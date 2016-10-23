@@ -1,0 +1,50 @@
+#
+# Description
+# -----------
+#
+# Fields
+# ------
+# id:                   The ID assigned to the festival.
+# uuid:                 The Universal Unique ID.
+# business_id:          The business the festival is attached to.
+#
+# festival_id:          The ID of the festival the class is for.
+# category_id:          The ID of the category the class is in.
+#
+# code:                 The code for the class.
+# name:                 The name for the class.
+# permalink:            The permalink for the class, a combination of code and name.
+#
+# sequence:             The order to display the classes in.
+# flags:                The options for the class.
+#
+#                           0x01 - Online registration
+#                           0x02 - Multireg - Allow for same student to register multiple times.
+#                           0x04 - 
+#                           0x08 - 
+#
+# fee:                  The fee for the class.
+#
+# date_added:           The UTC date and time the record was added.
+# last_updated:         The UTC date and time the record was last updated.
+#
+create table ciniki_musicfestival_classes (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    business_id int not null,
+    festival_id int not null,
+    category_id int not null,
+    code varchar(50) not null,
+    name varchar(150) not null,
+    permalink varchar(150) not null,
+    sequence tinyint unsigned not null,
+    flags tinyint unsigned not null,
+    fee decimal(19,6) not null,
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    unique index (festival_id, permalink),
+    unique index (festival_id, code),
+    index business_uuid (business_id, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';
