@@ -147,7 +147,7 @@ function ciniki_musicfestivals_categoryGet($ciniki) {
             }
             if( isset($rc['classes']) ) {
                 $category['classes'] = $rc['classes'];
-                foreach($festival['classes'] as $iid => $class) {
+                foreach($category['classes'] as $iid => $class) {
                     $category['classes'][$iid]['fee'] = numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency);
                     $nplists['classes'][] = $class['id'];
                 }
