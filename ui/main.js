@@ -9,11 +9,11 @@ function ciniki_musicfestivals_main() {
     this.menu.data = {};
     this.menu.nplist = [];
     this.menu.sections = {
-        'search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':1,
-            'cellClasses':[''],
-            'hint':'Search festival',
-            'noData':'No festival found',
-            },
+//        'search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':1,
+//            'cellClasses':[''],
+//            'hint':'Search festival',
+//            'noData':'No festival found',
+//            },
         'festivals':{'label':'Festival', 'type':'simplegrid', 'num_cols':1,
             'noData':'No festival',
             'addTxt':'Add Festival',
