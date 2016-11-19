@@ -258,24 +258,33 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $business_id, $ar
         //
         // Output the categories
         //
+        $newpage = 'yes';
         foreach($section['categories'] as $category) {
             //
             // Check if enough room
             //
-            $lh = 12;
-            $s_height = $pdf->getStringHeight(180, $category['synopsis']);
+            $lh = 9;
+            if( $category['synopsis'] != '' ) {
+                $s_height = $pdf->getStringHeight(180, $category['synopsis']);
+            } else {
+                $s_height = 0;
+            }
             if( $pdf->getY() > $pdf->getPageHeight() - (count($category['classes']) * $lh) - 50 - $s_height) {
                 $pdf->AddPage();
-            } else {
+                $newpage = 'yes';
+            } elseif( $newpage == 'no' ) {
                 $pdf->Ln();
             }
+            $newpage = 'no';
 
             $pdf->SetFont('', 'B', '18');
             $pdf->Cell(180, 10, $category['name'], 0, 0, 'L', 0);
-            $pdf->Ln(8);
+            $pdf->Ln(10);
             $pdf->SetFont('', '', '12');
-            $pdf->MultiCell(180, $lh, $category['synopsis'], 0, 'L', 0, 2);
-            $pdf->Ln(1);
+            if( $category['synopsis'] != '' ) {
+                $pdf->MultiCell(180, $lh, $category['synopsis'], 0, 'L', 0, 2);
+                $pdf->Ln(2);
+            }
             $fill = 1;
             $pdf->Cell($w[0], $lh, '', 0, 0, 'L', $fill);
             $pdf->Cell($w[1], $lh, '', 0, 0, 'L', $fill);
