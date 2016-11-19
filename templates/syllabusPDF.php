@@ -262,9 +262,12 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $business_id, $ar
             //
             // Check if enough room
             //
-            $lh = 9;
-            if( $pdf->getY() > $pdf->getPageHeight() - (count($category['classes']) * $lh) - 30) {
+            $lh = 12;
+            $s_height = $pdf->getStringHeight(180, $category['synopsis']);
+            if( $pdf->getY() > $pdf->getPageHeight() - (count($category['classes']) * $lh) - 50 - $s_height) {
                 $pdf->AddPage();
+            } else {
+                $pdf->Ln();
             }
 
             $pdf->SetFont('', 'B', '18');
