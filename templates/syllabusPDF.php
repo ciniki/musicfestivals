@@ -79,9 +79,11 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $business_id, $ar
         . "ciniki_musicfestival_sections.id AS section_id, "
         . "ciniki_musicfestival_sections.name AS section_name, "
         . "ciniki_musicfestival_sections.synopsis AS section_synopsis, "
+        . "ciniki_musicfestival_sections.description AS section_description, "
         . "ciniki_musicfestival_categories.id AS category_id, "
         . "ciniki_musicfestival_categories.name AS category_name, "
         . "ciniki_musicfestival_categories.synopsis AS category_synopsis, "
+        . "ciniki_musicfestival_categories.description AS category_description, "
         . "ciniki_musicfestival_classes.code, "
         . "ciniki_musicfestival_classes.name, "
         . "ciniki_musicfestival_classes.permalink, "
@@ -102,8 +104,10 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $business_id, $ar
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('name'=>'section_name', 'synopsis'=>'section_synopsis')),
-        array('container'=>'categories', 'fname'=>'category_id', 'fields'=>array('name'=>'category_name', 'synopsis'=>'category_synopsis')),
+        array('container'=>'sections', 'fname'=>'section_id', 
+            'fields'=>array('name'=>'section_name', 'synopsis'=>'section_synopsis', 'description'=>'section_description')),
+        array('container'=>'categories', 'fname'=>'category_id', 
+            'fields'=>array('name'=>'category_name', 'synopsis'=>'category_synopsis', 'description'=>'category_description')),
         array('container'=>'classes', 'fname'=>'id', 
             'fields'=>array('id', 'festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 'fee')),
         ));
@@ -264,8 +268,13 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $business_id, $ar
             // Check if enough room
             //
             $lh = 9;
-            if( $category['synopsis'] != '' ) {
+            $description = '';
+            if( $category['description'] != '' ) {
+                $s_height = $pdf->getStringHeight(180, $category['description']);
+                $description = $category['description'];
+            } elseif( $category['synopsis'] != '' ) {
                 $s_height = $pdf->getStringHeight(180, $category['synopsis']);
+                $description = $category['synopsis'];
             } else {
                 $s_height = 0;
             }
@@ -281,8 +290,8 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $business_id, $ar
             $pdf->Cell(180, 10, $category['name'], 0, 0, 'L', 0);
             $pdf->Ln(10);
             $pdf->SetFont('', '', '12');
-            if( $category['synopsis'] != '' ) {
-                $pdf->MultiCell(180, $lh, $category['synopsis'], 0, 'L', 0, 2);
+            if( $description != '' ) {
+                $pdf->MultiCell(180, $lh, $description, 0, 'L', 0, 2);
                 $pdf->Ln(2);
             }
             $fill = 1;
