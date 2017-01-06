@@ -22,6 +22,8 @@ function ciniki_musicfestivals_festivalUpdate(&$ciniki) {
         'permalink'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Permalink'),
         'start_date'=>array('required'=>'no', 'blank'=>'no', 'type'=>'date', 'name'=>'Start'),
         'end_date'=>array('required'=>'no', 'blank'=>'no', 'type'=>'date', 'name'=>'End'),
+        'status'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Status'),
+        'flags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Options'),
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Primary Image'),
         'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),
         'document_logo_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Document Header Logo'),

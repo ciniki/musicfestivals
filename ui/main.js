@@ -233,6 +233,7 @@ function ciniki_musicfestivals_main() {
             'name':{'label':'Name', 'type':'text'},
             'start_date':{'label':'Start', 'type':'date'},
             'end_date':{'label':'End', 'type':'date'},
+            'status':{'label':'Status', 'type':'toggle', 'toggles':{'10':'Active', '60':'Archived'}},
             }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'website', 'tabs':{
             'website':{'label':'Website', 'fn':'M.ciniki_musicfestivals_main.edit.switchTab(\'website\');'},
@@ -792,7 +793,7 @@ function ciniki_musicfestivals_main() {
     this.adjudicator.festival_id = 0;
     this.adjudicator.adjudicator_id = 0;
     this.adjudicator.customer_id = 0;
-    this.nplist = [];
+    this.adjudicator.nplist = [];
     this.adjudicator.sections = {
         'customer_details':{'label':'Adjudicator', 'type':'simplegrid', 'num_cols':2,
             'cellClasses':['label', ''],
@@ -802,7 +803,7 @@ function ciniki_musicfestivals_main() {
             'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_musicfestivals_main.adjudicator.updateCustomer();\',\'mc\',{\'next\':\'M.ciniki_musicfestivals_main.adjudicator.updateCustomer\',\'customer_id\':0});',
             },
         '_buttons':{'label':'', 'buttons':{
-//            'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.adjudicator.save();'},
+            'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.adjudicator.save();'},
             'delete':{'label':'Remove Adjudicator', 
                 'visible':function() {return M.ciniki_musicfestivals_main.adjudicator.adjudicator_id > 0 ? 'yes' : 'no'; },
                 'fn':'M.ciniki_musicfestivals_main.adjudicator.remove();'},
@@ -840,7 +841,9 @@ function ciniki_musicfestivals_main() {
             }
             var p = M.ciniki_musicfestivals_main.adjudicator;
             p.data = rsp.adjudicator;
-            p.festival_id = rsp.adjudicator.festival_id;
+            if( rsp.adjudicator.id > 0 ) {
+                p.festival_id = rsp.adjudicator.festival_id;
+            }
             p.customer_id = rsp.adjudicator.customer_id;
             if( p.customer_id == 0 ) {
                 p.sections.customer_details.addTxt = '';

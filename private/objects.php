@@ -23,6 +23,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'permalink'=>array('name'=>'Permalink', 'default'=>''),
             'start_date'=>array('name'=>'Start'),
             'end_date'=>array('name'=>'End'),
+            'status'=>array('name'=>'Status', 'default'=>'10'),
             'primary_image_id'=>array('name'=>'Primary Image', 'ref'=>'ciniki.images.image', 'default'=>'0'),
             'description'=>array('name'=>'Description', 'default'=>''),
             'document_logo_id'=>array('name'=>'Document Header Logo', 'ref'=>'ciniki.images.image', 'default'=>'0'),

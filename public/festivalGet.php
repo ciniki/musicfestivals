@@ -81,6 +81,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             'permalink'=>'',
             'start_date'=>'',
             'end_date'=>'',
+            'status'=>'10',
+            'flags'=>'0',
             'primary_image_id'=>'0',
             'header_logo_id'=>'0',
             'description'=>'',
@@ -97,6 +99,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             . "ciniki_musicfestivals.permalink, "
             . "ciniki_musicfestivals.start_date, "
             . "ciniki_musicfestivals.end_date, "
+            . "ciniki_musicfestivals.status, "
+            . "ciniki_musicfestivals.flags, "
             . "ciniki_musicfestivals.primary_image_id, "
             . "ciniki_musicfestivals.description, "
             . "ciniki_musicfestivals.document_logo_id, "
@@ -109,7 +113,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'festivals', 'fname'=>'id', 
-                'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'primary_image_id', 'description', 
+                'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'status', 'flags', 'primary_image_id', 'description', 
                     'document_logo_id', 'document_header_msg', 'document_footer_msg'),
                 'utctotz'=>array('start_date'=>array('timezone'=>'UTC', 'format'=>$date_format),
                     'end_date'=>array('timezone'=>'UTC', 'format'=>$date_format)),                ),

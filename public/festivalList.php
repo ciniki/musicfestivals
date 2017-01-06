@@ -42,14 +42,16 @@ function ciniki_musicfestivals_festivalList($ciniki) {
         . "ciniki_musicfestivals.name, "
         . "ciniki_musicfestivals.permalink, "
         . "ciniki_musicfestivals.start_date, "
-        . "ciniki_musicfestivals.end_date "
+        . "ciniki_musicfestivals.end_date, "
+        . "ciniki_musicfestivals.status, "
+        . "ciniki_musicfestivals.flags "
         . "FROM ciniki_musicfestivals "
         . "WHERE ciniki_musicfestivals.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'festivals', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'permalink', 'start_date', 'end_date')),
+            'fields'=>array('id', 'name', 'permalink', 'start_date', 'end_date', 'status', 'flags')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
