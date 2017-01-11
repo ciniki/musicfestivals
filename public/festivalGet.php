@@ -287,6 +287,23 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         // Get the list of files
         //
         if( isset($args['files']) && $args['files'] == 'yes' ) {
+            $strsql = "SELECT id, name "
+                . "FROM ciniki_musicfestival_files "
+                . "WHERE festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'files', 'fname'=>'id', 'fields'=>array('id', 'name')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            if( isset($rc['files']) ) {
+                $festival['files'] = $rc['files'];
+            } else {
+                $festival['files'] = array();
+            }
         }
     }
 

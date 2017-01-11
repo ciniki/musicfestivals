@@ -90,6 +90,35 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $business
     }
 
     //
+    // Check if file to download
+    //
+    if( isset($args['uri_split'][0]) && $args['uri_split'][0] == 'download' && isset($args['uri_split'][1]) && $args['uri_split'][1] != '' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'web', 'fileDownload');
+        $rc = ciniki_musicfestivals_web_fileDownload($ciniki, $ciniki['request']['business_id'], $festival_id, $ciniki['request']['uri_split'][1]);
+        if( $rc['stat'] == 'ok' ) {
+            header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+            header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+            header('Cache-Control: no-cache, must-revalidate');
+            header('Pragma: no-cache');
+            $file = $rc['file'];
+            if( $file['extension'] == 'pdf' ) {
+                header('Content-Type: application/pdf');
+            }
+//          header('Content-Disposition: attachment;filename="' . $file['filename'] . '"');
+            header('Content-Length: ' . strlen($file['binary_content']));
+            header('Cache-Control: max-age=0');
+
+            print $file['binary_content'];
+            exit;
+        }
+        
+        //
+        // If there was an error locating the files, display generic error
+        //
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.63', 'msg'=>'The file you requested does not exist.'));
+    }
+
+    //
     // Decide what should be displayed, default to about page
     //
     $display = 'about';
@@ -150,6 +179,26 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $business
 
         $content = $festival['description'];
         $page['blocks'][] = array('type'=>'content', 'section'=>'content', 'title'=>'', 'content'=>$content);
+
+        //
+        // Get any files
+        //
+        $strsql = "SELECT id, name, permalink, extension, description "
+            . "FROM ciniki_musicfestival_files "
+            . "WHERE festival_id = '" . ciniki_core_dbQuote($ciniki, $festival_id) . "' "
+            . "AND business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND (ciniki_musicfestival_files.webflags&0x01) > 0 "       // Make sure file is to be visible
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'files', 'fname'=>'id', 'fields'=>array('id', 'name', 'permalink', 'extension', 'description')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['files']) ) {
+            $page['blocks'][] = array('type'=>'files', 'base_url'=>$args['base_url'] . '/download', 'files'=>$rc['files']);
+        }
     }
 
     //
