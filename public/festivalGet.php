@@ -29,6 +29,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'registrations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registrations'),
         'adjudicators'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicators'),
         'files'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Files'),
+        'sponsors'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sponsors'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -70,6 +71,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'registrations'=>array(),
         'adjudicators'=>array(),
         'files'=>array(),
+        'sponsors'=>array(),
         );
 
     //
@@ -87,6 +89,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             'header_logo_id'=>'0',
             'description'=>'',
             'num_registrations'=>0,
+            'sponsors'=>array(),
         );
     }
 
@@ -303,6 +306,24 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $festival['files'] = $rc['files'];
             } else {
                 $festival['files'] = array();
+            }
+        }
+
+        //
+        // Get any sponsors for this festival, and that references for sponsors is enabled
+        //
+        if( isset($args['sponsors']) && $args['sponsors'] == 'yes' 
+            && isset($ciniki['business']['modules']['ciniki.sponsors']) 
+            && ($ciniki['business']['modules']['ciniki.sponsors']['flags']&0x02) == 0x02
+            ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'sponsors', 'hooks', 'sponsorList');
+            $rc = ciniki_sponsors_hooks_sponsorList($ciniki, $args['business_id'], 
+                array('object'=>'ciniki.musicfestivals.festival', 'object_id'=>$args['festival_id']));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            if( isset($rc['sponsors']) ) {
+                $festival['sponsors'] = $rc['sponsors'];
             }
         }
     }

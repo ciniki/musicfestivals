@@ -90,6 +90,23 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $business
     }
 
     //
+    // Get the sponsors for the festival
+    //
+    if( isset($ciniki['business']['modules']['ciniki.sponsors']) 
+        && ($ciniki['business']['modules']['ciniki.sponsors']['flags']&0x02) == 0x02
+        ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'sponsors', 'web', 'sponsorRefList');
+        $rc = ciniki_sponsors_web_sponsorRefList($ciniki, $settings, $business_id, 
+            'ciniki.musicfestivals.festival', $festival_id);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['sponsors']) ) {
+            $sponsors = $rc['sponsors'];
+        }
+    }
+
+    //
     // Check if file to download
     //
     if( isset($args['uri_split'][0]) && $args['uri_split'][0] == 'download' && isset($args['uri_split'][1]) && $args['uri_split'][1] != '' ) {
@@ -310,6 +327,10 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $business
         } else {
             $page['blocks'][] = array('type'=>'content', 'section'=>'content', 'title'=>'', 'content'=>"We don't currently have any adjudicators.");
         } 
+    }
+
+    if( isset($sponsors) && count($sponsors) > 0 ) {
+        $page['blocks'][] = array('type'=>'sponsors', 'section'=>'sponsors', 'title'=>'', 'sponsors'=>$sponsors);
     }
 
     //
