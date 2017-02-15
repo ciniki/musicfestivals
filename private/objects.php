@@ -115,6 +115,57 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );
+    $objects['competitor'] = array(
+        'name'=>'Competitor',
+        'o_name'=>'competitor',
+        'o_container'=>'competitors',
+        'sync'=>'yes',
+        'table'=>'ciniki_musicfestival_competitors',
+        'fields'=>array(
+            'festival_id'=>array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'name'=>array('name'=>'Name'),
+            'parent'=>array('name'=>'Parent'),
+            'address'=>array('name'=>'Address', 'default'=>''),
+            'city'=>array('name'=>'City', 'default'=>''),
+            'province'=>array('name'=>'Province', 'default'=>''),
+            'postal'=>array('name'=>'Postal Code', 'default'=>''),
+            'phone_home'=>array('name'=>'Home Phone', 'default'=>''),
+            'phone_cell'=>array('name'=>'Cell Phone', 'default'=>''),
+            'email'=>array('name'=>'Email', 'default'=>''),
+            'age'=>array('name'=>'Age', 'default'=>''),
+            'study_level'=>array('name'=>'Study/Level', 'default'=>''),
+            'instrument'=>array('name'=>'Instrument', 'default'=>''),
+            'notes'=>array('name'=>'Notes', 'default'=>''),
+            ),
+        'history_table'=>'ciniki_musicfestivals_history',
+        );
+    $objects['registration'] = array(
+        'name'=>'Registration',
+        'o_name'=>'registration',
+        'o_container'=>'registrations',
+        'sync'=>'yes',
+        'table'=>'ciniki_musicfestival_registrations',
+        'fields'=>array(
+            'festival_id'=>array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'teacher_customer_id'=>array('name'=>'Teacher', 'ref'=>'ciniki.customers.customer', 'default'=>'0'),
+            'billing_customer_id'=>array('name'=>'Billing', 'ref'=>'ciniki.customers.customer', 'default'=>'0'),
+            'rtype'=>array('name'=>'Type'),
+            'status'=>array('name'=>'Status'),
+            'display_name'=>array('name'=>'Name', 'default'=>''),
+            'competitor1_id'=>array('name'=>'Competitor 1', 'ref'=>'ciniki.musicfestivals.competitor', 'default'=>'0'),
+            'competitor2_id'=>array('name'=>'Competitor 2', 'ref'=>'ciniki.musicfestivals.competitor', 'default'=>'0'),
+            'competitor3_id'=>array('name'=>'Competitor 3', 'ref'=>'ciniki.musicfestivals.competitor', 'default'=>'0'),
+            'competitor4_id'=>array('name'=>'Competitor 4', 'ref'=>'ciniki.musicfestivals.competitor', 'default'=>'0'),
+            'competitor5_id'=>array('name'=>'Competitor 5', 'ref'=>'ciniki.musicfestivals.competitor', 'default'=>'0'),
+            'class_id'=>array('name'=>'Class', 'ref'=>'ciniki.musicfestivals.class'),
+            'title'=>array('name'=>'Title', 'default'=>''),
+            'perf_time'=>array('name'=>'Performance Time', 'default'=>''),
+            'fee'=>array('name'=>'Fee', 'type'=>'currency', 'default'=>'0'),
+            'payment_type'=>array('name'=>'Payment Type', 'default'=>'0'),
+            'notes'=>array('name'=>'Notes', 'default'=>''),
+            ),
+        'history_table'=>'ciniki_musicfestivals_history',
+        );
     
     return array('stat'=>'ok', 'objects'=>$objects);
 }

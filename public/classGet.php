@@ -143,7 +143,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
             array('container'=>'categories', 'fname'=>'id', 'fields'=>array('id', 'name')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.40', 'msg'=>'Categories not found', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.78', 'msg'=>'Categories not found', 'err'=>$rc['err']));
         }
         if( isset($rc['categories']) ) {
             $rsp['categories'] = $rc['categories'];
