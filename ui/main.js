@@ -1023,7 +1023,7 @@ function ciniki_musicfestivals_main() {
         'teacher_details':{'label':'Teacher', 'type':'simplegrid', 'num_cols':2,
             'cellClasses':['label', ''],
             'addTxt':'Edit',
-            'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_musicfestivals_main.registration.updateTeacher();\',\'mc\',{\'next\':\'M.ciniki_musicfestivals_main.registration.updateTeacher\',\'customer_id\':M.ciniki_musicfestivals_main.registration.data.teacher_customer_id});',
+            'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_musicfestivals_main.registration.updateTeacher();\',\'mc\',{\'next\':\'M.ciniki_musicfestivals_main.registration.updateTeacher\',\'customer_id\':M.ciniki_musicfestivals_main.registration.teacher_customer_id});',
             'changeTxt':'Change',
             'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_musicfestivals_main.registration.updateTeacher();\',\'mc\',{\'next\':\'M.ciniki_musicfestivals_main.registration.updateTeacher\',\'customer_id\':0});',
             },
@@ -1122,24 +1122,36 @@ function ciniki_musicfestivals_main() {
     }
     this.registration.updateTeacher = function(cid) {
         if( cid != null ) { 
-            this.teacher_customer_id = cid; }
-            M.api.getJSONCb('ciniki.customers.customerDetails', {'business_id':M.curBusinessID, 'customer_id':this.teacher_customer_id}, function(rsp) {
-                if( rsp.stat != 'ok' ) {
-                    M.api.err(rsp);
-                    return false;
-                }
-                var p = M.ciniki_musicfestivals_main.registration;
-                p.data.teacher_details = rsp.details;
-                if( p.customer_id == 0 ) {
-                    p.sections.teacher_details.addTxt = '';
-                    p.sections.teacher_details.changeTxt = 'Add';
-                } else {
-                    p.sections.teacher_details.addTxt = 'Edit';
-                    p.sections.teacher_details.changeTxt = 'Change';
-                }
-                p.refreshSection('teacher_details');
-                p.show();
-            });
+            this.teacher_customer_id = cid;
+            if( this.teacher_customer_id > 0 ) {
+                M.api.getJSONCb('ciniki.customers.customerDetails', {'business_id':M.curBusinessID, 'customer_id':this.teacher_customer_id}, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    var p = M.ciniki_musicfestivals_main.registration;
+                    p.data.teacher_details = rsp.details;
+                    if( p.customer_id == 0 ) {
+                        p.sections.teacher_details.addTxt = '';
+                        p.sections.teacher_details.changeTxt = 'Add';
+                    } else {
+                        p.sections.teacher_details.addTxt = 'Edit';
+                        p.sections.teacher_details.changeTxt = 'Change';
+                    }
+                    p.refreshSection('teacher_details');
+                    p.show();
+                });
+            } else {
+                console.log('test');
+                this.data.teacher_details = [];
+                this.sections.teacher_details.addTxt = '';
+                this.sections.teacher_details.changeTxt = 'Add';
+                this.refreshSection('teacher_details');
+                this.show();
+            }
+        } else {
+            this.show();
+        }
     }
     this.registration.open = function(cb, rid, tid, fid, list) {
         if( rid != null ) { this.registration_id = rid; }
@@ -1158,7 +1170,6 @@ function ciniki_musicfestivals_main() {
             p.classes = rsp.classes;
             p.sections._class.fields.class_id.options = rsp.classes;
             p.sections._class.fields.class_id.options.unshift({'id':0, 'name':''});
-            p.teacher_customer_id = rsp.registration.teacher_customer_id;
             p.teacher_customer_id = parseInt(rsp.registration.teacher_customer_id);
             if( p.teacher_customer_id == 0 ) {
                 p.sections.teacher_details.addTxt = '';
