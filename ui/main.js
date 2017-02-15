@@ -1142,7 +1142,6 @@ function ciniki_musicfestivals_main() {
                     p.show();
                 });
             } else {
-                console.log('test');
                 this.data.teacher_details = [];
                 this.sections.teacher_details.addTxt = '';
                 this.sections.teacher_details.changeTxt = 'Add';
