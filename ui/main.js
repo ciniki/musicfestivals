@@ -1029,13 +1029,13 @@ function ciniki_musicfestivals_main() {
             },
         '_class':{'label':'', 'fields':{
             'status':{'label':'Status', 'required':'yes', 'type':'toggle', 'toggles':{'10':'Applied', '50':'Paid'}},
+            'payment_type':{'label':'Payment', 'type':'toggle', 'toggles':{'20':'Square', '50':'Visa', '55':'Mastercard', '100':'Cash', '105':'Cheque', '110':'Email', '120':'Other'}},
             'class_id':{'label':'Class', 'required':'yes', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}, 
                 'onchangeFn':'M.ciniki_musicfestivals_main.registration.setFee',
                 },
             'title':{'label':'Title', 'type':'text'},
             'perf_time':{'label':'PerfTime', 'type':'text', 'size':'small'},
             'fee':{'label':'Fee', 'type':'text', 'size':'small'},
-            'payment_type':{'label':'Payment', 'type':'toggle', 'toggles':{'20':'Square', '50':'Visa', '55':'Mastercard', '100':'Cash', '105':'Cheque', '110':'Email', '120':'Other'}},
             }},
         '_notes':{'label':'Notes', 'fields':{
             'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea'},
