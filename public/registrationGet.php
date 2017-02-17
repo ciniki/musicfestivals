@@ -222,7 +222,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
     //
     // Get the list of classes
     //
-    $strsql = "SELECT ciniki_musicfestival_classes.id, CONCAT_WS(' - ', ciniki_musicfestival_sections.name, ciniki_musicfestival_classes.code, ciniki_musicfestival_classes.name) AS name, FORMAT(fee, 2) AS fee "
+    $strsql = "SELECT ciniki_musicfestival_classes.id, CONCAT_WS(' - ', ciniki_musicfestival_classes.code, ciniki_musicfestival_classes.name) AS name, FORMAT(fee, 2) AS fee "
         . "FROM ciniki_musicfestival_sections, ciniki_musicfestival_categories, ciniki_musicfestival_classes "
         . "WHERE ciniki_musicfestival_sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "AND ciniki_musicfestival_sections.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
