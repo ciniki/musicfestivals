@@ -152,6 +152,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'rtype'=>array('name'=>'Type'),
             'status'=>array('name'=>'Status'),
             'display_name'=>array('name'=>'Name', 'default'=>''),
+            'public_name'=>array('name'=>'Name', 'default'=>''),
             'competitor1_id'=>array('name'=>'Competitor 1', 'ref'=>'ciniki.musicfestivals.competitor', 'default'=>'0'),
             'competitor2_id'=>array('name'=>'Competitor 2', 'ref'=>'ciniki.musicfestivals.competitor', 'default'=>'0'),
             'competitor3_id'=>array('name'=>'Competitor 3', 'ref'=>'ciniki.musicfestivals.competitor', 'default'=>'0'),

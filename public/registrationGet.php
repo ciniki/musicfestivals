@@ -23,6 +23,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'registration_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Registration'),
+        'class_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Class'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -62,7 +63,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'festival_id'=>'',
             'teacher_customer_id'=>'0',
             'billing_customer_id'=>'0',
-            'rtype'=>'',
+            'rtype'=>30,
             'status'=>'',
             'display_name'=>'',
             'competitor1_id'=>'0',
@@ -70,7 +71,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'competitor3_id'=>'0',
             'competitor4_id'=>'0',
             'competitor5_id'=>'0',
-            'class_id'=>'',
+            'class_id'=>(isset($args['class_id']) ? $args['class_id'] : 0),
             'title'=>'',
             'perf_time'=>'',
             'fee'=>'0',

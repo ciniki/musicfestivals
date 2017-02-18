@@ -31,6 +31,8 @@
 #                       Duet & Trio the name for certificates, programs etc goes here. 
 #                       Ensembles, the name of the group goes here.
 #
+# public_name:          The name to use for the PDF of the schedule, first initials and last names.
+#
 # competitor1_id:       The individual competitor, or first person of a duet/trio/ensemble.
 # competitor2_id:       The second person of a duet/trio/ensemble.
 # competitor3_id:       The third person of a trio/ensemble.
@@ -71,6 +73,7 @@ create table ciniki_musicfestival_registrations (
     rtype tinyint unsigned not null,
     status tinyint unsigned not null,
     display_name varchar(250) not null,
+    public_name varchar(250) not null,
     competitor1_id int not null,
     competitor2_id int not null,
     competitor3_id int not null,

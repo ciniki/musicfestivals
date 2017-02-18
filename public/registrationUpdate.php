@@ -40,6 +40,10 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     }
     $args = $rc['args'];
 
+    if( isset($args['display_name']) ) {
+        $args['public_name'] = $args['display_name'];
+    }
+
     //
     // Make sure this module is activated, and
     // check permission to run this function for this business

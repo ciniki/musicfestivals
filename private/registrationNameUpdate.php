@@ -23,6 +23,7 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $business_id, $r
         . "registrations.rtype, "
         . "registrations.status, "
         . "registrations.display_name, "
+        . "registrations.public_name, "
         . "registrations.competitor1_id, "
         . "registrations.competitor2_id, "
         . "registrations.competitor3_id, "
@@ -51,7 +52,7 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $business_id, $r
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
-            'fields'=>array('rtype', 'display_name', 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id')),
+            'fields'=>array('rtype', 'display_name', 'public_name', 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id')),
         array('container'=>'competitors', 'fname'=>'competitor_id', 
             'fields'=>array('competitor_id', 'name'=>'competitor_name')),
         ));
@@ -68,29 +69,43 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $business_id, $r
     //
     if( $registration['rtype'] < 90 ) {
         $names = array();
+        $pnames = array();
         if( $registration['competitor1_id'] > 0 && isset($registration['competitors'][$registration['competitor1_id']]['name']) ) {
             $names[] = $registration['competitors'][$registration['competitor1_id']]['name'];
+            $pnames[] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $registration['competitors'][$registration['competitor1_id']]['name']); 
         } 
         if( $registration['rtype'] > 30 ) {
             if( $registration['competitor2_id'] > 0 && isset($registration['competitors'][$registration['competitor2_id']]['name']) ) {
                 $names[] = $registration['competitors'][$registration['competitor2_id']]['name'];
+                $pnames[] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $registration['competitors'][$registration['competitor2_id']]['name']); 
             } 
         }
         if( $registration['rtype'] > 50 ) {
             if( $registration['competitor3_id'] > 0 && isset($registration['competitors'][$registration['competitor3_id']]['name']) ) {
                 $names[] = $registration['competitors'][$registration['competitor3_id']]['name'];
+                $pnames[] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $registration['competitors'][$registration['competitor3_id']]['name']); 
             } 
         }
         if( count($names) == 3 ) {
             $display_name = $names[0] . ', ' . $names[1] . ' & ' . $names[2];
+            $public_name = $pnames[0] . ', ' . $pnames[1] . ' & ' . $pnames[2];
         } elseif( count($names) == 2 ) {
             $display_name = $names[0] . ' & ' . $names[1];
+            $public_name = $pnames[0] . ' & ' . $pnames[1];
         } elseif( count($names) == 1 ) {
             $display_name = $names[0];
+            $public_name = $pnames[0];
         }
-        if( $display_name != $registration['display_name'] ) {
+        $update_args = array();
+        if( isset($display_name) && $display_name != $registration['display_name'] ) {
+            $update_args['display_name'] = $display_name;
+        }
+        if( isset($public_name) && $public_name != $registration['public_name'] ) {
+            $update_args['public_name'] = $public_name;
+        }
+        if( count($update_args) > 0 ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-            $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.musicfestivals.registration', $registration_id, array('display_name'=>$display_name), 0x04);
+            $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.musicfestivals.registration', $registration_id, $update_args, 0x04);
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.84', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
             }

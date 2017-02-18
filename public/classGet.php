@@ -60,6 +60,16 @@ function ciniki_musicfestivals_classGet($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
 
     //
+    // Load conference maps
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'maps');
+    $rc = ciniki_musicfestivals_maps($ciniki);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $maps = $rc['maps'];
+
+    //
     // Return default for new Class
     //
     if( $args['class_id'] == 0 ) {
@@ -122,6 +132,70 @@ function ciniki_musicfestivals_classGet($ciniki) {
         $class['fee'] = numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency);
     }
 
+    //
+    // Get the list of registrations
+    //
+    if( isset($args['registrations']) && $args['registrations'] == 'yes' ) {
+        $strsql = "SELECT registrations.id, "
+            . "registrations.festival_id, "
+            . "sections.id AS section_id, "
+            . "registrations.teacher_customer_id, "
+            . "teachers.display_name AS teacher_name, "
+            . "registrations.billing_customer_id, "
+            . "registrations.rtype, "
+            . "registrations.rtype AS rtype_text, "
+            . "registrations.status, "
+            . "registrations.status AS status_text, "
+            . "registrations.display_name, "
+            . "registrations.class_id, "
+            . "classes.code AS class_code, "
+            . "classes.name AS class_name, "
+            . "registrations.title, "
+            . "registrations.perf_time, "
+            . "FORMAT(registrations.fee, 2) AS fee, "
+            . "registrations.payment_type "
+            . "FROM ciniki_musicfestival_registrations AS registrations "
+            . "LEFT JOIN ciniki_customers AS teachers ON ("
+                . "registrations.teacher_customer_id = teachers.id "
+                . "AND teachers.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+                . "registrations.class_id = classes.id "
+                . "AND classes.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
+                . "classes.category_id = categories.id "
+                . "AND categories.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+                . "categories.section_id = sections.id "
+                . "AND sections.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                . ") "
+            . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "AND registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND classes.id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'registrations', 'fname'=>'id', 
+                'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
+                    'class_id', 'class_code', 'class_name', 'title', 'perf_time', 'fee', 'payment_type'),
+                'maps'=>array(
+                    'rtype_text'=>$maps['registration']['rtype'],
+                    'status_text'=>$maps['registration']['status'],
+                    'payment_type'=>$maps['registration']['payment_type'],
+                    ),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['registrations']) ) {
+            $class['registrations'] = $rc['registrations'];
+        } else {
+            $class['registrations'] = array();
+        }
+    }
 
     $rsp = array('stat'=>'ok', 'class'=>$class);
 
