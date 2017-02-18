@@ -166,6 +166,49 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );
+    $objects['schedulesection'] = array(
+        'name'=>'Schedule Section',
+        'o_name'=>'schedulesection',
+        'o_container'=>'schedulesections',
+        'sync'=>'yes',
+        'table'=>'ciniki_musicfestival_schedule_sections',
+        'fields'=>array(
+            'festival_id'=>array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'name'=>array('name'=>'Name'),
+            ),
+        'history_table'=>'ciniki_musicfestivals_history',
+        );
+    $objects['scheduledivision'] = array(
+        'name'=>'Schedule Division',
+        'o_name'=>'scheduledivision',
+        'o_container'=>'scheduledivisions',
+        'sync'=>'yes',
+        'table'=>'ciniki_musicfestival_schedule_divisions',
+        'fields'=>array(
+            'festival_id'=>array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'ssection_id'=>array('name'=>'Section', 'ref'=>'ciniki.musicfestivals.schedulesection'),
+            'name'=>array('name'=>'Name'),
+            'division_date'=>array('name'=>'Date'),
+            'address'=>array('name'=>'Address', 'default'=>''),
+            ),
+        'history_table'=>'ciniki_musicfestivals_history',
+        );
+    $objects['scheduletimeslot'] = array(
+        'name'=>'Schedule Time Slot',
+        'o_name'=>'scheduletimeslot',
+        'o_container'=>'scheduletimeslot',
+        'sync'=>'yes',
+        'table'=>'ciniki_musicfestival_schedule_timeslots',
+        'fields'=>array(
+            'festival_id'=>array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'sdivision_id'=>array('name'=>'Division', 'ref'=>'ciniki.musicfestivals.scheduledivision'),
+            'slot_time'=>array('name'=>'Time'),
+            'class_id'=>array('name'=>'Class', 'ref'=>'ciniki.musicfestivals.class'),
+            'name'=>array('name'=>'Name'),
+            'description'=>array('name'=>'Description', 'default'=>''),
+            ),
+        'history_table'=>'ciniki_musicfestivals_history',
+        );
     
     return array('stat'=>'ok', 'objects'=>$objects);
 }
