@@ -120,7 +120,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
         if( $competitor['address'] != '' ) { $address .= $competitor['address']; }
         $city = $competitor['city'];
         if( $competitor['province'] != '' ) { $city .= ($city != '' ? ", " : '') . $competitor['province']; }
-        if( $competitor['postal'] != '' ) { $postal .= ($postal != '' ? "  " : '') . $competitor['postal']; }
+        if( $competitor['postal'] != '' ) { $city .= ($city != '' ? "  " : '') . $competitor['postal']; }
         if( $city != '' ) { $address .= ($address != '' ? "\n" : '' ) . $city; }
         if( $address != '' ) {
             $details[] = array('label'=>'Address', 'value'=>$address);
