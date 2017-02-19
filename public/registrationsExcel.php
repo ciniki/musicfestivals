@@ -175,36 +175,39 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
 
         foreach($section['registrations'] as $registration) {
 
-            if( isset($teachers[$registration['teacher_customer_id']]) ) {
-                $registration['teacher_name'] = $teachers[$registration['teacher_customer_id']]['teacher_name'];
-                $registration['teacher_phone'] = $teachers[$registration['teacher_customer_id']]['teacher_phone'];
-                $registration['teacher_email'] = $teachers[$registration['teacher_customer_id']]['teacher_email'];
-            } else {
-                $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['business_id'], 
-                    array('customer_id'=>$registration['teacher_customer_id'], 'phones'=>'yes', 'emails'=>'yes'));
-                if( $rc['stat'] != 'ok' ) {
-                    return $rc;
-                }
-                if( isset($rc['customer']) ) {
-                    $registration['teacher_name'] = $rc['customer']['display_name'];
-                    $registration['teacher_phone'] = '';
-                    $registration['teacher_email'] = '';
-                    if( isset($rc['customer']['phones']) ) {
-                        foreach($rc['customer']['phones'] as $phone) {
-                            $registration['teacher_phone'] .= ($registration['teacher_phone'] != '' ? ', ' : '') . $phone['phone_number'];
-                        }
+            $registration['teacher_name'] = '';
+            $registration['teacher_phone'] = '';
+            $registration['teacher_email'] = '';
+            if( $registration['teacher_customer_id'] > 0 ) {
+                if( isset($teachers[$registration['teacher_customer_id']]) ) {
+                    $registration['teacher_name'] = $teachers[$registration['teacher_customer_id']]['teacher_name'];
+                    $registration['teacher_phone'] = $teachers[$registration['teacher_customer_id']]['teacher_phone'];
+                    $registration['teacher_email'] = $teachers[$registration['teacher_customer_id']]['teacher_email'];
+                } else {
+                    $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['business_id'], 
+                        array('customer_id'=>$registration['teacher_customer_id'], 'phones'=>'yes', 'emails'=>'yes'));
+                    if( $rc['stat'] != 'ok' ) {
+                        return $rc;
                     }
-                    if( isset($rc['customer']['emails']) ) {
-                        foreach($rc['customer']['emails'] as $email) {
-                            $registration['teacher_email'] .= ($registration['teacher_email'] != '' ? ', ' : '') . $email['email']['address'];
+                    if( isset($rc['customer']) ) {
+                        $registration['teacher_name'] = $rc['customer']['display_name'];
+                        if( isset($rc['customer']['phones']) ) {
+                            foreach($rc['customer']['phones'] as $phone) {
+                                $registration['teacher_phone'] .= ($registration['teacher_phone'] != '' ? ', ' : '') . $phone['phone_number'];
+                            }
                         }
-                    }
+                        if( isset($rc['customer']['emails']) ) {
+                            foreach($rc['customer']['emails'] as $email) {
+                                $registration['teacher_email'] .= ($registration['teacher_email'] != '' ? ', ' : '') . $email['email']['address'];
+                            }
+                        }
 
-                    $teachers[$registration['teacher_customer_id']] = array(
-                        'teacher_name'=>$registration['teacher_name'],
-                        'teacher_phone'=>$registration['teacher_phone'],
-                        'teacher_email'=>$registration['teacher_email'],
-                        );
+                        $teachers[$registration['teacher_customer_id']] = array(
+                            'teacher_name'=>$registration['teacher_name'],
+                            'teacher_phone'=>$registration['teacher_phone'],
+                            'teacher_email'=>$registration['teacher_email'],
+                            );
+                    }
                 }
             }
 
