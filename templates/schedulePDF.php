@@ -87,7 +87,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $business_id, $ar
         . "timeslots.name AS timeslot_name, "
         . "timeslots.description, "
         . "registrations.id AS reg_id, "
-        . "registrations.public_name, "
+        . "registrations.display_name, "
         . "registrations.public_name "
         . "FROM ciniki_musicfestival_schedule_sections AS sections "
         . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
@@ -290,7 +290,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $business_id, $ar
             } else {
                 $s_height = 0;
             }
-            if( $pdf->getY() > $pdf->getPageHeight() - (count($division['classes']) * $lh) - 70 - $s_height) {
+            if( $pdf->getY() > $pdf->getPageHeight() - (count($division['timeslots']) * $lh) - 70 - $s_height) {
                 $pdf->AddPage();
                 $newpage = 'yes';
             } elseif( $newpage == 'no' ) {
@@ -309,7 +309,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $business_id, $ar
             $fill = 1;
             
             //
-            // Output the classes
+            // Output the timeslots
             //
             $fill = 0;
             $border = 'T';
