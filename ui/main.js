@@ -1036,7 +1036,7 @@ function ciniki_musicfestivals_main() {
     this.registration.registration_id = 0;
     this.registration.nplist = [];
     this.registration.sections = {
-        '_tabs':{'label':'', 'type':'menutabs', 'field_id':'rtype', 'selected':'30', 'tabs':{
+        '_tabs':{'label':'', 'type':'paneltabs', 'field_id':'rtype', 'selected':'30', 'tabs':{
             '30':{'label':'Individual', 'fn':'M.ciniki_musicfestivals_main.registration.switchTab("30");'},
             '50':{'label':'Duet', 'fn':'M.ciniki_musicfestivals_main.registration.switchTab("50");'},
             '60':{'label':'Trio', 'fn':'M.ciniki_musicfestivals_main.registration.switchTab("60");'},
