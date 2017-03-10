@@ -136,6 +136,7 @@ function ciniki_musicfestivals_main() {
             'visible':function() {return M.ciniki_musicfestivals_main.festival.sections._tabs.selected=='registrations'?'yes':'no';},
             'buttons':{
                 'excel':{'label':'Export to Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadExcel(M.ciniki_musicfestivals_main.festival.festival_id);'},
+                'pdf':{'label':'Registrations PDF ', 'fn':'M.ciniki_musicfestivals_main.festival.downloadPDF(M.ciniki_musicfestivals_main.festival.festival_id);'},
             }},
         'registration_search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':5,
             'visible':function() {return M.ciniki_musicfestivals_main.festival.sections._tabs.selected=='registrations'?'yes':'no';},
@@ -377,6 +378,9 @@ function ciniki_musicfestivals_main() {
     }
     this.festival.downloadExcel = function(fid) {
         M.api.openFile('ciniki.musicfestivals.registrationsExcel', {'business_id':M.curBusinessID, 'festival_id':fid});
+    }
+    this.festival.downloadPDF = function(fid) {
+        M.api.openFile('ciniki.musicfestivals.registrationsPDF', {'business_id':M.curBusinessID, 'festival_id':fid});
     }
     this.festival.open = function(cb, fid, list) {
         if( fid != null ) { this.festival_id = fid; }

@@ -11,7 +11,7 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $business_id, $args) {
+function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $business_id, $args) {
 
     //
     // Load the business details
@@ -73,64 +73,59 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $business_id, $ar
     //
     // Load the schedule sections, divisions, timeslots, classes, registrations
     //
-    $strsql = "SELECT sections.id AS section_id, "
-        . "sections.name AS section_name, "
-        . "divisions.id AS division_id, "
-        . "divisions.name AS division_name, "
-        . "divisions.address, "
-        . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, "
-        . "timeslots.id AS timeslot_id, "
-        . "timeslots.name AS timeslot_name, "
-        . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
-        . "timeslots.class_id, "
+    $strsql = "SELECT classes.id AS class_id, "
+        . "classes.code AS class_code, "
         . "classes.name AS class_name, "
-        . "timeslots.name AS timeslot_name, "
-        . "timeslots.description, "
         . "registrations.id AS reg_id, "
         . "registrations.display_name, "
         . "registrations.public_name, "
-        . "registrations.title "
-        . "FROM ciniki_musicfestival_schedule_sections AS sections "
-        . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
-            . "sections.id = divisions.ssection_id " 
-            . "AND divisions.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
-            . "divisions.id = timeslots.sdivision_id " 
-            . "AND timeslots.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
-            . "timeslots.class_id = classes.id " 
-            . "AND classes.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
-            . "timeslots.class_id = registrations.class_id " 
-            . "AND ((timeslots.flags&0x01) = 0 OR timeslots.id = registrations.timeslot_id) "
+        . "registrations.title, "
+        . "registrations.perf_time, "
+        . "registrations.notes, "
+        . "competitors.id AS competitor_id, "
+        . "competitors.notes AS competitor_notes "
+        . "FROM ciniki_musicfestival_classes AS classes "
+        . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+            . "classes.id = registrations.class_id "
             . "AND registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
             . ") "
-        . "WHERE sections.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-        . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "";
-    if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
-        $strsql .= "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
-    }
-    $strsql .= "ORDER BY slot_time "
+        . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ("
+            . "(registrations.competitor1_id = competitors.id "
+                . "OR registrations.competitor2_id = competitors.id "
+                . "OR registrations.competitor3_id = competitors.id "
+                . "OR registrations.competitor4_id = competitors.id "
+                . "OR registrations.competitor5_id = competitors.id "
+                . ") "
+            . "AND competitors.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . ") "
+        . "WHERE classes.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND classes.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "ORDER BY class_code, class_name, reg_id, competitor_id "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'name'=>'section_name')),
-        array('container'=>'divisions', 'fname'=>'division_id', 'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'address')),
-        array('container'=>'timeslots', 'fname'=>'timeslot_id', 'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 'class_id', 'description', 'class_name')),
-        array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title')),
+        array('container'=>'classes', 'fname'=>'class_id', 'fields'=>array('id'=>'class_id', 'code'=>'class_code', 'name'=>'class_name')),
+        array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'title', 'perf_time', 'notes')),
+        array('container'=>'competitors', 'fname'=>'competitor_id', 'fields'=>array('id'=>'competitor_id', 'notes'=>'competitor_notes')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-    if( isset($rc['sections']) ) {
-        $sections = $rc['sections'];
+    if( isset($rc['classes']) ) {
+        $classes = $rc['classes'];
+        foreach($classes as $cid => $class) {
+            $classes[$cid]['num_reg'] = count($class['registrations']);
+        }
     } else {
-        $sections = array();
+        $classes = array();
     }
+
+    usort($classes, function($a, $b) {
+        if( $a['num_reg'] == $b['num_reg'] ) {
+            strcasecmp($a['code'], $b['code']);
+        }
+        return ($a['num_reg'] < $b['num_reg'] ? 1 : -1);
+    });
 
     //
     // Load TCPDF library
@@ -260,117 +255,65 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $business_id, $ar
     $pdf->SetDrawColor(232);
     $pdf->SetLineWidth(0.1);
 
-    $filename = 'schedule';
+    $filename = 'class_registrations';
 
+    $pdf->AddPage();
     //
     // Go through the sections, divisions and classes
     //
-    $w = array(30, 5, 145);
-    foreach($sections as $section) {
-        //
-        // Start a new section
-        //
-        $pdf->header_sub_title = $section['name'] . ' Schedule';
-        if( isset($args['schedulesection_id']) ) {
-            $filename = preg_replace('/[^a-zA-Z0-9_]/', '_', $section['name']) . '_schedule';
+    $cw = array(20, 5, 155);
+    $w = array(10, 55, 90, 25);
+    $nw = array(20, 160);
+    $lh = 6;
+    $border = 'T';
+    foreach($classes as $class) {
+        if( $pdf->getY() > ($pdf->getPageHeight() - 60 ) ) {
+            $pdf->AddPage();
         }
-        $pdf->AddPage();
-
-        //
-        // Output the divisions
-        //
-        $newpage = 'yes';
-        foreach($section['divisions'] as $division) {
-            //
-            // Check if enough room
-            //
-            $lh = 9;
-            $address = '';
-            if( $division['address'] != '' ) {
-                $s_height = $pdf->getStringHeight(180, $division['address']);
-                $address = $division['address'];
-            } else {
-                $s_height = 0;
+        $pdf->SetFont('', 'B', 14);
+        $pdf->Cell($cw[0], $lh, $class['code'], $border, 0, 'L', 0);
+        $pdf->Cell($cw[1], $lh, '', $border, 0, 'R', 0);
+        $pdf->Cell($cw[2], $lh, $class['name'], $border, 1, 'L', 0);
+        $pdf->SetFont('', '', 12);
+        foreach($class['registrations'] as $reg) {
+            $notes = $reg['notes'];
+            if( isset($reg['competitors']) ) {
+                foreach($reg['competitors'] as $competitor) {
+                    if( $competitor['notes'] != '' ) {
+                        $notes .= ($notes != '' ? "\n" : '') . $competitor['notes'];
+                    }
+                }
             }
-            if( $pdf->getY() > $pdf->getPageHeight() - (count($division['timeslots']) * $lh) - 70 - $s_height) {
+            $d_height = $pdf->getStringHeight($w[1], $reg['name']);
+            if( $pdf->getStringHeight($w[2], $reg['title']) > $d_height ) {
+                $d_height = $pdf->getStringHeight($w[2], $reg['title']);
+            }
+            $n_height = 0;
+            if( $notes != '' ) {
+                $n_height = $pdf->getStringHeight($nw[1], $notes);
+            }
+
+            if( $pdf->getY() > ($pdf->getPageHeight() - 30 - $d_height - $n_height) ) {
                 $pdf->AddPage();
-                $newpage = 'yes';
-            } elseif( $newpage == 'no' ) {
-                $pdf->Ln();
+                $pdf->SetFont('', 'B', 14);
+                $pdf->Cell($cw[0], $lh, $class['code'], $border, 0, 'R', 0);
+                $pdf->Cell($cw[1], $lh, '', $border, 0, 'L', 0);
+                $pdf->Cell($cw[2], $lh, $class['name'] . ' (continued...)', $border, 1, 'L', 0);
+                $pdf->SetFont('', '', 12);
             }
-            $newpage = 'no';
+   
+            $pdf->writeHTMLCell($w[0], $d_height, '', '', '', '', 0, false, true, 'L', 1);
+            $pdf->writeHTMLCell($w[1], $d_height, '', '', $reg['name'], 0, 0, false, true, 'L', 1);
+            $pdf->writeHTMLCell($w[2], $d_height, '', '', $reg['title'], 0, 0, false, true, 'L', 1);
+            $pdf->writeHTMLCell($w[3], $d_height, '', '', $reg['perf_time'], 0, 1, false, true, 'L', 1);
 
-            $pdf->SetFont('', 'B', '18');
-            $pdf->Cell(180, 10, $division['name'] . ' - ' . $division['date'], 0, 0, 'L', 0);
-            $pdf->Ln(10);
-            $pdf->SetFont('', '', '12');
-            if( $address != '' ) {
-                $pdf->MultiCell(180, $lh, $address, 0, 'L', 0, 2);
-                $pdf->Ln(2);
+            if( $notes != '' ) {
+                $pdf->writeHTMLCell($nw[0], $n_height, '', '', '', 0, 0, false, true, 'L', 1);
+                $pdf->writeHTMLCell($nw[1], $h_height, '', '', '**' . preg_replace("/\n/", "<br/>", $notes), 0, 1, false, true, 'L', 1);
             }
-            $fill = 1;
-            
-            //
-            // Output the timeslots
-            //
-            $fill = 0;
-            $border = 'T';
-            foreach($division['timeslots'] as $timeslot) {
-                $name = $timeslot['name'];
-                $description = $timeslot['description'];
-                if( $timeslot['class_id'] > 0 && $timeslot['class_name'] != '' ) {  
-                    $name = $timeslot['class_name'];
-                    if( isset($timeslot['registrations']) && count($timeslot['registrations']) > 0 ) {
-                        if( $description != '' ) {
-                            $description .= "\n\n";
-                        }
-                        foreach($timeslot['registrations'] as $reg) {
-                            if( isset($args['names']) && $args['names'] == 'private' ) {
-                                $description .= ($description != '' ? "\n" : '') . $reg['name'] . ($reg['title'] != '' ? ' - ' . $reg['title'] : '');
-                            } else {
-                                $description .= ($description != '' ? "\n" : '') . $reg['public_name'] . ($reg['title'] != '' ? ' - ' . $reg['title'] : '');
-                            }
-                        }
-                    }
-                }
-
-                if( $description != '' ) {
-                    $d_height = $pdf->getStringHeight($w[2], $description);
-                    if( $pdf->getY() > $pdf->getPageHeight() - 50 - $d_height) {
-                        $pdf->AddPage();
-                        $pdf->SetFont('', 'B', '18');
-                        $pdf->Cell(180, 10, $division['name'] . ' - ' . $division['date'] . ' (continued...)', 0, 0, 'L', 0);
-                        $pdf->Ln(10);
-                        $pdf->SetFont('', '', '12');
-                        if( $address != '' ) {
-                            $pdf->MultiCell(180, $lh, $address, 0, 'L', 0, 2);
-                            $pdf->Ln(2);
-                        }
-                    }
-                }
-                
-                $pdf->SetFont('', 'B');
-                $pdf->Cell($w[0], $lh, $timeslot['time'], $border, 0, 'R', 0);
-                $pdf->Cell($w[1], $lh, '', $border, 0, 'R', 0);
-                $pdf->Cell($w[2], $lh, $name, $border, 0, 'L', 0);
-                $pdf->SetFont('', '');
-                $pdf->Ln($lh);
-    
-                if( $description != '' ) {
-                    $pdf->writeHTMLCell($w[0], $d_height, '', '', '', '', 0, false, true, 'L', 1);
-                    $pdf->writeHTMLCell($w[1], $d_height, '', '', '', '', 0, false, true, 'L', 1);
-                    $pdf->writeHTMLCell($w[2], $d_height, '', '', preg_replace("/\n/", "<br/>", $description), '', 0, false, true, 'L', 1);
-                    $pdf->Ln();
-                }
-                $pdf->Ln(5);
-
-                $fill=!$fill;
-                $border = 'T';
-            }
-            $pdf->Cell($w[0]+$w[1]+$w[2], 1, '', 'T', 0, 'R', 0);
         }
+        $pdf->Ln();
     }
-
     return array('stat'=>'ok', 'pdf'=>$pdf, 'filename'=>$filename . '.pdf');
 }
 ?>
