@@ -362,13 +362,17 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
+            $festival['registrations_copy'] = '';
             if( isset($rc['registrations']) ) {
                 $festival['registrations'] = $rc['registrations'];
                 $festival['nplists']['registrations'] = array();
                 $total = 0;
+                $festival['registrations_copy'] = "<table cellpadding=2 cellspacing=0>";
                 foreach($festival['registrations'] as $iid => $registration) {
                     $festival['nplists']['registrations'][] = $registration['id'];
+                    $festival['registrations_copy'] .= '<tr><td>' . $registration['class_code'] . '</td><td>' . $registration['title'] . '</td><td>' . $registration['perf_time'] . "</td></tr>\n";
                 }
+                $festival['registrations_copy'] .= "</table>";
             } else {
                 $festival['registrations'] = array();
                 $festival['nplists']['registrations'] = array();
@@ -398,6 +402,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             if( isset($rc['teachers']) ) {
                 $festival['registration_teachers'] = $rc['teachers'];
             }
+
+
         }
 
         //
@@ -496,6 +502,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         . ") "
                     . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
                         . "timeslots.class_id = registrations.class_id " 
+                        . "AND ((timeslots.flags&0x01) = 0 OR timeslots.id = registrations.timeslot_id) "
                         . "AND timeslots.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
                         . ") "
                     . "WHERE timeslots.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "

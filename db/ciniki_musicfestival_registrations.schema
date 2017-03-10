@@ -40,6 +40,8 @@
 # competitor5_id:       The fifth person of a ensemble.
 #
 # class_id:             The class the registration is for.
+#
+# timeslot_id:          The ID of the time this registration is attached to, If the timeslot is a partial registration list.
 # 
 # title:                The title and composer of the piece they will perform.
 #
@@ -80,6 +82,7 @@ create table ciniki_musicfestival_registrations (
     competitor4_id int not null,
     competitor5_id int not null,
     class_id int not null,
+    timeslot_id int not null,
     title varchar(250) not null,
     perf_time varchar(50) not null,
     fee decimal(19,4) not null, 
@@ -91,4 +94,4 @@ create table ciniki_musicfestival_registrations (
     unique index (uuid),
     index (festival_id, teacher_customer_id, billing_customer_id),
     index business_uuid (business_id, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

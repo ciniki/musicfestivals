@@ -23,6 +23,8 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
         'class_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Class'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
         'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),
+        'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
+        'registrations'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Registrations'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -38,6 +40,21 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
+    
+    //
+    // Get the current list of registrations
+    //
+    $strsql = "SELECT registrations.id "
+        . "FROM ciniki_musicfestival_registrations AS registrations "
+        . "WHERE registrations.timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['scheduletimeslot_id']) . "' "
+        . "AND registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
+    $rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.musicfestivals', 'registrations', 'id');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $registrations = (isset($rc['registrations']) ? $rc['registrations'] : array());
 
     //
     // Start transaction
@@ -46,6 +63,7 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
     $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.musicfestivals');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -59,6 +77,36 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;
+    }
+
+    //
+    // Add any registrations
+    //
+    if( isset($args['registrations']) ) {
+        foreach($args['registrations'] as $reg_id) {
+            if( !in_array($reg_id, $registrations) ) {
+                error_log('update');
+                $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.musicfestivals.registration', $reg_id, array('timeslot_id'=>$args['scheduletimeslot_id']), 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+            }
+        }
+    }
+
+    //
+    // Remove any registrations
+    //
+    if( isset($args['registrations']) && isset($registrations) ) {
+        foreach($registrations as $reg_id) {
+            if( !in_array($reg_id, $args['registrations']) ) {
+                error_log('delete');
+                $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.musicfestivals.registration', $reg_id, array('timeslot_id'=>0), 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+            }
+        }
     }
 
     //

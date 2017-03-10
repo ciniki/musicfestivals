@@ -88,7 +88,8 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $business_id, $ar
         . "timeslots.description, "
         . "registrations.id AS reg_id, "
         . "registrations.display_name, "
-        . "registrations.public_name "
+        . "registrations.public_name, "
+        . "registrations.title "
         . "FROM ciniki_musicfestival_schedule_sections AS sections "
         . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
             . "sections.id = divisions.ssection_id " 
@@ -104,6 +105,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $business_id, $ar
             . ") "
         . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "timeslots.class_id = registrations.class_id " 
+            . "AND ((timeslots.flags&0x01) = 0 OR timeslots.id = registrations.timeslot_id) "
             . "AND timeslots.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
             . ") "
         . "WHERE sections.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
@@ -119,7 +121,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $business_id, $ar
         array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'name'=>'section_name')),
         array('container'=>'divisions', 'fname'=>'division_id', 'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'address')),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 'class_id', 'description', 'class_name')),
-        array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name')),
+        array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -323,7 +325,11 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $business_id, $ar
                             $description .= "\n\n";
                         }
                         foreach($timeslot['registrations'] as $reg) {
-                            $description .= ($description != '' ? "\n" : '') . $reg['public_name'];
+                            if( isset($args['names']) && $args['names'] == 'private' ) {
+                                $description .= ($description != '' ? "\n" : '') . $reg['name'] . ($reg['title'] != '' ? ' - ' . $reg['title'] : '');
+                            } else {
+                                $description .= ($description != '' ? "\n" : '') . $reg['public_name'] . ($reg['title'] != '' ? ' - ' . $reg['title'] : '');
+                            }
                         }
                     }
                 }

@@ -1,0 +1,5 @@
+#
+# Added timeslot link
+#
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN timeslot_id int not null AFTER class_id;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.02';

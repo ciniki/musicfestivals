@@ -17,7 +17,7 @@ function ciniki_musicfestivals_competitorUpdate(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'),
         'competitor_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Competitor'),
-        'festival_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Festival'),
+        'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
         'parent'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Parent'),
         'address'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address'),
@@ -64,6 +64,16 @@ function ciniki_musicfestivals_competitorUpdate(&$ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
     $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.musicfestivals.competitor', $args['competitor_id'], $args, 0x04);
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+        return $rc;
+    }
+
+    //
+    // Update the competitor registrations
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'competitorUpdateNames');
+    $rc = ciniki_musicfestivals_competitorUpdateNames($ciniki, $args['business_id'], $args['festival_id'], $args['competitor_id']);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;

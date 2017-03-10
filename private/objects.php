@@ -159,6 +159,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'competitor4_id'=>array('name'=>'Competitor 4', 'ref'=>'ciniki.musicfestivals.competitor', 'default'=>'0'),
             'competitor5_id'=>array('name'=>'Competitor 5', 'ref'=>'ciniki.musicfestivals.competitor', 'default'=>'0'),
             'class_id'=>array('name'=>'Class', 'ref'=>'ciniki.musicfestivals.class'),
+            'timeslot_id'=>array('name'=>'Timeslot', 'ref'=>'ciniki.musicfestivals.scheduletimeslot', 'default'=>'0'),
             'title'=>array('name'=>'Title', 'default'=>''),
             'perf_time'=>array('name'=>'Performance Time', 'default'=>''),
             'fee'=>array('name'=>'Fee', 'type'=>'currency', 'default'=>'0'),
@@ -207,6 +208,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'class_id'=>array('name'=>'Class', 'ref'=>'ciniki.musicfestivals.class'),
             'name'=>array('name'=>'Name'),
             'description'=>array('name'=>'Description', 'default'=>''),
+            'flags'=>array('name'=>'Options', 'default'=>'0'),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );

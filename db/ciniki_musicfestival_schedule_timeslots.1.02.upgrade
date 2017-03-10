@@ -1,0 +1,5 @@
+#
+# Add options for timeslots
+#
+ALTER TABLE ciniki_musicfestival_schedule_timeslots ADD COLUMN flags tinyint unsigned not null AFTER class_id;
+ALTER TABLE ciniki_musicfestival_schedule_timeslots COMMENT='v1.02';

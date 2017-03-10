@@ -31,7 +31,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
     // Check access to business_id as owner, or sys admin.
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['business_id'], 'ciniki.musicfestivals.registrationList');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['business_id'], 'ciniki.musicfestivals.registrationsExcel');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
