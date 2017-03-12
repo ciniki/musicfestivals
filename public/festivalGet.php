@@ -489,19 +489,24 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "timeslots.festival_id, "
                     . "timeslots.sdivision_id, "
                     . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
-                    . "timeslots.class_id, "
-                    . "classes.name AS class_name, "
+                    . "timeslots.class1_id, "
+                    . "timeslots.class2_id, "
+                    . "timeslots.class3_id, "
+                    . "class1.name AS class1_name, "
                     . "timeslots.name, "
                     . "timeslots.description, "
                     . "registrations.id AS reg_id, "
                     . "registrations.display_name "
                     . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
-                    . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
-                        . "timeslots.class_id = classes.id " 
-                        . "AND timeslots.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+                    . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
+                        . "timeslots.class1_id = class1.id " 
+                        . "AND class1.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
                         . ") "
                     . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
-                        . "timeslots.class_id = registrations.class_id " 
+                        . "(timeslots.class1_id = registrations.class_id " 
+                            . "OR timeslots.class2_id = registrations.class_id " 
+                            . "OR timeslots.class3_id = registrations.class_id " 
+                            . ") "
                         . "AND ((timeslots.flags&0x01) = 0 OR timeslots.id = registrations.timeslot_id) "
                         . "AND timeslots.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
                         . ") "
@@ -512,7 +517,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-                    array('container'=>'scheduletimeslots', 'fname'=>'id', 'fields'=>array('id', 'festival_id', 'sdivision_id', 'slot_time_text', 'class_id', 'name', 'description', 'class_name')),
+                    array('container'=>'scheduletimeslots', 'fname'=>'id', 'fields'=>array('id', 'festival_id', 'sdivision_id', 'slot_time_text', 'class1_id', 'name', 'description', 'class1_name')),
                     array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name')),
                     ));
                 if( $rc['stat'] != 'ok' ) {
@@ -525,8 +530,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         //
                         // Check if class is set, then use class name
                         //
-                        if( $scheduletimeslot['class_id'] > 0 && $scheduletimeslot['class_name'] != '' ) {
-                            $festival['schedule_timeslots'][$iid]['name'] = $scheduletimeslot['class_name'];
+                        if( $scheduletimeslot['class1_id'] > 0 ) {
+                            if( $scheduletimeslot['name'] == '' && $scheduletimeslot['class1_name'] != '' ) {
+                                $festival['schedule_timeslots'][$iid]['name'] = $scheduletimeslot['class1_name'];
+                            }
                             $festival['schedule_timeslots'][$iid]['description'] .= ($festival['schedule_timeslots'][$iid]['description'] != '' ? "\n":'');
                             //
                             // Add the registrations to the description

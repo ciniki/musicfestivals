@@ -1,0 +1,7 @@
+#
+# Add options for timeslots
+#
+ALTER TABLE ciniki_musicfestival_schedule_timeslots ADD COLUMN class2_id int not null AFTER class_id;
+ALTER TABLE ciniki_musicfestival_schedule_timeslots ADD COLUMN class3_id int not null AFTER class2_id;
+ALTER TABLE ciniki_musicfestival_schedule_timeslots CHANGE COLUMN class_id class1_id int not null;
+ALTER TABLE ciniki_musicfestival_schedule_timeslots COMMENT='v1.03';

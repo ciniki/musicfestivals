@@ -24,7 +24,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'scheduletimeslot_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Schedule Time Slot'),
         'sdivision_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Division'),
-        'class_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Class'),
+        'class1_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Class'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -66,7 +66,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             'festival_id'=>'',
             'sdivision_id'=>(isset($args['sdivision_id']) ? $args['sdivision_id'] : 0),
             'slot_time'=>'',
-            'class_id'=>(isset($args['class_id']) ? $args['class_id'] : 0),
+            'class1_id'=>(isset($args['class1_id']) ? $args['class1_id'] : 0),
             'name'=>'',
             'description'=>'',
         );
@@ -80,7 +80,9 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "timeslots.festival_id, "
             . "timeslots.sdivision_id, "
             . "TIME_FORMAT(timeslots.slot_time, '%h:%i %p') AS slot_time, "
-            . "timeslots.class_id, "
+            . "timeslots.class1_id, "
+            . "timeslots.class2_id, "
+            . "timeslots.class3_id, "
             . "timeslots.flags, "
             . "timeslots.name, "
             . "timeslots.description, "
@@ -96,7 +98,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'scheduletimeslot', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'sdivision_id', 'slot_time', 'class_id', 'flags', 'name', 'description', 'registrations'),
+                'fields'=>array('festival_id', 'sdivision_id', 'slot_time', 'class1_id', 'class2_id', 'class3_id', 'flags', 'name', 'description', 'registrations'),
                 'idlists'=>array('registrations'),
                 ),
             ));

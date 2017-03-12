@@ -1741,15 +1741,22 @@ function ciniki_musicfestivals_main() {
         'general':{'label':'', 'fields':{
             'sdivision_id':{'label':'Division', 'required':'yes', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}},
             'slot_time':{'label':'Time', 'required':'yes', 'type':'text', 'size':'small'},
-            'class_id':{'label':'Class', 'required':'yes', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}, 
+            'class1_id':{'label':'Class 1', 'required':'yes', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}, 
+                'onchangeFn':'M.ciniki_musicfestivals_main.scheduletimeslot.updateRegistrations'},
+            'class2_id':{'label':'Class 2', 'required':'yes', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}, 
+                'onchangeFn':'M.ciniki_musicfestivals_main.scheduletimeslot.updateRegistrations'},
+            'class3_id':{'label':'Class 3', 'required':'yes', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}, 
                 'onchangeFn':'M.ciniki_musicfestivals_main.scheduletimeslot.updateRegistrations'},
             'name':{'label':'Name', 'type':'text'},
             }},
         '_options':{'label':'',
             'visible':function() {
-                var c = M.ciniki_musicfestivals_main.scheduletimeslot.formValue('class_id');
-                if( c == null && M.ciniki_musicfestivals_main.scheduletimeslot.data.class_id > 0 ) { return 'yes'; }
-                return (c != null && c > 0 ? 'yes' : 'hidden');
+                var p = M.ciniki_musicfestivals_main.scheduletimeslot;
+                var c1 = p.formValue('class1_id');
+                var c2 = p.formValue('class2_id');
+                var c3 = p.formValue('class3_id');
+                if( c1 == null && p.data.class1_id > 0 && p.data.class2_id == 0 && p.data.class3_id == 0 ) { return 'yes'; }
+                return (c1 != null && c1 > 0 && (c2 == null || c2 == 0) && (c3 == null || c3 == 0) ? 'yes' : 'hidden');
                 },
             'fields':{
                 'flags1':{'label':'Split Class', 'type':'flagtoggle', 'default':'off', 'bit':0x01, 'field':'flags', 
@@ -1776,9 +1783,9 @@ function ciniki_musicfestivals_main() {
     }
     this.scheduletimeslot.updateRegistrations = function() {
         this.sections._registrations.visible = 'hidden';
-        if( this.formValue('flags1') == 'on' && this.formValue('class_id') > 0 && this.data.classes != null ) {
+        if( this.formValue('flags1') == 'on' && this.formValue('class1_id') > 0 && this.formValue('class2_id') == 0 && this.formValue('class3_id') == 0 && this.data.classes != null ) {
             for(var i in this.data.classes) {
-                if( this.data.classes[i].id == this.formValue('class_id') ) {
+                if( this.data.classes[i].id == this.formValue('class1_id') ) {
                     if( this.data.classes[i].registrations != null ) {
                         this.sections._registrations.visible = 'yes';
                         this.sections._registrations.fields.registrations.list = this.data.classes[i].registrations;
@@ -1807,12 +1814,14 @@ function ciniki_musicfestivals_main() {
                 p.data = rsp.scheduletimeslot;
                 p.data.classes = rsp.classes;
                 p.sections.general.fields.sdivision_id.options = rsp.scheduledivisions;
-                p.sections.general.fields.class_id.options = rsp.classes;
-                p.sections.general.fields.class_id.options.unshift({'id':0, 'name':'No Class'});
+                rsp.classes.unshift({'id':0, 'name':'No Class'});
+                p.sections.general.fields.class1_id.options = rsp.classes;
+                p.sections.general.fields.class2_id.options = rsp.classes;
+                p.sections.general.fields.class3_id.options = rsp.classes;
                 p.sections._registrations.visible = 'hidden';
-                if( rsp.scheduletimeslot.class_id > 0 && rsp.classes != null ) {
+                if( rsp.scheduletimeslot.class1_id > 0 && rsp.classes != null ) {
                     for(var i in rsp.classes) {
-                        if( rsp.classes[i].id == rsp.scheduletimeslot.class_id ) {
+                        if( rsp.classes[i].id == rsp.scheduletimeslot.class1_id ) {
                             if( rsp.classes[i].registrations != null ) {
                                 if( (rsp.scheduletimeslot.flags&0x01) > 0 ) {
                                     p.sections._registrations.visible = 'yes';
