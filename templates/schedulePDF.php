@@ -313,7 +313,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $business_id, $ar
             } else {
                 $s_height = 0;
             }
-            if( $pdf->getY() > $pdf->getPageHeight() - (count($division['timeslots']) * $lh) - 70 - $s_height) {
+            if( $pdf->getY() > $pdf->getPageHeight() - $lh - 70 - $s_height) {
                 $pdf->AddPage();
                 $newpage = 'yes';
             } elseif( $newpage == 'no' ) {
