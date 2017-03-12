@@ -297,6 +297,12 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $business_id, $ar
         $newpage = 'yes';
         foreach($section['divisions'] as $division) {
             //
+            // Skip empty divisions
+            //
+            if( !isset($division['timeslots']) ) {
+                continue;
+            }
+            //
             // Check if enough room
             //
             $lh = 9;
