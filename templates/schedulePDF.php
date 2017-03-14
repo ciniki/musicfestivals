@@ -321,8 +321,12 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $business_id, $ar
             }
             $newpage = 'no';
 
-            $pdf->SetFont('', 'B', '18');
-            $pdf->Cell(180, 10, $division['name'] . ' - ' . $division['date'], 0, 0, 'L', 0);
+            $pdf->SetFont('', 'B', '16');
+            if( $pdf->getStringWidth($division['date'] . ' - ' . $division['name'], '', 'B', 16) > 180 ) {
+                $pdf->MultiCell(180, 20, $division['date'] . "\n" . $division['name'], 0, 'L', 0);
+            } else {
+                $pdf->Cell(180, 10, $division['date'] . ' - ' . $division['name'], 0, 0, 'L', 0);
+            }
             $pdf->Ln(10);
             $pdf->SetFont('', '', '12');
             if( $address != '' ) {
@@ -361,8 +365,13 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $business_id, $ar
                     $d_height = $pdf->getStringHeight($w[2], $description);
                     if( $pdf->getY() > $pdf->getPageHeight() - 50 - $d_height) {
                         $pdf->AddPage();
-                        $pdf->SetFont('', 'B', '18');
-                        $pdf->Cell(180, 10, $division['name'] . ' - ' . $division['date'] . ' (continued...)', 0, 0, 'L', 0);
+                        $pdf->SetFont('', 'B', '16');
+                        // $pdf->Cell(180, 10, $division['name'] . ' - ' . $division['date'] . ' (continued...)', 0, 0, 'L', 0);
+                        if( $pdf->getStringWidth($division['date'] . ' - ' . $division['name'] . ' (continued...)', '', 'B', 16) > 180 ) {
+                            $pdf->MultiCell(180, 20, $division['date'] . "\n" . $division['name'] . ' (continued...)', 0, 'L', 0);
+                        } else {
+                            $pdf->Cell(180, 10, $division['date'] . ' - ' . $division['name'] . ' (continued...)', 0, 0, 'L', 0);
+                        }
                         $pdf->Ln(10);
                         $pdf->SetFont('', '', '12');
                         if( $address != '' ) {
