@@ -221,7 +221,16 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['teacher_name'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['teacher_email'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['teacher_phone'], false);
-            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['notes'], false);
+            $notes = $registration['notes'];
+            if( isset($registration['competitors']) ) {
+                foreach($registration['competitors'] as $competitor) {
+                    if( $competitor['notes'] != '' ) {
+                        $notes .= ($notes != '' ? '  ' : '') . $competitor['notes'];
+                    }
+                }
+            }
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $notes, false);
+            
             
             if( isset($registration['competitors']) ) {
                 foreach($registration['competitors'] as $competitor) {
@@ -245,7 +254,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
     }
 
     //
-    // Output the word file
+    // Output the excel file
     //
     header('Content-Type: application/vnd.ms-excel');
     header('Content-Disposition: attachment;filename="musicfestival_registrations.xls"');
