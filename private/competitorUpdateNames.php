@@ -56,7 +56,6 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $business_id, $fe
             . "OR registrations.competitor5_id = '" . ciniki_core_dbQuote($ciniki, $competitor_id) . "' "
             . ") ";
     }
-    error_log($strsql);
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
@@ -77,7 +76,6 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $business_id, $fe
         // Only update display name for non-ensembles
         //
         if( $registration['rtype'] < 90 ) {
-            error_log(print_r($registration, true));
             $names = array();
             $pnames = array();
             if( $registration['competitor1_id'] > 0 && isset($registration['competitors'][$registration['competitor1_id']]['name']) ) {

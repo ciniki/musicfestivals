@@ -87,7 +87,6 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
     if( isset($args['registrations']) ) {
         foreach($args['registrations'] as $reg_id) {
             if( !in_array($reg_id, $registrations) ) {
-                error_log('update');
                 $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.musicfestivals.registration', $reg_id, array('timeslot_id'=>$args['scheduletimeslot_id']), 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
@@ -102,7 +101,6 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
     if( isset($args['registrations']) && isset($registrations) ) {
         foreach($registrations as $reg_id) {
             if( !in_array($reg_id, $args['registrations']) ) {
-                error_log('delete');
                 $rc = ciniki_core_objectUpdate($ciniki, $args['business_id'], 'ciniki.musicfestivals.registration', $reg_id, array('timeslot_id'=>0), 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
