@@ -272,7 +272,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $business_id, $ar
     //
     $pdf->SetCreator('Ciniki');
     $pdf->SetAuthor($business_details['name']);
-    $pdf->SetTitle($festival['name'] . ' - Schedule');
+    $pdf->SetTitle($festival['name'] . ' - Comments');
     $pdf->SetSubject('');
     $pdf->SetKeywords('');
 
@@ -301,7 +301,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $business_id, $ar
         //
         // Start a new section
         //
-        $pdf->header_sub_title = $section['name'] . ' Schedule';
+        $pdf->header_sub_title = "Adjudicator's Comments";
         if( isset($args['schedulesection_id']) ) {
             $filename = preg_replace('/[^a-zA-Z0-9_]/', '_', $section['name']) . '_comments';
         }
