@@ -296,7 +296,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $business_id, $ar
     //
     // Go through the sections, divisions and classes
     //
-    $w = array(35, 145);
+    $w = array(30, 150);
     foreach($sections as $section) {
         //
         // Start a new section
@@ -330,30 +330,33 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $business_id, $ar
                     $pdf->AddPage();
                     $border = 'T';
                     $lh = 8;
+                    $lh = $pdf->getStringHeight($w[1], $reg['class_name'], false, true, 0);
                     $pdf->SetFont('helvetica', 'B', 12);
-                    $pdf->Cell($w[0], $lh, 'Class: ', $border, false, 'R', 0, '', 0, false);
+                    $pdf->MultiCell($w[0], $lh, 'Class: ', $border, 'R', 0, 0, '', '');
                     $pdf->SetFont('helvetica', '', 12);
-                    $pdf->Cell($w[1], $lh, $reg['class_name'], $border, false, 'L', 0, '', 0, false);
+                    $pdf->MultiCell($w[1], $lh, $reg['class_name'], $border, 'L', 0, 0, '', '');
                     $pdf->Ln($lh);
                     $pdf->SetFont('helvetica', 'B', 12);
 
                     $border = ($reg['title'] != '' ? '' : 'B');
 
+                    $lh = $pdf->getStringHeight($w[1], $reg['name'], false, true, 0);
                     if( $reg['competitor2_id'] > 0 ) {
-                        $pdf->Cell($w[0], $lh, 'Participants: ', $border, false, 'R', 0, '', 0, false);
+                        $pdf->MultiCell($w[0], $lh, 'Participants: ', $border, 'R', 0, 0, '', '');
                     } else {
-                        $pdf->Cell($w[0], $lh, 'Participant: ', $border, false, 'R', 0, '', 0, false);
+                        $pdf->MultiCell($w[0], $lh, 'Participant: ', $border, 'R', 0, 0, '', '');
                     }
                     $pdf->SetFont('helvetica', '', 12);
-                    $pdf->Cell($w[1], $lh, $reg['name'], $border, false, 'L', 0, '', 0, false);
+                    $pdf->MultiCell($w[1], $lh, $reg['name'], $border, 'L', 0, 0, '', '');
                     $pdf->Ln($lh);
 
                     if( $reg['title'] != '' ) {
+                        $lh = $pdf->getStringHeight($w[1], $reg['title'], false, true, 0);
                         $border = 'B';
                         $pdf->SetFont('helvetica', 'B', 12);
-                        $pdf->Cell($w[0], $lh, 'Title: ', $border, false, 'R', 0, '', 0, false);
+                        $pdf->MultiCell($w[0], $lh, 'Title: ', $border, 'R', 0, 0, '', '');
                         $pdf->SetFont('helvetica', '', 12);
-                        $pdf->Cell($w[1], $lh, $reg['title'], $border, false, 'L', 0, '', 0, false);
+                        $pdf->MultiCell($w[1], $lh, $reg['title'], $border, 'L', 0, 0, '', '');
                         $pdf->Ln($lh);
                     }
                 }
