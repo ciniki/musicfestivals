@@ -296,7 +296,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $business_id, $ar
     //
     // Go through the sections, divisions and classes
     //
-    $w = array(30, 150);
+    $w = array(35, 145);
     foreach($sections as $section) {
         //
         // Start a new section
@@ -330,7 +330,8 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $business_id, $ar
                     $pdf->AddPage();
                     $border = 'T';
                     $lh = 8;
-                    $lh = $pdf->getStringHeight($w[1], $reg['class_name'], false, true, 0);
+                    $pdf->SetFont('helvetica', '', 12);
+                    $lh = $pdf->getNumLines($reg['class_name'], $w[1]) * 8;
                     $pdf->SetFont('helvetica', 'B', 12);
                     $pdf->MultiCell($w[0], $lh, 'Class: ', $border, 'R', 0, 0, '', '');
                     $pdf->SetFont('helvetica', '', 12);
@@ -340,7 +341,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $business_id, $ar
 
                     $border = ($reg['title'] != '' ? '' : 'B');
 
-                    $lh = $pdf->getStringHeight($w[1], $reg['name'], false, true, 0);
+                    $lh = $pdf->getNumLines($reg['name'], $w[1]) * 8;
                     if( $reg['competitor2_id'] > 0 ) {
                         $pdf->MultiCell($w[0], $lh, 'Participants: ', $border, 'R', 0, 0, '', '');
                     } else {
@@ -351,7 +352,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $business_id, $ar
                     $pdf->Ln($lh);
 
                     if( $reg['title'] != '' ) {
-                        $lh = $pdf->getStringHeight($w[1], $reg['title'], false, true, 0);
+                        $lh = ($pdf->getNumLines($reg['title'], $w[1]) * 6) + 3;
                         $border = 'B';
                         $pdf->SetFont('helvetica', 'B', 12);
                         $pdf->MultiCell($w[0], $lh, 'Title: ', $border, 'R', 0, 0, '', '');
