@@ -171,7 +171,7 @@ function ciniki_musicfestivals_main() {
             'addTxt':'Add Division',
             'addFn':'M.ciniki_musicfestivals_main.scheduledivision.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.schedulesection_id,M.ciniki_musicfestivals_main.festival.festival_id,null);',
             },
-        'schedule_download':{'label':'', 'aside':'yes',
+        'schedule_download':{'label':'Schedule PDF', 'aside':'yes',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._tabs.selected == 'schedule' && M.ciniki_musicfestivals_main.festival.schedulesection_id>0? 'yes' : 'no'; },
             'fields':{
                 'names':{'label':'Full Names', 'type':'toggle', 'default':'public', 'toggles':{'public':'No', 'private':'yes'}},
@@ -180,7 +180,7 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._tabs.selected == 'schedule' && M.ciniki_musicfestivals_main.festival.schedulesection_id>0? 'yes' : 'no'; },
             'buttons':{
                 'pdf':{'label':'Download PDF', 'fn':'M.ciniki_musicfestivals_main.festival.downloadSchedulePDF();'},
-//                'publicpdf':{'label':'Partial Names PDF', 'fn':'M.ciniki_musicfestivals_main.schedulesection.downloadPDF(M.ciniki_musicfestivals_main.festival.festival_id,M.ciniki_musicfestivals_main.festival.schedulesection_id,"public");'},
+                'comments':{'label':'Adjudicators Comments PDF', 'fn':'M.ciniki_musicfestivals_main.festival.downloadCommentsPDF();'},
             }},
         'schedule_timeslots':{'label':'Time Slots', 'type':'simplegrid', 'num_cols':2, 
             'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._tabs.selected == 'schedule' && M.ciniki_musicfestivals_main.festival.schedulesection_id>0 && M.ciniki_musicfestivals_main.festival.scheduledivision_id>0 ? 'yes' : 'no'; },
@@ -210,7 +210,14 @@ function ciniki_musicfestivals_main() {
             'schedulesection_id':this.schedulesection_id,
             'names':this.formValue('names'),
             };
-        M.api.openFile('ciniki.musicfestivals.schedulePDF',args);
+        M.api.openPDF('ciniki.musicfestivals.schedulePDF',args);
+    }
+    this.festival.downloadCommentsPDF = function() {
+        var args = {'business_id':M.curBusinessID,
+            'festival_id':this.festival_id,
+            'schedulesection_id':this.schedulesection_id,
+            };
+        M.api.openPDF('ciniki.musicfestivals.commentsPDF',args);
     }
     this.festival.listLabel = function(s, i, d) { return d.label; }
     this.festival.listValue = function(s, i, d) { return this.data[i]; }
