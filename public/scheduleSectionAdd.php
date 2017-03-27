@@ -22,6 +22,9 @@ function ciniki_musicfestivals_scheduleSectionAdd(&$ciniki) {
         'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'),
+        'adjudicator1_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'First Adjudicator'),
+        'adjudicator2_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Second Adjudicator'),
+        'adjudicator3_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Third Adjudicator'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -74,12 +77,6 @@ function ciniki_musicfestivals_scheduleSectionAdd(&$ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
     ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'musicfestivals');
-
-    //
-    // Update the web index if enabled
-    //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
-    ciniki_core_hookExec($ciniki, $args['business_id'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.musicfestivals.scheduleSection', 'object_id'=>$schedulesection_id));
 
     return array('stat'=>'ok', 'id'=>$schedulesection_id);
 }

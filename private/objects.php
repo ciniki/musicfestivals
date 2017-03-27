@@ -177,6 +177,9 @@ function ciniki_musicfestivals_objects($ciniki) {
         'fields'=>array(
             'festival_id'=>array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
             'name'=>array('name'=>'Name'),
+            'adjudicator1_id'=>array('name'=>'First Adjudicator', 'id'=>'ciniki.musicfestivals.adjudicator', 'default'=>'0'),
+            'adjudicator2_id'=>array('name'=>'Second Adjudicator', 'id'=>'ciniki.musicfestivals.adjudicator', 'default'=>'0'),
+            'adjudicator3_id'=>array('name'=>'Third Adjudicator', 'id'=>'ciniki.musicfestivals.adjudicator', 'default'=>'0'),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );
