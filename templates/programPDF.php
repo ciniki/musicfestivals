@@ -310,7 +310,6 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $business_id, $arg
                 $pdf->SetFont('', '', 10);
                 $pdf->MultiCell($fw, 10, $bio, 0, 'J', false, 1, '', '', true, 0, false, true, 0, 'T', false);
             }
-            continue;
         }
 
         //
