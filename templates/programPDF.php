@@ -248,7 +248,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $business_id, $arg
     //
     // Go through the sections, divisions and classes
     //
-    $w = array(20, 4, 90);
+    $w = array(20, 2, 94);
     $w2 = array(7, 109);
     $fw = 116;
     foreach($sections as $section) {
