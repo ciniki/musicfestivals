@@ -178,7 +178,7 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $business_id,
     //
     $pdf->SetCreator('Ciniki');
     $pdf->SetAuthor($business_details['name']);
-    $pdf->SetTitle($festival['name'] . ' - Comments');
+    $pdf->SetTitle($festival['name'] . ' - Certificates');
     $pdf->SetSubject('');
     $pdf->SetKeywords('');
 
@@ -232,7 +232,7 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $business_id,
                     }
                     for($i=0;$i<$num_copies;$i++) {
                         $pdf->AddPage();
-                        $pdf->SetCellPaddings(0, 1, 0, 1);
+                        $pdf->SetCellPaddings(1, 0, 1, 0);
                         $pdf->Image($ciniki['config']['core']['modules_dir'] . '/musicfestivals/templates/certificate.png', 0, 0, 279, 216, '', '', '', false, 300, '', false, false, 0);
                         $pdf->setFont('', '', 18);
                         $pdf->setXY(100, 110);
