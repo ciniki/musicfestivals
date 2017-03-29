@@ -4,6 +4,8 @@
 // ===========
 // This method will produce a PDF of the class.
 //
+// NOTE: the background required should be opened in Preview on Mac, and Exported to PNG 300 dpi (NO ALPHA)!!!
+//
 // Arguments
 // ---------
 // 
