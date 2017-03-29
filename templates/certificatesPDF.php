@@ -95,7 +95,10 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $business_id,
         . "registrations.public_name, "
         . "registrations.title, "
         . "IFNULL(classes.name, '') AS class_name, "
-        . "IFNULL(registrations.competitor2_id, 0) AS competitor2_id "
+        . "IFNULL(registrations.competitor2_id, 0) AS competitor2_id, "
+        . "IFNULL(registrations.competitor3_id, 0) AS competitor3_id, "
+        . "IFNULL(registrations.competitor4_id, 0) AS competitor4_id, "
+        . "IFNULL(registrations.competitor5_id, 0) AS competitor5_id "
         . "FROM ciniki_musicfestival_schedule_sections AS sections "
         . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
             . "sections.id = divisions.ssection_id " 
@@ -142,7 +145,7 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $business_id,
         array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'name'=>'section_name')),
         array('container'=>'divisions', 'fname'=>'division_id', 'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'address')),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 'class1_id', 'class2_id', 'class3_id', 'description', 'class1_name', 'class2_name', 'class3_name')),
-        array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title', 'class_name', 'competitor2_id')),
+        array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title', 'class_name', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -214,20 +217,31 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $business_id,
                 }
 
                 foreach($timeslot['registrations'] as $reg) {
-                    $pdf->AddPage();
-
-                    $pdf->SetCellPaddings(1, 0, 1, 0);
-                    $pdf->Image($ciniki['config']['core']['modules_dir'] . '/musicfestivals/templates/certificate.png', 0, 0, 279, 216, '', '', '', false, 300, '', false, false, 0);
-
-                    $pdf->setFont('', '', 18);
-
-                    $pdf->setXY(100, 110);
-                    $lh = $pdf->getNumLines($reg['name'], 155) * 12;
-                    $pdf->MultiCell(155, $lh, $reg['name'], $border, 'L', 0, 0, '', '');
-
-                    $pdf->setXY(100, 145);
-                    $lh = $pdf->getNumLines($reg['class_name'], 155) * 12;
-                    $pdf->MultiCell(155, $lh, $reg['class_name'], $border, 'L', 0, 0, '', '');
+                    $num_copies = 1;
+                    if( $reg['competitor2_id'] > 0 ) {
+                        $num_copies++;
+                    }
+                    if( $reg['competitor3_id'] > 0 ) {
+                        $num_copies++;
+                    }
+                    if( $reg['competitor4_id'] > 0 ) {
+                        $num_copies++;
+                    }
+                    if( $reg['competitor5_id'] > 0 ) {
+                        $num_copies++;
+                    }
+                    for($i=0;$i<$num_copies;$i++) {
+                        $pdf->AddPage();
+                        $pdf->SetCellPaddings(0, 1, 0, 1);
+                        $pdf->Image($ciniki['config']['core']['modules_dir'] . '/musicfestivals/templates/certificate.png', 0, 0, 279, 216, '', '', '', false, 300, '', false, false, 0);
+                        $pdf->setFont('', '', 18);
+                        $pdf->setXY(100, 110);
+                        $lh = $pdf->getNumLines($reg['name'], 155) * 12;
+                        $pdf->MultiCell(155, $lh, $reg['name'], $border, 'L', 0, 0, '', '');
+                        $pdf->setXY(100, 145);
+                        $lh = $pdf->getNumLines($reg['class_name'], 155) * 12;
+                        $pdf->MultiCell(155, $lh, $reg['class_name'], $border, 'L', 0, 0, '', '');
+                    }
                 }
             }
         }

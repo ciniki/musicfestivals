@@ -227,7 +227,7 @@ function ciniki_musicfestivals_main() {
             'festival_id':this.festival_id,
             'schedulesection_id':this.schedulesection_id,
             };
-        M.api.openPDF('ciniki.musicfestivals.certificatesPDF',args);
+        M.api.openFile('ciniki.musicfestivals.certificatesPDF',args);
     }
     this.festival.downloadCommentsPDF = function() {
         var args = {'business_id':M.curBusinessID,
