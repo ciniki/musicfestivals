@@ -1196,6 +1196,12 @@ function ciniki_musicfestivals_main() {
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.registration.save();'},
+            'printcert':{'label':'Download Certificate PDF', 
+                'visible':function() {return M.ciniki_musicfestivals_main.registration.registration_id > 0 ? 'yes' : 'no'; },
+                'fn':'M.ciniki_musicfestivals_main.registration.printCert();'},
+            'printcomments':{'label':'Download Comments PDF', 
+                'visible':function() {return M.ciniki_musicfestivals_main.registration.registration_id > 0 ? 'yes' : 'no'; },
+                'fn':'M.ciniki_musicfestivals_main.registration.printComments();'},
             'delete':{'label':'Delete', 
                 'visible':function() {return M.ciniki_musicfestivals_main.registration.registration_id > 0 ? 'yes' : 'no'; },
                 'fn':'M.ciniki_musicfestivals_main.registration.remove();'},
@@ -1305,6 +1311,12 @@ function ciniki_musicfestivals_main() {
         } else {
             this.show();
         }
+    }
+    this.registration.printCert = function() {
+        M.api.openFile('ciniki.musicfestivals.registrationCertificatesPDF', {'business_id':M.curBusinessID, 'festival_id':this.festival_id, 'registration_id':this.registration_id});
+    }
+    this.registration.printComments = function() {
+        M.api.openFile('ciniki.musicfestivals.registrationCommentsPDF', {'business_id':M.curBusinessID, 'festival_id':this.festival_id, 'registration_id':this.registration_id});
     }
     this.registration.open = function(cb, rid, tid, cid, fid, list) {
         if( rid != null ) { this.registration_id = rid; }
