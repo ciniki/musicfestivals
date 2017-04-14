@@ -108,7 +108,6 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $business_id,
             . "WHERE registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
             . "AND registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
             . "";
-            error_log($strsql);
     } else {
         $strsql = "SELECT sections.id AS section_id, "
             . "sections.name AS section_name, "
