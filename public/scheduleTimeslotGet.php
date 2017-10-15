@@ -129,7 +129,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         array('container'=>'divisions', 'fname'=>'id', 'fields'=>array('id', 'name')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.100', 'msg'=>'Schedule Division not found', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.118', 'msg'=>'Schedule Division not found', 'err'=>$rc['err']));
     }
     if( isset($rc['divisions']) ) {
         $rsp['scheduledivisions'] = $rc['divisions'];

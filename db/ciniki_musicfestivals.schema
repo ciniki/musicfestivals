@@ -17,7 +17,8 @@
 # 
 # status:               The current status of the festival.
 #
-#                           10 - Active
+#                           10 - Preparing
+#                           30 - Published
 #                           60 - Archived
 #
 # flags:                The options for the festival.

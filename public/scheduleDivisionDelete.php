@@ -74,7 +74,7 @@ function ciniki_musicfestivals_scheduleDivisionDelete(&$ciniki) {
     }
     if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
         $count = $rc['num']['items'];
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.101', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' timeslot' . ($count==1?'':'s') . ' in the schdule division.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.119', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' timeslot' . ($count==1?'':'s') . ' in the schdule division.'));
     }
 
     //

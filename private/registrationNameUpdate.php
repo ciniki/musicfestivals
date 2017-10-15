@@ -57,10 +57,10 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $business_id, $r
             'fields'=>array('competitor_id', 'name'=>'competitor_name')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.82', 'msg'=>'Registration not found', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.115', 'msg'=>'Registration not found', 'err'=>$rc['err']));
     }
     if( !isset($rc['registrations']) || count($rc['registrations']) <= 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.83', 'msg'=>'Unable to find Registration'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.116', 'msg'=>'Unable to find Registration'));
     }
     $registration = array_pop($rc['registrations']);
 
@@ -107,7 +107,7 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $business_id, $r
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
             $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.musicfestivals.registration', $registration_id, $update_args, 0x04);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.84', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.117', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
             }
         }
     }

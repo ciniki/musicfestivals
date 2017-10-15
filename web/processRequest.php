@@ -43,7 +43,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $business
         $strsql = "SELECT id, name "
             . "FROM ciniki_musicfestivals "
             . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-            . "AND status = 10 "
+            . "AND status = 30 "
             . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $uri_split[0]) . "' "
             . "ORDER BY start_date DESC "
             . "";
@@ -68,7 +68,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $business
         $strsql = "SELECT id, name "
             . "FROM ciniki_musicfestivals "
             . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-            . "AND status = 10 "
+            . "AND status = 30 "
             . "ORDER BY start_date DESC "
             . "LIMIT 1 "
             . "";
@@ -176,7 +176,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $business
         $strsql = "SELECT id, name, start_date, end_date, status, flags, primary_image_id, description "
             . "FROM ciniki_musicfestivals "
             . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
-            . "AND status = 10 "
+            . "AND status = 30 "
             . "AND id = '" . ciniki_core_dbQuote($ciniki, $festival_id) . "' "
             . "ORDER BY start_date DESC "
             . "LIMIT 1 "
