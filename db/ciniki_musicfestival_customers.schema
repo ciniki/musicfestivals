@@ -8,7 +8,7 @@
 # ------
 # id:                   The ID assigned to the competitor.
 # uuid:                 The Universal Unique ID.
-# tnid:                 The tenant the competitor is attached to.
+# tnid:                 The ID of the tenant the competitor is attached to.
 #
 # festival_id:          The ID of the festival the competitor is attached to.
 #
