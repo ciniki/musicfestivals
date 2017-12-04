@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business the adjudicator is attached to.
+// tnid:         The ID of the tenant the adjudicator is attached to.
 // adjudicator_id:          The ID of the adjudicator to get the details for.
 //
 // Returns
@@ -20,7 +20,7 @@ function ciniki_musicfestivals_adjudicatorGet($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'),
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'adjudicator_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Adjudicator'),
         'customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer'),
         'festival_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Festival'),
@@ -32,19 +32,19 @@ function ciniki_musicfestivals_adjudicatorGet($ciniki) {
 
     //
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['business_id'], 'ciniki.musicfestivals.adjudicatorGet');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.adjudicatorGet');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
 
     //
-    // Load business settings
+    // Load tenant settings
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $args['tnid']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -73,7 +73,7 @@ function ciniki_musicfestivals_adjudicatorGet($ciniki) {
             . "ciniki_musicfestival_adjudicators.festival_id, "
             . "ciniki_musicfestival_adjudicators.customer_id "
             . "FROM ciniki_musicfestival_adjudicators "
-            . "WHERE ciniki_musicfestival_adjudicators.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE ciniki_musicfestival_adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_musicfestival_adjudicators.id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -95,7 +95,7 @@ function ciniki_musicfestivals_adjudicatorGet($ciniki) {
     //
     if( isset($adjudicator['customer_id']) && $adjudicator['customer_id'] > 0 ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
-        $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['business_id'], 
+        $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['tnid'], 
             array('customer_id'=>$adjudicator['customer_id'], 'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
         if( $rc['stat'] != 'ok' ) {
             return $rc;

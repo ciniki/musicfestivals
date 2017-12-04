@@ -2,13 +2,13 @@
 //
 // Description
 // -----------
-// This method will return the list of Categorys for a business.
+// This method will return the list of Categorys for a tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// business_id:        The ID of the business to get Category for.
+// tnid:        The ID of the tenant to get Category for.
 //
 // Returns
 // -------
@@ -19,7 +19,7 @@ function ciniki_musicfestivals_categoryList($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'),
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -27,10 +27,10 @@ function ciniki_musicfestivals_categoryList($ciniki) {
     $args = $rc['args'];
 
     //
-    // Check access to business_id as owner, or sys admin.
+    // Check access to tnid as owner, or sys admin.
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['business_id'], 'ciniki.musicfestivals.categoryList');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.categoryList');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -46,9 +46,9 @@ function ciniki_musicfestivals_categoryList($ciniki) {
         . "ciniki_musicfestival_categories.permalink, "
         . "ciniki_musicfestival_categories.sequence "
         . "FROM ciniki_musicfestival_categories, ciniki_musicfestival_sections "
-        . "WHERE ciniki_musicfestival_categories.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE ciniki_musicfestival_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ciniki_musicfestival_categories.section_id = ciniki_musicfestival_sections.id "
-        . "AND ciniki_musicfestival_sections.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND ciniki_musicfestival_sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "ORDER BY sequence, name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');

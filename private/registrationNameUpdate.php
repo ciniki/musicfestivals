@@ -7,14 +7,14 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:                 The business ID to check the session user against.
+// tnid:                 The tenant ID to check the session user against.
 // method:                      The requested method.
 //
 // Returns
 // -------
 // <rsp stat='ok' />
 //
-function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $business_id, $registration_id) {
+function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $tnid, $registration_id) {
     
     $strsql = "SELECT registrations.id, "
         . "registrations.festival_id, "
@@ -46,7 +46,7 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $business_id, $r
                 . "OR registrations.competitor5_id = competitors.id "
                 . ") "
             . ") "
-        . "WHERE registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND registrations.id = '" . ciniki_core_dbQuote($ciniki, $registration_id) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
@@ -105,7 +105,7 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $business_id, $r
         }
         if( count($update_args) > 0 ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-            $rc = ciniki_core_objectUpdate($ciniki, $business_id, 'ciniki.musicfestivals.registration', $registration_id, $update_args, 0x04);
+            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration_id, $update_args, 0x04);
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.117', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
             }

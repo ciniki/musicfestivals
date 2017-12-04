@@ -7,17 +7,17 @@
 // Returns
 // -------
 //
-function ciniki_musicfestivals_web_fileDownload($ciniki, $business_id, $festival_id, $file_permalink) {
+function ciniki_musicfestivals_web_fileDownload($ciniki, $tnid, $festival_id, $file_permalink) {
 
     //
-    // Get the business storage directory
+    // Get the tenant storage directory
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'hooks', 'storageDir');
-    $rc = ciniki_businesses_hooks_storageDir($ciniki, $business_id, array());
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+    $rc = ciniki_tenants_hooks_storageDir($ciniki, $tnid, array());
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-    $business_storage_dir = $rc['storage_dir'];
+    $tenant_storage_dir = $rc['storage_dir'];
 
     //
     // Get the file details
@@ -28,7 +28,7 @@ function ciniki_musicfestivals_web_fileDownload($ciniki, $business_id, $festival
         . "ciniki_musicfestival_files.permalink, "
         . "ciniki_musicfestival_files.extension "
         . "FROM ciniki_musicfestival_files "
-        . "WHERE ciniki_musicfestival_files.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_musicfestival_files.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_musicfestival_files.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival_id) . "' "
         . "AND CONCAT_WS('.', ciniki_musicfestival_files.permalink, ciniki_musicfestival_files.extension) = '" . ciniki_core_dbQuote($ciniki, $file_permalink) . "' "
         . "AND (ciniki_musicfestival_files.webflags&0x01) > 0 "       // Make sure file is to be visible
@@ -45,7 +45,7 @@ function ciniki_musicfestivals_web_fileDownload($ciniki, $business_id, $festival
     //
     // Get the storage filename
     //
-    $storage_filename = $business_storage_dir . '/ciniki.musicfestivals/files/' . $rc['file']['uuid'][0] . '/' . $rc['file']['uuid'];
+    $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/files/' . $rc['file']['uuid'][0] . '/' . $rc['file']['uuid'];
     if( file_exists($storage_filename) ) {
         $rc['file']['binary_content'] = file_get_contents($storage_filename);    
     }

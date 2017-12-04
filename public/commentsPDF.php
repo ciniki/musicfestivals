@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business the section is attached to.
+// tnid:         The ID of the tenant the section is attached to.
 // section_id:          The ID of the section to get the details for.
 //
 // Returns
@@ -20,7 +20,7 @@ function ciniki_musicfestivals_commentsPDF($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'),
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'schedulesection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Section'),
         'names'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name Format'),
@@ -32,19 +32,19 @@ function ciniki_musicfestivals_commentsPDF($ciniki) {
 
     //
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['business_id'], 'ciniki.musicfestivals.commentsPDF');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.commentsPDF');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
 
     //
-    // Load business settings
+    // Load tenant settings
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $args['business_id']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $args['tnid']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -59,7 +59,7 @@ function ciniki_musicfestivals_commentsPDF($ciniki) {
     // Run the template
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'commentsPDF');
-    $rc = ciniki_musicfestivals_templates_commentsPDF($ciniki, $args['business_id'], $args);
+    $rc = ciniki_musicfestivals_templates_commentsPDF($ciniki, $args['tnid'], $args);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }

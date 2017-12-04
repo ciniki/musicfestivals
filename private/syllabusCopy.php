@@ -7,14 +7,14 @@
 // Arguments
 // ---------
 // ciniki:
-// business_id:                 The business ID to check the session user against.
+// tnid:                 The tenant ID to check the session user against.
 // method:                      The requested method.
 //
 // Returns
 // -------
 // <rsp stat='ok' />
 //
-function ciniki_musicfestivals_syllabusCopy(&$ciniki, $business_id, $festival_id, $old_festival_id) {
+function ciniki_musicfestivals_syllabusCopy(&$ciniki, $tnid, $festival_id, $old_festival_id) {
    
     $strsql = "SELECT s.id AS sid, s.name AS sn, s.permalink AS sp, s.sequence AS so, "
         . "s.primary_image_id AS si, s.synopsis AS ss, s.description AS sd, "
@@ -23,14 +23,14 @@ function ciniki_musicfestivals_syllabusCopy(&$ciniki, $business_id, $festival_id
         . "FROM ciniki_musicfestival_sections AS s "
         . "LEFT JOIN ciniki_musicfestival_categories AS c ON ("
             . "s.id = c.section_id "
-            . "AND c.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND c.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_classes AS i ON ("
             . "c.id = i.category_id "
-            . "AND i.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND i.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE s.festival_id = '" . ciniki_core_dbQuote($ciniki, $old_festival_id) . "' "
-        . "AND s.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND s.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY s.sequence, s.date_added, c.sequence, c.date_added, i.sequence, i.date_added "
         . "";
     
@@ -55,7 +55,7 @@ function ciniki_musicfestivals_syllabusCopy(&$ciniki, $business_id, $festival_id
             // Add the section
             //
             $section['festival_id'] = $festival_id;
-            $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.musicfestivals.section', $section, 0x04);
+            $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.section', $section, 0x04);
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
@@ -67,7 +67,7 @@ function ciniki_musicfestivals_syllabusCopy(&$ciniki, $business_id, $festival_id
                     //
                     $category['festival_id'] = $festival_id;
                     $category['section_id'] = $section_id;
-                    $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.musicfestivals.category', $category, 0x04);
+                    $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.category', $category, 0x04);
                     if( $rc['stat'] != 'ok' ) {
                         return $rc;
                     }
@@ -79,7 +79,7 @@ function ciniki_musicfestivals_syllabusCopy(&$ciniki, $business_id, $festival_id
                             //
                             $class['festival_id'] = $festival_id;
                             $class['category_id'] = $category_id;
-                            $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.musicfestivals.class', $class, 0x04);
+                            $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.class', $class, 0x04);
                             if( $rc['stat'] != 'ok' ) {
                                 return $rc;
                             }

@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:            The ID of the business the schedule division is attached to.
+// tnid:            The ID of the tenant the schedule division is attached to.
 // scheduledivision_id:            The ID of the schedule division to be removed.
 //
 // Returns
@@ -20,7 +20,7 @@ function ciniki_musicfestivals_scheduleDivisionDelete(&$ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'),
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'scheduledivision_id'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Schedule Division'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -29,10 +29,10 @@ function ciniki_musicfestivals_scheduleDivisionDelete(&$ciniki) {
     $args = $rc['args'];
 
     //
-    // Check access to business_id as owner
+    // Check access to tnid as owner
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['business_id'], 'ciniki.musicfestivals.scheduleDivisionDelete');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.scheduleDivisionDelete');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -42,7 +42,7 @@ function ciniki_musicfestivals_scheduleDivisionDelete(&$ciniki) {
     //
     $strsql = "SELECT id, uuid "
         . "FROM ciniki_musicfestival_schedule_divisions "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['scheduledivision_id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'scheduledivision');
@@ -63,7 +63,7 @@ function ciniki_musicfestivals_scheduleDivisionDelete(&$ciniki) {
     //
     $strsql = "SELECT 'items', COUNT(*) "
         . "FROM ciniki_musicfestival_schedule_timeslots "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "AND sdivision_id = '" . ciniki_core_dbQuote($ciniki, $args['scheduledivision_id']) . "' "
         . "";
@@ -81,7 +81,7 @@ function ciniki_musicfestivals_scheduleDivisionDelete(&$ciniki) {
     // Check if any modules are currently using this object
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectCheckUsed');
-    $rc = ciniki_core_objectCheckUsed($ciniki, $args['business_id'], 'ciniki.musicfestivals.scheduleDivision', $args['scheduledivision_id']);
+    $rc = ciniki_core_objectCheckUsed($ciniki, $args['tnid'], 'ciniki.musicfestivals.scheduleDivision', $args['scheduledivision_id']);
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.91', 'msg'=>'Unable to check if the schedule division is still being used.', 'err'=>$rc['err']));
     }
@@ -106,7 +106,7 @@ function ciniki_musicfestivals_scheduleDivisionDelete(&$ciniki) {
     //
     // Remove the scheduledivision
     //
-    $rc = ciniki_core_objectDelete($ciniki, $args['business_id'], 'ciniki.musicfestivals.scheduledivision',
+    $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.musicfestivals.scheduledivision',
         $args['scheduledivision_id'], $scheduledivision['uuid'], 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
@@ -122,11 +122,11 @@ function ciniki_musicfestivals_scheduleDivisionDelete(&$ciniki) {
     }
 
     //
-    // Update the last_change date in the business modules
+    // Update the last_change date in the tenant modules
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'updateModuleChangeDate');
-    ciniki_businesses_updateModuleChangeDate($ciniki, $args['business_id'], 'ciniki', 'musicfestivals');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'musicfestivals');
 
     return array('stat'=>'ok');
 }

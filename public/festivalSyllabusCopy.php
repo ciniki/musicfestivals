@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business the festival is attached to.
+// tnid:         The ID of the tenant the festival is attached to.
 // festival_id:          The ID of the festival to get the details for.
 //
 // Returns
@@ -20,7 +20,7 @@ function ciniki_musicfestivals_festivalSyllabusCopy($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'),
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'old_festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Previous Festival'),
         ));
@@ -31,10 +31,10 @@ function ciniki_musicfestivals_festivalSyllabusCopy($ciniki) {
 
     //
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['business_id'], 'ciniki.musicfestivals.festivalSyllabusCopy');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.festivalSyllabusCopy');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -42,7 +42,7 @@ function ciniki_musicfestivals_festivalSyllabusCopy($ciniki) {
     if( $args['old_festival_id'] == 'previous' ) {
         $strsql = "SELECT id "
             . "FROM ciniki_musicfestivals "
-            . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "ORDER BY start_date DESC "
             . "LIMIT 1 ";
@@ -72,7 +72,7 @@ function ciniki_musicfestivals_festivalSyllabusCopy($ciniki) {
     // Update the Festival in the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'syllabusCopy');
-    $rc = ciniki_musicfestivals_syllabusCopy($ciniki, $args['business_id'], $args['festival_id'], $args['old_festival_id']);
+    $rc = ciniki_musicfestivals_syllabusCopy($ciniki, $args['tnid'], $args['festival_id'], $args['old_festival_id']);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;

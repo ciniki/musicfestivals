@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:         The ID of the business to add the file to.
+// tnid:         The ID of the tenant to add the file to.
 // festival_id:          The ID of the music festival the file is attached to.
 // name:                The name of the file.
 // description:         (optional) The extended description of the file, can be much longer than the name.
@@ -27,7 +27,7 @@ function ciniki_musicfestivals_fileAdd(&$ciniki) {
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'), 
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'), 
         'description'=>array('required'=>'no', 'default'=>'', 'blank'=>'yes', 'name'=>'Description'), 
@@ -45,30 +45,30 @@ function ciniki_musicfestivals_fileAdd(&$ciniki) {
 
     //  
     // Make sure this module is activated, and
-    // check permission to run this function for this business
+    // check permission to run this function for this tenant
     //  
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['business_id'], 'ciniki.musicfestivals.fileAdd', $args['festival_id']); 
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.fileAdd', $args['festival_id']); 
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }   
 
     //
-    // Get the business storage directory
+    // Get the tenant storage directory
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'hooks', 'storageDir');
-    $rc = ciniki_businesses_hooks_storageDir($ciniki, $args['business_id'], array());
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+    $rc = ciniki_tenants_hooks_storageDir($ciniki, $args['tnid'], array());
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-    $business_storage_dir = $rc['storage_dir'];
+    $tenant_storage_dir = $rc['storage_dir'];
 
     //
     // Check the permalink doesn't already exist
     //
     $strsql = "SELECT id, name, permalink "
         . "FROM ciniki_musicfestival_files "
-        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
         . "";
@@ -118,7 +118,7 @@ function ciniki_musicfestivals_fileAdd(&$ciniki) {
     //
     // Move the file to ciniki-storage
     //
-    $storage_filename = $business_storage_dir . '/ciniki.musicfestivals/files/' . $args['uuid'][0] . '/' . $args['uuid'];
+    $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/files/' . $args['uuid'][0] . '/' . $args['uuid'];
     if( !is_dir(dirname($storage_filename)) ) {
         if( !mkdir(dirname($storage_filename), 0700, true) ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.55', 'msg'=>'Unable to add file'));
@@ -133,6 +133,6 @@ function ciniki_musicfestivals_fileAdd(&$ciniki) {
     // Add the file to the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    return ciniki_core_objectAdd($ciniki, $args['business_id'], 'ciniki.musicfestivals.file', $args, 0x07);
+    return ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.file', $args, 0x07);
 }
 ?>

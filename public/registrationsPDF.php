@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:        The ID of the business to get Registration for.
+// tnid:        The ID of the tenant to get Registration for.
 //
 // Returns
 // -------
@@ -19,7 +19,7 @@ function ciniki_musicfestivals_registrationsPDF($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'),
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -28,16 +28,16 @@ function ciniki_musicfestivals_registrationsPDF($ciniki) {
     $args = $rc['args'];
 
     //
-    // Check access to business_id as owner, or sys admin.
+    // Check access to tnid as owner, or sys admin.
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['business_id'], 'ciniki.musicfestivals.registrationsPDF');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.registrationsPDF');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'classRegistrationsPDF');
-    $rc = ciniki_musicfestivals_templates_classRegistrationsPDF($ciniki, $args['business_id'], $args);
+    $rc = ciniki_musicfestivals_templates_classRegistrationsPDF($ciniki, $args['tnid'], $args);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }

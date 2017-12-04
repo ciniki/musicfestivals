@@ -8,7 +8,7 @@
 // ---------
 // api_key:
 // auth_token:
-// business_id:        The ID of the business to get Registration for.
+// tnid:        The ID of the tenant to get Registration for.
 //
 // Returns
 // -------
@@ -19,7 +19,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
-        'business_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Business'),
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -28,10 +28,10 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
     $args = $rc['args'];
 
     //
-    // Check access to business_id as owner, or sys admin.
+    // Check access to tnid as owner, or sys admin.
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['business_id'], 'ciniki.musicfestivals.registrationsExcel');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.registrationsExcel');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -65,15 +65,15 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         . "FROM ciniki_musicfestival_sections AS sections "
         . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
             . "sections.id = categories.section_id "
-            . "AND categories.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
             . "categories.id = classes.category_id "
-            . "AND classes.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "classes.id = registrations.class_id "
-            . "AND registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ("
             . "("
@@ -83,10 +83,10 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 . "OR registrations.competitor4_id = competitors.id "
                 . "OR registrations.competitor5_id = competitors.id "
                 . ") "
-            . "AND registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "AND sections.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
+        . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "ORDER BY sections.id, registrations.id "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -184,7 +184,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     $registration['teacher_phone'] = $teachers[$registration['teacher_customer_id']]['teacher_phone'];
                     $registration['teacher_email'] = $teachers[$registration['teacher_customer_id']]['teacher_email'];
                 } else {
-                    $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['business_id'], 
+                    $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['tnid'], 
                         array('customer_id'=>$registration['teacher_customer_id'], 'phones'=>'yes', 'emails'=>'yes'));
                     if( $rc['stat'] != 'ok' ) {
                         return $rc;

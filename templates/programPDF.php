@@ -11,30 +11,30 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_musicfestivals_templates_programPDF(&$ciniki, $business_id, $args) {
+function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
 
     //
-    // Load the business details
+    // Load the tenant details
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'businessDetails');
-    $rc = ciniki_businesses_businessDetails($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'tenantDetails');
+    $rc = ciniki_tenants_tenantDetails($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
     if( isset($rc['details']) && is_array($rc['details']) ) {    
-        $business_details = $rc['details'];
+        $tenant_details = $rc['details'];
     } else {
-        $business_details = array();
+        $tenant_details = array();
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
 
     //
-    // Load business settings
+    // Load tenant settings
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'businesses', 'private', 'intlSettings');
-    $rc = ciniki_businesses_intlSettings($ciniki, $business_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -56,7 +56,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $business_id, $arg
         . "ciniki_musicfestivals.document_header_msg, "
         . "ciniki_musicfestivals.document_footer_msg "
         . "FROM ciniki_musicfestivals "
-        . "WHERE ciniki_musicfestivals.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_musicfestivals.id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -104,23 +104,23 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $business_id, $arg
         . "FROM ciniki_musicfestival_schedule_sections AS sections "
         . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
             . "sections.id = divisions.ssection_id " 
-            . "AND divisions.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
             . "divisions.id = timeslots.sdivision_id " 
-            . "AND timeslots.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
             . "timeslots.class1_id = class1.id " 
-            . "AND class1.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND class1.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_classes AS class2 ON ("
             . "timeslots.class3_id = class2.id " 
-            . "AND class2.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND class2.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_classes AS class3 ON ("
             . "timeslots.class3_id = class3.id " 
-            . "AND class3.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND class3.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "(timeslots.class1_id = registrations.class_id "  
@@ -128,9 +128,9 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $business_id, $arg
                 . "OR timeslots.class3_id = registrations.class_id "
                 . ") "
             . "AND ((timeslots.flags&0x01) = 0 OR timeslots.id = registrations.timeslot_id) "
-            . "AND registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE sections.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "";
     if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
@@ -171,7 +171,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $business_id, $arg
         public $header_msg = '';
         public $header_height = 0;      // The height of the image and address
         public $footer_msg = '';
-        public $business_details = array();
+        public $tenant_details = array();
         public $fw = 116;
 
         public function Header() {
@@ -211,7 +211,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $business_id, $arg
     $pdf = new MYPDF('P', PDF_UNIT, 'STATEMENT', true, 'UTF-8', false);
 
     //
-    // Figure out the header business name and address information
+    // Figure out the header tenant name and address information
     //
     $pdf->header_height = 0;
     $pdf->header_title = $festival['name'];
@@ -223,7 +223,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $business_id, $arg
     // Setup the PDF basics
     //
     $pdf->SetCreator('Ciniki');
-    $pdf->SetAuthor($business_details['name']);
+    $pdf->SetAuthor($tenant_details['name']);
     $pdf->SetTitle($festival['name'] . ' - Program');
     $pdf->SetSubject('');
     $pdf->SetKeywords('');
@@ -262,10 +262,10 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $business_id, $arg
                 . "FROM ciniki_musicfestival_adjudicators AS a "
                 . "LEFT JOIN ciniki_customers AS c ON ("
                     . "a.customer_id = c.id "
-                    . "AND c.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                    . "AND c.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                     . ") "
                 . "WHERE a.id = '" . ciniki_core_dbQuote($ciniki, $section['adjudicator1_id']) . "' "
-                . "AND a.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+                . "AND a.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'customer');
             if( $rc['stat'] != 'ok' ) {
@@ -289,7 +289,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $business_id, $arg
                 // Add image
                 //
                 if( isset($rc['customer']['primary_image_id']) && $rc['customer']['primary_image_id'] > 0 ) {
-                    $rc = ciniki_images_loadImage($ciniki, $business_id, $rc['customer']['primary_image_id'], 'original');
+                    $rc = ciniki_images_loadImage($ciniki, $tnid, $rc['customer']['primary_image_id'], 'original');
                     if( $rc['stat'] == 'ok' ) {
                         $image = $rc['image'];
                         $height = $image->getImageHeight();
