@@ -22,6 +22,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         'billing_customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Billing'),
         'rtype'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Type'),
         'status'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Status'),
+        'invoice_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Invoice'),
         'display_name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name'),
         'competitor1_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitor 1'),
         'competitor2_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitor 2'),
@@ -53,40 +54,6 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-
-/*    //
-    // Get the existing registration
-    //
-    $strsql = "SELECT ciniki_musicfestival_registrations.id, "
-        . "ciniki_musicfestival_registrations.festival_id, "
-        . "ciniki_musicfestival_registrations.teacher_customer_id, "
-        . "ciniki_musicfestival_registrations.billing_customer_id, "
-        . "ciniki_musicfestival_registrations.rtype, "
-        . "ciniki_musicfestival_registrations.status, "
-        . "ciniki_musicfestival_registrations.display_name, "
-        . "ciniki_musicfestival_registrations.competitor1_id, "
-        . "ciniki_musicfestival_registrations.competitor2_id, "
-        . "ciniki_musicfestival_registrations.competitor3_id, "
-        . "ciniki_musicfestival_registrations.competitor4_id, "
-        . "ciniki_musicfestival_registrations.competitor5_id, "
-        . "ciniki_musicfestival_registrations.class_id, "
-        . "ciniki_musicfestival_registrations.title, "
-        . "ciniki_musicfestival_registrations.perf_time, "
-        . "FORMAT(ciniki_musicfestival_registrations.fee, 2) AS fee, "
-        . "ciniki_musicfestival_registrations.payment_type, "
-        . "ciniki_musicfestival_registrations.notes "
-        . "FROM ciniki_musicfestival_registrations "
-        . "WHERE ciniki_musicfestival_registrations.business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
-        . "AND ciniki_musicfestival_registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
-        . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'registration');
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.80', 'msg'=>'Registration not found', 'err'=>$rc['err']));
-    }
-    if( !isset($rc['registration']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.81', 'msg'=>'Unable to find Registration'));
-    }
-    $registration = $rc['registration'];*/
 
     //
     // Start transaction

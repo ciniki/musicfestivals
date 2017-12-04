@@ -2,7 +2,7 @@
 //
 // Description
 // -----------
-// This function will process a web request for the Music Festival module.
+// This function will process the registrations page for online music festival registrations.
 //
 // Arguments
 // ---------
@@ -16,14 +16,174 @@
 // Returns
 // -------
 //
-function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $business_id, $args) {
+function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settings, $business_id, $args) {
 
     //
     // Check to make sure the module is enabled
     //
     if( !isset($ciniki['business']['modules']['ciniki.musicfestivals']) ) {
-        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.11', 'msg'=>"I'm sorry, the page you requested does not exist."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.121', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
+
+    //
+    // Check there is a festival setup
+    //
+    if( !isset($args['festival_id']) || $args['festival_id'] <= 0 ) {
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.122', 'msg'=>"I'm sorry, the page you requested does not exist."));
+    }
+
+    //
+    // This function does not build a page, just provides an array of blocks
+    //
+    $blocks = array();
+
+    //
+    // Check to make sure the customer is logged in, otherwise redirect to login page
+    //
+    if( !isset($ciniki['session']['customer']['id']) ) {
+        $blocks[] = array(
+            'type' => 'login', 
+            'section' => 'login',
+            'redirect' => $args['base_url'],        // Redirect back to registrations page
+            );
+        return array('stat'=>'ok', 'blocks'=>$blocks);
+    }
+
+    //
+    // Check if customer is setup for the music festival this year
+    //
+    $strsql = "SELECT id, ctype "
+        . "FROM ciniki_musicfestival_customers "
+        . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['customer']['id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'customer');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.123', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
+    }
+    $customer_type = 0;
+    if( !isset($rc['customer']['ctype']) || $rc['customer']['ctype'] == 0 ) {
+        //
+        // Check if customer type was submitted
+        //
+        if( isset($_GET['ctype']) && in_array($_GET['ctype'], array(10,20,30)) ) {
+            //
+            // Add the customer to the musicfestival
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+            $rc = ciniki_core_objectAdd($ciniki, $business_id, 'ciniki.musicfestivals.customer', array(
+                'festival_id' => $args['festival_id'],
+                'customer_id' => $ciniki['session']['customer']['id'],
+                'ctype' => $_GET['ctype'],
+                ), 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.124', 'msg'=>'Unable to add the customer'));
+            }
+            $customer_type = $_GET['t'];
+        } 
+        
+        //
+        // Ask the customer what type they are
+        //
+        else {
+            $content = "<p>In order to better serve you, we need to know who you are.</p>";
+            $content .= "<a href='" . $args['base_url'] . "?t=10'>I am a parent registering my children</a>";
+            $content .= "<a href='" . $args['base_url'] . "?t=20'>I am a teacher registering my students</a>";
+            $content .= "<a href='" . $args['base_url'] . "?t=30'>I am an adult registering myself</a>";
+
+            return array('stat'=>'ok', 'blocks'=>$blocks);
+        }
+    } else {
+        $customer_type = $rc['customer']['ctype'];
+    }
+
+    //
+    // Load the customers registrations
+    //
+    $strsql = "SELECT r.id, "
+        . "r.teacher_customer_id, r.billing_customer_id, r.rtype, r.status, "
+        . "r.display_name, r.public_name, "
+        . "r.competitor1_id, r.competitor2_id, r.competitor3_id, r.competitor4_id, r.competitor5_id, "
+        . "r.class_id, r.timeslot_id, r.title, r.perf_time, r.fee, r.payment_type, r.notes "
+        . "FROM ciniki_musicfestival_registrations AS r "
+        . "WHERE r.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "AND r.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['customer']['id']) . "' "
+        . "ORDER BY r.status, r.display_name "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'registrations', 'fname'=>'id', 
+            'fields'=>array('id', 'teacher_customer_id', 'billing_customer_id', 'rtype', 'status', 
+                'display_name', 'public_name', 'competitor1_id', 'competitor2_id', 'competitor3_id', 
+                'competitor4_id', 'competitor5_id', 'class_id', 'timeslot_id', 'title', 'perf_time', 
+                'fee', 'payment_type', 'notes'),
+            ),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.126', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+    }
+    $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
+
+    //
+    // Load the competitors
+    //
+    $strsql = "SELECT c.id, "
+        . "c.name, c.parent, c.address, c.city, c.province, c.postal, "
+        . "c.phone_home, c.phone_cell, c.email, c.age, c.study_level, c.instrument, c.notes "
+        . "FROM ciniki_musicfestival_registrations AS r "
+        . "LEFT JOIN ciniki_musicfestival_competitors AS c ON ("
+            . "c.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "AND ("
+                . "r.competitor1_id = c.id "
+                . "OR r.competitor2_id = c.id "
+                . "OR r.competitor3_id = c.id "
+                . "OR r.competitor4_id = c.id "
+                . "OR r.competitor5_id = c.id "
+                . ") "
+            . "AND c.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+            . ") "
+        . "WHERE r.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "AND r.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['customer']['id']) . "' "
+        . "AND r.business_id = '" . ciniki_core_dbQuote($ciniki, $business_id) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'competitors', 'fname'=>'id', 
+            'fields'=>array('id', 'name', 'parent', 'address', 'city', 'province', 'postal', 'phone_home', 
+                'phone_cell', 'email', 'age', 'study_level', 'instrument', 'notes'),
+            ),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.125', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
+    }
+    $competitors = isset($rc['competitors']) ? $rc['competitors'] : array();
+
+
+    //
+    // Decide what should be displayed
+    //
+    $display = 'list';
+    if( isset($args['uri_split'][0]) && $args['uri_split'][0] == '' ) {
+        $display = 'form';
+    } elseif( isset($args['uri_split'][0]) && $args['uri_split'][0] == 'new' ) {
+        $display = 'form';
+        $form_permalink
+    }
+
+
+
+
+    if( $display == 'list' ) {
+    }
+
+    //
+    // Prepare the registration list
+    //
+
+
+    return array('stat'=>'ok', 'blocks'=>$blocks);
+
     $page = array(
         'title'=>$args['page_title'],
         'breadcrumbs'=>$args['breadcrumbs'],
@@ -145,9 +305,9 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $business
         } elseif( $uri_split[0] == 'adjudicators' ) {
             $display = 'adjudicators';
             $adjudicator_permalink = $uri_split[0];
-/*        } elseif( $uri_split[0] == 'registrations' ) {
+        } elseif( $uri_split[0] == 'registrations' ) {
             $display = 'registrations';
-            array_shift($uri_split); */
+            array_shift($uri_split);
         } else {
             $strsql = "SELECT id, name, permalink, primary_image_id AS image_id, synopsis, description "
                 . "FROM ciniki_musicfestival_sections "
@@ -220,16 +380,12 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $business
     //
     // Process the registrations page
     //
-/*    elseif( $display == 'registrations' && $ciniki['session']['customer']['id'] > 0 ) {
+    elseif( $display == 'registrations' && $ciniki['session']['customer']['id'] > 0 ) {
         $page['breadcrumbs'][] = array('name'=>'Registrations', 'url'=>$args['base_url'] . '/registrations');
 
         $args['uri_split'] = $uri_split;
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'web', 'processRequestRegistrations');
-        $rc = ciniki_musicfestivals_web_processRequestRegistrations($ciniki, $settings, $business_id, array(
-            'uri_split' => $uri_split,
-            'festival_id' => $festival_id,
-            'base_url' => $args['base_url'] . '/registrations',
-            ));
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'processRequestRegistrations');
+        $rc = ciniki_musicfestivals_processRequestRegistrations($ciniki, $settings, $business_id, $args);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
@@ -238,7 +394,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $business
                 $page['blocks'][] = $block;
             }
         }
-    } */
+    }
 
     //
     // Display the section information

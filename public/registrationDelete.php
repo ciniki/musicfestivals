@@ -40,7 +40,7 @@ function ciniki_musicfestivals_registrationDelete(&$ciniki) {
     //
     // Get the current settings for the registration
     //
-    $strsql = "SELECT id, uuid "
+    $strsql = "SELECT id, uuid, invoice_id "
         . "FROM ciniki_musicfestival_registrations "
         . "WHERE business_id = '" . ciniki_core_dbQuote($ciniki, $args['business_id']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
@@ -53,6 +53,13 @@ function ciniki_musicfestivals_registrationDelete(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.70', 'msg'=>'Registration does not exist.'));
     }
     $registration = $rc['registration'];
+
+    //
+    // Check for an invoice
+    //
+    if( $registration['invoice_id'] > 0 ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.127', 'msg'=>'Registration is attached to an invoice.'));
+    }
 
     //
     // Check for any dependencies before deleting

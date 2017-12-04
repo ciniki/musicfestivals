@@ -63,6 +63,7 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         . "registrations.rtype AS rtype_text, "
         . "registrations.status, "
         . "registrations.status AS status_text, "
+        . "registrations.invoice_id, "
         . "registrations.display_name, "
         . "registrations.class_id, "
         . "classes.code AS class_code, "
@@ -116,7 +117,8 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
-            'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
+            'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 'rtype', 'rtype_text', 
+                'status', 'status_text', 'invoice_id', 'display_name', 
                 'class_id', 'class_code', 'class_name', 'title', 'perf_time', 'fee', 'payment_type'),
             'maps'=>array(
                 'rtype_text'=>$maps['registration']['rtype'],

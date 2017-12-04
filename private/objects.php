@@ -32,6 +32,19 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );
+    $objects['customer'] = array(
+        'name' => 'Customer',
+        'sync' => 'yes',
+        'o_name' => 'customer',
+        'o_container' => 'customers',
+        'table' => 'ciniki_musicfestival_customers',
+        'fields' => array(
+            'festival_id,' => array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'customer_id,' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
+            'ctype' => array('name'=>'Type', 'default'=>'0'),
+            ),
+        'history_table' => 'ciniki_musicfestival_history',
+        );
     $objects['adjudicator'] = array(
         'name'=>'Adjudicator',
         'o_name'=>'adjudicator',
@@ -151,6 +164,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'billing_customer_id'=>array('name'=>'Billing', 'ref'=>'ciniki.customers.customer', 'default'=>'0'),
             'rtype'=>array('name'=>'Type'),
             'status'=>array('name'=>'Status'),
+            'invoice_id'=>array('name'=>'Status', 'default'=>'0'),
             'display_name'=>array('name'=>'Name', 'default'=>''),
             'public_name'=>array('name'=>'Name', 'default'=>''),
             'competitor1_id'=>array('name'=>'Competitor 1', 'ref'=>'ciniki.musicfestivals.competitor', 'default'=>'0'),
