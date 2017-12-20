@@ -22,6 +22,10 @@
 #                           0x02 - Multireg - Allow for same student to register multiple times.
 #                           0x04 - 
 #                           0x08 - 
+#                           0x10 - Enable Second competitor
+#                           0x20 - Enable Third competitor
+#                           0x40 - Enable Fourth competitor
+#                           0x80 - Enable Fifth competitor
 #
 # fee:                  The fee for the class.
 #

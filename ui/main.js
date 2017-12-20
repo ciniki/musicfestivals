@@ -989,6 +989,8 @@ function ciniki_musicfestivals_main() {
         'registration':{'label':'Registration Options', 'aside':'yes', 'fields':{
             'flags1':{'label':'Online Registrations', 'type':'flagtoggle', 'default':'on', 'bit':0x01, 'field':'flags'},
             'flags2':{'label':'Multiple/Registrant', 'type':'flagtoggle', 'default':'on', 'bit':0x02, 'field':'flags'},
+            'flags5':{'label':'2nd Competitor', 'type':'flagtoggle', 'default':'off', 'bit':0x10, 'field':'flags'},
+            'flags6':{'label':'3nd Competitor', 'type':'flagtoggle', 'default':'off', 'bit':0x20, 'field':'flags'},
             }},
         'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':3, 
             'headerValues':['Competitor', 'Teacher', 'Status'],

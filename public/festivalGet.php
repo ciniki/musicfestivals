@@ -381,17 +381,19 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             //
             // Get the list of teachers and number of registrations
             //
-            $strsql = "SELECT registrations.teacher_customer_id, "
-                . "customers.display_name, "
-                . "COUNT(registrations.id) AS num_registrations "
-                . "FROM ciniki_musicfestival_registrations AS registrations "
-                . "LEFT JOIN ciniki_customers AS customers ON ("
-                    . "registrations.teacher_customer_id = customers.id "
-                    . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            $strsql = "SELECT r.teacher_customer_id, "
+                . "c.display_name, "
+                . "COUNT(r.id) AS num_registrations "
+                . "FROM ciniki_musicfestival_registrations AS r "
+                . "LEFT JOIN ciniki_customers AS c ON ("
+                    . "r.teacher_customer_id = c.id "
+                    . "AND c.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
-                . "WHERE registrations.teacher_customer_id != 0 "
-                . "GROUP BY registrations.teacher_customer_id "
-                . "ORDER BY customers.display_name "
+                . "WHERE r.teacher_customer_id != 0 "
+                . "AND r.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND r.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "GROUP BY r.teacher_customer_id "
+                . "ORDER BY c.display_name "
                 . "";
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'teachers', 'fname'=>'teacher_customer_id', 'fields'=>array('id'=>'teacher_customer_id', 'display_name', 'num_registrations')),

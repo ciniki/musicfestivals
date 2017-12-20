@@ -24,12 +24,14 @@ function ciniki_musicfestivals_maps($ciniki) {
             '90'=>'Ensemble',
         ),
         'status'=>array(
+            '5'=>'Cart',
             '10'=>'Applied',
             '50'=>'Paid',
         ),
         'payment_type'=>array(
             '10'=>'Paypal',
             '20'=>'Square',
+            '30'=>'Stripe',
             '50'=>'Visa',
             '55'=>'Mastercard',
             '100'=>'Cash',

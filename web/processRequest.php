@@ -145,9 +145,9 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
         } elseif( $uri_split[0] == 'adjudicators' ) {
             $display = 'adjudicators';
             $adjudicator_permalink = $uri_split[0];
-/*        } elseif( $uri_split[0] == 'registrations' ) {
+        } elseif( $uri_split[0] == 'registrations' ) {
             $display = 'registrations';
-            array_shift($uri_split); */
+            array_shift($uri_split); 
         } else {
             $strsql = "SELECT id, name, permalink, primary_image_id AS image_id, synopsis, description "
                 . "FROM ciniki_musicfestival_sections "
@@ -220,7 +220,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
     //
     // Process the registrations page
     //
-/*    elseif( $display == 'registrations' && $ciniki['session']['customer']['id'] > 0 ) {
+    elseif( $display == 'registrations' && $ciniki['session']['customer']['id'] > 0 ) {
         $page['breadcrumbs'][] = array('name'=>'Registrations', 'url'=>$args['base_url'] . '/registrations');
 
         $args['uri_split'] = $uri_split;
@@ -238,7 +238,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
                 $page['blocks'][] = $block;
             }
         }
-    } */
+    }
 
     //
     // Display the section information

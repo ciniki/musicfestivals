@@ -39,8 +39,8 @@ function ciniki_musicfestivals_objects($ciniki) {
         'o_container' => 'customers',
         'table' => 'ciniki_musicfestival_customers',
         'fields' => array(
-            'festival_id,' => array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
-            'customer_id,' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
+            'festival_id' => array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'customer_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
             'ctype' => array('name'=>'Type', 'default'=>'0'),
             ),
         'history_table' => 'ciniki_musicfestival_history',
@@ -136,6 +136,7 @@ function ciniki_musicfestivals_objects($ciniki) {
         'table'=>'ciniki_musicfestival_competitors',
         'fields'=>array(
             'festival_id'=>array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'billing_customer_id'=>array('name'=>'Billing Customer', 'ref'=>'ciniki.customers.customer', 'default'=>0),
             'name'=>array('name'=>'Name'),
             'parent'=>array('name'=>'Parent'),
             'address'=>array('name'=>'Address', 'default'=>''),
