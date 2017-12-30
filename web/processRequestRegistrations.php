@@ -50,15 +50,40 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
     //
     // Check to make sure the customer is logged in, otherwise redirect to login page
     //
-    if( !isset($ciniki['session']['customer']['id']) ) {
+    if( !isset($ciniki['session']['customer']['id']) || $ciniki['session']['customer']['id'] == 0 ) {
+        $redirect = $args['ssl_domain_base_url'];
+        $join = '?';
+        if( isset($_GET['r']) && $_GET['r'] != '' ) {
+            $redirect .= $join . 'r=' . $_GET['r'];
+            $join = '&';
+        }
+        if( isset($_GET['cl']) && $_GET['cl'] != '' ) {
+            $redirect .= $join . 'cl=' . $_GET['cl'];
+            $join = '&';
+        }
         $blocks[] = array(
             'type' => 'login', 
             'section' => 'login',
             'register' => 'yes',
-            'redirect' => $args['base_url'],        // Redirect back to registrations page
+            'redirect' => $redirect,        // Redirect back to registrations page
             );
         return array('stat'=>'ok', 'blocks'=>$blocks);
     }
+
+    //
+    // Get the customer details
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
+    $rc = ciniki_customers_hooks_customerDetails($ciniki, $tnid, array(
+        'customer_id' => $ciniki['session']['customer']['id'], 
+        'addresses' => 'yes',
+        'phones' => 'yes',
+        'emails' => 'yes',
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.128', 'msg'=>'Internal Error', 'err'=>$rc['err']));
+    }
+    $customer = $rc['customer'];
 
     //
     // Check if customer is setup for the music festival this year
@@ -98,17 +123,24 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
         // Ask the customer what type they are
         //
         else {
+            $additional_args = '';
+            if( isset($_GET['r']) && $_GET['r'] != '' ) {
+                $additional_args .= '&r=' . $_GET['r'];
+            }
+            if( isset($_GET['cl']) && $_GET['cl'] != '' ) {
+                $additional_args .= '&cl=' . $_GET['cl'];
+            }
             $blocks[] = array('type'=>'content', 'content'=>'In order to better serve you, we need to know who you are.');
             $blocks[] = array('type'=>'decisionbuttons',
                 'buttons'=>array(
                     array('label' => 'I am a Parent registering my Children',
-                        'url' => $args['base_url'] . "?ctype=10",
+                        'url' => $args['base_url'] . "?ctype=10" . $additional_args,
                         ),
                     array('label' => 'I am a Teacher registering my Students',
-                        'url' => $args['base_url'] . "?ctype=20",
+                        'url' => $args['base_url'] . "?ctype=20" . $additional_args,
                         ),
                     array('label' => 'I am an Adult registering Myself',
-                        'url' => $args['base_url'] . "?ctype=30",
+                        'url' => $args['base_url'] . "?ctype=30" . $additional_args,
                         ),
                     ));
             return array('stat'=>'ok', 'blocks'=>$blocks);
@@ -128,6 +160,9 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
     } elseif( $customer_type == 20 ) {
         $s_competitor = 'Student';
         $p_competitor = 'Students';
+    } else {
+        $s_competitor = 'Competitor';
+        $p_competitor = 'Competitors';
     }
 
     //
@@ -198,6 +233,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
         . "s.name AS section_name, "
         . "ca.name AS category_name, "
         . "cl.id AS class_id, "
+        . "cl.uuid AS class_uuid, "
         . "cl.code AS class_code, "
         . "cl.name AS class_name, "
         . "cl.flags AS class_flags, "
@@ -218,7 +254,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'name'=>'section_name')),
-        array('container'=>'classes', 'fname'=>'class_id', 'fields'=>array('id'=>'class_id', 
+        array('container'=>'classes', 'fname'=>'class_id', 'fields'=>array('id'=>'class_id', 'uuid'=>'class_uuid',
             'category_name'=>'category_name', 'code'=>'class_code', 'name'=>'class_name', 'flags'=>'class_flags', 'fee'=>'class_fee')),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -231,8 +267,12 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
         $class = $sections[$_POST['section']]['classes'][$_POST["section-{$_POST['section']}-class"]];
     } elseif( isset($_GET['cl']) && $_GET['cl'] > 0 ) {
         foreach($sections as $sid => $section) {
-            if( isset($section['classes'][$_GET['cl']]) ) {
-                $class = $section['classes'][$_GET['cl']];
+            if( isset($section['classes']) ) {
+                foreach($section['classes'] as $section_class) {
+                    if( $_GET['cl'] == $section_class['uuid'] ) {
+                        $class = $section_class;
+                    }
+                }
             }
         }
     }
@@ -241,7 +281,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
     // Decide what should be displayed
     //
     $display = 'registration-list';
-    if( isset($_GET['r']) && $_GET['r'] != '' ) {
+    if( ($args['festival_flags']&0x01) == 0x01 && isset($_GET['r']) && $_GET['r'] != '' ) {
         $display = 'registration-form';
         $registration_id = 0;
         $err_msg = '';
@@ -372,6 +412,14 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                             }
                         }
                     } elseif( isset($_POST['save']) ) {
+                        //
+                        // Update the display_name for the registration
+                        //
+                        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationNameUpdate');
+                        $rc = ciniki_musicfestivals_registrationNameUpdate($ciniki, $tnid, $registration_id);
+                        if( $rc['stat'] != 'ok' ) {
+                            error_log('Unable to update registration name');
+                        }
                         if( !isset($_POST['ceditid']) || $_POST['ceditid'] == '' ) {
                             header('Location: ' . $args['base_url']);
                             exit;
@@ -387,7 +435,6 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
             //
             // Check required fields were submitted
             //
-            error_log($_POST['competitor1_id']);
             if( $class == null ) {
                 $err_msg = "You must pick a class to register for.";
             } elseif( !isset($_POST['competitor1_id']) || $_POST['competitor1_id'] == '' || $_POST['competitor1_id'] == '0' ) {
@@ -510,17 +557,14 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
             $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>$err_msg);
         }
     }
-/*    if( isset($_GET['c']) && $_GET['c'] != '' ) {
-        $display = 'competitor-form';
-        $competitor_id = 0;
-        if( $_GET['c'] != 'new' ) {
-            foreach($competitors as $competitor) {
-                if( $competitor['uuid'] == $_GET['c'] ) {
-                    $competitor_id = $competitor['id'];
-                }
-            }
-        }
-    } */
+
+    //
+    // Check if a register link was followed
+    //
+    if( ($args['festival_args']&0x01) == 0x01 && isset($_GET['cl']) && $_GET['cl'] != '' ) {
+        $display = 'registration-form';
+    } 
+
     //
     // Check if a competitor edit has been requested. The registration form will have been saved above
     // so any changes to title, perf_time will be saved before editing the competitor details.
@@ -576,24 +620,18 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
             }
         }
     }
-/*    if( isset($_POST['competitor1_id']) && $_POST['competitor1_id'] == 'new' ) {
-        $display = 'competitor-form';
-        $competitor_id = 0;
-        print_r($_POST);
-    } */
 
     //
     // Display the list of registrations
     //
     if( $display == 'registration-list' ) {
-        $blocks[] = array('type'=>'foldingtable',
+        $block = array('type'=>'foldingtable',
             'section' => 'registration-list',
             'headers' => 'yes',
             'folded-labels' => 'yes',
-            'editable' => 'yes',
-            'add' => array('label' => '+ Add Registration', 'url' => $args['base_url'] . '?r=new'),
+            'editable' => 'no',
             'columns' => array( 
-                array('label'=>$s_competitor . '(s)', 'field'=>'display_name', 'class'=>''),
+                array('label'=>$p_competitor, 'field'=>'display_name', 'class'=>''),
                 array('label'=>'Class', 'field'=>'class_code', 'fold'=>'yes', 'class'=>''),
                 array('label'=>'Title', 'field'=>'title', 'fold'=>'yes', 'class'=>''),
                 array('label'=>'Fee', 'field'=>'fee_display', 'fold'=>'yes', 'class'=>''),
@@ -601,6 +639,11 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 ),
             'rows' => $registrations,
             );
+        if( ($args['festival_flags']&0x01) == 0x01 ) {
+            $block['editable'] = 'yes';
+            $block['add'] = array('label' => '+ Add Registration', 'url' => $args['base_url'] . '?r=new');
+        }
+        $blocks[] = $block;
     }
     
     //
@@ -677,48 +720,121 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
 
         for($i = 1; $i <= 3; $i++) {
             //
-            // FIXME: Prefill the address, parent from customer details
+            // Prefill the address, parent from customer details
             //
+            $competitor = array( 
+                'name' => '',
+                'parent' => $customer['first'] . ' ' . $customer['last'],
+                'address' => '',
+                'city' => '',
+                'province' => '',
+                'postal' => '', 
+                'phone_home' => '', 
+                'phone_cell' => '', 
+                'email' => '', 
+                'age' => '', 
+                'study_level' => '', 
+                'instrument' => '', 
+                'notes' => '', 
+                );
+            if( $customer_type == 10 ) {
+                $competitor['parent'] = $customer['first'] . ' ' . $customer['last'];
+            } elseif( $customer_type == 30 ) {
+                $competitor['name'] = $customer['first'] . ' ' . $customer['last'];
+                $competitor['parent'] = '';
+            }
+            if( $customer_type == 10 || $customer_type == 30 ) {
+                //
+                // Load the default values for parent/adult
+                //
+                if( isset($customer['addresses']) ) {
+                    foreach($customer['addresses'] as $address) {
+                        if( ($address['address']['flags']&0x07) > 0 ) {
+                            $competitor['address'] = $address['address']['address1'];
+                            $competitor['city'] = $address['address']['city'];
+                            $competitor['province'] = $address['address']['province'];
+                            $competitor['postal'] = $address['address']['postal'];
+                            break;
+                        }
+                    }
+                }
+                if( isset($customer['phones']) ) {
+                    foreach($customer['phones'] as $phone) {
+                        if( $phone['phone_label'] == 'Home' ) {
+                            $competitor['phone_home'] = $phone['phone_number'];
+                        }
+                        if( $phone['phone_label'] == 'Cell' ) {
+                            $competitor['phone_cell'] = $phone['phone_number'];
+                        }
+                    }
+                }
+                if( isset($customer['emails'][0]['email']['address']) ) {
+                    $competitor['email'] = $customer['emails'][0]['email']['address'];
+                }
+            }
             $competitor = array(
-                'name' => (isset($_POST["name{$i}"]) ? $_POST["name{$i}"] : ''),
-                'parent' => (isset($_POST["parent{$i}"]) ? $_POST["parent{$i}"] : ''),
-                'address' => (isset($_POST["address{$i}"]) ? $_POST["address{$i}"] :''), 
-                'city' => (isset($_POST["city{$i}"]) ? $_POST["city{$i}"] :''), 
-                'province' => (isset($_POST["province{$i}"]) ? $_POST["province{$i}"] :''), 
-                'postal' => (isset($_POST["postal{$i}"]) ? $_POST["postal{$i}"] :''), 
-                'phone_home' => (isset($_POST["phone_home{$i}"]) ? $_POST["phone_home{$i}"] :''), 
-                'phone_cell' => (isset($_POST["phone_cell{$i}"]) ? $_POST["phone_cell{$i}"] :''), 
-                'email' => (isset($_POST["email{$i}"]) ? $_POST["email{$i}"] :''), 
-                'age' => (isset($_POST["age{$i}"]) ? $_POST["age{$i}"] :''), 
-                'study_level' => (isset($_POST["study_level{$i}"]) ? $_POST["study_level{$i}"] :''), 
-                'instrument' => (isset($_POST["instrument{$i}"]) ? $_POST["instrument{$i}"] :''), 
-                'notes' => (isset($_POST["notes{$i}"]) ? $_POST["notes{$i}"] :''), 
+                'name' => (isset($_POST["name{$i}"]) ? $_POST["name{$i}"] : $competitor['name']),
+                'parent' => (isset($_POST["parent{$i}"]) ? $_POST["parent{$i}"] : $competitor['parent']),
+                'address' => (isset($_POST["address{$i}"]) ? $_POST["address{$i}"] :$competitor['address']), 
+                'city' => (isset($_POST["city{$i}"]) ? $_POST["city{$i}"] :$competitor['city']), 
+                'province' => (isset($_POST["province{$i}"]) ? $_POST["province{$i}"] :$competitor['province']), 
+                'postal' => (isset($_POST["postal{$i}"]) ? $_POST["postal{$i}"] :$competitor['postal']), 
+                'phone_home' => (isset($_POST["phone_home{$i}"]) ? $_POST["phone_home{$i}"] :$competitor['phone_home']), 
+                'phone_cell' => (isset($_POST["phone_cell{$i}"]) ? $_POST["phone_cell{$i}"] :$competitor['phone_cell']), 
+                'email' => (isset($_POST["email{$i}"]) ? $_POST["email{$i}"] : $competitor['email']), 
+                'age' => (isset($_POST["age{$i}"]) ? $_POST["age{$i}"] :$competitor['age']), 
+                'study_level' => (isset($_POST["study_level{$i}"]) ? $_POST["study_level{$i}"] :$competitor['study_level']), 
+                'instrument' => (isset($_POST["instrument{$i}"]) ? $_POST["instrument{$i}"] :$competitor['instrument']), 
+                'notes' => (isset($_POST["notes{$i}"]) ? $_POST["notes{$i}"] :$competitor['notes']), 
                 );
 //            if( isset($competitors[$registration["competitor{$i}_id"]]) ) {
 //                $competitor = $competitors[$registration["competitor{$i}_id"]];
 //            }
 
-            $form_sections["competitor{$i}"]['fields'] = array(
-                "competitor{$i}_id" => array('type'=>'select', 
-                    'label' => array('title'=>$s_competitor, 'class'=>'hidden'),
-                    'size' => 'full', 
-                    'options' => array(),
-                    'details' => array(),
-                    ),
-                "name{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Name'), 'size'=>'medium', 'value'=>$competitor['name']),
-                "parent{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Parent'), 'size'=>'medium', 'value'=>$competitor['parent']),
-                "address{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Address'), 'size'=>'full', 'value'=>$competitor['address']),
-                "city{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'City'), 'size'=>'medium', 'value'=>$competitor['city']),
-                "province{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Province'), 'size'=>'small', 'value'=>$competitor['province']),
-                "postal{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Postal'), 'size'=>'small', 'value'=>$competitor['postal']),
-                "phone_home{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Home Phone'), 'size'=>'small', 'value'=>$competitor['phone_home']),
-                "phone_cell{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Cell Phone'), 'size'=>'small', 'value'=>$competitor['phone_cell']),
-                "email{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Email'), 'size'=>'medium', 'value'=>$competitor['phone_cell']),
-                "age{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Age'), 'size'=>'small', 'value'=>$competitor['age']),
-                "study_level{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Current Level of Study/Method book'), 'size'=>'medium', 'value'=>$competitor['study_level']),
-                "instrument{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Instrument'), 'size'=>'small', 'value'=>$competitor['instrument']),
-                "notes{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Notes'), 'size'=>'full', 'value'=>$competitor['notes']),
-                );
+            if( $customer_type == 10 || $customer_type == 20 ) {
+                $form_sections["competitor{$i}"]['fields'] = array(
+                    "competitor{$i}_id" => array('type'=>'select', 
+                        'label' => array('title'=>$s_competitor, 'class'=>'hidden'),
+                        'size' => 'full', 
+                        'options' => array(),
+                        'details' => array(),
+                        ),
+                    "name{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Name'), 'size'=>'medium', 'value'=>$competitor['name']),
+                    "parent{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Parent'), 'size'=>'medium', 'value'=>$competitor['parent']),
+                    "address{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Address'), 'size'=>'full', 'value'=>$competitor['address']),
+                    "city{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'City'), 'size'=>'medium', 'value'=>$competitor['city']),
+                    "province{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Province'), 'size'=>'small', 'value'=>$competitor['province']),
+                    "postal{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Postal'), 'size'=>'small', 'value'=>$competitor['postal']),
+                    "phone_home{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Home Phone'), 'size'=>'small', 'value'=>$competitor['phone_home']),
+                    "phone_cell{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Cell Phone'), 'size'=>'small', 'value'=>$competitor['phone_cell']),
+                    "email{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Email'), 'size'=>'medium', 'value'=>$competitor['email']),
+                    "age{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Age'), 'size'=>'small', 'value'=>$competitor['age']),
+                    "study_level{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Current Level of Study/Method book'), 'size'=>'medium', 'value'=>$competitor['study_level']),
+                    "instrument{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Instrument'), 'size'=>'small', 'value'=>$competitor['instrument']),
+                    "notes{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Notes'), 'size'=>'full', 'value'=>$competitor['notes']),
+                    );
+            } else {
+                $form_sections["competitor{$i}"]['fields'] = array(
+                    "competitor{$i}_id" => array('type'=>'select', 
+                        'label' => array('title'=>$s_competitor, 'class'=>'hidden'),
+                        'size' => 'full', 
+                        'options' => array(),
+                        'details' => array(),
+                        ),
+                    "name{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Name'), 'size'=>'full', 'value'=>$competitor['name']),
+                    "address{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Address'), 'size'=>'full', 'value'=>$competitor['address']),
+                    "city{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'City'), 'size'=>'medium', 'value'=>$competitor['city']),
+                    "province{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Province'), 'size'=>'small', 'value'=>$competitor['province']),
+                    "postal{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Postal'), 'size'=>'small', 'value'=>$competitor['postal']),
+                    "phone_home{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Home Phone'), 'size'=>'small', 'value'=>$competitor['phone_home']),
+                    "phone_cell{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Cell Phone'), 'size'=>'small', 'value'=>$competitor['phone_cell']),
+                    "email{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Email'), 'size'=>'medium', 'value'=>$competitor['email']),
+                    "age{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Age'), 'size'=>'small', 'value'=>$competitor['age']),
+                    "study_level{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Current Level of Study/Method book'), 'size'=>'medium', 'value'=>$competitor['study_level']),
+                    "instrument{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Instrument'), 'size'=>'small', 'value'=>$competitor['instrument']),
+                    "notes{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Notes'), 'size'=>'full', 'value'=>$competitor['notes']),
+                    );
+            }
         }
         
         //
@@ -750,7 +866,9 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
 
             foreach($section['classes'] as $class) {
                 $class_flags[$class['id']] = $class['flags'];
-                if( $class['id'] == $registration['class_id'] ) {
+                if( $class['id'] == $registration['class_id'] 
+                    || (isset($_GET['cl']) && $_GET['cl'] == $class['uuid']) 
+                    ) {
                     $selected_section_id = $section['id'];
                     $selected_flags = $class['flags'];
                     $form_sections['class']['fields'][$class_field]['options'][] = array(
@@ -807,20 +925,38 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 $address .= $competitor['city'] != '' ? ($address != '' ? ', ' : '') . $competitor['city'] : '';
                 $address .= $competitor['province'] != '' ? ($address != '' ? ', ' : '') . $competitor['province'] : '';
                 $address .= $competitor['postal'] != '' ? ($address != '' ? ', ' : '') . $competitor['postal'] : '';
-                $form_sections["competitor{$i}"]['fields']["competitor{$i}_id"]['details'][$competitor['id']] = array(
-                    array('label'=>'Parent', 'value'=>$competitor['parent'], 'size'=>'full'),
-                    array('label'=>'Address', 'value'=>$address, 'size'=>'full'),
-                    array('label'=>'Home Phone', 'value'=>$competitor['phone_home'], 'size'=>'full'),
-                    array('label'=>'Cell Phone', 'value'=>$competitor['phone_cell'], 'size'=>'full'),
-                    array('label'=>'Email', 'value'=>$competitor['email'], 'size'=>'full'),
-                    array('label'=>'Age', 'value'=>$competitor['age'], 'size'=>'full'),
-                    array('label'=>'Study/Level', 'value'=>$competitor['study_level'], 'size'=>'full'),
-                    array('label'=>'Instrument', 'value'=>$competitor['instrument'], 'size'=>'full'),
-//                    array('type'=>'button', 'label'=>'Edit ' . $s_competitor, 'url'=>$args['base_url'] . "?r=" . $registration['uuid'] . "&c=" . $competitor['uuid']),
-                    array('type'=>'button', 'label'=>'Edit ' . $s_competitor, 'url'=>'javascript: editComp("' . $competitor['uuid'] . '");'),
-                    );
+                if( $customer_type == 10 || $customer_type == 20 ) {
+                    $form_sections["competitor{$i}"]['fields']["competitor{$i}_id"]['details'][$competitor['id']] = array(
+                        array('label'=>'Parent', 'value'=>$competitor['parent'], 'size'=>'full'),
+                        array('label'=>'Address', 'value'=>$address, 'size'=>'full'),
+                        array('label'=>'Home Phone', 'value'=>$competitor['phone_home'], 'size'=>'full'),
+                        array('label'=>'Cell Phone', 'value'=>$competitor['phone_cell'], 'size'=>'full'),
+                        array('label'=>'Email', 'value'=>$competitor['email'], 'size'=>'full'),
+                        array('label'=>'Age', 'value'=>$competitor['age'], 'size'=>'full'),
+                        array('label'=>'Study/Level', 'value'=>$competitor['study_level'], 'size'=>'full'),
+                        array('label'=>'Instrument', 'value'=>$competitor['instrument'], 'size'=>'full'),
+    //                    array('type'=>'button', 'label'=>'Edit ' . $s_competitor, 'url'=>$args['base_url'] . "?r=" . $registration['uuid'] . "&c=" . $competitor['uuid']),
+                        array('type'=>'button', 'label'=>'Edit ' . $s_competitor, 'url'=>'javascript: editComp("' . $competitor['uuid'] . '");'),
+                        );
+                } else {
+                    $form_sections["competitor{$i}"]['fields']["competitor{$i}_id"]['details'][$competitor['id']] = array(
+                        array('label'=>'Address', 'value'=>$address, 'size'=>'full'),
+                        array('label'=>'Home Phone', 'value'=>$competitor['phone_home'], 'size'=>'full'),
+                        array('label'=>'Cell Phone', 'value'=>$competitor['phone_cell'], 'size'=>'full'),
+                        array('label'=>'Email', 'value'=>$competitor['email'], 'size'=>'full'),
+                        array('label'=>'Age', 'value'=>$competitor['age'], 'size'=>'full'),
+                        array('label'=>'Study/Level', 'value'=>$competitor['study_level'], 'size'=>'full'),
+                        array('label'=>'Instrument', 'value'=>$competitor['instrument'], 'size'=>'full'),
+    //                    array('type'=>'button', 'label'=>'Edit ' . $s_competitor, 'url'=>$args['base_url'] . "?r=" . $registration['uuid'] . "&c=" . $competitor['uuid']),
+                        array('type'=>'button', 'label'=>'Edit ' . $s_competitor, 'url'=>'javascript: editComp("' . $competitor['uuid'] . '");'),
+                        );
+                }
             }
-            $form_sections["competitor{$i}"]['fields']["competitor{$i}_id"]['options'][] = array('value'=>'new', 'label'=>'Add ' . $s_competitor);
+            if( $customer_type == 10 || $customer_type == 20 ) {
+                $form_sections["competitor{$i}"]['fields']["competitor{$i}_id"]['options'][] = array('value'=>'new', 'label'=>'Add ' . $s_competitor);
+            } else {
+                $form_sections["competitor{$i}"]['fields']["competitor{$i}_id"]['options'][] = array('value'=>'new', 'label'=>'Add Competitor');
+            }
         }
 
         $buttons = array(
@@ -830,6 +966,12 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
             $buttons['delete'] = array('type'=>'submit', 'class'=>'delete', 'label'=>'Delete');
         } elseif( $registration['status'] == 5 && isset($_POST['delete']) && $_POST['delete'] == 'Delete' ) {
             $buttons['delete'] = array('type'=>'submit', 'class'=>'delete', 'label'=>'Confirm');
+        }
+
+        if( $customer_type == 10 || $customer_type == 20 ) {
+            $cfields = "'name','parent','address','city','province','postal','phone_home','phone_cell','email','age','study_level','instrument','notes'";
+        } else {
+            $cfields = "'name','address','city','province','postal','phone_home','phone_cell','email','age','study_level','instrument','notes'";
         }
 
         $blocks[] = array('type' => 'registrationform', 
@@ -842,7 +984,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
             'javascript' => ""
                 . "var cflags = " . json_encode($class_flags) . ";"
                 . "var sids = [" . implode(',', $section_ids) . "];"
-                . "var cfields = ['name','parent','address','city','province','postal','phone_home','phone_cell','email','age','study_level','instrument','notes'];"
+                . "var cfields = [{$cfields}];"
                 . "var curdetails = {{$curdetails}};"
                 . "function regFormUpdate() {"
                     //

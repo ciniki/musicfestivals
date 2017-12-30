@@ -24,6 +24,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'start_date'=>array('name'=>'Start'),
             'end_date'=>array('name'=>'End'),
             'status'=>array('name'=>'Status', 'default'=>'10'),
+            'flags'=>array('name'=>'Flags', 'default'=>'0'),
             'primary_image_id'=>array('name'=>'Primary Image', 'ref'=>'ciniki.images.image', 'default'=>'0'),
             'description'=>array('name'=>'Description', 'default'=>''),
             'document_logo_id'=>array('name'=>'Document Header Logo', 'ref'=>'ciniki.images.image', 'default'=>'0'),
@@ -43,7 +44,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'customer_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
             'ctype' => array('name'=>'Type', 'default'=>'0'),
             ),
-        'history_table' => 'ciniki_musicfestival_history',
+        'history_table' => 'ciniki_musicfestivals_history',
         );
     $objects['adjudicator'] = array(
         'name'=>'Adjudicator',

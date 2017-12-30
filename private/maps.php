@@ -24,7 +24,7 @@ function ciniki_musicfestivals_maps($ciniki) {
             '90'=>'Ensemble',
         ),
         'status'=>array(
-            '5'=>'Cart',
+            '5'=>'Unpaid',
             '10'=>'Applied',
             '50'=>'Paid',
         ),

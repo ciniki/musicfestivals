@@ -36,11 +36,14 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
     // Check for music festival permalink, for archived festivals
     //
     $festival_id = 0;
+    $festival = array(
+        'flags' => 0,
+        );
     if( isset($uri_split[0]) && $uri_split[0] != '' ) {
         //
         // Check if a musicfestival
         //
-        $strsql = "SELECT id, name "
+        $strsql = "SELECT id, name, flags "
             . "FROM ciniki_musicfestivals "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND status = 30 "
@@ -53,6 +56,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
         }
         if( isset($rc['festival']) ) {
             $festival_id = $rc['festival']['id'];
+            $festival = $rc['festival'];
             $uri_split = shift($uri_split);
             $page['breadcrumbs'][] = array('name'=>$rc['festival']['name'], 'url'=>$args['base_url'] . '/' . $uri_split[0]);
         }
@@ -65,7 +69,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
         //
         // Load the festival name
         //
-        $strsql = "SELECT id, name "
+        $strsql = "SELECT id, name, flags "
             . "FROM ciniki_musicfestivals "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND status = 30 "
@@ -78,6 +82,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
         }
         if( isset($rc['festival']) ) {
             $festival_id = $rc['festival']['id'];
+            $festival = $rc['festival'];
             $page['breadcrumbs'][] = array('name'=>$rc['festival']['name'], 'url'=>$args['base_url']);
         }
     }
@@ -220,7 +225,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
     //
     // Process the registrations page
     //
-    elseif( $display == 'registrations' && $ciniki['session']['customer']['id'] > 0 ) {
+    elseif( $display == 'registrations' ) {
         $page['breadcrumbs'][] = array('name'=>'Registrations', 'url'=>$args['base_url'] . '/registrations');
 
         $args['uri_split'] = $uri_split;
@@ -228,7 +233,9 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
         $rc = ciniki_musicfestivals_web_processRequestRegistrations($ciniki, $settings, $tnid, array(
             'uri_split' => $uri_split,
             'festival_id' => $festival_id,
+            'festival_flags' => $festival['flags'],
             'base_url' => $args['base_url'] . '/registrations',
+            'ssl_domain_base_url' => $args['ssl_domain_base_url'] . '/registrations',
             ));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
@@ -258,6 +265,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
         // Get the categories and classes
         //
         $strsql = "SELECT ciniki_musicfestival_classes.id, "
+            . "ciniki_musicfestival_classes.uuid, "
             . "ciniki_musicfestival_classes.festival_id, "
             . "ciniki_musicfestival_classes.category_id, "
             . "ciniki_musicfestival_categories.id AS category_id, "
@@ -284,7 +292,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
             array('container'=>'categories', 'fname'=>'category_id', 
                 'fields'=>array('name'=>'category_name', 'image_id'=>'category_image_id', 'synopsis'=>'category_synopsis', 'description'=>'category_description')),
             array('container'=>'classes', 'fname'=>'id', 
-                'fields'=>array('id', 'festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 'fee')),
+                'fields'=>array('id', 'uuid', 'festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 'fee')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
@@ -298,14 +306,32 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
                     'content'=>($category['description'] != '' ? $category['description'] : $category['synopsis'])
                     );
                 if( isset($category['classes']) && count($category['classes']) > 0 ) {
-                    $page['blocks'][] = array('type'=>'table', 'section'=>'classes', 
-                        'columns'=>array(
-                            array('label'=>'', 'field'=>'code', 'class'=>''),
-                            array('label'=>'', 'field'=>'name', 'class'=>''),
-                            array('label'=>'Fee', 'field'=>'fee', 'class'=>'aligncenter'),
-                            ),
-                        'rows'=>$category['classes'],
-                        );
+                    //
+                    // FIXME: Check if online registrations enabled, and online registrations enabled for this class
+                    //
+                    if( ($festival['flags']&0x01) == 0x01 ) {
+                        foreach($category['classes'] as $cid => $class) {
+                            $category['classes'][$cid]['register'] = "<a href='" . $args['base_url'] . "/registrations?r=new&cl=" . $class['uuid'] . "'>Register</a>";
+                        }
+                        $page['blocks'][] = array('type'=>'table', 'section'=>'classes', 
+                            'columns'=>array(
+                                array('label'=>'Code', 'field'=>'code', 'class'=>''),
+                                array('label'=>'Course', 'field'=>'name', 'class'=>''),
+                                array('label'=>'Fee', 'field'=>'fee', 'class'=>'aligncenter'),
+                                array('label'=>'', 'field'=>'register', 'class'=>'alignright'),
+                                ),
+                            'rows'=>$category['classes'],
+                            );
+                    } else {
+                        $page['blocks'][] = array('type'=>'table', 'section'=>'classes', 
+                            'columns'=>array(
+                                array('label'=>'', 'field'=>'code', 'class'=>''),
+                                array('label'=>'', 'field'=>'name', 'class'=>''),
+                                array('label'=>'Fee', 'field'=>'fee', 'class'=>'aligncenter'),
+                                ),
+                            'rows'=>$category['classes'],
+                            );
+                    }
                 }
             }
         }

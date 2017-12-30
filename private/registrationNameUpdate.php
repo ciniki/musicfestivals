@@ -74,18 +74,18 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $tnid, $registra
             $names[] = $registration['competitors'][$registration['competitor1_id']]['name'];
             $pnames[] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $registration['competitors'][$registration['competitor1_id']]['name']); 
         } 
-        if( $registration['rtype'] > 30 ) {
+//        if( $registration['rtype'] > 30 ) {
             if( $registration['competitor2_id'] > 0 && isset($registration['competitors'][$registration['competitor2_id']]['name']) ) {
                 $names[] = $registration['competitors'][$registration['competitor2_id']]['name'];
                 $pnames[] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $registration['competitors'][$registration['competitor2_id']]['name']); 
             } 
-        }
-        if( $registration['rtype'] > 50 ) {
+//        }
+//        if( $registration['rtype'] > 50 ) {
             if( $registration['competitor3_id'] > 0 && isset($registration['competitors'][$registration['competitor3_id']]['name']) ) {
                 $names[] = $registration['competitors'][$registration['competitor3_id']]['name'];
                 $pnames[] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $registration['competitors'][$registration['competitor3_id']]['name']); 
             } 
-        }
+//        }
         if( count($names) == 3 ) {
             $display_name = $names[0] . ', ' . $names[1] . ' & ' . $names[2];
             $public_name = $pnames[0] . ', ' . $pnames[1] . ' & ' . $pnames[2];
