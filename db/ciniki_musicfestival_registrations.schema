@@ -25,6 +25,7 @@
 # status:               The current status of the registration.
 #
 #                            5 - Draft (online)
+#                            6 - Cart (online)
 #                           10 - Applied
 #                           50 - Paid
 #
@@ -62,6 +63,7 @@
 #                           105 - Cheque
 #                           110 - Email Transfer
 #                           120 - Other
+#                           121 - Paid Online
 #
 # notes:                Any notes for the registration.
 #

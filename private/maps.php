@@ -25,19 +25,20 @@ function ciniki_musicfestivals_maps($ciniki) {
         ),
         'status'=>array(
             '5'=>'Unpaid',
+            '6'=>'Cart',
             '10'=>'Applied',
             '50'=>'Paid',
         ),
         'payment_type'=>array(
             '10'=>'Paypal',
             '20'=>'Square',
-            '30'=>'Stripe',
             '50'=>'Visa',
             '55'=>'Mastercard',
             '100'=>'Cash',
             '102'=>'Cheque',
             '110'=>'Email',
             '120'=>'Other',
+            '121'=>'Online',
         ),
     );
 

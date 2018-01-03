@@ -201,7 +201,9 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
     $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
     foreach($registrations as $rid => $reg) {
         $registrations[$rid]['fee_display'] = '$' . number_format($reg['fee'], 2);
-        $registrations[$rid]['edit-url'] = $args['base_url'] . '?r=' . $reg['uuid'];
+        if( $reg['status'] == 5 ) {
+            $registrations[$rid]['edit-url'] = $args['base_url'] . '?r=' . $reg['uuid'];
+        }
     }
 
     //
@@ -275,6 +277,69 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 }
             }
         }
+    }
+
+    //
+    // Check if sapos cart should be created and loaded with unpaid items
+    //
+    if( isset($_POST['action']) && $_POST['action'] == 'Add to Cart' ) {
+ 
+        //
+        // Open or create a shopping cart
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'web', 'cartCreate');
+        $rc = ciniki_sapos_web_cartCreate($ciniki, $settings, $tnid, array());
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.130', 'msg'=>'Unable to create cart.', 'err'=>$rc['err']));
+        }
+        $cart_id = $rc['sapos_id']; 
+
+        //
+        // Add items to cart
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'web', 'cartItemAdd');
+        $line_number = 1;
+        foreach($registrations as $reg) {
+            //
+            // Check if in a previous cart and remove
+            //
+            if( $reg['status'] == 5 ) {
+                $rc = ciniki_sapos_web_cartItemAdd($ciniki, $settings, $tnid, array(
+                    'line_number' => $line_number,
+                    'flags' => 0x08,        // Registration item, quantity must be zero.
+                    'object' => 'ciniki.musicfestivals.registration',
+                    'object_id' => $reg['id'],
+                    'price_id' => 0,
+                    'code' => $reg['class_code'],
+                    'description' => $reg['class_name'],
+                    'quantity' => 1,
+                    'shipped_quantity' => 0,
+                    'unit_amount' => $reg['fee'],
+                    'unit_discount_amount' => 0,
+                    'unit_discount_percentage' => 0,
+                    'taxtype_id' => 0,
+                    'notes' => $reg['display_name'] . ($reg['title'] != '' ? ' - ' . $reg['title'] : ''),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.133', 'msg'=>'Unable to add registration to cart.', 'err'=>$rc['err']));
+                }
+                $line_number++;
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $reg['id'], array(
+                    'invoice_id'=>$cart_id,
+                    'status'=>6,
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.134', 'msg'=>'Unable to update registration', 'err'=>$rc['err']));
+                }
+            }
+        }
+
+        //
+        // Redirect to the shopping cart
+        //
+        header('Location: ' . $ciniki['request']['ssl_domain_base_url'] . '/cart');
+        exit;
     }
 
     //
@@ -525,7 +590,20 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
             //
             // Add the registration
             //
-            if( $err_msg == '' ) {
+            if( $err_msg == '' ) {  
+                //
+                // Get the UUID so it can be used later
+                //
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
+                $rc = ciniki_core_dbUUID($ciniki, 'ciniki.musicfestivals');
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.129', 'msg'=>'', 'err'=>$rc['err']));
+                }
+                $registration['uuid'] = $rc['uuid'];
+
+                //
+                // Add the regisrations
+                //
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
                 $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration, 0x04);
                 if( $rc['stat'] != 'ok' ) {   
@@ -544,8 +622,11 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                     //
                     // The registration was added, now redirect to the registration list
                     //
-                    header("Location: " . $args['base_url']);
-                    exit;
+                    $args['r'] = $registration['uuid'];
+                    if( !isset($_POST['ceditid']) || $_POST['ceditid'] == '' ) {
+                        header("Location: " . $args['base_url']);
+                        exit;
+                    }
                 }
             }
         }
@@ -561,7 +642,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
     //
     // Check if a register link was followed
     //
-    if( ($args['festival_args']&0x01) == 0x01 && isset($_GET['cl']) && $_GET['cl'] != '' ) {
+    if( ($args['festival_flags']&0x01) == 0x01 && isset($_GET['cl']) && $_GET['cl'] != '' ) {
         $display = 'registration-form';
     } 
 
@@ -603,6 +684,8 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                             }
                             if( isset($_POST['r']) && $_POST['r'] != '' ) {
                                 header('Location: ' . $args['base_url'] . '?r=' . $_POST['r']);
+                            } elseif( isset($args['r']) && $args['r'] != '' ) {
+                                header('Location: ' . $args['base_url'] . '?r=' . $args['r']);
                             } else {
                                 header('Location: ' . $args['base_url']);
                             }
@@ -611,6 +694,8 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                     } elseif( isset($_POST['save']) ) {
                         if( isset($_POST['r']) && $_POST['r'] != '' ) {
                             header('Location: ' . $args['base_url'] . '?r=' . $_POST['r']);
+                        } elseif( isset($args['r']) && $args['r'] != '' ) {
+                            header('Location: ' . $args['base_url'] . '?r=' . $args['r']);
                         } else {
                             header('Location: ' . $args['base_url']);
                         }
@@ -644,6 +729,29 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
             $block['add'] = array('label' => '+ Add Registration', 'url' => $args['base_url'] . '?r=new');
         }
         $blocks[] = $block;
+
+        //
+        // Get the total of unpaid registrations
+        //
+        $total = 0;
+        foreach($registrations as $reg) {
+            if( $reg['status'] == 5 ) {
+                $total = bcadd($total, $reg['fee'], 6);
+            }
+        }
+        if( $total > 0 ) {
+            $content = "<p class='wide'>You have $" . number_format($total, 2) . " in unpaid registrations. "
+                . "When you are ready to pay, click Add to Cart button below and checkout."
+                . "<br/><b>Please Note: Once added to your cart you will no longer be able to make changes to the registrations.</b></p>"
+//                . "<p class='wide alignright'><button class='button' href='" . $args['base_url'] . "?checkout'>Checkout</button></p>"
+                . "<form class='wide' method='POST'>"
+//                    . "<input type='hidden' name='action' value='checkout'>"
+                    . "<div class='alignright wide'>"
+                    . "<input class='submit' type='submit' name='action' value='Add to Cart' />"
+                . "</div></form>"
+                . "";
+            $blocks[] = array('type'=>'content', 'html'=>$content);
+        }
     }
     
     //
@@ -1102,7 +1210,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 'type' => 'hidden',
                 'fields' => array(
                     'ceditid' => array('type' => 'hidden', 'value' => $_POST['ceditid']),
-                    'r' => array('type' => 'hidden', 'value' => $_GET['r']),
+                    'r' => array('type' => 'hidden', 'value' => (isset($registration['uuid']) ? $registration['uuid'] : $_GET['r'])),
                     ),
                 ),
             'competitor' => array(
