@@ -148,6 +148,23 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         $festival = $rc['festivals'][0];
 
         //
+        // Get the additional settings
+        //
+        $strsql = "SELECT detail_key, detail_value "
+            . "FROM ciniki_musicfestival_settings "
+            . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
+        $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.140', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+        }
+        foreach($rc['settings'] as $k => $v) {
+            $festival[$k] = $v;
+        }
+
+        //
         // Get the number of registrations
         //
         $festival['num_registrations'] = '';

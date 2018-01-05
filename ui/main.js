@@ -518,6 +518,9 @@ function ciniki_musicfestivals_main() {
             'status':{'label':'Status', 'type':'toggle', 'toggles':{'10':'Active', '30':'Published', '60':'Archived'}},
             'flags1':{'label':'Online Registrations', 'type':'flagtoggle', 'default':'off', 'bit':0x01, 'field':'flags'},
             }},
+        '_settings':{'label':'', 'aside':'yes', 'fields':{
+            'age-restriction-msg':{'label':'Age Restriction Message', 'type':'text'},
+            }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'website', 'tabs':{
             'website':{'label':'Website', 'fn':'M.ciniki_musicfestivals_main.edit.switchTab(\'website\');'},
             'documents':{'label':'Documents', 'fn':'M.ciniki_musicfestivals_main.edit.switchTab(\'documents\');'},

@@ -95,6 +95,16 @@ function ciniki_musicfestivals_festivalAdd(&$ciniki) {
     $festival_id = $rc['id'];
 
     //
+    // Update the Festival settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'settingsUpdate');
+    $rc = ciniki_musicfestivals_settingsUpdate($ciniki, $args['tnid'], $festival_id, $ciniki['request']['args']);
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+        return $rc;
+    }
+
+    //
     // Commit the transaction
     //
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.musicfestivals');

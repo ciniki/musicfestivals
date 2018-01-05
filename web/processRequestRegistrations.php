@@ -832,7 +832,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
             //
             $competitor = array( 
                 'name' => '',
-                'parent' => $customer['first'] . ' ' . $customer['last'],
+                'parent' => '',
                 'address' => '',
                 'city' => '',
                 'province' => '',
@@ -916,7 +916,9 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                     "phone_home{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Home Phone'), 'size'=>'small', 'value'=>$competitor['phone_home']),
                     "phone_cell{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Cell Phone'), 'size'=>'small', 'value'=>$competitor['phone_cell']),
                     "email{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Email'), 'size'=>'medium', 'value'=>$competitor['email']),
-                    "age{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Age'), 'size'=>'small', 'value'=>$competitor['age']),
+                    "age{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array(
+                        'title'=>'Age' . ($args['settings']['age-restriction-msg'] != '' ? ' ' . $args['settings']['age-restriction-msg'] : '')),
+                        'size'=>'small', 'value'=>$competitor['age']),
                     "study_level{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Current Level of Study/Method book'), 'size'=>'medium', 'value'=>$competitor['study_level']),
                     "instrument{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Instrument'), 'size'=>'small', 'value'=>$competitor['instrument']),
                     "notes{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Notes'), 'size'=>'full', 'value'=>$competitor['notes']),
@@ -937,7 +939,9 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                     "phone_home{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Home Phone'), 'size'=>'small', 'value'=>$competitor['phone_home']),
                     "phone_cell{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Cell Phone'), 'size'=>'small', 'value'=>$competitor['phone_cell']),
                     "email{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Email'), 'size'=>'medium', 'value'=>$competitor['email']),
-                    "age{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Age'), 'size'=>'small', 'value'=>$competitor['age']),
+                    "age{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array(
+                        'title'=>'Age' . ($args['settings']['age-restriction-msg'] != '' ? ' ' . $args['settings']['age-restriction-msg'] : '')),
+                        'size'=>'small', 'value'=>$competitor['age']),
                     "study_level{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Current Level of Study/Method book'), 'size'=>'medium', 'value'=>$competitor['study_level']),
                     "instrument{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Instrument'), 'size'=>'small', 'value'=>$competitor['instrument']),
                     "notes{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Notes'), 'size'=>'full', 'value'=>$competitor['notes']),
@@ -1235,8 +1239,9 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                         'label'=>array('title'=>'Cell Phone'), 'size'=>'small', 'value'=>$competitor['phone_cell']),
                     'email'=>array('type'=>'text',
                         'label'=>array('title'=>'Email'), 'size'=>'medium', 'value'=>$competitor['email']),
-                    'age'=>array('type'=>'text',
-                        'label'=>array('title'=>'Age'), 'size'=>'small', 'value'=>$competitor['age']),
+                    'age'=>array('type'=>'text', 'label'=>array(
+                        'title'=>'Age' . ($args['settings']['age-restriction-msg'] != '' ? ' ' . $args['settings']['age-restriction-msg'] : '')),
+                        'size'=>'small', 'value'=>$competitor['age']),
                     'study_level'=>array('type'=>'text',
                         'label'=>array('title'=>'Current Level of Study/Method book'), 'size'=>'medium', 'value'=>$competitor['study_level']),
                     'instrument'=>array('type'=>'text',

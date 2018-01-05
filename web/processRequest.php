@@ -38,6 +38,9 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
     $festival_id = 0;
     $festival = array(
         'flags' => 0,
+        'settings' => array(
+            'age-restriction-msg' => '',
+            ),
         );
     if( isset($uri_split[0]) && $uri_split[0] != '' ) {
         //
@@ -92,6 +95,23 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
     //
     if( $festival_id == 0 ) {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.39', 'msg'=>'We could not find the requested Music Festival. Please try again or contact us for more information.'));
+    }
+
+    //
+    // Load the settings for the festival
+    //
+    $strsql = "SELECT detail_key, detail_value "
+        . "FROM ciniki_musicfestival_settings "
+        . "WHERE festival_id = '" . ciniki_core_dbQuote($ciniki, $festival_id) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
+    $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.143', 'msg'=>'We could not find the requested Music Festival. Please try again or contact us for more information.'));
+    }
+    foreach($rc['settings'] as $k => $v) {
+        $festival['settings'][$k] = $v;
     }
 
     //
@@ -234,6 +254,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
             'uri_split' => $uri_split,
             'festival_id' => $festival_id,
             'festival_flags' => $festival['flags'],
+            'settings' => $festival['settings'],
             'base_url' => $args['base_url'] . '/registrations',
             'ssl_domain_base_url' => $args['ssl_domain_base_url'] . '/registrations',
             ));
