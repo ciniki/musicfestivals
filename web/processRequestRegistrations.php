@@ -199,8 +199,10 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.126', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
     }
     $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
+    $teacher_ids = array();
     foreach($registrations as $rid => $reg) {
         $registrations[$rid]['fee_display'] = '$' . number_format($reg['fee'], 2);
+        $teacher_ids[] = $reg['teacher_customer_id'];
         if( $reg['status'] == 5 ) {
             $registrations[$rid]['edit-url'] = $args['base_url'] . '?r=' . $reg['uuid'];
         }
@@ -227,6 +229,28 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.125', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
     }
     $competitors = isset($rc['competitors']) ? $rc['competitors'] : array();
+
+    //
+    // Load the teachers that this customer has access to, based 
+    // on their registrations
+    //
+    $teachers = array();
+    if( count($teacher_ids) > 0 ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
+        $strsql = "SELECT id, display_name "
+            . "FROM ciniki_customers "
+            . "WHERE id IN (" . ciniki_core_dbQuoteIDs($ciniki, $teacher_ids) . ") "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'teachers', 'fname'=>'id', 'fields'=>array('id', 'name'=>'display_name')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.144', 'msg'=>'Unable to load teachers', 'err'=>$rc['err']));
+        }
+        $teachers = isset($rc['teachers']) ? $rc['teachers'] : array();
+    }
 
     //
     // Load the classes
@@ -451,6 +475,22 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                             }
                         }
                     }
+                    if( isset($_POST['teacher_customer_id']) ) {
+                        if( $_POST['teacher_customer_id'] == 'new' ) {
+                            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'web', 'teacherCreate');
+                            $rc = ciniki_musicfestivals_web_teacherCreate($ciniki, $settings, $tnid, $_POST);
+                            if( $rc['stat'] == 'error' ) {
+                                $err_msg = $rc['err']['msg'];
+                            } elseif( $rc['stat'] != 'ok' ) {
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.145', 'msg'=>'Unable to update registration', 'err'=>$rc['err']));
+                            }
+                            if( $err_msg != '' ) {
+                                $update_args['teacher_customer_id'] = $rc['teacher_customer_id'];
+                            }
+                        } elseif( $_POST['teacher_customer_id'] != $registration['teacher_customer_id'] ) {
+                            $update_args['teacher_customer_id'] = $_POST['teacher_customer_id'];
+                        }
+                    }
                     foreach(['title', 'perf_time'] as $field) {
                         if( isset($_POST[$field]) && $_POST[$field] != $registration[$field] ) {
                             $update_args[$field] = $_POST[$field];
@@ -514,7 +554,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
             //
             $registration = array(
                 'festival_id' => $args['festival_id'],
-                'teacher_customer_id' => ($customer_type == 20 ? $ciniki['session']['customer']['id'] : 0),
+                'teacher_customer_id' => ($customer_type == 20 ? $ciniki['session']['customer']['id'] : (isset($_POST['teacher_customer_id']) ? $_POST['teacher_customer_id'] : 0)),
                 'billing_customer_id' => $ciniki['session']['customer']['id'],
                 'rtype' => 30,
                 'status' => 5,
@@ -587,6 +627,24 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                     }
                 }
             }
+            //
+            // FIXME: Check if there's a teacher to add
+            //
+            if( $err_msg == '' ) {
+                if( $_POST['teacher_customer_id'] == 'new' ) {
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'web', 'teacherCreate');
+                    $rc = ciniki_musicfestivals_web_teacherCreate($ciniki, $settings, $tnid, $_POST);
+                    if( $rc['stat'] == 'error' ) {
+                        $err_msg = $rc['err']['msg'];
+                    } elseif( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.145', 'msg'=>'Unable to update registration', 'err'=>$rc['err']));
+                    }
+                    $registration['teacher_customer_id'] = $rc['teacher_customer_id'];
+                } elseif( $_POST['teacher_customer_id'] != $registration['teacher_customer_id'] ) {
+                    $registration['teacher_customer_id'] = $_POST['teacher_customer_id'];
+                }
+            }
+
             //
             // Add the registration
             //
@@ -764,6 +822,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
         } else {
             $registration = array(
                 'status' => 0,
+                'teacher_customer_id' => 0,
                 'class_id' => 0,
                 'competitor1_id' => 0,
                 'competitor2_id' => 0,
@@ -808,6 +867,11 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 ),
             'competitor3' => array(
                 'label' => $s_competitor . ' 3',
+                'visible' => 'no',
+                'fields' => array(),
+                ),
+            'teacher' => array(
+                'label' => 'Teacher',
                 'visible' => 'no',
                 'fields' => array(),
                 ),
@@ -950,6 +1014,36 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
         }
         
         //
+        // Setup the teacher field
+        //
+        $teacher = array( 
+            'name' => '',
+            'email' => '',
+            'phone' => '',
+            );
+        $teacher = array(
+            'name' => (isset($_POST["teacher_name"]) ? $_POST["teacher_name"] : $teacher['name']),
+            'email' => (isset($_POST["teacher_email"]) ? $_POST["teacher_email"] : $teacher['email']),
+            'phone' => (isset($_POST["teacher_phone"]) ? $_POST["teacher_phone"] :$teacher['phone']), 
+            );
+        if( $customer_type == 10 || $customer_type == 30 ) {
+            $form_sections["teacher"]['fields'] = array(
+                "teacher_customer_id" => array('type'=>'select', 
+                    'label' => array('title'=>'Teacher', 'class'=>'hidden'),
+                    'size' => 'full', 
+                    'options' => array(),
+                    'details' => array(),
+                    ),
+                "teacher_name"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Name'), 'size'=>'full', 'value'=>$teacher['name']),
+                "teacher_email"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Email'), 'size'=>'medium', 'value'=>$teacher['email']),
+                "teacher_phone"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Phone'), 'size'=>'medium', 'value'=>$teacher['phone']),
+                );
+            $form_sections['teacher']['visible'] = 'yes';
+        } else {
+            $form_sections['teacher']['visible'] = 'no';
+        }
+
+        //
         // Build the drop down lists for section and classes
         //
         $section_ids = array();
@@ -1071,6 +1165,23 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
             }
         }
 
+        //
+        // Teacher
+        //
+        $form_sections['teacher']['fields']['teacher_customer_id']['options'][] = array('value'=>'', 'label'=>'');
+        foreach($teachers as $teacher) {
+            $form_sections['teacher']['fields']['teacher_customer_id']['options'][] = array(
+                'value' => $teacher['id'],
+                'selected' => ($registration['teacher_customer_id'] == $teacher['id'] ? 'yes' : 'no'),
+                'label' => $teacher['name'],
+                );
+            if( $registration['teacher_customer_id'] == $teacher['id'] ) {
+                $curdetails .= "teacher_customer_id:'{$teacher['id']}',";
+            }
+        }
+        $form_sections['teacher']['fields']['teacher_customer_id']['options'][] = array('value'=>'new', 'label'=>'Add Teacher');
+
+
         $buttons = array(
             'save' => array('type'=>'submit', 'label'=>'Save'),
             );
@@ -1097,6 +1208,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 . "var cflags = " . json_encode($class_flags) . ";"
                 . "var sids = [" . implode(',', $section_ids) . "];"
                 . "var cfields = [{$cfields}];"
+                . "var tfields = ['teacher_name', 'teacher_email', 'teacher_phone'];"
                 . "var curdetails = {{$curdetails}};"
                 . "function regFormUpdate() {"
                     //
@@ -1164,6 +1276,18 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                             . "showCompetitorDetails(3,c3.value);"
                         . "}"
                     . "}"
+                    . "var t=document.getElementById('teacher_customer_id');"
+                    . "if(t.value=='new') {"
+                        . "for(var i in tfields){"
+                            . "var e=document.getElementById(tfields[i] + '-wrap');"
+                            . "e.classList.contains('hidden') ? e.classList.remove('hidden') : '';"
+                        . "}"
+                    . "}else{"
+                        . "for(var i in tfields){"
+                            . "var e=document.getElementById(tfields[i] + '-wrap');"
+                            . "e.classList.contains('hidden') ? '' : e.classList.add('hidden');"
+                        . "}"
+                    . "}"
                 . "};"
                 . "function showCompetitorAdd(n){"
                     . "for(var i in cfields){"
@@ -1193,6 +1317,16 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                         . "e.classList.contains('hidden') ? e.classList.remove('hidden') : '';"
                     . "}"
                 . "}"
+                . "function showTeacher(){"
+                    . "var e=document.getElementById(cfields[i] + n + '-wrap');"
+                    . "e.classList.contains('hidden') ? e.classList.remove('hidden') : '';"
+                . "};"
+                . "function hideCompetitorAdd(n){"
+                    . "for(var i in cfields){"
+                        . "var e=document.getElementById(cfields[i] + n + '-wrap');"
+                        . "e.classList.contains('hidden') ? '' : e.classList.add('hidden');"
+                    . "}"
+                . "};"
                 . "function editComp(n){"
                     . "var e=document.getElementById('ceditid');"
                     . "e.value=n;"
