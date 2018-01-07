@@ -88,6 +88,7 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
         . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "classes.id = registrations.class_id "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ("
             . "(registrations.competitor1_id = competitors.id "

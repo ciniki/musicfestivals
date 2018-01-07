@@ -1206,7 +1206,7 @@ function ciniki_musicfestivals_main() {
             'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_musicfestivals_main.registration.updateTeacher();\',\'mc\',{\'next\':\'M.ciniki_musicfestivals_main.registration.updateTeacher\',\'customer_id\':0});',
             },
         '_class':{'label':'', 'fields':{
-            'status':{'label':'Status', 'required':'yes', 'type':'toggle', 'toggles':{'10':'Applied', '50':'Paid'}},
+            'status':{'label':'Status', 'required':'yes', 'type':'toggle', 'toggles':{'5':'Draft', '10':'Applied', '50':'Paid'}},
             'payment_type':{'label':'Payment', 'type':'toggle', 'toggles':{'20':'Square', '50':'Visa', '55':'Mastercard', '100':'Cash', '105':'Cheque', '110':'Email', '120':'Other', '121':'Online'}},
             'class_id':{'label':'Class', 'required':'yes', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}, 
                 'onchangeFn':'M.ciniki_musicfestivals_main.registration.setFee',
