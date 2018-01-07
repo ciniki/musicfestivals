@@ -225,6 +225,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
             //
             $img_width = 0;
             if( $this->header_image != null ) {
+                error_log('image');
                 $height = $this->header_image->getImageHeight();
                 $width = $this->header_image->getImageWidth();
                 $image_ratio = $width/$height;
@@ -312,7 +313,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
     $pdf->header_title = $festival['name'];
     $pdf->header_sub_title = '';
     $pdf->header_msg = $festival['document_header_msg'];
-    $pdf->footer_msg = '';
+    $pdf->footer_msg = $festival['document_footer_msg'];
 
     //
     // Set the minimum header height
@@ -325,6 +326,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
     // Load the header image
     //
     if( isset($festival['document_logo_id']) && $festival['document_logo_id'] > 0 ) {
+        error_log('logo');
         ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
         $rc = ciniki_images_loadImage($ciniki, $tnid, $festival['document_logo_id'], 'original');
         if( $rc['stat'] == 'ok' ) {
