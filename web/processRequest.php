@@ -60,6 +60,9 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
         if( isset($rc['festival']) ) {
             $festival_id = $rc['festival']['id'];
             $festival = $rc['festival'];
+            $festival['settings'] = array(
+                'age-restriction-msg' => '',
+                );
             $uri_split = shift($uri_split);
             $page['breadcrumbs'][] = array('name'=>$rc['festival']['name'], 'url'=>$args['base_url'] . '/' . $uri_split[0]);
         }
@@ -86,6 +89,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
         if( isset($rc['festival']) ) {
             $festival_id = $rc['festival']['id'];
             $festival = $rc['festival'];
+
             $page['breadcrumbs'][] = array('name'=>$rc['festival']['name'], 'url'=>$args['base_url']);
         }
     }
