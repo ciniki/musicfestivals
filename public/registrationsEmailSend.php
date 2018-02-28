@@ -100,7 +100,7 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
             $text .= $registration['class_code'] 
                 . ' - ' . $registration['display_name'] 
                 . ($registration['title'] != '' ? ' - ' . $registration['title'] : '')
-                . ($registration['pref_time'] != '' ? ' - ' . $registration['pref_time'] : '')
+                . ($registration['perf_time'] != '' ? ' - ' . $registration['perf_time'] : '')
                 . "\n";
         }
         $html .= "</table>";
