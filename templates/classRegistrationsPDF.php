@@ -310,7 +310,7 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
 
             if( $notes != '' ) {
                 $pdf->writeHTMLCell($nw[0], $n_height, '', '', '', 0, 0, false, true, 'L', 1);
-                $pdf->writeHTMLCell($nw[1], $h_height, '', '', '**' . preg_replace("/\n/", "<br/>", $notes), 0, 1, false, true, 'L', 1);
+                $pdf->writeHTMLCell($nw[1], $n_height, '', '', '**' . preg_replace("/\n/", "<br/>", $notes), 0, 1, false, true, 'L', 1);
             }
         }
         $pdf->Ln();
