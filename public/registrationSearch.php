@@ -80,6 +80,7 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
                 . "OR competitors.id = registrations.competitor4_id "
                 . "OR competitors.id = registrations.competitor5_id "
             . ") "
+            . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_customers AS teachers ON ("
