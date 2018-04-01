@@ -1,0 +1,5 @@
+#
+# Added public name override
+#
+ALTER TABLE ciniki_musicfestival_competitors ADD COLUMN public_name varchar(250) not null AFTER name;
+ALTER TABLE ciniki_musicfestival_competitors COMMENT='v1.02';

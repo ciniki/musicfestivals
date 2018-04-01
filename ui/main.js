@@ -1471,6 +1471,7 @@ function ciniki_musicfestivals_main() {
     this.competitor.sections = {
         'general':{'label':'Competitor', 'aside':'yes', 'fields':{
             'name':{'label':'Name', 'required':'yes', 'type':'text', 'livesearch':'yes'},
+            'public_name':{'label':'Public Name', 'type':'text'},
             'parent':{'label':'Parent', 'type':'text'},
             }},
         '_other':{'label':'', 'aside':'yes', 'fields':{

@@ -139,6 +139,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'festival_id'=>array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
             'billing_customer_id'=>array('name'=>'Billing Customer', 'ref'=>'ciniki.customers.customer', 'default'=>0),
             'name'=>array('name'=>'Name'),
+            'public_name'=>array('name'=>'Public Name', 'default'=>''),
             'parent'=>array('name'=>'Parent'),
             'address'=>array('name'=>'Address', 'default'=>''),
             'city'=>array('name'=>'City', 'default'=>''),

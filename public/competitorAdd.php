@@ -22,6 +22,7 @@ function ciniki_musicfestivals_competitorAdd(&$ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'),
+        'public_name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Public Name'),
         'parent'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Parent'),
         'address'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address'),
         'city'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'City'),
@@ -47,6 +48,14 @@ function ciniki_musicfestivals_competitorAdd(&$ciniki) {
     $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.competitorAdd');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
+    }
+
+    //
+    // If the public_name is same as calculated, the keep as blank, the public name is an override only field.
+    //
+    $public_name = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $args['name']); 
+    if( isset($args['public_name']) && $args['public_name'] == $public_name ) {
+        $args['public_name'] = '';
     }
 
     //
