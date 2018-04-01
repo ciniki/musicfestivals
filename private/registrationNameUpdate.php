@@ -36,7 +36,8 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $tnid, $registra
         . "registrations.payment_type, "
         . "registrations.notes, "
         . "competitors.id AS competitor_id, "
-        . "competitors.name AS competitor_name "
+        . "competitors.name AS competitor_name, "
+        . "competitors.public_name AS competitor_public_name "
         . "FROM ciniki_musicfestival_registrations AS registrations "
         . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ( "
             . "(registrations.competitor1_id = competitors.id "
@@ -54,7 +55,7 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $tnid, $registra
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('rtype', 'display_name', 'public_name', 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id')),
         array('container'=>'competitors', 'fname'=>'competitor_id', 
-            'fields'=>array('competitor_id', 'name'=>'competitor_name')),
+            'fields'=>array('competitor_id', 'name'=>'competitor_name', 'public_name'=>'competitor_public_name')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.115', 'msg'=>'Registration not found', 'err'=>$rc['err']));
@@ -72,18 +73,30 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $tnid, $registra
         $pnames = array();
         if( $registration['competitor1_id'] > 0 && isset($registration['competitors'][$registration['competitor1_id']]['name']) ) {
             $names[] = $registration['competitors'][$registration['competitor1_id']]['name'];
-            $pnames[] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $registration['competitors'][$registration['competitor1_id']]['name']); 
+            if( $registration['competitors'][$registration['competitor1_id']]['public_name'] != '' ) {
+                $pnames[] = $registration['competitors'][$registration['competitor1_id']]['public_name']; 
+            } else {
+                $pnames[] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $registration['competitors'][$registration['competitor1_id']]['name']); 
+            }
         } 
 //        if( $registration['rtype'] > 30 ) {
             if( $registration['competitor2_id'] > 0 && isset($registration['competitors'][$registration['competitor2_id']]['name']) ) {
                 $names[] = $registration['competitors'][$registration['competitor2_id']]['name'];
-                $pnames[] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $registration['competitors'][$registration['competitor2_id']]['name']); 
+                if( $registration['competitors'][$registration['competitor2_id']]['public_name'] != '' ) {
+                    $pnames[] = $registration['competitors'][$registration['competitor2_id']]['public_name']; 
+                } else {
+                    $pnames[] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $registration['competitors'][$registration['competitor2_id']]['name']); 
+                }
             } 
 //        }
 //        if( $registration['rtype'] > 50 ) {
             if( $registration['competitor3_id'] > 0 && isset($registration['competitors'][$registration['competitor3_id']]['name']) ) {
                 $names[] = $registration['competitors'][$registration['competitor3_id']]['name'];
-                $pnames[] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $registration['competitors'][$registration['competitor3_id']]['name']); 
+                if( $registration['competitors'][$registration['competitor3_id']]['public_name'] != '' ) {
+                    $pnames[] = $registration['competitors'][$registration['competitor3_id']]['public_name']; 
+                } else {
+                    $pnames[] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $registration['competitors'][$registration['competitor3_id']]['name']); 
+                }
             } 
 //        }
         if( count($names) == 3 ) {
