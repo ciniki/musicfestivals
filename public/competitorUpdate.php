@@ -19,7 +19,7 @@ function ciniki_musicfestivals_competitorUpdate(&$ciniki) {
         'competitor_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Competitor'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
-        'public_name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Public Name'),
+        'public_name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Public Name'),
         'parent'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Parent'),
         'address'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address'),
         'city'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'City'),

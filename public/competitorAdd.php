@@ -22,7 +22,7 @@ function ciniki_musicfestivals_competitorAdd(&$ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'),
-        'public_name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Public Name'),
+        'public_name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Public Name'),
         'parent'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Parent'),
         'address'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address'),
         'city'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'City'),
