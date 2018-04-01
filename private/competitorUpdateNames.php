@@ -91,9 +91,9 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $festival_
                 if( $registration['competitor2_id'] > 0 && isset($registration['competitors'][$registration['competitor2_id']]['name']) ) {
                     $names[] = $registration['competitors'][$registration['competitor2_id']]['name'];
                     if( $registration['competitors'][$registration['competitor2_id']]['public_name'] != '' ) {
-                        $pnames[] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $registration['competitors'][$registration['competitor2_id']]['name']); 
-                    } else {
                         $pnames[] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $registration['competitors'][$registration['competitor2_id']]['public_name']); 
+                    } else {
+                        $pnames[] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $registration['competitors'][$registration['competitor2_id']]['name']); 
                     }
                 } 
             }
@@ -101,9 +101,9 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $festival_
                 if( $registration['competitor3_id'] > 0 && isset($registration['competitors'][$registration['competitor3_id']]['name']) ) {
                     $names[] = $registration['competitors'][$registration['competitor3_id']]['name'];
                     if( $registration['competitors'][$registration['competitor3_id']]['public_name'] != '' ) {
-                        $pnames[] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $registration['competitors'][$registration['competitor3_id']]['name']); 
-                    } else {
                         $pnames[] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $registration['competitors'][$registration['competitor3_id']]['public_name']); 
+                    } else {
+                        $pnames[] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $registration['competitors'][$registration['competitor3_id']]['name']); 
                     }
                 } 
             }
