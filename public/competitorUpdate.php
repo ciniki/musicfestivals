@@ -71,7 +71,11 @@ function ciniki_musicfestivals_competitorUpdate(&$ciniki) {
     // If the public_name is same as calculated, the keep as blank, the public name is an override only field.
     //
     if( isset($args['public_name']) && $args['public_name'] != '' ) {
-        $public_name = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $args['name']); 
+        if( isset($args['name']) ) {
+            $public_name = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $args['name']); 
+        } else {
+            $public_name = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $competitor['name']); 
+        }
         if( isset($args['public_name']) && $args['public_name'] == $public_name ) {
             $args['public_name'] = '';
         }
