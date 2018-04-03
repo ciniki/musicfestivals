@@ -68,6 +68,7 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $tnid, $registra
     //
     // Only update display name for non-ensembles
     //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
     if( $registration['rtype'] < 90 ) {
         $names = array();
         $pnames = array();
@@ -117,10 +118,25 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $tnid, $registra
             $update_args['public_name'] = $public_name;
         }
         if( count($update_args) > 0 ) {
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
             $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration_id, $update_args, 0x04);
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.117', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
+            }
+        }
+    } elseif( $registration['rtype'] == 90 ) {  
+        $update_args = array();
+        if( $registration['competitor1_id'] > 0 
+            && isset($registration['competitors'][$registration['competitor1_id']]['name']) 
+            ) {
+            if( $registration['display_name'] != $registration['competitors'][$registration['competitor1_id']]['name'] ) {
+                $update_args['display_name'] = $registration['competitors'][$registration['competitor1_id']]['name'];
+            }
+            if( $registration['public_name'] != $registration['competitors'][$registration['competitor1_id']]['name'] ) {
+                $update_args['public_name'] = $registration['competitors'][$registration['competitor1_id']]['name'];
+            }
+            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration_id, $update_args, 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.152', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
             }
         }
     }

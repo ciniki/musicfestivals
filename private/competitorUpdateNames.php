@@ -131,6 +131,22 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $festival_
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.84', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
                 }
             }
+        } elseif( $registration['rtype'] == 90 ) {
+            $update_args = array();
+            if( $registration['competitor1_id'] > 0 
+                && isset($registration['competitors'][$registration['competitor1_id']]['name']) 
+                ) {
+                if( $registration['display_name'] != $registration['competitors'][$registration['competitor1_id']]['name'] ) {
+                    $update_args['display_name'] = $registration['competitors'][$registration['competitor1_id']]['name'];
+                }
+                if( $registration['public_name'] != $registration['competitors'][$registration['competitor1_id']]['name'] ) {
+                    $update_args['public_name'] = $registration['competitors'][$registration['competitor1_id']]['name'];
+                }
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration_id, $update_args, 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.153', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
+                }
+            }
         }
     }
 
