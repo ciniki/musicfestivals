@@ -68,7 +68,8 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $festival_
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.82', 'msg'=>'Registration not found', 'err'=>$rc['err']));
     }
     if( !isset($rc['registrations']) || count($rc['registrations']) <= 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.83', 'msg'=>'Unable to find Registration'));
+        // Nothing to update
+        return array('stat'=>'ok');
     }
 
     $registrations = $rc['registrations'];

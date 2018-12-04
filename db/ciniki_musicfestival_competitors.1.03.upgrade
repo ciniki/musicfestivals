@@ -1,0 +1,5 @@
+#
+# Added public name override
+#
+ALTER TABLE ciniki_musicfestival_competitors ADD COLUMN flags smallint unsigned not null AFTER public_name;
+ALTER TABLE ciniki_musicfestival_competitors COMMENT='v1.03';

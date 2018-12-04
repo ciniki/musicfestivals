@@ -228,8 +228,9 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
     // Load the competitors
     //
     $strsql = "SELECT c.id, c.uuid, "
-        . "c.name, c.parent, c.address, c.city, c.province, c.postal, "
-        . "c.phone_home, c.phone_cell, c.email, c.age, c.study_level, c.instrument, c.notes "
+        . "c.name, c.flags, c.parent, c.address, c.city, c.province, c.postal, "
+        . "c.phone_home, c.phone_cell, c.email, c.age, c.study_level, c.instrument, c.notes, "
+        . "IF((c.flags&0x01)=0x01,'signed','') AS waiver_signed "
         . "FROM ciniki_musicfestival_competitors AS c "
         . "WHERE c.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "AND c.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['customer']['id']) . "' "
@@ -237,8 +238,8 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
         . "";
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'competitors', 'fname'=>'id', 
-            'fields'=>array('id', 'uuid', 'name', 'parent', 'address', 'city', 'province', 'postal', 
-                'phone_home', 'phone_cell', 'email', 'age', 'study_level', 'instrument', 'notes'),
+            'fields'=>array('id', 'uuid', 'name', 'flags', 'parent', 'address', 'city', 'province', 'postal', 
+                'phone_home', 'phone_cell', 'email', 'age', 'study_level', 'instrument', 'notes', 'waiver_signed'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -474,38 +475,60 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                             }
                             if( isset($_POST[$field]) ) {
                                 if( $_POST[$field] == 'new' ) {
-                                    if( !isset($_POST["name{$i}"]) || $_POST["name{$i}"] == '' ) {
-                                        $err_msg = 'You must specified a name for the new ' . $s_competitor;
-                                        break;
+                                    $required = array();
+                                    $required['name'] = 'You must enter a competitors name';
+                                    $required['parent'] = 'You must enter the parents name';
+                                    $required['city'] = 'You must enter an city';
+                                    $required['email'] = 'You must enter an email address';
+                                    $required['age'] = 'You must enter this competitors age';
+                                    $required['study_level'] = 'You must enter level of study';
+                                    $required['instrument'] = 'You must enter the competitors instrument';
+                                    $required['waiver_signed'] = 'You must agree to "' . $args['settings']['waiver-msg'] . '"';
+                                    $err_msg = '';
+                                    foreach($required as $rf => $msg) {
+                                        $f = $rf . $i;
+                                        if( !isset($_POST[$f]) || trim($_POST[$f]) == '' ) {
+                                            $err_msg = $msg;
+                                            break;
+                                        }
                                     }
                                     //
                                     // Add new competitor
                                     //
-                                    $new_competitor = array(
-                                        'festival_id' => $args['festival_id'],
-                                        'billing_customer_id' => $ciniki['session']['customer']['id'],
-                                        'name' => $_POST["name{$i}"],
-                                        'parent' => (isset($_POST["parent{$i}"]) ? $_POST["parent{$i}"] : ''),
-                                        'address' => (isset($_POST["address{$i}"]) ? $_POST["address{$i}"] : ''),
-                                        'city' => (isset($_POST["city{$i}"]) ? $_POST["city{$i}"] : ''),
-                                        'province' => (isset($_POST["province{$i}"]) ? $_POST["province{$i}"] : ''),
-                                        'postal' => (isset($_POST["postal{$i}"]) ? $_POST["postal{$i}"] : ''),
-                                        'phone_home' => (isset($_POST["phone_home{$i}"]) ? $_POST["phone_home{$i}"] : ''),
-                                        'phone_cell' => (isset($_POST["phone_cell{$i}"]) ? $_POST["phone_cell{$i}"] : ''),
-                                        'email' => (isset($_POST["email{$i}"]) ? $_POST["email{$i}"] : ''),
-                                        'age' => (isset($_POST["age{$i}"]) ? $_POST["age{$i}"] : ''),
-                                        'study_level' => (isset($_POST["study_level{$i}"]) ? $_POST["study_level{$i}"] : ''),
-                                        'instrument' => (isset($_POST["instrument{$i}"]) ? $_POST["instrument{$i}"] : ''),
-                                        'notes' => (isset($_POST["notes{$i}"]) ? $_POST["notes{$i}"] : ''),
-                                        );
-                                    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-                                    $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.competitor', $new_competitor, 0x04);
-                                    if( $rc['stat'] != 'ok' ) {   
-                                        $err_msg = "Unable to add new {$s_competitor}. Please try again, or contact us for help.";
-                                        error_log(print_r($rc['err'], true));
-                                    } else {
-                                        $update_args[$field] = $rc['id'];
-                                        $competitors[$rc['id']] = $new_competitor;
+                                    if( $err_msg == '' ) {
+//                                        $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>$err_msg);
+//                                    } else {
+                                        $new_competitor = array(
+                                            'festival_id' => $args['festival_id'],
+                                            'billing_customer_id' => $ciniki['session']['customer']['id'],
+                                            'name' => $_POST["name{$i}"],
+                                            'parent' => (isset($_POST["parent{$i}"]) ? $_POST["parent{$i}"] : ''),
+                                            'address' => (isset($_POST["address{$i}"]) ? $_POST["address{$i}"] : ''),
+                                            'city' => (isset($_POST["city{$i}"]) ? $_POST["city{$i}"] : ''),
+                                            'province' => (isset($_POST["province{$i}"]) ? $_POST["province{$i}"] : ''),
+                                            'postal' => (isset($_POST["postal{$i}"]) ? $_POST["postal{$i}"] : ''),
+                                            'phone_home' => (isset($_POST["phone_home{$i}"]) ? $_POST["phone_home{$i}"] : ''),
+                                            'phone_cell' => (isset($_POST["phone_cell{$i}"]) ? $_POST["phone_cell{$i}"] : ''),
+                                            'email' => (isset($_POST["email{$i}"]) ? $_POST["email{$i}"] : ''),
+                                            'age' => (isset($_POST["age{$i}"]) ? $_POST["age{$i}"] : ''),
+                                            'study_level' => (isset($_POST["study_level{$i}"]) ? $_POST["study_level{$i}"] : ''),
+                                            'instrument' => (isset($_POST["instrument{$i}"]) ? $_POST["instrument{$i}"] : ''),
+                                            'notes' => (isset($_POST["notes{$i}"]) ? $_POST["notes{$i}"] : ''),
+                                            );
+                                        if( isset($_POST["waiver_signed{$i}"]) && $_POST["waiver_signed{$i}"] == 'signed' ) {
+                                            $new_competitor['flags'] = 0x01;
+                                        } else {
+                                            $new_competitor['flags'] = 0;
+                                        }
+                                        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+                                        $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.competitor', $new_competitor, 0x04);
+                                        if( $rc['stat'] != 'ok' ) {   
+                                            $err_msg = "Unable to add new {$s_competitor}. Please try again, or contact us for help.";
+                                            error_log(print_r($rc['err'], true));
+                                        } else {
+                                            $update_args[$field] = $rc['id'];
+                                            $competitors[$rc['id']] = $new_competitor;
+                                        }
                                     }
                                 } elseif( $_POST[$field] != $registration[$field] ) {
                                     $update_args[$field] = $_POST[$field];
@@ -554,7 +577,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                                 exit;
                             }
                         }
-                    } elseif( isset($_POST['save']) ) {
+                    } elseif( $err_msg == '' && isset($_POST['save']) ) {
                         //
                         // Update the display_name for the registration
                         //
@@ -578,6 +601,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
             //
             // Check required fields were submitted
             //
+            $required = array();
             if( $class == null ) {
                 $err_msg = "You must pick a class to register for.";
             } elseif( !isset($_POST['competitor1_id']) || $_POST['competitor1_id'] == '' || $_POST['competitor1_id'] == '0' ) {
@@ -586,7 +610,73 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 && (!isset($_POST['name1']) || $_POST['name1'] == '' )
                 ) {
                 $err_msg = "You must enter a competitors name";
+            } elseif( isset($_POST['competitor1_id']) && $_POST['competitor1_id'] == 'new'
+                && (!isset($_POST['phone_home1']) || $_POST['phone_home1'] == '' )
+                && (!isset($_POST['phone_cell1']) || $_POST['phone_cell1'] == '' )
+                ) {
+                $err_msg = "You must enter a phone number for the first child";
+            } elseif( isset($_POST['competitor2_id']) && $_POST['competitor2_id'] == 'new'
+                && (!isset($_POST['phone_home2']) || $_POST['phone_home2'] == '' )
+                && (!isset($_POST['phone_cell2']) || $_POST['phone_cell2'] == '' )
+                ) {
+                $err_msg = "You must enter a phone number for the second child";
+            } elseif( isset($_POST['competitor3_id']) && $_POST['competitor3_id'] == 'new'
+                && (!isset($_POST['phone_home3']) || $_POST['phone_home3'] == '' )
+                && (!isset($_POST['phone_cell3']) || $_POST['phone_cell3'] == '' )
+                ) {
+                $err_msg = "You must enter a phone number for the third child";
+            } elseif( isset($_POST['teacher_customer_id']) && $_POST['teacher_customer_id'] == 'new'
+                && (!isset($_POST['teacher_name']) || $_POST['teacher_name'] == '' )
+                ) {
+                $err_msg = "You must enter a name for the teacher";
+            } elseif( isset($_POST['teacher_customer_id']) && $_POST['teacher_customer_id'] == 'new'
+                && (!isset($_POST['teacher_email']) || $_POST['teacher_email'] == '' )
+                ) {
+                $err_msg = "You must enter an email address for the teacher";
+            } elseif( !isset($_POST['teacher_customer_id']) || $_POST['teacher_customer_id'] == '' || $_POST['teacher_customer_id'] == '0' ) {
+                $err_msg = "You must choose specify a teacher.";
             }
+
+            if( isset($_POST['competitor1_id']) && $_POST['competitor1_id'] == 'new' ) {
+                $required['name1'] = 'You must enter a competitors name';
+                $required['parent1'] = 'You must enter the parents name';
+                $required['city1'] = 'You must enter an city';
+                $required['email1'] = 'You must enter an email address';
+                $required['age1'] = 'You must enter this competitors age';
+                $required['study_level1'] = 'You must enter level of study';
+                $required['instrument1'] = 'You must enter the competitors instrument';
+                $required['waiver_signed1'] = 'You must agree to "' . $args['settings']['waiver-msg'] . '"';
+            }
+            if( isset($_POST['competitor2_id']) && $_POST['competitor2_id'] == 'new' ) {
+                $required['name2'] = 'You must enter a competitors name';
+                $required['parent2'] = 'You must enter the parents name';
+                $required['city2'] = 'You must enter an city';
+                $required['email2'] = 'You must enter an email address';
+                $required['age2'] = 'You must enter this competitors age';
+                $required['study_level2'] = 'You must enter level of study';
+                $required['instrument2'] = 'You must enter the competitors instrument';
+                $required['waiver_signed2'] = 'You must agree to "' . $args['settings']['waiver-msg'] . '"';
+            }
+            if( isset($_POST['competitor3_id']) && $_POST['competitor3_id'] == 'new' ) {
+                $required['name3'] = 'You must enter a competitors name';
+                $required['parent3'] = 'You must enter the parents name';
+                $required['city3'] = 'You must enter an city';
+                $required['email3'] = 'You must enter an email address';
+                $required['age3'] = 'You must enter this competitors age';
+                $required['study_level3'] = 'You must enter level of study';
+                $required['instrument3'] = 'You must enter the competitors instrument';
+                $required['waiver_signed3'] = 'You must agree to "' . $args['settings']['waiver-msg'] . '"';
+            }
+
+            foreach($required as $field => $msg) {
+                if( isset($_POST['competitor1_id']) && $_POST['competitor1_id'] == 'new' 
+                    && (!isset($_POST[$field]) || trim($_POST[$field]) == '' ) 
+                    ) {
+                    $err_msg = $msg;
+                    break;
+                }
+            }
+
             //
             // Check for new competitors
             //
@@ -629,37 +719,59 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                     }
                     if( isset($_POST[$field]) ) {
                         if( $_POST[$field] == 'new' ) {
-                            if( !isset($_POST["name{$i}"]) || $_POST["name{$i}"] == '' ) {
-                                $err_msg = 'You must specified a name for the new ' . $s_competitor;
-                                break;
+                            $required = array();
+                            $required['name'] = 'You must enter a competitors name';
+                            $required['parent'] = 'You must enter the parents name';
+                            $required['city'] = 'You must enter an city';
+                            $required['email'] = 'You must enter an email address';
+                            $required['age'] = 'You must enter this competitors age';
+                            $required['study_level'] = 'You must enter level of study';
+                            $required['instrument'] = 'You must enter the competitors instrument';
+                            $required['waiver_signed'] = 'You must agree to "' . $args['settings']['waiver-msg'] . '"';
+                            $err_msg = '';
+                            foreach($required as $field => $msg) {
+                                $f = $field . $i;
+                                if( !isset($_POST[$f]) || trim($_POST[$f]) == '' ) {
+                                    $err_msg = $msg;
+                                    break;
+                                }
                             }
                             //
                             // Add new competitor
                             //
-                            $new_competitor = array(
-                                'festival_id' => $args['festival_id'],
-                                'billing_customer_id' => $ciniki['session']['customer']['id'],
-                                'name' => $_POST["name{$i}"],
-                                'parent' => (isset($_POST["parent{$i}"]) ? $_POST["parent{$i}"] : ''),
-                                'address' => (isset($_POST["address{$i}"]) ? $_POST["address{$i}"] : ''),
-                                'city' => (isset($_POST["city{$i}"]) ? $_POST["city{$i}"] : ''),
-                                'province' => (isset($_POST["province{$i}"]) ? $_POST["province{$i}"] : ''),
-                                'postal' => (isset($_POST["postal{$i}"]) ? $_POST["postal{$i}"] : ''),
-                                'phone_home' => (isset($_POST["phone_home{$i}"]) ? $_POST["phone_home{$i}"] : ''),
-                                'phone_cell' => (isset($_POST["phone_cell{$i}"]) ? $_POST["phone_cell{$i}"] : ''),
-                                'email' => (isset($_POST["email{$i}"]) ? $_POST["email{$i}"] : ''),
-                                'age' => (isset($_POST["age{$i}"]) ? $_POST["age{$i}"] : ''),
-                                'study_level' => (isset($_POST["study_level{$i}"]) ? $_POST["study_level{$i}"] : ''),
-                                'instrument' => (isset($_POST["instrument{$i}"]) ? $_POST["instrument{$i}"] : ''),
-                                'notes' => (isset($_POST["notes{$i}"]) ? $_POST["notes{$i}"] : ''),
-                                );
-                            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-                            $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.competitor', $new_competitor, 0x04);
-                            if( $rc['stat'] != 'ok' ) {   
-                                $err_msg = "Unable to add new {$s_competitor}. Please try again, or contact us for help.";
-                                error_log(print_r($rc['err'], true));
+                            if( $err_msg != '' ) {
+                                $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>$err_msg);
                             } else {
-                                $registration[$field] = $rc['id'];
+                                $new_competitor = array(
+                                    'festival_id' => $args['festival_id'],
+                                    'billing_customer_id' => $ciniki['session']['customer']['id'],
+                                    'name' => $_POST["name{$i}"],
+                                    'parent' => (isset($_POST["parent{$i}"]) ? $_POST["parent{$i}"] : ''),
+                                    'address' => (isset($_POST["address{$i}"]) ? $_POST["address{$i}"] : ''),
+                                    'city' => (isset($_POST["city{$i}"]) ? $_POST["city{$i}"] : ''),
+                                    'province' => (isset($_POST["province{$i}"]) ? $_POST["province{$i}"] : ''),
+                                    'postal' => (isset($_POST["postal{$i}"]) ? $_POST["postal{$i}"] : ''),
+                                    'phone_home' => (isset($_POST["phone_home{$i}"]) ? $_POST["phone_home{$i}"] : ''),
+                                    'phone_cell' => (isset($_POST["phone_cell{$i}"]) ? $_POST["phone_cell{$i}"] : ''),
+                                    'email' => (isset($_POST["email{$i}"]) ? $_POST["email{$i}"] : ''),
+                                    'age' => (isset($_POST["age{$i}"]) ? $_POST["age{$i}"] : ''),
+                                    'study_level' => (isset($_POST["study_level{$i}"]) ? $_POST["study_level{$i}"] : ''),
+                                    'instrument' => (isset($_POST["instrument{$i}"]) ? $_POST["instrument{$i}"] : ''),
+                                    'notes' => (isset($_POST["notes{$i}"]) ? $_POST["notes{$i}"] : ''),
+                                    );
+                                if( isset($_POST["waiver_signed{$i}"]) && $_POST["waiver_signed{$i}"] == 'signed' ) {
+                                    $new_competitor['flags'] = 0x01;
+                                } else {
+                                    $new_competitor['flags'] = 0;
+                                }
+                                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+                                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.competitor', $new_competitor, 0x04);
+                                if( $rc['stat'] != 'ok' ) {   
+                                    $err_msg = "Unable to add new {$s_competitor}. Please try again, or contact us for help.";
+                                    error_log(print_r($rc['err'], true));
+                                } else {
+                                    $registration[$field] = $rc['id'];
+                                }
                             }
                         }
                     }
@@ -749,6 +861,19 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
     if( isset($_POST['ceditid']) && $_POST['ceditid'] != '' ) {
         $display = 'competitor-form';
         $competitor_id = 0;
+        //
+        // Setup required fields
+        //
+        $required = array();
+        $required['name'] = 'You must enter a competitors name';
+        $required['parent'] = 'You must enter the parents name';
+        $required['city'] = 'You must enter an city';
+        $required['email'] = 'You must enter an email address';
+        $required['age'] = 'You must enter this competitors age';
+        $required['study_level'] = 'You must enter level of study';
+        $required['instrument'] = 'You must enter the competitors instrument';
+        $required['waiver_signed'] = 'You must agree to "' . $args['settings']['waiver-msg'] . '"';
+        $err_msg = '';
         if( $_POST['ceditid'] != 'new' ) {
             foreach($competitors as $competitor) {
                 if( $competitor['uuid'] == $_POST['ceditid'] ) {
@@ -757,27 +882,53 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                     //
                     // Check for updates
                     //
-                    $update_args = array();
-                    foreach(['name', 'parent', 'address', 'city', 'postal', 'phone_home', 'phone_cell', 'email', 'age', 'study_level', 'instrument', 'notes'] as $field) {
-                        if( isset($_POST[$field]) && $_POST[$field] != $competitor[$field] ) {
-                            $update_args[$field] = $_POST[$field];
+                    if( isset($_POST['save']) && $_POST['save'] == 'Save' ) {
+                        $update_args = array();
+                        if( isset($_POST["waiver_signed"]) && $_POST["waiver_signed"] == 'signed' && ($competitor['flags']&0x01) == 0 ) {
+                            $update_args['flags'] = $competitor['flags'] | 0x01;
+                        } elseif( !isset($_POST['waiver_signed']) ) {
+                            $err_msg = $required['waiver_signed'];
                         }
-                    }
-                    if( count($update_args) > 0 ) {
-                        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-                        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.competitor',
-                            $competitor_id, $update_args, 0x04);
-                        if( $rc['stat'] != 'ok' ) {
-                            $err_msg = "We had an error saving the changes. Please try again, or contact us for help.";
-                        } else {
-                            //
-                            // Update the display_name for the registration
-                            //
-                            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'competitorUpdateNames');
-                            $rc = ciniki_musicfestivals_competitorUpdateNames($ciniki, $tnid, $args['festival_id'], $competitor_id);
-                            if( $rc['stat'] != 'ok' ) {
-                                error_log('Unable to update competitor name');
+                        foreach(['name', 'parent', 'address', 'city', 'postal', 'phone_home', 'phone_cell', 'email', 'age', 'study_level', 'instrument', 'notes'] as $field) {
+                            if( isset($_POST[$field]) && $_POST[$field] != $competitor[$field] ) {
+                                if( isset($required[$field]) && trim($_POST[$field]) == '' ) {
+                                    $err_msg = $required[$field];
+                                    break;
+                                } else {
+                                    $update_args[$field] = $_POST[$field];
+                                }
+                            } elseif( isset($required[$field]) && trim($competitor[$field]) == '' ) {
+                                $err_msg = $required[$field];
+                                break;
                             }
+                        }
+                        if( $err_msg != '' ) {
+                            $blocks[] = array('type'=>'formmessage', 'level'=>'error', 'message'=>$err_msg);
+                        } elseif( $err_msg == '' && count($update_args) > 0 ) {
+                            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+                            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.competitor',
+                                $competitor_id, $update_args, 0x04);
+                            if( $rc['stat'] != 'ok' ) {
+                                $err_msg = "We had an error saving the changes. Please try again, or contact us for help.";
+                            } else {
+                                //
+                                // Update the display_name for the registration
+                                //
+                                ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'competitorUpdateNames');
+                                $rc = ciniki_musicfestivals_competitorUpdateNames($ciniki, $tnid, $args['festival_id'], $competitor_id);
+                                if( $rc['stat'] != 'ok' ) {
+                                    error_log('Unable to update competitor name');
+                                }
+                                if( isset($_POST['r']) && $_POST['r'] != '' ) {
+                                    header('Location: ' . $args['base_url'] . '?r=' . $_POST['r']);
+                                } elseif( isset($args['r']) && $args['r'] != '' ) {
+                                    header('Location: ' . $args['base_url'] . '?r=' . $args['r']);
+                                } else {
+                                    header('Location: ' . $args['base_url']);
+                                }
+                                exit;
+                            }
+                        } elseif( isset($_POST['save']) ) {
                             if( isset($_POST['r']) && $_POST['r'] != '' ) {
                                 header('Location: ' . $args['base_url'] . '?r=' . $_POST['r']);
                             } elseif( isset($args['r']) && $args['r'] != '' ) {
@@ -787,15 +938,6 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                             }
                             exit;
                         }
-                    } elseif( isset($_POST['save']) ) {
-                        if( isset($_POST['r']) && $_POST['r'] != '' ) {
-                            header('Location: ' . $args['base_url'] . '?r=' . $_POST['r']);
-                        } elseif( isset($args['r']) && $args['r'] != '' ) {
-                            header('Location: ' . $args['base_url'] . '?r=' . $args['r']);
-                        } else {
-                            header('Location: ' . $args['base_url']);
-                        }
-                        exit;
                     }
                 }
             }
@@ -976,6 +1118,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 'study_level' => '', 
                 'instrument' => '', 
                 'notes' => '', 
+                'waiver_signed' => 'no', 
                 );
             if( $customer_type == 10 ) {
                 $competitor['parent'] = $customer['first'] . ' ' . $customer['last'];
@@ -1026,6 +1169,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 'study_level' => (isset($_POST["study_level{$i}"]) ? $_POST["study_level{$i}"] :$competitor['study_level']), 
                 'instrument' => (isset($_POST["instrument{$i}"]) ? $_POST["instrument{$i}"] :$competitor['instrument']), 
                 'notes' => (isset($_POST["notes{$i}"]) ? $_POST["notes{$i}"] :$competitor['notes']), 
+                'waiver_signed' => (isset($_POST["waiver_signed{$i}"]) ? $_POST["waiver_signed{$i}"] :$competitor['waiver_signed']), 
                 );
 //            if( isset($competitors[$registration["competitor{$i}_id"]]) ) {
 //                $competitor = $competitors[$registration["competitor{$i}_id"]];
@@ -1054,6 +1198,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                     "study_level{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Current Level of Study/Method book'), 'size'=>'medium', 'value'=>$competitor['study_level']),
                     "instrument{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Instrument'), 'size'=>'small', 'value'=>$competitor['instrument']),
                     "notes{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Notes'), 'size'=>'full', 'value'=>$competitor['notes']),
+                    "waiver_signed{$i}"=>array('type'=>'checkbox', 'visible'=>'no', 'label'=>array('title'=>$args['settings']['waiver-title']), 'size'=>'full', 'checked_value'=>'signed', 'value'=>$competitor['waiver_signed'], 'msg'=>$args['settings']['waiver-msg']),
                     );
             } else {
                 $form_sections["competitor{$i}"]['fields'] = array(
@@ -1077,6 +1222,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                     "study_level{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Current Level of Study/Method book'), 'size'=>'medium', 'value'=>$competitor['study_level']),
                     "instrument{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Instrument'), 'size'=>'small', 'value'=>$competitor['instrument']),
                     "notes{$i}"=>array('type'=>'text', 'visible'=>'no', 'label'=>array('title'=>'Notes'), 'size'=>'full', 'value'=>$competitor['notes']),
+                    "waiver_signed{$i}"=>array('type'=>'checkbox', 'visible'=>'no', 'label'=>array('title'=>$args['settings']['waiver-title']), 'size'=>'full', 'checked_value'=>'signed', 'value'=>$competitor['waiver_signed'], 'msg'=>$args['settings']['waiver-msg']),
                     );
             }
         }
@@ -1227,9 +1373,17 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 }
             }
             if( $customer_type == 10 || $customer_type == 20 ) {
-                $form_sections["competitor{$i}"]['fields']["competitor{$i}_id"]['options'][] = array('value'=>'new', 'label'=>'Add ' . $s_competitor);
+                $form_sections["competitor{$i}"]['fields']["competitor{$i}_id"]['options'][] = array(
+                    'value'=>'new', 
+                    'selected'=>(isset($_POST["competitor{$i}_id"]) && $_POST["competitor{$i}_id"] == 'new' ? 'yes' : 'no'),
+                    'label'=>'Add ' . $s_competitor,
+                    );
             } else {
-                $form_sections["competitor{$i}"]['fields']["competitor{$i}_id"]['options'][] = array('value'=>'new', 'label'=>'Add Competitor');
+                $form_sections["competitor{$i}"]['fields']["competitor{$i}_id"]['options'][] = array(
+                    'value'=>'new', 
+                    'selected'=>(isset($_POST["competitor{$i}_id"]) && $_POST["competitor{$i}_id"] == 'new' ? 'yes' : 'no'),
+                    'label'=>'Add Competitor',
+                    );
             }
         }
 
@@ -1248,7 +1402,11 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                     $curdetails .= "teacher_customer_id:'{$teacher['id']}',";
                 }
             }
-            $form_sections['teacher']['fields']['teacher_customer_id']['options'][] = array('value'=>'new', 'label'=>'Add Teacher');
+            $form_sections['teacher']['fields']['teacher_customer_id']['options'][] = array(
+                'value'=>'new', 
+                'selected'=>(isset($_POST['teacher_customer_id']) && $_POST['teacher_customer_id'] == 'new' ? 'yes' : 'no'),
+                'label'=>'Add Teacher',
+                );
         }
 
 
@@ -1262,9 +1420,9 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
         }
 
         if( $customer_type == 10 || $customer_type == 20 ) {
-            $cfields = "'name','parent','address','city','province','postal','phone_home','phone_cell','email','age','study_level','instrument','notes'";
+            $cfields = "'name','parent','address','city','province','postal','phone_home','phone_cell','email','age','study_level','instrument','notes','waiver_signed'";
         } else {
-            $cfields = "'name','address','city','province','postal','phone_home','phone_cell','email','age','study_level','instrument','notes'";
+            $cfields = "'name','address','city','province','postal','phone_home','phone_cell','email','age','study_level','instrument','notes','waiver_signed'";
         }
 
         $blocks[] = array('type' => 'registrationform', 
@@ -1402,7 +1560,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                     . "e.value=n;"
                     . "document.getElementById('mrf').submit();"
                 . "}"
-                . "",
+                . "window.onload = regFormUpdate;",
             );
     }
 
@@ -1411,6 +1569,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
     //
     if( $display == 'competitor-form' ) {
         $competitor = $competitors[$competitor_id];
+        error_log(print_r($competitor, true));
         $form_sections = array(
             'cedit' => array(
                 'label' => '',
@@ -1452,6 +1611,8 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                         'label'=>array('title'=>'Instrument'), 'size'=>'small', 'value'=>$competitor['instrument']),
                     'notes'=>array('type'=>'text',
                         'label'=>array('title'=>'Notes'), 'size'=>'full', 'value'=>$competitor['notes']),
+                    'waiver_signed'=>array('type'=>'checkbox',
+                        'label'=>array('title'=>$args['settings']['waiver-title']), 'size'=>'full', 'checked_value'=>'signed', 'value'=>$competitor['waiver_signed'], 'msg'=>$args['settings']['waiver-msg']),
                     ),
                 ),
             ); 

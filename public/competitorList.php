@@ -41,6 +41,7 @@ function ciniki_musicfestivals_competitorList($ciniki) {
     $strsql = "SELECT ciniki_musicfestival_competitors.id, "
         . "ciniki_musicfestival_competitors.festival_id, "
         . "ciniki_musicfestival_competitors.name, "
+        . "ciniki_musicfestival_competitors.flags, "
         . "ciniki_musicfestival_competitors.parent, "
         . "ciniki_musicfestival_competitors.address, "
         . "ciniki_musicfestival_competitors.city, "
@@ -59,7 +60,9 @@ function ciniki_musicfestivals_competitorList($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'competitors', 'fname'=>'id', 
-            'fields'=>array('id', 'festival_id', 'name', 'parent', 'address', 'city', 'province', 'postal', 'phone_home', 'phone_cell', 'email', 'age', 'study_level', 'instrument', 'notes')),
+            'fields'=>array('id', 'festival_id', 'name', 'flags', 
+                'parent', 'address', 'city', 'province', 'postal', 'phone_home', 'phone_cell', 
+                'email', 'age', 'study_level', 'instrument', 'notes')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

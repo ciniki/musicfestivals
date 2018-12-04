@@ -44,6 +44,8 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
     //
     $valid_settings = array(
         'age-restriction-msg',
+        'waiver-title',
+        'waiver-msg',
         );
     foreach($valid_settings as $field) {
         if( isset($args[$field]) ) {

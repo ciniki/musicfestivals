@@ -117,13 +117,13 @@ function ciniki_musicfestivals_festivalAdd(&$ciniki) {
     // Ignore the result, as we don't want to stop user updates if this fails.
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
-    ciniki_core_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'musicfestivals');
+    ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'musicfestivals');
 
     //
     // Update the web index if enabled
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
-    ciniki_tenants_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.musicfestivals.festival', 'object_id'=>$festival_id));
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.musicfestivals.festival', 'object_id'=>$festival_id));
 
     return array('stat'=>'ok', 'id'=>$festival_id);
 }

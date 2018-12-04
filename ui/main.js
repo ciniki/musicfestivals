@@ -81,6 +81,7 @@ function ciniki_musicfestivals_main() {
             'sections':{'label':'Syllabus', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'sections\');'},
             'registrations':{'label':'Registrations', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'registrations\');'},
             'schedule':{'label':'Schedule', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'schedule\');'},
+            'competitors':{'label':'Competitors', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'competitors\');'},
             'adjudicators':{'label':'Adjudicators', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'adjudicators\');'},
             'files':{'label':'Files', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'files\');'},
             'sponsors':{'label':'Sponsors', 
@@ -204,6 +205,10 @@ function ciniki_musicfestivals_main() {
             'cellClasses':['label', 'multiline'],
             'addTxt':'Add Time Slot',
             'addFn':'M.ciniki_musicfestivals_main.scheduletimeslot.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.scheduledivision_id,M.ciniki_musicfestivals_main.festival.festival_id,null);',
+            },
+        'competitors':{'label':'', 'type':'simplegrid', 'num_cols':3,
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._tabs.selected == 'competitors' ? 'yes' : 'no'; },
+            'headerValues':['Name', 'Classes', 'Waiver'],
             },
         'adjudicators':{'label':'', 'type':'simplegrid', 'num_cols':1,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._tabs.selected == 'adjudicators' ? 'yes' : 'no'; },
@@ -332,6 +337,13 @@ function ciniki_musicfestivals_main() {
                 case 1: return '<span class="maintext">' + d.name + '</span><span class="subtext">' + d.description.replace(/\n/g, '<br/>') + '</span>';
             }
         }
+        if( s == 'competitors' ) {
+            switch(j) {
+                case 0: return d.name;
+                case 1: return d.classcodes;
+                case 2: return d.waiver_signed;
+            }
+        }
         if( s == 'adjudicators' ) {
             return d.name;
         }
@@ -364,10 +376,12 @@ function ciniki_musicfestivals_main() {
 //            case 'schedule_sections': return 'M.ciniki_musicfestivals_main.schedulesection.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.id + '\',M.ciniki_musicfestivals_main.festival.festival_id,null);';
 //            case 'schedule_divisions': return 'M.ciniki_musicfestivals_main.scheduledivision.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.id + '\',M.ciniki_musicfestivals_main.festival.schedulesection_id,M.ciniki_musicfestivals_main.festival.festival_id,null);';
             case 'schedule_timeslots': return 'M.ciniki_musicfestivals_main.scheduletimeslot.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.id + '\',M.ciniki_musicfestivals_main.festival.scheduledivision_id,M.ciniki_musicfestivals_main.festival.festival_id,null);';
+            case 'competitors': return 'M.ciniki_musicfestivals_main.competitor.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.id + '\',M.ciniki_musicfestivals_main.festival.festival_id);';
             case 'adjudicators': return 'M.ciniki_musicfestivals_main.adjudicator.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.id + '\',0,M.ciniki_musicfestivals_main.festival.festival_id, M.ciniki_musicfestivals_main.festival.nplists.adjudicators);';
             case 'files': return 'M.ciniki_musicfestivals_main.editfile.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.id + '\');';
             case 'sponsors': return 'M.startApp(\'ciniki.sponsors.ref\',null,\'M.ciniki_musicfestivals_main.festival.open();\',\'mc\',{\'ref_id\':\'' + d.sponsor.ref_id + '\'});';
         }
+        return '';
     }
     this.festival.switchTab = function(tab, stab) {
         if( tab != null ) { this.sections._tabs.selected = tab; }
@@ -434,6 +448,8 @@ function ciniki_musicfestivals_main() {
             args['schedule'] = 'yes';
             args['ssection_id'] = this.schedulesection_id;
             args['sdivision_id'] = this.scheduledivision_id;
+        } else if( this.sections._tabs.selected == 'competitors' ) {
+            args['competitors'] = 'yes';
         } else if( this.sections._tabs.selected == 'adjudicators' ) {
             args['adjudicators'] = 'yes';
         } else if( this.sections._tabs.selected == 'files' ) {
@@ -526,6 +542,10 @@ function ciniki_musicfestivals_main() {
             }},
         '_settings':{'label':'', 'aside':'yes', 'fields':{
             'age-restriction-msg':{'label':'Age Restriction Message', 'type':'text'},
+            }},
+        '_waiver':{'label':'Waiver Message', 'aside':'yes', 'fields':{
+            'waiver-title':{'label':'Title', 'type':'text'},
+            'waiver-msg':{'label':'Message', 'type':'textarea', 'size':'medium'},
             }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'website', 'tabs':{
             'website':{'label':'Website', 'fn':'M.ciniki_musicfestivals_main.edit.switchTab(\'website\');'},
@@ -1484,6 +1504,7 @@ function ciniki_musicfestivals_main() {
             'age':{'label':'Age', 'type':'text'},
             'study_level':{'label':'Study/Level', 'type':'text'},
             'instrument':{'label':'Instrument', 'type':'text'},
+            'flags1':{'label':'Waiver', 'type':'flagtoggle', 'bit':0x01, 'field':'flags', 'toggles':{'':'Unsigned', 'signed':'Signed'}},
             }},
         '_notes':{'label':'Notes', 'aside':'yes', 'fields':{
             'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea'},
