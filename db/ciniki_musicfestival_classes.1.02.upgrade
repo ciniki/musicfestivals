@@ -1,0 +1,5 @@
+#
+# Added earlybird fee
+#
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN earlybird_fee decimal(19,6) not null AFTER flags;
+ALTER TABLE ciniki_musicfestival_classes COMMENT='v1.02';

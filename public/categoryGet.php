@@ -132,6 +132,7 @@ function ciniki_musicfestivals_categoryGet($ciniki) {
                 . "ciniki_musicfestival_classes.permalink, "
                 . "ciniki_musicfestival_classes.sequence, "
                 . "ciniki_musicfestival_classes.flags, "
+                . "ciniki_musicfestival_classes.earlybird_fee, "
                 . "ciniki_musicfestival_classes.fee "
                 . "FROM ciniki_musicfestival_classes "
                 . "WHERE ciniki_musicfestival_classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -140,7 +141,7 @@ function ciniki_musicfestivals_categoryGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'classes', 'fname'=>'id', 
-                    'fields'=>array('id', 'festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 'fee')),
+                    'fields'=>array('id', 'festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 'earlybird_fee', 'fee')),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
@@ -148,6 +149,7 @@ function ciniki_musicfestivals_categoryGet($ciniki) {
             if( isset($rc['classes']) ) {
                 $category['classes'] = $rc['classes'];
                 foreach($category['classes'] as $iid => $class) {
+                    $category['classes'][$iid]['earlybird_fee'] = numfmt_format_currency($intl_currency_fmt, $class['earlybird_fee'], $intl_currency);
                     $category['classes'][$iid]['fee'] = numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency);
                     $nplists['classes'][] = $class['id'];
                 }

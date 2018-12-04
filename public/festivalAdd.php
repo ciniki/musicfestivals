@@ -27,6 +27,7 @@ function ciniki_musicfestivals_festivalAdd(&$ciniki) {
         'end_date'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'date', 'name'=>'End'),
         'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
+        'earlybird_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Earlybird End Date'),
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Primary Image'),
         'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),
         'document_logo_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Document Header Logo'),

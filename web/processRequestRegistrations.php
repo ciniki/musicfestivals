@@ -477,7 +477,9 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                                 if( $_POST[$field] == 'new' ) {
                                     $required = array();
                                     $required['name'] = 'You must enter a competitors name';
-                                    $required['parent'] = 'You must enter the parents name';
+                                    if( $customer_type == 10 || $customer_type == 20 ) {
+                                        $required['parent'] = 'You must enter the parents name';
+                                    }
                                     $required['city'] = 'You must enter an city';
                                     $required['email'] = 'You must enter an email address';
                                     $required['age'] = 'You must enter this competitors age';
@@ -486,8 +488,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                                     $required['waiver_signed'] = 'You must agree to "' . $args['settings']['waiver-msg'] . '"';
                                     $err_msg = '';
                                     foreach($required as $rf => $msg) {
-                                        $f = $rf . $i;
-                                        if( !isset($_POST[$f]) || trim($_POST[$f]) == '' ) {
+                                        if( !isset($_POST[$rf . $i]) || trim($_POST[$rf . $i]) == '' ) {
                                             $err_msg = $msg;
                                             break;
                                         }
@@ -639,7 +640,9 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
 
             if( isset($_POST['competitor1_id']) && $_POST['competitor1_id'] == 'new' ) {
                 $required['name1'] = 'You must enter a competitors name';
-                $required['parent1'] = 'You must enter the parents name';
+                if( $customer_type == 10 || $customer_type == 20 ) {
+                    $required['parent1'] = 'You must enter the parents name';
+                }
                 $required['city1'] = 'You must enter an city';
                 $required['email1'] = 'You must enter an email address';
                 $required['age1'] = 'You must enter this competitors age';
@@ -649,7 +652,9 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
             }
             if( isset($_POST['competitor2_id']) && $_POST['competitor2_id'] == 'new' ) {
                 $required['name2'] = 'You must enter a competitors name';
-                $required['parent2'] = 'You must enter the parents name';
+                if( $customer_type == 10 || $customer_type == 20 ) {
+                    $required['parent2'] = 'You must enter the parents name';
+                }
                 $required['city2'] = 'You must enter an city';
                 $required['email2'] = 'You must enter an email address';
                 $required['age2'] = 'You must enter this competitors age';
@@ -659,7 +664,9 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
             }
             if( isset($_POST['competitor3_id']) && $_POST['competitor3_id'] == 'new' ) {
                 $required['name3'] = 'You must enter a competitors name';
-                $required['parent3'] = 'You must enter the parents name';
+                if( $customer_type == 10 || $customer_type == 20 ) {
+                    $required['parent3'] = 'You must enter the parents name';
+                }
                 $required['city3'] = 'You must enter an city';
                 $required['email3'] = 'You must enter an email address';
                 $required['age3'] = 'You must enter this competitors age';
@@ -668,9 +675,9 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 $required['waiver_signed3'] = 'You must agree to "' . $args['settings']['waiver-msg'] . '"';
             }
 
-            foreach($required as $field => $msg) {
+            foreach($required as $rf => $msg) {
                 if( isset($_POST['competitor1_id']) && $_POST['competitor1_id'] == 'new' 
-                    && (!isset($_POST[$field]) || trim($_POST[$field]) == '' ) 
+                    && (!isset($_POST[$rf]) || trim($_POST[$rf]) == '' ) 
                     ) {
                     $err_msg = $msg;
                     break;
@@ -721,7 +728,9 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                         if( $_POST[$field] == 'new' ) {
                             $required = array();
                             $required['name'] = 'You must enter a competitors name';
-                            $required['parent'] = 'You must enter the parents name';
+                            if( $customer_type == 10 || $customer_type == 20 ) {
+                                $required['parent'] = 'You must enter the parents name';
+                            }
                             $required['city'] = 'You must enter an city';
                             $required['email'] = 'You must enter an email address';
                             $required['age'] = 'You must enter this competitors age';
@@ -729,9 +738,8 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                             $required['instrument'] = 'You must enter the competitors instrument';
                             $required['waiver_signed'] = 'You must agree to "' . $args['settings']['waiver-msg'] . '"';
                             $err_msg = '';
-                            foreach($required as $field => $msg) {
-                                $f = $field . $i;
-                                if( !isset($_POST[$f]) || trim($_POST[$f]) == '' ) {
+                            foreach($required as $rf => $msg) {
+                                if( !isset($_POST[$rf . $i]) || trim($_POST[$rf . $i]) == '' ) {
                                     $err_msg = $msg;
                                     break;
                                 }
@@ -866,7 +874,9 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
         //
         $required = array();
         $required['name'] = 'You must enter a competitors name';
-        $required['parent'] = 'You must enter the parents name';
+        if( $customer_type == 10 || $customer_type == 20 ) {
+            $required['parent'] = 'You must enter the parents name';
+        }
         $required['city'] = 'You must enter an city';
         $required['email'] = 'You must enter an email address';
         $required['age'] = 'You must enter this competitors age';

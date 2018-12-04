@@ -300,7 +300,7 @@ function ciniki_musicfestivals_main() {
                 case 0: return d.section_name;
                 case 1: return d.category_name;
                 case 2: return d.code + ' - ' + d.name;
-                case 3: return d.fee;
+                case 3: return d.earlybird_fee + '/' + d.fee;
                 case 4: return (d.num_registrations!=0 ? d.num_registrations : '');
             }
         }
@@ -539,6 +539,7 @@ function ciniki_musicfestivals_main() {
             'end_date':{'label':'End', 'type':'date'},
             'status':{'label':'Status', 'type':'toggle', 'toggles':{'10':'Active', '30':'Published', '60':'Archived'}},
             'flags1':{'label':'Online Registrations', 'type':'flagtoggle', 'default':'off', 'bit':0x01, 'field':'flags'},
+            'earlybird_date':{'label':'Earlybird End', 'type':'date'},
             }},
         '_settings':{'label':'', 'aside':'yes', 'fields':{
             'age-restriction-msg':{'label':'Age Restriction Message', 'type':'text'},
@@ -906,7 +907,7 @@ function ciniki_musicfestivals_main() {
     this.category.cellValue = function(s, i, j, d) {
         switch (j) {
             case 0: return d.code + ' - ' + d.name;
-            case 1: return d.fee;
+            case 1: return d.earlybird_fee + '/' + d.fee;
         }
     }
     this.category.rowFn = function(s, i, d) {
@@ -990,7 +991,7 @@ function ciniki_musicfestivals_main() {
     }
     this.category.prevButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.category_id) > 0 ) {
-            return 'M.ciniki_musicfestivals_main.category.save(\'M.ciniki_musicfestivals_main.category_id.open(null,' + this.nplist[this.nplist.indexOf('' + this.category_id) - 1] + ');\');';
+            return 'M.ciniki_musicfestivals_main.category.save(\'M.ciniki_musicfestivals_main.category.open(null,' + this.nplist[this.nplist.indexOf('' + this.category_id) - 1] + ');\');';
         }
         return null;
     }
@@ -1014,6 +1015,7 @@ function ciniki_musicfestivals_main() {
             'code':{'label':'Code', 'type':'text', 'size':'small'},
             'name':{'label':'Name', 'type':'text'},
             'sequence':{'label':'Order', 'type':'text'},
+            'earlybird_fee':{'label':'Earlybird Fee', 'type':'text', 'size':'small'},
             'fee':{'label':'Fee', 'type':'text', 'size':'small'},
             }},
         'registration':{'label':'Registration Options', 'aside':'yes', 'fields':{
@@ -1117,7 +1119,7 @@ function ciniki_musicfestivals_main() {
     }
     this.class.prevButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.class_id) > 0 ) {
-            return 'M.ciniki_musicfestivals_main.class.save(\'M.ciniki_musicfestivals_main.class_id.open(null,' + this.nplist[this.nplist.indexOf('' + this.class_id) - 1] + ');\');';
+            return 'M.ciniki_musicfestivals_main.class.save(\'M.ciniki_musicfestivals_main.classd.open(null,' + this.nplist[this.nplist.indexOf('' + this.class_id) - 1] + ');\');';
         }
         return null;
     }
@@ -1239,6 +1241,7 @@ function ciniki_musicfestivals_main() {
                 },
             'title':{'label':'Title', 'type':'text'},
             'perf_time':{'label':'PerfTime', 'type':'text', 'size':'small'},
+            'earlybird_fee':{'label':'Fee', 'type':'text', 'size':'small'},
             'fee':{'label':'Fee', 'type':'text', 'size':'small'},
             }},
         '_notes':{'label':'Notes', 'fields':{

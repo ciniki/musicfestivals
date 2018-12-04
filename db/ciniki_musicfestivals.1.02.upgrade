@@ -1,5 +1,5 @@
 #
-# Add waiver message
+# Added earlybird fee
 #
-ALTER TABLE ciniki_musicfestivals ADD COLUMN waiver_msg varchar(5000) not null AFTER document_footer_msg;
+ALTER TABLE ciniki_musicfestivals ADD COLUMN earlybird_date date not null AFTER flags;
 ALTER TABLE ciniki_musicfestivals COMMENT='v1.02';

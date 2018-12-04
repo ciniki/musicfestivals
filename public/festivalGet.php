@@ -123,6 +123,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             . "ciniki_musicfestivals.end_date, "
             . "ciniki_musicfestivals.status, "
             . "ciniki_musicfestivals.flags, "
+            . "ciniki_musicfestivals.earlybird_date, "
             . "ciniki_musicfestivals.primary_image_id, "
             . "ciniki_musicfestivals.description, "
             . "ciniki_musicfestivals.document_logo_id, "
@@ -135,10 +136,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'festivals', 'fname'=>'id', 
-                'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'status', 'flags', 'primary_image_id', 'description', 
+                'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'status', 'flags', 'earlybird_date',
+                    'primary_image_id', 'description', 
                     'document_logo_id', 'document_header_msg', 'document_footer_msg'),
                 'utctotz'=>array('start_date'=>array('timezone'=>'UTC', 'format'=>$date_format),
-                    'end_date'=>array('timezone'=>'UTC', 'format'=>$date_format)),                ),
+                    'end_date'=>array('timezone'=>'UTC', 'format'=>$date_format),
+                    'earlybird_date'=>array('timezone'=>'UTC', 'format'=>$date_format)),
+                ),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.8', 'msg'=>'Festival not found', 'err'=>$rc['err']));
@@ -277,6 +281,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "classes.permalink, "
                 . "classes.sequence, "
                 . "classes.flags, "
+                . "classes.earlybird_fee, "
                 . "classes.fee, "
                 . "COUNT(registrations.id) AS num_registrations "
                 . "FROM ciniki_musicfestival_sections AS sections "
@@ -302,7 +307,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'classes', 'fname'=>'id', 
-                    'fields'=>array('id', 'festival_id', 'category_id', 'section_name', 'category_name', 'code', 'name', 'permalink', 'sequence', 'flags', 'fee', 'num_registrations')),
+                    'fields'=>array('id', 'festival_id', 'category_id', 'section_name', 'category_name', 
+                        'code', 'name', 'permalink', 'sequence', 'flags', 'earlybird_fee', 'fee', 'num_registrations')),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
@@ -310,6 +316,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             if( isset($rc['classes']) ) {
                 $festival['classes'] = $rc['classes'];
                 foreach($festival['classes'] as $iid => $class) {
+                    $festival['classes'][$iid]['earlybird_fee'] = numfmt_format_currency($intl_currency_fmt, $class['earlybird_fee'], $intl_currency);
                     $festival['classes'][$iid]['fee'] = numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency);
                     $nplists['classes'][] = $class['id'];
                 }

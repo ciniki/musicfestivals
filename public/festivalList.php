@@ -44,14 +44,15 @@ function ciniki_musicfestivals_festivalList($ciniki) {
         . "ciniki_musicfestivals.start_date, "
         . "ciniki_musicfestivals.end_date, "
         . "ciniki_musicfestivals.status, "
-        . "ciniki_musicfestivals.flags "
+        . "ciniki_musicfestivals.flags, "
+        . "ciniki_musicfestivals.earlybird_date "
         . "FROM ciniki_musicfestivals "
         . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'festivals', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'permalink', 'start_date', 'end_date', 'status', 'flags')),
+            'fields'=>array('id', 'name', 'permalink', 'start_date', 'end_date', 'status', 'flags', 'earlybird_date')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
