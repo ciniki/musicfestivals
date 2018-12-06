@@ -281,9 +281,13 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
         . "cl.uuid AS class_uuid, "
         . "cl.code AS class_code, "
         . "cl.name AS class_name, "
-        . "cl.flags AS class_flags, "
-        . "cl.fee AS class_fee "
-        . "FROM ciniki_musicfestival_sections AS s "
+        . "cl.flags AS class_flags, ";
+    if( isset($args['earlybird']) && $args['earlybird'] >= 0 ) {
+        $strsql .= "cl.earlybird_fee AS class_fee ";
+    } else {
+        $strsql .= "cl.fee AS class_fee ";
+    }
+    $strsql .= "FROM ciniki_musicfestival_sections AS s "
         . "LEFT JOIN ciniki_musicfestival_categories AS ca ON ("
             . "s.id = ca.section_id "
             . "AND ca.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "

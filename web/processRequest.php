@@ -19,6 +19,16 @@
 function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $args) {
 
     //
+    // Load the tenant settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $intl_timezone = $rc['settings']['intl-default-timezone'];
+
+    //
     // Check to make sure the module is enabled
     //
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
@@ -36,17 +46,19 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
     // Check for music festival permalink, for archived festivals
     //
     $festival_id = 0;
-    $festival = array(
+/*    $festival = array(
         'flags' => 0,
         'settings' => array(
             'age-restriction-msg' => '',
             ),
-        );
+        ); */
+    $dt = new DateTime('now', new DateTimezone($intl_timezone));
     if( isset($uri_split[0]) && $uri_split[0] != '' ) {
         //
         // Check if a musicfestival
         //
-        $strsql = "SELECT id, name, flags "
+        $strsql = "SELECT id, name, flags, "
+            . "IFNULL(DATEDIFF(earlybird_date, '" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d')) . "'), -1) AS earlybird "
             . "FROM ciniki_musicfestivals "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND status = 30 "
@@ -75,7 +87,8 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
         //
         // Load the festival name
         //
-        $strsql = "SELECT id, name, flags "
+        $strsql = "SELECT id, name, flags, "
+            . "IFNULL(DATEDIFF(earlybird_date, '" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d')) . "'), -1) AS earlybird "
             . "FROM ciniki_musicfestivals "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND status = 30 "
@@ -258,6 +271,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
             'uri_split' => $uri_split,
             'festival_id' => $festival_id,
             'festival_flags' => $festival['flags'],
+            'earlybird' => $festival['earlybird'],
             'settings' => $festival['settings'],
             'base_url' => $args['base_url'] . '/registrations',
             'ssl_domain_base_url' => $args['ssl_domain_base_url'] . '/registrations',
@@ -302,9 +316,13 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
             . "ciniki_musicfestival_classes.name, "
             . "ciniki_musicfestival_classes.permalink, "
             . "ciniki_musicfestival_classes.sequence, "
-            . "ciniki_musicfestival_classes.flags, "
-            . "CONCAT('$', FORMAT(ciniki_musicfestival_classes.fee, 2)) AS fee "
-            . "FROM ciniki_musicfestival_categories, ciniki_musicfestival_classes "
+            . "ciniki_musicfestival_classes.flags, ";
+        if( $festival['earlybird'] >= 0 ) {
+            $strsql .= "CONCAT('$', FORMAT(ciniki_musicfestival_classes.earlybird_fee, 2)) AS fee ";
+        } else {
+            $strsql .= "CONCAT('$', FORMAT(ciniki_musicfestival_classes.fee, 2)) AS fee ";
+        }
+        $strsql .= "FROM ciniki_musicfestival_categories, ciniki_musicfestival_classes "
             . "WHERE ciniki_musicfestival_categories.section_id = '" . ciniki_core_dbQuote($ciniki, $section['id']) . "' "
             . "AND ciniki_musicfestival_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND ciniki_musicfestival_categories.id = ciniki_musicfestival_classes.category_id "

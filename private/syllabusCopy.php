@@ -19,7 +19,7 @@ function ciniki_musicfestivals_syllabusCopy(&$ciniki, $tnid, $festival_id, $old_
     $strsql = "SELECT s.id AS sid, s.name AS sn, s.permalink AS sp, s.sequence AS so, "
         . "s.primary_image_id AS si, s.synopsis AS ss, s.description AS sd, "
         . "c.id AS cid, c.name AS cn, c.permalink AS cp, c.sequence AS co, c.primary_image_id AS ci, c.synopsis AS cs, c.description AS cd, "
-        . "i.id AS iid, i.code, i.name AS iname, i.permalink AS ip, i.sequence AS io, i.flags, i.fee "
+        . "i.id AS iid, i.code, i.name AS iname, i.permalink AS ip, i.sequence AS io, i.flags, i.earlybird_fee, i.fee "
         . "FROM ciniki_musicfestival_sections AS s "
         . "LEFT JOIN ciniki_musicfestival_categories AS c ON ("
             . "s.id = c.section_id "
@@ -41,7 +41,7 @@ function ciniki_musicfestivals_syllabusCopy(&$ciniki, $tnid, $festival_id, $old_
         array('container'=>'categories', 'fname'=>'cid',
             'fields'=>array('name'=>'cn', 'permalink'=>'cp', 'sequence'=>'co', 'primary_image_id'=>'ci', 'synopsis'=>'cs', 'description'=>'cd')),
         array('container'=>'classes', 'fname'=>'iid',
-            'fields'=>array('code', 'name'=>'iname', 'permalink'=>'ip', 'sequence'=>'io', 'flags', 'fee')),
+            'fields'=>array('code', 'name'=>'iname', 'permalink'=>'ip', 'sequence'=>'io', 'flags', 'earlybird_fee', 'fee')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.104', 'msg'=>'Previous syllabus not found', 'err'=>$rc['err']));
