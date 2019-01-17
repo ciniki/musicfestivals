@@ -638,7 +638,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 && (!isset($_POST['teacher_email']) || $_POST['teacher_email'] == '' )
                 ) {
                 $err_msg = "You must enter an email address for the teacher";
-            } elseif( !isset($_POST['teacher_customer_id']) || $_POST['teacher_customer_id'] == '' || $_POST['teacher_customer_id'] == '0' ) {
+            } elseif( $customer_type != 20 && (!isset($_POST['teacher_customer_id']) || $_POST['teacher_customer_id'] == '' || $_POST['teacher_customer_id'] == '0') ) {
                 $err_msg = "You must choose specify a teacher.";
             }
 
