@@ -1241,7 +1241,7 @@ function ciniki_musicfestivals_main() {
                 },
             'title':{'label':'Title', 'type':'text'},
             'perf_time':{'label':'PerfTime', 'type':'text', 'size':'small'},
-            'earlybird_fee':{'label':'Fee', 'type':'text', 'size':'small'},
+//            'earlybird_fee':{'label':'Earlybird Fee', 'type':'text', 'size':'small'},
             'fee':{'label':'Fee', 'type':'text', 'size':'small'},
             }},
         '_notes':{'label':'Notes', 'fields':{
