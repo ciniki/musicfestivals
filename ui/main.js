@@ -161,7 +161,7 @@ function ciniki_musicfestivals_main() {
             'headerValues':['Class', 'Registrant', 'Teacher', 'Fee', 'Status', ''],
             'sortable':'yes',
             'sortTypes':['text', 'text', 'text', 'altnumber', 'altnumber', ''],
-            'cellClasses':['', '', '', '', '', 'alignright'],
+            'cellClasses':['', 'multiline', '', '', '', 'alignright'],
             'addTxt':'Add Registration',
             'addFn':'M.ciniki_musicfestivals_main.registration.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,0,0,M.ciniki_musicfestivals_main.festival.festival_id,null);',
             },
@@ -307,7 +307,7 @@ function ciniki_musicfestivals_main() {
         if( s == 'registrations' ) {
             switch (j) {
                 case 0: return d.class_code;
-                case 1: return d.display_name;
+                case 1: return '<span class="maintext">' + d.display_name + '</span><span class="subtext">' + d.title + '</span>';
                 case 2: return d.teacher_name;
                 case 3: return '$' + d.fee;
                 case 4: return d.status_text;
@@ -441,6 +441,7 @@ function ciniki_musicfestivals_main() {
             args['categories'] = 'yes';
             args['classes'] = 'yes';
         } else if( this.sections._tabs.selected == 'registrations' ) {
+            this.size = 'xlarge narrowaside';
             args['sections'] = 'yes';
             args['registrations'] = 'yes';
         } else if( this.sections._tabs.selected == 'schedule' ) {
