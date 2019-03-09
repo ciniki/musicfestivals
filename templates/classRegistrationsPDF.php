@@ -74,6 +74,9 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
     // Load the schedule sections, divisions, timeslots, classes, registrations
     //
     $strsql = "SELECT classes.id AS class_id, "
+        . "classes.sequence AS cla_seq, "
+        . "categories.sequence AS cat_seq, "
+        . "sections.sequence AS sec_seq, "
         . "classes.code AS class_code, "
         . "classes.name AS class_name, "
         . "registrations.id AS reg_id, "
@@ -85,6 +88,14 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
         . "competitors.id AS competitor_id, "
         . "competitors.notes AS competitor_notes "
         . "FROM ciniki_musicfestival_classes AS classes "
+        . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
+            . "classes.category_id = categories.id "
+            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestival_sections AS sections ON ("
+            . "categories.section_id = sections.id "
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
         . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "classes.id = registrations.class_id "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -101,11 +112,11 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
             . ") "
         . "WHERE classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND classes.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "ORDER BY class_code, class_name, reg_id, competitor_id "
+        . "ORDER BY sec_seq, cat_seq, cla_seq, class_code, class_name, reg_id, competitor_id "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'classes', 'fname'=>'class_id', 'fields'=>array('id'=>'class_id', 'code'=>'class_code', 'name'=>'class_name')),
+        array('container'=>'classes', 'fname'=>'class_id', 'fields'=>array('id'=>'class_id', 'cat_seq', 'sec_seq', 'code'=>'class_code', 'name'=>'class_name')),
         array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'title', 'perf_time', 'notes')),
         array('container'=>'competitors', 'fname'=>'competitor_id', 'fields'=>array('id'=>'competitor_id', 'notes'=>'competitor_notes')),
         ));
@@ -121,12 +132,20 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
         $classes = array();
     }
 
-    usort($classes, function($a, $b) {
+/*    usort($classes, function($a, $b) {
+        if( $a['sec_seq'] == $b['sec_seq'] ) {
+            if( $a['cat_seq'] == $b['cat_seq'] ) {
+                if( $a['code'] == $b['code'] ) {
+                    strcasecmp($a['code'], $b['code']);
+                }
+            }
+        }
+        if( $a['cat_seq'] == $b['cat_seq'] ) {
         if( $a['num_reg'] == $b['num_reg'] ) {
             strcasecmp($a['code'], $b['code']);
         }
         return ($a['num_reg'] < $b['num_reg'] ? 1 : -1);
-    });
+    }); */
 
     //
     // Load TCPDF library
