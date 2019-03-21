@@ -55,10 +55,44 @@ function ciniki_musicfestivals_registrationDelete(&$ciniki) {
     $registration = $rc['registration'];
 
     //
-    // Check for an invoice
+    // Check for an invoice, and remove from the sapos module, which will hook back and remove registration
     //
     if( $registration['invoice_id'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.127', 'msg'=>'Registration is attached to an invoice.'));
+        //
+        // Get the status of the invoice
+        //
+        $strsql = "SELECT id, invoice_type, status "
+            . "FROM ciniki_sapos_invoices "
+            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $registration['invoice_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'invoice');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.83', 'msg'=>'Unable to load invoice', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['invoice']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.84', 'msg'=>'Unable to find requested invoice'));
+        }
+        $invoice = $rc['invoice'];
+
+        if( $invoice['invoice_type'] != 20 ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.127', 'msg'=>'Registration is attached to an invoice.'));
+        }
+
+        //
+        // Remove invoice item from cart
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemDelete');
+        $rc = ciniki_sapos_hooks_invoiceItemDelete($ciniki, $args['tnid'], array(
+            'invoice_id' => $rc['invoice']['id'],
+            'object' => 'ciniki.musicfestivals.registration',
+            'object_id' => $registration['id'],
+            'deleteinvoice' => 'yes',
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.154', 'msg'=>'Unable to remove item from invoice', 'err'=>$rc['err']));
+        }
+        return array('stat'=>'ok');
     }
 
     //
