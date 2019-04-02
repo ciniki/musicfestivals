@@ -164,7 +164,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
         public $left_margin = 12;
         public $right_margin = 12;
         public $top_margin = 12;
-        public $footer_margin = 12;
+        public $footer_margin = 0;
         public $header_image = null;
         public $header_title = '';
         public $header_sub_title = '';
@@ -370,6 +370,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
             //
             $fill = 0;
             $border = 'T';
+            $c = 1;
             foreach($division['timeslots'] as $timeslot) {
                 $name = $timeslot['name'];
                 $description = $timeslot['description'];
@@ -422,12 +423,15 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
                     $pdf->writeHTMLCell($w2[1], $d_height, '', '', preg_replace("/\n/", "<br/>", $description), '', 0, false, true, 'L', 1);
                     $pdf->Ln();
                 }
-                $pdf->Ln(5);
+                if( $c < count($division['timeslots']) ) {
+                    $pdf->Ln(5);
+                }
 
                 $fill=!$fill;
                 $border = 'T';
+                $c++;
             }
-            $pdf->Cell($w[0]+$w[1]+$w[2], 1, '', 'T', 0, 'R', 0);
+//            $pdf->Cell($w[0]+$w[1]+$w[2], 1, '', 'T', 0, 'R', 0);
         }
     }
 
