@@ -213,14 +213,11 @@ function ciniki_musicfestivals_hooks_uiCustomersData($ciniki, $tnid, $args) {
     }
     $sections['ciniki.musicfestivals.registrations']['data'] = isset($rc['registrations']) ? $rc['registrations'] : array();
 
-
-
-
     //
     // Setup the tab
     //
     $rsp['tabs'][] = array(
-        'id' => 'ciniki.musicfestivals.competitors',
+        'id' => 'ciniki.musicfestivals.festivals',
         'label' => 'Music',
         'sections' => $sections,
         );

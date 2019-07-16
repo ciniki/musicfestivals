@@ -103,7 +103,7 @@ function ciniki_musicfestivals_hooks_customerMerge($ciniki, $tnid, $args) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'items');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.161', 'msg'=>'Unable to find music customers', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.161', 'msg'=>'Unable to find music registrations', 'err'=>$rc['err']));
     }
     $items = $rc['rows'];
     foreach($items as $i => $row) {
@@ -116,7 +116,7 @@ function ciniki_musicfestivals_hooks_customerMerge($ciniki, $tnid, $args) {
         }
         $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $row['id'], $update_args, 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.162', 'msg'=>'Unable to find music customers.', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.162', 'msg'=>'Unable to find music registrations.', 'err'=>$rc['err']));
         }
         $updated++;
     }
