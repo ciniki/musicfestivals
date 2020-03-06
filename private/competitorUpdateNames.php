@@ -143,7 +143,7 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $festival_
                 if( $registration['public_name'] != $registration['competitors'][$registration['competitor1_id']]['name'] ) {
                     $update_args['public_name'] = $registration['competitors'][$registration['competitor1_id']]['name'];
                 }
-                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration_id, $update_args, 0x04);
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration['id'], $update_args, 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.153', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
                 }
