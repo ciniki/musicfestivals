@@ -196,6 +196,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
                 . "WHERE festival_id = '" . ciniki_core_dbQuote($ciniki, $festival_id) . "' "
                 . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $uri_split[0]) . "' "
                 . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "AND (flags&0x01) = 0 "   // Make sure visible on website
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'section');
             if( $rc['stat'] != 'ok' ) {
@@ -437,6 +438,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
         . "FROM ciniki_musicfestival_sections "
         . "WHERE festival_id = '" . ciniki_core_dbQuote($ciniki, $festival_id) . "' "
         . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND (flags&0x01) = 0 "   // Make sure visible on website
         . "ORDER BY sequence "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'section');

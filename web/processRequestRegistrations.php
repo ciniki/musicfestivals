@@ -298,6 +298,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
             . ") "
         . "WHERE s.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "AND s.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND (s.flags&0x01) = 0 "
         . "ORDER BY s.sequence, s.name, ca.sequence, ca.name, cl.sequence, cl.name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');

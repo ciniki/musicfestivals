@@ -725,6 +725,7 @@ function ciniki_musicfestivals_main() {
         'general':{'label':'Section', 'aside':'yes', 'fields':{
             'name':{'label':'Name', 'type':'text', 'required':'yes'},
             'sequence':{'label':'Order', 'type':'text', 'required':'yes', 'size':'small'},
+            'flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'Hidden'}}},
             }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'categories', 'tabs':{
             'categories':{'label':'Categories', 'fn':'M.ciniki_musicfestivals_main.section.switchTab(\'categories\');'},

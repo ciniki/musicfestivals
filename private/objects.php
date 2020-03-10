@@ -70,6 +70,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'name'=>array('name'=>'Name'),
             'permalink'=>array('name'=>'Permalink', 'default'=>''),
             'sequence'=>array('name'=>'Order', 'default'=>'1'),
+            'flags'=>array('name'=>'Options', 'default'=>'0'),
             'primary_image_id'=>array('name'=>'Image', 'ref'=>'ciniki.images.image', 'default'=>'0'),
             'synopsis'=>array('name'=>'Synopsis', 'default'=>''),
             'description'=>array('name'=>'Description', 'default'=>''),
