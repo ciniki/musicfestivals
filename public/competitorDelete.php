@@ -58,13 +58,13 @@ function ciniki_musicfestivals_competitorDelete(&$ciniki) {
     // Check for any dependencies before deleting
     //
     $strsql = "SELECT COUNT(id) AS num_registrations "
-        . "FROM ciniki_musicfestivals_registrations "
+        . "FROM ciniki_musicfestival_registrations "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND (ciniki_musicfestivals_registrations.competitor1_id = '" . ciniki_core_dbQuote($ciniki, $args['competitor_id']) . "' "
-                . "OR ciniki_musicfestivals_registrations.competitor2_id = '" . ciniki_core_dbQuote($ciniki, $args['competitor_id']) . "' "
-                . "OR ciniki_musicfestivals_registrations.competitor3_id = '" . ciniki_core_dbQuote($ciniki, $args['competitor_id']) . "' "
-                . "OR ciniki_musicfestivals_registrations.competitor4_id = '" . ciniki_core_dbQuote($ciniki, $args['competitor_id']) . "' "
-                . "OR ciniki_musicfestivals_registrations.competitor5_id = '" . ciniki_core_dbQuote($ciniki, $args['competitor_id']) . "' "
+            . "AND (ciniki_musicfestival_registrations.competitor1_id = '" . ciniki_core_dbQuote($ciniki, $args['competitor_id']) . "' "
+                . "OR ciniki_musicfestival_registrations.competitor2_id = '" . ciniki_core_dbQuote($ciniki, $args['competitor_id']) . "' "
+                . "OR ciniki_musicfestival_registrations.competitor3_id = '" . ciniki_core_dbQuote($ciniki, $args['competitor_id']) . "' "
+                . "OR ciniki_musicfestival_registrations.competitor4_id = '" . ciniki_core_dbQuote($ciniki, $args['competitor_id']) . "' "
+                . "OR ciniki_musicfestival_registrations.competitor5_id = '" . ciniki_core_dbQuote($ciniki, $args['competitor_id']) . "' "
             . ") "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
