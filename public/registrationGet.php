@@ -77,6 +77,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'perf_time'=>'',
             'fee'=>'0',
             'payment_type'=>'0',
+            'videolink'=>'',
             'notes'=>'',
         );
     }
@@ -103,6 +104,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "ciniki_musicfestival_registrations.perf_time, "
             . "FORMAT(ciniki_musicfestival_registrations.fee, 2) AS fee, "
             . "ciniki_musicfestival_registrations.payment_type, "
+            . "ciniki_musicfestival_registrations.videolink, "
+            . "ciniki_musicfestival_registrations.music_orgfilename, "
             . "ciniki_musicfestival_registrations.notes "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE ciniki_musicfestival_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -113,7 +116,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             array('container'=>'registrations', 'fname'=>'id', 
                 'fields'=>array('festival_id', 'teacher_customer_id', 'billing_customer_id', 'rtype', 'status', 'invoice_id',
                     'display_name', 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 
-                    'class_id', 'title', 'perf_time', 'fee', 'payment_type', 'notes'),
+                    'class_id', 'title', 'perf_time', 'fee', 'payment_type', 'videolink', 'music_orgfilename', 'notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

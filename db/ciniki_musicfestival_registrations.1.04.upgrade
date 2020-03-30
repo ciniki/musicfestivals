@@ -1,0 +1,6 @@
+#
+# Added invoice link
+#
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN videolink varchar(1000) not null AFTER payment_type;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN music_orgfilename varchar(250) not null AFTER videolink;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.04';

@@ -71,7 +71,9 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         . "registrations.title, "
         . "registrations.perf_time, "
         . "FORMAT(registrations.fee, 2) AS fee, "
-        . "registrations.payment_type "
+        . "registrations.payment_type, "
+        . "registrations.videolink, "
+        . "registrations.music_orgfilename "
         . "FROM ciniki_musicfestival_competitors AS competitors "
         . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "(competitors.id = registrations.competitor1_id "
@@ -120,7 +122,7 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 'rtype', 'rtype_text', 
                 'status', 'status_text', 'invoice_id', 'display_name', 
-                'class_id', 'class_code', 'class_name', 'title', 'perf_time', 'fee', 'payment_type'),
+                'class_id', 'class_code', 'class_name', 'title', 'perf_time', 'fee', 'payment_type', 'videolink', 'music_orgfilename'),
             'maps'=>array(
                 'rtype_text'=>$maps['registration']['rtype'],
                 'status_text'=>$maps['registration']['status'],
@@ -128,6 +130,7 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
                 ),
             ),
         ));
+
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }

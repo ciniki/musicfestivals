@@ -185,7 +185,23 @@ function ciniki_musicfestivals_objects($ciniki) {
             'perf_time'=>array('name'=>'Performance Time', 'default'=>''),
             'fee'=>array('name'=>'Fee', 'type'=>'currency', 'default'=>'0'),
             'payment_type'=>array('name'=>'Payment Type', 'default'=>'0'),
+            'videolink'=>array('name'=>'Video Link', 'default'=>''),
+            'music_orgfilename'=>array('name'=>'Music Original Filename', 'default'=>''),
             'notes'=>array('name'=>'Notes', 'default'=>''),
+            ),
+        'history_table'=>'ciniki_musicfestivals_history',
+        );
+    $objects['comment'] = array(
+        'name'=>'Adjudication Comment',
+        'o_name'=>'comment',
+        'o_container'=>'comments',
+        'sync'=>'yes',
+        'table'=>'ciniki_musicfestival_comments',
+        'fields'=>array(
+            'registration_id'=>array('name'=>'Registration', 'ref'=>'ciniki.musicfestivals.registration'),
+            'adjudicator_id'=>array('name'=>'Adjudicator', 'ref'=>'ciniki.musicfestivals.adjudicator'),
+            'comments'=>array('name'=>'Comments', 'default'=>''),
+            'grade'=>array('name'=>'Grade', 'default'=>''),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );
