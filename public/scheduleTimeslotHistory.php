@@ -41,6 +41,26 @@ function ciniki_musicfestivals_scheduleTimeslotHistory($ciniki) {
         return $rc;
     }
 
+    if( preg_match("/(comments|grade)_([0-9]+)_([0-9]+)/", $args['field'], $m) ) {
+        $strsql = "SELECT id "
+            . "FROM ciniki_musicfestival_comments "
+            . "WHERE registration_id = '" . ciniki_core_dbQuote($ciniki, $m[2]) . "' "
+            . "AND adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $m[3]) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'comment');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.169', 'msg'=>'Unable to load comment', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['comment']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.170', 'msg'=>'Unable to find requested comment'));
+        }
+        $comment = $rc['comment'];
+
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
+        return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', $args['tnid'], 'ciniki_musicfestival_comments', $comment['id'], $m[1]);
+        
+    }
+
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
     return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', $args['tnid'], 'ciniki_musicfestival_schedule_timeslots', $args['scheduletimeslot_id'], $args['field']);
 }

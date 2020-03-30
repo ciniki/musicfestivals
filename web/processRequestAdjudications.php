@@ -296,7 +296,6 @@ function ciniki_musicfestivals_web_processRequestAdjudications(&$ciniki, $settin
             if( $registration['videolink'] != '' ) {
                 if( preg_match('/youtu.be\/([^\/]+)/', $registration['videolink'], $m) ) {
                     $content .= '<br/><div class="embed-video wide"><div class="embed-video-wrap"><iframe src="https://www.youtube.com/embed/' . $m[1] . '" frameborder="0" allow="accelerometer; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></div></div>';
-                } else {
                 }
             }
             $content .= '<br/><b>Comments:</b>'
