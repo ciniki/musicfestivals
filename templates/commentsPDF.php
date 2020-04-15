@@ -93,6 +93,8 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.171', 'msg'=>'Unable to get adjudicator list', 'err'=>$rc['err']));
     }
+    $adjudicators = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
+    error_log(print_r($adjudicators,true));
 
     //
     // Load the schedule sections, divisions, timeslots, classes, registrations
@@ -445,10 +447,15 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         $pdf->SetDrawColor(50);
                         $pdf->SetY(-45);
                         $pdf->SetFont('helvetica', 'I', 12);
-                        $pdf->Cell(45, 12, "Adjudicator's Signature ", 0, false, 'L', 0, '', 0, false);
-                        $pdf->Cell(85, 12, "", 'B', false, 'L', 0, '', 0, false);
+                        if( $comment['grade'] != '' && isset($adjudicators[$comment['adjudicator_id']]['name']) ) {
+                            $pdf->Cell(45, 12, "            Adjudicator", 0, false, 'L', 0, '', 0, false);
+                            $pdf->Cell(85, 12, $adjudicators[$comment['adjudicator_id']]['name'], 'B', false, 'L', 0, '', 0, false);
+                        } else {
+                            $pdf->Cell(45, 12, "Adjudicator's Signature ", 0, false, 'L', 0, '', 0, false);
+                            $pdf->Cell(85, 12, "", 'B', false, 'L', 0, '', 0, false);
+                        }
                         $pdf->Cell(30, 12, "Level ", 0, false, 'R', 0, '', 0, false);
-                        $pdf->Cell(20, 12, "", 'B', false, 'L', 0, '', 0, false);
+                        $pdf->Cell(20, 12, $comment['grade'], 'B', false, 'L', 0, '', 0, false);
                         $pdf->Ln(14);
                         
                         $pdf->SetTextColor(128);
