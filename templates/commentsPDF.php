@@ -152,6 +152,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "timeslots.name AS timeslot_name, "
             . "timeslots.description, "
             . "registrations.id AS reg_id, "
+            . "registrations.teacher_customer_id, "
             . "registrations.display_name, "
             . "registrations.public_name, "
             . "registrations.title, "
@@ -205,9 +206,14 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
         if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
             $strsql .= "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
         }
-        $strsql .= "ORDER BY divisions.division_date, division_id, slot_time "
-            . "";
+        if( isset($args['teacher_customer_id']) && $args['teacher_customer_id'] > 0 ) {
+            $strsql .= "AND registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' ";
+            $strsql .= "ORDER BY divisions.division_date, division_id, slot_time, display_name ";
+        } else {
+            $strsql .= "ORDER BY divisions.division_date, division_id, slot_time ";
+        }
     }
+    error_log($strsql);
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'name'=>'section_name')),
