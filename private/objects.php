@@ -202,6 +202,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'adjudicator_id'=>array('name'=>'Adjudicator', 'ref'=>'ciniki.musicfestivals.adjudicator'),
             'comments'=>array('name'=>'Comments', 'default'=>''),
             'grade'=>array('name'=>'Grade', 'default'=>''),
+            'score'=>array('name'=>'Score', 'default'=>''),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );

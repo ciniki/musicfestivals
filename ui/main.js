@@ -2212,7 +2212,7 @@ function ciniki_musicfestivals_main() {
                         {'label':'Music', 'value':registration.music_orgfilename},
                         ];
                     // 
-                    // Setup the comment & grade fields, could be for multiple adjudicators
+                    // Setup the comment, grade & score fields, could be for multiple adjudicators
                     //
                     for(var j in rsp.adjudicators) {
                         p.sections['comments_' + i] = {'label':rsp.adjudicators[j].display_name, 'fields':{}};
@@ -2223,6 +2223,11 @@ function ciniki_musicfestivals_main() {
                             };
                         p.sections['comments_' + i].fields['grade_' + rsp.timeslot.registrations[i].id + '_' + rsp.adjudicators[j].id] = {
                             'label':'Grade', 
+                            'type':'text', 
+                            'size':'small',
+                            };
+                        p.sections['comments_' + i].fields['score_' + rsp.timeslot.registrations[i].id + '_' + rsp.adjudicators[j].id] = {
+                            'label':'Score', 
                             'type':'text', 
                             'size':'small',
                             };

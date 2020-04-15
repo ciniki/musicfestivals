@@ -113,6 +113,7 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsUpdate($ciniki) {
         . "IFNULL(comments.id, 0) AS comment_id, "
         . "IFNULL(comments.comments, '') AS comments, "
         . "IFNULL(comments.grade, '') AS grade, "
+        . "IFNULL(comments.score, '') AS score, "
         . "regclass.name AS reg_class_name "
         . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
         . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
@@ -159,7 +160,7 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsUpdate($ciniki) {
                 'videolink', 'music_orgfilename', 'reg_class_name',
                 )),
         array('container'=>'comments', 'fname'=>'adjudicator_id', 
-            'fields'=>array('id'=>'adjudicator_id', 'comment_id', 'comments', 'grade')),
+            'fields'=>array('id'=>'adjudicator_id', 'comment_id', 'comments', 'grade', 'score')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -186,10 +187,16 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsUpdate($ciniki) {
                         ) {
                         $update_args['grade'] = $ciniki['request']['args']['grade_' . $registration['id'] . '_' . $adjudicator['id']];
                     }
+                    if( isset($ciniki['request']['args']['score_' . $registration['id'] . '_' . $adjudicator['id']])
+                        && $ciniki['request']['args']['score_' . $registration['id'] . '_' . $adjudicator['id']] != $existing_comments['score'] 
+                        ) {
+                        $update_args['score'] = $ciniki['request']['args']['score_' . $registration['id'] . '_' . $adjudicator['id']];
+                    }
                     if( count($update_args) > 0 ) {
                         //
                         // Update the comments for the adjudicator
                         //
+                        error_log(print_r($update_args, true));
                         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
                         $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.comment', $existing_comments['comment_id'], $update_args, 0x04);
                         if( $rc['stat'] != 'ok' ) {
@@ -211,6 +218,11 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsUpdate($ciniki) {
                         && $ciniki['request']['args']['grade_' . $registration['id'] . '_' . $adjudicator['id']] != '')
                         ) {
                         $update_args['grade'] = $ciniki['request']['args']['grade_' . $registration['id'] . '_' . $adjudicator['id']];
+                    }
+                    if( (isset($ciniki['request']['args']['score_' . $registration['id'] . '_' . $adjudicator['id']])
+                        && $ciniki['request']['args']['score_' . $registration['id'] . '_' . $adjudicator['id']] != '')
+                        ) {
+                        $update_args['score'] = $ciniki['request']['args']['score_' . $registration['id'] . '_' . $adjudicator['id']];
                     }
                     if( count($update_args) > 0 ) {
                         //

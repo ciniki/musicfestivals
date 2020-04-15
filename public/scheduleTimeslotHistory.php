@@ -41,7 +41,7 @@ function ciniki_musicfestivals_scheduleTimeslotHistory($ciniki) {
         return $rc;
     }
 
-    if( preg_match("/(comments|grade)_([0-9]+)_([0-9]+)/", $args['field'], $m) ) {
+    if( preg_match("/(comments|grade|score)_([0-9]+)_([0-9]+)/", $args['field'], $m) ) {
         $strsql = "SELECT id "
             . "FROM ciniki_musicfestival_comments "
             . "WHERE registration_id = '" . ciniki_core_dbQuote($ciniki, $m[2]) . "' "

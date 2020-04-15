@@ -120,6 +120,7 @@ function ciniki_musicfestivals_web_processRequestAdjudications(&$ciniki, $settin
         . "IFNULL(comments.id, 0) AS comment_id, "
         . "IFNULL(comments.comments, '') AS comments, "
         . "IFNULL(comments.grade, '') AS grade, "
+        . "IFNULL(comments.score, '') AS score, "
         . "regclass.name AS reg_class_name "
         . "FROM ciniki_musicfestival_schedule_sections AS sections "
         . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
@@ -182,7 +183,7 @@ function ciniki_musicfestivals_web_processRequestAdjudications(&$ciniki, $settin
                 )),
         array('container'=>'registrations', 'fname'=>'reg_uuid', 
             'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name', 'title', 
-                'videolink', 'music_orgfilename', 'class_name'=>'reg_class_name', 'comment_id', 'comments', 'grade')),
+                'videolink', 'music_orgfilename', 'class_name'=>'reg_class_name', 'comment_id', 'comments', 'grade', 'score')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -259,6 +260,11 @@ function ciniki_musicfestivals_web_processRequestAdjudications(&$ciniki, $settin
                     ) {
                     $update_args['grade'] = $_POST[$registration['id'] . '-grade'];
                 }
+                if( isset($_POST[$registration['id'] . '-score']) 
+                    && $_POST[$registration['id'] . '-score'] != $registration['score'] 
+                    ) {
+                    $update_args['score'] = $_POST[$registration['id'] . '-score'];
+                }
                 $update_args['test'] = 'one';
                 if( count($update_args) > 0 ) {
                     if( $registration['comment_id'] > 0 ) {
@@ -304,6 +310,9 @@ function ciniki_musicfestivals_web_processRequestAdjudications(&$ciniki, $settin
                 . '<div class="adjudications-grade">'
                 . '<b>Grade: </b> <input class="small text" type="text" name="' . $registration['id'] . '-grade" value="' . $registration['grade'] . '"/><br/>'
                 . '</div>'
+                . '<div class="adjudications-score">'
+                . '<b>Score: </b> <input class="small text" type="text" name="' . $registration['id'] . '-score" value="' . $registration['score'] . '"/><br/>'
+                . '</div>'
                 . '</div>';
         }
         $content .= '<div class="submit wide">'
@@ -333,7 +342,7 @@ function ciniki_musicfestivals_web_processRequestAdjudications(&$ciniki, $settin
             foreach($division['timeslots'] as $tid => $timeslot) {
                 $num_completed = 0;
                 foreach($timeslot['registrations'] as $rid => $registration) {
-                    if( $registration['comments'] != '' && $registration['grade'] != '' ) {
+                    if( $registration['comments'] != '' && $registration['grade'] != '' && $registration['score'] != '' ) {
                         $num_completed++;
                     }
                 }

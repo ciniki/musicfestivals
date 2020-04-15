@@ -120,6 +120,7 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
         . "IFNULL(comments.id, 0) AS comment_id, "
         . "IFNULL(comments.comments, '') AS comments, "
         . "IFNULL(comments.grade, '') AS grade, "
+        . "IFNULL(comments.score, '') AS score, "
         . "regclass.name AS reg_class_name "
         . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
         . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
@@ -166,7 +167,7 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
                 'videolink', 'music_orgfilename', 'reg_class_name',
                 )),
         array('container'=>'comments', 'fname'=>'comment_id', 
-            'fields'=>array('id'=>'comment_id', 'adjudicator_id', 'comments', 'grade')),
+            'fields'=>array('id'=>'comment_id', 'adjudicator_id', 'comments', 'grade', 'score')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -178,11 +179,13 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
             foreach($adjudicators as $aid => $adjudicator) {
                 $timeslot['registrations'][$rid]['comments_' . $adjudicator['id']] = '';
                 $timeslot['registrations'][$rid]['grade_' . $adjudicator['id']] = '';
+                $timeslot['registrations'][$rid]['score_' . $adjudicator['id']] = '';
                 if( isset($registration['comments']) ) {
                     foreach($registration['comments'] as $comment) {
                         if( $comment['adjudicator_id'] == $adjudicator['id'] ) {
                             $timeslot['comments_' . $registration['id'] . '_' . $adjudicator['id']] = $comment['comments'];
                             $timeslot['grade_' . $registration['id'] . '_' . $adjudicator['id']] = $comment['grade'];
+                            $timeslot['score_' . $registration['id'] . '_' . $adjudicator['id']] = $comment['score'];
                         }
                     }
                 }

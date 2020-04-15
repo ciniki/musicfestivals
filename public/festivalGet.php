@@ -549,7 +549,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "IFNULL(comments.adjudicator_id, 0) AS adjudicator_id, "
                     . "IFNULL(comments.id, 0) AS comment_id, "
                     . "IFNULL(comments.comments, '') AS comments, "
-                    . "IFNULL(comments.grade, '') AS grade "
+                    . "IFNULL(comments.grade, '') AS grade, "
+                    . "IFNULL(comments.score, '') AS score "
                     . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
                     . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
                         . "timeslots.class1_id = class1.id " 
@@ -591,7 +592,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             'videolink', 'music_orgfilename',
                             )),
                     array('container'=>'comments', 'fname'=>'comment_id', 
-                        'fields'=>array('id'=>'comment_id', 'adjudicator_id', 'comments', 'grade')),
+                        'fields'=>array('id'=>'comment_id', 'adjudicator_id', 'comments', 'grade', 'score')),
                     ));
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
@@ -605,7 +606,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             $num_registrations++;
                             if( isset($registration['comments']) ) {
                                 foreach($registration['comments'] as $comment) {
-                                    if( $comment['comments'] != '' && $comment['grade'] != '' ) {
+                                    if( $comment['comments'] != '' && $comment['grade'] != '' && $comment['score'] != '' ) {
                                         if( !isset($num_completed[$comment['adjudicator_id']]) ) {
                                             $num_completed[$comment['adjudicator_id']] = 1;
                                         } else {
