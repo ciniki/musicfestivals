@@ -28,6 +28,7 @@ function ciniki_musicfestivals_maps($ciniki) {
             '6'=>'Cart',
             '10'=>'Applied',
             '50'=>'Paid',
+            '60'=>'Cancelled',
         ),
         'payment_type'=>array(
             '10'=>'Paypal',
