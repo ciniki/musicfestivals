@@ -28,6 +28,7 @@
 #                            6 - Cart (online)
 #                           10 - Applied
 #                           50 - Paid
+#                           60 - Cancelled
 #
 # invoice_id:           The ID of the invoice in ciniki.sapos if paid online.
 #
