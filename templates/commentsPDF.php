@@ -94,7 +94,6 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.171', 'msg'=>'Unable to get adjudicator list', 'err'=>$rc['err']));
     }
     $adjudicators = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
-    error_log(print_r($adjudicators,true));
 
     //
     // Load the schedule sections, divisions, timeslots, classes, registrations
@@ -213,7 +212,6 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             $strsql .= "ORDER BY divisions.division_date, division_id, slot_time ";
         }
     }
-    error_log($strsql);
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'name'=>'section_name')),

@@ -604,7 +604,6 @@ function ciniki_musicfestivals_main() {
             }
             var p = M.ciniki_musicfestivals_main.festival;
             p.data = rsp.festival;
-            console.log(rsp);
             p.sections.timeslot_comments.headerValues[2] = '';
             p.sections.timeslot_comments.headerValues[3] = '';
             p.sections.timeslot_comments.headerValues[4] = '';
@@ -2240,7 +2239,6 @@ function ciniki_musicfestivals_main() {
                 }
                 var p = M.ciniki_musicfestivals_main.timeslotcomments;
                 p.data = rsp.timeslot;
-                console.log(rsp);
                 p.sections = {};
                 for(var i in rsp.timeslot.registrations) {
                     var registration = rsp.timeslot.registrations[i];

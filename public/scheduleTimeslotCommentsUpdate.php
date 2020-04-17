@@ -196,7 +196,6 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsUpdate($ciniki) {
                         //
                         // Update the comments for the adjudicator
                         //
-                        error_log(print_r($update_args, true));
                         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
                         $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.comment', $existing_comments['comment_id'], $update_args, 0x04);
                         if( $rc['stat'] != 'ok' ) {
