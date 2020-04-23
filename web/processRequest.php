@@ -605,15 +605,26 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
     //
     elseif( $display == 'adjudicators' ) {
         $page['breadcrumbs'][] = array('name'=>'Adjudicators', 'url'=>$args['base_url'] . '/adjudicators');
-        $strsql = "SELECT ciniki_musicfestival_adjudicators.id, "
-            . "ciniki_musicfestival_adjudicators.customer_id, "
-            . "ciniki_customers.sort_name "
-            . "FROM ciniki_musicfestival_adjudicators, ciniki_customers "
-            . "WHERE ciniki_musicfestival_adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival_id) . "' "
-            . "AND ciniki_musicfestival_adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND ciniki_musicfestival_adjudicators.customer_id = ciniki_customers.id "
-            . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "ORDER BY ciniki_customers.sort_name "
+        $strsql = "SELECT adjudicators.id, "
+            . "adjudicators.customer_id, "
+            . "customers.sort_name, "
+            . "sections.name "
+            . "FROM ciniki_musicfestival_adjudicators AS adjudicators "
+            . "INNER JOIN ciniki_customers AS customers ON ("
+                . "adjudicators.customer_id = customers.id "
+                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_schedule_sections AS sections ON ("
+                . "("
+                    . "adjudicators.id = sections.adjudicator1_id "
+                    . "OR adjudicators.id = sections.adjudicator2_id "
+                    . "OR adjudicators.id = sections.adjudicator3_id "
+                    . ") "
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival_id) . "' "
+            . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "ORDER BY customers.sort_name "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'a');
         if( $rc['stat'] != 'ok' ) {
@@ -627,7 +638,8 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
                     return $rc;
                 }
                 $customer = $rc['customer'];
-                $page['blocks'][] = array('type'=>'content', 'section'=>'section', 'title'=>$customer['display_name'], 
+                $page['blocks'][] = array('type'=>'content', 'section'=>'section', 'title'=>$customer['display_name']
+                    . (isset($row['name']) && $row['name'] != '' ? ' - ' . $row['name'] : ''), 
                     'aside_image_id'=>(isset($customer['image_id']) && $customer['image_id'] > 0  ? $customer['image_id'] : 0),
                     'html'=>$customer['processed_description']);
 //                if( isset($customer['image_id']) && $customer['image_id'] > 0 ) {
