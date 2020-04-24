@@ -696,6 +696,7 @@ function ciniki_musicfestivals_main() {
             }},
         '_settings':{'label':'', 'aside':'yes', 'fields':{
             'age-restriction-msg':{'label':'Age Restriction Message', 'type':'text'},
+            'president-name':{'label':'President Name', 'type':'text'},
             }},
         '_waiver':{'label':'Waiver Message', 'aside':'yes', 'fields':{
             'waiver-title':{'label':'Title', 'type':'text'},
