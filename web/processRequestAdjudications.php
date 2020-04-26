@@ -265,7 +265,6 @@ function ciniki_musicfestivals_web_processRequestAdjudications(&$ciniki, $settin
                     ) {
                     $update_args['score'] = $_POST[$registration['id'] . '-score'];
                 }
-                $update_args['test'] = 'one';
                 if( count($update_args) > 0 ) {
                     if( $registration['comment_id'] > 0 ) {
                         //
