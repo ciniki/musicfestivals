@@ -825,15 +825,15 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.edit.remove = function() {
-        if( confirm('Are you sure you want to remove festival?') ) {
-            M.api.getJSONCb('ciniki.musicfestivals.festivalDelete', {'tnid':M.curTenantID, 'festival_id':this.festival_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove festival?',null,function() {
+            M.api.getJSONCb('ciniki.musicfestivals.festivalDelete', {'tnid':M.curTenantID, 'festival_id':M.ciniki_musicfestivals_main.edit.festival_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_musicfestivals_main.edit.close();
             });
-        }
+        });
     }
     this.edit.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.festival_id) < (this.nplist.length - 1) ) {
@@ -977,15 +977,15 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.section.remove = function() {
-        if( confirm('Are you sure you want to remove section?') ) {
-            M.api.getJSONCb('ciniki.musicfestivals.sectionDelete', {'tnid':M.curTenantID, 'section_id':this.section_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove section?',null,function() {
+            M.api.getJSONCb('ciniki.musicfestivals.sectionDelete', {'tnid':M.curTenantID, 'section_id':M.ciniki_musicfestivals_main.section.section_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_musicfestivals_main.section.close();
             });
-        }
+        });
     }
     this.section.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.section_id) < (this.nplist.length - 1) ) {
@@ -1128,15 +1128,15 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.category.remove = function() {
-        if( confirm('Are you sure you want to remove category?') ) {
-            M.api.getJSONCb('ciniki.musicfestivals.categoryDelete', {'tnid':M.curTenantID, 'category_id':this.category_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove category?',null,function() {
+            M.api.getJSONCb('ciniki.musicfestivals.categoryDelete', {'tnid':M.curTenantID, 'category_id':M.ciniki_musicfestivals_main.category.category_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_musicfestivals_main.category.close();
             });
-        }
+        });
     }
     this.category.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.category_id) < (this.nplist.length - 1) ) {
@@ -1256,15 +1256,15 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.class.remove = function() {
-        if( confirm('Are you sure you want to remove class?') ) {
-            M.api.getJSONCb('ciniki.musicfestivals.classDelete', {'tnid':M.curTenantID, 'class_id':this.class_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove class?',null,function() {
+            M.api.getJSONCb('ciniki.musicfestivals.classDelete', {'tnid':M.curTenantID, 'class_id':M.ciniki_musicfestivals_main.class.class_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_musicfestivals_main.class.close();
             });
-        }
+        });
     }
     this.class.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.class_id) < (this.nplist.length - 1) ) {
@@ -1678,15 +1678,15 @@ function ciniki_musicfestivals_main() {
         if( this.data.invoice_id > 0 && this.data.status == 50 ) {
             msg = '**WARNING** Removing this registration will NOT remove the item from the Invoice. You will need make sure they have received a refund for the registration.';
         }
-        if( confirm(msg) ) {
-            M.api.getJSONCb('ciniki.musicfestivals.registrationDelete', {'tnid':M.curTenantID, 'registration_id':this.registration_id}, function(rsp) {
+        M.confirm(msg,null,function() {
+            M.api.getJSONCb('ciniki.musicfestivals.registrationDelete', {'tnid':M.curTenantID, 'registration_id':M.ciniki_musicfestivals_main.registration.registration_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_musicfestivals_main.registration.close();
             });
-        }
+        });
     }
     this.registration.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.registration_id) < (this.nplist.length - 1) ) {
@@ -1808,15 +1808,15 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.competitor.remove = function() {
-        if( confirm('Are you sure you want to remove competitor?') ) {
-            M.api.getJSONCb('ciniki.musicfestivals.competitorDelete', {'tnid':M.curTenantID, 'competitor_id':this.competitor_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove competitor?',null,function() {
+            M.api.getJSONCb('ciniki.musicfestivals.competitorDelete', {'tnid':M.curTenantID, 'competitor_id':M.ciniki_musicfestivals_main.competitor.competitor_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_musicfestivals_main.competitor.close();
             });
-        }
+        });
     }
     this.competitor.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.competitor_id) < (this.nplist.length - 1) ) {
@@ -1916,15 +1916,15 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.schedulesection.remove = function() {
-        if( confirm('Are you sure you want to remove scheduleSection?') ) {
-            M.api.getJSONCb('ciniki.musicfestivals.scheduleSectionDelete', {'tnid':M.curTenantID, 'schedulesection_id':this.schedulesection_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove scheduleSection?',null,function() {
+            M.api.getJSONCb('ciniki.musicfestivals.scheduleSectionDelete', {'tnid':M.curTenantID, 'schedulesection_id':M.ciniki_musicfestivals_main.schedulesection.schedulesection_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_musicfestivals_main.schedulesection.close();
             });
-        }
+        });
     }
     this.schedulesection.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.schedulesection_id) < (this.nplist.length - 1) ) {
@@ -2018,15 +2018,15 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.scheduledivision.remove = function() {
-        if( confirm('Are you sure you want to remove scheduleDivision?') ) {
-            M.api.getJSONCb('ciniki.musicfestivals.scheduleDivisionDelete', {'tnid':M.curTenantID, 'scheduledivision_id':this.scheduledivision_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove division?',null,function() {
+            M.api.getJSONCb('ciniki.musicfestivals.scheduleDivisionDelete', {'tnid':M.curTenantID, 'scheduledivision_id':M.ciniki_musicfestivals_main.scheduledivision.scheduledivision_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_musicfestivals_main.scheduledivision.close();
             });
-        }
+        });
     }
     this.scheduledivision.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.scheduledivision_id) < (this.nplist.length - 1) ) {
@@ -2182,15 +2182,15 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.scheduletimeslot.remove = function() {
-        if( confirm('Are you sure you want to remove scheduleTimeslot?') ) {
-            M.api.getJSONCb('ciniki.musicfestivals.scheduleTimeslotDelete', {'tnid':M.curTenantID, 'scheduletimeslot_id':this.scheduletimeslot_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove timeslot?',null,function() {
+            M.api.getJSONCb('ciniki.musicfestivals.scheduleTimeslotDelete', {'tnid':M.curTenantID, 'scheduletimeslot_id':M.ciniki_musicfestivals_main.scheduletimeslot.scheduletimeslot_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_musicfestivals_main.scheduletimeslot.close();
             });
-        }
+        });
     }
     this.scheduletimeslot.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.scheduletimeslot_id) < (this.nplist.length - 1) ) {
@@ -2421,15 +2421,15 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.adjudicator.remove = function() {
-        if( confirm('Are you sure you want to remove adjudicator?') ) {
-            M.api.getJSONCb('ciniki.musicfestivals.adjudicatorDelete', {'tnid':M.curTenantID, 'adjudicator_id':this.adjudicator_id}, function(rsp) {
+        M.confirm('Are you sure you want to remove adjudicator?',null,function() {
+            M.api.getJSONCb('ciniki.musicfestivals.adjudicatorDelete', {'tnid':M.curTenantID, 'adjudicator_id':M.ciniki_musicfestivals_main.adjudicator.adjudicator_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
                 M.ciniki_musicfestivals_main.adjudicator.close();
             });
-        }
+        });
     }
     this.adjudicator.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.adjudicator_id) < (this.nplist.length - 1) ) {
@@ -2550,15 +2550,15 @@ function ciniki_musicfestivals_main() {
         }
     };
     this.editfile.remove = function() {
-        if( confirm('Are you sure you want to delete \'' + this.data.name + '\'?  All information about it will be removed and unrecoverable.') ) {
-            M.api.getJSONCb('ciniki.musicfestivals.fileDelete', {'tnid':M.curTenantID, 'file_id':this.file_id}, function(rsp) {
+        M.confirm('Are you sure you want to delete \'' + this.data.name + '\'?  All information about it will be removed and unrecoverable.',null,function() {
+            M.api.getJSONCb('ciniki.musicfestivals.fileDelete', {'tnid':M.curTenantID, 'file_id':M.ciniki_musicfestivals_main.editfile.file_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 } 
                 M.ciniki_musicfestivals_main.editfile.close();
             });
-        }
+        });
     };
     this.editfile.download = function(fid) {
         M.api.openFile('ciniki.musicfestivals.fileDownload', {'tnid':M.curTenantID, 'file_id':fid});
