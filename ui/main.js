@@ -780,7 +780,7 @@ function ciniki_musicfestivals_main() {
                 M.api.err(rsp);
                 return false;
             }
-            alert("Done");
+            M.alert("Done");
         });
     }
     this.edit.open = function(cb, fid, list) {
@@ -1629,11 +1629,11 @@ function ciniki_musicfestivals_main() {
         if( cb == null ) { cb = 'M.ciniki_musicfestivals_main.registration.close();'; }
         if( !this.checkForm() ) { return false; }
         if( this.formValue('class_id') == 0 ) {
-            alert("You must select a class.");
+            M.alert("You must select a class.");
             return false;
         }
         if( this.competitor1_id == 0 ) {
-            alert("You must have a competitor.");
+            M.alert("You must have a competitor.");
             return false;
         }
         if( this.registration_id > 0 ) {
@@ -1916,7 +1916,7 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.schedulesection.remove = function() {
-        M.confirm('Are you sure you want to remove scheduleSection?',null,function() {
+        M.confirm('Are you sure you want to remove this section?',null,function() {
             M.api.getJSONCb('ciniki.musicfestivals.scheduleSectionDelete', {'tnid':M.curTenantID, 'schedulesection_id':M.ciniki_musicfestivals_main.schedulesection.schedulesection_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -2018,7 +2018,7 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.scheduledivision.remove = function() {
-        M.confirm('Are you sure you want to remove division?',null,function() {
+        M.confirm('Are you sure you want to remove this division?',null,function() {
             M.api.getJSONCb('ciniki.musicfestivals.scheduleDivisionDelete', {'tnid':M.curTenantID, 'scheduledivision_id':M.ciniki_musicfestivals_main.scheduledivision.scheduledivision_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
@@ -2634,7 +2634,7 @@ function ciniki_musicfestivals_main() {
         //
         var ac = M.createContainer(ap, 'ciniki_musicfestivals_main', 'yes');
         if( ac == null ) {
-            alert('App Error');
+            M.alert('App Error');
             return false;
         }
         
