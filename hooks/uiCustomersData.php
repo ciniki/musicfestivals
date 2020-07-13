@@ -216,12 +216,18 @@ function ciniki_musicfestivals_hooks_uiCustomersData($ciniki, $tnid, $args) {
     //
     // Setup the tab
     //
-    $rsp['tabs'][] = array(
-        'id' => 'ciniki.musicfestivals.festivals',
-        'label' => 'Music',
-        'sections' => $sections,
-        );
-    $sections = array();
+    if( count($sections['ciniki.musicfestivals.adjudicators']['data']) > 0 
+        || count($sections['ciniki.musicfestivals.competitors']['data']) > 0 
+        || count($sections['ciniki.musicfestivals.customers']['data']) > 0 
+        || count($sections['ciniki.musicfestivals.registrations']['data']) > 0 
+        ) {
+        $rsp['tabs'][] = array(
+            'id' => 'ciniki.musicfestivals.festivals',
+            'label' => 'Music',
+            'sections' => $sections,
+            );
+        $sections = array();
+    }
 
     return $rsp;
 }
