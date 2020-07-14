@@ -1399,15 +1399,15 @@ function ciniki_musicfestivals_main() {
 //            'earlybird_fee':{'label':'Earlybird Fee', 'type':'text', 'size':'small'},
             'fee':{'label':'Fee', 'type':'text', 'size':'small'},
             'videolink':{'label':'Video', 'type':'text', 
-                'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x02) == 0x02 ? 'yes' : 'no'},
+                'visible':function() { return (M.ciniki_musicfestivals_main.registration.data.festival.flags&0x02) == 0x02 ? 'yes' : 'no'},
                 },
             'music_orgfilename':{'label':'Music', 'type':'text', 'editable':'no',
-                'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x02) == 0x02 ? 'yes' : 'no'},
+                'visible':function() { return (M.ciniki_musicfestivals_main.registration.data.festival.flags&0x02) == 0x02 ? 'yes' : 'no'},
                 },
 //            'music_orgfilename_upload':{'label':'', 'type':'file', 'visible':'hidden'},
             }},
         'music_buttons':{'label':'', 
-            'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x02) == 0x02 ? 'yes' : 'no'},
+            'visible':function() { return (M.ciniki_musicfestivals_main.registration.data.festival.flags&0x02) == 0x02 ? 'yes' : 'no'},
             'buttons':{
                 'add':{'label':'Upload Music PDF', 'fn':'M.ciniki_musicfestivals_main.registration.uploadPDF();',
                     'visible':function() { return M.ciniki_musicfestivals_main.registration.data.music_orgfilename == '' ? 'yes' : 'no'},
@@ -1645,7 +1645,7 @@ function ciniki_musicfestivals_main() {
             if( this.competitor4_id != this.data.competitor4_id ) { c += '&competitor4_id=' + this.competitor4_id; }
             if( this.competitor5_id != this.data.competitor5_id ) { c += '&competitor5_id=' + this.competitor5_id; }
             if( c != '' ) {
-                M.api.postJSONCb('ciniki.musicfestivals.registrationUpdate', {'tnid':M.curTenantID, 'registration_id':this.registration_id, 'festival_id':this.festival_id}, c, function(rsp) {
+                M.api.postJSONCb('ciniki.musicfestivals.registrationUpdate', {'tnid':M.curTenantID, 'registration_id':this.registration_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
@@ -2637,7 +2637,11 @@ function ciniki_musicfestivals_main() {
             M.alert('App Error');
             return false;
         }
-        
-        this.menu.open(cb);
+
+        if( args.registration_id != null && args.registration_id != '' ) {
+            this.registration.open(cb, args.registration_id, 0, 0);
+        } else {
+            this.menu.open(cb);
+        }
     }
 }
