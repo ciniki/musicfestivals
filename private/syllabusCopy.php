@@ -16,10 +16,28 @@
 //
 function ciniki_musicfestivals_syllabusCopy(&$ciniki, $tnid, $festival_id, $old_festival_id) {
    
-    $strsql = "SELECT s.id AS sid, s.name AS sn, s.permalink AS sp, s.sequence AS so, "
-        . "s.primary_image_id AS si, s.synopsis AS ss, s.description AS sd, "
-        . "c.id AS cid, c.name AS cn, c.permalink AS cp, c.sequence AS co, c.primary_image_id AS ci, c.synopsis AS cs, c.description AS cd, "
-        . "i.id AS iid, i.code, i.name AS iname, i.permalink AS ip, i.sequence AS io, i.flags, i.earlybird_fee, i.fee "
+    $strsql = "SELECT s.id AS sid, "
+        . "s.name AS sn, "
+        . "s.permalink AS sp, "
+        . "s.sequence AS so, "
+        . "s.primary_image_id AS si, "
+        . "s.synopsis AS ss, "
+        . "s.description AS sd, "
+        . "c.id AS cid, "
+        . "c.name AS cn, "
+        . "c.permalink AS cp, "
+        . "c.sequence AS co, "
+        . "c.primary_image_id AS ci, "
+        . "c.synopsis AS cs, "
+        . "c.description AS cd, "
+        . "i.id AS iid, "
+        . "i.code, "
+        . "i.name AS iname, "
+        . "i.permalink AS ip, "
+        . "i.sequence AS io, "
+        . "i.flags, "
+        . "i.earlybird_fee, "
+        . "i.fee "
         . "FROM ciniki_musicfestival_sections AS s "
         . "LEFT JOIN ciniki_musicfestival_categories AS c ON ("
             . "s.id = c.section_id "
@@ -31,9 +49,9 @@ function ciniki_musicfestivals_syllabusCopy(&$ciniki, $tnid, $festival_id, $old_
             . ") "
         . "WHERE s.festival_id = '" . ciniki_core_dbQuote($ciniki, $old_festival_id) . "' "
         . "AND s.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "ORDER BY s.sequence, s.date_added, c.sequence, c.date_added, i.sequence, i.date_added "
+        . "ORDER BY s.sequence, s.date_added, c.sequence, c.name, c.date_added, i.sequence, i.date_added "
         . "";
-    
+    error_log($strsql); 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'sid',
