@@ -69,7 +69,7 @@ function ciniki_musicfestivals_registrationMusicPDF($ciniki) {
     $storage_filename = $rc['storage_dir'] . '/ciniki.musicfestivals/files/' 
         . $registration['uuid'][0] . '/' . $registration['uuid'] . '_music';
     if( !file_exists($storage_filename) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.55', 'msg'=>'File does not exist'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.181', 'msg'=>'File does not exist'));
     }
 
     header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 

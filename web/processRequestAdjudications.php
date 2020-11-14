@@ -29,7 +29,7 @@ function ciniki_musicfestivals_web_processRequestAdjudications(&$ciniki, $settin
     // Check there is a festival setup
     //
     if( !isset($args['festival_id']) || $args['festival_id'] <= 0 ) {
-        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.122', 'msg'=>"I'm sorry, the page you requested does not exist."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.189', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
 
     //
@@ -81,7 +81,7 @@ function ciniki_musicfestivals_web_processRequestAdjudications(&$ciniki, $settin
         'emails' => 'yes',
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.128', 'msg'=>'Internal Error', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.193', 'msg'=>'Internal Error', 'err'=>$rc['err']));
     }
     $customer = $rc['customer'];
 
@@ -214,7 +214,7 @@ function ciniki_musicfestivals_web_processRequestAdjudications(&$ciniki, $settin
             $storage_filename = $rc['storage_dir'] . '/ciniki.musicfestivals/files/' 
                 . $registration['uuid'][0] . '/' . $registration['uuid'] . '_music';
             if( !file_exists($storage_filename) ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.55', 'msg'=>'File does not exist'));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.182', 'msg'=>'File does not exist'));
             }
 
             header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 

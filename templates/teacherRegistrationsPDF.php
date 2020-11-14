@@ -193,7 +193,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.107', 'msg'=>'Festival not found', 'err'=>$rc['err']));
     }
     if( !isset($rc['festivals'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.108', 'msg'=>'Unable to find Festival'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.187', 'msg'=>'Unable to find Festival'));
     }
     $festival = $rc['festivals'][0];
 

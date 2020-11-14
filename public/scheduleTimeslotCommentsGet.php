@@ -90,7 +90,7 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.166', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.203', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
     }
     $adjudicators = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
 

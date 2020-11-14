@@ -71,7 +71,7 @@ function ciniki_musicfestivals_registrationDelete(&$ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.83', 'msg'=>'Unable to load invoice', 'err'=>$rc['err']));
         }
         if( !isset($rc['invoice']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.84', 'msg'=>'Unable to find requested invoice'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.185', 'msg'=>'Unable to find requested invoice'));
         }
         $invoice = $rc['invoice'];
 

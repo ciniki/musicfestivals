@@ -51,7 +51,6 @@ function ciniki_musicfestivals_syllabusCopy(&$ciniki, $tnid, $festival_id, $old_
         . "AND s.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY s.sequence, s.date_added, c.sequence, c.name, c.date_added, i.sequence, i.date_added "
         . "";
-    error_log($strsql); 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'sid',

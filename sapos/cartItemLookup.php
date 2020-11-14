@@ -15,7 +15,7 @@ function ciniki_musicfestivals_sapos_cartItemLookup($ciniki, $tnid, $customer, $
 
     if( !isset($args['object']) || $args['object'] == '' 
         || !isset($args['object_id']) || $args['object_id'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.131', 'msg'=>'No registration specified', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.194', 'msg'=>'No registration specified', 'err'=>$rc['err']));
     }
 
     //

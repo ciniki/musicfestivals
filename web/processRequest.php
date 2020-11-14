@@ -32,7 +32,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
     // Check to make sure the module is enabled
     //
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
-        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.11', 'msg'=>"I'm sorry, the page you requested does not exist."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.177', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
     $page = array(
         'title'=>$args['page_title'],
@@ -125,7 +125,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
     $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.143', 'msg'=>'We could not find the requested Music Festival. Please try again or contact us for more information.'));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.196', 'msg'=>'We could not find the requested Music Festival. Please try again or contact us for more information.'));
     }
     foreach($rc['settings'] as $k => $v) {
         $festival['settings'][$k] = $v;

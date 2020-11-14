@@ -44,7 +44,7 @@ function ciniki_musicfestivals_web_teacherCreate(&$ciniki, $settings, $tnid, $ar
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.146', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.198', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
         }
         if( isset($rc['item']) ) {
             return array('stat'=>'ok', 'teacher_customer_id'=>$rc['item']['id']);
@@ -67,7 +67,7 @@ function ciniki_musicfestivals_web_teacherCreate(&$ciniki, $settings, $tnid, $ar
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.146', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.199', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
         }
         if( isset($rc['item']) ) {
             return array('stat'=>'ok', 'teacher_customer_id'=>$rc['item']['customer_id']);
@@ -78,7 +78,7 @@ function ciniki_musicfestivals_web_teacherCreate(&$ciniki, $settings, $tnid, $ar
     // Check that both name and email were specified
     //
     if( $_POST['teacher_name'] == '' && isset($_POST['teacher_email']) && $_POST['teacher_email'] != '' ) {
-        return array('stat'=>'error', 'err'=>array('code'=>'ciniki.musicfestivals.146', 'msg'=>"You must specifiy the Teacher's Name"));
+        return array('stat'=>'error', 'err'=>array('code'=>'ciniki.musicfestivals.200', 'msg'=>"You must specifiy the Teacher's Name"));
     }
 
     //

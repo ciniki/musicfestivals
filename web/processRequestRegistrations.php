@@ -22,7 +22,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
     // Check to make sure the module is enabled
     //
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
-        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.121', 'msg'=>"I'm sorry, the page you requested does not exist."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.188', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
 
     //
@@ -81,7 +81,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
         'emails' => 'yes',
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.128', 'msg'=>'Internal Error', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.192', 'msg'=>'Internal Error', 'err'=>$rc['err']));
     }
     $customer = $rc['customer'];
 
@@ -200,7 +200,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.126', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.191', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
     }
     $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
     $teacher_ids = array();
@@ -243,7 +243,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.125', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.190', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
     }
     $competitors = isset($rc['competitors']) ? $rc['competitors'] : array();
 
@@ -549,7 +549,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                             if( $rc['stat'] == 'error' ) {
                                 $err_msg = $rc['err']['msg'];
                             } elseif( $rc['stat'] != 'ok' ) {
-                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.145', 'msg'=>'Unable to update registration', 'err'=>$rc['err']));
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.197', 'msg'=>'Unable to update registration', 'err'=>$rc['err']));
                             }
                             if( $err_msg != '' ) {
                                 $update_args['teacher_customer_id'] = $rc['teacher_customer_id'];

@@ -51,10 +51,10 @@ function ciniki_musicfestivals_registrationMusicAdd(&$ciniki) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'registration');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.164', 'msg'=>'Unable to load registration', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.201', 'msg'=>'Unable to load registration', 'err'=>$rc['err']));
     }
     if( !isset($rc['registration']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.165', 'msg'=>'Unable to find requested registration'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.202', 'msg'=>'Unable to find requested registration'));
     }
     $registration = $rc['registration'];
     
@@ -100,7 +100,7 @@ function ciniki_musicfestivals_registrationMusicAdd(&$ciniki) {
         . $registration['uuid'][0] . '/' . $registration['uuid'] . '_music';
     if( !is_dir(dirname($storage_filename)) ) {
         if( !mkdir(dirname($storage_filename), 0700, true) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.55', 'msg'=>'Unable to add file'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.183', 'msg'=>'Unable to add file'));
         }
     }
 
