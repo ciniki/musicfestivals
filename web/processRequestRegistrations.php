@@ -172,7 +172,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
         . "r.teacher_customer_id, r.billing_customer_id, r.rtype, r.status, r.status AS status_text, "
         . "r.display_name, r.public_name, "
         . "r.competitor1_id, x.parent, r.competitor2_id, r.competitor3_id, r.competitor4_id, r.competitor5_id, "
-        . "r.class_id, r.timeslot_id, r.title, r.perf_time, r.fee, r.payment_type, r.notes, "
+        . "r.class_id, r.timeslot_id, r.title, r.perf_time, r.fee, r.payment_type, r.virtual, r.notes, "
         . "c.code AS class_code, c.name AS class_name, c.flags AS class_flags "
         . "FROM ciniki_musicfestival_registrations AS r "
         . "LEFT JOIN ciniki_musicfestival_classes AS c ON ("
@@ -194,7 +194,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
             'fields'=>array('id', 'uuid', 'teacher_customer_id', 'billing_customer_id', 'rtype', 'status', 'status_text',
                 'display_name', 'public_name', 'competitor1_id', 'parent', 'competitor2_id', 'competitor3_id', 
                 'competitor4_id', 'competitor5_id', 'class_id', 'timeslot_id', 'title', 'perf_time', 
-                'fee', 'payment_type', 'notes',
+                'fee', 'payment_type', 'virtual', 'notes',
                 'class_code', 'class_name', 'class_flags'),
             'maps'=>array('status_text'=>$maps['registration']['status']),
             ),
@@ -206,6 +206,13 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
     $teacher_ids = array();
     $parents = array();
     foreach($registrations as $rid => $reg) {
+        if( $reg['virtual'] == -1 ) {
+            $registrations[$rid]['virtual_text'] = '??';
+        } elseif( $reg['virtual'] == 0 ) {
+            $registrations[$rid]['virtual_text'] = 'In Person';
+        } elseif( $reg['virtual'] == 1 ) {
+            $registrations[$rid]['virtual_text'] = 'Virtually';
+        }
         $registrations[$rid]['fee_display'] = '$' . number_format($reg['fee'], 2);
         $teacher_ids[] = $reg['teacher_customer_id'];
         if( $reg['status'] == 5 ) {
@@ -563,6 +570,18 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                             $update_args[$field] = $_POST[$field];
                         }
                     }
+                    if( isset($_POST['title']) && trim($_POST['title']) == '' ) {
+                        $err_msg = "You must specify a title of the performance.";
+                    }
+                    if( isset($_POST["virtual"]) ) {
+                        if( $_POST["virtual"] == '1' ) {
+                            $update_args['virtual'] = 1;
+                        } elseif( $_POST['virtual'] == 0 ) {
+                            $update_args['virtual'] = 0;
+                        } else {
+                            $err_msg = "You must specify how you will be participating.";
+                        }
+                    }
                     if( $err_msg == '' && count($update_args) > 0 ) {
                         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
                         $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration',
@@ -712,6 +731,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 'perf_time' => (isset($_POST['perf_time']) ? $_POST['perf_time'] : ''),
                 'fee' => $class['fee'],
                 'payment_type' => 0,
+                'virtual' => (isset($_POST['virtual']) ? $_POST['virtual'] : -1),
                 'notes' => (isset($_POST['notes']) ? $_POST['notes'] : ''),
                 );
             if( ($class['flags']&0x20) == 0x20 ) {
@@ -823,30 +843,43 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 $registration['uuid'] = $rc['uuid'];
 
                 //
+                // Check to make sure title and virtual specified
+                //
+                error_log($registration['virtual']);
+                if( trim($registration['title']) == '' ) {
+                    $err_msg = "You must specify a title of the performance.";
+                }
+                if( $err_msg == '' && $registration['virtual'] == -1 ) {
+                    $err_msg = "You must specify how you will be participating.";
+                }
+
+                //
                 // Add the regisrations
                 //
-                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration, 0x04);
-                if( $rc['stat'] != 'ok' ) {   
-                    $err_msg = "I'm sorry, we had a problem saving your registration. Please try again or contact us for help.";
-                    error_log(print_r($rc['err'], true));
-                } else {
-                    //
-                    // Update the display_name for the registration
-                    //
-                    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationNameUpdate');
-                    $rc = ciniki_musicfestivals_registrationNameUpdate($ciniki, $tnid, $rc['id']);
-                    if( $rc['stat'] != 'ok' ) {
-                        error_log('Unable to update registration name');
-                    }
+                if( $err_msg == '' ) {
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+                    $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration, 0x04);
+                    if( $rc['stat'] != 'ok' ) {   
+                        $err_msg = "I'm sorry, we had a problem saving your registration. Please try again or contact us for help.";
+                        error_log(print_r($rc['err'], true));
+                    } else {
+                        //
+                        // Update the display_name for the registration
+                        //
+                        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationNameUpdate');
+                        $rc = ciniki_musicfestivals_registrationNameUpdate($ciniki, $tnid, $rc['id']);
+                        if( $rc['stat'] != 'ok' ) {
+                            error_log('Unable to update registration name');
+                        }
 
-                    //
-                    // The registration was added, now redirect to the registration list
-                    //
-                    $args['r'] = $registration['uuid'];
-                    if( !isset($_POST['ceditid']) || $_POST['ceditid'] == '' ) {
-                        header("Location: " . $args['base_url']);
-                        exit;
+                        //
+                        // The registration was added, now redirect to the registration list
+                        //
+                        $args['r'] = $registration['uuid'];
+                        if( !isset($_POST['ceditid']) || $_POST['ceditid'] == '' ) {
+                            header("Location: " . $args['base_url']);
+                            exit;
+                        }
                     }
                 }
             }
@@ -974,6 +1007,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 array('label'=>'Title', 'field'=>'title', 'fold'=>'yes', 'class'=>''),
                 array('label'=>'Fee', 'field'=>'fee_display', 'fold'=>'yes', 'class'=>''),
                 array('label'=>'Status', 'field'=>'status_text', 'fold'=>'yes', 'class'=>''),
+                array('label'=>'Participate', 'field'=>'virtual_text', 'fold'=>'yes', 'class'=>''),
                 ),
             'rows' => $registrations,
             );
@@ -1041,6 +1075,21 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
     // Display the registration form for new registration or edit registration
     //
     if( $display == 'registration-form' ) {
+        //
+        // Get the festival settings
+        //
+        $strsql = "SELECT detail_key, detail_value "
+            . "FROM ciniki_musicfestival_settings "
+            . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
+        $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.204', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+        }
+        $festival_settings = isset($rc['settings']) ? $rc['settings'] : array();
+
         $form = "<form id='registration-form' class='registration-form medium' action='' method='POST'>";
         if( isset($registrations[$registration_id]) ) {
             $registration = $registrations[$registration_id];
@@ -1054,6 +1103,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 'competitor3_id' => 0,
                 'title' => '',
                 'perf_time' => '',
+                'virtual' => -1,
                 );
         }
 
@@ -1108,12 +1158,40 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                         'size' => 'large',
                         'value' => (isset($_POST['title']) ? $_POST['title'] : $registration['title'])),
                     'perf_time' => array('type'=>'text', 
-                        'label' => array('title'=>'Performance Time'), 
+                        'label' => array('title'=>'Time'), 
                         'size' => 'small',
-                        'value' => (isset($_POST['perf_time']) ? $_POST['perf_time'] : $registration['perf_time'])),
+                        'value' => (isset($_POST['perf_time']) ? $_POST['perf_time'] : $registration['perf_time']),
+                        ),
+                    'virtual' => array('type'=>'select',
+                        'label' => array('title' => 'I would like to participate:'),
+                        'size' => 'full',
+                        'options' => array(
+                            array(
+                                'value' => -1,
+                                'label' => 'Please choose how you will participate',
+                                ),
+                            array(
+                                'value' => 0,
+                                'selected' => ((isset($_POST['virtual']) ? $_POST['virtual'] : $registration['virtual']) == 0 ? 'yes' : 'no'),
+                                'label' => 'in person on a date to be scheduled',
+                                ),
+                            array(
+                                'value' => '1',
+                                'selected' => ((isset($_POST['virtual']) ? $_POST['virtual'] : $registration['virtual']) == 1 ? 'yes' : 'no'),
+                                'label' => 'virtually and submit a video',
+                                ),
+                            ),
+                        ),
                     ),
                 ),
             ); 
+
+            if( isset($festival_settings['inperson-choice-msg']) && $festival_settings['inperson-choice-msg'] != '' ) {
+                $form_sections['performance']['fields']['virtual']['options'][1]['label'] = $festival_settings['inperson-choice-msg'];
+            }
+            if( isset($festival_settings['virtual-choice-msg']) && $festival_settings['virtual-choice-msg'] != '' ) {
+                $form_sections['performance']['fields']['virtual']['options'][2]['label'] = $festival_settings['virtual-choice-msg'];
+            }
 
         for($i = 1; $i <= 3; $i++) {
             //
@@ -1584,7 +1662,6 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
     //
     if( $display == 'competitor-form' ) {
         $competitor = $competitors[$competitor_id];
-        error_log(print_r($competitor, true));
         $form_sections = array(
             'cedit' => array(
                 'label' => '',

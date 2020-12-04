@@ -66,6 +66,9 @@
 #                           120 - Other
 #                           121 - Paid Online
 #
+# virtual:              Set to 1 when the registration is doing the class virtually, otherwise
+#                       assumed to be in person.
+#
 # videolink:            The URL to view the video for the submission. Used for virtual music festivals.
 # music_orgfilename:    The original filename of the PDF uploaded for sheet music.
 #
@@ -97,6 +100,7 @@ create table ciniki_musicfestival_registrations (
     perf_time varchar(50) not null,
     fee decimal(19,4) not null, 
     payment_type tinyint unsigned not null,
+    virtual tinyint unsigned not null,
     videolink varchar(1000) not null,
     music_orgfilename varchar(250) not null,
     notes varchar(5000) not null,
@@ -106,4 +110,4 @@ create table ciniki_musicfestival_registrations (
     unique index (uuid),
     index (festival_id, teacher_customer_id, billing_customer_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.04';
+) ENGINE='InnoDB', COMMENT='v1.05';

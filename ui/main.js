@@ -162,11 +162,11 @@ function ciniki_musicfestivals_main() {
             'headerValues':['Class', 'Registrant', 'Teacher', 'Fee', 'Status'],
             'cellClasses':['', '', '', '', ''],
             },
-        'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':5,
+        'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._tabs.selected == 'registrations' ? 'yes' : 'no'; },
-            'headerValues':['Class', 'Registrant', 'Teacher', 'Fee', 'Status', ''],
+            'headerValues':['Class', 'Registrant', 'Teacher', 'Fee', 'Status', 'Virtual'],
             'sortable':'yes',
-            'sortTypes':['text', 'text', 'text', 'altnumber', 'altnumber', ''],
+            'sortTypes':['text', 'text', 'text', 'altnumber', 'altnumber', 'text'],
             'cellClasses':['', 'multiline', '', '', '', 'alignright'],
             'addTxt':'Add Registration',
             'addFn':'M.ciniki_musicfestivals_main.registration.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,0,0,M.ciniki_musicfestivals_main.festival.festival_id,null);',
@@ -385,6 +385,7 @@ function ciniki_musicfestivals_main() {
                 case 2: return d.teacher_name;
                 case 3: return '$' + d.fee;
                 case 4: return d.status_text;
+                case 5: return (d.virtual == 1 ? 'Virtual' : 'In Person');
             }
         }
         if( s == 'registration_sections' ) {
@@ -701,6 +702,10 @@ function ciniki_musicfestivals_main() {
         '_waiver':{'label':'Waiver Message', 'aside':'yes', 'fields':{
             'waiver-title':{'label':'Title', 'type':'text'},
             'waiver-msg':{'label':'Message', 'type':'textarea', 'size':'medium'},
+            }},
+        '_hybrid':{'label':'In Person/Virtual Choices', 'aside':'yes', 'fields':{
+            'inperson-choice-msg':{'label':'In Person Choice', 'type':'text', 'hint':'in person on a scheduled date'},
+            'virtual-choice-msg':{'label':'Virtual Choise', 'type':'text', 'hint':'virtually and submit a video'},
             }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'website', 'tabs':{
             'website':{'label':'Website', 'fn':'M.ciniki_musicfestivals_main.edit.switchTab(\'website\');'},
@@ -1398,6 +1403,12 @@ function ciniki_musicfestivals_main() {
             'perf_time':{'label':'PerfTime', 'type':'text', 'size':'small'},
 //            'earlybird_fee':{'label':'Earlybird Fee', 'type':'text', 'size':'small'},
             'fee':{'label':'Fee', 'type':'text', 'size':'small'},
+            'virtual':{'label':'Participate', 'type':'select', 
+                'visible':function() { return (M.ciniki_musicfestivals_main.registration.data.festival.flags&0x02) == 0x02 ? 'yes' : 'no'},
+                'options':{
+                    '0':'in person on a date to be scheduled',
+                    '1':'virtually and submit a video online',
+                }},
             'videolink':{'label':'Video', 'type':'text', 
                 'visible':function() { return (M.ciniki_musicfestivals_main.registration.data.festival.flags&0x02) == 0x02 ? 'yes' : 'no'},
                 },
@@ -1620,6 +1631,16 @@ function ciniki_musicfestivals_main() {
                     p.sections['competitor' + i + '_details'].addTxt = 'Edit';
                     p.sections['competitor' + i + '_details'].changeTxt = 'Change';
                 }
+            }
+            p.sections._class.fields.virtual.options = {
+                '0':'in person on a date to be scheduled',
+                '1':'virtually and submit a video online',
+                };
+            if( p.data.festival['inperson-choice-msg'] != null && p.data.festival['inperson-choice-msg'] != '' ) {
+                p.sections._class.fields.virtual.options[0] = p.data.festival['inperson-choice-msg'];
+            }
+            if( p.data.festival['virtual-choice-msg'] != null && p.data.festival['virtual-choice-msg'] != '' ) {
+                p.sections._class.fields.virtual.options[1] = p.data.festival['virtual-choice-msg'];
             }
             p.refresh();
             p.show(cb);
@@ -2628,7 +2649,7 @@ function ciniki_musicfestivals_main() {
         if( ag != null ) {
             args = eval(ag);
         }
-        
+       
         //
         // Create the app container
         //

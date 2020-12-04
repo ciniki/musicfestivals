@@ -185,6 +185,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'perf_time'=>array('name'=>'Performance Time', 'default'=>''),
             'fee'=>array('name'=>'Fee', 'type'=>'currency', 'default'=>'0'),
             'payment_type'=>array('name'=>'Payment Type', 'default'=>'0'),
+            'virtual'=>array('name'=>'Virtual Submission', 'default'=>'0'),
             'videolink'=>array('name'=>'Video Link', 'default'=>''),
             'music_orgfilename'=>array('name'=>'Music Original Filename', 'default'=>''),
             'notes'=>array('name'=>'Notes', 'default'=>''),

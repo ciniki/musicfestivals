@@ -47,6 +47,8 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'waiver-title',
         'waiver-msg',
         'president-name',
+        'inperson-choice-msg',
+        'virtual-choice-msg',
         );
     foreach($valid_settings as $field) {
         if( isset($args[$field]) ) {

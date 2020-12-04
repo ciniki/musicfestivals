@@ -348,6 +348,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "registrations.perf_time, "
                 . "FORMAT(registrations.fee, 2) AS fee, "
                 . "registrations.payment_type, "
+                . "registrations.virtual, "
                 . "registrations.videolink, "
                 . "registrations.music_orgfilename "
                 . "FROM ciniki_musicfestival_registrations AS registrations "
@@ -380,7 +381,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 array('container'=>'registrations', 'fname'=>'id', 
                     'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
                         'class_id', 'class_code', 'class_name', 'title', 'perf_time', 'fee', 'payment_type',
-                        'videolink', 'music_orgfilename',
+                        'virtual', 'videolink', 'music_orgfilename',
                         ),
                     'maps'=>array(
                         'rtype_text'=>$maps['registration']['rtype'],
@@ -581,6 +582,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "registrations.display_name, "
                     . "registrations.public_name, "
                     . "registrations.title, "
+                    . "registrations.virtual, "
                     . "registrations.videolink, "
                     . "registrations.music_orgfilename, "
                     . "IFNULL(comments.adjudicator_id, 0) AS adjudicator_id, "
@@ -626,7 +628,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             )),
                     array('container'=>'registrations', 'fname'=>'reg_id', 
                         'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name', 'title', 
-                            'videolink', 'music_orgfilename',
+                            'virtual', 'videolink', 'music_orgfilename',
                             )),
                     array('container'=>'comments', 'fname'=>'comment_id', 
                         'fields'=>array('id'=>'comment_id', 'adjudicator_id', 'comments', 'grade', 'score')),

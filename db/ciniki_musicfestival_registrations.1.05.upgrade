@@ -1,0 +1,5 @@
+#
+# Added invoice link
+#
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN virtual tinyint unsigned not null AFTER payment_type;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.05';

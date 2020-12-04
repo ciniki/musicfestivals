@@ -46,6 +46,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         . "registrations.fee AS reg_fee, "
         . "registrations.perf_time, "
         . "registrations.payment_type, "
+        . "registrations.virtual, "
         . "registrations.notes AS reg_notes, "
         . "registrations.teacher_customer_id, "
         . "competitors.id AS competitor_id, "
@@ -94,7 +95,8 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'name'=>'section_name')),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'section_id', 'teacher_customer_id', 
-                'display_name', 'class_code', 'class_name', 'title', 'fee'=>'reg_fee', 'perf_time', 'payment_type', 'notes'=>'reg_notes'),
+                'display_name', 'class_code', 'class_name', 'title', 'fee'=>'reg_fee', 'perf_time', 'payment_type', 
+                'virtual', 'notes'=>'reg_notes'),
             ),
         array('container'=>'competitors', 'fname'=>'competitor_id', 
             'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'parent', 'address', 'city', 'province', 'postal', 
@@ -133,6 +135,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Class Name', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Title', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Fee', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Virtual', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Type', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Teacher', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Teacher Email', false);
@@ -217,6 +220,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['class_name'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['title'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['fee'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, ($registration['virtual'] == 1 ? 'Virtual' : 'In Person'), false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['payment_type'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['teacher_name'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['teacher_email'], false);

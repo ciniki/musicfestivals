@@ -77,6 +77,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'perf_time'=>'',
             'fee'=>'0',
             'payment_type'=>'0',
+            'virtual'=>0,
             'videolink'=>'',
             'notes'=>'',
         );
@@ -104,6 +105,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "ciniki_musicfestival_registrations.perf_time, "
             . "FORMAT(ciniki_musicfestival_registrations.fee, 2) AS fee, "
             . "ciniki_musicfestival_registrations.payment_type, "
+            . "ciniki_musicfestival_registrations.virtual, "
             . "ciniki_musicfestival_registrations.videolink, "
             . "ciniki_musicfestival_registrations.music_orgfilename, "
             . "ciniki_musicfestival_registrations.notes "
@@ -116,7 +118,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             array('container'=>'registrations', 'fname'=>'id', 
                 'fields'=>array('festival_id', 'teacher_customer_id', 'billing_customer_id', 'rtype', 'status', 'invoice_id',
                     'display_name', 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 
-                    'class_id', 'title', 'perf_time', 'fee', 'payment_type', 'videolink', 'music_orgfilename', 'notes'),
+                    'class_id', 'title', 'perf_time', 'fee', 'payment_type', 
+                    'virtual', 'videolink', 'music_orgfilename', 'notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -288,6 +291,23 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.175', 'msg'=>'Unable to find Festival'));
     }
     $rsp['registration']['festival'] = $rc['festivals'][0];
+
+    //
+    // Get the festival settings
+    //
+    $strsql = "SELECT detail_key, detail_value "
+        . "FROM ciniki_musicfestival_settings "
+        . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
+    $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.205', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+    }
+    foreach($rc['settings'] as $k => $v) {
+        $rsp['registration']['festival'][$k] = $v;
+    }
 
     return $rsp;
 }
