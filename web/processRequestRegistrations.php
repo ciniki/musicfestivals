@@ -492,6 +492,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                                     if( $customer_type == 10 || $customer_type == 20 ) {
                                         $required['parent'] = 'You must enter the parents name';
                                     }
+                                    $required['address'] = 'You must enter an address';
                                     $required['city'] = 'You must enter an city';
                                     $required['email'] = 'You must enter an email address';
                                     $required['age'] = 'You must enter this competitors age';
@@ -667,6 +668,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 if( $customer_type == 10 || $customer_type == 20 ) {
                     $required['parent1'] = 'You must enter the parents name';
                 }
+                $required['address1'] = 'You must enter an address';
                 $required['city1'] = 'You must enter an city';
                 $required['email1'] = 'You must enter an email address';
                 $required['age1'] = 'You must enter this competitors age';
@@ -679,6 +681,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 if( $customer_type == 10 || $customer_type == 20 ) {
                     $required['parent2'] = 'You must enter the parents name';
                 }
+                $required['address2'] = 'You must enter an address';
                 $required['city2'] = 'You must enter an city';
                 $required['email2'] = 'You must enter an email address';
                 $required['age2'] = 'You must enter this competitors age';
@@ -691,6 +694,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 if( $customer_type == 10 || $customer_type == 20 ) {
                     $required['parent3'] = 'You must enter the parents name';
                 }
+                $required['address3'] = 'You must enter an address';
                 $required['city3'] = 'You must enter an city';
                 $required['email3'] = 'You must enter an email address';
                 $required['age3'] = 'You must enter this competitors age';
@@ -756,6 +760,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                             if( $customer_type == 10 || $customer_type == 20 ) {
                                 $required['parent'] = 'You must enter the parents name';
                             }
+                            $required['address'] = 'You must enter an address';
                             $required['city'] = 'You must enter an city';
                             $required['email'] = 'You must enter an email address';
                             $required['age'] = 'You must enter this competitors age';
@@ -915,6 +920,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
         if( $customer_type == 10 || $customer_type == 20 ) {
             $required['parent'] = 'You must enter the parents name';
         }
+        $required['address'] = 'You must enter an address';
         $required['city'] = 'You must enter an city';
         $required['email'] = 'You must enter an email address';
         $required['age'] = 'You must enter this competitors age';
@@ -1035,7 +1041,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
 //                    . "<input type='hidden' name='action' value='checkout'>"
                     . "<div class='submit alignright wide'>"
                     . "<input class='submit' type='submit' name='action' value='Add to Cart' />"
-                . "</div></form>"
+                . "</div></form><br/>"
                 . "";
             $blocks[] = array('type'=>'content', 'html'=>$content);
         }
@@ -1154,9 +1160,10 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 'label' => 'Performing',
                 'fields' => array(
                     'title' => array('type'=>'text', 
-                        'label' => array('title'=>'Title & Composer'), 
+                        'label' => array('title'=>'Title & Composer ex. Prelude op.39, no.19 (D. Kabalevsky)'), 
                         'size' => 'large',
-                        'value' => (isset($_POST['title']) ? $_POST['title'] : $registration['title'])),
+                        'value' => (isset($_POST['title']) ? $_POST['title'] : $registration['title']),
+                        ),
                     'perf_time' => array('type'=>'text', 
                         'label' => array('title'=>'Time'), 
                         'size' => 'small',
