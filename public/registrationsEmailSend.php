@@ -55,6 +55,7 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
         . "classes.name AS class_name, "
         . "registrations.title, "
         . "registrations.perf_time, "
+        . "IF(registrations.virtual = 1, 'Virtual', 'In Person') AS virtual, "
         . "FORMAT(registrations.fee, 2) AS fee, "
         . "registrations.payment_type "
         . "FROM ciniki_musicfestival_registrations AS registrations "
@@ -82,7 +83,7 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'festival_id', 'teacher_name', 'display_name', 
-                'class_id', 'class_code', 'class_name', 'title', 'perf_time', 'fee', 'payment_type'),
+                'class_id', 'class_code', 'class_name', 'title', 'perf_time', 'fee', 'payment_type', 'virtual'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -94,9 +95,9 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
         $festival['registrations'] = $rc['registrations'];
         $total = 0;
         $html = "<table cellpadding=5 cellspacing=0>";
-        $html .= "<tr><th>Class</th><th>Competitor</th><th>Title</th><th>Time</th></tr>";
+        $html .= "<tr><th>Class</th><th>Competitor</th><th>Title</th><th>Time</th><th>Virtual</th></tr>";
         foreach($festival['registrations'] as $iid => $registration) {
-            $html .= '<tr><td>' . $registration['class_code'] . '</td><td>' . $registration['display_name'] . '</td><td>' . $registration['title'] . '</td><td>' . $registration['perf_time'] . "</td></tr>\n";
+            $html .= '<tr><td>' . $registration['class_code'] . '</td><td>' . $registration['display_name'] . '</td><td>' . $registration['title'] . '</td><td>' . $registration['perf_time'] . "</td><td>" . $registration['virtual'] . "</td></tr>\n";
             $text .= $registration['class_code'] 
                 . ' - ' . $registration['display_name'] 
                 . ($registration['title'] != '' ? ' - ' . $registration['title'] : '')
