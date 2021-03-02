@@ -2602,8 +2602,9 @@ function ciniki_musicfestivals_main() {
         '_save':{'label':'', 'aside':'yes', 'buttons':{
             'send':{'label':'Send', 'fn':'M.ciniki_musicfestivals_main.emailregistrations.send();'},
         }},
-        'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':4,
-            'headerValues':['Class', 'Registrant', 'Title', 'Time'],
+        'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':5,
+            'headerValues':['Class', 'Registrant', 'Title', 'Time', 'Virtual'],
+            'cellClasses':['', '', '', '', ''],
             },
     };
     this.emailregistrations.fieldValue = function(s, i, d) { return ''; }
@@ -2614,6 +2615,7 @@ function ciniki_musicfestivals_main() {
                 case 1: return d.display_name;
                 case 2: return d.title;
                 case 3: return d.perf_time;
+                case 4: return (d.virtual == 1 ? 'Virtual' : 'In Person');
             }
         }
     }
