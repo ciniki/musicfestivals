@@ -89,7 +89,7 @@ function ciniki_musicfestivals_registrationMusicAdd(&$ciniki) {
     //
     // Check the extension is a PDF, currently only accept PDF files
     //
-    if( $args['extension'] != 'pdf' ) {
+    if( $args['extension'] != 'pdf' && $args['extension'] != 'PDF' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.54', 'msg'=>'The file must be a PDF file.'));
     }
    
