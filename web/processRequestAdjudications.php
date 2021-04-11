@@ -315,7 +315,7 @@ function ciniki_musicfestivals_web_processRequestAdjudications(&$ciniki, $settin
                 . '</div>';
         }
         $content .= '<div class="submit wide">'
-            . '<button class="submit" onclick="window.open(\'' . $args['base_url'] . '\');">Cancel</button> '
+            . '<button class="submit" onclick="window.open(\'' . $args['base_url'] . '\'); return false;">Cancel</button> '
             . '<input class="submit" type="submit" value="Save"/>'
             . '</div>';
         $content .= '</form>'; 
