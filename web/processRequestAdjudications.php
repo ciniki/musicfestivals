@@ -340,10 +340,14 @@ function ciniki_musicfestivals_web_processRequestAdjudications(&$ciniki, $settin
         foreach($divisions as $division) {
             foreach($division['timeslots'] as $tid => $timeslot) {
                 $num_completed = 0;
-                foreach($timeslot['registrations'] as $rid => $registration) {
-                    if( $registration['comments'] != '' && $registration['grade'] != '' && $registration['score'] != '' ) {
-                        $num_completed++;
+                if( isset($timeslot['registrations']) ) {
+                    foreach($timeslot['registrations'] as $rid => $registration) {
+                        if( $registration['comments'] != '' && $registration['grade'] != '' && $registration['score'] != '' ) {
+                            $num_completed++;
+                        }
                     }
+                } else {
+                    $timeslot['registrations'] = array();
                 }
                 $division['timeslots'][$tid]['status'] = $num_completed . ' of ' . count($timeslot['registrations']);
                 $division['timeslots'][$tid]['actions'] = "<a class='button' href='{$args['base_url']}/{$division['uuid']}/{$timeslot['permalink']}'>Open</a>";
