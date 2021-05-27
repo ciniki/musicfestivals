@@ -89,10 +89,12 @@ function ciniki_musicfestivals_registrationDelete(&$ciniki) {
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.127', 'msg'=>'Unable to load invoice item', 'err'=>$rc['err']));
         }
-        if( !isset($rc['item']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.128', 'msg'=>'Unable to find requested invoice item'));
+//        if( !isset($rc['item']) ) {
+//            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.128', 'msg'=>'Unable to find requested invoice item'));
+//        }
+        if( isset($rc['item']) ) {
+            $invoice_item = $rc['item'];
         }
-        $invoice_item = $rc['item'];
 
         //
         // Remove invoice item from cart, the callback from sapos will remove the registration.
