@@ -850,7 +850,6 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
                 //
                 // Check to make sure title and virtual specified
                 //
-                error_log($registration['virtual']);
                 if( trim($registration['title']) == '' ) {
                     $err_msg = "You must specify a title of the performance.";
                 }
