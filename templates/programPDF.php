@@ -102,15 +102,15 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
 //        . "'' AS title "
         . "registrations.title "
         . "FROM ciniki_musicfestival_schedule_sections AS sections "
-        . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+        . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
             . "sections.id = divisions.ssection_id " 
             . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+        . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
             . "divisions.id = timeslots.sdivision_id " 
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
+        . "INNER JOIN ciniki_musicfestival_classes AS class1 ON ("
             . "timeslots.class1_id = class1.id " 
             . "AND class1.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
@@ -122,7 +122,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
             . "timeslots.class3_id = class3.id " 
             . "AND class3.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
+        . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "(timeslots.class1_id = registrations.class_id "  
                 . "OR timeslots.class2_id = registrations.class_id "
                 . "OR timeslots.class3_id = registrations.class_id "
@@ -135,6 +135,11 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
         . "";
     if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
         $strsql .= "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
+    }
+    if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
+        $strsql .= "AND registrations.virtual = 0 ";
+    } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
+        $strsql .= "AND registrations.virtual = 1 ";
     }
     $strsql .= "ORDER BY divisions.division_date, division_id, slot_time, registrations.public_name "
         . "";
