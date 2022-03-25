@@ -333,26 +333,32 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $tnid, $args)
                     if( $reg['competitor5_id'] > 0 ) {
                         $num_copies++;
                     }
+//                    $pdf->SetDrawColor(0,0,0);
+//                    $pdf->setFillColor(230,230,230);
                     for($i=0;$i<$num_copies;$i++) {
                         $pdf->AddPage();
                         $pdf->SetCellPaddings(1, 0, 1, 0);
                         $pdf->Image($ciniki['config']['core']['modules_dir'] . '/musicfestivals/templates/certificate.png', 0, 0, 279, 216, '', '', '', false, 300, '', false, false, 0);
-                        $pdf->setFont('', '', 18);
-                        $pdf->setXY(100, 110);
+                        $pdf->setPageMark();
+                        $pdf->setFont('vidaloka', 'B', 28);
+                        $pdf->setXY(30, 115);
                         $lh = $pdf->getNumLines($reg['name'], 155) * 12;
-                        $pdf->MultiCell(155, $lh, $reg['name'], $border, 'L', 0, 0, '', '');
-                        $pdf->setXY(100, 145);
-                        $lh = $pdf->getNumLines($reg['class_name'], 155) * 12;
-                        $pdf->MultiCell(155, $lh, $reg['class_name'], $border, 'L', 0, 0, '', '');
+                        //$pdf->MultiCell(155, $lh, $reg['name'], $border, 'L', 0, 0, '', '');
+                        $pdf->MultiCell(219, $lh, $reg['name'], 0, 'C', 0, 0, '', '');
+                        $pdf->setXY(30, 150);
+                        $pdf->setFont('opensans', '', 18);
+                        $lh = $pdf->getNumLines($reg['class_name'], 219) * 12;
+                        //$pdf->MultiCell(155, $lh, $reg['class_name'], $border, 'L', 0, 0, '', '');
+                        $pdf->MultiCell(219, $lh, $reg['class_name'], 0, 'C', 0, 0, '', '');
                         if( isset($festival['president-name']) && $festival['president-name'] != '' ) {
                             $pdf->SetDrawColor(232);
                             $pdf->SetLineWidth(0.1);
                             $pdf->setXY(87, 179);
                             $pdf->setFont('scriptina', '', '28');
-                            $pdf->MultiCell(90, $lh, $festival['president-name'], 'T', 'L', 1, 0, '', '', true, 0, false, true, 0, 'T', true);
+                            $pdf->MultiCell(90, $lh, $festival['president-name'], 0, 'L', 0, 0, '', '', true, 0, false, true, 0, 'T', true);
                             if( isset($adjudicators[$section['adjudicator1_id']]['name']) ) {
-                                $pdf->setXY(192, 179);
-                                $pdf->MultiCell(80, $lh, $adjudicators[$section['adjudicator1_id']]['name'], 'TLR', 'L', 1, 0, '', '', true, 0, false, true, 0, 'T', true);
+                                $pdf->setXY(190, 179);
+                                $pdf->MultiCell(80, $lh, $adjudicators[$section['adjudicator1_id']]['name'], 0, 'L', 0, 0, '', '', true, 0, false, true, 0, 'T', true);
                             }
                             $pdf->setFont('helvetica');
                         }
