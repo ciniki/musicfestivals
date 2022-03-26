@@ -346,7 +346,7 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $tnid, $args)
                         //$pdf->MultiCell(155, $lh, $reg['name'], $border, 'L', 0, 0, '', '');
                         $pdf->MultiCell(219, $lh, $reg['name'], 0, 'C', 1, 0, '', '');
                         $pdf->setXY(30, 150);
-                        $pdf->setFont('opensans', '', 18);
+                        $pdf->setFont('helvetica', '', 18);
                         $lh = $pdf->getNumLines($reg['class_name'], 219) * 12;
                         //$pdf->MultiCell(155, $lh, $reg['class_name'], $border, 'L', 0, 0, '', '');
                         $pdf->MultiCell(219, $lh, $reg['class_name'], 0, 'C', 1, 0, '', '');
