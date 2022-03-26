@@ -334,22 +334,22 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $tnid, $args)
                         $num_copies++;
                     }
 //                    $pdf->SetDrawColor(0,0,0);
-//                    $pdf->setFillColor(230,230,230);
+                    $pdf->setFillColor(255,255,255);
                     for($i=0;$i<$num_copies;$i++) {
                         $pdf->AddPage();
                         $pdf->SetCellPaddings(1, 0, 1, 0);
                         $pdf->Image($ciniki['config']['core']['modules_dir'] . '/musicfestivals/templates/certificate.png', 0, 0, 279, 216, '', '', '', false, 300, '', false, false, 0);
-                        //$pdf->setPageMark();
+                        $pdf->setPageMark();
                         $pdf->setFont('vidaloka', 'B', 28);
                         $pdf->setXY(30, 115);
                         $lh = $pdf->getNumLines($reg['name'], 155) * 12;
                         //$pdf->MultiCell(155, $lh, $reg['name'], $border, 'L', 0, 0, '', '');
-                        $pdf->MultiCell(219, $lh, $reg['name'], 0, 'C', 0, 0, '', '');
+                        $pdf->MultiCell(219, $lh, $reg['name'], 0, 'C', 1, 0, '', '');
                         $pdf->setXY(30, 150);
                         $pdf->setFont('opensans', '', 18);
                         $lh = $pdf->getNumLines($reg['class_name'], 219) * 12;
                         //$pdf->MultiCell(155, $lh, $reg['class_name'], $border, 'L', 0, 0, '', '');
-                        $pdf->MultiCell(219, $lh, $reg['class_name'], 0, 'C', 0, 0, '', '');
+                        $pdf->MultiCell(219, $lh, $reg['class_name'], 0, 'C', 1, 0, '', '');
                         if( isset($festival['president-name']) && $festival['president-name'] != '' ) {
                             $pdf->SetDrawColor(232);
                             $pdf->SetLineWidth(0.1);
