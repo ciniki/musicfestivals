@@ -339,7 +339,7 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $tnid, $args)
                         $pdf->AddPage();
                         $pdf->SetCellPaddings(1, 0, 1, 0);
                         $pdf->Image($ciniki['config']['core']['modules_dir'] . '/musicfestivals/templates/certificate.png', 0, 0, 279, 216, '', '', '', false, 300, '', false, false, 0);
-                        $pdf->setPageMark();
+                        //$pdf->setPageMark();
                         $pdf->setFont('vidaloka', 'B', 28);
                         $pdf->setXY(30, 115);
                         $lh = $pdf->getNumLines($reg['name'], 155) * 12;
