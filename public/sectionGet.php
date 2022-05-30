@@ -108,6 +108,7 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
             . "FROM ciniki_musicfestival_sections "
             . "WHERE ciniki_musicfestival_sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_musicfestival_sections.id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
+            . "ORDER BY sequence, name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(

@@ -137,6 +137,7 @@ function ciniki_musicfestivals_categoryGet($ciniki) {
                 . "FROM ciniki_musicfestival_classes "
                 . "WHERE ciniki_musicfestival_classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "AND ciniki_musicfestival_classes.category_id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
+                . "ORDER BY sequence, code, name "
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
