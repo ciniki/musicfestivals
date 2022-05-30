@@ -68,7 +68,7 @@ function ciniki_musicfestivals_categoryGet($ciniki) {
             $strsql = "SELECT MAX(sequence) AS max_sequence "
                 . "FROM ciniki_musicfestival_categories "
                 . "WHERE ciniki_musicfestival_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "AND ciniki_musicfestival_categories.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
+                . "AND ciniki_musicfestival_categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'max');
             if( $rc['stat'] != 'ok' ) {
