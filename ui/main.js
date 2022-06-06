@@ -883,8 +883,8 @@ function ciniki_musicfestivals_main() {
                     return true;
                     },
                 'addDropImageRefresh':'',
-                'addDropImage':function(fid) {
-                    M.ciniki_musicfestivals_main.section.setFieldValue(fid,0);
+                'deleteImage':function(fid) {
+                    M.ciniki_musicfestivals_main.section.setFieldValue('primary_image_id',0);
                     return true;
                  },
              },
@@ -1034,7 +1034,7 @@ function ciniki_musicfestivals_main() {
                     return true;
                     },
                 'addDropImageRefresh':'',
-                'addDropImage':function(fid) {
+                'deleteImage':function(fid) {
                     M.ciniki_musicfestivals_main.category.setFieldValue(fid,0);
                     return true;
                  },
