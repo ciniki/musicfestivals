@@ -19,12 +19,12 @@ function ciniki_musicfestivals_categoryUpdate(&$ciniki) {
         'category_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Category'),
         'festival_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Festival'),
         'section_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Section'),
-        'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
+        'name'=>array('required'=>'no', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'),
         'permalink'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Permalink'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
-        'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
-        'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),
+        'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Synopsis'),
+        'description'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Description'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
