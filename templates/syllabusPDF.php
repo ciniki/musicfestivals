@@ -245,8 +245,8 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
     // add a page
     $pdf->SetFillColor(236);
     $pdf->SetTextColor(0);
-    $pdf->SetDrawColor(51);
-    $pdf->SetLineWidth(0.15);
+    $pdf->SetDrawColor(200);
+    $pdf->SetLineWidth(0.1);
 
     //
     // Go through the sections, categories and classes
@@ -295,19 +295,20 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                 $pdf->Ln(2);
             }
             $fill = 1;
-            $pdf->Cell($w[0], $lh, '', 0, 0, 'L', $fill);
-            $pdf->Cell($w[1], $lh, '', 0, 0, 'L', $fill);
-            $pdf->Cell($w[2], $lh, 'Fee', 0, 0, 'C', $fill);
-            $pdf->Ln();
+//            $pdf->Cell($w[0], $lh, '', 0, 0, 'L', $fill);
+//            $pdf->Cell($w[1], $lh, '', 0, 0, 'L', $fill);
+//            $pdf->Cell($w[2], $lh, 'Fee', 0, 0, 'C', $fill);
+//            $pdf->Ln();
+            $pdf->Ln(3);
             
             //
             // Output the classes
             //
-            $fill = 0;
+            $fill = 1;
             foreach($category['classes'] as $class) {
-                $pdf->Cell($w[0], $lh, $class['code'], 0, 0, 'L', $fill);
-                $pdf->Cell($w[1], $lh, $class['name'], 0, 0, 'L', $fill);
-                $pdf->Cell($w[2], $lh, numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency), 0, 0, 'C', $fill);
+                $pdf->Cell($w[0], $lh, $class['code'], 'TLB', 0, 'L', $fill);
+                $pdf->Cell($w[1], $lh, $class['name'], 'TB', 0, 'L', $fill);
+                $pdf->Cell($w[2], $lh, numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency), 'TRB', 0, 'C', $fill);
                 $pdf->Ln($lh);
                 $fill=!$fill;
             }
