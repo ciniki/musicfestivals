@@ -70,7 +70,7 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, $request
     }
     $adjudicators = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
 
-    if( count($rc['adjudicators']) > 0 ) {
+    if( count($adjudicators) > 0 ) {
         //
         // Add the title block
         //
