@@ -20,6 +20,8 @@ function ciniki_musicfestivals_adjudicatorUpdate(&$ciniki) {
         'adjudicator_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Adjudicator'),
         'festival_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Festival'),
         'customer_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Customer'),
+        'image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
+        'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Bio'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

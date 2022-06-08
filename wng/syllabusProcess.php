@@ -80,6 +80,14 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, $request, $s
     $sections = isset($rc['sections']) ? $rc['sections'] : array();
 
     //
+    // Add the title block
+    //
+    $blocks[] = array(
+        'type' => 'title', 
+        'title' => isset($s['title']) ? $s['title'] : 'Syllabus',
+        );
+
+    //
     // Display as trading cards
     //
     if( isset($s['format']) && $s['format'] == 'tradingcards' ) {

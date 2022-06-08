@@ -689,7 +689,7 @@ function ciniki_musicfestivals_main() {
                     return true;
                     },
                 'addDropImageRefresh':'',
-                'addDropImage':function(fid) {
+                'deleteImage':function(fid) {
                     M.ciniki_musicfestivals_main.edit.setFieldValue(fid,0);
                     return true;
                  },
@@ -2331,20 +2331,36 @@ function ciniki_musicfestivals_main() {
     //
     // Adjudicators
     //
-    this.adjudicator = new M.panel('Adjudicator', 'ciniki_musicfestivals_main', 'adjudicator', 'mc', 'medium', 'sectioned', 'ciniki.musicfestivals.main.adjudicator');
+    this.adjudicator = new M.panel('Adjudicator', 'ciniki_musicfestivals_main', 'adjudicator', 'mc', 'medium narrowaside', 'sectioned', 'ciniki.musicfestivals.main.adjudicator');
     this.adjudicator.data = null;
     this.adjudicator.festival_id = 0;
     this.adjudicator.adjudicator_id = 0;
     this.adjudicator.customer_id = 0;
     this.adjudicator.nplist = [];
     this.adjudicator.sections = {
-        'customer_details':{'label':'Adjudicator', 'type':'simplegrid', 'num_cols':2,
+        '_image_id':{'label':'Adjudicator Photo', 'type':'imageform', 'aside':'yes', 'fields':{
+            'image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
+                'addDropImage':function(iid) {
+                    M.ciniki_musicfestivals_main.adjudicator.setFieldValue('image_id', iid);
+                    return true;
+                    },
+                'addDropImageRefresh':'',
+                'deleteImage':function(fid) {
+                    M.ciniki_musicfestivals_main.adjudicator.setFieldValue(fid,0);
+                    return true;
+                 },
+             },
+        }}, 
+        'customer_details':{'label':'Adjudicator', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
             'cellClasses':['label', ''],
             'addTxt':'Edit',
             'addFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_musicfestivals_main.adjudicator.updateCustomer();\',\'mc\',{\'next\':\'M.ciniki_musicfestivals_main.adjudicator.updateCustomer\',\'customer_id\':M.ciniki_musicfestivals_main.adjudicator.data.customer_id});',
             'changeTxt':'Change customer',
             'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_musicfestivals_main.adjudicator.updateCustomer();\',\'mc\',{\'next\':\'M.ciniki_musicfestivals_main.adjudicator.updateCustomer\',\'customer_id\':0});',
             },
+        '_description':{'label':'Full Bio', 'fields':{
+            'description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
+            }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.adjudicator.save();'},
             'delete':{'label':'Remove Adjudicator', 

@@ -109,12 +109,19 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, $requ
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.218', 'msg'=>'Unable to find requested section'));
     }
     $section = $rc['section'];
-   
-    $blocks[] = array(
-        'type' => 'text',
-        'title' => $section['name'],
-        'content' => $section['description'],
-        );
+  
+    if( isset($section['description']) && $section['description'] != '' ) {
+        $blocks[] = array(
+            'type' => 'text',
+            'title' => (isset($s['title']) ? $s['title'] : 'Syllabus') . ' - ' . $section['name'],
+            'content' => $section['description'],
+            );
+    } else {
+        $blocks[] = array(
+            'type' => 'title', 
+            'title' => (isset($s['title']) ? $s['title'] : 'Syllabus') . ' - ' . $section['name'],
+            );
+    }
 
     //
     // Load the syllabus for the section

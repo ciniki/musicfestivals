@@ -56,6 +56,8 @@ function ciniki_musicfestivals_objects($ciniki) {
         'fields'=>array(
             'festival_id'=>array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
             'customer_id'=>array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
+            'image_id'=>array('name'=>'Image', 'ref'=>'ciniki.images.image', 'default'=>0),
+            'description'=>array('name'=>'Bio', 'default'=>''),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );

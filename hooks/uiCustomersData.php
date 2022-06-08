@@ -229,8 +229,8 @@ function ciniki_musicfestivals_hooks_uiCustomersData($ciniki, $tnid, $args) {
             . ") ";
     } elseif( isset($args['customer_ids']) && count($args['customer_ids']) > 0 ) {
         $strsql .= "AND ("
-            . "registrations.teacher_customer_id IN (" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . ") "
-            . "OR registrations.billing_customer_id IN (" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . ") "
+            . "registrations.teacher_customer_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['customer_ids']) . ") "
+            . "OR registrations.billing_customer_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['customer_ids']) . ") "
             . ") ";
     } else {
         return array('stat'=>'ok');
