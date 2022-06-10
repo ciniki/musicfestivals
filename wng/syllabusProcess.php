@@ -66,6 +66,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, $request, $s
         . "FROM ciniki_musicfestival_sections AS sections "
         . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
+        . "AND (sections.flags&0x01) = 0 "
         . "ORDER BY sections.sequence, sections.name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
