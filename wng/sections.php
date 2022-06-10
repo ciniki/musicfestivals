@@ -79,6 +79,19 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             ),
         );
 
+    //
+    // Section to display the sponsors for a festival
+    //
+    $sections['ciniki.musicfestivals.sponsors'] = array(
+        'name' => 'Sponsors',
+        'module' => 'Music Festivals',
+        'settings' => array(
+            'title' => array('label'=>'Title', 'type'=>'text'),
+            'festival-id' => array('label'=>'Festival', 'type'=>'select', 'options'=>$festivals),
+            'level' => array('label'=>'Sponsor Level', 'type'=>'toggle', 'default'=>'1', 'toggles'=>array('1'=>'1', '2'=>'2')),
+            ),
+        );
+
 
     return array('stat'=>'ok', 'sections'=>$sections);
 }

@@ -854,6 +854,41 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         // Get any sponsors for this festival, and that references for sponsors is enabled
         //
         if( isset($args['sponsors']) && $args['sponsors'] == 'yes' 
+            && ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x10)
+            ) {
+            $strsql = "SELECT sponsors.id, "
+                . "sponsors.name, "
+                . "sponsors.url, "
+                . "sponsors.sequence, "
+                . "sponsors.flags "
+                . "FROM ciniki_musicfestival_sponsors AS sponsors "
+                . "WHERE sponsors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "AND sponsors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "ORDER BY sponsors.flags DESC, sponsors.sequence "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'sponsors', 'fname'=>'id', 
+                    'fields'=>array('id', 'name', 'url', 'sequence', 'flags')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $festival['sponsors'] = isset($rc['sponsors']) ? $rc['sponsors'] : array();
+            foreach($festival['sponsors'] as $sid => $sponsor) {
+                $festival['sponsors'][$sid]['level'] = '';
+                if( ($sponsor['flags']&0x01) == 0x01 ) {
+                    $festival['sponsors'][$sid]['level'] = ($festival['sponsors'][$sid]['level'] != '' ? ', ' : '') . '1';
+                }
+                if( ($sponsor['flags']&0x02) == 0x02 ) {
+                    $festival['sponsors'][$sid]['level'] = ($festival['sponsors'][$sid]['level'] != '' ? ', ' : '') . '2';
+                }
+                if( ($sponsor['flags']&0x04) == 0x04 ) {
+                    $festival['sponsors'][$sid]['level'] = ($festival['sponsors'][$sid]['level'] != '' ? ', ' : '') . '3';
+                }
+            }
+        }
+        if( isset($args['sponsors']) && $args['sponsors'] == 'yes' 
             && isset($ciniki['tenant']['modules']['ciniki.sponsors']) 
             && ($ciniki['tenant']['modules']['ciniki.sponsors']['flags']&0x02) == 0x02
             ) {
@@ -864,7 +899,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 return $rc;
             }
             if( isset($rc['sponsors']) ) {
-                $festival['sponsors'] = $rc['sponsors'];
+                $festival['sponsors-old'] = $rc['sponsors'];
             }
         }
 

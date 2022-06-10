@@ -258,6 +258,22 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );
+    $objects['sponsor'] = array(
+        'name' => 'Sponsor',
+        'sync' => 'yes',
+        'o_name' => 'sponsor',
+        'o_container' => 'sponsors',
+        'table' => 'ciniki_musicfestival_sponsors',
+        'fields' => array(
+            'festival_id' => array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'name' => array('name'=>'Name'),
+            'url' => array('name'=>'Website', 'default'=>''),
+            'sequence' => array('name'=>'Order', 'default'=>1),
+            'flags' => array('name'=>'Options', 'default'=>'0'),
+            'image_id' => array('name'=>'Logo', 'ref'=>'ciniki.images.image', 'default'=>0),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
     $objects['setting'] = array(
         'name' => 'Setting',
         'sync' => 'yes',
