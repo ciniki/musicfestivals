@@ -88,6 +88,13 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         'settings' => array(
             'title' => array('label'=>'Title', 'type'=>'text'),
             'festival-id' => array('label'=>'Festival', 'type'=>'select', 'options'=>$festivals),
+            'image-size'=>array('label'=>'Image Size', 'type'=>'toggle', 'default'=>'medium', 'toggles'=>array(    
+                'xsmall' => 'X-Small',
+                'small' => 'Small',
+                'medium' => 'Medium',
+                'large' => 'Large',
+                'xlarge' => 'X-Large',
+                )),
             'level' => array('label'=>'Sponsor Level', 'type'=>'toggle', 'default'=>'1', 'toggles'=>array('1'=>'1', '2'=>'2')),
             ),
         );
