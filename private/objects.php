@@ -258,6 +258,23 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );
+    $objects['timeslotimage'] = array(
+        'name' => 'Schedule Time Slot Image',
+        'sync' => 'yes',
+        'o_name' => 'image',
+        'o_container' => 'images',
+        'table' => 'ciniki_musicfestival_timeslot_images',
+        'fields' => array(
+            'timeslot_id' => array('name'=>'Timeslot', 'ref'=>'ciniki.musicfestivals.scheduletimeslot'),
+            'title' => array('name'=>'Title', 'default'=>''),
+            'permalink' => array('name'=>'Permalink', 'default'=>''),
+            'flags' => array('name'=>'Options', 'default'=>0),
+            'sequence' => array('name'=>'Order', 'default'=>1),
+            'image_id' => array('name'=>'Image', 'ref'=>'ciniki.images.image'),
+            'description' => array('name'=>'Description', 'default'=>''),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
     $objects['sponsor'] = array(
         'name' => 'Sponsor',
         'sync' => 'yes',

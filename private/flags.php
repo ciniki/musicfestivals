@@ -18,7 +18,7 @@ function ciniki_musicfestivals_flags(&$ciniki) {
         // 0x01
 //        array('flag'=>array('bit'=>'1', 'name'=>'')), // Registrations **flag not yet implemented**
         array('flag'=>array('bit'=>'2', 'name'=>'Online Registrations')),
-//        array('flag'=>array('bit'=>'3', 'name'=>'')),
+        array('flag'=>array('bit'=>'3', 'name'=>'Timeslot Photos')),
 //        array('flag'=>array('bit'=>'4', 'name'=>'')),
         // 0x10
         array('flag'=>array('bit'=>'5', 'name'=>'Sponsors')),

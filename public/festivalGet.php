@@ -34,6 +34,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'teacher_customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Teacher'),
         'competitors'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitors'),
         'adjudicators'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicators'),
+        'photos'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Photos'),
         'comments'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Comments'),
         'files'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Files'),
         'sponsors'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sponsors'),
@@ -669,6 +670,85 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     }
                 }
             }
+            elseif( isset($args['sdivision_id']) && $args['sdivision_id'] > 0 
+                && isset($args['photos']) && $args['photos'] == 'yes'
+                && isset($requested_section)
+                ) {
+                $strsql = "SELECT timeslots.id, "
+                    . "timeslots.festival_id, "
+                    . "timeslots.sdivision_id, "
+                    . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
+                    . "timeslots.class1_id, "
+                    . "timeslots.class2_id, "
+                    . "timeslots.class3_id, "
+                    . "class1.name AS class1_name, "
+                    . "timeslots.name, "
+                    . "timeslots.description, "
+                    . "images.id AS timeslot_image_id, "
+                    . "images.image_id, "
+                    . "images.last_updated "
+                    . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
+                    . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
+                        . "timeslots.class1_id = class1.id " 
+                        . "AND class1.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_musicfestival_timeslot_images AS images ON ("
+                        . "timeslots.id = images.timeslot_id "
+                        . "AND images.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "AND timeslots.sdivision_id = '" . ciniki_core_dbQuote($ciniki, $args['sdivision_id']) . "' "
+                    . "AND timeslots.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "ORDER BY slot_time, images.sequence "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'scheduletimeslots', 'fname'=>'id', 
+                        'fields'=>array('id', 'festival_id', 'sdivision_id', 'slot_time_text', 'class1_id', 
+                            'name', 'description', 'class1_name')),
+                    array('container'=>'images', 'fname'=>'image_id', 'fields'=>array('timeslot_image_id', 'image_id', 'last_updated')),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                if( isset($rc['scheduletimeslots']) ) {
+                    $festival['timeslot_photos'] = $rc['scheduletimeslots'];
+                    $nplists['timeslot_photos'] = array();
+                    foreach($festival['timeslot_photos'] as $tid => $scheduletimeslot) {
+                        //
+                        // Check if class is set, then use class name
+                        //
+                        if( $scheduletimeslot['class1_id'] > 0 ) {
+                            if( $scheduletimeslot['name'] == '' && $scheduletimeslot['class1_name'] != '' ) {
+                                $festival['timeslot_photos'][$tid]['name'] = $scheduletimeslot['class1_name'];
+                            }
+                            $festival['timeslot_photos'][$tid]['description'] .= ($festival['timeslot_photos'][$tid]['description'] != '' ? "\n":'');
+                        }
+                        $nplists['timeslot_photos'][] = $scheduletimeslot['id'];
+
+                        //
+                        // Create image thumbnails
+                        //
+                        if( isset($scheduletimeslot['images']) ) {
+                            ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'hooks', 'loadThumbnail');
+                            foreach($scheduletimeslot['images'] as $iid => $image) {
+                                $rc = ciniki_images_hooks_loadThumbnail($ciniki, $args['tnid'], array(
+                                    'image_id' => $image['image_id'],
+                                    'maxlength' => 50,
+                                    'last_updated' => $image['last_updated'],
+                                    ));
+                                if( $rc['stat'] != 'ok' ) {
+                                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.244', 'msg'=>'No thumbnail', 'err'=>$rc['err']));
+                                }
+                                $festival['timeslot_photos'][$tid]['images'][$iid]['image'] = 'data:image/jpg;base64,' . base64_encode($rc['image']);
+                            }
+                        }
+                    }
+                } else {
+                    $festival['timeslot_photos'] = array();
+                    $nplists['timeslot_photos'] = array();
+                }
+            }   
             elseif( isset($args['sdivision_id']) && $args['sdivision_id'] > 0 ) {
                 $strsql = "SELECT timeslots.id, "
                     . "timeslots.festival_id, "
