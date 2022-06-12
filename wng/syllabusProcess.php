@@ -20,7 +20,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, $request, $s
     // Make sure a valid section was passed
     //
     if( !isset($section['ref']) || !isset($section['settings']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.211', 'msg'=>"No festival specified"));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.230', 'msg'=>"No festival specified"));
     }
     $s = $section['settings'];
     $blocks = array();

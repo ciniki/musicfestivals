@@ -705,8 +705,11 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'scheduletimeslots', 'fname'=>'id', 
                         'fields'=>array('id', 'festival_id', 'sdivision_id', 'slot_time_text', 'class1_id', 
-                            'name', 'description', 'class1_name')),
-                    array('container'=>'images', 'fname'=>'image_id', 'fields'=>array('timeslot_image_id', 'image_id', 'last_updated')),
+                            'name', 'description', 'class1_name'),
+                        ),
+                    array('container'=>'images', 'fname'=>'image_id', 
+                        'fields'=>array('timeslot_image_id', 'image_id', 'last_updated'),
+                        ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;

@@ -58,7 +58,7 @@ function ciniki_musicfestivals_wng_sponsorsProcess(&$ciniki, $tnid, $request, $s
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.221', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.250', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
     }
     $sponsors = isset($rc['sponsors']) ? $rc['sponsors'] : array();
 

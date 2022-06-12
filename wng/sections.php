@@ -80,6 +80,20 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         );
 
     //
+    // Section to display the photos for a festival
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x04) ) {
+        $sections['ciniki.musicfestivals.timeslotphotos'] = array(
+            'name' => 'Photos',
+            'module' => 'Music Festivals',
+            'settings' => array(
+                'title' => array('label'=>'Title', 'type'=>'text'),
+                'festival-id' => array('label'=>'Festival', 'type'=>'select', 'options'=>$festivals),
+                ),
+            );
+    }
+
+    //
     // Section to display the sponsors for a festival
     //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x10) ) {

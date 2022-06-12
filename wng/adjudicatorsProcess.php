@@ -13,14 +13,14 @@
 function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, $request, $section) {
 
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
-        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.219', 'msg'=>"I'm sorry, the page you requested does not exist."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.248', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
 
     //
     // Make sure a valid section was passed
     //
     if( !isset($section['ref']) || !isset($section['settings']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.220', 'msg'=>"No festival specified"));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.249', 'msg'=>"No festival specified"));
     }
     $s = $section['settings'];
     $blocks = array();
