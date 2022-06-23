@@ -18,8 +18,8 @@ function ciniki_musicfestivals_listSectionUpdate(&$ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'listsection_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'List Section'),
         'list_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'List'),
-        'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
-        'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
+        'name'=>array('required'=>'no', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'),
+        'sequence'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Order'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

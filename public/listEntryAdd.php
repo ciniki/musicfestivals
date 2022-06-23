@@ -22,10 +22,10 @@ function ciniki_musicfestivals_listEntryAdd(&$ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'section_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Section'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
-        'award'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Award'),
-        'amount'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Amount'),
-        'donor'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Donor'),
-        'winner'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Winner'),
+        'award'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Award'),
+        'amount'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Amount'),
+        'donor'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Donor'),
+        'winner'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Winner'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

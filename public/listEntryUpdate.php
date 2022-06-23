@@ -18,11 +18,11 @@ function ciniki_musicfestivals_listEntryUpdate(&$ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'listentry_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'List Entry'),
         'section_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Section'),
-        'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
-        'award'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Award'),
-        'amount'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Amount'),
-        'donor'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Donor'),
-        'winner'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Winner'),
+        'sequence'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Order'),
+        'award'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Award'),
+        'amount'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Amount'),
+        'donor'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Donor'),
+        'winner'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Winner'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

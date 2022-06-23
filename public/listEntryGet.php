@@ -61,7 +61,7 @@ function ciniki_musicfestivals_listEntryGet($ciniki) {
         $listentry = array(
             'id' => 0,
             'section_id' => '',
-            'sequence' => $seq,
+            'sequence' => 1,
             'award' => '',
             'amount' => '',
             'donor' => '',
@@ -81,7 +81,7 @@ function ciniki_musicfestivals_listEntryGet($ciniki) {
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
-            $seq = (isset($rc['item']['num']) ? $rc['item']['num'] + 1 : 1);
+            $listentry['sequence'] = (isset($rc['item']['num']) ? $rc['item']['num'] + 1 : 1);
            
             //
             // Get the last entry details for this section
