@@ -22,6 +22,7 @@ function ciniki_musicfestivals_listEntryGet($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'listentry_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'List Entry'),
+        'section_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'List Section'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -57,14 +58,49 @@ function ciniki_musicfestivals_listEntryGet($ciniki) {
     // Return default for new List Entry
     //
     if( $args['listentry_id'] == 0 ) {
-        $listentry = array('id'=>0,
-            'section_id'=>'',
-            'sequence'=>'1',
-            'award'=>'',
-            'amount'=>'',
-            'donor'=>'',
-            'winner'=>'',
+        $listentry = array(
+            'id' => 0,
+            'section_id' => '',
+            'sequence' => $seq,
+            'award' => '',
+            'amount' => '',
+            'donor' => '',
+            'winner' => '',
         );
+        if( isset($args['section_id']) && $args['section_id'] > 0 ) {
+            //
+            // Get the next sequence number
+            //
+            $strsql = "SELECT MAX(sequence) AS num "
+                . "FROM ciniki_musicfestival_list_entries "
+                . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "AND section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals','item');
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $seq = (isset($rc['item']['num']) ? $rc['item']['num'] + 1 : 1);
+           
+            //
+            // Get the last entry details for this section
+            //
+            $strsql = "SELECT award, donor "
+                . "FROM ciniki_musicfestival_list_entries "
+                . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "AND section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
+                . "ORDER BY date_added DESC "
+                . "LIMIT 1 "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals','item');
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $listentry['award'] = (isset($rc['item']['award']) ? $rc['item']['award'] : '');
+            $listentry['donor'] = (isset($rc['item']['donor']) ? $rc['item']['donor'] : '');
+        }
     }
 
     //

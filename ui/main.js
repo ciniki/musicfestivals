@@ -310,6 +310,25 @@ function ciniki_musicfestivals_main() {
             'headerValues':['Award', 'Amount', 'Donor', 'Winner'],
             'addTxt':'Add Entry',
             'addFn':'M.ciniki_musicfestivals_main.listentry.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.listsection_id,null);',
+            'seqDrop':function(e,from,to) {
+                M.api.getJSONCb('ciniki.musicfestivals.festivalGet', {'tnid':M.curTenantID, 
+                    'action':'listentrysequenceupdate',
+                    'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
+                    'lists':'yes',
+                    'list_id':M.ciniki_musicfestivals_main.festival.list_id,
+                    'listsection_id':M.ciniki_musicfestivals_main.festival.listsection_id,
+                    'entry_id':M.ciniki_musicfestivals_main.festival.data.listentries[from].id, 
+                    'sequence':M.ciniki_musicfestivals_main.festival.data.listentries[to].sequence, 
+                    }, function(rsp) {
+                        if( rsp.stat != 'ok' ) {
+                            M.api.err(rsp);
+                            return false;
+                        }
+                        var p = M.ciniki_musicfestivals_main.festival;
+                        p.data.listentries = rsp.festival.listentries;
+                        p.refreshSection("listentries");
+                    });
+                },
             },
         'sponsors':{'label':'Sponsors', 'type':'simplegrid', 'num_cols':2,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._tabs.selected == 'sponsors' ? 'yes' : 'no'; },
@@ -3261,7 +3280,7 @@ function ciniki_musicfestivals_main() {
         if( lid != null ) { this.listentry_id = lid; }
         if( sid != null ) { this.listsection_id = sid; }
         if( list != null ) { this.nplist = list; }
-        M.api.getJSONCb('ciniki.musicfestivals.listEntryGet', {'tnid':M.curTenantID, 'listentry_id':this.listentry_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.musicfestivals.listEntryGet', {'tnid':M.curTenantID, 'listentry_id':this.listentry_id, 'section_id':this.listsection_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
