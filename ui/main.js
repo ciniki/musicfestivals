@@ -3373,8 +3373,10 @@ function ciniki_musicfestivals_main() {
         if( args.registration_id != null && args.registration_id != '' ) {
             this.registration.open(cb, args.registration_id, 0, 0);
         } else if( args.festival_id != null && args.festival_id != '' ) {
+            this.festival.list_id = 0;
             this.festival.open(cb, args.festival_id, null);
         } else {
+            this.festival.list_id = 0;
             this.menu.open(cb);
         }
     }
