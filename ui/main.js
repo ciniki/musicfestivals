@@ -3182,7 +3182,7 @@ function ciniki_musicfestivals_main() {
         if( lid != null ) { this.listsection_id = lid; }
         if( list_id != null ) { this.list_id = list_id; }
         if( list != null ) { this.nplist = list; }
-        M.api.getJSONCb('ciniki.musicfestivals.listSectionGet', {'tnid':M.curTenantID, 'listsection_id':this.listsection_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.musicfestivals.listSectionGet', {'tnid':M.curTenantID, 'listsection_id':this.listsection_id, 'list_id':this.list_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;

@@ -22,6 +22,7 @@ function ciniki_musicfestivals_listSectionGet($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'listsection_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'List Section'),
+        'list_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'List Section'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -62,6 +63,22 @@ function ciniki_musicfestivals_listSectionGet($ciniki) {
             'name'=>'',
             'sequence'=>'1',
         );
+        if( isset($args['list_id']) && $args['list_id'] > 0 ) {
+            //
+            // Get the next sequence number
+            //
+            $strsql = "SELECT MAX(sequence) AS num "
+                . "FROM ciniki_musicfestival_list_sections "
+                . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "AND list_id = '" . ciniki_core_dbQuote($ciniki, $args['list_id']) . "' "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals','item');
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $listsection['sequence'] = (isset($rc['item']['num']) ? $rc['item']['num'] + 1 : 1);
+        }
     }
 
     //
