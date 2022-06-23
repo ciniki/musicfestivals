@@ -1080,6 +1080,7 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
     // Display the registration form for new registration or edit registration
     //
     if( $display == 'registration-form' ) {
+        error_log('registration form');
         //
         // Get the festival settings
         //
@@ -1664,7 +1665,8 @@ function ciniki_musicfestivals_web_processRequestRegistrations(&$ciniki, $settin
     }
 
     //
-    // Display the competitor form to add/edit a competitors details.
+    // Display the competitor form to add/edit a competitors details
+    // This form is used when editing a student detail from an existing registration prior to add to cart
     //
     if( $display == 'competitor-form' ) {
         $competitor = $competitors[$competitor_id];

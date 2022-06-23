@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_musicfestivals_wng_timeslotPhotosProcess(&$ciniki, $tnid, $request, $section) {
+function ciniki_musicfestivals_wng_timeslotPhotosProcess(&$ciniki, $tnid, &$request, $section) {
 
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.219', 'msg'=>"I'm sorry, the page you requested does not exist."));

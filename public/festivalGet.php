@@ -37,6 +37,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'photos'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Photos'),
         'comments'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Comments'),
         'files'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Files'),
+        'lists'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Lists'),
+        'list_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'List'),
+        'listsection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'List Section'),
         'sponsors'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sponsors'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -930,6 +933,75 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $festival['files'] = $rc['files'];
             } else {
                 $festival['files'] = array();
+            }
+        }
+
+        //
+        // Get any lists, list sections and/or list entries
+        //
+        if( isset($args['lists']) && $args['lists'] == 'yes'
+            && ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x20)
+            ) {
+            $strsql = "SELECT id, "
+                . "name "
+                . "FROM ciniki_musicfestival_lists "
+                . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "ORDER BY name "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'lists', 'fname'=>'id', 'fields'=>array('id', 'name')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $festival['lists'] = isset($rc['lists']) ? $rc['lists'] : array();
+
+            //
+            // Check if need query for list sections
+            //
+            if( isset($args['list_id']) && $args['list_id'] > 0 ) {
+                $strsql = "SELECT id, "
+                    . "name "
+                    . "FROM ciniki_musicfestival_list_sections "
+                    . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "AND list_id = '" . ciniki_core_dbQuote($ciniki, $args['list_id']) . "' "
+                    . "ORDER BY sequence "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'listsections', 'fname'=>'id', 'fields'=>array('id', 'name')),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                $festival['listsections'] = isset($rc['listsections']) ? $rc['listsections'] : array();
+            }
+
+            //
+            // Check if need query for list sections
+            //
+            if( isset($args['listsection_id']) && $args['listsection_id'] > 0 ) {
+                $strsql = "SELECT id, "
+                    . "award, "
+                    . "amount, "
+                    . "donor, "
+                    . "winner "
+                    . "FROM ciniki_musicfestival_list_entries "
+                    . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "AND section_id = '" . ciniki_core_dbQuote($ciniki, $args['listsection_id']) . "' "
+                    . "ORDER BY sequence "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'listentries', 'fname'=>'id', 
+                        'fields'=>array('id', 'award', 'amount', 'donor', 'winner')),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                $festival['listentries'] = isset($rc['listentries']) ? $rc['listentries'] : array();
             }
         }
 

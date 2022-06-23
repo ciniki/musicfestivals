@@ -291,6 +291,49 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );
+    $objects['list'] = array(
+        'name' => 'List',
+        'sync' => 'yes',
+        'o_name' => 'list',
+        'o_container' => 'lists',
+        'table' => 'ciniki_musicfestival_lists',
+        'fields' => array(
+            'festival_id' => array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'name' => array('name'=>'Name'),
+            'category' => array('name'=>'Category'),
+            'intro' => array('name'=>'Introduction', 'default'=>''),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
+    $objects['listsection'] = array(
+        'name' => 'List Section',
+        'sync' => 'yes',
+        'o_name' => 'listsection',
+        'o_container' => 'listsections',
+        'table' => 'ciniki_musicfestival_list_sections',
+        'fields' => array(
+            'list_id' => array('name'=>'List', 'ref'=>'ciniki.musicfestivals.list'),
+            'name' => array('name'=>'Name'),
+            'sequence' => array('name'=>'Order', 'default'=>'1'),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
+    $objects['listentry'] = array(
+        'name' => 'List Entry',
+        'sync' => 'yes',
+        'o_name' => 'listentry',
+        'o_container' => 'listentries',
+        'table' => 'ciniki_musicfestival_list_entries',
+        'fields' => array(
+            'section_id' => array('name'=>'Section', 'ref'=>'ciniki.musicfestivals.listsection'),
+            'sequence' => array('name'=>'Order', 'default'=>'1'),
+            'award' => array('name'=>'Award', 'default'=>''),
+            'amount' => array('name'=>'Amount', 'default'=>''),
+            'donor' => array('name'=>'Donor', 'default'=>''),
+            'winner' => array('name'=>'Winner', 'default'=>''),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
     $objects['setting'] = array(
         'name' => 'Setting',
         'sync' => 'yes',

@@ -1,0 +1,38 @@
+#
+# Description
+# -----------
+# This table stores various lists for different purposes in the system.
+# It was designed for Scholarship/Awards and Provincial Winners.
+#
+# The category field is used to pull multiple festival years Scholarship lists into 1 page on website.
+# This does not mean combining lists but starting with list of lists of a category for multiple years.
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+# 
+# festival_id:              The ID of the festival the list is attached to.
+# name:                     The name of the list.
+# categor:                  The category for the list, used to pull multiple years into website.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_musicfestival_lists (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    festival_id int not null,
+    name varchar(150) not null,
+    category varchar(150) not null,
+    intro text not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

@@ -36,6 +36,16 @@ function ciniki_musicfestivals_festivalList($ciniki) {
     }
 
     //
+    // Load maps
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'maps');
+    $rc = ciniki_musicfestivals_maps($ciniki);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $maps = $rc['maps'];
+
+    //
     // Get the list of festivals
     //
     $strsql = "SELECT ciniki_musicfestivals.id, "
@@ -44,15 +54,21 @@ function ciniki_musicfestivals_festivalList($ciniki) {
         . "ciniki_musicfestivals.start_date, "
         . "ciniki_musicfestivals.end_date, "
         . "ciniki_musicfestivals.status, "
+        . "ciniki_musicfestivals.status AS status_text, "
         . "ciniki_musicfestivals.flags, "
         . "ciniki_musicfestivals.earlybird_date "
         . "FROM ciniki_musicfestivals "
         . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "ORDER BY start_date DESC "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'festivals', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'permalink', 'start_date', 'end_date', 'status', 'flags', 'earlybird_date')),
+            'fields'=>array('id', 'name', 'permalink', 'start_date', 'end_date', 'status', 'status_text',
+                'flags', 'earlybird_date',
+                ),
+            'maps'=>array('status_text'=>$maps['festival']['status']),
+            ),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

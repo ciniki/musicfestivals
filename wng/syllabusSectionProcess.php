@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, $request, $section) {
+function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$request, $section) {
 
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.214', 'msg'=>"I'm sorry, the page you requested does not exist."));
@@ -24,6 +24,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, $requ
     }
     $s = $section['settings'];
     $blocks = array();
+
 
     //
     // Make sure a festival was specified
@@ -52,6 +53,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, $requ
     }
 
     $section_permalink = $request['uri_split'][$request['cur_uri_pos']];
+    $base_url = $request['base_url'] . $request['page']['path'];
 
     //
     // Check for image format
@@ -174,11 +176,11 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, $requ
                 );
             if( isset($category['classes']) && count($category['classes']) > 0 ) {
                 //
-                // FIXME: Check if online registrations enabled, and online registrations enabled for this class
+                // Check if online registrations enabled, and online registrations enabled for this class
                 //
                 if( ($festival['flags']&0x01) == 0x01 ) {
                     foreach($category['classes'] as $cid => $class) {
-                        $category['classes'][$cid]['register'] = "<a href='" . $args['base_url'] . "/registrations?r=new&cl=" . $class['uuid'] . "'>Register</a>";
+                        $category['classes'][$cid]['register'] = "<a class='button' href='" . $base_url . "/registration?r=new&cl=" . $class['uuid'] . "'>Register</a>";
                     }
                     $blocks[] = array(
                         'type' => 'table', 
@@ -188,7 +190,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, $requ
                             array('label'=>'Code', 'field'=>'code', 'class'=>''),
                             array('label'=>'Course', 'field'=>'name', 'class'=>''),
                             array('label'=>'Fee', 'field'=>'fee', 'class'=>'aligncenter'),
-                            array('label'=>'', 'field'=>'register', 'class'=>'alignright'),
+                            array('label'=>'', 'field'=>'register', 'class'=>'alignright buttons'),
                             ),
                         'rows' => $category['classes'],
                         );

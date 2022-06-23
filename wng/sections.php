@@ -94,6 +94,45 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     }
 
     //
+    // Section to display lists for 
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x20) ) {
+        //
+        // Get the list of categories available
+        //
+        $strsql = "SELECT DISTINCT category, category "
+            . "FROM ciniki_musicfestival_lists "
+            . "WHERE ciniki_musicfestival_lists.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "ORDER BY category "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
+        $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'categories', 'category');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.209', 'msg'=>'Unable to load the list of festivals', 'err'=>$rc['err']));
+        }
+        $categories = isset($rc['categories']) ? $rc['categories'] : array();
+
+        if( count($categories) > 0 ) {
+            $sections['ciniki.musicfestivals.categorylists'] = array(
+                'name' => 'Category Lists',
+                'module' => 'Music Festivals',
+                'settings' => array(
+                    'title' => array('label'=>'Title', 'type'=>'text'),
+                    'category' => array('label'=>'Category', 'type'=>'select', 'options'=>$categories),
+                    'amount-visible' => array('label'=>'Amount Visible', 'type'=>'toggle', 'default'=>'yes', 'toggles'=>array(
+                        'no' => 'No',
+                        'yes' => 'Yes',
+                        )),
+                    'donor-visible' => array('label'=>'Donor Visible', 'type'=>'toggle', 'default'=>'yes', 'toggles'=>array(
+                        'no' => 'No',
+                        'yes' => 'Yes',
+                        )),
+                    ),
+                );
+        }
+    }
+
+    //
     // Section to display the sponsors for a festival
     //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x10) ) {

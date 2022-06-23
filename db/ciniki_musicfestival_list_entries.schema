@@ -1,0 +1,40 @@
+#
+# Description
+# -----------
+# This table stores the entries for each list section
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# section_id:               The ID of the section the entry is attached to.
+#
+# sequence:                 The order to show the entry in.
+# award:                    The award/scholarship for entry.
+# amount:                   The amount awarded to the entry.
+# donor:                    The donor who donated the award/scholarship.
+# winner:                   The winner/competitor for the entry.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_musicfestival_list_entries (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    section_id int not null,
+    sequence tinyint unsigned not null,
+    award varchar(250) not null,
+    amount varchar(50) not null,
+    donor varchar(250) not null,
+    winner varchar(250) not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

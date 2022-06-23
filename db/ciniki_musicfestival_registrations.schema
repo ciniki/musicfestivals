@@ -13,7 +13,9 @@
 #
 # teacher_customer_id:  The ID of the customer who is the teacher for this registration or conductor of ensemble.
 #
-# billing_customer_id:  The ID of the customer the billing is attached to. **future**
+# billing_customer_id:  The ID of the customer the billing is attached to, who did the registration.
+#                       This will be the teacher if they registered their students, and the parent for children, 
+#                       or adult if they registered themselves.
 #
 # rtype:                The type of registration.
 #

@@ -22,11 +22,11 @@ function ciniki_musicfestivals_flags(&$ciniki) {
 //        array('flag'=>array('bit'=>'4', 'name'=>'')),
         // 0x10
         array('flag'=>array('bit'=>'5', 'name'=>'Sponsors')),
-//        array('flag'=>array('bit'=>'6', 'name'=>'')),
+        array('flag'=>array('bit'=>'6', 'name'=>'Lists')),
 //        array('flag'=>array('bit'=>'7', 'name'=>'')),
 //        array('flag'=>array('bit'=>'8', 'name'=>'')),
         // 0x0100
-//        array('flag'=>array('bit'=>'9', 'name'=>'')),
+        array('flag'=>array('bit'=>'9', 'name'=>'Main Menu Festivals')),
 //        array('flag'=>array('bit'=>'10', 'name'=>'')),
 //        array('flag'=>array('bit'=>'11', 'name'=>'')),
 //        array('flag'=>array('bit'=>'12', 'name'=>'')),

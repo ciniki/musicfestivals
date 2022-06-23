@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, $request, $section) {
+function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $section) {
 
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.210', 'msg'=>"I'm sorry, the page you requested does not exist."));
@@ -30,6 +30,19 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, $request, $s
     //
     if( !isset($s['festival-id']) || $s['festival-id'] == '' || $s['festival-id'] == 0 ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.212', 'msg'=>"No festival specified"));
+    }
+
+    //
+    // Check for registration request
+    //
+    if( isset($request['uri_split'][($request['cur_uri_pos']+1)])
+        && $request['uri_split'][($request['cur_uri_pos']+1)] == 'registration' 
+        ) {
+        $request['cur_uri_pos']++;
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'registrationProcess');
+        return ciniki_musicfestivals_wng_registrationProcess($ciniki, $tnid, $request, array(
+            'festival-id' => $s['festival-id'],
+            ));
     }
 
     //
