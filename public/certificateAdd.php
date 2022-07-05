@@ -23,7 +23,7 @@ function ciniki_musicfestivals_certificateAdd(&$ciniki) {
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'),
         'image_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Image'),
-        'section_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Section'),
+        'section_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Section'),
         'min_score'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Minimum Score'),
         ));
     if( $rc['stat'] != 'ok' ) {
