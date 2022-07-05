@@ -3450,13 +3450,17 @@ function ciniki_musicfestivals_main() {
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.certificate.save();'},
             'download':{'label':'Generate Test', 
                 'visible':function() {return M.ciniki_musicfestivals_main.certificate.certificate_id > 0 ? 'yes' : 'no'; },
-                'fn':'M.ciniki_musicfestivals_main.certificate.generateTest();'},
+                'fn':'M.ciniki_musicfestivals_main.certificate.generateTestOutlines();',
+                },
+            'download2':{'label':'Generate Test No Outlines', 
+                'visible':function() {return M.ciniki_musicfestivals_main.certificate.certificate_id > 0 ? 'yes' : 'no'; },
+                'fn':'M.ciniki_musicfestivals_main.certificate.generateTest();',
                 },
             'delete':{'label':'Delete', 
                 'visible':function() {return M.ciniki_musicfestivals_main.certificate.certificate_id > 0 ? 'yes' : 'no'; },
                 'fn':'M.ciniki_musicfestivals_main.certificate.remove();',
                 },
-            },
+            }},
         };
     this.certificate.fieldValue = function(s, i, d) { return this.data[i]; }
     this.certificate.fieldHistoryArgs = function(s, i) {
@@ -3515,6 +3519,9 @@ function ciniki_musicfestivals_main() {
                 eval(cb);
             });
         }
+    }
+    this.certificate.generateTestOutlines = function() {
+        M.api.openFile('ciniki.musicfestivals.certificateGet', {'tnid':M.curTenantID, 'certificate_id':this.certificate_id, 'festival_id':this.festival_id, 'output':'pdf', 'outlines':'yes'});
     }
     this.certificate.generateTest = function() {
         M.api.openFile('ciniki.musicfestivals.certificateGet', {'tnid':M.curTenantID, 'certificate_id':this.certificate_id, 'festival_id':this.festival_id, 'output':'pdf'});

@@ -24,6 +24,7 @@ function ciniki_musicfestivals_certificateGet($ciniki) {
         'certificate_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Certificate'),
         'festival_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Festival'),
         'output'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Output'),
+        'outlines'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Outlines'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -146,7 +147,7 @@ function ciniki_musicfestivals_certificateGet($ciniki) {
         $rc = ciniki_musicfestivals_templates_certificatesPDF($ciniki, $args['tnid'], array(
             'festival_id' => $certificate['festival_id'],
             'certificates' => array($certificate),
-            'testmode' => 'yes',
+            'testmode' => isset($args['outlines']) && $args['outlines'] == 'yes' ? 'yes' : 'no',
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.303', 'msg'=>'Unable to generate PDF', 'err'=>$rc['err']));

@@ -124,7 +124,7 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $tnid, $args)
 
     $filename = 'certificates';
 
-    $border = isset($args['testmode']) ? 1 : 0;
+    $border = (isset($args['testmode']) && $args['testmode'] == 'yes' ? 1 : 0);
     $pdf->setDrawColor(225);
     $pdf->setLineWidth(0.1);
 
