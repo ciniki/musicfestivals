@@ -334,6 +334,46 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );
+    $objects['certificate'] = array(
+        'name' => 'Certificate',
+        'sync' => 'yes',
+        'o_name' => 'certificate',
+        'o_container' => 'certificates',
+        'table' => 'ciniki_musicfestival_certificates',
+        'fields' => array(
+            'festival_id' => array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'name' => array('name'=>'Name'),
+            'image_id' => array('name'=>'Image', 'ref'=>'ciniki.images.image'),
+            'section_id' => array('name'=>'Section', 'ref'=>'ciniki.musicfestivals.section'),
+            'min_score' => array('name'=>'Minimum Score', 'default'=>'0'),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
+    $objects['certfield'] = array(
+        'name' => 'Certificate Field',
+        'sync' => 'yes',
+        'o_name' => 'field',
+        'o_container' => 'fields',
+        'table' => 'ciniki_musicfestival_certificate_fields',
+        'fields' => array(
+            'certificate_id' => array('name'=>'Certificate', 'ref'=>'ciniki.musicfestivals.certificate'),
+            'name' => array('name'=>'Name'),
+            'field' => array('name'=>'Field'),
+            'xpos' => array('name'=>'X Position'),
+            'ypos' => array('name'=>'Y Position'),
+            'width' => array('name'=>'Width'),
+            'height' => array('name'=>'Height'),
+            'font' => array('name'=>'Font', 'default'=>''),
+            'size' => array('name'=>'Size', 'default'=>''),
+            'style' => array('name'=>'Style', 'default'=>''),
+            'align' => array('name'=>'Align', 'default'=>'C'),
+            'valign' => array('name'=>'Vertical Align', 'default'=>'M'),
+            'color' => array('name'=>'Color', 'default'=>''),
+            'bgcolor' => array('name'=>'Background Color', 'default'=>''),
+            'text' => array('name'=>'Text', 'default'=>''),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
     $objects['setting'] = array(
         'name' => 'Setting',
         'sync' => 'yes',

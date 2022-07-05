@@ -1,0 +1,65 @@
+#
+# Description
+# -----------
+# This table stores the field that are to be placed onto a certificate.
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# certificate_id:           The ID of the certificate to place the field on.
+#
+# name:                     The name for this certificate, used for UI only.
+#
+# field:                    The field to be filled in.
+#
+#                               class - The name of the class.
+#                               participant - The name of the participant.
+#                               adjudicator - The name of the adjudicator.
+#                               text - Content to be used from text field.
+#
+# xpos:                     The x position of the year box.
+# ypos:                     The y position of the year box.
+# width:                    The width of the year box.
+# height:                   The height of the year box.
+# font:                     The font to be used: helvetica, times, etc
+# size:                     The font size to be used.
+# style:                    The font style to be used: B, I, BI
+# align:                    The align to be used: L, C, R
+# valign:                   The vertical align to be used: T, M, B
+# color:                    The font color to be used.
+# bgcolor:                  The background color, blank if transparent.
+# text:                     The content to be filled into the field when ftype is text.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_musicfestival_certificate_fields (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    certificate_id int not null,
+    name varchar(50) not null,
+    field varchar(20) not null,
+    xpos int not null,
+    ypos int not null,
+    width int not null,
+    height int not null,
+    font varchar(50) not null,
+    size varchar(50) not null,
+    style varchar(50) not null,
+    align varchar(50) not null,
+    valign varchar(50) not null,
+    color varchar(50) not null,
+    bgcolor varchar(50) not null,
+    text varchar(250) not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';
