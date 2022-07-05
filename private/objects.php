@@ -344,7 +344,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'festival_id' => array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
             'name' => array('name'=>'Name'),
             'image_id' => array('name'=>'Image', 'ref'=>'ciniki.images.image'),
-            'section_id' => array('name'=>'Section', 'ref'=>'ciniki.musicfestivals.section'),
+            'section_id' => array('name'=>'Section', 'ref'=>'ciniki.musicfestivals.section', 'default'=>0),
             'min_score' => array('name'=>'Minimum Score', 'default'=>'0'),
             ),
         'history_table' => 'ciniki_musicfestivals_history',
