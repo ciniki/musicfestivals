@@ -3581,6 +3581,7 @@ function ciniki_musicfestivals_main() {
                 'vidaloka':'Vidaloka',
                 'scriptina':'Scriptina',
                 'allison':'Allison',
+                'greatvibes':'Great Vibes',
                 }},
             'size':{'label':'Size', 'type':'text'},
             'style':{'label':'Style', 'type':'select', 'options':{
