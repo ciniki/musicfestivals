@@ -3580,6 +3580,7 @@ function ciniki_musicfestivals_main() {
                 'helvetica':'Helvetica',
                 'vidaloka':'Vidaloka',
                 'scriptina':'Scriptina',
+                'allison':'Allison',
                 }},
             'size':{'label':'Size', 'type':'text'},
             'style':{'label':'Style', 'type':'select', 'options':{
