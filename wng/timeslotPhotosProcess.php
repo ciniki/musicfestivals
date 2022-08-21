@@ -73,7 +73,7 @@ function ciniki_musicfestivals_wng_timeslotPhotosProcess(&$ciniki, $tnid, &$requ
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'divisions', 'fname'=>'division_id', 
-            'fields'=>array('id'=>'division_id', 'title'=>'division_name', 'image-id'=>'image_id'),
+            'fields'=>array('id'=>'division_id', 'text'=>'division_name', 'image-id'=>'image_id'),
             ),
         array('container'=>'images', 'fname'=>'permalink', 
             'fields'=>array('id'=>'timeslot_image_id', 'image-id'=>'image_id', 'permalink', 'title', 'description'),
@@ -84,10 +84,10 @@ function ciniki_musicfestivals_wng_timeslotPhotosProcess(&$ciniki, $tnid, &$requ
     }
     $divisions = isset($rc['divisions']) ? $rc['divisions'] : array();
     foreach($divisions as $did => $division) {
-        $divisions[$did]['permalink'] = ciniki_core_makePermalink($ciniki, trim($division['title']));
+        $divisions[$did]['permalink'] = ciniki_core_makePermalink($ciniki, trim($division['text']));
         $divisions[$did]['url'] = $request['page']['path'] . '/' . $divisions[$did]['permalink'];
         if( $divisions[$did]['permalink'] == $division_permalink ) {
-            $division['permalink'] = ciniki_core_makePermalink($ciniki, trim($division['title']));
+            $division['permalink'] = ciniki_core_makePermalink($ciniki, trim($division['text']));
             $division['url'] = $request['page']['path'] . '/' . $divisions[$did]['permalink'];
             $selected_division = $division;
             if( $image_permalink != '' && isset($division['images'][$image_permalink]) ) {
@@ -146,10 +146,12 @@ function ciniki_musicfestivals_wng_timeslotPhotosProcess(&$ciniki, $tnid, &$requ
         // Add the adjudicators
         //
         $blocks[] = array(
-            'type' => 'imagebuttons',
+            //'type' => 'imagebuttons',
+            'type' => 'buttons',
             'image-ratio' => '4-3',
             'title-position' => 'overlay-bottomhalf',
-            'items' => $divisions,
+            //'items' => $divisions,
+            'list' => $divisions,
             );
     } else {
         $blocks[] = array(
