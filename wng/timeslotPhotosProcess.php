@@ -127,6 +127,7 @@ function ciniki_musicfestivals_wng_timeslotPhotosProcess(&$ciniki, $tnid, &$requ
 
         $blocks[] = array(
             'type' => 'gallery',
+            'layout' => 'originals',
             'items' => $selected_division['images'],
             );
 
