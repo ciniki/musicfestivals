@@ -515,7 +515,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
         // Display the section information
         //
         $page['blocks'][] = array('type'=>'content', 'section'=>'content', 'title'=>$section['name'], 
-            'aside_image_id'=>(isset($section['image_id']) && $section['image_id'] > 0  ? $section['image_id'] : 0),
+//            'aside_image_id'=>(isset($section['image_id']) && $section['image_id'] > 0  ? $section['image_id'] : 0),
             'wide'=>(isset($section['image_id']) && $section['image_id'] > 0  ? 'no' : 'yes'),
             'content'=>($section['description'] != '' ? $section['description'] : $section['synopsis'])
             );
