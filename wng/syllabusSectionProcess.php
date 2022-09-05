@@ -70,9 +70,13 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     //
     // Get the music festival details
     //
-    $dt = new DateTime('now', new DateTimezone($intl_timezone));
+    $dt = new DateTime('now', new DateTimezone('UTC'));
     $strsql = "SELECT id, name, flags, "
-        . "IFNULL(DATEDIFF(earlybird_date, '" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d')) . "'), -1) AS earlybird "
+        . "earlybird_date, "
+        . "live_date, "
+        . "virtual_date "
+//        . "IFNULL(DATEDIFF(earlybird_date, '" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d')) . "'), -1) AS earlybird, "
+//        . "IFNULL(DATEDIFF(virtual_date, '" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d')) . "'), -1) AS virtual "
         . "FROM ciniki_musicfestivals "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
@@ -83,9 +87,12 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     }
     if( isset($rc['festival']) ) {
         $festival = $rc['festival'];
-//        $festival['settings'] = array(
-//            'age-restriction-msg' => '',
-//            );
+        $earlybird_dt = new DateTime($rc['festival']['earlybird_date'], new DateTimezone('UTC'));
+        $live_dt = new DateTime($rc['festival']['live_date'], new DateTimezone('UTC'));
+        $virtual_dt = new DateTime($rc['festival']['virtual_date'], new DateTimezone('UTC'));
+        $festival['earlybird'] = ($earlybird_dt > $dt ? 'yes' : 'no');
+        $festival['live'] = ($live_dt > $dt ? 'yes' : 'no');
+        $festival['virtual'] = ($virtual_dt > $dt ? 'yes' : 'no');
     }
 
     //
@@ -141,13 +148,11 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         . "classes.name, "
         . "classes.permalink, "
         . "classes.sequence, "
-        . "classes.flags, ";
-    if( $festival['earlybird'] >= 0 ) {
-        $strsql .= "CONCAT('$', FORMAT(classes.earlybird_fee, 2)) AS fee ";
-    } else {
-        $strsql .= "CONCAT('$', FORMAT(classes.fee, 2)) AS fee ";
-    }
-    $strsql .= "FROM ciniki_musicfestival_categories AS categories "
+        . "classes.flags, "
+        . "earlybird_fee, "
+        . "fee, "
+        . "virtual_fee "
+        . "FROM ciniki_musicfestival_categories AS categories "
         . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
             . "categories.id = classes.category_id "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -161,7 +166,8 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         array('container'=>'categories', 'fname'=>'category_id', 
             'fields'=>array('name'=>'category_name', 'image_id'=>'category_image_id', 'synopsis'=>'category_synopsis', 'description'=>'category_description')),
         array('container'=>'classes', 'fname'=>'id', 
-            'fields'=>array('id', 'uuid', 'festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 'fee')),
+            'fields'=>array('id', 'uuid', 'festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 
+                'earlybird_fee', 'fee', 'virtual_fee')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -176,20 +182,50 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 );
             if( isset($category['classes']) && count($category['classes']) > 0 ) {
                 //
-                // Check if online registrations enabled, and online registrations enabled for this class
+                // Process the classes to determine which fee to show
                 //
-                if( ($festival['flags']&0x01) == 0x01 ) {
-                    foreach($category['classes'] as $cid => $class) {
+                foreach($category['classes'] as $cid => $class) {
+                    if( $festival['live'] == 'yes' ) {
+                        if( isset($festival['earlybird']) && $festival['earlybird'] == 'yes' && $class['earlybird_fee'] > 0 ) {
+                            $category['classes'][$cid]['live_fee'] = '$' . number_format($class['earlybird_fee'], 2);
+                        } elseif( isset($festival['live']) && $festival['live'] == 'yes' && $class['fee'] > 0 ) {
+                            $category['classes'][$cid]['live_fee'] = '$' . number_format($class['fee'], 2);
+                        } else {
+                            $category['classes'][$cid]['live_fee'] = 'n/a';
+                        }
+                    } else {
+                        $category['classes'][$cid]['live_fee'] = 'closed';
+                    }
+                    if( ($festival['flags']&0x04) == 0x04 ) {
+                        if( $festival['virtual'] == 'yes' && $class['virtual_fee'] > 0 ) {
+                            $category['classes'][$cid]['virtual_fee'] = '$' . number_format($class['virtual_fee'], 2);
+                        } elseif( $festival['virtual'] == 'yes' ) {
+                            $category['classes'][$cid]['virtual_fee'] = 'n/a';
+                        } else {
+                            $category['classes'][$cid]['virtual_fee'] = 'closed';
+                        }
+                    }
+                    $category['classes'][$cid]['fullname'] = $class['code'] . ' - ' . $class['name'];
+                    if( ($festival['flags']&0x01) == 0x01 
+                        && ($festival['live'] == 'yes' || $festival['virtual'] == 'yes') 
+                        ) {
                         $category['classes'][$cid]['register'] = "<a class='button' href='" . $base_url . "/registration?r=new&cl=" . $class['uuid'] . "'>Register</a>";
                     }
+                }
+                //
+                // Check if online registrations enabled, and online registrations enabled for this class
+                //
+                if( ($festival['flags']&0x06) == 0x06 ) {   // Virtual option & Virtual Pricing
                     $blocks[] = array(
                         'type' => 'table', 
                         'section' => 'classes', 
-                        'headers' => 'no',
+                        'headers' => ($festival['flags']&0x04) == 0x04 ? 'yes' : 'no',
+                        'class' => 'fold-at-40',
                         'columns' => array(
-                            array('label'=>'Code', 'field'=>'code', 'class'=>''),
-                            array('label'=>'Course', 'field'=>'name', 'class'=>''),
-                            array('label'=>'Fee', 'field'=>'fee', 'class'=>'aligncenter'),
+                            array('label'=>'Class', 'fold-label'=>'Class', 'field'=>'fullname', 'class'=>''),
+    //                            array('label'=>'Course', 'field'=>'name', 'class'=>''),
+                            array('label'=>'Live', 'fold-label'=>'Live', 'field'=>'live_fee', 'class'=>'aligncenter'),
+                            array('label'=>'Virtual', 'fold-label'=>'Virtual', 'field'=>'virtual_fee', 'class'=>'aligncenter'),
                             array('label'=>'', 'field'=>'register', 'class'=>'alignright buttons'),
                             ),
                         'rows' => $category['classes'],
@@ -199,10 +235,11 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                         'type' => 'table', 
                         'section' => 'classes', 
                         'headers' => 'no',
+                        'class' => 'fold-at-40',
                         'columns' => array(
-                            array('label'=>'', 'field'=>'code', 'class'=>''),
-                            array('label'=>'', 'field'=>'name', 'class'=>''),
-                            array('label'=>'Fee', 'field'=>'fee', 'class'=>'aligncenter'),
+                            array('label'=>'Class', 'fold-label'=>'Class', 'field'=>'fullname', 'class'=>''),
+                            array('label'=>'Live', 'fold-label'=>'Live', 'field'=>'live_fee', 'class'=>'aligncenter'),
+                            array('label'=>'', 'field'=>'register', 'class'=>'alignright buttons'),
                             ),
                         'rows' => $category['classes'],
                         );

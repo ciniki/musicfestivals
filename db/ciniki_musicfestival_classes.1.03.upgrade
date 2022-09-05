@@ -1,0 +1,5 @@
+#
+# Upgrade size of flags field
+#
+ALTER TABLE ciniki_musicfestival_classes MODIFY COLUMN flags smallint not null;
+ALTER TABLE ciniki_musicfestival_classes COMMENT='v1.03';

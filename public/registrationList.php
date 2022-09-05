@@ -52,8 +52,12 @@ function ciniki_musicfestivals_registrationList($ciniki) {
         . "ciniki_musicfestival_registrations.competitor4_id, "
         . "ciniki_musicfestival_registrations.competitor5_id, "
         . "ciniki_musicfestival_registrations.class_id, "
-        . "ciniki_musicfestival_registrations.title, "
-        . "ciniki_musicfestival_registrations.perf_time, "
+        . "ciniki_musicfestival_registrations.title1, "
+        . "ciniki_musicfestival_registrations.perf_time1, "
+        . "ciniki_musicfestival_registrations.title2, "
+        . "ciniki_musicfestival_registrations.perf_time2, "
+        . "ciniki_musicfestival_registrations.title3, "
+        . "ciniki_musicfestival_registrations.perf_time3, "
         . "ciniki_musicfestival_registrations.fee, "
         . "ciniki_musicfestival_registrations.payment_type "
         . "FROM ciniki_musicfestival_registrations "
@@ -64,7 +68,9 @@ function ciniki_musicfestivals_registrationList($ciniki) {
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'billing_customer_id', 'rtype', 'status', 'invoice_id',
                 'display_name', 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 
-                'class_id', 'title', 'perf_time', 'fee', 'payment_type')),
+                'class_id', 'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 
+                'fee', 'payment_type',
+                )),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

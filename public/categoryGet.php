@@ -133,7 +133,8 @@ function ciniki_musicfestivals_categoryGet($ciniki) {
                 . "ciniki_musicfestival_classes.sequence, "
                 . "ciniki_musicfestival_classes.flags, "
                 . "ciniki_musicfestival_classes.earlybird_fee, "
-                . "ciniki_musicfestival_classes.fee "
+                . "ciniki_musicfestival_classes.fee, "
+                . "ciniki_musicfestival_classes.virtual_fee "
                 . "FROM ciniki_musicfestival_classes "
                 . "WHERE ciniki_musicfestival_classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "AND ciniki_musicfestival_classes.category_id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
@@ -142,7 +143,8 @@ function ciniki_musicfestivals_categoryGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'classes', 'fname'=>'id', 
-                    'fields'=>array('id', 'festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 'earlybird_fee', 'fee')),
+                    'fields'=>array('id', 'festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 
+                        'earlybird_fee', 'fee', 'virtual_fee')),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
@@ -150,8 +152,9 @@ function ciniki_musicfestivals_categoryGet($ciniki) {
             if( isset($rc['classes']) ) {
                 $category['classes'] = $rc['classes'];
                 foreach($category['classes'] as $iid => $class) {
-                    $category['classes'][$iid]['earlybird_fee'] = numfmt_format_currency($intl_currency_fmt, $class['earlybird_fee'], $intl_currency);
-                    $category['classes'][$iid]['fee'] = numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency);
+                    $category['classes'][$iid]['earlybird_fee'] = number_format($class['earlybird_fee'], 2);
+                    $category['classes'][$iid]['fee'] = number_format($class['fee'], 2);
+                    $category['classes'][$iid]['virtual_fee'] = number_format($class['virtual_fee'], 2);
                     $nplists['classes'][] = $class['id'];
                 }
             } else {

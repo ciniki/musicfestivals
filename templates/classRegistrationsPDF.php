@@ -82,8 +82,12 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
         . "registrations.id AS reg_id, "
         . "registrations.display_name, "
         . "registrations.public_name, "
-        . "registrations.title, "
-        . "registrations.perf_time, "
+        . "registrations.title1, "
+        . "registrations.perf_time1, "
+        . "registrations.title2, "
+        . "registrations.perf_time2, "
+        . "registrations.title3, "
+        . "registrations.perf_time3, "
         . "registrations.notes, "
         . "competitors.id AS competitor_id, "
         . "competitors.notes AS competitor_notes "
@@ -116,9 +120,16 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'classes', 'fname'=>'class_id', 'fields'=>array('id'=>'class_id', 'cat_seq', 'sec_seq', 'code'=>'class_code', 'name'=>'class_name')),
-        array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'title', 'perf_time', 'notes')),
-        array('container'=>'competitors', 'fname'=>'competitor_id', 'fields'=>array('id'=>'competitor_id', 'notes'=>'competitor_notes')),
+        array('container'=>'classes', 'fname'=>'class_id', 
+            'fields'=>array('id'=>'class_id', 'cat_seq', 'sec_seq', 'code'=>'class_code', 'name'=>'class_name'),
+            ),
+        array('container'=>'registrations', 'fname'=>'reg_id', 
+            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 
+                'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 'notes',
+            )),
+        array('container'=>'competitors', 'fname'=>'competitor_id', 
+            'fields'=>array('id'=>'competitor_id', 'notes'=>'competitor_notes'),
+            ),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -304,9 +315,17 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
                     }
                 }
             }
+            if( $reg['title2'] != '' ) {
+                $reg['title1'] .= "<br/>" . $reg['title2'];
+                $reg['perf_time1'] .= "<br/>" . $reg['perf_time2'];
+            }
+            if( $reg['title3'] != '' ) {
+                $reg['title1'] .= "<br/>" . $reg['title3'];
+                $reg['perf_time1'] .= "<br/>" . $reg['perf_time3'];
+            }
             $d_height = $pdf->getStringHeight($w[1], $reg['name']);
-            if( $pdf->getStringHeight($w[2], $reg['title']) > $d_height ) {
-                $d_height = $pdf->getStringHeight($w[2], $reg['title']);
+            if( $pdf->getStringHeight($w[2], $reg['title1']) > $d_height ) {
+                $d_height = $pdf->getStringHeight($w[2], $reg['title1']);
             }
             $n_height = 0;
             if( $notes != '' ) {
@@ -324,8 +343,8 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
    
             $pdf->writeHTMLCell($w[0], $d_height, '', '', '', '', 0, false, true, 'L', 1);
             $pdf->writeHTMLCell($w[1], $d_height, '', '', $reg['name'], 0, 0, false, true, 'L', 1);
-            $pdf->writeHTMLCell($w[2], $d_height, '', '', $reg['title'], 0, 0, false, true, 'L', 1);
-            $pdf->writeHTMLCell($w[3], $d_height, '', '', $reg['perf_time'], 0, 1, false, true, 'L', 1);
+            $pdf->writeHTMLCell($w[2], $d_height, '', '', $reg['title1'], 0, 0, false, true, 'L', 1);
+            $pdf->writeHTMLCell($w[3], $d_height, '', '', $reg['perf_time1'], 0, 1, false, true, 'L', 1);
 
             if( $notes != '' ) {
                 $pdf->writeHTMLCell($nw[0], $n_height, '', '', '', 0, 0, false, true, 'L', 1);

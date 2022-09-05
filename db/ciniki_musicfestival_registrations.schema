@@ -50,9 +50,12 @@
 #
 # timeslot_id:          The ID of the time this registration is attached to, If the timeslot is a partial registration list.
 # 
-# title:                The title and composer of the piece they will perform.
-#
-# perf_time:            The time of the performance in minutes.
+# title1:               The title and composer of the 1st piece they will perform.
+# perf_time1:           The time of the 1st performance in minutes.
+# title2:               The title and composer of the 2nd piece they will perform.
+# perf_time2:           The time of the 2nd performance in minutes.
+# title2:               The title and composer of the 3rd piece they will perform.
+# perf_time2:           The time of the 3rd performance in minutes.
 #
 # fee:                  The entry fee for the registration.
 #
@@ -98,8 +101,12 @@ create table ciniki_musicfestival_registrations (
     competitor5_id int not null,
     class_id int not null,
     timeslot_id int not null,
-    title varchar(250) not null,
-    perf_time varchar(50) not null,
+    title1 varchar(250) not null,
+    perf_time1 varchar(50) not null,
+    title2 varchar(250) not null,
+    perf_time2 varchar(50) not null,
+    title3 varchar(250) not null,
+    perf_time3 varchar(50) not null,
     fee decimal(19,4) not null, 
     payment_type tinyint unsigned not null,
     virtual tinyint unsigned not null,
@@ -112,4 +119,4 @@ create table ciniki_musicfestival_registrations (
     unique index (uuid),
     index (festival_id, teacher_customer_id, billing_customer_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.05';
+) ENGINE='InnoDB', COMMENT='v1.06';

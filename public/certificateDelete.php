@@ -84,7 +84,7 @@ function ciniki_musicfestivals_certificateDelete(&$ciniki) {
         array('container'=>'fields', 'fname'=>'id', 'fields'=>array('id', 'uuid')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.294', 'msg'=>'Unable to load fields', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.326', 'msg'=>'Unable to load fields', 'err'=>$rc['err']));
     }
     $fields = isset($rc['fields']) ? $rc['fields'] : array();
 

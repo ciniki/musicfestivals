@@ -96,7 +96,9 @@ function ciniki_musicfestivals_classGet($ciniki) {
             'permalink'=>'',
             'sequence'=>$seq,
             'flags'=>'0',
+            'earlybird_fee'=>'',
             'fee'=>'',
+            'virtual_fee'=>'',
         );
     }
 
@@ -113,14 +115,16 @@ function ciniki_musicfestivals_classGet($ciniki) {
             . "ciniki_musicfestival_classes.sequence, "
             . "ciniki_musicfestival_classes.flags, "
             . "ciniki_musicfestival_classes.earlybird_fee, "
-            . "ciniki_musicfestival_classes.fee "
+            . "ciniki_musicfestival_classes.fee, "
+            . "ciniki_musicfestival_classes.virtual_fee "
             . "FROM ciniki_musicfestival_classes "
             . "WHERE ciniki_musicfestival_classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_musicfestival_classes.id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'classes', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 'earlybird_fee', 'fee'),
+                'fields'=>array('festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 
+                    'earlybird_fee', 'fee', 'virtual_fee'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -130,8 +134,9 @@ function ciniki_musicfestivals_classGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.46', 'msg'=>'Unable to find Class'));
         }
         $class = $rc['classes'][0];
-        $class['earlybird_fee'] = numfmt_format_currency($intl_currency_fmt, $class['earlybird_fee'], $intl_currency);
-        $class['fee'] = numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency);
+        $class['earlybird_fee'] = number_format($class['earlybird_fee'], 2);
+        $class['fee'] = number_format($class['fee'], 2);
+        $class['virtual_fee'] = number_format($class['virtual_fee'], 2);
     }
 
     //
@@ -152,8 +157,12 @@ function ciniki_musicfestivals_classGet($ciniki) {
             . "registrations.class_id, "
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
-            . "registrations.title, "
-            . "registrations.perf_time, "
+            . "registrations.title1, "
+            . "registrations.perf_time1, "
+            . "registrations.title2, "
+            . "registrations.perf_time2, "
+            . "registrations.title3, "
+            . "registrations.perf_time3, "
             . "FORMAT(registrations.fee, 2) AS fee, "
             . "registrations.payment_type "
             . "FROM ciniki_musicfestival_registrations AS registrations "
@@ -181,7 +190,9 @@ function ciniki_musicfestivals_classGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
                 'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
-                    'class_id', 'class_code', 'class_name', 'title', 'perf_time', 'fee', 'payment_type'),
+                    'class_id', 'class_code', 'class_name', 
+                    'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 'fee', 'payment_type',
+                    ),
                 'maps'=>array(
                     'rtype_text'=>$maps['registration']['rtype'],
                     'status_text'=>$maps['registration']['status'],

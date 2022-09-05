@@ -364,8 +364,8 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
             . "registrations.class_id, "
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
-            . "registrations.title, "
-            . "registrations.perf_time, "
+            . "registrations.title1, "
+            . "registrations.perf_time1, "
             . "FORMAT(registrations.fee, 2) AS fee, "
             . "registrations.payment_type "
             . "FROM ciniki_musicfestival_registrations AS registrations "
@@ -398,7 +398,7 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
                 'fields'=>array('id', 'uuid', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
-                    'class_id', 'class_code', 'class_name', 'title', 'perf_time', 'fee', 'payment_type'),
+                    'class_id', 'class_code', 'class_name', 'title1', 'perf_time1', 'fee', 'payment_type'),
                 ),
             )); 
         if( $rc['stat'] != 'ok' ) {

@@ -73,8 +73,12 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'competitor4_id'=>'0',
             'competitor5_id'=>'0',
             'class_id'=>(isset($args['class_id']) ? $args['class_id'] : 0),
-            'title'=>'',
-            'perf_time'=>'',
+            'title1'=>'',
+            'perf_time1'=>'',
+            'title2'=>'',
+            'perf_time2'=>'',
+            'title3'=>'',
+            'perf_time3'=>'',
             'fee'=>'0',
             'payment_type'=>'0',
             'virtual'=>0,
@@ -101,8 +105,12 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "ciniki_musicfestival_registrations.competitor4_id, "
             . "ciniki_musicfestival_registrations.competitor5_id, "
             . "ciniki_musicfestival_registrations.class_id, "
-            . "ciniki_musicfestival_registrations.title, "
-            . "ciniki_musicfestival_registrations.perf_time, "
+            . "ciniki_musicfestival_registrations.title1, "
+            . "ciniki_musicfestival_registrations.perf_time1, "
+            . "ciniki_musicfestival_registrations.title2, "
+            . "ciniki_musicfestival_registrations.perf_time2, "
+            . "ciniki_musicfestival_registrations.title3, "
+            . "ciniki_musicfestival_registrations.perf_time3, "
             . "FORMAT(ciniki_musicfestival_registrations.fee, 2) AS fee, "
             . "ciniki_musicfestival_registrations.payment_type, "
             . "ciniki_musicfestival_registrations.virtual, "
@@ -118,7 +126,9 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             array('container'=>'registrations', 'fname'=>'id', 
                 'fields'=>array('festival_id', 'teacher_customer_id', 'billing_customer_id', 'rtype', 'status', 'invoice_id',
                     'display_name', 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 
-                    'class_id', 'title', 'perf_time', 'fee', 'payment_type', 
+                    'class_id', 
+                    'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 
+                    'fee', 'payment_type', 
                     'virtual', 'videolink', 'music_orgfilename', 'notes'),
                 ),
             ));

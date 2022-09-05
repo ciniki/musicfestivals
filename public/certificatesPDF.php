@@ -79,10 +79,10 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                 'document_logo_id', 'document_header_msg', 'document_footer_msg')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.105', 'msg'=>'Festival not found', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.321', 'msg'=>'Festival not found', 'err'=>$rc['err']));
     }
     if( !isset($rc['festivals'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.106', 'msg'=>'Unable to find Festival'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.322', 'msg'=>'Unable to find Festival'));
     }
     $festival = $rc['festivals'][0];
 
@@ -97,7 +97,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
     $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.140', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.323', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
     }
     foreach($rc['settings'] as $k => $v) {
         $festival[$k] = $v;
@@ -124,7 +124,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
             'fields'=>array('id', 'festival_id', 'customer_id', 'name'=>'display_name')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.173', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.324', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
     }
     $adjudicators = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
 
@@ -260,7 +260,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.296', 'msg'=>'Unable to load certificates', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.320', 'msg'=>'Unable to load certificates', 'err'=>$rc['err']));
     }
     $avail_certs = isset($rc['certificates']) ? $rc['certificates'] : array();
 

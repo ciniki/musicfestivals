@@ -34,7 +34,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
     $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'festivals', '');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.209', 'msg'=>'Unable to load the list of festivals', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.316', 'msg'=>'Unable to load the list of festivals', 'err'=>$rc['err']));
     }
     $festivals = isset($rc['festivals']) ? $rc['festivals'] : array();
 
@@ -150,6 +150,19 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'xlarge' => 'X-Large',
                     )),
                 'level' => array('label'=>'Sponsor Level', 'type'=>'toggle', 'default'=>'1', 'toggles'=>array('1'=>'1', '2'=>'2')),
+                ),
+            );
+    }
+
+    //
+    // Section to display trophies
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x40) ) {
+        $sections['ciniki.musicfestivals.trophies'] = array(
+            'name' => 'Trophies',
+            'module' => 'Music Festivals',
+            'settings' => array(
+                'title' => array('label'=>'Title', 'type'=>'text'),
                 ),
             );
     }

@@ -75,6 +75,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'datetimeFormat');
+    $datetime_format = ciniki_users_datetimeFormat($ciniki, 'php');
 
     //
     // Load conference maps
@@ -177,6 +179,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             . "ciniki_musicfestivals.status, "
             . "ciniki_musicfestivals.flags, "
             . "ciniki_musicfestivals.earlybird_date, "
+            . "ciniki_musicfestivals.live_date, "
+            . "ciniki_musicfestivals.virtual_date, "
             . "ciniki_musicfestivals.primary_image_id, "
             . "ciniki_musicfestivals.description, "
             . "ciniki_musicfestivals.document_logo_id, "
@@ -189,12 +193,16 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'festivals', 'fname'=>'id', 
-                'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'status', 'flags', 'earlybird_date',
+                'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'status', 'flags', 
+                    'earlybird_date', 'live_date', 'virtual_date',
                     'primary_image_id', 'description', 
                     'document_logo_id', 'document_header_msg', 'document_footer_msg'),
                 'utctotz'=>array('start_date'=>array('timezone'=>'UTC', 'format'=>$date_format),
                     'end_date'=>array('timezone'=>'UTC', 'format'=>$date_format),
-                    'earlybird_date'=>array('timezone'=>'UTC', 'format'=>$date_format)),
+                    'earlybird_date'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                    'live_date'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                    'virtual_date'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                    ),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -396,8 +404,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "registrations.class_id, "
                 . "classes.code AS class_code, "
                 . "classes.name AS class_name, "
-                . "registrations.title, "
-                . "registrations.perf_time, "
+                . "registrations.title1, "
+                . "registrations.perf_time1, "
+                . "registrations.title2, "
+                . "registrations.perf_time2, "
+                . "registrations.title3, "
+                . "registrations.perf_time3, "
                 . "FORMAT(registrations.fee, 2) AS fee, "
                 . "registrations.payment_type, "
                 . "registrations.virtual, "
@@ -432,7 +444,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'registrations', 'fname'=>'id', 
                     'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
-                        'class_id', 'class_code', 'class_name', 'title', 'perf_time', 'fee', 'payment_type',
+                        'class_id', 'class_code', 'class_name', 
+                        'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 
+                        'fee', 'payment_type',
                         'virtual', 'videolink', 'music_orgfilename',
                         ),
                     'maps'=>array(
@@ -453,7 +467,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $festival['registrations_copy'] = "<table cellpadding=2 cellspacing=0>";
                 foreach($festival['registrations'] as $iid => $registration) {
                     $festival['nplists']['registrations'][] = $registration['id'];
-                    $festival['registrations_copy'] .= '<tr><td>' . $registration['class_code'] . '</td><td>' . $registration['title'] . '</td><td>' . $registration['perf_time'] . "</td></tr>\n";
+                    $festival['registrations_copy'] .= '<tr><td>' . $registration['class_code'] . '</td><td>' . $registration['title1'] . '</td><td>' . $registration['perf_time1'] . "</td></tr>\n";
                 }
                 $festival['registrations_copy'] .= "</table>";
             } else {

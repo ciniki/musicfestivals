@@ -42,9 +42,13 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         . "classes.name AS class_name, "
         . "registrations.id AS reg_id, "
         . "registrations.display_name, "
-        . "registrations.title, "
         . "registrations.fee AS reg_fee, "
-        . "registrations.perf_time, "
+        . "registrations.title1, "
+        . "registrations.perf_time1, "
+        . "registrations.title2, "
+        . "registrations.perf_time2, "
+        . "registrations.title3, "
+        . "registrations.perf_time3, "
         . "registrations.payment_type, "
         . "registrations.virtual, "
         . "registrations.notes AS reg_notes, "
@@ -95,7 +99,8 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'name'=>'section_name')),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'section_id', 'teacher_customer_id', 
-                'display_name', 'class_code', 'class_name', 'title', 'fee'=>'reg_fee', 'perf_time', 'payment_type', 
+                'display_name', 'class_code', 'class_name', 'fee'=>'reg_fee', 
+                'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 'payment_type', 
                 'virtual', 'notes'=>'reg_notes'),
             ),
         array('container'=>'competitors', 'fname'=>'competitor_id', 
@@ -134,6 +139,11 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Class Code', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Class Name', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Title', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Time', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '2nd Title', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '2nd Time', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '3rd Title', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '3rd Time', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Fee', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Virtual', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Type', false);
@@ -218,7 +228,12 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['display_name'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['class_code'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['class_name'], false);
-            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['title'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['title1'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['perf_time1'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['title2'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['perf_time2'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['title3'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['perf_time3'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['fee'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, ($registration['virtual'] == 1 ? 'Virtual' : 'In Person'), false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['payment_type'], false);

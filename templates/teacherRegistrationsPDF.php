@@ -66,7 +66,8 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
             . "r.teacher_customer_id, r.billing_customer_id, r.rtype, r.status, r.status AS status_text, "
             . "r.display_name, r.public_name, "
             . "r.competitor1_id, x.name, x.parent, r.competitor2_id, r.competitor3_id, r.competitor4_id, r.competitor5_id, "
-            . "r.class_id, r.timeslot_id, r.title, r.perf_time, r.fee, r.payment_type, r.notes, "
+            . "r.class_id, r.timeslot_id, r.title1, r.perf_time1, r.title2, r.perf_time2, r.title3, r.perf_time3, "
+            . "r.fee, r.payment_type, r.notes, "
             . "c.code AS class_code, c.name AS class_name, c.flags AS class_flags "
             . "FROM ciniki_musicfestival_registrations AS r "
             . "LEFT JOIN ciniki_musicfestival_classes AS c ON ("
@@ -91,7 +92,8 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
             array('container'=>'registrations', 'fname'=>'id', 
                 'fields'=>array('id', 'uuid', 'teacher_customer_id', 'billing_customer_id', 'rtype', 'status', 'status_text',
                     'display_name', 'public_name', 'competitor1_id', 'parent', 'competitor2_id', 'competitor3_id', 
-                    'competitor4_id', 'competitor5_id', 'class_id', 'timeslot_id', 'title', 'perf_time', 
+                    'competitor4_id', 'competitor5_id', 'class_id', 'timeslot_id', 
+                    'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 
                     'fee', 'payment_type', 'notes',
                     'class_code', 'class_name', 'class_flags'),
                 'maps'=>array('status_text'=>$maps['registration']['status']),
@@ -435,8 +437,14 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
         $total = 0;
         foreach($parent['registrations'] as $registration) {
             $description = $registration['class_code'] . ' - ' . $registration['class_name'];
-            if( $registration['title'] != '' ) {
-                $description .= "\n" . $registration['title'];
+            if( $registration['title1'] != '' ) {
+                $description .= "\n" . $registration['title1'];
+            }
+            if( $registration['title2'] != '' ) {
+                $description .= "\n" . $registration['title2'];
+            }
+            if( $registration['title3'] != '' ) {
+                $description .= "\n" . $registration['title3'];
             }
             $lh = $pdf->getStringHeight($r[1], $description);
 

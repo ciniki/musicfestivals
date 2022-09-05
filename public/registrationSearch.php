@@ -68,8 +68,12 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         . "registrations.class_id, "
         . "classes.code AS class_code, "
         . "classes.name AS class_name, "
-        . "registrations.title, "
-        . "registrations.perf_time, "
+        . "registrations.title1, "
+        . "registrations.perf_time1, "
+        . "registrations.title2, "
+        . "registrations.perf_time2, "
+        . "registrations.title3, "
+        . "registrations.perf_time3, "
         . "FORMAT(registrations.fee, 2) AS fee, "
         . "registrations.payment_type, "
         . "registrations.virtual, "
@@ -123,7 +127,8 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 'rtype', 'rtype_text', 
                 'status', 'status_text', 'invoice_id', 'display_name', 
-                'class_id', 'class_code', 'class_name', 'title', 'perf_time', 'fee', 'payment_type', 
+                'class_id', 'class_code', 'class_name', 
+                'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 'fee', 'payment_type', 
                 'virtual', 'videolink', 'music_orgfilename'),
             'maps'=>array(
                 'rtype_text'=>$maps['registration']['rtype'],
@@ -146,60 +151,7 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         $registrations = array();
         $registration_ids = array();
     }
-/*
-    //
-    // Get the list of registrations
-    //
-    $strsql = "SELECT registrations.id, "
-        . "registrations.festival_id, "
-        . "registrations.teacher_customer_id, "
-        . "registrations.billing_customer_id, "
-        . "registrations.rtype, "
-        . "registrations.status, "
-        . "registrations.display_name, "
-        . "registrations.competitor1_id, "
-        . "registrations.competitor2_id, "
-        . "registrations.competitor3_id, "
-        . "registrations.competitor4_id, "
-        . "registrations.competitor5_id, "
-        . "registrations.class_id, "
-        . "registrations.title, "
-        . "registrations.perf_time, "
-        . "registrations.fee, "
-        . "registrations.payment_type "
-        . "FROM ciniki_musicfestival_registrations AS registrations "
-        . "WHERE registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND ("
-            . "registrations.display_name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR registrations.display_name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR registrations.parent LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR registrations.parent LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-        . ") "
-        . "";
-    if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
-        $strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";
-    } else {
-        $strsql .= "LIMIT 25 ";
-    }
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'registrations', 'fname'=>'id', 
-            'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'billing_customer_id', 'rtype', 'status', 'display_name', 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 'class_id', 'title', 'perf_time', 'fee', 'payment_type')),
-        ));
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
-    }
-    if( isset($rc['registrations']) ) {
-        $registrations = $rc['registrations'];
-        $registration_ids = array();
-        foreach($registrations as $iid => $registration) {
-            $registration_ids[] = $registration['id'];
-        }
-    } else {
-        $registrations = array();
-        $registration_ids = array();
-    }
-    */
+
     return array('stat'=>'ok', 'registrations'=>$registrations, 'nplist'=>$registration_ids);
 }
 ?>

@@ -1,0 +1,10 @@
+#
+# Added invoice link
+#
+ALTER TABLE ciniki_musicfestival_registrations CHANGE COLUMN title title1 varchar(250) not null;
+ALTER TABLE ciniki_musicfestival_registrations CHANGE COLUMN perf_time perf_time1 varchar(50) not null;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN title2 varchar(250) not null AFTER perf_time1;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN perf_time2 varchar(50) not null AFTER title2;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN title3 varchar(250) not null AFTER perf_time2;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN perf_time3 varchar(50) not null AFTER title3;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.06';

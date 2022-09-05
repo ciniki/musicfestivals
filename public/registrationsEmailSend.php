@@ -53,8 +53,12 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
         . "registrations.class_id, "
         . "classes.code AS class_code, "
         . "classes.name AS class_name, "
-        . "registrations.title, "
-        . "registrations.perf_time, "
+        . "registrations.title1, "
+        . "registrations.perf_time1, "
+        . "registrations.title2, "
+        . "registrations.perf_time2, "
+        . "registrations.title3, "
+        . "registrations.perf_time3, "
         . "IF(registrations.virtual = 1, 'Virtual', 'In Person') AS virtual, "
         . "FORMAT(registrations.fee, 2) AS fee, "
         . "registrations.payment_type "
@@ -83,7 +87,9 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'festival_id', 'teacher_name', 'display_name', 
-                'class_id', 'class_code', 'class_name', 'title', 'perf_time', 'fee', 'payment_type', 'virtual'),
+                'class_id', 'class_code', 'class_name', 
+                'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 
+                'fee', 'payment_type', 'virtual'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -97,12 +103,35 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
         $html = "<table cellpadding=5 cellspacing=0>";
         $html .= "<tr><th>Class</th><th>Competitor</th><th>Title</th><th>Time</th><th>Virtual</th></tr>";
         foreach($festival['registrations'] as $iid => $registration) {
-            $html .= '<tr><td>' . $registration['class_code'] . '</td><td>' . $registration['display_name'] . '</td><td>' . $registration['title'] . '</td><td>' . $registration['perf_time'] . "</td><td>" . $registration['virtual'] . "</td></tr>\n";
+            $html .= '<tr><td>' . $registration['class_code'] . '</td><td>' . $registration['display_name'] . '</td>'
+                . '<td>' . $registration['title1'] 
+                    . ($registration['title2'] != '' ? "<br/>{$registration['title2']}" : '')
+                    . ($registration['title3'] != '' ? "<br/>{$registration['title3']}" : '')
+                    . '</td>'
+                . '<td>' . $registration['perf_time1'] 
+                    . ($registration['perf_time2'] != '' ? "<br/>{$registration['perf_time2']}" : '')
+                    . ($registration['perf_time3'] != '' ? "<br/>{$registration['perf_time3']}" : '')
+                    . '</td>'
+                . '<td>' . $registration['virtual'] . "</td></tr>\n";
             $text .= $registration['class_code'] 
                 . ' - ' . $registration['display_name'] 
-                . ($registration['title'] != '' ? ' - ' . $registration['title'] : '')
-                . ($registration['perf_time'] != '' ? ' - ' . $registration['perf_time'] : '')
+                . ($registration['title1'] != '' ? ' - ' . $registration['title1'] : '')
+                . ($registration['perf_time1'] != '' ? ' - ' . $registration['perf_time1'] : '')
                 . "\n";
+            if( $registration['title2'] != '' ) {
+                $text .= preg_replace("/./", '', $registration['class_code'])
+                    . ' - ' . preg_replace("/./", '', $registration['display_name'])
+                    . ($registration['title2'] != '' ? ' - ' . $registration['title2'] : '')
+                    . ($registration['perf_time2'] != '' ? ' - ' . $registration['perf_time2'] : '')
+                    . "\n";
+            }
+            if( $registration['title3'] != '' ) {
+                $text .= preg_replace("/./", '', $registration['class_code'])
+                    . ' - ' . preg_replace("/./", '', $registration['display_name'])
+                    . ($registration['title3'] != '' ? ' - ' . $registration['title3'] : '')
+                    . ($registration['perf_time3'] != '' ? ' - ' . $registration['perf_time3'] : '')
+                    . "\n";
+            }
         }
         $html .= "</table>";
     } else {
