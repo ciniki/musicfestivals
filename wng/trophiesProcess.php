@@ -205,7 +205,7 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
             'title' => $category_permalink,
             );
         $blocks[] = array(
-            'type' => 'flexcards',
+            'type' => 'imagebuttons',
             'class' => 'limit-width limit-width-80',
             'image-version' => 'original',
             'title-position' => 'overlay-bottomhalf',
