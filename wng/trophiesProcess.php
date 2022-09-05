@@ -65,6 +65,27 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
         $trophy_permalink = urldecode($request['uri_split'][($request['cur_uri_pos']+2)]);
         
         //
+        // Get the trophies for a category
+        //
+        $strsql = "SELECT id, "
+            . "name, "
+            . "permalink "
+            . "FROM ciniki_musicfestival_trophies "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND category = '" . ciniki_core_dbQuote($ciniki, $category_permalink) . "' "
+            . "ORDER BY name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'trophies', 'fname'=>'permalink', 
+                'fields'=>array('id', 'title'=>'name', 'permalink')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.366', 'msg'=>'Unable to load trophies', 'err'=>$rc['err']));
+        }
+        $trophies = isset($rc['trophies']) ? $rc['trophies'] : array();
+
+        //
         // Get the trophy details
         //
         $strsql = "SELECT trophies.id, "
@@ -165,6 +186,43 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
                 'rows' => $winners,
                 );
         }
+        
+        //
+        // Add prev/next buttons
+        //
+        if( count($trophies) > 1 ) {
+            $first_trophy = null;
+            $last_trophy = null;
+            foreach($trophies as $trophy) {
+                if( $first_trophy == null ) {
+                    $first_trophy = $trophy;
+                }
+                if( $last_trophy != null && $trophy['permalink'] == $trophy_permalink ) {
+                    $prev = $last_trophy;
+                }
+                if( $last_trophy != null && $last_trophy['permalink'] == $trophy_permalink ) {
+                    $next = $trophy;
+                }
+                $last_trophy = $trophy;
+            }
+            if( !isset($next) ) {
+                $next = $first_trophy;
+            }
+            if( !isset($prev) ) {
+                $prev = $last_trophy;
+            }
+            if( isset($next) && isset($prev) ) {
+                $blocks[] = array(
+                    'type' => 'buttons',
+                    'class' => 'aligncenter',
+                    'list' => array(
+                        array('text' => 'Previous', 'url' => $base_url . '/' . $category_permalink . '/' . $prev['permalink']),
+                        array('text' => 'Next', 'url' => $base_url . '/' . $category_permalink . '/' . $next['permalink']),
+                        ),
+                    );
+            }
+        }
+
 
     }
     elseif( isset($request['uri_split'][($request['cur_uri_pos']+1)]) ) {
