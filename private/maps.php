@@ -27,6 +27,7 @@ function ciniki_musicfestivals_maps($ciniki) {
         'status'=>array(
             '5'=>'Unpaid',
             '6'=>'Cart',
+            '7'=>'E-Transfer Required',
             '10'=>'Applied',
             '50'=>'Paid',
             '60'=>'Cancelled',

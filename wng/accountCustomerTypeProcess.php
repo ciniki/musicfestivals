@@ -27,10 +27,21 @@ function ciniki_musicfestivals_wng_accountCustomerTypeProcess(&$ciniki, $tnid, &
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'customer');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.327', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.346', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
     }
     $ctype_id = isset($rc['customer']['id']) ? $rc['customer']['id'] : 0;
     $customer_type = isset($rc['customer']['ctype']) ? $rc['customer']['ctype'] : 0;
+
+    $additional_args = '';
+    if( isset($_GET['add']) && $_GET['add'] != '' ) {
+        $additional_args .= '&add=' . $_GET['add'];
+    }
+    if( isset($_GET['r']) && $_GET['r'] != '' ) {
+        $additional_args .= '&r=' . $_GET['r'];
+    }
+    if( isset($_GET['cl']) && $_GET['cl'] != '' ) {
+        $additional_args .= '&cl=' . $_GET['cl'];
+    }
 
     //
     // Check for the customer type and if not ask for it
@@ -51,21 +62,29 @@ function ciniki_musicfestivals_wng_accountCustomerTypeProcess(&$ciniki, $tnid, &
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.361', 'msg'=>'Unable to update the customer', 'err'=>$rc['err']));
                 }
-                header("Location: {$args['base_url']}");
-                exit;
+                if( $additional_args != '' ) {
+                    header("Location: {$args['base_url']}?{$additional_args}");
+                } else {
+                    header("Location: {$args['base_url']}");
+                }
+                return array('stat'=>'exit');
 
             } else {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
                 $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.customer', array(
-                    'festival_id' => $festival['id'],
+                    'festival_id' => $args['festival']['id'],
                     'customer_id' => $request['session']['customer']['id'],
                     'ctype' => $_GET['ctype'],
                     ), 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.328', 'msg'=>'Unable to add the customer', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.373', 'msg'=>'Unable to add the customer', 'err'=>$rc['err']));
                 }
-                header("Location: {$args['base_url']}");
-                exit;
+                if( $additional_args != '' ) {
+                    header("Location: {$args['base_url']}?{$additional_args}");
+                } else {
+                    header("Location: {$args['base_url']}");
+                }
+                return array('stat'=>'exit');
             }
         } 
         
@@ -73,13 +92,6 @@ function ciniki_musicfestivals_wng_accountCustomerTypeProcess(&$ciniki, $tnid, &
         // Ask the customer what type they are
         //
         else {
-            $additional_args = '';
-            if( isset($_GET['r']) && $_GET['r'] != '' ) {
-                $additional_args .= '&r=' . $_GET['r'];
-            }
-            if( isset($_GET['cl']) && $_GET['cl'] != '' ) {
-                $additional_args .= '&cl=' . $_GET['cl'];
-            }
             if( isset($_GET['changetype']) ) {
                 $additional_args .= '&changetype';
             }

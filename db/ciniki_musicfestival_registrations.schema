@@ -28,6 +28,7 @@
 #
 #                            5 - Draft (online)
 #                            6 - Cart (online)
+#                            7 - E-Transfer Pending
 #                           10 - Applied
 #                           50 - Paid
 #                           60 - Cancelled
@@ -54,8 +55,8 @@
 # perf_time1:           The time of the 1st performance in minutes.
 # title2:               The title and composer of the 2nd piece they will perform.
 # perf_time2:           The time of the 2nd performance in minutes.
-# title2:               The title and composer of the 3rd piece they will perform.
-# perf_time2:           The time of the 3rd performance in minutes.
+# title3:               The title and composer of the 3rd piece they will perform.
+# perf_time3:           The time of the 3rd performance in minutes.
 #
 # fee:                  The entry fee for the registration.
 #

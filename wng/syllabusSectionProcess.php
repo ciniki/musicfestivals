@@ -209,7 +209,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                     if( ($festival['flags']&0x01) == 0x01 
                         && ($festival['live'] == 'yes' || $festival['virtual'] == 'yes') 
                         ) {
-                        $category['classes'][$cid]['register'] = "<a class='button' href='" . $base_url . "/registration?r=new&cl=" . $class['uuid'] . "'>Register</a>";
+                        $category['classes'][$cid]['register'] = "<a class='button' href='/account/musicfestivalregistrations?add=yes&cl=" . $class['uuid'] . "'>Register</a>";
                     }
                 }
                 //

@@ -40,7 +40,7 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
     //
     // Check if the customer is or has been registered for the published festival
     //
-    $strsql = "SELECT COUNT(*) AS registrations "
+/*    $strsql = "SELECT COUNT(*) AS registrations "
         . "FROM ciniki_musicfestival_registrations "
         . "WHERE billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
         . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -58,7 +58,7 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
             'ref' => 'ciniki.musicfestivals.registrations',
             'url' => $base_url . '/musicfestivalregistrations',
             );
-    }
+    } */
 
     //
     // Check if they are setup for this music festival
@@ -75,7 +75,7 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.327', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
     }
     if( isset($rc['customer']) ) { */
-/*        $items[] = array(
+        $items[] = array(
             'title' => 'Registrations', 
             'priority' => 749, 
             'selected' => 'no',
@@ -88,7 +88,7 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
             'selected' => 'no',
             'ref' => 'ciniki.musicfestivals.competitors',
             'url' => $base_url . '/musicfestivalcompetitors',
-            ); */
+            );
 //    }
 
     return array('stat'=>'ok', 'items'=>$items);

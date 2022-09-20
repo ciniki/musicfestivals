@@ -63,6 +63,8 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $tnid, $registra
     }
     $registration = array_pop($rc['registrations']);
 
+    $display_name = '';
+    $public_name = '';
     //
     // Only update display name for non-ensembles
     //
@@ -126,6 +128,8 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $tnid, $registra
         if( $registration['competitor1_id'] > 0 
             && isset($registration['competitors'][$registration['competitor1_id']]['name']) 
             ) {
+            $display_name = $registration['competitors'][$registration['competitor1_id']]['name'];
+            $public_name = $registration['competitors'][$registration['competitor1_id']]['name'];
             if( $registration['display_name'] != $registration['competitors'][$registration['competitor1_id']]['name'] ) {
                 $update_args['display_name'] = $registration['competitors'][$registration['competitor1_id']]['name'];
             }
@@ -139,6 +143,6 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $tnid, $registra
         }
     }
 
-    return array('stat'=>'ok');
+    return array('stat'=>'ok', 'display_name'=>$display_name, 'public_name'=>$public_name);
 }
 ?>

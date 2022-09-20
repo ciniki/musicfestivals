@@ -246,7 +246,7 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
                 'fields'=>array('id', 'title'=>'name', 'permalink', 'image-id'=>'primary_image_id')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.366', 'msg'=>'Unable to load trophies', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.343', 'msg'=>'Unable to load trophies', 'err'=>$rc['err']));
         }
         $trophies = isset($rc['trophies']) ? $rc['trophies'] : array();
 

@@ -33,19 +33,6 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     }
 
     //
-    // Check for registration request
-    //
-    if( isset($request['uri_split'][($request['cur_uri_pos']+1)])
-        && $request['uri_split'][($request['cur_uri_pos']+1)] == 'registration' 
-        ) {
-        $request['cur_uri_pos']++;
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'registrationProcess');
-        return ciniki_musicfestivals_wng_registrationProcess($ciniki, $tnid, $request, array(
-            'festival-id' => $s['festival-id'],
-            ));
-    }
-
-    //
     // Check for syllabus section requested
     //
     if( isset($request['uri_split'][($request['cur_uri_pos']+1)])

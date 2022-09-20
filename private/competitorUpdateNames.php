@@ -21,6 +21,7 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $festival_
         . "registrations.teacher_customer_id, "
         . "registrations.billing_customer_id, "
         . "registrations.rtype, "
+        . "registrations.invoice_id, "
         . "registrations.status, "
         . "registrations.display_name, "
         . "registrations.public_name, "
@@ -58,7 +59,10 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $festival_
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
-            'fields'=>array('id', 'rtype', 'display_name', 'public_name', 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id')),
+            'fields'=>array('id', 'rtype', 'invoice_id', 'status', 
+                'display_name', 'public_name', 
+                'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
+                )),
         array('container'=>'competitors', 'fname'=>'competitor_id', 
             'fields'=>array('competitor_id', 'name'=>'competitor_name', 'public_name'=>'competitor_public_name')),
         ));
@@ -147,6 +151,10 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $festival_
                 }
             }
         }
+
+        //
+        // FIXME: Add check to see if invoice needs updating
+        //
     }
 
     return array('stat'=>'ok');
