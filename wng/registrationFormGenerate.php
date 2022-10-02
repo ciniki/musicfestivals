@@ -575,7 +575,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             . "if(t==-1){"
                 . "C.gE('f-action').value='addcompetitor';"
                 . "var f=C.gE('addregform');"
-                . "f.action='/account/musicfestivalcompetitors?add=yes';"
+                . "f.action='{$request['ssl_domain_base_url']}/account/musicfestivalcompetitors?add=yes';"
                 . "f.submit();"
             . "}"
         . "};"
