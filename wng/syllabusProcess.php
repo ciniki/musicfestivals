@@ -91,7 +91,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     //
     // Display as trading cards
     //
-    if( isset($s['format']) && $s['format'] == 'tradingcards' ) {
+    if( isset($s['layout']) && $s['layout'] == 'tradingcards' ) {
         $padding = '';
         if( isset($s['thumbnail-format']) && $s['thumbnail-format'] == 'square-padded' && isset($s['thumbnail-padding-color']) ) {
             $padding = $s['thumbnail-padding-color'];

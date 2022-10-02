@@ -42,7 +42,12 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     //
     // Get the music festival with the most recent date and status published
     //
-    $strsql = "SELECT id, name, flags "
+    $strsql = "SELECT id, "
+        . "name, "
+        . "flags, "
+        . "earlybird_date, "
+        . "live_date, "
+        . "virtual_date "
         . "FROM ciniki_musicfestivals "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND status = 30 "        // Published
@@ -58,6 +63,13 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         return array('stat'=>'ok');
     }
     $festival = $rc['festival'];
+    $now = new DateTime('now', new DateTimezone('UTC'));
+    $earlybird_dt = new DateTime($festival['earlybird_date'], new DateTimezone('UTC'));
+    $live_dt = new DateTime($festival['live_date'], new DateTimezone('UTC'));
+    $virtual_dt = new DateTime($festival['virtual_date'], new DateTimezone('UTC'));
+    $festival['earlybird'] = (($festival['flags']&0x01) == 0x01 && $earlybird_dt > $now ? 'yes' : 'no');
+    $festival['live'] = (($festival['flags']&0x01) == 0x01 && $live_dt > $now ? 'yes' : 'no');
+    $festival['virtual'] = (($festival['flags']&0x03) == 0x03 && $virtual_dt > $now ? 'yes' : 'no');
 
     //
     // Load the festival details
@@ -654,7 +666,8 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         }
         if( count($competitors) > 0 ) {
             $add_button = '';
-            if( ($festival['flags']&0x01) == 0x01 ) {
+            //if( ($festival['flags']&0x01) == 0x01 ) {
+            if( ($festival['flags']&0x01) == 0x01 && ($festival['live'] == 'yes' || $festival['virtual'] == 'yes') ) {
                 foreach($competitors as $cid => $competitor) {
                     $competitors[$cid]['editbutton'] = "<form action='{$base_url}' method='POST'>"
                         . "<input type='hidden' name='f-competitor_id' value='{$cid}' />"
@@ -727,7 +740,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                 );
         }
 
-        if( ($festival['flags']&0x01) == 0x01 ) {
+        if( ($festival['flags']&0x01) == 0x01 && ($festival['live'] == 'yes' || $festival['virtual'] == 'yes') ) {
             $blocks[] = array(
                 'type' => 'buttons',
                 'class' => 'limit-width limit-width-40 aligncenter',

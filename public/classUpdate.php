@@ -43,9 +43,36 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
         return $rc;
     }
 
-    if( isset($args['name']) ) {
+    //
+    // Get the existing class
+    //
+    $strsql = "SELECT classes.id, "
+        . "classes.code, "
+        . "classes.category_id, "
+        . "classes.name "
+        . "FROM ciniki_musicfestival_classes AS classes "
+        . "WHERE classes.id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
+        . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'class');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.382', 'msg'=>'Unable to load class', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['class']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.383', 'msg'=>'Unable to find requested class'));
+    }
+    $class = $rc['class'];
+    
+    //
+    // Build new permalink
+    //
+    if( isset($args['name']) || isset($args['code']) ) {
+        
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
-        $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['name']);
+        $args['permalink'] = ciniki_core_makePermalink($ciniki, 
+            (isset($args['code']) ? $args['code'] : $class['code']) 
+            . '-' . (isset($args['name']) ? $args['name'] : $class['name']) 
+            );
         //
         // Make sure the permalink is unique
         //
@@ -54,6 +81,7 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
             . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
+            . "AND category_id = '" . ciniki_core_dbQuote($ciniki, (isset($args['category_id']) ? $args['category_id'] : $class['category_id'])) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
         if( $rc['stat'] != 'ok' ) {

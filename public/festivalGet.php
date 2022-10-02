@@ -550,7 +550,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             if( isset($args['ssection_id']) && $args['ssection_id'] == 'unscheduled' ) {
                 $strsql = "SELECT registrations.id, "
                     . "registrations.display_name, "
-                    . "registrations.title, "
+                    . "registrations.title1, "
                     . "registrations.status, "
                     . "registrations.status AS status_text, "
                     . "classes.code AS class_code, "
@@ -575,7 +575,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'registrations', 'fname'=>'id', 
-                        'fields'=>array('id', 'display_name', 'title', 'class_code', 'status', 'status_text'),
+                        'fields'=>array('id', 'display_name', 'title'=>'title1', 'class_code', 'status', 'status_text'),
                         'maps'=>array('status_text'=>$maps['registration']['status']),
                         ),
                     ));
@@ -647,7 +647,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "registrations.uuid AS reg_uuid, "
                     . "registrations.display_name, "
                     . "registrations.public_name, "
-                    . "registrations.title, "
+                    . "registrations.title1, "
                     . "registrations.virtual, "
                     . "registrations.videolink, "
                     . "registrations.music_orgfilename, "
@@ -693,7 +693,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             'class1_id', 'class2_id', 'class3_id', 'description', 'class1_name', 'class2_name', 'class3_name',
                             )),
                     array('container'=>'registrations', 'fname'=>'reg_id', 
-                        'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name', 'title', 
+                        'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name', 'title'=>'title1', 
                             'virtual', 'videolink', 'music_orgfilename',
                             )),
                     array('container'=>'comments', 'fname'=>'comment_id', 

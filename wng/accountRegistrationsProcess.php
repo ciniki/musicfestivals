@@ -61,7 +61,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         . "virtual_date "
         . "FROM ciniki_musicfestivals "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND status = 30 "        // Published
+        . "AND status = 30 "        // Current
         . "ORDER BY start_date DESC "
         . "LIMIT 1 "
         . "";
@@ -318,8 +318,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     $fields = $rc['fields'];
     $js = $rc['js'];
     $sections = $rc['sections'];
-    $selected_section = $rc['selected_section'];
-    $selected_class = $rc['selected_class'];
+    if( isset($rc['selected_section']) ) {
+        $selected_section = $rc['selected_section'];
+    }
+    if( isset($rc['selected_class']) ) {
+        $selected_class = $rc['selected_class'];
+    }
 
     //
     // Check if form submitted
@@ -972,7 +976,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             //
         }
 
-        if( ($festival['flags']&0x01) == 0x01 && isset($customer_switch_type_block) ) {
+        if( ($festival['flags']&0x01) == 0x01 && ($festival['live'] == 'yes' || $festival['virtual'] == 'yes') 
+            && isset($customer_switch_type_block)
+            ) {
             $blocks[] = $customer_switch_type_block;
         }
     }

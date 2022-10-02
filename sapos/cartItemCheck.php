@@ -28,6 +28,7 @@ function ciniki_musicfestivals_sapos_cartItemCheck($ciniki, $tnid, $customer, $a
         //
         $strsql = "SELECT registrations.id, "
             . "registrations.fee, "
+            . "registrations.class_id, "
             . "registrations.festival_id, "
             . "registrations.virtual "
             . "FROM ciniki_musicfestival_registrations AS registrations "
@@ -42,7 +43,7 @@ function ciniki_musicfestivals_sapos_cartItemCheck($ciniki, $tnid, $customer, $a
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.379', 'msg'=>'Unable to find requested registration'));
         }
         $registration = $rc['registration'];
-        
+
         //
         // Get the music festival for the registration
         //
@@ -74,6 +75,50 @@ function ciniki_musicfestivals_sapos_cartItemCheck($ciniki, $tnid, $customer, $a
         $festival['earlybird'] = (($festival['flags']&0x01) == 0x01 && $earlybird_dt > $now ? 'yes' : 'no');
         $festival['live'] = (($festival['flags']&0x01) == 0x01 && $live_dt > $now ? 'yes' : 'no');
         $festival['virtual'] = (($festival['flags']&0x03) == 0x03 && $virtual_dt > $now ? 'yes' : 'no');
+
+        //
+        // Check for section registration end dates and if still available
+        //
+        $section_live = 'yes';
+        $section_virtual = 'yes';
+        if( ($festival['flags']&0x08) == 0x08 ) {
+            $strsql = "SELECT sections.id, "
+                . "sections.live_end_dt, "
+                . "sections.virtual_end_dt "
+                . "FROM ciniki_musicfestival_classes AS classes "
+                . "INNER JOIN ciniki_musicfestival_category AS categories ON ("
+                    . "classes.category_id = categories.id "
+                    . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_musicfestival_sections AS sections ON ("
+                    . "categories.section_id = sections.id "
+                    . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . ") "
+                . "WHERE classes.id = '" . ciniki_core_dbQuote($ciniki, $registration['class_id']) . "' "
+                . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'section');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.316', 'msg'=>'Unable to load section', 'err'=>$rc['err']));
+            }
+            if( !isset($rc['section']) ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.317', 'msg'=>'Unable to find requested section'));
+            }
+            $section = $rc['section'];
+
+            if( $section['live_end_dt'] != '0000-00-00 00:00:00' ) {
+                $section_live_dt = new DateTime($section['live_end_dt'], new DateTimezone('UTC'));
+                if( $section_live_dt < $dt ) {
+                    $festival['live'] = 'no';
+                }
+            }
+            if( $section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
+                $section_virtual_dt = new DateTime($section['virtual_end_dt'], new DateTimezone('UTC'));
+                if( $section_virtual_dt < $dt ) {
+                    $festival['virtual'] = 'no';
+                }
+            }
+        }
 
         //
         // Registrations are closed

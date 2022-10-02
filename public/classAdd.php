@@ -50,7 +50,7 @@ function ciniki_musicfestivals_classAdd(&$ciniki) {
     //
     if( !isset($args['permalink']) || $args['permalink'] == '' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
-        $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['name']);
+        $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['code'] . '-' . $args['name']);
     }
 
     //
@@ -60,6 +60,7 @@ function ciniki_musicfestivals_classAdd(&$ciniki) {
         . "FROM ciniki_musicfestival_classes "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
+        . "AND category_id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
     if( $rc['stat'] != 'ok' ) {

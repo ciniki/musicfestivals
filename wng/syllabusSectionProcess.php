@@ -103,7 +103,9 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         . "sections.name, "
         . "sections.primary_image_id, "
         . "sections.synopsis, "
-        . "sections.description "
+        . "sections.description, "
+        . "sections.live_end_dt, "
+        . "sections.virtual_end_dt "
         . "FROM ciniki_musicfestival_sections AS sections "
         . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
@@ -118,6 +120,24 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.218', 'msg'=>'Unable to find requested section'));
     }
     $section = $rc['section'];
+  
+    //
+    // Check for section end dates
+    //
+    if( ($festival['flags']&0x08) == 0x08 ) {
+        if( $section['live_end_dt'] != '0000-00-00 00:00:00' ) {
+            $section_live_dt = new DateTime($section['live_end_dt'], new DateTimezone('UTC'));
+            if( $section_live_dt < $dt ) {
+                $festival['live'] = 'no';
+            }
+        }
+        if( $section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
+            $section_virtual_dt = new DateTime($section['virtual_end_dt'], new DateTimezone('UTC'));
+            if( $section_virtual_dt < $dt ) {
+                $festival['virtual'] = 'no';
+            }
+        }
+    }
   
     if( isset($section['description']) && $section['description'] != '' ) {
         $blocks[] = array(
@@ -209,7 +229,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                     if( ($festival['flags']&0x01) == 0x01 
                         && ($festival['live'] == 'yes' || $festival['virtual'] == 'yes') 
                         ) {
-                        $category['classes'][$cid]['register'] = "<a class='button' href='/account/musicfestivalregistrations?add=yes&cl=" . $class['uuid'] . "'>Register</a>";
+                        $category['classes'][$cid]['register'] = "<a class='button' href='{$request['ssl_domain_base_url']}/account/musicfestivalregistrations?add=yes&cl=" . $class['uuid'] . "'>Register</a>";
                     }
                 }
                 //

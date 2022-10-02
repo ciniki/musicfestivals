@@ -31,13 +31,14 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY start_date DESC "
         . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
-    $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'festivals', '');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.writingfestivals', array(
+        array('container'=>'festivals', 'fname'=>'id', 'fields'=>array('id', 'name')),
+        ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.316', 'msg'=>'Unable to load the list of festivals', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.writingfestivals.198', 'msg'=>'Unable to load festivals', 'err'=>$rc['err']));
     }
     $festivals = isset($rc['festivals']) ? $rc['festivals'] : array();
-
 
     //
     // Section to display the syllabus
@@ -47,8 +48,11 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         'module' => 'Music Festivals',
         'settings' => array(
             'title' => array('label'=>'Title', 'type'=>'text'),
-            'festival-id' => array('label'=>'Festival', 'type'=>'select', 'options'=>$festivals),
-            'format' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
+            'festival-id' => array('label'=>'Festival', 'type'=>'select', 
+                'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                'options'=>$festivals,
+                ),
+            'layout' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
                 'tradingcards' => 'Trading Cards',
                 'imagebuttons' => 'Image Buttons',
                 )),
@@ -63,7 +67,10 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         'module' => 'Music Festivals',
         'settings' => array(
             'title' => array('label'=>'Title', 'type'=>'text'),
-            'festival-id' => array('label'=>'Festival', 'type'=>'select', 'options'=>$festivals),
+            'festival-id' => array('label'=>'Festival', 'type'=>'select', 
+                'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                'options'=>$festivals,
+                ),
             ),
         );
 
@@ -75,7 +82,10 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         'module' => 'Music Festivals',
         'settings' => array(
             'title' => array('label'=>'Title', 'type'=>'text'),
-            'festival-id' => array('label'=>'Festival', 'type'=>'select', 'options'=>$festivals),
+            'festival-id' => array('label'=>'Festival', 'type'=>'select', 
+                'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                'options'=>$festivals,
+                ),
             ),
         );
 
@@ -88,7 +98,10 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             'module' => 'Music Festivals',
             'settings' => array(
                 'title' => array('label'=>'Title', 'type'=>'text'),
-                'festival-id' => array('label'=>'Festival', 'type'=>'select', 'options'=>$festivals),
+                'festival-id' => array('label'=>'Festival', 'type'=>'select', 
+                    'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                    'options'=>$festivals,
+                    ),
                 ),
             );
     }
@@ -141,7 +154,10 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             'module' => 'Music Festivals',
             'settings' => array(
                 'title' => array('label'=>'Title', 'type'=>'text'),
-                'festival-id' => array('label'=>'Festival', 'type'=>'select', 'options'=>$festivals),
+                'festival-id' => array('label'=>'Festival', 'type'=>'select', 
+                    'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                    'options'=>$festivals,
+                    ),
                 'image-size'=>array('label'=>'Image Size', 'type'=>'toggle', 'default'=>'medium', 'toggles'=>array(    
                     'xsmall' => 'X-Small',
                     'small' => 'Small',
