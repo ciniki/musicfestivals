@@ -399,6 +399,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.310', 'msg'=>'Error opening cart', 'err'=>$rc['err']));
             }
+            error_log(print_r($rc,true));
         }
         //
         // If no errors, add/update the registration
@@ -437,7 +438,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $registration['rtype'] = 50;
             }
             // Virtual pricing
-            if( $festival['earlybird'] == 'yes' && $festival['earlybird_fee'] > 0 ) {
+            if( $festival['earlybird'] == 'yes' && $selected_class['earlybird_fee'] > 0 ) {
                 $registration['fee'] = $selected_class['earlybird_fee'];
             } else {
                 $registration['fee'] = $selected_class['fee'];
@@ -641,7 +642,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             //
             // Check for a defined cart
             //
-            if( isset($request['session']['cart']['id']) ) {
+            if( isset($request['session']['cart']['id']) && $request['session']['cart']['id'] > 0 ) {
                 //
                 // Load the cart item
                 //
