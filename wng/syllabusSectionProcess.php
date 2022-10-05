@@ -204,6 +204,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 //
                 // Process the classes to determine which fee to show
                 //
+                $live_label = $festival['earlybird'] == 'yes' ? 'Earlybird' : 'Live';
                 foreach($category['classes'] as $cid => $class) {
                     if( $festival['live'] == 'yes' ) {
                         if( isset($festival['earlybird']) && $festival['earlybird'] == 'yes' && $class['earlybird_fee'] > 0 ) {
@@ -244,7 +245,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                         'columns' => array(
                             array('label'=>'Class', 'fold-label'=>'Class', 'field'=>'fullname', 'class'=>''),
     //                            array('label'=>'Course', 'field'=>'name', 'class'=>''),
-                            array('label'=>'Live', 'fold-label'=>'Live', 'field'=>'live_fee', 'class'=>'aligncenter'),
+                            array('label'=>$live_label, 'fold-label'=>$live_label, 'field'=>'live_fee', 'class'=>'aligncenter'),
                             array('label'=>'Virtual', 'fold-label'=>'Virtual', 'field'=>'virtual_fee', 'class'=>'aligncenter'),
                             array('label'=>'', 'field'=>'register', 'class'=>'alignright buttons'),
                             ),
@@ -258,7 +259,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                         'class' => 'fold-at-40',
                         'columns' => array(
                             array('label'=>'Class', 'fold-label'=>'Class', 'field'=>'fullname', 'class'=>''),
-                            array('label'=>'Live', 'fold-label'=>'Live', 'field'=>'live_fee', 'class'=>'aligncenter'),
+                            array('label'=>$live_label, 'fold-label'=>$live_label, 'field'=>'live_fee', 'class'=>'aligncenter'),
                             array('label'=>'', 'field'=>'register', 'class'=>'alignright buttons'),
                             ),
                         'rows' => $category['classes'],
