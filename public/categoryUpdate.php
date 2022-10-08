@@ -41,6 +41,29 @@ function ciniki_musicfestivals_categoryUpdate(&$ciniki) {
         return $rc;
     }
 
+    //
+    // Get the existing category
+    //
+    $strsql = "SELECT categories.id, "
+        . "categories.code, "
+        . "categories.section_id, "
+        . "categories.name "
+        . "FROM ciniki_musicfestival_categories AS category "
+        . "WHERE categories.id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
+        . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'category');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.384', 'msg'=>'Unable to load category', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['category']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.385', 'msg'=>'Unable to find requested category'));
+    }
+    $category = $rc['category'];
+   
+    //
+    // Check for permalink
+    //
     if( isset($args['name']) ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
         $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['name']);
@@ -52,6 +75,7 @@ function ciniki_musicfestivals_categoryUpdate(&$ciniki) {
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
             . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
+            . "AND section_id = '" . ciniki_core_dbQuote($ciniki, (isset($args['section_id']) ? $args['section_id'] : $category['section_id'])) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
         if( $rc['stat'] != 'ok' ) {

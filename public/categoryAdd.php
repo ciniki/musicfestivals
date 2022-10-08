@@ -58,6 +58,7 @@ function ciniki_musicfestivals_categoryAdd(&$ciniki) {
         . "FROM ciniki_musicfestival_categories "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
+        . "AND section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
     if( $rc['stat'] != 'ok' ) {
