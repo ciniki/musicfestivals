@@ -42,24 +42,30 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
     //
     // Load the festival
     //
-    $strsql = "SELECT ciniki_musicfestivals.id, "
-        . "ciniki_musicfestivals.name, "
-        . "ciniki_musicfestivals.permalink, "
-        . "ciniki_musicfestivals.start_date, "
-        . "ciniki_musicfestivals.end_date, "
-        . "ciniki_musicfestivals.primary_image_id, "
-        . "ciniki_musicfestivals.description, "
-        . "ciniki_musicfestivals.document_logo_id, "
-        . "ciniki_musicfestivals.document_header_msg, "
-        . "ciniki_musicfestivals.document_footer_msg "
-        . "FROM ciniki_musicfestivals "
-        . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND ciniki_musicfestivals.id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+    $strsql = "SELECT festivals.id, "
+        . "festivals.name, "
+        . "festivals.permalink, "
+        . "festivals.flags, "
+        . "festivals.start_date, "
+        . "festivals.end_date, "
+        . "festivals.earlybird_date, "
+        . "festivals.live_date, "
+        . "festivals.virtual_date, "
+        . "festivals.primary_image_id, "
+        . "festivals.description, "
+        . "festivals.document_logo_id, "
+        . "festivals.document_header_msg, "
+        . "festivals.document_footer_msg "
+        . "FROM ciniki_musicfestivals AS festivals "
+        . "WHERE festivals.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND festivals.id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'festivals', 'fname'=>'id', 
-            'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'primary_image_id', 'description', 
+            'fields'=>array('id', 'name', 'permalink', 'flags',
+                'start_date', 'end_date', 'primary_image_id', 'description', 
+                'earlybird_date', 'live_date', 'virtual_date',
                 'document_logo_id', 'document_header_msg', 'document_footer_msg')),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -73,34 +79,44 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
     //
     // Load the sections, categories and classes
     //
-    $strsql = "SELECT ciniki_musicfestival_classes.id, "
-        . "ciniki_musicfestival_classes.festival_id, "
-        . "ciniki_musicfestival_classes.category_id, "
-        . "ciniki_musicfestival_sections.id AS section_id, "
-        . "ciniki_musicfestival_sections.name AS section_name, "
-        . "ciniki_musicfestival_sections.synopsis AS section_synopsis, "
-        . "ciniki_musicfestival_sections.description AS section_description, "
-        . "ciniki_musicfestival_categories.id AS category_id, "
-        . "ciniki_musicfestival_categories.name AS category_name, "
-        . "ciniki_musicfestival_categories.synopsis AS category_synopsis, "
-        . "ciniki_musicfestival_categories.description AS category_description, "
-        . "ciniki_musicfestival_classes.code, "
-        . "ciniki_musicfestival_classes.name, "
-        . "ciniki_musicfestival_classes.permalink, "
-        . "ciniki_musicfestival_classes.sequence, "
-        . "ciniki_musicfestival_classes.flags, "
-        . "ciniki_musicfestival_classes.fee "
-        . "FROM ciniki_musicfestival_sections, ciniki_musicfestival_categories, ciniki_musicfestival_classes "
-        . "WHERE ciniki_musicfestival_sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND ciniki_musicfestival_sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . (isset($args['section_id']) ? "AND ciniki_musicfestival_sections.id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' " : "")
-        . "AND ciniki_musicfestival_sections.id = ciniki_musicfestival_categories.section_id "
-        . "AND ciniki_musicfestival_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND ciniki_musicfestival_categories.id = ciniki_musicfestival_classes.category_id "
-        . "AND ciniki_musicfestival_classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "ORDER BY ciniki_musicfestival_sections.sequence, ciniki_musicfestival_sections.name, "
-            . "ciniki_musicfestival_categories.sequence, ciniki_musicfestival_categories.name, "
-            . "ciniki_musicfestival_classes.sequence, ciniki_musicfestival_classes.name "
+    $strsql = "SELECT classes.id, "
+        . "classes.festival_id, "
+        . "classes.category_id, "
+        . "sections.id AS section_id, "
+        . "sections.name AS section_name, "
+        . "sections.synopsis AS section_synopsis, "
+        . "sections.description AS section_description, "
+        . "categories.id AS category_id, "
+        . "categories.name AS category_name, "
+        . "categories.synopsis AS category_synopsis, "
+        . "categories.description AS category_description, "
+        . "classes.code, "
+        . "classes.name, "
+        . "classes.permalink, "
+        . "classes.sequence, "
+        . "classes.flags, "
+        . "classes.earlybird_fee, "
+        . "classes.fee, "
+        . "classes.virtual_fee "
+        . "FROM ciniki_musicfestival_sections AS sections "
+        . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
+            . "sections.id = categories.section_id "
+            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
+            . "categories.id = classes.category_id "
+            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+        . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND (sections.flags&0x01) = 0 "  // Visible
+        . "";
+    if( isset($args['section_id']) && $args['section_id'] != '' && $args['section_id'] > 0 ) {
+        $strsql .= "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' ";
+    } 
+    $strsql .= "ORDER BY sections.sequence, sections.name, "
+            . "categories.sequence, categories.name, "
+            . "classes.sequence, classes.name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -109,7 +125,8 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         array('container'=>'categories', 'fname'=>'category_id', 
             'fields'=>array('name'=>'category_name', 'synopsis'=>'category_synopsis', 'description'=>'category_description')),
         array('container'=>'classes', 'fname'=>'id', 
-            'fields'=>array('id', 'festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 'fee')),
+            'fields'=>array('id', 'festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 
+                'earlybird_fee', 'fee', 'virtual_fee')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -305,12 +322,52 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             // Output the classes
             //
             $fill = 1;
-            foreach($category['classes'] as $class) {
-                $pdf->Cell($w[0], $lh, $class['code'], 'TLB', 0, 'L', $fill);
-                $pdf->Cell($w[1], $lh, $class['name'], 'TB', 0, 'L', $fill);
-                $pdf->Cell($w[2], $lh, numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency), 'TRB', 0, 'C', $fill);
+            //
+            // Earlybird & Virtual Fees
+            //
+            if( ($festival['flags']&0x04) && $festival['earlybird_date'] != '0000-00-00 00:00:00' ) {
+                $w = array(105, 25, 25, 25);
+                $pdf->SetFont('', 'B', '12');
+                $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
+                $pdf->Cell($w[1], $lh, 'Earlybird', 1, 0, 'C', $fill);
+                $pdf->Cell($w[2], $lh, 'Live', 1, 0, 'C', $fill);
+                $pdf->Cell($w[3], $lh, 'Virtual', 1, 0, 'C', $fill);
                 $pdf->Ln($lh);
-                $fill=!$fill;
+                $pdf->SetFont('', '', '12');
+                foreach($category['classes'] as $class) {
+                    $pdf->Cell($w[0], $lh, $class['code'] . ' - ' . $class['name'], 1, 0, 'L', $fill);
+                    $pdf->Cell($w[1], $lh, numfmt_format_currency($intl_currency_fmt, $class['earlybird_fee'], $intl_currency), 1, 0, 'C', $fill);
+                    $pdf->Cell($w[2], $lh, numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency), 1, 0, 'C', $fill);
+                    $pdf->Cell($w[3], $lh, numfmt_format_currency($intl_currency_fmt, $class['virtual_fee'], $intl_currency), 1, 0, 'C', $fill);
+                    $pdf->Ln($lh);
+                    $fill=!$fill;
+                }
+
+            } elseif( ($festival['flags']&0x04) ) {
+                $w = array(105, 25, 25);
+                $pdf->SetFont('', 'B', '12');
+                $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
+                $pdf->Cell($w[1], $lh, 'Live', 1, 0, 'C', $fill);
+                $pdf->Cell($w[2], $lh, 'Virtual', 1, 0, 'C', $fill);
+                $pdf->Ln($lh);
+                $pdf->SetFont('', '', '12');
+                foreach($category['classes'] as $class) {
+                    $pdf->Cell($w[0], $lh, $class['code'] . ' - ' . $class['name'], 1, 0, 'L', $fill);
+                    $pdf->Cell($w[1], $lh, numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency), 1, 0, 'C', $fill);
+                    $pdf->Cell($w[2], $lh, numfmt_format_currency($intl_currency_fmt, $class['virtual_fee'], $intl_currency), 1, 0, 'C', $fill);
+                    $pdf->Ln($lh);
+                    $fill=!$fill;
+                }
+
+            } else {
+                $w = array(30, 120, 30);
+                foreach($category['classes'] as $class) {
+                    $pdf->Cell($w[0], $lh, $class['code'], 'TLB', 0, 'L', $fill);
+                    $pdf->Cell($w[1], $lh, $class['name'], 'TB', 0, 'L', $fill);
+                    $pdf->Cell($w[2], $lh, numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency), 'TRB', 0, 'C', $fill);
+                    $pdf->Ln($lh);
+                    $fill=!$fill;
+                }
             }
         }
     }

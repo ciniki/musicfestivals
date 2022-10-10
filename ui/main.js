@@ -198,9 +198,14 @@ function ciniki_musicfestivals_main() {
             'addFn':'M.ciniki_musicfestivals_main.section.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.festival_id,null);',
             },
         'si_buttons':{'label':'', 
-            'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._tabs.selected == 'sections' && M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'sections' && M.ciniki_musicfestivals_main.festival.data.sections.length == 0 ? 'yes' : 'no'; },
             'buttons':{
-                'copy':{'label':'Copy previous syllabus', 'fn':'M.ciniki_musicfestivals_main.festival.syllabusCopy("previous");'},
+                'download':{'label':'Download Syllabus (PDF)', 
+                    'fn':'M.ciniki_musicfestivals_main.festival.syllabusDownload();',
+                    },
+                'copy':{'label':'Copy previous syllabus', 
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._tabs.selected == 'sections' && M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'sections' && M.ciniki_musicfestivals_main.festival.data.sections.length == 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.syllabusCopy("previous");',
+                    },
             }},
         'categories':{'label':'', 'type':'simplegrid', 'num_cols':3,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._tabs.selected == 'sections' && M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'categories' ? 'yes' : 'no'; },
@@ -944,6 +949,9 @@ function ciniki_musicfestivals_main() {
             }
             M.ciniki_musicfestivals_main.festival.open();
         });
+    }
+    this.festival.syllabusDownload = function() {
+        M.api.openPDF('ciniki.musicfestivals.festivalSyllabusPDF', {'tnid':M.curTenantID, 'festival_id':this.festival_id});
     }
     this.festival.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.festival_id) < (this.nplist.length - 1) ) {

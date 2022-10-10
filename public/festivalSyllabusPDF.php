@@ -21,8 +21,8 @@ function ciniki_musicfestivals_festivalSyllabusPDF($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
-        'section_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Section'),
-        'festival_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Festival'),
+        'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
+        'section_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Section'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
