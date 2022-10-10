@@ -676,7 +676,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                         . "<input class='button' type='submit' name='f-delete' value='Remove'>"
                         . "</form>";
                 }
-                $add_button = "<a class='button' href='/account/musicfestivalcompetitors?add=yes'>Add</a>";
+                $add_button = "<a class='button' href='{$request['ssl_domain_base_url']}/account/musicfestivalcompetitors?add=yes'>Add</a>";
             }
             if( $customer_type == 10 ) {
                 $blocks[] = array(
