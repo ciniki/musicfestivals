@@ -45,10 +45,9 @@ function ciniki_musicfestivals_categoryUpdate(&$ciniki) {
     // Get the existing category
     //
     $strsql = "SELECT categories.id, "
-        . "categories.code, "
         . "categories.section_id, "
         . "categories.name "
-        . "FROM ciniki_musicfestival_categories AS category "
+        . "FROM ciniki_musicfestival_categories AS categories "
         . "WHERE categories.id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
         . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
