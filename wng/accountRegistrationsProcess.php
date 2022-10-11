@@ -51,36 +51,14 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     }
 
     //
-    // Get the music festival with the most recent date and status published
+    // Load current festival
     //
-    $strsql = "SELECT id, "
-        . "name, "
-        . "flags, "
-        . "earlybird_date, "
-        . "live_date, "
-        . "virtual_date "
-        . "FROM ciniki_musicfestivals "
-        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND status = 30 "        // Current
-        . "ORDER BY start_date DESC "
-        . "LIMIT 1 "
-        . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
+    $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.259', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
-    }
-    if( !isset($rc['festival']) ) {
-        // No festivals published, no items to return
-        return array('stat'=>'ok');
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.390', 'msg'=>'', 'err'=>$rc['err']));
     }
     $festival = $rc['festival'];
-    $now = new DateTime('now', new DateTimezone('UTC'));
-    $earlybird_dt = new DateTime($festival['earlybird_date'], new DateTimezone('UTC'));
-    $live_dt = new DateTime($festival['live_date'], new DateTimezone('UTC'));
-    $virtual_dt = new DateTime($festival['virtual_date'], new DateTimezone('UTC'));
-    $festival['earlybird'] = (($festival['flags']&0x01) == 0x01 && $earlybird_dt > $now ? 'yes' : 'no');
-    $festival['live'] = (($festival['flags']&0x01) == 0x01 && $live_dt > $now ? 'yes' : 'no');
-    $festival['virtual'] = (($festival['flags']&0x03) == 0x03 && $virtual_dt > $now ? 'yes' : 'no');
 
     //
     // Load the customer type, or ask for customer type
