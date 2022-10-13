@@ -315,6 +315,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             'label' => $festival['waiver-msg'],
             'ftype' => 'checkbox',
             'size' => 'large',
+            'required' => 'yes',
             'class' => 'hidden',
             'value' => (isset($competitor['flags']) && ($competitor['flags']&0x01) == 0x01 ? 'on' : ''),
             );
@@ -335,9 +336,9 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         $fields['competitor_id']['value'] = $_POST['f-competitor_id'];
         $display = 'form';
         foreach($fields as $field) {
-            if( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == '' && $field['id'] != 'termstitle' ) {
+            if( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == '' && $field['id'] != 'termstitle' && $field['id'] != 'terms' ) {
                 $errors[] = array(
-                    'msg' => 'You must specify the competitor ' . $field['label'],
+                    'msg' => 'You must specify the competitor ' . $field['label'] . '.',
                     );
             }
         }

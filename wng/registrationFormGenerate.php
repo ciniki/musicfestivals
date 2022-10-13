@@ -394,6 +394,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'label' => 'Teacher Email',
             'ftype' => 'text',
             'size' => 'medium',
+            'required' => 'yes',
             'class' => isset($_POST['f-teacher_customer_id']) && $_POST['f-teacher_customer_id'] == -1 ? '' : 'hidden',
             'value' => isset($_POST['f-teacher_email']) ? $_POST['f-teacher_email'] : '',
             );

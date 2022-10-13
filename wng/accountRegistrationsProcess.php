@@ -335,7 +335,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             }
             if( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == '' && $field['id'] != 'termstitle' ) {
                 $errors[] = array(
-                    'msg' => 'You must specify the registration ' . $field['label'],
+                    'msg' => 'You must specify the registration ' . $field['label'] . '.',
                     );
             }
         }
@@ -349,7 +349,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         elseif( $fields['teacher_customer_id']['value'] == -1 ) {
             if( $fields['teacher_email']['value'] == '' ) {
                 $errors[] = array(
-                    'msg' => 'You must specify your teachers email',
+                    'msg' => "You must specify your teacher's email.",
                     );
             } else {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'teacherCreate');
@@ -820,7 +820,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         }
         if( ($festival['flags']&0x01) == 0x01 && ($festival['live'] == 'yes' || $festival['virtual'] == 'yes') ) {
             if( count($cart_registrations) > 0 ) {
-                $add_button = "<a class='button' href='/account/musicfestivalregistrations?add=yes'>Add</a>";
+                $add_button = "<a class='button' href='{$request['ssl_domain_base_url']}/account/musicfestivalregistrations?add=yes'>Add</a>";
                 $total = 0;
                 foreach($cart_registrations as $rid => $registration) {
                     $cart_registrations[$rid]['editbutton'] = "<form action='{$base_url}' method='POST'>"
