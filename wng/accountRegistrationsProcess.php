@@ -502,8 +502,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $registration['rtype'] = 30;
             }
             // Virtual pricing
-            error_log($registration['fee']);
-            if( $festival['earlybird'] == 'yes' && $festival['earlybird_fee'] > 0 ) {
+            if( isset($festival['earlybird_fee']) && $festival['earlybird'] == 'yes' && $festival['earlybird_fee'] > 0 ) {
                 $new_fee = $selected_class['earlybird_fee'];
             } else {
                 $new_fee = $selected_class['fee'];
@@ -835,19 +834,19 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $blocks[] = array(
                     'type' => 'table',
                     'title' => $festival['name'] . ' Cart',
-                    'class' => 'limit-width limit-width-60',
+                    'class' => 'musicfestival-registrations limit-width limit-width-70 fold-at-50',
                     'headers' => 'yes',
                     'columns' => array(
                         array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
-                        array('label' => 'Class', 'field' => 'codename', 'class' => 'alignleft'),
-                        array('label' => 'Title', 'field' => 'title1', 'class' => 'alignleft'),
-                        array('label' => 'Fee', 'field' => 'fee', 'class' => 'alignright'),
+                        array('label' => 'Class', 'fold-label'=>'Class', 'field' => 'codename', 'class' => 'alignleft'),
+                        array('label' => 'Title', 'fold-label'=>'Title', 'field' => 'title1', 'class' => 'alignleft'),
+                        array('label' => 'Fee', 'fold-label'=>'Fee', 'field' => 'fee', 'class' => 'alignright fold-alignleft'),
                         array('label' => $add_button, 'field' => 'editbutton', 'class' => 'buttons alignright'),
                         ),
                     'footer' => array(
                         array('value' => '<b>Total</b>', 'colspan' => 3, 'class' => 'alignright'),
                         array('value' => '$' . number_format($total, 2), 'class' => 'alignright'),
-                        array('value' => '', 'class' => 'alignright'),
+                        array('value' => '', 'class' => 'alignright fold-hidden'),
                         ),
                     'rows' => $cart_registrations,
                     );
@@ -894,13 +893,13 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             $blocks[] = array(
                 'type' => 'table',
                 'title' => $festival['name'] . ' E-transfers Required',
-                'class' => 'limit-width limit-width-60',
+                'class' => 'musicfestival-registrations limit-width limit-width-60 fold-at-50',
                 'headers' => 'yes',
                 'columns' => array(
                     array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
-                    array('label' => 'Class', 'field' => 'codename', 'class' => 'alignleft'),
-                    array('label' => 'Title', 'field' => 'title1', 'class' => 'alignleft'),
-                    array('label' => 'Fee', 'field' => 'fee', 'class' => 'alignright'),
+                    array('label' => 'Class', 'fold-label'=>'Class', 'field' => 'codename', 'class' => 'alignleft'),
+                    array('label' => 'Title', 'fold-label'=>'Title', 'field' => 'title1', 'class' => 'alignleft'),
+                    array('label' => 'Fee', 'fold-label'=>'Fee', 'field' => 'fee', 'class' => 'alignright fold-alignleft'),
                     ),
                 'rows' => $etransfer_registrations,
                 'footer' => array(
@@ -920,12 +919,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             $blocks[] = array(
                 'type' => 'table',
                 'title' => $festival['name'] . ' Paid Registrations',
-                'class' => 'limit-width limit-width-60',
+                'class' => 'musicfestival-registrations limit-width limit-width-60 fold-at-50',
                 'headers' => 'yes',
                 'columns' => array(
                     array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
-                    array('label' => 'Class', 'field' => 'codename', 'class' => 'alignleft'),
-                    array('label' => 'Title', 'field' => 'title1', 'class' => 'alignleft'),
+                    array('label' => 'Class', 'fold-label'=>'Class', 'field' => 'codename', 'class' => 'alignleft'),
+                    array('label' => 'Title', 'fold-label'=>'Title', 'field' => 'title1', 'class' => 'alignleft'),
                     ),
                 'rows' => $paid_registrations,
                 );
@@ -941,12 +940,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             $blocks[] = array(
                 'type' => 'table',
                 'title' => $festival['name'] . ' Cancelled Registrations',
-                'class' => 'limit-width limit-width-60',
+                'class' => 'musicfestival-registrations limit-width limit-width-60',
                 'headers' => 'yes',
                 'columns' => array(
                     array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
-                    array('label' => 'Class', 'field' => 'codename', 'class' => 'alignleft'),
-                    array('label' => 'Title', 'field' => 'title1', 'class' => 'alignleft'),
+                    array('label' => 'Class', 'fold-label'=>'Class', 'field' => 'codename', 'class' => 'alignleft'),
+                    array('label' => 'Title', 'fold-label'=>'Title', 'field' => 'title1', 'class' => 'alignleft'),
                     ),
                 'rows' => $cancelled_registrations,
                 );

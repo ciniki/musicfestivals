@@ -434,7 +434,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             $required = 'no';
         }
 
-        $title = 'Title & Composer ex. Prelude op.39, no.19 (D. Kabalevsky)';
+        $title = 'Title & Composer e.g. Prelude op.39, no.19 (D. Kabalevsky)';
         if( $i == 2 ) {
             $title = '2nd Title & Composer';
         } elseif( $i == 3 ) {
