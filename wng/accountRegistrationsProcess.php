@@ -719,7 +719,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             'cancel-label' => 'Cancel',
             'js-submit' => 'formSubmit();',
             'js-cancel' => 'formCancel();',
-            'submit-label' => ($registration_id > 0 ? 'Update Registration' : 'Add Registration'),
+            'submit-label' => ($registration_id > 0 ? 'Save' : 'Save'),
             'fields' => $fields,
             'js' => $js,
             );

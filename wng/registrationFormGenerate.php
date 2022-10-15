@@ -373,6 +373,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'ftype' => 'select',
             'size' => 'large',
             'label' => "Teacher",
+            'blank-label' => 'No Teacher',
             'onchange' => "teacherSelected()",
             'options' => $teachers,
             'complex_options' => array(

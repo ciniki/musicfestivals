@@ -594,7 +594,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             'class' => 'limit-width limit-width-60',
             'problem-list' => $form_errors,
             'cancel-label' => 'Cancel',
-            'submit-label' => ($competitor_id > 0 ? 'Update Competitor' : 'Add Competitor'),
+            'submit-label' => ($competitor_id > 0 ? 'Save' : 'Save'),
             'fields' => $fields,
             );
     }
