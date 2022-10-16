@@ -271,7 +271,11 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             $registration_id = $registration['registration_id'];
             $display = 'form';
             if( isset($_GET['ru']) && $_GET['ru'] != '' ) {
-                $return_url = $request['ssl_domain_base_url'] . $_GET['ru'];
+                if( strncmp('http', $_GET['ru'], 4) == 0 ) {
+                    $return_url = $_GET['ru'];
+                } else {
+                    $return_url = $request['ssl_domain_base_url'] . $_GET['ru'];
+                }
                 $request['session']['account-musicfestivals-registration-return-url'] = $return_url;
             }
         }
