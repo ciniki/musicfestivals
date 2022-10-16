@@ -257,7 +257,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
 
     // set font
     $pdf->SetFont('times', 'BI', 10);
-    $pdf->SetCellPadding(1);
+    $pdf->SetCellPadding(2);
 
     // add a page
     $pdf->SetFillColor(236);
@@ -328,14 +328,34 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             if( ($festival['flags']&0x04) && $festival['earlybird_date'] != '0000-00-00 00:00:00' ) {
                 $w = array(105, 25, 25, 25);
                 $pdf->SetFont('', 'B', '12');
+                $lh = $pdf->getStringHeight($w[0], 'Class');
                 $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
                 $pdf->Cell($w[1], $lh, 'Earlybird', 1, 0, 'C', $fill);
                 $pdf->Cell($w[2], $lh, 'Live', 1, 0, 'C', $fill);
                 $pdf->Cell($w[3], $lh, 'Virtual', 1, 0, 'C', $fill);
                 $pdf->Ln($lh);
                 $pdf->SetFont('', '', '12');
+                $fill = 0;
                 foreach($category['classes'] as $class) {
-                    $pdf->Cell($w[0], $lh, $class['code'] . ' - ' . $class['name'], 1, 0, 'L', $fill);
+                    $lh = $pdf->getStringHeight($w[0], $class['code'] . ' - ' . $class['name']);
+                    if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 30) ) {
+                        $pdf->AddPage();
+                        // Category
+                        $pdf->SetFont('', 'B', '18');
+                        $pdf->Cell(180, 10, $category['name'] . ' (continued)', 0, 0, 'L', 0);
+                        $pdf->Ln(12);
+                        // Headers
+                        $pdf->SetFont('', 'B', '12');
+                        $fill = 1;
+                        $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
+                        $pdf->Cell($w[1], $lh, 'Earlybird', 1, 0, 'C', $fill);
+                        $pdf->Cell($w[2], $lh, 'Live', 1, 0, 'C', $fill);
+                        $pdf->Cell($w[3], $lh, 'Virtual', 1, 0, 'C', $fill);
+                        $pdf->Ln($lh);
+                        $pdf->SetFont('', '', '12');
+                        $fill = 0;
+                    }
+                    $pdf->MultiCell($w[0], $lh, $class['code'] . ' - ' . $class['name'], 1, 'L', $fill, 0);
                     $pdf->Cell($w[1], $lh, numfmt_format_currency($intl_currency_fmt, $class['earlybird_fee'], $intl_currency), 1, 0, 'C', $fill);
                     $pdf->Cell($w[2], $lh, numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency), 1, 0, 'C', $fill);
                     $pdf->Cell($w[3], $lh, numfmt_format_currency($intl_currency_fmt, $class['virtual_fee'], $intl_currency), 1, 0, 'C', $fill);
@@ -351,8 +371,27 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                 $pdf->Cell($w[2], $lh, 'Virtual', 1, 0, 'C', $fill);
                 $pdf->Ln($lh);
                 $pdf->SetFont('', '', '12');
+                $fill = 0;
                 foreach($category['classes'] as $class) {
-                    $pdf->Cell($w[0], $lh, $class['code'] . ' - ' . $class['name'], 1, 0, 'L', $fill);
+                    $lh = $pdf->getStringHeight($w[0], $class['code'] . ' - ' . $class['name']);
+                    if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 30) ) {
+                        $pdf->AddPage();
+                        // Category
+                        $pdf->SetFont('', 'B', '18');
+                        $pdf->Cell(180, 10, $category['name'] . ' (continued)', 0, 0, 'L', 0);
+                        $pdf->Ln(12);
+                        // Headers
+                        $pdf->SetFont('', 'B', '12');
+                        $fill = 1;
+                        $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
+                        $pdf->Cell($w[1], $lh, 'Earlybird', 1, 0, 'C', $fill);
+                        $pdf->Cell($w[2], $lh, 'Live', 1, 0, 'C', $fill);
+                        $pdf->Cell($w[3], $lh, 'Virtual', 1, 0, 'C', $fill);
+                        $pdf->Ln($lh);
+                        $pdf->SetFont('', '', '12');
+                        $fill = 0;
+                    }
+                    $pdf->MultiCell($w[0], $lh, $class['code'] . ' - ' . $class['name'], 1, 'L', $fill, 0);
                     $pdf->Cell($w[1], $lh, numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency), 1, 0, 'C', $fill);
                     $pdf->Cell($w[2], $lh, numfmt_format_currency($intl_currency_fmt, $class['virtual_fee'], $intl_currency), 1, 0, 'C', $fill);
                     $pdf->Ln($lh);
