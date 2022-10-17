@@ -457,7 +457,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'required' => $required,
             'class' => $class,
             'ftype' => 'text',
-            'size' => 'small',
+            'size' => 'tiny',
             'label' => 'Time',
             'value' => isset($_POST["f-perf_time{$i}"]) ? $_POST["f-perf_time{$i}"] : (isset($registration["perf_time{$i}"]) ? $registration["perf_time{$i}"] : ''),
             );
