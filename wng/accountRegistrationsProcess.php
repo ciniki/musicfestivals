@@ -859,7 +859,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     'type' => 'text',
                     'class' => 'limit-width limit-width-60',
                     'title' => $festival['name'] . ' Registrations',
-                    'content' => 'No registrations',
+                    'content' => 'No pending registrations',
                     );
             }
             $buttons = array(
