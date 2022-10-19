@@ -124,7 +124,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'teacher_customer_id', 'billing_customer_id', 'rtype', 'status', 'invoice_id',
+                'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'billing_customer_id', 'rtype', 'status', 'invoice_id',
                     'display_name', 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 
                     'class_id', 
                     'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 
@@ -214,6 +214,52 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                 $registration['competitor' . $i . '_details'] = $details;
             }
         }
+
+        //
+        // Load the invoice details
+        //
+        if( $registration['invoice_id'] > 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceObjectItem');
+            $rc = ciniki_sapos_hooks_invoiceObjectItem($ciniki, $args['tnid'], $registration['invoice_id'], 
+                'ciniki.musicfestivals.registration', $registration['id']);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            if( isset($rc['invoice']) ) {
+                $registration['invoice_details'][] = array(
+                    'label'=>'Invoice', 
+                    'value'=>'#' . $rc['invoice']['invoice_number'] . ' - ' . $rc['invoice']['status_text'],
+                    );
+                if( $rc['invoice']['customer']['display_name'] != '' ) {
+                    $registration['invoice_details'][] = array(
+                        'label'=>'Customer', 
+                        'value'=>$rc['invoice']['customer']['display_name'],
+                        );
+                }
+                $registration['invoice_details'][] = array(
+                    'label'=>'Type', 
+                    'value'=>$rc['invoice']['invoice_type_text'],
+                    );
+                $registration['invoice_details'][] = array(
+                    'label'=>'Date', 
+                    'value'=>$rc['invoice']['invoice_date'],
+                    );
+                $registration['invoice_status'] = $rc['invoice']['status'];
+            }
+            if( isset($rc['item']) ) {
+                $registration['item_id'] = $rc['item']['id'];
+                $registration['unit_amount'] = $rc['item']['unit_amount_display'];
+                $registration['unit_discount_amount'] = $rc['item']['unit_discount_amount_display'];
+                $registration['unit_discount_percentage'] = $rc['item']['unit_discount_percentage'];
+                $registration['taxtype_id'] = $rc['item']['taxtype_id'];
+            } else {
+                $registration['item_id'] = 0;
+                $registration['unit_amount'] = '';
+                $registration['unit_discount_amount'] = '';
+                $registration['unit_discount_percentage'] = '';
+                $registration['taxtype_id'] = 0;
+            }
+        }
     }
 
     $rsp = array('stat'=>'ok', 'registration'=>$registration, 'competitors'=>array(), 'classes'=>array());
@@ -243,18 +289,28 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
     //
     // Get the list of classes
     //
-    $strsql = "SELECT ciniki_musicfestival_classes.id, CONCAT_WS(' - ', ciniki_musicfestival_classes.code, ciniki_musicfestival_classes.name) AS name, FORMAT(fee, 2) AS fee "
-        . "FROM ciniki_musicfestival_sections, ciniki_musicfestival_categories, ciniki_musicfestival_classes "
-        . "WHERE ciniki_musicfestival_sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
-        . "AND ciniki_musicfestival_sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND ciniki_musicfestival_sections.id = ciniki_musicfestival_categories.section_id "
-        . "AND ciniki_musicfestival_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND ciniki_musicfestival_categories.id = ciniki_musicfestival_classes.category_id "
-        . "AND ciniki_musicfestival_classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "ORDER BY ciniki_musicfestival_sections.name, ciniki_musicfestival_classes.name "
+    $strsql = "SELECT classes.id, "
+        . "CONCAT_WS(' - ', classes.code, classes.name) AS name, "
+        . "classes.flags, "
+        . "FORMAT(classes.earlybird_fee, 2) AS earlybird_fee, "
+        . "FORMAT(classes.fee, 2) AS fee, "
+        . "FORMAT(classes.virtual_fee, 2) AS virtual_fee "
+        . "FROM ciniki_musicfestival_sections AS sections "
+        . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
+            . "sections.id = categories.section_id "
+            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
+            . "categories.id = classes.category_id "
+            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
+        . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "ORDER BY sections.sequence, sections.name, categories.sequence, categories.name, classes.sequence, classes.name "
         . "";
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'classes', 'fname'=>'id', 'fields'=>array('id', 'name', 'fee')),
+        array('container'=>'classes', 'fname'=>'id', 
+            'fields'=>array('id', 'name', 'flags', 'earlybird_fee', 'fee', 'virtual_fee')),
         ));
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
@@ -274,6 +330,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         . "ciniki_musicfestivals.status, "
         . "ciniki_musicfestivals.flags, "
         . "ciniki_musicfestivals.earlybird_date, "
+        . "ciniki_musicfestivals.live_date, "
+        . "ciniki_musicfestivals.virtual_date, "
         . "ciniki_musicfestivals.primary_image_id, "
         . "ciniki_musicfestivals.description, "
         . "ciniki_musicfestivals.document_logo_id, "
@@ -286,7 +344,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'festivals', 'fname'=>'id', 
-            'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'status', 'flags', 'earlybird_date',
+            'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'status', 'flags', 
+                'earlybird_date', 'live_date', 'virtual_date',
                 'primary_image_id', 'description', 
                 'document_logo_id', 'document_header_msg', 'document_footer_msg'),
             'utctotz'=>array('start_date'=>array('timezone'=>'UTC', 'format'=>$date_format),
@@ -301,6 +360,18 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.175', 'msg'=>'Unable to find Festival'));
     }
     $rsp['registration']['festival'] = $rc['festivals'][0];
+
+    //
+    // Determine which dates are still open for the festival
+    //
+    $now = new DateTime('now', new DateTimezone('UTC'));
+    $earlybird_dt = new DateTime($rsp['registration']['festival']['earlybird_date'], new DateTimezone('UTC'));
+    $live_dt = new DateTime($rsp['registration']['festival']['live_date'], new DateTimezone('UTC'));
+    $virtual_dt = new DateTime($rsp['registration']['festival']['virtual_date'], new DateTimezone('UTC'));
+    $rsp['registration']['festival']['earlybird'] = (($rsp['registration']['festival']['flags']&0x01) == 0x01 && $earlybird_dt > $now ? 'yes' : 'no');
+    $rsp['registration']['festival']['live'] = (($rsp['registration']['festival']['flags']&0x01) == 0x01 && $live_dt > $now ? 'yes' : 'no');
+    $rsp['registration']['festival']['virtual'] = (($rsp['registration']['festival']['flags']&0x03) == 0x03 && $virtual_dt > $now ? 'yes' : 'no');
+
 
     //
     // Get the festival settings

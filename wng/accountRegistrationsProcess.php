@@ -385,7 +385,6 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.310', 'msg'=>'Error opening cart', 'err'=>$rc['err']));
             }
-            error_log(print_r($rc,true));
         }
         //
         // If no errors, add/update the registration

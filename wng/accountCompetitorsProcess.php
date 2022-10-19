@@ -426,7 +426,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     if( $field['ftype'] == 'content' || $field['ftype'] == 'hidden' || $field['id'] == 'terms' ) {
                         continue;
                     }
-                    if( !isset($competitor[$field['id']]) || $field['value'] != $competitor[$field['id']] ) {
+                    if( !isset($competitor[$field['id']]) || (isset($field['value']) && $field['value'] != $competitor[$field['id']]) ) {
                         $update_args[$field['id']] = $field['value'];
                     }
                 }
