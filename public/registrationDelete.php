@@ -111,11 +111,11 @@ function ciniki_musicfestivals_registrationDelete(&$ciniki) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.154', 'msg'=>'Unable to remove item from invoice', 'err'=>$rc['err']));
             }
             return array('stat'=>'ok');
-        } elseif( !preg_match("/Removed/", $invoice_item['description']) ) {
+        } elseif( !preg_match("/Cancelled/", $invoice_item['description']) ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemUpdate');
             $rc = ciniki_sapos_hooks_invoiceItemUpdate($ciniki, $args['tnid'], array(
                 'item_id' => $invoice_item['id'],
-                'description' => $invoice_item['description'] . ' (Removed)',
+                'description' => $invoice_item['description'] . ' (Cancelled)',
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.313', 'msg'=>'Unable to update invoice', 'err'=>$rc['err']));
