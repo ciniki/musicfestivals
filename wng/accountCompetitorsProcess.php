@@ -188,7 +188,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             ),
         'name' => array(
             'id' => 'name',
-            'label' => 'First & Last Name',
+            'label' => 'First & Last Name OR Ensemble',
             'ftype' => 'text',
             'required' => 'yes',
             'size' => ($customer_type == 30 ? 'large' : 'medium'),
