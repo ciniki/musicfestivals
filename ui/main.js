@@ -2075,7 +2075,6 @@ function ciniki_musicfestivals_main() {
     }
     this.registration.remove = function() {
         var msg = 'Are you sure you want to remove this registration?';
-        console.log(this.data);
         if( this.data.invoice_id > 0 && this.data.invoice_status >= 50 ) {
             msg = '**WARNING** Removing this registration will NOT remove the item from the Invoice. You will need make sure they have received a refund for the registration.';
         }
