@@ -505,12 +505,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $registration['rtype'] = 30;
             }
             // Virtual pricing
-            if( isset($festival['earlybird_fee']) && $festival['earlybird'] == 'yes' && $festival['earlybird_fee'] > 0 ) {
+            if( isset($festival['earlybird_fee']) && $festival['earlybird'] == 'yes' && $selected_class['earlybird_fee'] > 0 ) {
                 $new_fee = $selected_class['earlybird_fee'];
             } else {
                 $new_fee = $selected_class['fee'];
             }
-            if( ($festival['flags']&0x04) == 0x04 && $fields['virtual']['value'] == 1 && $festival['virtual_fee'] > 0 ) {
+            if( ($festival['flags']&0x04) == 0x04 && $fields['virtual']['value'] == 1 && $selected_class['virtual_fee'] > 0 ) {
                 $new_fee = $selected_class['virtual_fee'];
             }
 
