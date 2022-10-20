@@ -396,7 +396,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             $registration = array(
                 'festival_id' => $festival['id'],
                 'billing_customer_id' => $request['session']['customer']['id'],
-                'teacher_customer_id' => $fields['teacher_customer_id']['value'],
+                'teacher_customer_id' => ($customer_type == 20 ? $request['session']['customer']['id'] : $fields['teacher_customer_id']['value']),
                 'rtype' => 30,
                 'status' => 6,
                 'invoice_id' => $request['session']['cart']['id'],
