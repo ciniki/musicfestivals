@@ -27,6 +27,9 @@ function ciniki_musicfestivals_sapos_itemSearch($ciniki, $tnid, $args) {
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.390', 'msg'=>'', 'err'=>$rc['err']));
     }
+    if( !isset($rc['festival']) ) {
+        return array('stat'=>'ok', 'items'=>array());
+    }
     $festival = $rc['festival'];
 
     //
