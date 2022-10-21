@@ -35,6 +35,11 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         return array('stat'=>'exit');
     }
 
+    if( isset($_POST['f-action']) && $_POST['f-action'] == 'view' ) {
+        header("Location: {$base_url}");
+        return array('stat'=>'exit');
+    }
+
     if( isset($request['session']['account-musicfestivals-registration-saved']) ) {
         $_POST = $request['session']['account-musicfestivals-registration-saved'];
         if( isset($request['session']['account-musicfestivals-registration-saved']['new-id']) ) {
@@ -222,7 +227,11 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             $display = 'list';
         } else {
             $registration = $rc['registration'];
-            $display = 'form';
+            if( isset($_POST['action']) && $_POST['action'] == 'view' ) {
+                $display = 'view';
+            } else {
+                $display = 'form';
+            }
         }
     }
     elseif( isset($_GET['r']) && $_GET['r'] != '' ) {
@@ -727,6 +736,41 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             'js' => $js,
             );
     }
+
+    //
+    // Show the registration in view only mode
+    //
+    elseif( $display == 'view' ) {
+        foreach($fields as $fid => $field) {
+            if( isset($field['id']) && $field['id'] == 'action' ) {
+                $fields[$fid]['value'] = 'view';
+            }
+            if( $field['ftype'] == 'select' ) {
+                $fields[$fid]['ftype'] = 'text';
+                if( isset($field['options'][$field['value']]['name']) ) {
+                    $fields[$fid]['value'] = $field['options'][$field['value']]['name'];
+                }
+                elseif( isset($field['options'][$field['value']]) ) {
+                    $fields[$fid]['value'] = $field['options'][$field['value']];
+                } else {
+                    $fields[$fid]['value'] = '';
+                }
+            }
+            $fields[$fid]['required'] = 'no';
+            $fields[$fid]['editable'] = 'no';
+        }
+        $blocks[] = array(
+            'type' => 'form',
+            'title' => 'Registration',
+            'class' => 'limit-width limit-width-60',
+            'problem-list' => $form_errors,
+            'cancel-label' => 'Back',
+            'submit-label' => '',
+            'submit-hide' => 'yes',
+            'fields' => $fields,
+            'js' => $js,
+            );
+    }
     //
     // Show the delete form
     //
@@ -890,6 +934,11 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             //
             $total = 0;
             foreach($etransfer_registrations as $rid => $registration) {
+                $etransfer_registrations[$rid]['viewbutton'] = "<form action='{$base_url}' method='POST'>"
+                    . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
+                    . "<input type='hidden' name='action' value='view' />"
+                    . "<input class='button' type='submit' name='submit' value='View'>"
+                    . "</form>";
                 $etransfer_registrations[$rid]['fee'] = '$' . number_format($registration['fee'], 2);
                 $total += $registration['fee'];
             }
@@ -903,11 +952,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     array('label' => 'Class', 'fold-label'=>'Class', 'field' => 'codename', 'class' => 'alignleft'),
                     array('label' => 'Title', 'fold-label'=>'Title', 'field' => 'title1', 'class' => 'alignleft'),
                     array('label' => 'Fee', 'fold-label'=>'Fee', 'field' => 'fee', 'class' => 'alignright fold-alignleft'),
+                    array('label' => '', 'field' => 'viewbutton', 'class' => 'buttons alignright'),
                     ),
                 'rows' => $etransfer_registrations,
                 'footer' => array(
                     array('value' => '<b>Total</b>', 'colspan' => 3, 'class' => 'alignright'),
-                    array('value' => '$' . number_format($total, 2), 'class' => 'alignright'),
+                    array('value' => '$' . number_format($total, 2), 'colspan'=>2, 'class' => 'alignright'),
                     ),
                 );
             //
@@ -919,6 +969,13 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             //
         }
         if( count($paid_registrations) > 0 ) {
+            foreach($paid_registrations as $rid => $registration) {
+                $paid_registrations[$rid]['viewbutton'] = "<form action='{$base_url}' method='POST'>"
+                    . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
+                    . "<input type='hidden' name='action' value='view' />"
+                    . "<input class='button' type='submit' name='submit' value='View'>"
+                    . "</form>";
+            }
             $blocks[] = array(
                 'type' => 'table',
                 'title' => $festival['name'] . ' Paid Registrations',
@@ -928,6 +985,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
                     array('label' => 'Class', 'fold-label'=>'Class', 'field' => 'codename', 'class' => 'alignleft'),
                     array('label' => 'Title', 'fold-label'=>'Title', 'field' => 'title1', 'class' => 'alignleft'),
+                    array('label' => '', 'field' => 'viewbutton', 'class' => 'buttons alignright'),
                     ),
                 'rows' => $paid_registrations,
                 );

@@ -84,7 +84,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         'base_url' => $base_url,
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.256', 'msg'=>'Unable to ', 'err'=>$rc['err']));
+        return $rc;
     }
     if( isset($rc['stop']) && $rc['stop'] == 'yes' ) {
         // 
