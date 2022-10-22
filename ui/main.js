@@ -1534,8 +1534,8 @@ function ciniki_musicfestivals_main() {
             }},
         'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':3, 
             'headerValues':['Competitor', 'Teacher', 'Status'],
-            'addTxt':'Add Registration',
-            'addFn':'M.ciniki_musicfestivals_main.registration.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,0,M.ciniki_musicfestivals_main.class.class_id,M.ciniki_musicfestivals_main.festival.festival_id,null,\'festival\');',
+//            'addTxt':'Add Registration',
+//            'addFn':'M.ciniki_musicfestivals_main.registration.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,0,M.ciniki_musicfestivals_main.class.class_id,M.ciniki_musicfestivals_main.festival.festival_id,null,\'festival\');',
             },
         '_buttons':{'label':'', 'aside':'yes', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.class.save();'},
@@ -1989,6 +1989,9 @@ function ciniki_musicfestivals_main() {
             var p = M.ciniki_musicfestivals_main.registration;
             p.data = rsp.registration;
             p.classes = rsp.classes;
+            if( p.festival_id == 0 ) {
+                p.festival_id = rsp.registration.festival_id;
+            }
 //            p.sections._tabs.selected = rsp.registration.rtype;
             p.sections._class.fields.class_id.options = rsp.classes;
             p.sections._class.fields.class_id.options.unshift({'id':0, 'name':''});
