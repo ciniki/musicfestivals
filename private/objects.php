@@ -198,6 +198,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'videolink'=>array('name'=>'Video Link', 'default'=>''),
             'music_orgfilename'=>array('name'=>'Music Original Filename', 'default'=>''),
             'notes'=>array('name'=>'Notes', 'default'=>''),
+            'internal_notes'=>array('name'=>'Interal Notes', 'default'=>''),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );

@@ -1764,8 +1764,11 @@ function ciniki_musicfestivals_main() {
                     'visible':function() { return M.ciniki_musicfestivals_main.registration.data.music_orgfilename != '' ? 'yes' : 'no'},
                     },
             }},
-        '_notes':{'label':'Notes', 'fields':{
+        '_notes':{'label':'Registration Notes', 'fields':{
             'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea'},
+            }},
+        '_internal_notes':{'label':'Internal Admin Notes', 'fields':{
+            'internal_notes':{'label':'', 'hidelabel':'yes', 'type':'textarea'},
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.registration.save();'},
@@ -2129,7 +2132,7 @@ function ciniki_musicfestivals_main() {
             'instrument':{'label':'Instrument', 'type':'text'},
             'flags1':{'label':'Waiver', 'type':'flagtoggle', 'bit':0x01, 'field':'flags', 'toggles':{'':'Unsigned', 'signed':'Signed'}},
             }},
-        '_notes':{'label':'Notes', 'aside':'yes', 'fields':{
+        '_notes':{'label':'Competitor Notes', 'aside':'yes', 'fields':{
             'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea'},
             }},
         '_address':{'label':'', 'fields':{

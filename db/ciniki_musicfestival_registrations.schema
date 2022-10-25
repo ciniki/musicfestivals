@@ -79,6 +79,7 @@
 # music_orgfilename:    The original filename of the PDF uploaded for sheet music.
 #
 # notes:                Any notes for the registration.
+# internal_notes:       Any internal admin notes for the registration viewable only by admins.
 #
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.
@@ -114,10 +115,11 @@ create table ciniki_musicfestival_registrations (
     videolink varchar(1000) not null,
     music_orgfilename varchar(250) not null,
     notes varchar(5000) not null,
+    internal_notes text not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
     index (festival_id, teacher_customer_id, billing_customer_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.06';
+) ENGINE='InnoDB', COMMENT='v1.07';

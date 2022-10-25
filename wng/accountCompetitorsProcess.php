@@ -293,7 +293,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             ),
         'notes' => array(
             'id' => 'notes',
-            'label' => 'Notes',
+            'label' => 'Competitor Notes',
             'ftype' => 'textarea',
             'size' => 'tiny',
             'class' => '',

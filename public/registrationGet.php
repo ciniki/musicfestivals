@@ -84,6 +84,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'virtual'=>0,
             'videolink'=>'',
             'notes'=>'',
+            'internal_notes'=>'',
         );
     }
 
@@ -116,7 +117,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "ciniki_musicfestival_registrations.virtual, "
             . "ciniki_musicfestival_registrations.videolink, "
             . "ciniki_musicfestival_registrations.music_orgfilename, "
-            . "ciniki_musicfestival_registrations.notes "
+            . "ciniki_musicfestival_registrations.notes, "
+            . "ciniki_musicfestival_registrations.internal_notes "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE ciniki_musicfestival_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_musicfestival_registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
@@ -129,7 +131,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     'class_id', 
                     'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 
                     'fee', 'payment_type', 
-                    'virtual', 'videolink', 'music_orgfilename', 'notes'),
+                    'virtual', 'videolink', 'music_orgfilename', 'notes', 'internal_notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -211,6 +213,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                 if( $competitor['age'] != '' ) { $details[] = array('label'=>'Age', 'value'=>$competitor['_age']); }
                 if( $competitor['study_level'] != '' ) { $details[] = array('label'=>'Study/Level', 'value'=>$competitor['study_level']); }
                 if( $competitor['instrument'] != '' ) { $details[] = array('label'=>'Instrument', 'value'=>$competitor['instrument']); }
+                $details[] = array('label'=>'Notes', 'value'=>$competitor['notes']);
                 $registration['competitor' . $i . '_details'] = $details;
             }
         }

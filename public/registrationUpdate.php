@@ -41,6 +41,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         'virtual'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Virtual'),
         'videolink'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
+        'internal_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Interal Notes'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
