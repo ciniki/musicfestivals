@@ -78,7 +78,7 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
         $items[] = array(
             'title' => 'Registrations', 
             'priority' => 749, 
-            'selected' => 'no',
+            'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivalregistrations' ? 'yes' : 'no',
             'ref' => 'ciniki.musicfestivals.registrations',
             'url' => $base_url . '/musicfestivalregistrations',
             );
@@ -86,6 +86,7 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
             'title' => 'Competitors', 
             'priority' => 748, 
             'selected' => 'no',
+            'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivalcompetitors' ? 'yes' : 'no',
             'ref' => 'ciniki.musicfestivals.competitors',
             'url' => $base_url . '/musicfestivalcompetitors',
             );
