@@ -1014,10 +1014,6 @@ function ciniki_musicfestivals_main() {
             'age-restriction-msg':{'label':'Age Restriction Message', 'type':'text'},
             'president-name':{'label':'President Name', 'type':'text'},
             }},
-        '_waiver':{'label':'Waiver Message', 'aside':'yes', 'fields':{
-            'waiver-title':{'label':'Title', 'type':'text'},
-            'waiver-msg':{'label':'Message', 'type':'textarea', 'size':'medium'},
-            }},
 // Remove 2022, could be readded in future
 //        '_hybrid':{'label':'In Person/Virtual Choices', 'aside':'yes', 'fields':{
 //            'inperson-choice-msg':{'label':'In Person Choice', 'type':'text', 'hint':'in person on a scheduled date'},
@@ -1103,6 +1099,12 @@ function ciniki_musicfestivals_main() {
             'fields':{
                 'competitor-adult-msg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
             }},
+        '_waiver':{'label':'Waiver Message', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
+            'fields':{
+                'waiver-title':{'label':'Title', 'type':'text'},
+                'waiver-msg':{'label':'Message', 'type':'textarea', 'size':'medium'},
+            }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.edit.save();'},
             'updatename':{'label':'Update Public Names', 
@@ -1130,6 +1132,7 @@ function ciniki_musicfestivals_main() {
         this.showHideSection('_competitor_parent_msg');
         this.showHideSection('_competitor_teacher_msg');
         this.showHideSection('_competitor_adult_msg');
+        this.showHideSection('_waiver');
         this.refreshSection('_tabs');
     }
     this.edit.updateNames = function() {
