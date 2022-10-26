@@ -419,6 +419,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
 
     //
     // Add performing titles
+    //
     for($i = 1; $i <= 3; $i++ ) {
         $class = ($i > 1 ? 'hidden' : '');
         $required = 'yes';
@@ -516,6 +517,18 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     }
 
     //
+    // Add notes field
+    //
+    $fields['notes'] = array(
+        'id' => 'notes',
+        'label' => 'Registration Notes',
+        'ftype' => 'textarea',
+        'size' => 'tiny',
+        'class' => '',
+        'value' => (isset($_POST['f-notes']) ? trim($_POST['f-notes']) : (isset($registration['notes']) ? $registration['notes'] :'')),
+        );
+
+    //
     // Setup the Javascript for updating the form as fields change
     //
     $js_prices = '';
@@ -537,6 +550,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             . "}"
             . "";
     }
+
     $js = ""
         . "var sids=[" . implode(',', array_keys($sections)) . "];"
         . "var cls2c=[" . implode(',', $classes_2c) . "];" // 2 competitor classes (duets)
