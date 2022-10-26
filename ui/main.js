@@ -1018,13 +1018,15 @@ function ciniki_musicfestivals_main() {
             'waiver-title':{'label':'Title', 'type':'text'},
             'waiver-msg':{'label':'Message', 'type':'textarea', 'size':'medium'},
             }},
-        '_hybrid':{'label':'In Person/Virtual Choices', 'aside':'yes', 'fields':{
-            'inperson-choice-msg':{'label':'In Person Choice', 'type':'text', 'hint':'in person on a scheduled date'},
-            'virtual-choice-msg':{'label':'Virtual Choice', 'type':'text', 'hint':'virtually and submit a video'},
-            }},
+// Remove 2022, could be readded in future
+//        '_hybrid':{'label':'In Person/Virtual Choices', 'aside':'yes', 'fields':{
+//            'inperson-choice-msg':{'label':'In Person Choice', 'type':'text', 'hint':'in person on a scheduled date'},
+//            'virtual-choice-msg':{'label':'Virtual Choice', 'type':'text', 'hint':'virtually and submit a video'},
+//            }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'website', 'tabs':{
             'website':{'label':'Website', 'fn':'M.ciniki_musicfestivals_main.edit.switchTab(\'website\');'},
             'documents':{'label':'Documents', 'fn':'M.ciniki_musicfestivals_main.edit.switchTab(\'documents\');'},
+            'registrations':{'label':'Registrations', 'fn':'M.ciniki_musicfestivals_main.edit.switchTab(\'registrations\');'},
             }},
         '_primary_image_id':{'label':'Primary Image', 'type':'imageform', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'website' ? 'yes' : 'hidden'; },
@@ -1071,6 +1073,36 @@ function ciniki_musicfestivals_main() {
             'fields':{
                 'document_footer_msg':{'label':'', 'hidelabel':'yes', 'type':'text'},
             }},
+        '_registration_parent_msg':{'label':'Registration Message - Parents', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
+            'fields':{
+                'registration-parent-msg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+            }},
+        '_registration_teacher_msg':{'label':'Registration Message - Teachers', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
+            'fields':{
+                'registration-teacher-msg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+            }},
+        '_registration_adult_msg':{'label':'Registration Message - Adults', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
+            'fields':{
+                'registration-adult-msg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+            }},
+        '_competitor_parent_msg':{'label':'Competitor Message - Parents', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
+            'fields':{
+                'competitor-parent-msg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+            }},
+        '_competitor_teacher_msg':{'label':'Competitor Message - Teachers', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
+            'fields':{
+                'competitor-teacher-msg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+            }},
+        '_competitor_adult_msg':{'label':'Competitor Message - Adults', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
+            'fields':{
+                'competitor-adult-msg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+            }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.edit.save();'},
             'updatename':{'label':'Update Public Names', 
@@ -1092,6 +1124,12 @@ function ciniki_musicfestivals_main() {
         this.showHideSection('_document_logo_id');
         this.showHideSection('_document_header_msg');
         this.showHideSection('_document_footer_msg');
+        this.showHideSection('_registration_parent_msg');
+        this.showHideSection('_registration_teacher_msg');
+        this.showHideSection('_registration_adult_msg');
+        this.showHideSection('_competitor_parent_msg');
+        this.showHideSection('_competitor_teacher_msg');
+        this.showHideSection('_competitor_adult_msg');
         this.refreshSection('_tabs');
     }
     this.edit.updateNames = function() {

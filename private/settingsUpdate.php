@@ -49,6 +49,12 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'president-name',
         'inperson-choice-msg',
         'virtual-choice-msg',
+        'registration-parent-msg',
+        'registration-teacher-msg',
+        'registration-adult-msg',
+        'competitor-parent-msg',
+        'competitor-teacher-msg',
+        'competitor-adult-msg',
         );
     foreach($valid_settings as $field) {
         if( isset($args[$field]) ) {

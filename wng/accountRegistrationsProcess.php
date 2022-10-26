@@ -66,6 +66,25 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     $festival = $rc['festival'];
 
     //
+    // Load the festival details
+    //
+    $strsql = "SELECT detail_key, detail_value "
+        . "FROM ciniki_musicfestival_settings "
+        . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
+    $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.352', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+    }
+    if( isset($rc['settings']) ) {
+        foreach($rc['settings'] as $k => $v) {
+            $festival[$k] = $v;
+        }
+    }
+
+    //
     // Load the customer type, or ask for customer type
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountCustomerTypeProcess');
@@ -722,9 +741,18 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     // Show the registration edit/add form
     //
     if( $display == 'form' ) {
+        $guidelines = '';
+        if( $customer_type == 10 && isset($festival['registration-parent-msg']) ) {
+            $guidelines = $festival['registration-parent-msg'];
+        } elseif( $customer_type == 20 && isset($festival['registration-teacher-msg']) ) {
+            $guidelines = $festival['registration-teacher-msg'];
+        } elseif( $customer_type == 30 && isset($festival['registration-adult-msg']) ) {
+            $guidelines = $festival['registration-adult-msg'];
+        }
         $blocks[] = array(
             'type' => 'form',
             'form-id' => 'addregform',
+            'guidelines' => $guidelines,
             'title' => ($registration_id > 0 ? 'Update Registration' : 'Add Registration'),
             'class' => 'limit-width limit-width-60',
             'problem-list' => $form_errors,

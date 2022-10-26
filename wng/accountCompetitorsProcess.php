@@ -587,9 +587,18 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     // Show the competitor edit/add form
     //
     if( $display == 'form' ) {
+        $guidelines = '';
+        if( $customer_type == 10 && isset($festival['competitor-parent-msg']) ) {
+            $guidelines = $festival['competitor-parent-msg'];
+        } elseif( $customer_type == 20 && isset($festival['competitor-teacher-msg']) ) {
+            $guidelines = $festival['competitor-teacher-msg'];
+        } elseif( $customer_type == 30 && isset($festival['competitor-adult-msg']) ) {
+            $guidelines = $festival['competitor-adult-msg'];
+        }
 
         $blocks[] = array(
             'type' => 'form',
+            'guidelines' => $guidelines,
             'title' => ($competitor_id > 0 ? 'Update Competitor' : 'Add Competitor'),
             'class' => 'limit-width limit-width-60',
             'problem-list' => $form_errors,
