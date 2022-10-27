@@ -56,6 +56,12 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'tradingcards' => 'Trading Cards',
                 'imagebuttons' => 'Image Buttons',
                 )),
+            'section-pdf' => array('label'=>'Section PDF Download', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
+                'no' => 'Off',
+                'top' => 'Top',
+                'bottom' => 'Bottom',
+                'both' => 'Both',
+                )),
             ),
         );
 
