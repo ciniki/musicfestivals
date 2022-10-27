@@ -43,6 +43,9 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     }
     $intl_timezone = $rc['settings']['intl-default-timezone'];
 
+    $section_permalink = $request['uri_split'][$request['cur_uri_pos']];
+    $base_url = $request['base_url'] . $request['page']['path'];
+
     //
     // Check for syllabus section requested
     //
@@ -51,9 +54,6 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.216', 'msg'=>"No syllabus specified"));
     }
-
-    $section_permalink = $request['uri_split'][$request['cur_uri_pos']];
-    $base_url = $request['base_url'] . $request['page']['path'];
 
     //
     // Check for image format
@@ -122,6 +122,43 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     $section = $rc['section'];
   
     //
+    // Check for syllabus download
+    //
+    if( isset($request['uri_split'][($request['cur_uri_pos']+1)])
+        && $request['uri_split'][($request['cur_uri_pos']+1)] == 'download.pdf' 
+        ) {
+        //
+        // Download the syllabus section pdf
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'syllabusPDF');
+        $rc = ciniki_musicfestivals_templates_syllabusPDF($ciniki, $tnid, array(
+            'festival_id' => $s['festival-id'],
+            'section_id' => $section['id'],
+            ));
+        if( isset($rc['pdf']) ) {
+            $filename = $festival['name'] . ' - ' . $section['name'];
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+            $filename = ciniki_core_makePermalink($ciniki, $filename) . '.pdf';
+            header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+            header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+            header('Cache-Control: no-cache, must-revalidate');
+            header('Pragma: no-cache');
+            header('Content-Type: application/pdf');
+            header('Cache-Control: max-age=0');
+
+            $rc['pdf']->Output($filename, 'D');
+
+            return array('stat'=>'exit');
+        } else {
+            $blocks[] = array(
+                'type' => 'msg',
+                'level' => 'error',
+                'content' => 'Unable to download pdf',
+                );
+        }
+    }
+
+    //
     // Check for section end dates
     //
     if( ($festival['flags']&0x08) == 0x08 ) {
@@ -149,6 +186,21 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         $blocks[] = array(
             'type' => 'title', 
             'title' => (isset($s['title']) ? $s['title'] : 'Syllabus') . ' - ' . $section['name'],
+            );
+    }
+
+    //
+    // Check if download button
+    //
+    if( isset($s['section-pdf']) && ($s['section-pdf'] == 'top' || $s['section-pdf'] == 'both') ) {
+        $blocks[] = array(
+            'type' => 'buttons',
+            'list' => array(
+                array(
+                    'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $section['permalink'] . '/download.pdf',
+                    'text' => 'Download Syllabus PDF for ' . $section['name'],
+                    ),
+                ),
             );
     }
 
@@ -268,6 +320,22 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             }
         }
     }
+
+    //
+    // Check if download button
+    //
+    if( isset($s['section-pdf']) && ($s['section-pdf'] == 'bottom' || $s['section-pdf'] == 'both') ) {
+        $blocks[] = array(
+            'type' => 'buttons',
+            'list' => array(
+                array(
+                    'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $section['permalink'] . '/download.pdf',
+                    'text' => 'Download Syllabus PDF for ' . $section['name'],
+                    ),
+                ),
+            );
+    }
+
 
 
     return array('stat'=>'ok', 'blocks'=>$blocks);
