@@ -31,7 +31,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
     // Load tenant settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
-    $rc = ciniki_tenants_intlSettings($ciniki, $args['tnid']);
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -57,7 +57,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         . "festivals.document_header_msg, "
         . "festivals.document_footer_msg "
         . "FROM ciniki_musicfestivals AS festivals "
-        . "WHERE festivals.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "WHERE festivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND festivals.id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -108,7 +108,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
-        . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND (sections.flags&0x01) = 0 "  // Visible
         . "";
     if( isset($args['section_id']) && $args['section_id'] != '' && $args['section_id'] > 0 ) {
