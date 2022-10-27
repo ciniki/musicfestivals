@@ -38,6 +38,11 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         $return_url = $request['ssl_domain_base_url'] . '/account/musicfestivalregistrations';
         $request['session']['account-musicfestivals-competitor-form-return'] = $return_url;
     }
+    elseif( isset($_POST['f-action']) && $_POST['f-action'] == 'editcompetitor' ) {
+        $request['session']['account-musicfestivals-registration-saved'] = $_POST;
+        $return_url = $request['ssl_domain_base_url'] . '/account/musicfestivalregistrations';
+        $request['session']['account-musicfestivals-competitor-form-return'] = $return_url;
+    }
 
     //
     // Load current festival
@@ -291,13 +296,13 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             'class' => '',
             'value' => (isset($_POST['f-study_level']) ? trim($_POST['f-study_level']) : (isset($competitor['study_level']) ? $competitor['study_level'] :'')),
             ),
-        'notes' => array(
-            'id' => 'notes',
+        'comp_notes' => array(
+            'id' => 'comp_notes',
             'label' => 'Competitor Notes',
             'ftype' => 'textarea',
             'size' => 'tiny',
             'class' => '',
-            'value' => (isset($_POST['f-notes']) ? trim($_POST['f-notes']) : (isset($competitor['notes']) ? $competitor['notes'] :'')),
+            'value' => (isset($_POST['f-comp_notes']) ? trim($_POST['f-comp_notes']) : (isset($competitor['notes']) ? $competitor['notes'] :'')),
             ),
         );
     if( isset($festival['waiver-msg']) && $festival['waiver-msg'] != '' ) {
@@ -402,7 +407,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     'age' => $fields['age']['value'],
                     'study_level' => $fields['study_level']['value'],
                     'instrument' => $fields['instrument']['value'],
-                    'notes' => $fields['notes']['value'],
+                    'notes' => $fields['comp_notes']['value'],
                     );
                 //
                 // Add the competitor
@@ -426,7 +431,12 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     if( $field['ftype'] == 'content' || $field['ftype'] == 'hidden' || $field['id'] == 'terms' ) {
                         continue;
                     }
-                    if( !isset($competitor[$field['id']]) || (isset($field['value']) && $field['value'] != $competitor[$field['id']]) ) {
+                    if( isset($field['id']) && $field['id'] == 'comp_notes' ) {
+                        if( isset($field['value']) && $field['value'] != $competitor['notes'] ) {
+                            $update_args['notes'] = $field['value'];
+                        }
+                    }
+                    elseif( !isset($competitor[$field['id']]) || (isset($field['value']) && $field['value'] != $competitor[$field['id']]) ) {
                         $update_args[$field['id']] = $field['value'];
                     }
                 }

@@ -348,6 +348,13 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         elseif( isset($selected_class) && $i == 3 && (($selected_class['flags']&0x20) == 0x20) ) {
             $class = '';
         }
+/*        if( $i > 1 ) {
+            $fields["competitor{$i}_newline"] = array(
+                'id' => "competitor{$i}_newline",
+                'ftype' => 'newline',
+                );
+        } */
+        $comp_id = isset($_POST["f-competitor{$i}_id"]) && $_POST["f-competitor{$i}_id"] > -1 ? $_POST["f-competitor{$i}_id"] : (isset($registration["competitor{$i}_id"]) ? $registration["competitor{$i}_id"] : 0);
         $fields["competitor{$i}_id"] = array(
             'id' => "competitor{$i}_id",
             'ftype' => 'select',
@@ -357,12 +364,26 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'label' => "Competitor {$i}",
             'onchange' => "competitorSelected({$i})",
             'options' => $competitors,
-            'value' => isset($_POST["f-competitor{$i}_id"]) && $_POST["f-competitor{$i}_id"] > -1 ? $_POST["f-competitor{$i}_id"] : (isset($registration["competitor{$i}_id"]) ? $registration["competitor{$i}_id"] : 0),
+            'value' => $comp_id,
             );
         $fields["competitor{$i}_id"]['options']['add'] = array(
             'id' => '-1',
             'name' => 'Add Competitor',
             );
+            //
+            // DO NOT ADD EDIT BUTTON
+            // It will confuse customers and think to change competitor they just change name 
+            // but will change all registrations for that competitor.
+            // 
+/*        $fields["competitor{$i}_edit"] = array(
+            'id' => "competitor{$i}_edit",
+            'label' => '',
+            'ftype' => 'button',
+            'size' => 'tiny',
+            'class' => ($comp_id > 0 ? '' : $class),
+            'value' => 'Edit Competitor',
+            'href' => "javascript: competitorEdit({$i});",
+            ); */
     }
     //
     // Add teacher
@@ -620,10 +641,29 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         . "};"
         . "function competitorSelected(c) {"
             . "var t=C.gE('f-competitor'+c+'_id').value;"
+//            . "var e=C.gE('f-competitor'+c+'_edit');"
             . "if(t==-1){"
                 . "C.gE('f-action').value='addcompetitor';"
                 . "var f=C.gE('addregform');"
                 . "f.action='{$request['ssl_domain_base_url']}/account/musicfestivalcompetitors?add=yes';"
+                . "f.submit();"
+//            . "}else if(t>0){"
+//                . "C.rC(e.parentNode,'hidden');"
+//            . "}else{"
+//                . "C.aC(e.parentNode,'hidden');"
+            . "}"
+        . "};"
+        . "function competitorEdit(c){"
+            . "var t=C.gE('f-competitor'+c+'_id').value;"
+            . "if(t>0){"
+                . "C.gE('f-action').value='editcompetitor';"
+                . "var f=C.gE('addregform');"
+                . "var i=C.aE('input','f-competitor_id','hidden');"
+                . "console.log(t);"
+                . "i.setAttribute('name','f-competitor_id');"
+                . "i.setAttribute('value',t);"
+                . "f.appendChild(i);"
+                . "f.action='{$request['ssl_domain_base_url']}/account/musicfestivalcompetitors';"
                 . "f.submit();"
             . "}"
         . "};"

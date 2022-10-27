@@ -549,12 +549,15 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     || $field['id'] == 'teacher_name'
                     || $field['id'] == 'teacher_email'
                     || $field['id'] == 'teacher_phone'
+                    || $field['ftype'] == 'button'
+                    || $field['ftype'] == 'newline'
                     ) {
                     continue;
                 }
                 if( strncmp($field['id'], 'section', 7) == 0 ) {
                     continue;
                 }
+
                 if( !isset($registration[$field['id']]) || $field['value'] != $registration[$field['id']] ) {
                     $update_args[$field['id']] = $field['value'];
                 }
