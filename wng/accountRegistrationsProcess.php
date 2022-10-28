@@ -443,7 +443,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'perf_time3' => $fields['perf_time3']['value'],
                 'payment_type' => 0,
                 'virtual' => $fields['virtual']['value'],
-//                'notes' => $fields['notes']['value'],
+                'notes' => $fields['notes']['value'],
                 );
             if( ($selected_class['flags']&0x20) == 0x20 ) {
                 $registration['rtype'] = 60;
