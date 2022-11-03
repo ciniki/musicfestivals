@@ -1,0 +1,11 @@
+#
+# Added invoice link
+#
+ALTER TABLE ciniki_musicfestival_registrations CHANGE COLUMN virtual participation tinyint not null;
+ALTER TABLE ciniki_musicfestival_registrations CHANGE COLUMN videolink video1_url varchar(500) not null;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN video2_url varchar(500) not null AFTER video1_url;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN video3_url varchar(500) not null AFTER video2_url;
+ALTER TABLE ciniki_musicfestival_registrations CHANGE COLUMN music_orgfilename music1_orgfilename varchar(250) not null;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN music2_orgfilename varchar(250) not null AFTER music1_orgfilename;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN music3_orgfilename varchar(250) not null AFTER music2_orgfilename;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.08';

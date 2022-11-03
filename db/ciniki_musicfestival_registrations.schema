@@ -111,9 +111,13 @@ create table ciniki_musicfestival_registrations (
     perf_time3 varchar(50) not null,
     fee decimal(19,4) not null, 
     payment_type tinyint unsigned not null,
-    virtual tinyint unsigned not null,
-    videolink varchar(1000) not null,
-    music_orgfilename varchar(250) not null,
+    participation tinyint unsigned not null,
+    video1_url varchar(500) not null,
+    video2_url varchar(500) not null,
+    video3_url varchar(500) not null,
+    music1_orgfilename varchar(250) not null,
+    music2_orgfilename varchar(250) not null,
+    music3_orgfilename varchar(250) not null,
     notes varchar(5000) not null,
     internal_notes text not null,
     date_added datetime not null,
@@ -122,4 +126,4 @@ create table ciniki_musicfestival_registrations (
     unique index (uuid),
     index (festival_id, teacher_customer_id, billing_customer_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.07';
+) ENGINE='InnoDB', COMMENT='v1.08';

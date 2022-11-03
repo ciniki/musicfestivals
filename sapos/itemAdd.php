@@ -13,8 +13,8 @@
 function ciniki_musicfestivals_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item) {
 
     //
-    // An course was added to an invoice item, get the details and see if we need to 
-    // create a registration for this course offering
+    // An registration was added to an invoice item, get the details and see if we need to 
+    // create a registration 
     //
     if( isset($item['object']) && $item['object'] == 'ciniki.musicfestivals.class' && isset($item['object_id']) ) {
         //
@@ -23,7 +23,7 @@ function ciniki_musicfestivals_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item)
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
         $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.390', 'msg'=>'', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.413', 'msg'=>'', 'err'=>$rc['err']));
         }
         $festival = $rc['festival'];
        
@@ -43,21 +43,21 @@ function ciniki_musicfestivals_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item)
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'class');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.388', 'msg'=>'Unable to load class', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.398', 'msg'=>'Unable to load class', 'err'=>$rc['err']));
         }
         if( !isset($rc['class']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.389', 'msg'=>'Unable to find requested class'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.399', 'msg'=>'Unable to find requested class'));
         }
         $class = $rc['class'];
 
         $fee = 0;
-        $virtual = 0;
+        $participation = 0;
         if( isset($festival['earlybird']) && $festival['earlybird'] == 'yes' ) {
             $fee = $class['earlybird_fee'];
         } elseif( isset($festival['live']) && $festival['live'] == 'yes' ) {
             $fee = $class['fee'];
         } elseif( isset($festival['virtual']) && $festival['virtual'] == 'yes' ) {
-            $virtual = 1;
+            $participation = 1;
             $fee = $class['virtual_fee'];
         } else {
             $fee = $class['fee'];
@@ -76,7 +76,7 @@ function ciniki_musicfestivals_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item)
             return $rc;
         }
         if( !isset($rc['invoice']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.courses.62', 'msg'=>'Unable to find invoice'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.411', 'msg'=>'Unable to find invoice'));
         }
         $invoice = $rc['invoice'];
         
@@ -108,7 +108,7 @@ function ciniki_musicfestivals_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item)
             'perf_time3' => '',
             'payment_type' => 0,
             'fee' => $fee,
-            'virtual' => $virtual,
+            'participation' => $participation,
             );
 
         //
@@ -117,7 +117,7 @@ function ciniki_musicfestivals_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item)
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
         $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration, 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.351', 'msg'=>'Unable to add the registration', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.412', 'msg'=>'Unable to add the registration', 'err'=>$rc['err']));
         }
         $reg_id = $rc['id'];
         

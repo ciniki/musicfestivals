@@ -61,7 +61,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
     $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.390', 'msg'=>'', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.419', 'msg'=>'', 'err'=>$rc['err']));
     }
     $festival = $rc['festival'];
 
@@ -76,7 +76,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
     $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.352', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.422', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
     }
     if( isset($rc['settings']) ) {
         foreach($rc['settings'] as $k => $v) {
@@ -227,7 +227,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "title3, "
             . "perf_time3, "
             . "fee, "
-            . "virtual, "
+            . "pariticipation, "
             . "notes "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $registration_id) . "' "
@@ -237,7 +237,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'registration');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.368', 'msg'=>'Unable to load registration', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.423', 'msg'=>'Unable to load registration', 'err'=>$rc['err']));
         }
         if( !isset($rc['registration']) ) {
             $errors[] = array(
@@ -277,7 +277,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "title3, "
             . "perf_time3, "
             . "fee, "
-            . "virtual, "
+            . "pariticipation, "
             . "notes "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE uuid = '" . ciniki_core_dbQuote($ciniki, $registration_uuid) . "' "
@@ -442,7 +442,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'title3' => $fields['title3']['value'],
                 'perf_time3' => $fields['perf_time3']['value'],
                 'payment_type' => 0,
-                'virtual' => $fields['virtual']['value'],
+                'pariticipation' => $fields['pariticipation']['value'],
                 'notes' => $fields['notes']['value'],
                 );
             if( ($selected_class['flags']&0x20) == 0x20 ) {
@@ -456,7 +456,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             } else {
                 $registration['fee'] = $selected_class['fee'];
             }
-            if( ($festival['flags']&0x04) == 0x04 && $fields['virtual']['value'] == 1 && $selected_class['virtual_fee'] > 0 ) {
+            if( ($festival['flags']&0x04) == 0x04 && $fields['pariticipation']['value'] == 1 && $selected_class['virtual_fee'] > 0 ) {
                 $registration['fee'] = $selected_class['virtual_fee'];
             }
 
@@ -476,7 +476,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationNameUpdate');
             $rc = ciniki_musicfestivals_registrationNameUpdate($ciniki, $tnid, $registration_id);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.311', 'msg'=>'Unable to updated registration name', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.416', 'msg'=>'Unable to updated registration name', 'err'=>$rc['err']));
             }
             $registration['display_name'] = $rc['display_name'];
             $registration['public_name'] = $rc['public_name'];
@@ -538,7 +538,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             } else {
                 $new_fee = $selected_class['fee'];
             }
-            if( ($festival['flags']&0x04) == 0x04 && $fields['virtual']['value'] == 1 && $selected_class['virtual_fee'] > 0 ) {
+            if( ($festival['flags']&0x04) == 0x04 && $fields['pariticipation']['value'] == 1 && $selected_class['virtual_fee'] > 0 ) {
                 $new_fee = $selected_class['virtual_fee'];
             }
 
@@ -596,7 +596,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceObjectItem');
                 $rc = ciniki_sapos_hooks_invoiceObjectItem($ciniki, $tnid, $request['session']['cart']['id'], 'ciniki.musicfestivals.registration', $registration_id);
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.312', 'msg'=>'Unable to get invoice item', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.420', 'msg'=>'Unable to get invoice item', 'err'=>$rc['err']));
                 }
                 $item = $rc['item'];
 
@@ -623,7 +623,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'wng', 'cartItemUpdate');
                     $rc = ciniki_sapos_wng_cartItemUpdate($ciniki, $tnid, $request, $update_item_args);
                     if( $rc['stat'] != 'ok' ) {
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.313', 'msg'=>'Unable to update invoice', 'err'=>$rc['err']));
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.417', 'msg'=>'Unable to update invoice', 'err'=>$rc['err']));
                     }
                 }
             }
@@ -685,7 +685,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'wng', 'cartLoad');
                 $rc = ciniki_sapos_wng_cartLoad($ciniki, $tnid, $request);
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.332', 'msg'=>'Unable to load cart', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.421', 'msg'=>'Unable to load cart', 'err'=>$rc['err']));
                 }
 
             } else {
@@ -789,7 +789,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     $fields[$fid]['value'] = '';
                 }
             }
-            if( isset($field['id']) && $field['id'] == 'virtual' ) {
+            if( isset($field['id']) && $field['id'] == 'pariticipation' ) {
                 $fields[$fid]['ftype'] = 'text';
                 if( $field['value'] == 0 ) {
                     $fields[$fid]['value'] = 'in person on a date to be scheduled';
@@ -845,7 +845,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     . "";
                 $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'competitor');
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.355', 'msg'=>'Unable to load competitor', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.418', 'msg'=>'Unable to load competitor', 'err'=>$rc['err']));
                 }
                 $competitor = isset($rc['competitor']) ? $rc['competitor'] : array();
                 $address = $competitor['address']

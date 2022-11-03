@@ -118,7 +118,7 @@ function ciniki_musicfestivals_registrationDelete(&$ciniki) {
                 'description' => $invoice_item['description'] . ' (Cancelled)',
                 ));
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.313', 'msg'=>'Unable to update invoice', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.425', 'msg'=>'Unable to update invoice', 'err'=>$rc['err']));
             }
         }
     }

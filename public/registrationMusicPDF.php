@@ -22,6 +22,7 @@ function ciniki_musicfestivals_registrationMusicPDF($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'registration_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Registration'),
+        'num'=>array('required'=>'yes', 'blank'=>'no', 'validlist'=>array(1,2,3), 'name'=>'Title Number (1,2,3)'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -44,7 +45,9 @@ function ciniki_musicfestivals_registrationMusicPDF($ciniki) {
     $strsql = "SELECT registrations.id, "
         . "registrations.uuid, "
         . "registrations.festival_id, "
-        . "registrations.music_orgfilename "
+        . "registrations.music1_orgfilename, "
+        . "registrations.music2_orgfilename, "
+        . "registrations.music3_orgfilename "
         . "FROM ciniki_musicfestival_registrations AS registrations "
         . "WHERE registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
@@ -67,7 +70,7 @@ function ciniki_musicfestivals_registrationMusicPDF($ciniki) {
         return $rc;
     }
     $storage_filename = $rc['storage_dir'] . '/ciniki.musicfestivals/files/' 
-        . $registration['uuid'][0] . '/' . $registration['uuid'] . '_music';
+        . $registration['uuid'][0] . '/' . $registration['uuid'] . '_music' . $args['num'];
     if( !file_exists($storage_filename) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.181', 'msg'=>'File does not exist'));
     }
@@ -80,7 +83,7 @@ function ciniki_musicfestivals_registrationMusicPDF($ciniki) {
     $finfo = finfo_open(FILEINFO_MIME);
     if( $finfo ) { header('Content-Type: ' . finfo_file($finfo, $storage_filename)); }
     // Specify Filename
-    header('Content-Disposition: attachment;filename="' . $registration['music_orgfilename'] . '"');
+    header('Content-Disposition: attachment;filename="' . $registration["music{$args['num']}_orgfilename"] . '"');
     header('Content-Length: ' . filesize($storage_filename));
     header('Cache-Control: max-age=0');
 

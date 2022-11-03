@@ -26,6 +26,9 @@ function ciniki_musicfestivals_wng_accountRequestProcess(&$ciniki, $tnid, &$requ
     } elseif( $item['ref'] == 'ciniki.musicfestivals.competitors' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountCompetitorsProcess');
         return ciniki_musicfestivals_wng_accountCompetitorsProcess($ciniki, $tnid, $request, $item);
+    } elseif( $item['ref'] == 'ciniki.musicfestivals.adjudications' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountAdjudicationsProcess');
+        return ciniki_musicfestivals_wng_accountAdjudicationsProcess($ciniki, $tnid, $request, $item);
     }
     
 

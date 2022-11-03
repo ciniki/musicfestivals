@@ -30,7 +30,7 @@ function ciniki_musicfestivals_sapos_cartItemCheck($ciniki, $tnid, $customer, $a
             . "registrations.fee, "
             . "registrations.class_id, "
             . "registrations.festival_id, "
-            . "registrations.virtual "
+            . "registrations.participation "
             . "FROM ciniki_musicfestival_registrations AS registrations "
             . "WHERE registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -61,7 +61,7 @@ function ciniki_musicfestivals_sapos_cartItemCheck($ciniki, $tnid, $customer, $a
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.259', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.427', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
         }
         if( !isset($rc['festival']) ) {
             // No festivals published, no items to return
@@ -102,7 +102,7 @@ function ciniki_musicfestivals_sapos_cartItemCheck($ciniki, $tnid, $customer, $a
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.316', 'msg'=>'Unable to load section', 'err'=>$rc['err']));
             }
             if( !isset($rc['section']) ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.317', 'msg'=>'Unable to find requested section'));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.428', 'msg'=>'Unable to find requested section'));
             }
             $section = $rc['section'];
 
@@ -124,8 +124,8 @@ function ciniki_musicfestivals_sapos_cartItemCheck($ciniki, $tnid, $customer, $a
         // Registrations are closed
         //
         if( ($festival['flags']&0x01) == 0      // Registrations are closed
-            || ($registration['virtual'] == 0 && $festival['live'] == 'no') // Live registrations are closed
-            || ($registration['virtual'] == 1 && $festival['virtual'] == 'no') // Live registrations are closed
+            || ($registration['participation'] == 0 && $festival['live'] == 'no') // Live registrations are closed
+            || ($registration['participation'] == 1 && $festival['virtual'] == 'no') // Live registrations are closed
             ) {
             return array('stat'=>'unavailable', 'err'=>array('code'=>'ciniki.musicfestivals.381', 'msg'=>'Registrations are closed'));
         }

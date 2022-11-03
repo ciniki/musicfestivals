@@ -81,8 +81,10 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'perf_time3'=>'',
             'fee'=>'0',
             'payment_type'=>'0',
-            'virtual'=>0,
-            'videolink'=>'',
+            'participation'=>0,
+            'video1_url'=>'',
+            'video2_url'=>'',
+            'video3_url'=>'',
             'notes'=>'',
             'internal_notes'=>'',
         );
@@ -114,9 +116,13 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "ciniki_musicfestival_registrations.perf_time3, "
             . "FORMAT(ciniki_musicfestival_registrations.fee, 2) AS fee, "
             . "ciniki_musicfestival_registrations.payment_type, "
-            . "ciniki_musicfestival_registrations.virtual, "
-            . "ciniki_musicfestival_registrations.videolink, "
-            . "ciniki_musicfestival_registrations.music_orgfilename, "
+            . "ciniki_musicfestival_registrations.participation, "
+            . "ciniki_musicfestival_registrations.video1_url, "
+            . "ciniki_musicfestival_registrations.video2_url, "
+            . "ciniki_musicfestival_registrations.video3_url, "
+            . "ciniki_musicfestival_registrations.music1_orgfilename, "
+            . "ciniki_musicfestival_registrations.music2_orgfilename, "
+            . "ciniki_musicfestival_registrations.music3_orgfilename, "
             . "ciniki_musicfestival_registrations.notes, "
             . "ciniki_musicfestival_registrations.internal_notes "
             . "FROM ciniki_musicfestival_registrations "
@@ -131,7 +137,9 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     'class_id', 
                     'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 
                     'fee', 'payment_type', 
-                    'virtual', 'videolink', 'music_orgfilename', 'notes', 'internal_notes'),
+                    'participation', 'video1_url', 'video2_url', 'video3_url', 
+                    'music1_orgfilename', 'music2_orgfilename', 'music3_orgfilename', 
+                    'notes', 'internal_notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

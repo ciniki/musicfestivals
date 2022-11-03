@@ -38,6 +38,30 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
     $festival = $rc['festival'];
 
     //
+    // Check if the customer is an adjudicator
+    //
+    $adjudicator = 'no';
+    $strsql = "SELECT id "
+        . "FROM ciniki_musicfestival_adjudicators "
+        . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+        . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'adjudicator');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.393', 'msg'=>'Unable to load adjudicator', 'err'=>$rc['err']));
+    }
+    if( isset($rc['adjudicator']) ) {
+        $items[] = array(
+            'title' => 'Adjudications', 
+            'priority' => 750, 
+            'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivaladjudications' ? 'yes' : 'no',
+            'ref' => 'ciniki.musicfestivals.adjudications',
+            'url' => $base_url . '/musicfestivaladjudications',
+            );
+    }
+
+    //
     // Check if the customer is or has been registered for the published festival
     //
 /*    $strsql = "SELECT COUNT(*) AS registrations "
@@ -91,6 +115,7 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
             'url' => $base_url . '/musicfestivalcompetitors',
             );
 //    }
+
 
     return array('stat'=>'ok', 'items'=>$items);
 }

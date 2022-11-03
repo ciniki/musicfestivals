@@ -489,8 +489,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     // Check if virtual performance option is available
     //
     if( ($festival['flags']&0x02) == 0x02 ) {
-        $fields['virtual'] = array(
-            'id' => 'virtual',
+        $fields['participation'] = array(
+            'id' => 'participation',
             'label' => 'I would like to participate',
             'ftype' => 'select',
             'blank' => 'no',
@@ -501,7 +501,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 '0' => 'in person on a date to be scheduled',
                 '1' => 'virtually and submit a video',
                 ),
-            'value' => isset($_POST['f-virtual']) ? $_POST['f-virtual'] : (isset($registration['virtual']) ? $registration['virtual'] : -1),
+            'value' => isset($_POST['f-participation']) ? $_POST['f-participation'] : (isset($registration['participation']) ? $registration['participation'] : -1),
             );
         //
         // Setup pricing for virtual option with separate virtual pricing
@@ -510,20 +510,20 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             if( isset($festival['live']) && $festival['live'] == 'yes' 
                 && isset($selected_class['live_fee']) && $selected_class['live_fee'] > 0 
                 ) {
-                $fields['virtual']['options'][0] .= ' - $' . number_format($selected_class['live_fee'], 2);
+                $fields['participation']['options'][0] .= ' - $' . number_format($selected_class['live_fee'], 2);
             } else {
-                unset($fields['virtual']['options'][-1]);
-                unset($fields['virtual']['options'][0]);
+                unset($fields['participation']['options'][-1]);
+                unset($fields['participation']['options'][0]);
             }
             if( isset($festival['virtual']) && $festival['virtual'] == 'yes' 
                 && isset($selected_class['virtual_fee']) && $selected_class['virtual_fee'] > 0 
                 ) {
-                $fields['virtual']['options'][1] .= ' - $' . number_format($selected_class['virtual_fee'], 2);
+                $fields['participation']['options'][1] .= ' - $' . number_format($selected_class['virtual_fee'], 2);
             } else {
-                if( isset($fields['virtual']['options'][-1]) ) {
-                    unset($fields['virtual']['options'][-1]);
+                if( isset($fields['participation']['options'][-1]) ) {
+                    unset($fields['participation']['options'][-1]);
                 }
-                unset($fields['virtual']['options'][1]);
+                unset($fields['participation']['options'][1]);
             }
         }
         // 
@@ -531,8 +531,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         //
         elseif( ($festival['flags']&0x06) == 0x02 ) {
             if( $festival['live'] == 'no' && $festival['earlybird'] == 'no' ) {
-                unset($fields['virtual']['options'][-1]);
-                unset($fields['virtual']['options'][0]);
+                unset($fields['participation']['options'][-1]);
+                unset($fields['participation']['options'][0]);
             }
         }
     }
@@ -559,7 +559,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             . "var clsvp=" . json_encode($virtual_prices) . ";" // virtual prices
             . "";
         $js_set_prices .= ""
-            . "var s=C.gE('f-virtual');"
+            . "var s=C.gE('f-participation');"
             . "var v=s.value;"
             . "s.options.length=0;"
             . "s.appendChild(new Option('Please choose how you will participate',-1));"

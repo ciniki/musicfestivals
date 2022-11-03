@@ -59,7 +59,7 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
         . "registrations.perf_time2, "
         . "registrations.title3, "
         . "registrations.perf_time3, "
-        . "IF(registrations.virtual = 1, 'Virtual', 'In Person') AS virtual, "
+        . "IF(registrations.participation = 1, 'Virtual', 'In Person') AS participation, "
         . "FORMAT(registrations.fee, 2) AS fee, "
         . "registrations.payment_type "
         . "FROM ciniki_musicfestival_registrations AS registrations "
@@ -89,7 +89,7 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
             'fields'=>array('id', 'festival_id', 'teacher_name', 'display_name', 
                 'class_id', 'class_code', 'class_name', 
                 'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 
-                'fee', 'payment_type', 'virtual'),
+                'fee', 'payment_type', 'participation'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -112,7 +112,7 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
                     . ($registration['perf_time2'] != '' ? "<br/>{$registration['perf_time2']}" : '')
                     . ($registration['perf_time3'] != '' ? "<br/>{$registration['perf_time3']}" : '')
                     . '</td>'
-                . '<td>' . $registration['virtual'] . "</td></tr>\n";
+                . '<td>' . $registration['participation'] . "</td></tr>\n";
             $text .= $registration['class_code'] 
                 . ' - ' . $registration['display_name'] 
                 . ($registration['title1'] != '' ? ' - ' . $registration['title1'] : '')

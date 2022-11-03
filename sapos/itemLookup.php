@@ -38,7 +38,7 @@ function ciniki_musicfestivals_sapos_itemLookup($ciniki, $tnid, $args) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
         $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.390', 'msg'=>'', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.426', 'msg'=>'', 'err'=>$rc['err']));
         }
         $festival = $rc['festival'];
 

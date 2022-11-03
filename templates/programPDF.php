@@ -137,9 +137,9 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
         $strsql .= "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
     }
     if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
-        $strsql .= "AND registrations.virtual = 0 ";
-    } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
-        $strsql .= "AND registrations.virtual = 1 ";
+        $strsql .= "AND registrations.participation = 0 ";
+    } elseif( isset($args['ipv']) && $args['ipv'] == 'participation' ) {
+        $strsql .= "AND registrations.participation = 1 ";
     }
     $strsql .= "ORDER BY divisions.division_date, division_id, slot_time, registrations.public_name "
         . "";

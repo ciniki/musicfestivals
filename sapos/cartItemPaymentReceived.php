@@ -31,10 +31,10 @@ function ciniki_musicfestivals_sapos_cartItemPaymentReceived($ciniki, $tnid, $cu
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.142', 'msg'=>'Unable to find registrations', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.414', 'msg'=>'Unable to find registrations', 'err'=>$rc['err']));
         }
         if( !isset($rc['item']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.143', 'msg'=>'Unable to find registration'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.415', 'msg'=>'Unable to find registration'));
         }
         $item = $rc['item'];
 
