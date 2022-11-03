@@ -115,7 +115,9 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "registrations.id AS reg_id, "
             . "registrations.display_name, "
             . "registrations.public_name, "
-            . "registrations.title, "
+            . "registrations.title1, "
+            . "registrations.title2, "
+            . "registrations.title3, "
             . "IFNULL(classes.name, '') AS class_name, "
             . "IFNULL(registrations.competitor2_id, 0) AS competitor2_id, "
             . "IFNULL(comments.id, 0) AS comment_id, "
@@ -154,7 +156,9 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "registrations.teacher_customer_id, "
             . "registrations.display_name, "
             . "registrations.public_name, "
-            . "registrations.title, "
+            . "registrations.title1, "
+            . "registrations.title2, "
+            . "registrations.title3, "
             . "IFNULL(classes.name, '') AS class_name, "
             . "IFNULL(registrations.competitor2_id, 0) AS competitor2_id, "
             . "IFNULL(comments.id, 0) AS comment_id, "
@@ -217,7 +221,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
         array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'name'=>'section_name')),
         array('container'=>'divisions', 'fname'=>'division_id', 'fields'=>array('id'=>'division_id', 'name'=>'division_name')),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'class1_id', 'class2_id', 'class3_id', 'description', 'class1_name', 'class2_name', 'class3_name')),
-        array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title', 'class_name', 'competitor2_id')),
+        array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title1', 'title2', 'title3', 'class_name', 'competitor2_id')),
         array('container'=>'comments', 'fname'=>'comment_id', 'fields'=>array('id'=>'comment_id', 'adjudicator_id', 'comments', 'grade', 'score')),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -420,7 +424,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         $pdf->Ln($lh);
                         $pdf->SetFont('helvetica', 'B', 12);
 
-                        $border = ($reg['title'] != '' ? '' : 'B');
+                        $border = ($reg['title1'] != '' ? '' : 'B');
 
                         $lh = $pdf->getNumLines($reg['name'], $w[1]) * 8;
                         if( $reg['competitor2_id'] > 0 ) {
@@ -432,13 +436,35 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         $pdf->MultiCell($w[1], $lh, $reg['name'], $border, 'L', 0, 0, '', '');
                         $pdf->Ln($lh);
 
-                        if( $reg['title'] != '' ) {
-                            $lh = ($pdf->getNumLines($reg['title'], $w[1]) * 6) + 3;
+                        if( $reg['title1'] != '' ) {
+                            $lh = ($pdf->getNumLines($reg['title1'], $w[1]) * 6) + 3;
+                            if( $reg['title2'] == '' && $reg['title3'] == '' ) {
+                                $border = 'B';
+                            }
+                            $pdf->SetFont('helvetica', 'B', 12);
+                            $pdf->MultiCell($w[0], $lh, 'Title: ', $border, 'R', 0, 0, '', '');
+                            $pdf->SetFont('helvetica', '', 12);
+                            $pdf->MultiCell($w[1], $lh, $reg['title1'], $border, 'L', 0, 0, '', '');
+                            $pdf->Ln($lh);
+                        }
+                        if( $reg['title2'] != '' ) {
+                            $lh = ($pdf->getNumLines($reg['title2'], $w[1]) * 6) + 3;
+                            if( $reg['title3'] == '' ) {
+                                $border = 'B';
+                            }
+                            $pdf->SetFont('helvetica', 'B', 12);
+                            $pdf->MultiCell($w[0], $lh, 'Title: ', $border, 'R', 0, 0, '', '');
+                            $pdf->SetFont('helvetica', '', 12);
+                            $pdf->MultiCell($w[1], $lh, $reg['title2'], $border, 'L', 0, 0, '', '');
+                            $pdf->Ln($lh);
+                        }
+                        if( $reg['title3'] != '' ) {
+                            $lh = ($pdf->getNumLines($reg['title3'], $w[1]) * 6) + 3;
                             $border = 'B';
                             $pdf->SetFont('helvetica', 'B', 12);
                             $pdf->MultiCell($w[0], $lh, 'Title: ', $border, 'R', 0, 0, '', '');
                             $pdf->SetFont('helvetica', '', 12);
-                            $pdf->MultiCell($w[1], $lh, $reg['title'], $border, 'L', 0, 0, '', '');
+                            $pdf->MultiCell($w[1], $lh, $reg['title3'], $border, 'L', 0, 0, '', '');
                             $pdf->Ln($lh);
                         }
 
