@@ -3062,7 +3062,7 @@ function ciniki_musicfestivals_main() {
     //
     // The panel to email a teacher their list of registrations
     //
-    this.emailregistrations = new M.panel('Email Registrations', 'ciniki_musicfestivals_main', 'emailregistrations', 'mc', 'medium mediumaside', 'sectioned', 'ciniki.musicfestivals.main.editfile');
+    this.emailregistrations = new M.panel('Email Registrations', 'ciniki_musicfestivals_main', 'emailregistrations', 'mc', 'medium mediumaside', 'sectioned', 'ciniki.musicfestivals.main.emailregistrations');
     this.emailregistrations.data = {};
     this.emailregistrations.sections = {
         '_subject':{'label':'', 'type':'simpleform', 'aside':'yes', 'fields':{
