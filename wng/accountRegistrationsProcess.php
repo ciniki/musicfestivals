@@ -406,7 +406,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         // If the cart doesn't exist, create one now
         //
         if( count($errors) == 0 
-            && (!isset($request['session']['cart']['id']) || $request['session']['cart']['id'] == 0)
+            && (!isset($request['session']['cart']['sapos_id']) || $request['session']['cart']['sapos_id'] == 0)
             ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'wng', 'cartCreate');
             $rc = ciniki_sapos_wng_cartCreate($ciniki, $tnid, $request, array());
