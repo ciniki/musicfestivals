@@ -131,7 +131,8 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         if( $num > 0 ) {
             $objPHPExcelWorksheet = $objPHPExcel->createSheet($num);
         }
-        $objPHPExcelWorksheet->setTitle($section['name']);
+        $title = str_split($section['name'], 31);
+        $objPHPExcelWorksheet->setTitle($title[0]);
 
         $col = 0;
         $row = 1;
