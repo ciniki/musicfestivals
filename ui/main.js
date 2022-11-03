@@ -519,7 +519,7 @@ function ciniki_musicfestivals_main() {
             switch(j) {
                 case 0: return d.class_code;
                 case 1: return d.display_name;
-                case 2: return M.hyperlink(d.videolink);
+                case 2: return M.hyperlink(d.video1_url);
                 case 3: return d.music_orgfilename;
                 case 4: return d.status_text;
             }
@@ -621,7 +621,7 @@ function ciniki_musicfestivals_main() {
             switch (j) {
                 case 0: return d.class_code;
                 case 1: return '<span class="maintext">' + d.display_name + '</span><span class="subtext">' + d.title + '</span>';
-                case 2: return M.hyperlink(d.videolink);
+                case 2: return M.hyperlink(d.video1_url);
                 case 3: return d.music_orgfilename;
                 case 4: return d.status_text;
             }
@@ -2725,8 +2725,8 @@ function ciniki_musicfestivals_main() {
                         {'label':'Class', 'value':registration.reg_class_name},
                         {'label':'Participant', 'value':registration.name},
                         {'label':'Title', 'value':registration.title},
-                        {'label':'Video', 'value':M.hyperlink(registration.videolink)},
-                        {'label':'Music', 'value':registration.music_orgfilename},
+                        {'label':'Video', 'value':M.hyperlink(registration.video1_url)},
+                        {'label':'Music', 'value':registration.music1_orgfilename},
                         ];
                     // 
                     // Setup the comment, grade & score fields, could be for multiple adjudicators

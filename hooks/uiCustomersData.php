@@ -201,8 +201,12 @@ function ciniki_musicfestivals_hooks_uiCustomersData($ciniki, $tnid, $args) {
         . "registrations.perf_time3, "
         . "FORMAT(registrations.fee, 2) AS fee, "
         . "registrations.payment_type, "
-        . "registrations.videolink, "
-        . "registrations.music_orgfilename "
+        . "registrations.video1_url, "
+        . "registrations.video2_url, "
+        . "registrations.video3_url, "
+        . "registrations.music1_orgfilename, "
+        . "registrations.music2_orgfilename, "
+        . "registrations.music3_orgfilename "
         . "FROM ciniki_musicfestival_registrations AS registrations "
         . "INNER JOIN ciniki_musicfestivals AS festivals ON ("
             . "registrations.festival_id = festivals.id "
@@ -249,7 +253,7 @@ function ciniki_musicfestivals_hooks_uiCustomersData($ciniki, $tnid, $args) {
                 'class_id', 'class_code', 'class_name', 
                 'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 
                 'fee', 'payment_type',
-                'videolink', 'music_orgfilename',
+                'video1_url', 'video2_url', 'video3_url', 'music1_orgfilename', 'music2_orgfilename', 'music3_orgfilename',
                 ),
             'maps'=>array(
                 'rtype_text'=>$maps['registration']['rtype'],
