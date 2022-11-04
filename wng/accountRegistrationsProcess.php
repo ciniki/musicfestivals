@@ -227,7 +227,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "title3, "
             . "perf_time3, "
             . "fee, "
-            . "pariticipation, "
+            . "participation, "
             . "notes "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $registration_id) . "' "
@@ -277,7 +277,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "title3, "
             . "perf_time3, "
             . "fee, "
-            . "pariticipation, "
+            . "participation, "
             . "notes "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE uuid = '" . ciniki_core_dbQuote($ciniki, $registration_uuid) . "' "
@@ -442,7 +442,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'title3' => $fields['title3']['value'],
                 'perf_time3' => $fields['perf_time3']['value'],
                 'payment_type' => 0,
-                'pariticipation' => $fields['pariticipation']['value'],
+                'participation' => $fields['participation']['value'],
                 'notes' => $fields['notes']['value'],
                 );
             if( ($selected_class['flags']&0x20) == 0x20 ) {
@@ -456,7 +456,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             } else {
                 $registration['fee'] = $selected_class['fee'];
             }
-            if( ($festival['flags']&0x04) == 0x04 && $fields['pariticipation']['value'] == 1 && $selected_class['virtual_fee'] > 0 ) {
+            if( ($festival['flags']&0x04) == 0x04 && $fields['participation']['value'] == 1 && $selected_class['virtual_fee'] > 0 ) {
                 $registration['fee'] = $selected_class['virtual_fee'];
             }
 
@@ -538,7 +538,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             } else {
                 $new_fee = $selected_class['fee'];
             }
-            if( ($festival['flags']&0x04) == 0x04 && $fields['pariticipation']['value'] == 1 && $selected_class['virtual_fee'] > 0 ) {
+            if( ($festival['flags']&0x04) == 0x04 && $fields['participation']['value'] == 1 && $selected_class['virtual_fee'] > 0 ) {
                 $new_fee = $selected_class['virtual_fee'];
             }
 
@@ -789,7 +789,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     $fields[$fid]['value'] = '';
                 }
             }
-            if( isset($field['id']) && $field['id'] == 'pariticipation' ) {
+            if( isset($field['id']) && $field['id'] == 'participation' ) {
                 $fields[$fid]['ftype'] = 'text';
                 if( $field['value'] == 0 ) {
                     $fields[$fid]['value'] = 'in person on a date to be scheduled';
