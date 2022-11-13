@@ -130,19 +130,19 @@ function ciniki_musicfestivals_wng_accountCustomerTypeProcess(&$ciniki, $tnid, &
         $rsp['switch_block'] = array(
             'type' => 'text',
             'class' => 'limit-width limit-width-60 aligncenter',
-            'content' => "<br/>You are registering competitors as a parent.<br/><br/><a class='button' href='{$args['base_url']}?changetype'>Change Registration Type</a>"
+            'content' => "<br/>You are a parent/guardian registering competitors.<br/><br/><a class='button' href='{$args['base_url']}?changetype'>Change Registration Type</a>"
             );
     } elseif( $customer_type == 20 ) {
         $rsp['switch_block'] = array(
             'type' => 'text',
             'class' => 'limit-width limit-width-60 aligncenter',
-            'content' => "<br/>You are registering competitors as a teacher.<br/><br/><a class='button' href='{$args['base_url']}?changetype'>Change Registration Type</a>"
+            'content' => "<br/>You are a teacher registering competitors.<br/><br/><a class='button' href='{$args['base_url']}?changetype'>Change Registration Type</a>"
             );
     } elseif( $customer_type == 30 ) {
         $rsp['switch_block'] = array(
             'type' => 'text',
             'class' => 'limit-width limit-width-60 aligncenter',
-            'content' => "<br/>You are registering yourself as a competitor.<br/><br/><a class='button' href='{$args['base_url']}?changetype'>Change Registration Type</a>"
+            'content' => "<br/>You are an adult registering yourself.<br/><br/><a class='button' href='{$args['base_url']}?changetype'>Change Registration Type</a>"
             );
     }
 
