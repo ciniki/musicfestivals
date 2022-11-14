@@ -1,0 +1,63 @@
+<?php
+//
+// Description
+// -----------
+// This function will check for registrations in the music festivals
+//
+// Arguments
+// ---------
+//
+// Returns
+// -------
+//
+function ciniki_musicfestivals_wng_adjudicatorCommentsUpdate(&$ciniki, $tnid, &$request, $args) {
+
+    if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.437', 'msg'=>"I'm sorry, the page you requested does not exist."));
+    }
+
+    if( !isset($args['registrations']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.438', 'msg'=>"No registrations specified"));
+    }
+    if( !isset($args['adjudicator_id']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.439', 'msg'=>"No adjudicator specified"));
+    }
+
+    //
+    // Go through the registrations and check for updates to comments or score
+    //
+    foreach($args['registrations'] as $reg) {
+        $update_args = array();
+        if( isset($_POST["f-{$reg['id']}-comments"])
+            && $_POST["f-{$reg['id']}-comments"] != $reg['comments']
+            ) {
+            $update_args['comments'] = $_POST["f-{$reg['id']}-comments"];
+        }
+        if( isset($_POST["f-{$reg['id']}-score"])
+            && $_POST["f-{$reg['id']}-score"] != $reg['score']
+            ) {
+            $update_args['score'] = $_POST["f-{$reg['id']}-score"];
+        }
+        if( count($update_args) > 0 ) {
+            if( $reg['comment_id'] > 0 ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.comment', $reg['comment_id'], $update_args, 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.441', 'msg'=>'Unable to update the comment', 'err'=>$rc['err']));
+                }
+                
+            } else {
+                $update_args['registration_id'] = $reg['id'];
+                $update_args['adjudicator_id'] = $args['adjudicator_id'];
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.comment', $update_args, 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.440', 'msg'=>'Unable to add the comment', 'err'=>$rc['err']));
+                }
+            }
+        }
+    }
+
+    return array('stat'=>'ok');
+}
+?>

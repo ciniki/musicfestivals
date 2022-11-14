@@ -42,6 +42,9 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         'video1_url'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
         'video2_url'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
         'video3_url'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
+        'music1_orgfilename'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
+        'music2_orgfilename'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
+        'music3_orgfilename'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         'internal_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Interal Notes'),
         ));
@@ -64,6 +67,37 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         return $rc;
     }
 
+    //
+    // Get the details of the registration
+    //
+    $strsql = "SELECT registrations.id, "
+        . "registrations.uuid, "
+        . "registrations.festival_id, "
+        . "registrations.music1_orgfilename, "
+        . "registrations.music2_orgfilename, "
+        . "registrations.music3_orgfilename "
+        . "FROM ciniki_musicfestival_registrations AS registrations "
+        . "WHERE registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'registration');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.201', 'msg'=>'Unable to load registration', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['registration']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.202', 'msg'=>'Unable to find requested registration'));
+    }
+    $registration = $rc['registration'];
+    
+    //
+    // Get the tenant storage directory
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+    $rc = ciniki_tenants_hooks_storageDir($ciniki, $args['tnid'], array());
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $tenant_storage_dir = $rc['storage_dir'];
 
     //
     // Start transaction
@@ -75,6 +109,55 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.musicfestivals');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
+    }
+        error_log(print_r($args,true));
+
+    //
+    // Check if new files added
+    //
+    if( isset($_FILES) ) {
+        foreach($_FILES as $field_name => $file) {
+            $file_name = 0;
+            if( $field_name == 'music1_orgfilename' ) {
+                $file_num = 1;
+            } elseif( $field_name == 'music2_orgfilename' ) {
+                $file_num = 2;
+            } elseif( $field_name == 'music3_orgfilename' ) {
+                $file_num = 3;
+            } else {
+                error_log('UNKNOWN FILE: ' . $field_name);
+                continue;
+            }
+            if( isset($file['error']) && $file['error'] == UPLOAD_ERR_INI_SIZE ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.442', 'msg'=>'Upload failed, file too large.'));
+            }
+            if( !isset($file['tmp_name']) || $file['tmp_name'] == '' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.53', 'msg'=>'No file specified.'));
+            }
+            $args["music{$file_num}_orgfilename"] = $file['name'];
+            $args['extension'] = preg_replace('/^.*\.([a-zA-Z]+)$/', '$1', $args["music{$file_num}_orgfilename"]);
+
+            //
+            // Check the extension is a PDF, currently only accept PDF files
+            //
+            if( $args['extension'] != 'pdf' && $args['extension'] != 'PDF' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.54', 'msg'=>'The file must be a PDF file.'));
+            }
+
+            //
+            // Move the file to ciniki-storage
+            //
+            $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/files/' 
+                . $registration['uuid'][0] . '/' . $registration['uuid'] . '_music' . $file_num;
+            if( !is_dir(dirname($storage_filename)) ) {
+                if( !mkdir(dirname($storage_filename), 0700, true) ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.183', 'msg'=>'Unable to add file'));
+                }
+            }
+            if( !rename($file['tmp_name'], $storage_filename) ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.56', 'msg'=>'Unable to add file'));
+            }
+        }
     }
 
     //
@@ -101,6 +184,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     // Load the updated registration to see if updates needed to invoice
     //
     $strsql = "SELECT registrations.id, "
+        . "registrations.uuid, "
         . "registrations.festival_id, "
         . "registrations.status, "
         . "registrations.invoice_id, "

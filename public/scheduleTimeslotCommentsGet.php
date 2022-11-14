@@ -114,6 +114,8 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
         . "registrations.display_name, "
         . "registrations.public_name, "
         . "registrations.title1, "
+        . "registrations.title2, "
+        . "registrations.title3, "
         . "registrations.video1_url, "
         . "registrations.video2_url, "
         . "registrations.video3_url, "
@@ -125,6 +127,7 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
         . "IFNULL(comments.comments, '') AS comments, "
         . "IFNULL(comments.grade, '') AS grade, "
         . "IFNULL(comments.score, '') AS score, "
+        . "regclass.flags AS reg_flags, "
         . "regclass.name AS reg_class_name "
         . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
         . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
@@ -167,7 +170,8 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
                 'class1_id', 'class2_id', 'class3_id', 'description', 'class1_name', 'class2_name', 'class3_name',
                 )),
         array('container'=>'registrations', 'fname'=>'reg_id', 
-            'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name', 'title1', 
+            'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name', 'reg_flags',
+                'title1', 'title2', 'title3',
                 'video1_url', 'video2_url', 'video3_url', 
                 'music1_orgfilename', 'music2_orgfilename', 'music3_orgfilename',
                 'reg_class_name',
