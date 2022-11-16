@@ -33,17 +33,6 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     }
 
     //
-    // Check for syllabus section requested
-    //
-    if( isset($request['uri_split'][($request['cur_uri_pos']+1)])
-        && $request['uri_split'][($request['cur_uri_pos']+1)] != '' 
-        ) {
-        $request['cur_uri_pos']++;
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'syllabusSectionProcess');
-        return ciniki_musicfestivals_wng_syllabusSectionProcess($ciniki, $tnid, $request, $section);
-    }
-
-    //
     // Check for image format
     //
     $thumbnail_format = 'square-cropped';
@@ -69,9 +58,9 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
         . "AND (sections.flags&0x01) = 0 "
         . "ORDER BY sections.sequence, sections.name "
         . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'sections', 'fname'=>'id', 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'sections', 'fname'=>'permalink', 
             'fields'=>array('id', 'permalink', 'title'=>'name', 'image-id'=>'primary_image_id', 'synopsis'),
             ),
         ));
@@ -87,6 +76,25 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
         'type' => 'title', 
         'title' => isset($s['title']) ? $s['title'] : 'Syllabus',
         );
+
+    //
+    // Check for syllabus section requested
+    //
+    if( isset($request['uri_split'][($request['cur_uri_pos']+1)])
+        && $request['uri_split'][($request['cur_uri_pos']+1)] != '' 
+        ) {
+        $request['cur_uri_pos']++;
+        if( isset($sections[$request['uri_split'][$request['cur_uri_pos']]]) ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'syllabusSectionProcess');
+            return ciniki_musicfestivals_wng_syllabusSectionProcess($ciniki, $tnid, $request, $section);
+        } else {
+            $blocks[] = array(
+                'type' => 'msg',
+                'level' => 'error',
+                'content' => 'Section not found',
+                );
+        }
+    }
 
     //
     // Display as trading cards
