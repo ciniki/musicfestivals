@@ -418,7 +418,6 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 . "}"
             . "}"
             . "function fSave(){"
-                . "console.log('save form');"
                 . "clearTimeout(fSaveTimer);"
                 . "fSaveTimer=null;"
                 . "console.log('save api');"
@@ -433,6 +432,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             'form-sections' => $sections,
             'js' => $js,
             'api-save-url' => $request['api_url'] . '/ciniki/musicfestivals/adjudicationsSave',
+            'last-saved-msg' => '',
             'api-args' => array(
                 ),
             );

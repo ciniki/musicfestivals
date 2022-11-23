@@ -17,8 +17,6 @@ function ciniki_musicfestivals_wng_apiAdjudicationsSave(&$ciniki, $tnid, $reques
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
 
-    error_log(print_r($_POST,true));
-
     //
     // Make sure customer is logged in
     //
@@ -44,6 +42,17 @@ function ciniki_musicfestivals_wng_apiAdjudicationsSave(&$ciniki, $tnid, $reques
     if( !isset($_POST['f-customer_id']) || $_POST['f-customer_id'] != $customer_id ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.433', 'msg'=>'Not signed in'));
     }
+
+    //
+    // Load the tenant settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $intl_timezone = $rc['settings']['intl-default-timezone'];
+    $dt = new DateTime('now', new DateTimezone($intl_timezone));
 
     //
     // Load current festival
@@ -195,11 +204,12 @@ function ciniki_musicfestivals_wng_apiAdjudicationsSave(&$ciniki, $tnid, $reques
     $rc = ciniki_musicfestivals_wng_adjudicatorCommentsUpdate($ciniki, $tnid, $request, array(
         'registrations' => $registrations,
         'adjudicator_id' => $adjudicator_id,
+        'autosave' => 'yes',
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.394', 'msg'=>'Unable to update comments', 'err'=>$rc['err']));
     }
 
-    return array('stat'=>'ok');
+    return array('stat'=>'ok', 'last_saved'=>$dt->format('M j, Y g:i A'));
 }
 ?>

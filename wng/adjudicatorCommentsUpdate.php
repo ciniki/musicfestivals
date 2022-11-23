@@ -22,6 +22,10 @@ function ciniki_musicfestivals_wng_adjudicatorCommentsUpdate(&$ciniki, $tnid, &$
     if( !isset($args['adjudicator_id']) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.439', 'msg'=>"No adjudicator specified"));
     }
+    $tmsupdate = 0x04;
+    if( isset($args['autosave']) && $args['autosave'] == 'yes' ) {
+        $tmsupdate = 0x04 | 0x08;
+    }
 
     //
     // Go through the registrations and check for updates to comments or score
@@ -41,9 +45,20 @@ function ciniki_musicfestivals_wng_adjudicatorCommentsUpdate(&$ciniki, $tnid, &$
         if( count($update_args) > 0 ) {
             if( $reg['comment_id'] > 0 ) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.comment', $reg['comment_id'], $update_args, 0x04);
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.comment', $reg['comment_id'], $update_args, $tmsupdate);
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.441', 'msg'=>'Unable to update the comment', 'err'=>$rc['err']));
+                }
+                //
+                // Clear autosave history
+                //
+                if( !isset($args['autosave']) || $args['autosave'] != 'yes' ) {
+                    // Unable to clear history because last autosave could be current value
+/*                    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbClearAutoSaveHistory');
+                    $rc = ciniki_core_objectClearAutoSaveHistory($ciniki, $tnid, 'ciniki.musicfestivals.comment', $reg['comment_id']);
+                    if( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.443', 'msg'=>'Unable to clear autosave history', 'err'=>$rc['err']));
+                    } */
                 }
                 
             } else {

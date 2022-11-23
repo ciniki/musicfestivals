@@ -30,6 +30,7 @@
 #                           5 - merge delete
 #                           6 - automerge
 #                           7 - automerge delete
+#                           8 - Auto save - to be deleted when full save made
 #
 # table_name:           The table where the change was made.
 #
