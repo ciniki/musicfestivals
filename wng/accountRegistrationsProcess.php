@@ -110,6 +110,24 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     }
 
     //
+    // Check if request to download PDF
+    //
+    if( isset($_GET['pdf']) && $_GET['pdf'] == 'yes' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'teacherRegistrationsPDF');
+        $rc = ciniki_musicfestivals_templates_teacherRegistrationsPDF($ciniki, $tnid, array(
+            'festival_id' => $festival['id'],
+            'billing_customer_id' => $request['session']['customer']['id'],
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.444', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+        }
+        if( isset($rc['pdf']) ) {
+            $rc['pdf']->Output($rc['filename'], 'I');
+            return array('stat'=>'exit');
+        }
+    }
+
+    //
     // Get the list of competitors
     // Search only current festival, as ages will have changed from previous festivals
     //
@@ -1120,8 +1138,19 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             //
            
             //
-            // FIXME: Add button to download PDF list of registrations
+            // Add button to download PDF list of registrations
             //
+            if( $customer_type == 20 ) {
+                $blocks[] = array(
+                    'type' => 'buttons',
+                    'class' => 'limit-width limit-width-60 aligncenter',
+                    'list' => array(array(
+                        'text' => 'Download PDF',
+                        'target' => '_blank',
+                        'url' => "/account/musicfestivalregistrations?pdf=yes",
+                        )),
+                    );
+            }
         }
         if( count($cancelled_registrations) > 0 ) {
             $blocks[] = array(
@@ -1136,13 +1165,6 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     ),
                 'rows' => $cancelled_registrations,
                 );
-            //
-            // FIXME: add check to see if timeslot assigned and show
-            //
-           
-            //
-            // FIXME: Add button to download PDF list of registrations
-            //
         }
 
         if( ($festival['flags']&0x01) == 0x01 && ($festival['live'] == 'yes' || $festival['virtual'] == 'yes') 

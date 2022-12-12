@@ -44,6 +44,16 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
     }
 
     //
+    // Load maps
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'maps');
+    $rc = ciniki_musicfestivals_maps($ciniki);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $maps = $rc['maps'];
+
+    //
     // Load tenant settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
@@ -113,6 +123,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
     $parents = array();
     foreach($registrations as $rid => $reg) {
         $registrations[$rid]['fee_display'] = '$' . number_format($reg['fee'], 2);
+        $reg['fee_display'] = '$' . number_format($reg['fee'], 2);
         if( $reg['parent'] != '' ) {
             if( !isset($parents[$reg['parent']]) ) {
                 $parents[$reg['parent']] = array(
@@ -237,7 +248,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
                 if( $available_ratio < $image_ratio ) {
                     $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, $img_width, 0, 'JPEG', '', 'L', 2, '150');
                 } else {
-                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, 0, $this->header_height-5, 'JPEG', '', 'L', 2, '150');
+                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, 0, $this->header_height-13, 'JPEG', '', 'L', 2, '150');
                 }
             }
 
@@ -428,7 +439,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
         $border = 1;
         $pdf->Cell($r[0], $lh-3, 'Competitor', $border, 0, 'L', 1);
         $pdf->Cell($r[1], $lh-3, 'Class', $border, 0, 'L', 1);
-        $pdf->Cell($r[2], $lh-3, 'Competitor', $border, 0, 'R', 1);
+        $pdf->Cell($r[2], $lh-3, 'Fee', $border, 0, 'R', 1);
         $pdf->Ln();
         $pdf->SetFont('times', '', 12);
         $pdf->SetFillColor(242);

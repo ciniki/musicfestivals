@@ -195,7 +195,7 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
                 if( $available_ratio < $image_ratio ) {
                     $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, $img_width, 0, 'JPEG', '', 'L', 2, '150');
                 } else {
-                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, 0, $this->header_height-5, 'JPEG', '', 'L', 2, '150');
+                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, 0, $this->header_height-13, 'JPEG', '', 'L', 2, '150');
                 }
             }
 
@@ -292,7 +292,7 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
     //
     // Go through the sections, divisions and classes
     //
-    $cw = array(20, 5, 155);
+    $cw = array(25, 5, 150);
     $w = array(10, 55, 90, 25);
     $nw = array(20, 160);
     $lh = 6;
@@ -302,9 +302,9 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
             $pdf->AddPage();
         }
         $pdf->SetFont('', 'B', 14);
-        $pdf->Cell($cw[0], $lh, $class['code'], $border, 0, 'L', 0);
-        $pdf->Cell($cw[1], $lh, '', $border, 0, 'R', 0);
-        $pdf->Cell($cw[2], $lh, $class['name'], $border, 1, 'L', 0);
+        $pdf->Cell($cw[0] + $cw[1] + $cw[2], $lh, $class['code'] . ' - ' . $class['name'], $border, 1, 'L', 0);
+//        $pdf->Cell($cw[1], $lh, '', $border, 0, 'R', 0);
+//        $pdf->Cell($cw[2], $lh, $class['name'], $border, 1, 'L', 0);
         $pdf->SetFont('', '', 12);
         foreach($class['registrations'] as $reg) {
             $notes = $reg['notes'];
