@@ -82,7 +82,7 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         . "registrations.video3_url, "
         . "registrations.music1_orgfilename, "
         . "registrations.music2_orgfilename, "
-        . "registrations.music3_orgfilename, "
+        . "registrations.music3_orgfilename "
         . "FROM ciniki_musicfestival_competitors AS competitors "
         . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "(competitors.id = registrations.competitor1_id "
