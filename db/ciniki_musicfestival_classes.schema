@@ -52,7 +52,7 @@ create table ciniki_musicfestival_classes (
     name varchar(150) not null,
     permalink varchar(150) not null,
     sequence tinyint unsigned not null,
-    flags smallint unsigned not null,
+    flags int unsigned not null,
     earlybird_fee decimal(19,6) not null,
     fee decimal(19,6) not null,
     virtual_fee decimal(19,6) not null,
