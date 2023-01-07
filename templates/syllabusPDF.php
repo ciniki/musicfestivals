@@ -295,7 +295,10 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             } else {
                 $s_height = 0;
             }
-            if( $pdf->getY() > $pdf->getPageHeight() - (count($category['classes']) * $lh) - 50 - $s_height) {
+            //
+            // Determine if new page should be started
+            //
+            if( $pdf->getY() > $pdf->getPageHeight() - 60 - $s_height ) {
                 $pdf->AddPage();
                 $newpage = 'yes';
             } elseif( $newpage == 'no' ) {
@@ -401,9 +404,20 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             } else {
                 $w = array(30, 120, 30);
                 foreach($category['classes'] as $class) {
-                    $pdf->Cell($w[0], $lh, $class['code'], 'TLB', 0, 'L', $fill);
-                    $pdf->Cell($w[1], $lh, $class['name'], 'TB', 0, 'L', $fill);
-                    $pdf->Cell($w[2], $lh, numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency), 'TRB', 0, 'C', $fill);
+                    $lh = $pdf->getStringHeight($w[1], $class['name']);
+                    if( $pdf->getY() > $pdf->getPageHeight() - $lh - 20) {
+                        $pdf->AddPage();
+                        $pdf->SetFont('', 'B', '18');
+                        $pdf->Cell(180, 10, $category['name'] . ' (continued)', 0, 0, 'L', 0);
+                        $pdf->Ln(12);
+                        $pdf->SetFont('', '', '12');
+                    }
+//                    $pdf->Cell($w[0], $lh, $class['code'], 'TLB', 0, 'L', $fill);
+//                    $pdf->Cell($w[1], $lh, $class['name'], 'TB', 0, 'L', $fill);
+//                    $pdf->Cell($w[2], $lh, numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency), 'TRB', 0, 'C', $fill);
+                    $pdf->MultiCell($w[0], $lh, $class['code'], 'TLB', 'L', $fill, 0);
+                    $pdf->MultiCell($w[1], $lh, $class['name'], 'TB', 'L', $fill, 0);
+                    $pdf->MultiCell($w[2], $lh, number_format($class['fee'], 2), 'TRB', 'C', $fill, 0);
                     $pdf->Ln($lh);
                     $fill=!$fill;
                 }

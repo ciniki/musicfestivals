@@ -146,7 +146,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             header('Content-Type: application/pdf');
             header('Cache-Control: max-age=0');
 
-            $rc['pdf']->Output($filename, 'D');
+            $rc['pdf']->Output($filename, 'I');
 
             return array('stat'=>'exit');
         } else {
@@ -198,6 +198,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             'list' => array(
                 array(
                     'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $section['permalink'] . '/download.pdf',
+                    'target' => '_blank',
                     'text' => 'Download Syllabus PDF for ' . $section['name'],
                     ),
                 ),
