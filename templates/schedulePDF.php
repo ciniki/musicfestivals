@@ -93,7 +93,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         . "registrations.id AS reg_id, "
         . "registrations.display_name, "
         . "registrations.public_name, "
-        . "registrations.title "
+        . "registrations.title1 "
         . "FROM ciniki_musicfestival_schedule_sections AS sections "
         . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
             . "sections.id = divisions.ssection_id " 
@@ -136,7 +136,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'name'=>'section_name')),
         array('container'=>'divisions', 'fname'=>'division_id', 'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'address')),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 'class1_id', 'class2_id', 'class3_id', 'description', 'class1_name', 'class2_name', 'class3_name')),
-        array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title')),
+        array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title1')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -353,9 +353,9 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                         }
                         foreach($timeslot['registrations'] as $reg) {
                             if( isset($args['names']) && $args['names'] == 'private' ) {
-                                $description .= ($description != '' ? "\n" : '') . $reg['name'] . ($reg['title'] != '' ? ' - ' . $reg['title'] : '');
+                                $description .= ($description != '' ? "\n" : '') . $reg['name'] . ($reg['title1'] != '' ? ' - ' . $reg['title1'] : '');
                             } else {
-                                $description .= ($description != '' ? "\n" : '') . $reg['public_name'] . ($reg['title'] != '' ? ' - ' . $reg['title'] : '');
+                                $description .= ($description != '' ? "\n" : '') . $reg['public_name'] . ($reg['title1'] != '' ? ' - ' . $reg['title1'] : '');
                             }
                         }
                     }
