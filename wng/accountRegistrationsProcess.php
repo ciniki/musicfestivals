@@ -460,7 +460,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'title3' => $fields['title3']['value'],
                 'perf_time3' => $fields['perf_time3']['value'],
                 'payment_type' => 0,
-                'participation' => $fields['participation']['value'],
+                'participation' => (isset($fields['participation']['value']) ? $fields['participation']['value'] : ''),
                 'notes' => $fields['notes']['value'],
                 );
             if( ($selected_class['flags']&0x20) == 0x20 ) {
