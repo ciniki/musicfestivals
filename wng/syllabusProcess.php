@@ -33,6 +33,70 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     }
 
     //
+    // Get the music festival details
+    //
+    $dt = new DateTime('now', new DateTimezone('UTC'));
+    $strsql = "SELECT id, name, flags, "
+        . "earlybird_date, "
+        . "live_date, "
+        . "virtual_date "
+//        . "IFNULL(DATEDIFF(earlybird_date, '" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d')) . "'), -1) AS earlybird, "
+//        . "IFNULL(DATEDIFF(virtual_date, '" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d')) . "'), -1) AS virtual "
+        . "FROM ciniki_musicfestivals "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( isset($rc['festival']) ) {
+        $festival = $rc['festival'];
+        $earlybird_dt = new DateTime($rc['festival']['earlybird_date'], new DateTimezone('UTC'));
+        $live_dt = new DateTime($rc['festival']['live_date'], new DateTimezone('UTC'));
+        $virtual_dt = new DateTime($rc['festival']['virtual_date'], new DateTimezone('UTC'));
+        $festival['earlybird'] = ($earlybird_dt > $dt ? 'yes' : 'no');
+        $festival['live'] = ($live_dt > $dt ? 'yes' : 'no');
+        $festival['virtual'] = ($virtual_dt > $dt ? 'yes' : 'no');
+    }
+
+    //
+    // Check if download of syllabus requested
+    //
+    if( isset($request['uri_split'][($request['cur_uri_pos']+1)])
+        && $request['uri_split'][($request['cur_uri_pos']+1)] == 'download.pdf' 
+        ) {
+        //
+        // Download the syllabus section pdf
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'syllabusPDF');
+        $rc = ciniki_musicfestivals_templates_syllabusPDF($ciniki, $tnid, array(
+            'festival_id' => $s['festival-id'],
+            ));
+        if( isset($rc['pdf']) ) {
+            $filename = $festival['name'];
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+            $filename = ciniki_core_makePermalink($ciniki, $filename) . '.pdf';
+            header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+            header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+            header('Cache-Control: no-cache, must-revalidate');
+            header('Pragma: no-cache');
+            header('Content-Type: application/pdf');
+            header('Cache-Control: max-age=0');
+
+            $rc['pdf']->Output($filename, 'I');
+
+            return array('stat'=>'exit');
+        } else {
+            $blocks[] = array(
+                'type' => 'msg',
+                'level' => 'error',
+                'content' => 'Unable to download pdf',
+                );
+        }
+    }
+
+    //
     // Check for image format
     //
     $thumbnail_format = 'square-cropped';
@@ -97,6 +161,22 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     }
 
     //
+    // Check if download button
+    //
+    if( isset($s['syllabus-pdf']) && ($s['syllabus-pdf'] == 'top' || $s['syllabus-pdf'] == 'both') ) {
+        $blocks[] = array(
+            'type' => 'buttons',
+            'list' => array(
+                array(
+                    'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/download.pdf',
+                    'target' => '_blank',
+                    'text' => 'Download Complete Syllabus PDF',
+                    ),
+                ),
+            );
+    }
+
+    //
     // Display as trading cards
     //
     if( isset($s['layout']) && $s['layout'] == 'tradingcards' ) {
@@ -130,6 +210,22 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
         $blocks[] = array(
             'type' => 'imagebuttons',
             'items' => $sections,
+            );
+    }
+
+    //
+    // Check if download button
+    //
+    if( isset($s['syllabus-pdf']) && ($s['syllabus-pdf'] == 'bottom' || $s['syllabus-pdf'] == 'both') ) {
+        $blocks[] = array(
+            'type' => 'buttons',
+            'list' => array(
+                array(
+                    'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/download.pdf',
+                    'target' => '_blank',
+                    'text' => 'Download Complete Syllabus PDF',
+                    ),
+                ),
             );
     }
 

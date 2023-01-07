@@ -295,10 +295,14 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             } else {
                 $s_height = 0;
             }
+
+            $pdf->SetFont('', 'B', '18');
+//            $pdf->Cell(180, 10, $category['name'], 0, 0, 'L', 0);
+            $lh = $pdf->getStringHeight(180, $category['name']);
             //
             // Determine if new page should be started
             //
-            if( $pdf->getY() > $pdf->getPageHeight() - 60 - $s_height ) {
+            if( $pdf->getY() > $pdf->getPageHeight() - 50 - $s_height - $lh) {
                 $pdf->AddPage();
                 $newpage = 'yes';
             } elseif( $newpage == 'no' ) {
@@ -306,9 +310,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             }
             $newpage = 'no';
 
-            $pdf->SetFont('', 'B', '18');
-            $pdf->Cell(180, 10, $category['name'], 0, 0, 'L', 0);
-            $pdf->Ln(10);
+            $pdf->MultiCell(180, 5, $category['name'], 0, 'L', 0, 1);
             $pdf->SetFont('', '', '12');
             if( $description != '' ) {
                 $pdf->MultiCell(180, $lh, $description, 0, 'L', 0, 2);
@@ -345,8 +347,9 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                         $pdf->AddPage();
                         // Category
                         $pdf->SetFont('', 'B', '18');
-                        $pdf->Cell(180, 10, $category['name'] . ' (continued)', 0, 0, 'L', 0);
-                        $pdf->Ln(12);
+                        //$pdf->Cell(180, 10, $category['name'] . ' (continued)', 0, 0, 'L', 0);
+                        $pdf->MultiCell(180, 10, $category['name'] . ' (continued)', 0, 'L', 0, 1);
+                        //$pdf->Ln(12);
                         // Headers
                         $pdf->SetFont('', 'B', '12');
                         $fill = 1;
@@ -381,8 +384,9 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                         $pdf->AddPage();
                         // Category
                         $pdf->SetFont('', 'B', '18');
-                        $pdf->Cell(180, 10, $category['name'] . ' (continued)', 0, 0, 'L', 0);
-                        $pdf->Ln(12);
+                        $pdf->MultiCell(180, 10, $category['name'] . ' (continued)', 0, 'L', 0, 1);
+                        //$pdf->Cell(180, 10, $category['name'] . ' (continued)', 0, 0, 'L', 0);
+                        //$pdf->Ln(12);
                         // Headers
                         $pdf->SetFont('', 'B', '12');
                         $fill = 1;
@@ -408,8 +412,9 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                     if( $pdf->getY() > $pdf->getPageHeight() - $lh - 20) {
                         $pdf->AddPage();
                         $pdf->SetFont('', 'B', '18');
-                        $pdf->Cell(180, 10, $category['name'] . ' (continued)', 0, 0, 'L', 0);
-                        $pdf->Ln(12);
+                        $pdf->MultiCell(180, 10, $category['name'] . ' (continued)', 0, 'L', 0, 1);
+                        //$pdf->Cell(180, 10, $category['name'] . ' (continued)', 0, 0, 'L', 0);
+                        //$pdf->Ln(12);
                         $pdf->SetFont('', '', '12');
                     }
 //                    $pdf->Cell($w[0], $lh, $class['code'], 'TLB', 0, 'L', $fill);

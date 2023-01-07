@@ -86,6 +86,12 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'bottom' => 'Bottom',
                 'both' => 'Both',
                 )),
+            'syllabus-pdf' => array('label'=>'Complete Syllabus PDF Download', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
+                'no' => 'Off',
+                'top' => 'Top',
+                'bottom' => 'Bottom',
+                'both' => 'Both',
+                )),
             ),
         );
 
