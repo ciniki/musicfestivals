@@ -276,6 +276,13 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         $pdf->header_sub_title = $section['name'] . ' Syllabus';
         $pdf->AddPage();
 
+        if( isset($section['description']) && $section['description'] != '' ) {
+            $pdf->SetFont('', 'B', '18');
+            $pdf->MultiCell(180, 5, $section['name'], 0, 'L', 0, 1);
+            $pdf->SetFont('', '', '12');
+            $pdf->MultiCell(180, 5, $section['description'], 0, 'L', 0, 1);
+        }
+
         //
         // Output the categories
         //
