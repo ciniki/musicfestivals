@@ -150,10 +150,16 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
         . "IFNULL(class3.name, '') AS class3_name, "
         . "timeslots.name AS timeslot_name, "
         . "timeslots.description, "
-        . "registrations.id AS reg_id, "
-        . "registrations.display_name, "
-        . "registrations.public_name, "
-        . "registrations.title, "
+        . "registrations.id AS reg_id, ";
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+        $strsql .= "registrations.pn_display_name AS display_name, "
+            . "registrations.pn_public_name AS public_name, ";
+    } else {
+        $strsql .= "registrations.display_name, "
+            . "registrations.public_name, ";
+    }
+    $strsql .= "registrations.title, "
+        . "registrations.placement, "
         . "IFNULL(classes.name, '') AS class_name, "
         . "IFNULL(registrations.competitor2_id, 0) AS competitor2_id, "
         . "IFNULL(registrations.competitor3_id, 0) AS competitor3_id, "

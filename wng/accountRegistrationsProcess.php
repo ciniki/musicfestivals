@@ -132,7 +132,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     // Search only current festival, as ages will have changed from previous festivals
     //
     $strsql = "SELECT competitors.id, "
-        . "competitors.name "
+        . "competitors.name, "
+        . "competitors.pronoun "
         . "FROM ciniki_musicfestival_competitors AS competitors "
         . "WHERE billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
         . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -141,12 +142,19 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'name')),
+        array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'name', 'pronoun')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.325', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
     }
     $competitors = isset($rc['competitors']) ? $rc['competitors'] : array();
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+        foreach($competitors as $cid => $competitor) {
+            if( $competitor['pronoun'] != '' ) {
+                $competitors[$cid]['name'] .= ' (' . $competitor['pronoun'] . ')';
+            }
+        }
+    }
 
     //
     // Load the class list
@@ -496,8 +504,13 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.416', 'msg'=>'Unable to updated registration name', 'err'=>$rc['err']));
             }
-            $registration['display_name'] = $rc['display_name'];
-            $registration['public_name'] = $rc['public_name'];
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+                $registration['display_name'] = $rc['pn_display_name'];
+                $registration['public_name'] = $rc['pn_public_name'];
+            } else {
+                $registration['display_name'] = $rc['display_name'];
+                $registration['public_name'] = $rc['public_name'];
+            }
 
             //
             // Add to the cart
@@ -605,8 +618,13 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.311', 'msg'=>'Unable to updated registration name', 'err'=>$rc['err']));
                 }
-                $registration['display_name'] = $rc['display_name'];
-                $registration['public_name'] = $rc['public_name'];
+                if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+                    $registration['display_name'] = $rc['pn_display_name'];
+                    $registration['public_name'] = $rc['pn_public_name'];
+                } else {
+                    $registration['display_name'] = $rc['display_name'];
+                    $registration['public_name'] = $rc['public_name'];
+                }
 
                 //
                 // Load the cart item
@@ -943,9 +961,13 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         //
         $strsql = "SELECT registrations.id, "
             . "registrations.status, "
-            . "registrations.invoice_id, "
-            . "registrations.display_name, "
-            . "registrations.title1, "
+            . "registrations.invoice_id, ";
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+            $strsql .= "registrations.pn_display_name AS display_name, ";
+        } else {
+            $strsql .= "registrations.display_name, ";
+        }
+        $strsql .= "registrations.title1, "
             . "registrations.fee, "
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "

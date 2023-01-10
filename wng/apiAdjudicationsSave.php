@@ -207,7 +207,7 @@ function ciniki_musicfestivals_wng_apiAdjudicationsSave(&$ciniki, $tnid, $reques
         'autosave' => 'yes',
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.394', 'msg'=>'Unable to update comments', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.452', 'msg'=>'Unable to update comments', 'err'=>$rc['err']));
     }
 
     return array('stat'=>'ok', 'last_saved'=>$dt->format('M j, Y g:i A'));

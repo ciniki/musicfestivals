@@ -107,6 +107,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     //
     $strsql = "SELECT competitors.id, "
         . "competitors.name, "
+        . "competitors.pronoun, "
         . "competitors.parent, "
         . "competitors.age, "
         . "competitors.instrument "
@@ -118,7 +119,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'name', 'parent', 'age', 'instrument')),
+        array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'name', 'pronoun', 'parent', 'age', 'instrument')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.257', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
@@ -141,6 +142,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             . "name, "
             . "flags, "
             . "public_name, "
+            . "pronoun, "
             . "parent, "
             . "address, "
             . "city, "
@@ -196,114 +198,125 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             'label' => 'First & Last Name OR Ensemble',
             'ftype' => 'text',
             'required' => 'yes',
-            'size' => ($customer_type == 30 ? 'large' : 'medium'),
+            //'size' => ($customer_type == 30 ? 'large' : 'medium'),
+            'size' => 'medium',
             'class' => '',
             'value' => (isset($_POST['f-name']) ? trim($_POST['f-name']) : (isset($competitor['name']) ? $competitor['name'] : '')),
             ),
-        'parent' => array(
-            'id' => 'parent',
-            'label' => 'Parent',
-            'ftype' => ($customer_type == 30 ? 'hidden' : 'text'),
-            'required' => ($customer_type == 30 ? 'no' : 'yes'),
-            'size' => 'medium',
-            'class' => '',
-            'value' => (isset($_POST['f-parent']) ? trim($_POST['f-parent']) : (isset($competitor['parent']) ? $competitor['parent'] :'')),
-            ),
-        'address' => array(
-            'id' => 'address',
-            'label' => 'Address',
-            'ftype' => 'text',
-            'required' => 'yes',
-            'size' => 'large',
-            'class' => '',
-            'value' => (isset($_POST['f-address']) ? trim($_POST['f-address']) : (isset($competitor['address']) ? $competitor['address'] :'')),
-            ),
-        'city' => array(
-            'id' => 'city',
-            'label' => 'City',
-            'ftype' => 'text',
-            'required' => 'yes',
-            'size' => 'small-medium',
-            'class' => '',
-            'value' => (isset($_POST['f-city']) ? trim($_POST['f-city']) : (isset($competitor['city']) ? $competitor['city'] :'')),
-            ),
-        'province' => array(
-            'id' => 'province',
-            'label' => 'Province',
-            'ftype' => 'text',
-            'required' => 'yes',
-            'size' => 'small',
-            'class' => '',
-            'value' => (isset($_POST['f-province']) ? trim($_POST['f-province']) : (isset($competitor['province']) ? $competitor['province'] :'')),
-            ),
-        'postal' => array(
-            'id' => 'postal',
-            'label' => 'Postal',
-            'ftype' => 'text',
-            'required' => 'yes',
-            'size' => 'small',
-            'class' => '',
-            'value' => (isset($_POST['f-postal']) ? trim($_POST['f-postal']) : (isset($competitor['postal']) ? $competitor['postal'] :'')),
-            ),
-        'phone_cell' => array(
-            'id' => 'phone_cell',
-            'label' => 'Cell Phone',
-            'ftype' => 'text',
-            'required' => 'yes',
-            'size' => 'small',
-            'class' => '',
-            'value' => (isset($_POST['f-phone_cell']) ? trim($_POST['f-phone_cell']) : (isset($competitor['phone_cell']) ? $competitor['phone_cell'] :'')),
-            ),
-        'phone_home' => array(
-            'id' => 'phone_home',
-            'label' => 'Home Phone',
+        );
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+        $fields['pronoun'] = array(
+            'id' => 'pronoun',
+            'label' => 'Pronoun',
             'ftype' => 'text',
             'size' => 'small',
             'class' => '',
-            'value' => (isset($_POST['f-phone_home']) ? trim($_POST['f-phone_home']) : (isset($competitor['phone_home']) ? $competitor['phone_home'] :'')),
-            ),
-        'email' => array(
-            'id' => 'email',
-            'label' => 'Email',
-            'ftype' => 'text',
-            'required' => 'yes',
-            'size' => 'small-medium',
-            'class' => '',
-            'value' => (isset($_POST['f-email']) ? trim($_POST['f-email']) : (isset($competitor['email']) ? $competitor['email'] :'')),
-            ),
-        'age' => array(
-            'id' => 'age',
-            'label' => 'Age' . (isset($festival['age-restriction-msg']) ? ' ' . $festival['age-restriction-msg'] : ''),
-            'ftype' => 'text',
-            'required' => 'yes',
-            'size' => 'small',
-            'class' => '',
-            'value' => (isset($_POST['f-age']) ? trim($_POST['f-age']) : (isset($competitor['age']) ? $competitor['age'] :'')),
-            ),
-        'instrument' => array(
-            'id' => 'instrument',
-            'label' => 'Instrument',
-            'ftype' => 'text',
-            'size' => 'small',
-            'class' => '',
-            'value' => (isset($_POST['f-instrument']) ? trim($_POST['f-instrument']) : (isset($competitor['instrument']) ? $competitor['instrument'] :'')),
-            ),
-        'study_level' => array(
-            'id' => 'study_level',
-            'label' => 'Current Level of Study/Method book',
-            'ftype' => 'text',
-            'size' => 'large',
-            'class' => '',
-            'value' => (isset($_POST['f-study_level']) ? trim($_POST['f-study_level']) : (isset($competitor['study_level']) ? $competitor['study_level'] :'')),
-            ),
-        'comp_notes' => array(
-            'id' => 'comp_notes',
-            'label' => 'Competitor Notes',
-            'ftype' => 'textarea',
-            'size' => 'tiny',
-            'class' => '',
-            'value' => (isset($_POST['f-comp_notes']) ? trim($_POST['f-comp_notes']) : (isset($competitor['notes']) ? $competitor['notes'] :'')),
-            ),
+            'value' => (isset($_POST['f-pronoun']) ? trim($_POST['f-pronoun']) : (isset($competitor['pronoun']) ? $competitor['pronoun'] :'')),
+            );
+    }
+    $fields['parent'] = array(
+        'id' => 'parent',
+        'label' => 'Parent',
+        'ftype' => ($customer_type == 30 ? 'hidden' : 'text'),
+        'required' => ($customer_type == 30 ? 'no' : 'yes'),
+        'size' => 'medium',
+        'class' => '',
+        'value' => (isset($_POST['f-parent']) ? trim($_POST['f-parent']) : (isset($competitor['parent']) ? $competitor['parent'] :'')),
+        );
+    $fields['address'] = array(
+        'id' => 'address',
+        'label' => 'Address',
+        'ftype' => 'text',
+        'required' => 'yes',
+        'size' => 'large',
+        'class' => '',
+        'value' => (isset($_POST['f-address']) ? trim($_POST['f-address']) : (isset($competitor['address']) ? $competitor['address'] :'')),
+        );
+    $fields['city'] = array(
+        'id' => 'city',
+        'label' => 'City',
+        'ftype' => 'text',
+        'required' => 'yes',
+        'size' => 'small-medium',
+        'class' => '',
+        'value' => (isset($_POST['f-city']) ? trim($_POST['f-city']) : (isset($competitor['city']) ? $competitor['city'] :'')),
+        );
+    $fields['province'] = array(
+        'id' => 'province',
+        'label' => 'Province',
+        'ftype' => 'text',
+        'required' => 'yes',
+        'size' => 'small',
+        'class' => '',
+        'value' => (isset($_POST['f-province']) ? trim($_POST['f-province']) : (isset($competitor['province']) ? $competitor['province'] :'')),
+        );
+    $fields['postal'] = array(
+        'id' => 'postal',
+        'label' => 'Postal',
+        'ftype' => 'text',
+        'required' => 'yes',
+        'size' => 'small',
+        'class' => '',
+        'value' => (isset($_POST['f-postal']) ? trim($_POST['f-postal']) : (isset($competitor['postal']) ? $competitor['postal'] :'')),
+        );
+    $fields['phone_cell'] = array(
+        'id' => 'phone_cell',
+        'label' => 'Cell Phone',
+        'ftype' => 'text',
+        'required' => 'yes',
+        'size' => 'small',
+        'class' => '',
+        'value' => (isset($_POST['f-phone_cell']) ? trim($_POST['f-phone_cell']) : (isset($competitor['phone_cell']) ? $competitor['phone_cell'] :'')),
+        );
+    $fields['phone_home'] = array(
+        'id' => 'phone_home',
+        'label' => 'Home Phone',
+        'ftype' => 'text',
+        'size' => 'small',
+        'class' => '',
+        'value' => (isset($_POST['f-phone_home']) ? trim($_POST['f-phone_home']) : (isset($competitor['phone_home']) ? $competitor['phone_home'] :'')),
+        );
+    $fields['email'] = array(
+        'id' => 'email',
+        'label' => 'Email',
+        'ftype' => 'text',
+        'required' => 'yes',
+        'size' => 'small-medium',
+        'class' => '',
+        'value' => (isset($_POST['f-email']) ? trim($_POST['f-email']) : (isset($competitor['email']) ? $competitor['email'] :'')),
+            );
+    $fields['age'] = array(
+        'id' => 'age',
+        'label' => 'Age' . (isset($festival['age-restriction-msg']) ? ' ' . $festival['age-restriction-msg'] : ''),
+        'ftype' => 'text',
+        'required' => 'yes',
+        'size' => 'small',
+        'class' => '',
+        'value' => (isset($_POST['f-age']) ? trim($_POST['f-age']) : (isset($competitor['age']) ? $competitor['age'] :'')),
+            );
+    $fields['instrument'] = array(
+        'id' => 'instrument',
+        'label' => 'Instrument',
+        'ftype' => 'text',
+        'size' => 'small',
+        'class' => '',
+        'value' => (isset($_POST['f-instrument']) ? trim($_POST['f-instrument']) : (isset($competitor['instrument']) ? $competitor['instrument'] :'')),
+        );
+    $fields['study_level'] = array(
+        'id' => 'study_level',
+        'label' => 'Current Level of Study/Method book',
+        'ftype' => 'text',
+        'size' => 'large',
+        'class' => '',
+        'value' => (isset($_POST['f-study_level']) ? trim($_POST['f-study_level']) : (isset($competitor['study_level']) ? $competitor['study_level'] :'')),
+        );
+    $fields['comp_notes'] = array(
+        'id' => 'comp_notes',
+        'label' => 'Competitor Notes',
+        'ftype' => 'textarea',
+        'size' => 'tiny',
+        'class' => '',
+        'value' => (isset($_POST['f-comp_notes']) ? trim($_POST['f-comp_notes']) : (isset($competitor['notes']) ? $competitor['notes'] :'')),
         );
     if( isset($festival['waiver-msg']) && $festival['waiver-msg'] != '' ) {
         $fields['termstitle'] = array(
@@ -395,6 +408,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     'billing_customer_id' => $request['session']['customer']['id'],
                     'name' => $fields['name']['value'],
                     'public_name' => preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $fields['name']['value']),
+                    'pronoun' => $fields['pronoun']['value'],
                     'flags' => ($fields['terms']['value'] == 'on' ? 0x01 : 0),
                     'parent' => $fields['parent']['value'],
                     'address' => $fields['address']['value'],
@@ -676,52 +690,28 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                 }
                 $add_button = "<a class='button' href='{$request['ssl_domain_base_url']}/account/musicfestivalcompetitors?add=yes'>Add</a>";
             }
-            if( $customer_type == 10 ) {
-                $blocks[] = array(
-                    'type' => 'table',
-                    'title' => $festival['name'] . ' Competitors',
-                    'class' => 'musicfestival-competitors limit-width limit-width-60 fold-at-40',
-                    'headers' => 'yes',
-                    'columns' => array(
-                        array('label' => 'Name', 'field' => 'name', 'class' => 'alignleft'),
-                        array('label' => 'Age', 'fold-label'=>'Age', 'field' => 'age', 'class' => 'alignleft'),
-                        array('label' => 'Instrument', 'fold-label'=>'Instrument', 'field' => 'instrument', 'class' => 'alignleft'),
-                        array('label' => $add_button, 'field' => 'editbutton', 'class' => 'buttons alignright'),
-                        ),
-                    'rows' => $competitors,
-                    );
-            } else {
-                if( $customer_type == 30 ) {
-                    $blocks[] = array(
-                        'type' => 'table',
-                        'title' => $festival['name'] . ' Competitors',
-                        'class' => 'musicfestival-competitors limit-width limit-width-60 fold-at-40',
-                        'headers' => 'yes',
-                        'columns' => array(
-                            array('label' => 'Name', 'field' => 'name', 'class' => 'alignleft'),
-                            array('label' => 'Age', 'fold-label'=>'Age', 'field' => 'age', 'class' => 'alignleft'),
-                            array('label' => 'Instrument', 'fold-label'=>'Instrument', 'field' => 'instrument', 'class' => 'alignleft'),
-                            array('label' => $add_button, 'field' => 'editbutton', 'class' => 'buttons alignright'),
-                            ),
-                        'rows' => $competitors,
-                        );
-                } else {
-                    $blocks[] = array(
-                        'type' => 'table',
-                        'title' => $festival['name'] . ' Competitors',
-                        'class' => 'musicfestival-competitors limit-width limit-width-60 fold-at-50',
-                        'headers' => 'yes',
-                        'columns' => array(
-                            array('label' => 'Name', 'field' => 'name', 'class' => 'alignleft'),
-                            array('label' => 'Parent', 'fold-label'=>'Parent', 'field' => 'parent', 'class' => 'alignleft'),
-                            array('label' => 'Age', 'fold-label'=>'Age', 'field' => 'age', 'class' => 'alignleft'),
-                            array('label' => 'Instrument', 'fold-label'=>'Instrument', 'field' => 'instrument', 'class' => 'alignleft'),
-                            array('label' => $add_button, 'field' => 'editbutton', 'class' => 'buttons alignright'),
-                            ),
-                        'rows' => $competitors,
-                        );
-                }
+            $columns = array(
+                array('label' => 'Name', 'field' => 'name', 'class' => 'alignleft')
+                );
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+                $columns[] = array('label' => 'Pronoun', 'field' => 'pronoun', 'class' => 'alignleft');
             }
+            if( $customer_type != 30 ) {
+                $columns[] = array('label' => 'Parent', 'fold-label'=>'Parent', 'field' => 'parent', 'class' => 'alignleft');
+            }
+            $columns[] = array('label' => 'Age', 'fold-label'=>'Age', 'field' => 'age', 'class' => 'alignleft');
+            $columns[] = array('label' => 'Instrument', 'fold-label'=>'Instrument', 'field' => 'instrument', 'class' => 'alignleft');
+            $columns[] = array('label' => $add_button, 'field' => 'editbutton', 'class' => 'buttons alignright');
+
+            $blocks[] = array(
+                'type' => 'table',
+                'title' => $festival['name'] . ' Competitors',
+                'class' => 'musicfestival-competitors limit-width limit-width-60 fold-at-40',
+                'headers' => 'yes',
+                'columns' => $columns,
+                'rows' => $competitors,
+                );
+
         } elseif( ($festival['flags']&0x01) == 0 ) {
             $blocks[] = array(
                 'type' => 'text',

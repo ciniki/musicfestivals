@@ -61,6 +61,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
             'festival_id'=>'',
             'name'=>'',
             'public_name'=>'',
+            'pronoun'=>'',
             'flags'=>'0',
             'parent'=>'',
             'address'=>'',
@@ -86,6 +87,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
             . "ciniki_musicfestival_competitors.festival_id, "
             . "ciniki_musicfestival_competitors.name, "
             . "ciniki_musicfestival_competitors.public_name, "
+            . "ciniki_musicfestival_competitors.pronoun, "
             . "ciniki_musicfestival_competitors.flags, "
             . "ciniki_musicfestival_competitors.parent, "
             . "ciniki_musicfestival_competitors.address, "
@@ -106,7 +108,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'competitors', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'name', 'public_name', 'flags',
+                'fields'=>array('festival_id', 'name', 'public_name', 'pronoun', 'flags',
                     'parent', 'address', 'city', 'province', 'postal', 'phone_home', 'phone_cell', 
                     'email', '_age', 'study_level', 'instrument', 'notes'),
                 ),

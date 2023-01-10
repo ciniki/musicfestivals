@@ -20,6 +20,7 @@ function ciniki_musicfestivals_competitorUpdate(&$ciniki) {
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
         'public_name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Public Name'),
+        'pronoun'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Pronoun'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'parent'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Parent'),
         'address'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address'),

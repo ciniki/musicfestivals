@@ -1,0 +1,6 @@
+#
+# Added pronoun names
+#
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN pn_display_name varchar(250) not null AFTER public_name;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN pn_public_name varchar(250) not null AFTER pn_display_name;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.09';

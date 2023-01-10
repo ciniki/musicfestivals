@@ -399,9 +399,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "registrations.rtype, "
                 . "registrations.rtype AS rtype_text, "
                 . "registrations.status, "
-                . "registrations.status AS status_text, "
-                . "registrations.display_name, "
-                . "registrations.class_id, "
+                . "registrations.status AS status_text, ";
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+                $strsql .= "registrations.pn_display_name AS display_name, ";
+            } else {
+                $strsql .= "registrations.display_name, ";
+            }
+            $strsql .= "registrations.class_id, "
                 . "classes.code AS class_code, "
                 . "classes.name AS class_name, "
                 . "registrations.title1, "
@@ -447,7 +451,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'registrations', 'fname'=>'id', 
-                    'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
+                    'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 
+                        'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
                         'class_id', 'class_code', 'class_name', 
                         'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 
                         'fee', 'payment_type', 'participation', 
@@ -553,9 +558,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             // Get the list of schedule section divisions
             //
             if( isset($args['ssection_id']) && $args['ssection_id'] == 'unscheduled' ) {
-                $strsql = "SELECT registrations.id, "
-                    . "registrations.display_name, "
-                    . "registrations.title1, "
+                $strsql = "SELECT registrations.id, ";
+                if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+                    $strsql .= "registrations.pn_display_name AS display_name, ";
+                } else {
+                    $strsql .= "registrations.display_name, ";
+                }
+                $strsql .= "registrations.title1, "
                     . "registrations.status, "
                     . "registrations.status AS status_text, "
                     . "classes.code AS class_code, "
@@ -649,10 +658,17 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             //        . "timeslots.name AS timeslot_name, "
                     . "timeslots.description, "
                     . "registrations.id AS reg_id, "
-                    . "registrations.uuid AS reg_uuid, "
-                    . "registrations.display_name, "
-                    . "registrations.public_name, "
-                    . "registrations.title1, "
+                    . "registrations.uuid AS reg_uuid, ";
+//                    . "registrations.display_name, "
+//                    . "registrations.public_name, ";
+                if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+                    $strsql .= "registrations.pn_display_name AS display_name, "
+                        . "registrations.pn_public_name AS public_name, ";
+                } else {
+                    $strsql .= "registrations.display_name, "
+                        . "registrations.public_name, ";
+                }
+                $strsql .= "registrations.title1, "
                     . "registrations.participation, "
                     . "registrations.video1_url, "
                     . "registrations.video2_url, "
@@ -702,7 +718,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             'class1_id', 'class2_id', 'class3_id', 'description', 'class1_name', 'class2_name', 'class3_name',
                             )),
                     array('container'=>'registrations', 'fname'=>'reg_id', 
-                        'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name', 'title'=>'title1', 
+                        'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name',
+                            'title'=>'title1', 
                             'participation', 'video1_url', 'video2_url', 'video3_url', 
                             'music1_orgfilename', 'music2_orgfilename', 'music3_orgfilename',
                             )),
@@ -838,9 +855,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "class1.name AS class1_name, "
                     . "timeslots.name, "
                     . "timeslots.description, "
-                    . "registrations.id AS reg_id, "
-                    . "registrations.display_name "
-                    . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
+                    . "registrations.id AS reg_id, ";
+                if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+                    $strsql .= "registrations.pn_display_name AS display_name, ";
+                } else {
+                    $strsql .= "registrations.display_name, ";
+                }
+                $strsql .= "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
                     . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
                         . "timeslots.class1_id = class1.id " 
                         . "AND class1.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -903,8 +924,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         if( isset($args['competitors']) && $args['competitors'] == 'yes' ) {
             $strsql = "SELECT competitors.id, "
                 . "competitors.festival_id, "
-                . "competitors.name, "
-                . "IF((competitors.flags&0x01) = 0x01, 'Signed', '') AS waiver_signed, "
+                . "competitors.name, ";
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+                $strsql .= "competitors.pronoun, ";
+            } else {
+                $strsql .= "'' AS pronoun, ";
+            }
+            $strsql .= "IF((competitors.flags&0x01) = 0x01, 'Signed', '') AS waiver_signed, "
                 . "IFNULL(classes.code, '') AS classcodes "
                 . "FROM ciniki_musicfestival_competitors AS competitors "
                 . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
@@ -929,7 +955,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'competitors', 'fname'=>'id', 
-                    'fields'=>array('id', 'festival_id', 'name', 'waiver_signed', 'classcodes'),
+                    'fields'=>array('id', 'festival_id', 'name', 'pronoun', 'waiver_signed', 'classcodes'),
                     'dlists'=>array('classcodes'=>', '),
                     ),
                 ));

@@ -173,6 +173,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                 $strsql = "SELECT ciniki_musicfestival_competitors.id, "
                     . "ciniki_musicfestival_competitors.festival_id, "
                     . "ciniki_musicfestival_competitors.name, "
+                    . "ciniki_musicfestival_competitors.pronoun, "
                     . "ciniki_musicfestival_competitors.parent, "
                     . "ciniki_musicfestival_competitors.address, "
                     . "ciniki_musicfestival_competitors.city, "
@@ -192,7 +193,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'competitors', 'fname'=>'id', 
-                        'fields'=>array('festival_id', 'name', 'parent', 'address', 'city', 'province', 'postal', 'phone_home', 'phone_cell', 'email', '_age', 'study_level', 'instrument', 'notes'),
+                        'fields'=>array('festival_id', 'name', 'pronoun', 'parent', 'address', 'city', 'province', 'postal', 'phone_home', 'phone_cell', 'email', '_age', 'study_level', 'instrument', 'notes'),
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
@@ -205,6 +206,9 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                 $competitor['age'] = $competitor['_age'];
                 $details = array();
                 $details[] = array('label'=>'Name', 'value'=>$competitor['name']);
+                if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+                    $details[] = array('label'=>'Pronoun', 'value'=>$competitor['pronoun']);
+                }
                 if( $competitor['parent'] != '' ) { $details[] = array('label'=>'Parent', 'value'=>$competitor['parent']); }
                 $address = '';
                 if( $competitor['address'] != '' ) { $address .= $competitor['address']; }

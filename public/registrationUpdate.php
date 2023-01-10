@@ -110,7 +110,6 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-        error_log(print_r($args,true));
 
     //
     // Check if new files added

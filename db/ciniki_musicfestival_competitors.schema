@@ -16,6 +16,7 @@
 #
 # name:                 The name of the competitor.
 # public_name:          The public name of the competitor, should only be set when auto generator is incorrect.
+# pronoun:              The competitors pronoun.
 #
 # flags:                The options for the competitor.
 #
@@ -49,6 +50,7 @@ create table ciniki_musicfestival_competitors (
     billing_customer_id int not null,
     name varchar(250) not null,
     public_name varchar(250) not null,
+    pronoun varchar(50) not null,
     flags smallint unsigned not null,
     parent varchar(250) not null,
     address varchar(250) not null,
@@ -67,4 +69,4 @@ create table ciniki_musicfestival_competitors (
     primary key (id),
     unique index (uuid),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.03';
+) ENGINE='InnoDB', COMMENT='v1.04';

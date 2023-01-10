@@ -15,7 +15,7 @@
 #
 # comments:             The comments for the participant.
 # grade:                The grade assigned the registration. (A,B,C...)
-# score:                The score for the performance (0-100).
+# score:                The score or mark for the performance (0-100).
 #
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.

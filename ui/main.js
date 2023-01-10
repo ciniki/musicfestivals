@@ -628,7 +628,7 @@ function ciniki_musicfestivals_main() {
         }
         if( s == 'competitors' ) {
             switch(j) {
-                case 0: return d.name;
+                case 0: return d.name + M.subdue(' (',d.pronoun,')');
                 case 1: return d.classcodes;
                 case 2: return d.waiver_signed;
             }
@@ -1591,7 +1591,7 @@ function ciniki_musicfestivals_main() {
     }
     this.class.cellValue = function(s, i, j, d) {
         switch(j) {
-            case 0: return d.display_name;
+            case 0: return d.display_name + M.subdue(' (',d.pronoun,')');
             case 1: return d.teacher_name;
             case 2: return d.status_text;
         }
@@ -2197,6 +2197,9 @@ function ciniki_musicfestivals_main() {
         'general':{'label':'Competitor', 'aside':'yes', 'fields':{
             'name':{'label':'Name', 'required':'yes', 'type':'text', 'livesearch':'yes'},
             'public_name':{'label':'Public Name', 'type':'text'},
+            'pronoun':{'label':'Pronoun', 'type':'text',
+                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x80); },
+                },
             'parent':{'label':'Parent', 'type':'text'},
             }},
         '_other':{'label':'', 'aside':'yes', 'fields':{
@@ -2756,10 +2759,17 @@ function ciniki_musicfestivals_main() {
 //                            'size':'small',
 //                            };
                         p.sections['comments_' + i].fields['score_' + rsp.timeslot.registrations[i].id + '_' + rsp.adjudicators[j].id] = {
-                            'label':'Score', 
+                            'label':'Mark', 
                             'type':'text', 
                             'size':'small',
                             };
+                        if( M.modFlagOn('ciniki.musicfestivals', 0x08) ) {
+                            p.sections['comments_' + i].fields['placement_' + rsp.timeslot.registrations[i].id + '_' + rsp.adjudicators[j].id] = {
+                                'label':'Placement', 
+                                'type':'text', 
+                                'size':'large',
+                                };
+                        }
                     }
                 }
                 p.refresh();
