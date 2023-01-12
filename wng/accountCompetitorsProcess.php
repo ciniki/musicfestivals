@@ -408,7 +408,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     'billing_customer_id' => $request['session']['customer']['id'],
                     'name' => $fields['name']['value'],
                     'public_name' => preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $fields['name']['value']),
-                    'pronoun' => $fields['pronoun']['value'],
+                    'pronoun' => (isset($fields['pronoun']['value']) ? $fields['pronoun']['value'] : ''),
                     'flags' => ($fields['terms']['value'] == 'on' ? 0x01 : 0),
                     'parent' => $fields['parent']['value'],
                     'address' => $fields['address']['value'],
