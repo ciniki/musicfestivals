@@ -389,6 +389,10 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             $filename = preg_replace('/[^a-zA-Z0-9_]/', '_', $section['name']) . '_comments';
         }
 
+        if( !isset($section['divisions']) ) {
+            continue;
+        }
+
         //
         // Output the divisions
         //
