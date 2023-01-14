@@ -472,7 +472,6 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     if( $rc['stat'] != 'ok' ) {
                         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.328', 'msg'=>'Unable to update registrations', 'err'=>$rc['err']));
                     }
-
                 }
 
                 if( isset($request['session']['account-musicfestivals-competitor-form-return']) ) {

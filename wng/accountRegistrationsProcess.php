@@ -618,12 +618,24 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.311', 'msg'=>'Unable to updated registration name', 'err'=>$rc['err']));
                 }
+                //
+                // Update registration values as they are needed when we update the cart below
+                //
                 if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
                     $registration['display_name'] = $rc['pn_display_name'];
                     $registration['public_name'] = $rc['pn_public_name'];
                 } else {
                     $registration['display_name'] = $rc['display_name'];
                     $registration['public_name'] = $rc['public_name'];
+                }
+                if( isset($update_args['title1']) ) {
+                    $registration['title1'] = $update_args['title1'];
+                }
+                if( isset($update_args['title2']) ) {
+                    $registration['title2'] = $update_args['title2'];
+                }
+                if( isset($update_args['title3']) ) {
+                    $registration['title3'] = $update_args['title3'];
                 }
 
                 //
@@ -640,7 +652,10 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 // Check if anything changed in the cart
                 //
                 $update_item_args = array();
-                $notes = $registration['display_name'] . ($registration['title1'] != '' ? ' - ' . $registration['title1'] : '');
+                $notes = $registration['display_name'] 
+                    . ($registration['title1'] != '' ? ' - ' . $registration['title1'] : '')
+                    . ($registration['title2'] != '' ? ', ' . $registration['title2'] : '')
+                    . ($registration['title3'] != '' ? ', ' . $registration['title3'] : '');
 
                 if( $item['code'] != $selected_class['code'] ) {
                     $update_item_args['code'] = $selected_class['code'];

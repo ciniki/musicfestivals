@@ -35,6 +35,9 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $festival_
         . "registrations.class_id, "
         . "FORMAT(registrations.fee, 2) AS fee, "
         . "registrations.payment_type, "
+        . "registrations.title1, "
+        . "registrations.title2, "
+        . "registrations.title3, "
         . "registrations.notes, "
         . "competitors.id AS competitor_id, "
         . "competitors.name AS competitor_name, "
@@ -63,7 +66,7 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $festival_
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'rtype', 'invoice_id', 'status', 
-                'display_name', 'public_name', 'pn_display_name', 'pn_public_name',
+                'display_name', 'public_name', 'pn_display_name', 'pn_public_name', 'title1', 'title2', 'title3',
                 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
                 )),
         array('container'=>'competitors', 'fname'=>'competitor_id', 
@@ -179,6 +182,13 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $festival_
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.84', 'msg'=>'Unable to update name', 'err'=>$rc['err']));
                 }
+                if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+                    $registration['display_name'] = $pn_display_name;
+                    $registration['public_name'] = $pn_public_name;
+                } else {
+                    $registration['display_name'] = $display_name;
+                    $registration['public_name'] = $public_name;
+                }
             }
         } elseif( $registration['rtype'] == 90 ) {
             $update_args = array();
@@ -187,9 +197,11 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $festival_
                 ) {
                 if( $registration['display_name'] != $registration['competitors'][$registration['competitor1_id']]['name'] ) {
                     $update_args['display_name'] = $registration['competitors'][$registration['competitor1_id']]['name'];
+                    $registration['display_name'] = $update_args['display_name'];
                 }
                 if( $registration['public_name'] != $registration['competitors'][$registration['competitor1_id']]['name'] ) {
                     $update_args['public_name'] = $registration['competitors'][$registration['competitor1_id']]['name'];
+                    $registration['public_name'] = $update_args['public_name'];
                 }
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration['id'], $update_args, 0x04);
                 if( $rc['stat'] != 'ok' ) {
@@ -199,8 +211,37 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $festival_
         }
 
         //
-        // FIXME: Add check to see if invoice needs updating
+        // Add check to see if invoice needs updating
         //
+        if( isset($registration['invoice_id']) && $registration['invoice_id'] > 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceObjectItem');
+            $rc = ciniki_sapos_hooks_invoiceObjectItem($ciniki, $tnid, $registration['invoice_id'], 'ciniki.musicfestivals.registration', $registration['id']);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.420', 'msg'=>'Unable to get invoice item', 'err'=>$rc['err']));
+            }
+            $item = $rc['item'];
+
+            //
+            // Check if anything changed in the cart
+            //
+            $update_item_args = array();
+            $notes = $registration['display_name'] 
+                . ($registration['title1'] != '' ? ' - ' . $registration['title1'] : '')
+                . ($registration['title2'] != '' ? ', ' . $registration['title2'] : '')
+                . ($registration['title3'] != '' ? ', ' . $registration['title3'] : '');
+
+            if( $item['notes'] != $notes ) {
+                $update_item_args['notes'] = $notes;
+            }
+            if( count($update_item_args) > 0 ) {
+                $update_item_args['item_id'] = $item['id'];
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemUpdate');
+                $rc = ciniki_sapos_hooks_invoiceItemUpdate($ciniki, $tnid, $update_item_args);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.417', 'msg'=>'Unable to update invoice', 'err'=>$rc['err']));
+                }
+            }
+        }
     }
 
     return array('stat'=>'ok');
