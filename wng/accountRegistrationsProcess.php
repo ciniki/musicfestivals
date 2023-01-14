@@ -564,7 +564,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $registration['rtype'] = 30;
             }
             // Virtual pricing
-            if( isset($festival['earlybird_fee']) && $festival['earlybird'] == 'yes' && $selected_class['earlybird_fee'] > 0 ) {
+            if( isset($selected_class['earlybird_fee']) && $festival['earlybird'] == 'yes' && $selected_class['earlybird_fee'] > 0 ) {
                 $new_fee = $selected_class['earlybird_fee'];
             } else {
                 $new_fee = $selected_class['fee'];
@@ -664,6 +664,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     $update_item_args['description'] = $selected_class['name'];
                 }
                 if( $item['unit_amount'] != $registration['fee'] ) {
+                    error_log('update unit amount: ' . $registration['fee']);
                     $update_item_args['unit_amount'] = $registration['fee'];
                 }
                 if( $item['notes'] != $notes ) {
@@ -875,6 +876,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     . "uuid, "
                     . "billing_customer_id, "
                     . "name, "
+                    . "pronoun, "
                     . "flags, "
                     . "public_name, "
                     . "parent, "
@@ -904,7 +906,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     . ($competitor['province'] != '' ? ', ' . $competitor['province'] : '')
                     . ($competitor['postal'] != '' ? ', ' . $competitor['postal'] : '')
                     . "";
-                $fields[$fid]['value'] = $competitor['name'] 
+                $fields[$fid]['value'] = $competitor['name'] . ($competitor['pronoun'] != '' ? ' (' . $competitor['pronoun'] . ')' : '')
                     . (isset($competitor['parent']) && $competitor['parent'] != '' ? "\nParent: " . $competitor['parent'] : '')
                     . "\nAddress: " . $address
                     . "\nCell Phone: " . $competitor['phone_cell']
