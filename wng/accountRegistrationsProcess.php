@@ -391,7 +391,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 ) {
                 continue;
             }
-            if( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == '' && $field['id'] != 'termstitle' ) {
+            if( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == '-1' && $field['id'] == 'participation' ) {
+                $errors[] = array(
+                    'msg' => 'You must specify how you want to participate.',
+                    );
+            }
+            elseif( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == '' && $field['id'] != 'termstitle' ) {
                 $errors[] = array(
                     'msg' => 'You must specify the registration ' . $field['label'] . '.',
                     );
