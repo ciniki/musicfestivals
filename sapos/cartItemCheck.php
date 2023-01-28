@@ -86,7 +86,7 @@ function ciniki_musicfestivals_sapos_cartItemCheck($ciniki, $tnid, $customer, $a
                 . "sections.live_end_dt, "
                 . "sections.virtual_end_dt "
                 . "FROM ciniki_musicfestival_classes AS classes "
-                . "INNER JOIN ciniki_musicfestival_category AS categories ON ("
+                . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
                     . "classes.category_id = categories.id "
                     . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                     . ") "
