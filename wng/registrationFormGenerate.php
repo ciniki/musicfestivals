@@ -121,20 +121,26 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     $classes_3to = array();  // Class id's with 3 title & times
     $live_prices = array();
     $virtual_prices = array();
+    $dt = new DateTime('now', new DateTimezone('UTC'));
     foreach($sections as $sid => $section) {
-        $section_live = 'yes';
-        $section_virtual = 'yes';
+        // Set default to current festival
+        $section_live = $festival['live'] == 'yes' ? 'yes' : 'no';
+        $section_virtual = $festival['virtual'] == 'yes' ? 'yes' : 'no';
         if( ($festival['flags']&0x08) == 0x08 ) {
             if( $section['live_end_dt'] != '0000-00-00 00:00:00' ) {
                 $section_live_dt = new DateTime($section['live_end_dt'], new DateTimezone('UTC'));
                 if( $section_live_dt < $dt ) {
                     $section_live = 'no';
+                } else {
+                    $section_live = 'yes';
                 }
             }
             if( $section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
                 $section_virtual_dt = new DateTime($section['virtual_end_dt'], new DateTimezone('UTC'));
                 if( $section_virtual_dt < $dt ) {
                     $section_virtual = 'no';
+                } else {
+                    $section_virtual = 'yes';
                 }
             }
         }
@@ -175,8 +181,14 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     } elseif( $festival['live'] == 'yes' && $section_live == 'yes' && $section_class['fee'] > 0 ) {
                         $live_prices[$cid] = '$' . number_format($section_class['fee'], 2);
                         $sections[$sid]['classes'][$cid]['live_fee'] = $section_class['fee'];
+                    } elseif( $festival['live'] == 'sections' && $section_live == 'yes' && $section_class['fee'] > 0 ) {
+                        $live_prices[$cid] = '$' . number_format($section_class['fee'], 2);
+                        $sections[$sid]['classes'][$cid]['live_fee'] = $section_class['fee'];
                     }
                     if( $festival['virtual'] == 'yes' && $section_virtual == 'yes' && $section_class['vfee'] > 0 ) {
+                        $virtual_prices[$cid] = '$' . number_format($section_class['vfee'], 2);
+                        $sections[$sid]['classes'][$cid]['virtual_fee'] = $section_class['vfee'];
+                    } elseif( $festival['virtual'] == 'sections' && $section_virtual == 'yes' && $section_class['vfee'] > 0 ) {
                         $virtual_prices[$cid] = '$' . number_format($section_class['vfee'], 2);
                         $sections[$sid]['classes'][$cid]['virtual_fee'] = $section_class['vfee'];
                     }
@@ -229,9 +241,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             unset($sections[$sid]);
         }
     }
-    if( isset($selected_sid) ) {
+    if( isset($selected_sid) && isset($sections[$selected_sid]) ) {
         $selected_section = $sections[$selected_sid];
-        if( isset($selected_cid) ) {
+        if( isset($selected_cid) && isset($sections[$selected_sid]['classes'][$selected_cid]) ) {
             $selected_class = $sections[$selected_sid]['classes'][$selected_cid];
         }
     }
@@ -507,7 +519,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         // Setup pricing for virtual option with separate virtual pricing
         //
         if( ($festival['flags']&0x06) == 0x06 ) {
-            if( isset($festival['live']) && $festival['live'] == 'yes' 
+            if( isset($festival['live']) && $festival['live'] != 'no' 
                 && isset($selected_class['live_fee']) && $selected_class['live_fee'] > 0 
                 ) {
                 $fields['participation']['options'][0] .= ' - $' . number_format($selected_class['live_fee'], 2);
@@ -515,7 +527,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 unset($fields['participation']['options'][-1]);
                 unset($fields['participation']['options'][0]);
             }
-            if( isset($festival['virtual']) && $festival['virtual'] == 'yes' 
+            if( isset($festival['virtual']) && $festival['virtual'] != 'no' 
                 && isset($selected_class['virtual_fee']) && $selected_class['virtual_fee'] > 0 
                 ) {
                 $fields['participation']['options'][1] .= ' - $' . number_format($selected_class['virtual_fee'], 2);

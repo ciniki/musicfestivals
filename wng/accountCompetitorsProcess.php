@@ -55,6 +55,51 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     $festival = $rc['festival'];
 
     //
+    // Check for any sections that have different end date
+    //
+    if( ($festival['flags']&0x09) == 0x09 ) {
+        $strsql = "SELECT s.id AS section_id, "
+            . "s.name AS section_name, "
+            . "s.live_end_dt, "
+            . "s.virtual_end_dt "
+            . "FROM ciniki_musicfestival_sections AS s "
+            . "WHERE s.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+            . "AND s.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND (s.flags&0x01) = 0 "
+            . "ORDER BY s.sequence, s.name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'sections', 'fname'=>'section_id', 
+                'fields'=>array('id'=>'section_id', 'name'=>'section_name', 'live_end_dt', 'virtual_end_dt'),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.298', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
+        }
+        $sections = isset($rc['sections']) ? $rc['sections'] : array();
+
+        //
+        // Check for sections that are still open
+        //
+        $dt = new DateTime('now', new DateTimezone('UTC'));
+        foreach($sections as $sid => $section) {
+            if( $festival['live'] == 'no' && $section['live_end_dt'] != '0000-00-00 00:00:00' ) {
+                $live_dt = new DateTime($section['live_end_dt'], new DateTimezone('UTC'));
+                if( $live_dt > $dt ) {
+                    $festival['live'] = 'sections';
+                }
+            }
+            if( $festival['live'] == 'no' && $section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
+                $virtual_dt = new DateTime($section['virtual_end_dt'], new DateTimezone('UTC'));
+                if( $live_dt > $dt ) {
+                    $festival['virtual'] = 'sections';
+                }
+            }
+        }
+    }
+
+    //
     // Load the festival details
     //
     $strsql = "SELECT detail_key, detail_value "
@@ -678,7 +723,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         if( count($competitors) > 0 ) {
             $add_button = '';
             //if( ($festival['flags']&0x01) == 0x01 ) {
-            if( ($festival['flags']&0x01) == 0x01 && ($festival['live'] == 'yes' || $festival['virtual'] == 'yes') ) {
+            if( ($festival['flags']&0x01) == 0x01 && ($festival['live'] != 'no' || $festival['virtual'] != 'no') ) {
                 foreach($competitors as $cid => $competitor) {
                     $competitors[$cid]['editbutton'] = "<form action='{$base_url}' method='POST'>"
                         . "<input type='hidden' name='f-competitor_id' value='{$cid}' />"

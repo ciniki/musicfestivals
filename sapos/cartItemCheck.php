@@ -30,8 +30,22 @@ function ciniki_musicfestivals_sapos_cartItemCheck($ciniki, $tnid, $customer, $a
             . "registrations.fee, "
             . "registrations.class_id, "
             . "registrations.festival_id, "
-            . "registrations.participation "
+            . "registrations.participation, "
+            . "IFNULL(sections.live_end_dt, '0000-00-00 00:00:00') AS live_end_dt, "
+            . "IFNULL(sections.virtual_end_dt, '0000-00-00 00:00:00') AS virtual_end_dt "
             . "FROM ciniki_musicfestival_registrations AS registrations "
+            . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+                . "registrations.class_id = classes.id "
+                . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
+                . "classes.category_id = categories.id "
+                . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+                . "categories.section_id = sections.id "
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
             . "WHERE registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
@@ -82,40 +96,23 @@ function ciniki_musicfestivals_sapos_cartItemCheck($ciniki, $tnid, $customer, $a
         $section_live = 'yes';
         $section_virtual = 'yes';
         if( ($festival['flags']&0x08) == 0x08 ) {
-            $strsql = "SELECT sections.id, "
-                . "sections.live_end_dt, "
-                . "sections.virtual_end_dt "
-                . "FROM ciniki_musicfestival_classes AS classes "
-                . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
-                    . "classes.category_id = categories.id "
-                    . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                    . ") "
-                . "INNER JOIN ciniki_musicfestival_sections AS sections ON ("
-                    . "categories.section_id = sections.id "
-                    . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                    . ") "
-                . "WHERE classes.id = '" . ciniki_core_dbQuote($ciniki, $registration['class_id']) . "' "
-                . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . "";
-            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'section');
-            if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.316', 'msg'=>'Unable to load section', 'err'=>$rc['err']));
-            }
-            if( !isset($rc['section']) ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.428', 'msg'=>'Unable to find requested section'));
-            }
-            $section = $rc['section'];
-
-            if( $section['live_end_dt'] != '0000-00-00 00:00:00' ) {
-                $section_live_dt = new DateTime($section['live_end_dt'], new DateTimezone('UTC'));
+            //
+            // Check the end dates for the registration section 
+            //
+            if( $registration['live_end_dt'] != '0000-00-00 00:00:00' ) {
+                $section_live_dt = new DateTime($registration['live_end_dt'], new DateTimezone('UTC'));
                 if( $section_live_dt < $dt ) {
                     $festival['live'] = 'no';
+                } else {
+                    $festival['live'] = 'yes';
                 }
             }
-            if( $section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
-                $section_virtual_dt = new DateTime($section['virtual_end_dt'], new DateTimezone('UTC'));
+            if( $registration['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
+                $section_virtual_dt = new DateTime($registration['virtual_end_dt'], new DateTimezone('UTC'));
                 if( $section_virtual_dt < $dt ) {
                     $festival['virtual'] = 'no';
+                } else {
+                    $festival['virtual'] = 'yes';
                 }
             }
         }

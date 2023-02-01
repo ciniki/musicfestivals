@@ -161,6 +161,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     //
     $strsql = "SELECT s.id AS section_id, "
         . "s.name AS section_name, "
+        . "s.live_end_dt, "
+        . "s.virtual_end_dt, "
         . "ca.name AS category_name, "
         . "cl.id AS class_id, "
         . "cl.uuid AS class_uuid, "
@@ -187,7 +189,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'section_id', 
-            'fields'=>array('id'=>'section_id', 'name'=>'section_name'),
+            'fields'=>array('id'=>'section_id', 'name'=>'section_name', 'live_end_dt', 'virtual_end_dt'),
             ),
         array('container'=>'classes', 'fname'=>'class_id', 
             'fields'=>array('id'=>'class_id', 'uuid'=>'class_uuid', 'category_name', 'code'=>'class_code', 
@@ -198,6 +200,27 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.298', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
     }
     $sections = isset($rc['sections']) ? $rc['sections'] : array();
+
+    //
+    // Check for sections that are still open
+    //
+    if( ($festival['flags']&0x09) == 0x09 ) {
+        $dt = new DateTime('now', new DateTimezone('UTC'));
+        foreach($sections as $sid => $section) {
+            if( $festival['live'] == 'no' && $section['live_end_dt'] != '0000-00-00 00:00:00' ) {
+                $live_dt = new DateTime($section['live_end_dt'], new DateTimezone('UTC'));
+                if( $live_dt > $dt ) {
+                    $festival['live'] = 'sections';
+                }
+            }
+            if( $festival['live'] == 'no' && $section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
+                $virtual_dt = new DateTime($section['virtual_end_dt'], new DateTimezone('UTC'));
+                if( $live_dt > $dt ) {
+                    $festival['virtual'] = 'sections';
+                }
+            }
+        }
+    }
 
     //
     // Load the teachers
@@ -1052,7 +1075,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'content' => $form_errors,
                 );
         }
-        if( ($festival['flags']&0x01) == 0x01 && ($festival['live'] == 'yes' || $festival['virtual'] == 'yes') ) {
+        if( ($festival['flags']&0x01) == 0x01 && ($festival['live'] != 'no' || $festival['virtual'] != 'no') ) {
             if( count($cart_registrations) > 0 ) {
                 $add_button = "<a class='button' href='{$request['ssl_domain_base_url']}/account/musicfestivalregistrations?add=yes'>Add</a>";
                 $total = 0;
@@ -1108,6 +1131,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     );
             }
             $blocks[] = $buttons;
+        } elseif( ($festival['flags']&0x09) == 0x09 ) {
+            error_log(print_r($festival,true));
         } else {
             $blocks[] = array(
                 'type' => 'text',
@@ -1211,7 +1236,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 );
         }
 
-        if( ($festival['flags']&0x01) == 0x01 && ($festival['live'] == 'yes' || $festival['virtual'] == 'yes') 
+        if( ($festival['flags']&0x01) == 0x01 && ($festival['live'] != 'no' || $festival['virtual'] != 'no') 
             && isset($customer_switch_type_block)
             ) {
             $blocks[] = $customer_switch_type_block;

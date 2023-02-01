@@ -120,6 +120,18 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.218', 'msg'=>'Unable to find requested section'));
     }
     $section = $rc['section'];
+
+    //
+    // Check if section has other deadlines
+    //
+    if( $section['live_end_dt'] != '' && $section['live_end_dt'] != '0000-00-00 00:00:00' ) {
+        $live_dt = new DateTime($section['live_end_dt'], new DateTimezone('UTC'));
+        $festival['live'] = ($live_dt > $dt ? 'yes' : 'no');
+    }
+    if( $section['virtual_end_dt'] != '' && $section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
+        $virtual_dt = new DateTime($section['virtual_end_dt'], new DateTimezone('UTC'));
+        $festival['virtual'] = ($virtual_dt > $dt ? 'yes' : 'no');
+    }
   
     //
     // Check for syllabus download

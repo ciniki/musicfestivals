@@ -54,7 +54,9 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
-
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'datetimeFormat');
+    $datetime_format = ciniki_users_datetimeFormat($ciniki, 'php');
+    
     //
     // Setup the arrays for the lists of next/prev ids
     //
@@ -104,7 +106,9 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
             . "ciniki_musicfestival_sections.flags, "
             . "ciniki_musicfestival_sections.primary_image_id, "
             . "ciniki_musicfestival_sections.synopsis, "
-            . "ciniki_musicfestival_sections.description "
+            . "ciniki_musicfestival_sections.description, "
+            . "ciniki_musicfestival_sections.live_end_dt, "
+            . "ciniki_musicfestival_sections.virtual_end_dt "
             . "FROM ciniki_musicfestival_sections "
             . "WHERE ciniki_musicfestival_sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_musicfestival_sections.id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
@@ -113,7 +117,14 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'sections', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'name', 'permalink', 'sequence', 'flags', 'primary_image_id', 'synopsis', 'description'),
+                'fields'=>array('festival_id', 'name', 'permalink', 'sequence', 'flags', 
+                    'primary_image_id', 'synopsis', 'description',
+                    'live_end_dt', 'virtual_end_dt', 
+                    ),
+                'utctotz'=>array(
+                    'live_end_dt'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                    'virtual_end_dt'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                    ),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

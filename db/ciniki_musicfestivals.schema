@@ -26,7 +26,7 @@
 #                           0x01 - Online Registrations Open
 #                           0x02 - Virtual Music Festival (Enable video links and PDF music uploads)
 #                           0x04 - Virtual Pricing
-#                           0x08 - Section End Dates **future**
+#                           0x08 - Section End Dates
 #                           0x10 -
 #                           0x20 -
 #                           0x40 -
