@@ -272,6 +272,7 @@ function ciniki_musicfestivals_main() {
             'buttons':{
                 'email':{'label':'Email List', 'fn':'M.ciniki_musicfestivals_main.festival.emailTeacherRegistrations();'},
                 'comments':{'label':'Comments PDF', 'fn':'M.ciniki_musicfestivals_main.festival.downloadTeacherComments();'},
+                'registrations':{'label':'Registrations PDF', 'fn':'M.ciniki_musicfestivals_main.festival.downloadTeacherRegistrations();'},
             }},
         'schedule_sections':{'label':'Schedules', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
 //            'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._tabs.selected == 'schedule' ? 'yes' : 'no'; },
@@ -485,6 +486,13 @@ function ciniki_musicfestivals_main() {
             'teacher_customer_id':this.teacher_customer_id,
             };
         M.api.openPDF('ciniki.musicfestivals.commentsPDF',args);
+    }
+    this.festival.downloadTeacherRegistrations = function() {
+        var args = {'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'teacher_customer_id':this.teacher_customer_id,
+            };
+        M.api.openPDF('ciniki.musicfestivals.teacherRegistrationsPDF',args);
     }
     this.festival.listLabel = function(s, i, d) { 
         if( s == 'details' ) {

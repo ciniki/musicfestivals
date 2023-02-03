@@ -153,15 +153,29 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
     // Check if the competitor information passed in
     //
     if( !isset($args['competitors']) ) {
-        $strsql = "SELECT c.id, c.uuid, "
-            . "c.name, c.parent, c.address, c.city, c.province, c.postal, "
-            . "c.phone_home, c.phone_cell, c.email, c.age, c.study_level, c.instrument, c.notes "
-            . "FROM ciniki_musicfestival_competitors AS c "
-            . "WHERE c.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
         if( isset($args['teacher_customer_id']) ) {
-            $strsql .= "AND c.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' ";
+            $strsql = "SELECT c.id, c.uuid, "
+                . "c.name, c.parent, c.address, c.city, c.province, c.postal, "
+                . "c.phone_home, c.phone_cell, c.email, c.age, c.study_level, c.instrument, c.notes "
+                . "FROM ciniki_musicfestival_competitors AS c "
+                . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                    . "( c.id = registrations.competitor1_id "
+                        . "OR c.id = registrations.competitor2_id "
+                        . "OR c.id = registrations.competitor3_id "
+                        . "OR c.id = registrations.competitor4_id "
+                        . "OR c.id = registrations.competitor5_id "
+                        . ") "
+                    . "AND registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' "
+                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . ") "
+                . "WHERE c.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
         } else {
-            $strsql .= "AND c.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['billing_customer_id']) . "' ";
+            $strsql = "SELECT c.id, c.uuid, "
+                . "c.name, c.parent, c.address, c.city, c.province, c.postal, "
+                . "c.phone_home, c.phone_cell, c.email, c.age, c.study_level, c.instrument, c.notes "
+                . "FROM ciniki_musicfestival_competitors AS c "
+                . "WHERE c.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND c.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['billing_customer_id']) . "' ";
         }
         $strsql .= "AND c.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
