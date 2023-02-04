@@ -1969,7 +1969,7 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.registration.addCompetitor = function(cid,c) {
-        this.save("M.ciniki_musicfestivals_main.competitor.open('M.ciniki_musicfestivals_main.registration.updateCompetitor(" + c + ");'," + cid + "," + this.festival_id + ",null);");
+        this.save("M.ciniki_musicfestivals_main.competitor.open('M.ciniki_musicfestivals_main.registration.updateCompetitor(" + c + ");'," + cid + "," + this.festival_id + ",null,M.ciniki_musicfestivals_main.registration.data.billing_customer_id);");
     }
     this.registration.updateCompetitor = function(c) {
         var p = M.ciniki_musicfestivals_main.competitor;
@@ -2215,6 +2215,7 @@ function ciniki_musicfestivals_main() {
     this.competitor.data = null;
     this.competitor.festival_id = 0;
     this.competitor.competitor_id = 0;
+    this.competitor.billing_customer_id = 0;
     this.competitor.nplist = [];
     this.competitor.sections = {
         'general':{'label':'Competitor', 'aside':'yes', 'fields':{
@@ -2268,10 +2269,11 @@ function ciniki_musicfestivals_main() {
     this.competitor.liveSearchResultRowFn = function(s, f, i, j, d) { 
         return 'M.ciniki_musicfestivals_main.competitor.open(null,\'' + d.id + '\');';
     }
-    this.competitor.open = function(cb, cid, fid, list) {
+    this.competitor.open = function(cb, cid, fid, list, bci) {
         if( cid != null ) { this.competitor_id = cid; }
         if( fid != null ) { this.festival_id = fid; }
         if( list != null ) { this.nplist = list; }
+        if( bci != null ) { this.billing_customer_id = bci; }
         M.api.getJSONCb('ciniki.musicfestivals.competitorGet', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'competitor_id':this.competitor_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
@@ -2301,7 +2303,7 @@ function ciniki_musicfestivals_main() {
             }
         } else {
             var c = this.serializeForm('yes');
-            M.api.postJSONCb('ciniki.musicfestivals.competitorAdd', {'tnid':M.curTenantID, 'festival_id':this.festival_id}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.musicfestivals.competitorAdd', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'billing_customer_id':this.billing_customer_id}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;

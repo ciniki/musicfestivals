@@ -21,6 +21,7 @@ function ciniki_musicfestivals_competitorAdd(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
+        'billing_customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Billing Customer'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'),
         'public_name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Public Name'),
         'pronoun'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Pronoun'),
