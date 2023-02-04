@@ -2140,12 +2140,13 @@ function ciniki_musicfestivals_main() {
             if( this.teacher_customer_id != this.data.teacher_customer_id ) {
                 c.append('teacher_customer_id', this.teacher_customer_id);
             }
-            if( this.competitor1_id != this.data.competitor1_id ) { c.append('&competitor1_id', this.competitor1_id); }
+            if( this.competitor1_id != this.data.competitor1_id ) { c.append('competitor1_id', this.competitor1_id); }
             if( this.competitor2_id != this.data.competitor2_id ) { c.append('competitor2_id', this.competitor2_id); }
             if( this.competitor3_id != this.data.competitor3_id ) { c.append('competitor3_id', this.competitor3_id); }
             if( this.competitor4_id != this.data.competitor4_id ) { c.append('competitor4_id', this.competitor4_id); }
 //            if( this.competitor5_id != this.data.competitor5_id ) { c.append('competitor5_id', this.competitor5_id); }
             if( c != '' ) {
+                
                 M.api.postJSONFormData('ciniki.musicfestivals.registrationUpdate', {'tnid':M.curTenantID, 'registration_id':this.registration_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
