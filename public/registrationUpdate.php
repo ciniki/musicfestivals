@@ -56,7 +56,6 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     if( isset($args['display_name']) ) {
         $args['public_name'] = $args['display_name'];
     }
-        error_log(print_r($args,true));
 
     //
     // Make sure this module is activated, and

@@ -692,7 +692,6 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     $update_item_args['description'] = $selected_class['name'];
                 }
                 if( $item['unit_amount'] != $registration['fee'] ) {
-                    error_log('update unit amount: ' . $registration['fee']);
                     $update_item_args['unit_amount'] = $registration['fee'];
                 }
                 if( $item['notes'] != $notes ) {
