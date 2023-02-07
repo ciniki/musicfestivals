@@ -62,5 +62,6 @@ create table ciniki_musicfestival_classes (
     unique index (uuid),
     unique index (festival_id, permalink),
     unique index (festival_id, code),
+    index (festival_id, category_id, tnid),
     index tenant_uuid (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.04';

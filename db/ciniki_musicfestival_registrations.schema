@@ -130,5 +130,6 @@ create table ciniki_musicfestival_registrations (
     primary key (id),
     unique index (uuid),
     index (festival_id, teacher_customer_id, billing_customer_id),
+    index (festival_id, class_id, tnid),
     index tenant_uuid (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.09';
