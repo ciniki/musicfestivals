@@ -828,9 +828,13 @@ function ciniki_musicfestivals_main() {
         var args = {'tnid':M.curTenantID, 'festival_id':this.festival_id};
         this.size = 'xlarge narrowaside';
         if( this.sections._tabs.selected == 'sections' ) {
-            args['sections'] = 'yes';
-            args['categories'] = 'yes';
-            args['classes'] = 'yes';
+            if( this.sections._stabs.selected == 'sections' ) {
+                args['sections'] = 'yes';
+            } else if( this.sections._stabs.selected == 'categories' ) {
+                args['categories'] = 'yes';
+            } else if( this.sections._stabs.selected == 'classes' ) {
+                args['classes'] = 'yes';
+            }
         } else if( this.sections._tabs.selected == 'registrations' || this.sections._tabs.selected == 'videos' ) {
             this.size = 'xlarge narrowaside';
             args['sections'] = 'yes';
