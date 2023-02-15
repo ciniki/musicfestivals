@@ -857,9 +857,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "timeslots.description, "
                     . "registrations.id AS reg_id, ";
                 if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
-                    $strsql .= "registrations.pn_display_name AS display_name, ";
+                    $strsql .= "registrations.pn_display_name AS display_name ";
                 } else {
-                    $strsql .= "registrations.display_name, ";
+                    $strsql .= "registrations.display_name ";
                 }
                 $strsql .= "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
                     . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
