@@ -82,6 +82,7 @@ function ciniki_musicfestivals_sapos_cartItemCheck($ciniki, $tnid, $customer, $a
             return array('stat'=>'ok');
         }
         $festival = $rc['festival'];
+        $dt = new DateTime('now', new DateTimezone('UTC'));
         $now = new DateTime('now', new DateTimezone('UTC'));
         $earlybird_dt = new DateTime($festival['earlybird_date'], new DateTimezone('UTC'));
         $live_dt = new DateTime($festival['live_date'], new DateTimezone('UTC'));
