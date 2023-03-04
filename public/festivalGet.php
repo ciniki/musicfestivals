@@ -42,6 +42,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'list_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'List'),
         'listsection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'List Section'),
         'sponsors'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sponsors'),
+        'emails_list'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Emails List'),
         'action'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Action'),
         'entry_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Entry'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sequence'),
@@ -511,8 +512,6 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             if( isset($rc['teachers']) ) {
                 $festival['registration_teachers'] = $rc['teachers'];
             }
-
-
         }
 
         //
@@ -1132,6 +1131,144 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 return $rc;
             }
             $festival['certificates'] = isset($rc['certificates']) ? $rc['certificates'] : array();
+        }
+
+        //
+        // Get the list of emails if requested
+        //
+        if( isset($args['emails_list']) && $args['emails_list'] != '' ) {
+            $emails = array();
+            if( $args['emails_list'] == 'all' || $args['emails_list'] == 'competitors' ) {
+                $strsql = "SELECT competitors.id, "    
+                    . "competitors.name, "
+                    . "competitors.email, "
+                    . "customers.display_name AS customer_name, "
+                    . "customer_emails.email AS customer_email "
+                    . "FROM ciniki_musicfestival_competitors AS competitors "
+                    . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                        . "registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                        . "AND ("
+                            . "competitors.id = registrations.competitor1_id "
+                            . "OR competitors.id = registrations.competitor2_id "
+                            . "OR competitors.id = registrations.competitor3_id "
+                            . "OR competitors.id = registrations.competitor4_id "
+                            . "OR competitors.id = registrations.competitor5_id "
+                        . ") "
+                        . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_customers AS customers ON ( "
+                        . "registrations.billing_customer_id = customers.id "
+                        . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_customer_emails AS customer_emails ON ( "
+                        . "customers.id = customer_emails.customer_id "
+                        . "AND customer_emails.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                        . "";
+                if( isset($args['section_id']) && $args['section_id'] > 0 ) {
+                    $strsql .= "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
+                        . "registrations.class_id = classes.id "
+                        . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
+                        . "classes.category_id = categories.id "
+                        . "AND categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
+                        . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") ";
+                }
+                $strsql .= "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'competitors', 'fname'=>'id', 
+                        'fields'=>array('id', 'name', 'email'),
+                        ),
+                    array('container'=>'billing', 'fname'=>'customer_email', 
+                        'fields'=>array('name'=>'customer_name', 'email'=>'customer_email'),
+                        ),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.316', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
+                }
+                $competitors = isset($rc['competitors']) ? $rc['competitors'] : array();
+                foreach($competitors as $competitor) {
+                    if( !isset($emails[$competitor['email']]) ) {
+                        $emails[$competitor['email']] = array(
+                            'name' => $competitor['name'],
+                            'email' => $competitor['email'],
+                            );
+                    }
+                    if( isset($competitors['billing']) ) {
+                        foreach($competitors['billing'] as $customer) {
+                            if( !isset($emails[$customer['email']]) ) {
+                                $emails[$customer['email']] = array(
+                                    'name' => $customer['name'],
+                                    'email' => $customer['email'],
+                                    );
+                            }
+                        }
+                    }
+
+                }
+                
+            }
+            if( $args['emails_list'] == 'all' || $args['emails_list'] == 'teachers' ) {
+                $strsql = "SELECT teacher_emails.id, "    
+                    . "teachers.display_name, "
+                    . "teacher_emails.email "
+                    . "FROM ciniki_musicfestival_registrations AS registrations "
+                    . "INNER JOIN ciniki_customers AS teachers ON ( "
+                        . "registrations.teacher_customer_id = teachers.id "
+                        . "AND teachers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "INNER JOIN ciniki_customer_emails AS teacher_emails ON ( "
+                        . "teachers.id = teacher_emails.customer_id "
+                        . "AND teacher_emails.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                        . "";
+                if( isset($args['section_id']) && $args['section_id'] > 0 ) {
+                    $strsql .= "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
+                        . "registrations.class_id = classes.id "
+                        . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
+                        . "classes.category_id = categories.id "
+                        . "AND categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
+                        . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") ";
+                }
+                $strsql .= "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'teachers', 'fname'=>'email', 
+                        'fields'=>array('name'=>'display_name', 'email'),
+                        ),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.316', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
+                }
+                $teachers = isset($rc['teachers']) ? $rc['teachers'] : array();
+                foreach($teachers as $teacher) {
+                    if( !isset($emails[$teacher['email']]) ) {
+                        $emails[$teacher['email']] = array(
+                            'name' => $teacher['name'],
+                            'email' => $teacher['email'],
+                            );
+                    }
+                }
+            }
+            uasort($emails, function($a, $b) {
+                return strcmp($a['name'], $b['name']);
+                });
+            $festival['emails_list'] = $emails;
+            $festival['emails_html'] = '';
+            foreach($emails as $email) {
+                $festival['emails_html'] .= ($festival['emails_html'] != '' ? ',<br/>' : '') 
+                    . $email['name'] . ' &lt;' . $email['email'] . '&gt;';
+            }
         }
 
         //

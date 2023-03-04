@@ -110,7 +110,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         . "registrations.music1_orgfilename, "
         . "registrations.music2_orgfilename, "
         . "registrations.music3_orgfilename, "
-        . "registrations.placement, "
+//        . "registrations.placement, "
         . "IFNULL(comments.id, 0) AS comment_id, "
         . "IFNULL(comments.comments, '') AS comments, "
         . "IFNULL(comments.grade, '') AS grade, "
@@ -180,7 +180,9 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name', 'title1', 'title2', 'title3',
                 'video1_url', 'video2_url', 'video3_url', 
                 'music1_orgfilename', 'music2_orgfilename', 'music3_orgfilename', 
-                'reg_class_flags', 'class_name'=>'reg_class_name', 'comment_id', 'comments', 'grade', 'score', 'placement')),
+                'reg_class_flags', 'class_name'=>'reg_class_name', 'comment_id', 'comments', 'grade', 'score', 
+//                'placement',
+                )),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -382,14 +384,14 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 'value' => $registration['score'],
                 );
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x04) ) {
-                $section['fields']["{$registration['id']}-placement"] = array(
+/*                $section['fields']["{$registration['id']}-placement"] = array(
                     'id' => "{$registration['id']}-placement",
                     'ftype' => 'text',
                     'onkeyup' => 'fieldUpdated()',
                     'size' => 'small',
-                    'label' => 'Mark',
+                    'label' => 'Placement',
                     'value' => $registration['placement'],
-                    );
+                    ); */
             }
             $sections[$registration['id']] = $section;
         }
