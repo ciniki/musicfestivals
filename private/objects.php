@@ -223,7 +223,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'comments'=>array('name'=>'Comments', 'default'=>''),
             'grade'=>array('name'=>'Grade', 'default'=>''),
             'score'=>array('name'=>'Score', 'default'=>''),
-            'placement'=>array('name'=>'Placement', 'default'=>''),
+//            'placement'=>array('name'=>'Placement', 'default'=>''),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );

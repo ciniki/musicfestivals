@@ -43,11 +43,11 @@ function ciniki_musicfestivals_wng_adjudicatorCommentsUpdate(&$ciniki, $tnid, &$
             ) {
             $update_args['score'] = $_POST["f-{$reg['id']}-score"];
         }
-        if( isset($_POST["f-{$reg['id']}-placement"])
+/*        if( isset($_POST["f-{$reg['id']}-placement"])
             && $_POST["f-{$reg['id']}-placement"] != $reg['placement']
             ) {
             $reg_update_args['placement'] = $_POST["f-{$reg['id']}-placement"];
-        }
+        } */
         if( count($update_args) > 0 ) {
             if( $reg['comment_id'] > 0 ) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
