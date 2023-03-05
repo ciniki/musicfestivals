@@ -122,7 +122,7 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
         . "registrations.music1_orgfilename, "
         . "registrations.music2_orgfilename, "
         . "registrations.music3_orgfilename, "
-        . "registrations.placement, "
+//        . "registrations.placement, "
         . "IFNULL(comments.adjudicator_id, 0) AS adjudicator_id, "
         . "IFNULL(comments.id, 0) AS comment_id, "
         . "IFNULL(comments.comments, '') AS comments, "
@@ -175,7 +175,8 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
                 'title1', 'title2', 'title3',
                 'video1_url', 'video2_url', 'video3_url', 
                 'music1_orgfilename', 'music2_orgfilename', 'music3_orgfilename',
-                'reg_class_name', 'placement',
+                'reg_class_name', 
+//                'placement',
                 )),
         array('container'=>'comments', 'fname'=>'comment_id', 
             'fields'=>array('id'=>'comment_id', 'adjudicator_id', 'comments', 'grade', 'score')),
@@ -191,14 +192,14 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
                 $timeslot['registrations'][$rid]['comments_' . $adjudicator['id']] = '';
                 $timeslot['registrations'][$rid]['grade_' . $adjudicator['id']] = '';
                 $timeslot['registrations'][$rid]['score_' . $adjudicator['id']] = '';
-                $timeslot['registrations'][$rid]['placement_' . $adjudicator['id']] = '';
+//                $timeslot['registrations'][$rid]['placement_' . $adjudicator['id']] = '';
                 if( isset($registration['comments']) ) {
                     foreach($registration['comments'] as $comment) {
                         if( $comment['adjudicator_id'] == $adjudicator['id'] ) {
                             $timeslot['comments_' . $registration['id'] . '_' . $adjudicator['id']] = $comment['comments'];
                             $timeslot['grade_' . $registration['id'] . '_' . $adjudicator['id']] = $comment['grade'];
                             $timeslot['score_' . $registration['id'] . '_' . $adjudicator['id']] = $comment['score'];
-                            $timeslot['placement_' . $registration['id'] . '_' . $adjudicator['id']] = $registration['placement'];
+//                            $timeslot['placement_' . $registration['id'] . '_' . $adjudicator['id']] = $registration['placement'];
                         }
                     }
                 }

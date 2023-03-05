@@ -159,7 +159,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
             . "registrations.public_name, ";
     }
     $strsql .= "registrations.title, "
-        . "registrations.placement, "
+//        . "registrations.placement, "
         . "IFNULL(classes.name, '') AS class_name, "
         . "IFNULL(registrations.competitor2_id, 0) AS competitor2_id, "
         . "IFNULL(registrations.competitor3_id, 0) AS competitor3_id, "

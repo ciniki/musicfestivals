@@ -19,7 +19,7 @@ function ciniki_musicfestivals_flags(&$ciniki) {
 //        array('flag'=>array('bit'=>'1', 'name'=>'')), // Registrations **flag not yet implemented**
         array('flag'=>array('bit'=>'2', 'name'=>'Online Registrations')),
         array('flag'=>array('bit'=>'3', 'name'=>'Timeslot Photos')),
-        array('flag'=>array('bit'=>'4', 'name'=>'Placement')),  // Used for placement field for adjudicators comments
+//        array('flag'=>array('bit'=>'4', 'name'=>'Placement')),  // Used for placement field for adjudicators comments
         // 0x10
         array('flag'=>array('bit'=>'5', 'name'=>'Sponsors')),
         array('flag'=>array('bit'=>'6', 'name'=>'Lists')),
