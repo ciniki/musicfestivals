@@ -474,17 +474,75 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             );
     }
 
-    $fields['line'] = array(
+    $fields['line-a'] = array(
+        'ftype' => 'line',
+        );
+
+    //
+    // Check if virtual performance option is available
+    //
+    $participation = isset($registration['participation']) ? $registration['participation'] : -1;
+    if( isset($_POST['f-participation']) && $_POST['f-participation'] == 0 ) {
+        $participation = 0;
+    }
+    if( ($festival['flags']&0x02) == 0x02 ) {
+        $fields['participation'] = array(
+            'id' => 'participation',
+            'label' => 'I would like to participate',
+            'onchange' => 'participationSelected()',
+            'ftype' => 'select',
+            'blank' => 'no',
+            'required' => 'yes',
+            'size' => 'large',
+            'options' => array(
+                '-1' => 'Please choose how you will participate',
+                '0' => 'in person on a date to be scheduled',
+                '1' => 'virtually and submit a video',
+                ),
+            'value' => isset($_POST['f-participation']) ? $_POST['f-participation'] : (isset($registration['participation']) ? $registration['participation'] : -1),
+            );
+        //
+        // Setup pricing for virtual option with separate virtual pricing
+        //
+        if( ($festival['flags']&0x06) == 0x06 ) {
+            if( isset($festival['live']) && $festival['live'] != 'no' 
+                && isset($selected_class['live_fee']) && $selected_class['live_fee'] > 0 
+                ) {
+                $fields['participation']['options'][0] .= ' - $' . number_format($selected_class['live_fee'], 2);
+            } else {
+                unset($fields['participation']['options'][-1]);
+                unset($fields['participation']['options'][0]);
+                $participation = 1;
+            }
+            if( isset($festival['virtual']) && $festival['virtual'] != 'no' 
+                && isset($selected_class['virtual_fee']) && $selected_class['virtual_fee'] > 0 
+                ) {
+                $fields['participation']['options'][1] .= ' - $' . number_format($selected_class['virtual_fee'], 2);
+            } else {
+                if( isset($fields['participation']['options'][-1]) ) {
+                    unset($fields['participation']['options'][-1]);
+                }
+                unset($fields['participation']['options'][1]);
+            }
+        }
+        // 
+        // Check if both options still available
+        //
+        elseif( ($festival['flags']&0x06) == 0x02 ) {
+            if( $festival['live'] == 'no' && $festival['earlybird'] == 'no' ) {
+                unset($fields['participation']['options'][-1]);
+                unset($fields['participation']['options'][0]);
+            }
+        }
+    }
+
+    $fields['line-b'] = array(
         'ftype' => 'line',
         );
 
     //
     // Add performing titles
     //
-    $participation = isset($registration['participation']) ? $registration['participation'] : -1;
-    if( isset($_POST['f-participation']) && $_POST['f-participation'] == 0 ) {
-        $participation = 0;
-    }
     for($i = 1; $i <= 3; $i++ ) {
         $class = ($i > 1 ? 'hidden' : '');
         $required = 'yes';
@@ -557,58 +615,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             );
     }
 
-    //
-    // Check if virtual performance option is available
-    //
-    if( ($festival['flags']&0x02) == 0x02 ) {
-        $fields['participation'] = array(
-            'id' => 'participation',
-            'label' => 'I would like to participate',
-            'onchange' => 'participationSelected()',
-            'ftype' => 'select',
-            'blank' => 'no',
-            'required' => 'yes',
-            'size' => 'large',
-            'options' => array(
-                '-1' => 'Please choose how you will participate',
-                '0' => 'in person on a date to be scheduled',
-                '1' => 'virtually and submit a video',
-                ),
-            'value' => isset($_POST['f-participation']) ? $_POST['f-participation'] : (isset($registration['participation']) ? $registration['participation'] : -1),
-            );
-        //
-        // Setup pricing for virtual option with separate virtual pricing
-        //
-        if( ($festival['flags']&0x06) == 0x06 ) {
-            if( isset($festival['live']) && $festival['live'] != 'no' 
-                && isset($selected_class['live_fee']) && $selected_class['live_fee'] > 0 
-                ) {
-                $fields['participation']['options'][0] .= ' - $' . number_format($selected_class['live_fee'], 2);
-            } else {
-                unset($fields['participation']['options'][-1]);
-                unset($fields['participation']['options'][0]);
-            }
-            if( isset($festival['virtual']) && $festival['virtual'] != 'no' 
-                && isset($selected_class['virtual_fee']) && $selected_class['virtual_fee'] > 0 
-                ) {
-                $fields['participation']['options'][1] .= ' - $' . number_format($selected_class['virtual_fee'], 2);
-            } else {
-                if( isset($fields['participation']['options'][-1]) ) {
-                    unset($fields['participation']['options'][-1]);
-                }
-                unset($fields['participation']['options'][1]);
-            }
-        }
-        // 
-        // Check if both options still available
-        //
-        elseif( ($festival['flags']&0x06) == 0x02 ) {
-            if( $festival['live'] == 'no' && $festival['earlybird'] == 'no' ) {
-                unset($fields['participation']['options'][-1]);
-                unset($fields['participation']['options'][0]);
-            }
-        }
-    }
+    $fields['line-c'] = array(
+        'ftype' => 'line',
+        );
 
     //
     // Add notes field
