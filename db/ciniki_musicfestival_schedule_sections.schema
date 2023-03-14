@@ -13,7 +13,13 @@
 #
 # name:                 The name for the category.
 #
-# adjudicator_id:       The adjudicator for the section.
+# adjudicator1_id:      The 1st adjudicator for the section.
+# adjudicator2_id:      The 2nd adjudicator for the section.
+# adjudicator3_id:      The 3rd adjudicator for the section.
+#
+# flags:                The options for the timeslot section.
+#
+#                           0x01 - Release comments & certificates for download.
 #
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.
@@ -28,10 +34,11 @@ create table ciniki_musicfestival_schedule_sections (
     adjudicator1_id int not null,
     adjudicator2_id int not null,
     adjudicator3_id int not null,
+    flags tinyint unsigned not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
     index (festival_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

@@ -42,9 +42,9 @@ function ciniki_musicfestivals_registrationAdd(&$ciniki) {
         'fee'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Fee'),
         'payment_type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Payment Type'),
         'participation'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Virtual'),
-        'video1_url'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
-        'video2_url'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
-        'video3_url'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
+        'video_url1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
+        'video_url2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
+        'video_url3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         'internal_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Interal Notes'),
         ));

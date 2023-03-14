@@ -555,7 +555,7 @@ function ciniki_musicfestivals_main() {
             switch(j) {
                 case 0: return d.class_code;
                 case 1: return d.display_name;
-                case 2: return M.hyperlink(d.video1_url);
+                case 2: return M.hyperlink(d.video_url1);
                 case 3: return d.music_orgfilename;
                 case 4: return d.status_text;
             }
@@ -657,7 +657,7 @@ function ciniki_musicfestivals_main() {
             switch (j) {
                 case 0: return d.class_code;
                 case 1: return '<span class="maintext">' + d.display_name + '</span><span class="subtext">' + d.title + '</span>';
-                case 2: return M.hyperlink(d.video1_url);
+                case 2: return M.hyperlink(d.video_url1);
                 case 3: return d.music_orgfilename;
                 case 4: return d.status_text;
             }
@@ -1057,13 +1057,15 @@ function ciniki_musicfestivals_main() {
             'status':{'label':'Status', 'type':'toggle', 'toggles':{'10':'Active', '30':'Current', '60':'Archived'}},
             'flags1':{'label':'Registrations Open', 'type':'flagtoggle', 'default':'off', 'bit':0x01, 'field':'flags'},
             'flags2':{'label':'Virtual Option', 'type':'flagtoggle', 'default':'off', 'bit':0x02, 'field':'flags',
-                'on_fields':['flags3','virtual_date'],
+                'on_fields':['flags3','virtual_date', 'upload_end_dt'],
                 },
             'flags3':{'label':'Virtual Pricing', 'type':'flagtoggle', 'default':'off', 'bit':0x04, 'field':'flags', 'visible':'no'},
             'flags4':{'label':'Section End Dates', 'type':'flagtoggle', 'default':'off', 'bit':0x08, 'field':'flags'},
             'earlybird_date':{'label':'Earlybird Deadline', 'type':'datetime'},
             'live_date':{'label':'Live Deadline', 'type':'datetime'},
             'virtual_date':{'label':'Virtual Deadline', 'type':'datetime', 'visible':'no'},
+            'edit_end_dt':{'label':'Edit Titles Deadline', 'type':'datetime'},
+            'upload_end_dt':{'label':'Upload Deadline', 'type':'datetime', 'visible':'no'},
             }},
         '_settings':{'label':'', 'aside':'yes', 'fields':{
             'age-restriction-msg':{'label':'Age Restriction Message', 'type':'text'},
@@ -1212,8 +1214,10 @@ function ciniki_musicfestivals_main() {
             if( (rsp.festival.flags&0x02) == 0x02 ) {
                 p.sections.general.fields.flags3.visible = 'yes';
                 p.sections.general.fields.virtual_date.visible = 'yes';
+                p.sections.general.fields.upload_end_dt.visible = 'yes';
             } else {
                 p.sections.general.fields.virtual_date.visible = 'no';
+                p.sections.general.fields.upload_end_dt.visible = 'no';
             }
             p.refresh();
             p.show(cb);
@@ -1305,6 +1309,12 @@ function ciniki_musicfestivals_main() {
                 'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x08) == 0x08 ? 'yes' : 'no';},
                 },
             'virtual_end_dt':{'label':'Virtual Deadline', 'type':'datetime',
+                'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x0a) == 0x0a ? 'yes' : 'no';},
+                },
+            'edit_end_dt':{'label':'Edit Titles Deadline', 'type':'datetime',
+                'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x0a) == 0x0a ? 'yes' : 'no';},
+                },
+            'upload_end_dt':{'label':'Upload Deadline', 'type':'datetime',
                 'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x0a) == 0x0a ? 'yes' : 'no';},
                 },
             }},
@@ -1846,24 +1856,24 @@ function ciniki_musicfestivals_main() {
                     '0':'in person on a date to be scheduled',
                     '1':'virtually and submit a video online',
                 }},
-            'video1_url':{'label':'1st Video', 'type':'text', 
+            'video_url1':{'label':'1st Video', 'type':'text', 
                 'visible':'no',
                 },
-            'music1_orgfilename':{'label':'1st Music', 'type':'file',
+            'music_orgfilename1':{'label':'1st Music', 'type':'file',
                 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(1);',
                 },
-            'video2_url':{'label':'2nd Video', 'type':'text', 
+            'video_url2':{'label':'2nd Video', 'type':'text', 
                 'visible':'no',
                 },
-            'music2_orgfilename':{'label':'2nd Music', 'type':'file',
+            'music_orgfilename2':{'label':'2nd Music', 'type':'file',
                 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(2);',
                 },
-            'video3_url':{'label':'3rd Video', 'type':'text', 
+            'video_url3':{'label':'3rd Video', 'type':'text', 
                 'visible':'no',
                 },
-            'music3_orgfilename':{'label':'3rd Music', 'type':'file',
+            'music_orgfilename3':{'label':'3rd Music', 'type':'file',
                 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(3);',
                 },
@@ -1981,12 +1991,12 @@ function ciniki_musicfestivals_main() {
                 this.sections._class.fields.perf_time2.visible = (c.flags&0x1000) == 0x1000 ? 'yes' : 'no';
                 this.sections._class.fields.title3.visible = (c.flags&0x2000) == 0x2000 ? 'yes' : 'no';
                 this.sections._class.fields.perf_time3.visible = (c.flags&0x2000) == 0x2000 ? 'yes' : 'no';
-                this.sections._class.fields.video1_url.visible = (participation == 1 ? 'yes' : 'no');
-                this.sections._class.fields.video2_url.visible = (participation == 1 && (c.flags&0x1000) == 0x1000 ? 'yes' : 'no');
-                this.sections._class.fields.video3_url.visible = (participation == 1 && (c.flags&0x2000) == 0x2000 ? 'yes' : 'no');
-                this.sections._class.fields.music1_orgfilename.visible = (participation == 1 ? 'yes' : 'no');
-                this.sections._class.fields.music2_orgfilename.visible = (participation == 1 && (c.flags&0x1000) == 0x1000 ? 'yes' : 'no');
-                this.sections._class.fields.music3_orgfilename.visible = (participation == 1 && (c.flags&0x2000) == 0x2000 ? 'yes' : 'no');
+                this.sections._class.fields.video_url1.visible = (participation == 1 ? 'yes' : 'no');
+                this.sections._class.fields.video_url2.visible = (participation == 1 && (c.flags&0x1000) == 0x1000 ? 'yes' : 'no');
+                this.sections._class.fields.video_url3.visible = (participation == 1 && (c.flags&0x2000) == 0x2000 ? 'yes' : 'no');
+                this.sections._class.fields.music_orgfilename1.visible = (participation == 1 ? 'yes' : 'no');
+                this.sections._class.fields.music_orgfilename2.visible = (participation == 1 && (c.flags&0x1000) == 0x1000 ? 'yes' : 'no');
+                this.sections._class.fields.music_orgfilename3.visible = (participation == 1 && (c.flags&0x2000) == 0x2000 ? 'yes' : 'no');
 
                 this.sections._display_name.visible = (c.flags&0x70) > 0 ? 'yes' : 'hidden';
                 this.sections.competitor2_details.visible = (c.flags&0x10) == 0x10 ? 'yes' : 'hidden';
@@ -2000,12 +2010,12 @@ function ciniki_musicfestivals_main() {
                 this.showHideFormField('_class', 'perf_time2');
                 this.showHideFormField('_class', 'title3');
                 this.showHideFormField('_class', 'perf_time3');
-                this.showHideFormField('_class', 'video1_url');
-                this.showHideFormField('_class', 'video2_url');
-                this.showHideFormField('_class', 'video3_url');
-                this.showHideFormField('_class', 'music1_orgfilename');
-                this.showHideFormField('_class', 'music2_orgfilename');
-                this.showHideFormField('_class', 'music2_orgfilename');
+                this.showHideFormField('_class', 'video_url1');
+                this.showHideFormField('_class', 'video_url2');
+                this.showHideFormField('_class', 'video_url3');
+                this.showHideFormField('_class', 'music_orgfilename1');
+                this.showHideFormField('_class', 'music_orgfilename2');
+                this.showHideFormField('_class', 'music_orgfilename3');
             }
         }
     }
@@ -2394,6 +2404,7 @@ function ciniki_musicfestivals_main() {
     this.schedulesection.sections = {
         'general':{'label':'', 'fields':{
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
+            'flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'Release Comments & Certificates'}}},
             }},
         'adjudicators':{'label':'Adjudicators', 'fields':{
             'adjudicator1_id':{'label':'First', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
@@ -2440,6 +2451,7 @@ function ciniki_musicfestivals_main() {
         if( this.schedulesection_id > 0 ) {
             var c = this.serializeForm('no');
             if( c != '' ) {
+                console.log(c);
                 M.api.postJSONCb('ciniki.musicfestivals.scheduleSectionUpdate', 
                     {'tnid':M.curTenantID, 'schedulesection_id':this.schedulesection_id, 'festival_id':this.festival_id}, c, function(rsp) {
                         if( rsp.stat != 'ok' ) {
@@ -2796,18 +2808,18 @@ function ciniki_musicfestivals_main() {
                         {'label':'Class', 'value':registration.reg_class_name},
                         {'label':'Participant', 'value':registration.name},
                         {'label':'Title', 'value':registration.title1},
-                        {'label':'Video', 'value':M.hyperlink(registration.video1_url)},
-                        {'label':'Music', 'value':registration.music1_orgfilename},
+                        {'label':'Video', 'value':M.hyperlink(registration.video_url1)},
+                        {'label':'Music', 'value':registration.music_orgfilename1},
                         ];
                     if( (registration.reg_flags&0x1000) == 0x1000 ) {
                         p.data['details_' + i].push({'label':'2nd Title', 'value':registration.title2});
-                        p.data['details_' + i].push({'label':'2nd Video', 'value':M.hyperlink(registration.video2_url)});
-                        p.data['details_' + i].push({'label':'2nd Music', 'value':registration.music2_orgfilename});
+                        p.data['details_' + i].push({'label':'2nd Video', 'value':M.hyperlink(registration.video_url2)});
+                        p.data['details_' + i].push({'label':'2nd Music', 'value':registration.music_orgfilename2});
                     }
                     if( (registration.reg_flags&0x4000) == 0x4000 ) {
                         p.data['details_' + i].push({'label':'3rd Title', 'value':registration.title3});
-                        p.data['details_' + i].push({'label':'3rd Video', 'value':M.hyperlink(registration.video3_url)});
-                        p.data['details_' + i].push({'label':'3rd Music', 'value':registration.music3_orgfilename});
+                        p.data['details_' + i].push({'label':'3rd Video', 'value':M.hyperlink(registration.video_url3)});
+                        p.data['details_' + i].push({'label':'3rd Music', 'value':registration.music_orgfilename3});
                     }
                     // 
                     // Setup the comment, grade & score fields, could be for multiple adjudicators

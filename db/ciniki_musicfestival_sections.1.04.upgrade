@@ -1,0 +1,6 @@
+#
+# Added end dates for section
+#
+ALTER TABLE ciniki_musicfestival_sections ADD COLUMN edit_end_dt datetime not null AFTER virtual_end_dt;
+ALTER TABLE ciniki_musicfestival_sections ADD COLUMN upload_end_dt datetime not null AFTER edit_end_dt;
+ALTER TABLE ciniki_musicfestival_sections COMMENT='v1.04';

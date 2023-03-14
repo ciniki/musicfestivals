@@ -39,12 +39,12 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         'fee'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Fee'),
         'payment_type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Payment Type'),
         'participation'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Virtual'),
-        'video1_url'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
-        'video2_url'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
-        'video3_url'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
-        'music1_orgfilename'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
-        'music2_orgfilename'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
-        'music3_orgfilename'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
+        'video_url1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
+        'video_url2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
+        'video_url3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
+        'music_orgfilename1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
+        'music_orgfilename2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
+        'music_orgfilename3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         'internal_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Interal Notes'),
         ));
@@ -73,9 +73,9 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     $strsql = "SELECT registrations.id, "
         . "registrations.uuid, "
         . "registrations.festival_id, "
-        . "registrations.music1_orgfilename, "
-        . "registrations.music2_orgfilename, "
-        . "registrations.music3_orgfilename "
+        . "registrations.music_orgfilename1, "
+        . "registrations.music_orgfilename2, "
+        . "registrations.music_orgfilename3 "
         . "FROM ciniki_musicfestival_registrations AS registrations "
         . "WHERE registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
@@ -117,11 +117,11 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     if( isset($_FILES) ) {
         foreach($_FILES as $field_name => $file) {
             $file_name = 0;
-            if( $field_name == 'music1_orgfilename' ) {
+            if( $field_name == 'music_orgfilename1' ) {
                 $file_num = 1;
-            } elseif( $field_name == 'music2_orgfilename' ) {
+            } elseif( $field_name == 'music_orgfilename2' ) {
                 $file_num = 2;
-            } elseif( $field_name == 'music3_orgfilename' ) {
+            } elseif( $field_name == 'music_orgfilename3' ) {
                 $file_num = 3;
             } else {
                 error_log('UNKNOWN FILE: ' . $field_name);

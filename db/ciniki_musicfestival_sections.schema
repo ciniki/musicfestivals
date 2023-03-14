@@ -17,7 +17,7 @@
 # flags:                The options for the section.
 #
 #                           0x01 - Hidden on website
-#                           0x02 - 
+#                           0x02 - Edit Titles & Times
 #                           0x04 - 
 #                           0x08 - 
 #
@@ -27,6 +27,8 @@
 #
 # live_end_dt:          The UTC date and time live registrations close for this section.
 # virtual_end_dt:       The UTC date and time virtual registrations close for this section.
+# edit_end_dt:          The UTC date and time deadline for editing titles and times
+# upload_end_dt:        The UTC date and time deadline for uploading video URL's and music.
 #
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.
@@ -45,10 +47,12 @@ create table ciniki_musicfestival_sections (
     description varchar(5000) not null,
     live_end_dt datetime not null,
     virtual_end_dt datetime not null,
+    edit_end_dt datetime not null,
+    upload_end_dt datetime not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
     unique index (festival_id, permalink),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.03';
+) ENGINE='InnoDB', COMMENT='v1.04';

@@ -107,12 +107,12 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsUpdate($ciniki) {
         . "registrations.display_name, "
         . "registrations.public_name, "
         . "registrations.title1, "
-        . "registrations.video1_url, "
-        . "registrations.video2_url, "
-        . "registrations.video3_url, "
-        . "registrations.music1_orgfilename, "
-        . "registrations.music2_orgfilename, "
-        . "registrations.music3_orgfilename, "
+        . "registrations.video_url1, "
+        . "registrations.video_url2, "
+        . "registrations.video_url3, "
+        . "registrations.music_orgfilename1, "
+        . "registrations.music_orgfilename2, "
+        . "registrations.music_orgfilename3, "
 //        . "registrations.placement, "
         . "IFNULL(comments.adjudicator_id, 0) AS adjudicator_id, "
         . "IFNULL(comments.id, 0) AS comment_id, "
@@ -162,8 +162,8 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsUpdate($ciniki) {
                 )),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'public_name', 'title1', 
-                'video1_url', 'video2_url', 'video3_url', 
-                'music1_orgfilename', 'music2_orgfilename', 'music3_orgfilename',
+                'video_url1', 'video_url2', 'video_url3', 
+                'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3',
                 'reg_class_name', 
 //                'placement',
                 )),

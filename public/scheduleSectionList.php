@@ -40,7 +40,8 @@ function ciniki_musicfestivals_scheduleSectionList($ciniki) {
     //
     $strsql = "SELECT ciniki_musicfestival_schedule_sections.id, "
         . "ciniki_musicfestival_schedule_sections.festival_id, "
-        . "ciniki_musicfestival_schedule_sections.name "
+        . "ciniki_musicfestival_schedule_sections.name, "
+        . "ciniki_musicfestival_schedule_sections.flags "
         . "FROM ciniki_musicfestival_schedule_sections "
         . "WHERE ciniki_musicfestival_schedule_sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";

@@ -45,9 +45,9 @@ function ciniki_musicfestivals_registrationMusicPDF($ciniki) {
     $strsql = "SELECT registrations.id, "
         . "registrations.uuid, "
         . "registrations.festival_id, "
-        . "registrations.music1_orgfilename, "
-        . "registrations.music2_orgfilename, "
-        . "registrations.music3_orgfilename "
+        . "registrations.music_orgfilename1, "
+        . "registrations.music_orgfilename2, "
+        . "registrations.music_orgfilename3 "
         . "FROM ciniki_musicfestival_registrations AS registrations "
         . "WHERE registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
@@ -83,7 +83,7 @@ function ciniki_musicfestivals_registrationMusicPDF($ciniki) {
     $finfo = finfo_open(FILEINFO_MIME);
     if( $finfo ) { header('Content-Type: ' . finfo_file($finfo, $storage_filename)); }
     // Specify Filename
-    header('Content-Disposition: attachment;filename="' . $registration["music{$args['num']}_orgfilename"] . '"');
+    header('Content-Disposition: attachment;filename="' . $registration["music_orgfilename{$args['num']}"] . '"');
     header('Content-Length: ' . filesize($storage_filename));
     header('Cache-Control: max-age=0');
 

@@ -22,7 +22,9 @@ function ciniki_musicfestivals_loadCurrentFestival(&$ciniki, $tnid) {
         . "flags, "
         . "earlybird_date, "
         . "live_date, "
-        . "virtual_date "
+        . "virtual_date, "
+        . "edit_end_dt, "
+        . "upload_end_dt "
         . "FROM ciniki_musicfestivals "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND status = 30 "        // Current
@@ -46,9 +48,13 @@ function ciniki_musicfestivals_loadCurrentFestival(&$ciniki, $tnid) {
     $earlybird_dt = new DateTime($festival['earlybird_date'], new DateTimezone('UTC'));
     $live_dt = new DateTime($festival['live_date'], new DateTimezone('UTC'));
     $virtual_dt = new DateTime($festival['virtual_date'], new DateTimezone('UTC'));
+    $edit_end_dt = new DateTime($festival['edit_end_dt'], new DateTimezone('UTC'));
+    $upload_end_dt = new DateTime($festival['upload_end_dt'], new DateTimezone('UTC'));
     $festival['earlybird'] = (($festival['flags']&0x01) == 0x01 && $earlybird_dt > $now ? 'yes' : 'no');
     $festival['live'] = (($festival['flags']&0x01) == 0x01 && $live_dt > $now ? 'yes' : 'no');
     $festival['virtual'] = (($festival['flags']&0x03) == 0x03 && $virtual_dt > $now ? 'yes' : 'no');
+    $festival['edit'] = ($edit_end_dt > $now ? 'yes' : 'no');
+    $festival['upload'] = (($festival['flags']&0x03) == 0x03 && $upload_end_dt > $now ? 'yes' : 'no');
 
     return array('stat'=>'ok', 'festival'=>$festival);
 }

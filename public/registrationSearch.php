@@ -77,12 +77,12 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         . "FORMAT(registrations.fee, 2) AS fee, "
         . "registrations.payment_type, "
         . "registrations.participation, "
-        . "registrations.video1_url, "
-        . "registrations.video2_url, "
-        . "registrations.video3_url, "
-        . "registrations.music1_orgfilename, "
-        . "registrations.music2_orgfilename, "
-        . "registrations.music3_orgfilename "
+        . "registrations.video_url1, "
+        . "registrations.video_url2, "
+        . "registrations.video_url3, "
+        . "registrations.music_orgfilename1, "
+        . "registrations.music_orgfilename2, "
+        . "registrations.music_orgfilename3 "
         . "FROM ciniki_musicfestival_competitors AS competitors "
         . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "(competitors.id = registrations.competitor1_id "
@@ -133,8 +133,8 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
                 'status', 'status_text', 'invoice_id', 'display_name', 
                 'class_id', 'class_code', 'class_name', 
                 'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 'fee', 'payment_type', 
-                'participation', 'video1_url', 'video2_url', 'video3_url', 
-                'music1_orgfilename', 'music2_orgfilename', 'music3_orgfilename',
+                'participation', 'video_url1', 'video_url2', 'video_url3', 
+                'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3',
                 ),
             'maps'=>array(
                 'rtype_text'=>$maps['registration']['rtype'],

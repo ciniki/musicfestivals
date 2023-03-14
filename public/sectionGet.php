@@ -108,7 +108,9 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
             . "ciniki_musicfestival_sections.synopsis, "
             . "ciniki_musicfestival_sections.description, "
             . "ciniki_musicfestival_sections.live_end_dt, "
-            . "ciniki_musicfestival_sections.virtual_end_dt "
+            . "ciniki_musicfestival_sections.virtual_end_dt, "
+            . "ciniki_musicfestival_sections.edit_end_dt, "
+            . "ciniki_musicfestival_sections.upload_end_dt "
             . "FROM ciniki_musicfestival_sections "
             . "WHERE ciniki_musicfestival_sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_musicfestival_sections.id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
@@ -119,11 +121,13 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
             array('container'=>'sections', 'fname'=>'id', 
                 'fields'=>array('festival_id', 'name', 'permalink', 'sequence', 'flags', 
                     'primary_image_id', 'synopsis', 'description',
-                    'live_end_dt', 'virtual_end_dt', 
+                    'live_end_dt', 'virtual_end_dt', 'edit_end_dt', 'upload_end_dt',
                     ),
                 'utctotz'=>array(
                     'live_end_dt'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
                     'virtual_end_dt'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                    'edit_end_dt'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                    'upload_end_dt'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
                     ),
                 ),
             ));

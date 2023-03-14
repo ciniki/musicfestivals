@@ -21,6 +21,7 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
+        'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'schedulesection_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Schedule Section'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -60,6 +61,10 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
         $schedulesection = array('id'=>0,
             'festival_id'=>'',
             'name'=>'',
+            'adjudicator1_id'=>0,
+            'adjudicator2_id'=>0,
+            'adjudicator3_id'=>0,
+            'flags'=>0,
         );
     }
 
@@ -72,7 +77,8 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
             . "ciniki_musicfestival_schedule_sections.name, "
             . "ciniki_musicfestival_schedule_sections.adjudicator1_id, "
             . "ciniki_musicfestival_schedule_sections.adjudicator2_id, "
-            . "ciniki_musicfestival_schedule_sections.adjudicator3_id "
+            . "ciniki_musicfestival_schedule_sections.adjudicator3_id, "
+            . "ciniki_musicfestival_schedule_sections.flags "
             . "FROM ciniki_musicfestival_schedule_sections "
             . "WHERE ciniki_musicfestival_schedule_sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_musicfestival_schedule_sections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' "
@@ -80,7 +86,7 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'schedulesections', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'name', 'adjudicator1_id', 'adjudicator2_id', 'adjudicator3_id'),
+                'fields'=>array('festival_id', 'name', 'adjudicator1_id', 'adjudicator2_id', 'adjudicator3_id', 'flags'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -106,7 +112,7 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
             . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "WHERE ciniki_musicfestival_adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND ciniki_musicfestival_adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $schedulesection['festival_id']) . "' "
+        . "AND ciniki_musicfestival_adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(

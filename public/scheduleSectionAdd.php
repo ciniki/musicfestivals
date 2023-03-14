@@ -25,6 +25,7 @@ function ciniki_musicfestivals_scheduleSectionAdd(&$ciniki) {
         'adjudicator1_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'First Adjudicator'),
         'adjudicator2_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Second Adjudicator'),
         'adjudicator3_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Third Adjudicator'),
+        'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

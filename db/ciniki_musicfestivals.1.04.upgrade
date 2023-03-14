@@ -1,0 +1,6 @@
+#
+# Add the edit and upload end dates for festival
+#
+ALTER TABLE ciniki_musicfestivals ADD COLUMN edit_end_dt datetime not null AFTER virtual_date;
+ALTER TABLE ciniki_musicfestivals ADD COLUMN upload_end_dt datetime not null AFTER edit_end_dt;
+ALTER TABLE ciniki_musicfestivals COMMENT='v1.04';

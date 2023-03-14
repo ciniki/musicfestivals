@@ -277,6 +277,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "perf_time3, "
             . "fee, "
             . "participation, "
+            . "video_url1, "
+            . "video_url2, "
+            . "video_url3, "
+            . "music_orgfilename1, "
+            . "music_orgfilename2, "
+            . "music_orgfilename3, "
             . "notes "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $registration_id) . "' "
@@ -297,6 +303,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             $registration = $rc['registration'];
             if( isset($_POST['action']) && $_POST['action'] == 'view' ) {
                 $display = 'view';
+//            } elseif( isset($_POST['action']) && $_POST['action'] == 'update' ) {
+//                $display = 'update';
             } else {
                 $display = 'form';
             }
@@ -327,6 +335,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "perf_time3, "
             . "fee, "
             . "participation, "
+            . "video_url1, "
+            . "video_url2, "
+            . "video_url3, "
+            . "music_orgfilename1, "
+            . "music_orgfilename2, "
+            . "music_orgfilename3, "
             . "notes "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE uuid = '" . ciniki_core_dbQuote($ciniki, $registration_uuid) . "' "
@@ -365,6 +379,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'registrationFormGenerate');
     $rc = ciniki_musicfestivals_wng_registrationFormGenerate($ciniki, $tnid, $request, array(
         'festival' => $festival,
+        'display' => $display,
         'competitors' => $competitors,
         'teachers' => $teachers,
         'registration' => isset($registration) ? $registration : array(),
@@ -457,6 +472,20 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         }
 
         //
+        // Check the cart still exists
+        //
+        if( count($errors) == 0 && isset($request['session']['cart']['sapos_id']) && $request['session']['cart']['sapos_id'] > 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'wng', 'cartLoad');
+            $rc = ciniki_sapos_wng_cartLoad($ciniki, $tnid, $request);
+            if( $rc['stat'] != 'ok' ) {
+                //
+                // Unable to load cart, create a new cart
+                //
+                error_log("WNG: Cart does not exist, creating new one");
+                $request['session']['cart']['sapos_id'] = 0;
+            }
+        }
+        //
         // If the cart doesn't exist, create one now
         //
         if( count($errors) == 0 
@@ -468,6 +497,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.310', 'msg'=>'Error opening cart', 'err'=>$rc['err']));
             }
         }
+
+
         //
         // If no errors, add/update the registration
         //
@@ -495,6 +526,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'perf_time2' => $fields['perf_time2']['value'],
                 'title3' => $fields['title3']['value'],
                 'perf_time3' => $fields['perf_time3']['value'],
+                'video_url1' => $fields['video_url1']['value'],
+                'video_url2' => $fields['video_url2']['value'],
+                'video_url3' => $fields['video_url3']['value'],
+//                'music_orgfilename1' => $fields['music_orgfilename1']['value'],
+//                'music_orgfilename2' => $fields['music_orgfilename2']['value'],
+//                'music_orgfilename3' => $fields['music_orgfilename3']['value'],
                 'payment_type' => 0,
                 'participation' => (isset($fields['participation']['value']) ? $fields['participation']['value'] : ''),
                 'notes' => $fields['notes']['value'],
@@ -514,6 +551,38 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $registration['fee'] = $selected_class['virtual_fee'];
             }
 
+            //
+            // Get the UUID so it can be used for adding files
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
+            $rc = ciniki_core_dbUUID($ciniki, 'ciniki.musicfestivals');
+            if( $rc['stat'] != 'ok' ) {
+                error_log('unable to get uuid');
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.454', 'msg'=>'Unable to get a new UUID', 'err'=>$rc['err']));
+            }
+            $registration['uuid'] = $rc['uuid'];
+
+            //
+            // Check for music uploads
+            //
+            foreach(['music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3'] as $fid) {
+                $field = $fields[$fid];
+                if( isset($_POST["f-{$field['id']}"]) && $_POST["f-{$field['id']}"] != '' ) {
+                    if( isset($_FILES["file-{$field['id']}"]["name"]) ) {
+                        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'storageFileAdd');
+                        $rc = ciniki_core_storageFileAdd($ciniki, $tnid, 'ciniki.musicfestivals.registration', array(
+                            'uuid' => $registration['uuid'] . '_' . $field['storage_suffix'],
+                            'subdir' => 'files',
+                            'binary_content' => file_get_contents($_FILES["file-{$field['id']}"]['tmp_name']),
+                            ));
+                        if( $rc['stat'] != 'ok' ) {
+                            error_log('unable to store file');
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.429', 'msg'=>'Unable to store uploaded file', 'err'=>$rc['err']));
+                        }
+                        $registration[$field['id']] = $field['value'];
+                    }
+                }
+            }
             //
             // Add the registration
             //
@@ -616,8 +685,35 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 if( strncmp($field['id'], 'section', 7) == 0 ) {
                     continue;
                 }
+                //
+                // Skip fields when editing a pending or paid registration
+                //
+                if( isset($registration['status']) && $registration['status'] != 6 
+                    && !in_array($field['id'], ['title1', 'title2', 'title3', 'perf_time1', 'perf_time2', 'perf_time3', 'video_url1', 'video_url2', 'video_url3', 'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3'])
+                    ) {
+                    continue;
+                }
 
-                if( !isset($registration[$field['id']]) || $field['value'] != $registration[$field['id']] ) {
+                if( $field['ftype'] == 'file' ) {
+                    if( isset($_POST["f-{$field['id']}"]) && $_POST["f-{$field['id']}"] != '' ) {
+                        if( isset($_FILES["file-{$field['id']}"]["name"]) 
+                            && isset($_FILES["file-{$field['id']}"]["tmp_name"]) 
+                            && $_FILES["file-{$field['id']}"]["tmp_name"] != '' 
+                            ) {
+                            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'storageFileAdd');
+                            $rc = ciniki_core_storageFileAdd($ciniki, $tnid, 'ciniki.musicfestivals.registration', array(
+                                'uuid' => $registration['uuid'] . '_' . $field['storage_suffix'],
+                                'subdir' => 'files',
+                                'binary_content' => file_get_contents($_FILES["file-{$field['id']}"]['tmp_name']),
+                                ));
+                            if( $rc['stat'] != 'ok' ) {
+                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.428', 'msg'=>'Unable to store uploaded file', 'err'=>$rc['err']));
+                            }
+                            $update_args[$field['id']] = $field['value'];
+                        }
+                    }
+                }
+                elseif( !isset($registration[$field['id']]) || $field['value'] != $registration[$field['id']] ) {
                     $update_args[$field['id']] = $field['value'];
                 }
             }
@@ -670,7 +766,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 // Load the cart item
                 //
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceObjectItem');
-                $rc = ciniki_sapos_hooks_invoiceObjectItem($ciniki, $tnid, $request['session']['cart']['id'], 'ciniki.musicfestivals.registration', $registration_id);
+                //$rc = ciniki_sapos_hooks_invoiceObjectItem($ciniki, $tnid, $request['session']['cart']['id'], 'ciniki.musicfestivals.registration', $registration_id);
+                $rc = ciniki_sapos_hooks_invoiceObjectItem($ciniki, $tnid, $registration['invoice_id'], 'ciniki.musicfestivals.registration', $registration_id);
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.420', 'msg'=>'Unable to get invoice item', 'err'=>$rc['err']));
                 }
@@ -851,6 +948,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     // Show the registration in view only mode
     //
     elseif( $display == 'view' ) {
+        $editable = 'no';
         foreach($fields as $fid => $field) {
             if( isset($field['id']) && $field['id'] == 'action' ) {
                 $fields[$fid]['value'] = 'view';
@@ -946,8 +1044,31 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     . "";
                 $fields[$fid]['ftype'] = 'textarea';
             }
-            $fields[$fid]['required'] = 'no';
-            $fields[$fid]['editable'] = 'no';
+            if( in_array($fid, ['title1', 'title2', 'title3', 'perf_time1', 'perf_time2', 'perf_time3'])
+                && $festival['edit'] == 'yes' 
+                ) {
+                $fields[$fid]['editable'] = 'yes';
+                $editable = 'yes';
+            } 
+            elseif( in_array($fid, ['video_url1', 'video_url2', 'video_url3'])
+                && $festival['upload'] == 'yes' 
+                ) {
+                $fields[$fid]['editable'] = 'yes';
+                $editable = 'yes';
+            } 
+            elseif( in_array($fid, ['music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3'])
+                && $festival['upload'] == 'yes' 
+                ) {
+                $fields[$fid]['editable'] = 'yes';
+                $editable = 'yes';
+            } 
+            else {
+                $fields[$fid]['required'] = 'no';
+                $fields[$fid]['editable'] = 'no';
+            }
+        }
+        if( $editable == 'yes' ) {
+            $fields['action']['value'] = 'update';
         }
         $blocks[] = array(
             'type' => 'form',
@@ -955,8 +1076,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             'class' => 'limit-width limit-width-60',
             'problem-list' => $form_errors,
             'cancel-label' => 'Back',
-            'submit-label' => '',
-            'submit-hide' => 'yes',
+            'submit-label' => 'Save',
+            'submit-hide' => $editable == 'no' ? 'yes' : 'no',
             'fields' => $fields,
             'js' => $js,
             );

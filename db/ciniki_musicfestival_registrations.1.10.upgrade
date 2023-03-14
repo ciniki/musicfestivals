@@ -1,0 +1,10 @@
+#
+# Added pronoun names
+#
+ALTER TABLE ciniki_musicfestival_registrations CHANGE video1_url video_url1 varchar(500) not null;
+ALTER TABLE ciniki_musicfestival_registrations CHANGE video2_url video_url2 varchar(500) not null;
+ALTER TABLE ciniki_musicfestival_registrations CHANGE video3_url video_url3 varchar(500) not null;
+ALTER TABLE ciniki_musicfestival_registrations CHANGE music1_orgfilename music_orgfilename1 varchar(250) not null;
+ALTER TABLE ciniki_musicfestival_registrations CHANGE music2_orgfilename music_orgfilename2 varchar(250) not null;
+ALTER TABLE ciniki_musicfestival_registrations CHANGE music3_orgfilename music_orgfilename3 varchar(250) not null;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.10';

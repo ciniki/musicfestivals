@@ -182,6 +182,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             . "ciniki_musicfestivals.earlybird_date, "
             . "ciniki_musicfestivals.live_date, "
             . "ciniki_musicfestivals.virtual_date, "
+            . "ciniki_musicfestivals.edit_end_dt, "
+            . "ciniki_musicfestivals.upload_end_dt, "
             . "ciniki_musicfestivals.primary_image_id, "
             . "ciniki_musicfestivals.description, "
             . "ciniki_musicfestivals.document_logo_id, "
@@ -195,7 +197,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'festivals', 'fname'=>'id', 
                 'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'status', 'flags', 
-                    'earlybird_date', 'live_date', 'virtual_date',
+                    'earlybird_date', 'live_date', 'virtual_date', 'edit_end_dt', 'upload_end_dt',
                     'primary_image_id', 'description', 
                     'document_logo_id', 'document_header_msg', 'document_footer_msg'),
                 'utctotz'=>array('start_date'=>array('timezone'=>'UTC', 'format'=>$date_format),
@@ -203,6 +205,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     'earlybird_date'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
                     'live_date'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
                     'virtual_date'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                    'edit_end_dt'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                    'upload_end_dt'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
                     ),
                 ),
             ));
@@ -418,12 +422,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "FORMAT(registrations.fee, 2) AS fee, "
                 . "registrations.payment_type, "
                 . "registrations.participation, "
-                . "registrations.video1_url, "
-                . "registrations.video2_url, "
-                . "registrations.video3_url, "
-                . "registrations.music1_orgfilename, "
-                . "registrations.music2_orgfilename, "
-                . "registrations.music3_orgfilename "
+                . "registrations.video_url1, "
+                . "registrations.video_url2, "
+                . "registrations.video_url3, "
+                . "registrations.music_orgfilename1, "
+                . "registrations.music_orgfilename2, "
+                . "registrations.music_orgfilename3 "
                 . "FROM ciniki_musicfestival_registrations AS registrations "
                 . "LEFT JOIN ciniki_customers AS teachers ON ("
                     . "registrations.teacher_customer_id = teachers.id "
@@ -457,8 +461,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         'class_id', 'class_code', 'class_name', 
                         'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 
                         'fee', 'payment_type', 'participation', 
-                        'video1_url', 'video2_url', 'video3_url', 
-                        'music1_orgfilename', 'music2_orgfilename', 'music3_orgfilename',
+                        'video_url1', 'video_url2', 'video_url3', 
+                        'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3',
                         ),
                     'maps'=>array(
                         'rtype_text'=>$maps['registration']['rtype'],
@@ -669,12 +673,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 }
                 $strsql .= "registrations.title1, "
                     . "registrations.participation, "
-                    . "registrations.video1_url, "
-                    . "registrations.video2_url, "
-                    . "registrations.video3_url, "
-                    . "registrations.music1_orgfilename, "
-                    . "registrations.music2_orgfilename, "
-                    . "registrations.music3_orgfilename, "
+                    . "registrations.video_url1, "
+                    . "registrations.video_url2, "
+                    . "registrations.video_url3, "
+                    . "registrations.music_orgfilename1, "
+                    . "registrations.music_orgfilename2, "
+                    . "registrations.music_orgfilename3, "
                     . "IFNULL(comments.adjudicator_id, 0) AS adjudicator_id, "
                     . "IFNULL(comments.id, 0) AS comment_id, "
                     . "IFNULL(comments.comments, '') AS comments, "
@@ -719,8 +723,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     array('container'=>'registrations', 'fname'=>'reg_id', 
                         'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name',
                             'title'=>'title1', 
-                            'participation', 'video1_url', 'video2_url', 'video3_url', 
-                            'music1_orgfilename', 'music2_orgfilename', 'music3_orgfilename',
+                            'participation', 'video_url1', 'video_url2', 'video_url3', 
+                            'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3',
                             )),
                     array('container'=>'comments', 'fname'=>'comment_id', 
                         'fields'=>array('id'=>'comment_id', 'adjudicator_id', 'comments', 'grade', 'score')),
