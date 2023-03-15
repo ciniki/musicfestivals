@@ -610,7 +610,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'size' => 'medium',
             'storage_suffix' => "music{$i}",
             'accept' => 'application/pdf',
-            'label' => 'Music',
+            'label' => 'Music (PDF)',
             'value' => isset($_POST["f-music_orgfilename{$i}"]) ? $_POST["f-music_orgfilename{$i}"] : (isset($registration["music_orgfilename{$i}"]) ? $registration["music_orgfilename{$i}"] : ''),
             );
     }
