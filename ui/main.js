@@ -2608,7 +2608,7 @@ function ciniki_musicfestivals_main() {
     //
     // The panel to edit Schedule Time Slot
     //
-    this.scheduletimeslot = new M.panel('Schedule Time Slot', 'ciniki_musicfestivals_main', 'scheduletimeslot', 'mc', 'medium', 'sectioned', 'ciniki.musicfestivals.main.scheduletimeslot');
+    this.scheduletimeslot = new M.panel('Schedule Time Slot', 'ciniki_musicfestivals_main', 'scheduletimeslot', 'mc', 'xlarge', 'sectioned', 'ciniki.musicfestivals.main.scheduletimeslot');
     this.scheduletimeslot.data = null;
     this.scheduletimeslot.festival_id = 0;
     this.scheduletimeslot.scheduletimeslot_id = 0;
