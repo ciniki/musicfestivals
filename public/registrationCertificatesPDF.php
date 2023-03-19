@@ -141,9 +141,13 @@ function ciniki_musicfestivals_registrationCertificatesPDF($ciniki) {
         . "classes.id AS class1_id, "
         . "0 AS class2_id, "
         . "0 AS class3_id, "
+        . "0 AS class4_id, "
+        . "0 AS class5_id, "
         . "'' AS class1_name, "
         . "'' AS class2_name, "
         . "'' AS class3_name, "
+        . "'' AS class4_name, "
+        . "'' AS class5_name, "
         . "'' AS description, "
         . "registrations.id AS reg_id, "
         . "registrations.display_name, "
@@ -167,6 +171,8 @@ function ciniki_musicfestivals_registrationCertificatesPDF($ciniki) {
                 . "registrations.class_id = timeslots.class1_id "
                 . "OR registrations.class_id = timeslots.class2_id "
                 . "OR registrations.class_id = timeslots.class3_id "
+                . "OR registrations.class_id = timeslots.class4_id "
+                . "OR registrations.class_id = timeslots.class5_id "
                 . ") "
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
@@ -185,7 +191,7 @@ function ciniki_musicfestivals_registrationCertificatesPDF($ciniki) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'name'=>'section_name', 'adjudicator1_id')),
         array('container'=>'divisions', 'fname'=>'division_id', 'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text')),
-        array('container'=>'timeslots', 'fname'=>'timeslot_id', 'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 'class1_id', 'class2_id', 'class3_id', 'description', 'class1_name', 'class2_name', 'class3_name')),
+        array('container'=>'timeslots', 'fname'=>'timeslot_id', 'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 'class1_id', 'class2_id', 'class3_id', 'class4_id', 'class5_id', 'description', 'class1_name', 'class2_name', 'class3_name', 'class4_name', 'class5_name')),
         array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title'=>'title1', 'class_name', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id')),
         ));
     if( $rc['stat'] != 'ok' ) {

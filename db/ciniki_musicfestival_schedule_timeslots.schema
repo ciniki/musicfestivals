@@ -36,6 +36,8 @@ create table ciniki_musicfestival_schedule_timeslots (
     class1_id int not null,
     class2_id int not null,
     class3_id int not null,
+    class4_id int not null,
+    class5_id int not null,
     flags tinyint unsigned not null,
     name varchar(150) not null,
     description varchar(250) not null,
@@ -43,6 +45,6 @@ create table ciniki_musicfestival_schedule_timeslots (
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
-    index (festival_id, sdivision_id, class1_id, class2_id, class3_id),
+    index (festival_id, sdivision_id, class1_id, class2_id, class3_id, class4_id, class5_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.03';
+) ENGINE='InnoDB', COMMENT='v1.04';

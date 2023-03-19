@@ -49,6 +49,8 @@ function ciniki_musicfestivals_scheduleTimeslotSearch($ciniki) {
         . "ciniki_musicfestival_schedule_timeslots.class1_id, "
         . "ciniki_musicfestival_schedule_timeslots.class2_id, "
         . "ciniki_musicfestival_schedule_timeslots.class3_id, "
+        . "ciniki_musicfestival_schedule_timeslots.class4_id, "
+        . "ciniki_musicfestival_schedule_timeslots.class5_id, "
         . "ciniki_musicfestival_schedule_timeslots.name, "
         . "ciniki_musicfestival_schedule_timeslots.description "
         . "FROM ciniki_musicfestival_schedule_timeslots "
@@ -66,7 +68,10 @@ function ciniki_musicfestivals_scheduleTimeslotSearch($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'scheduletimeslot', 'fname'=>'id', 
-            'fields'=>array('id', 'festival_id', 'sdivision_id', 'slot_time', 'class1_id', 'class2_id', 'class3_id', 'name', 'description')),
+            'fields'=>array('id', 'festival_id', 'sdivision_id', 'slot_time', 
+                'class1_id', 'class2_id', 'class3_id', 'class4_id', 'class5_id', 
+                'name', 'description',
+                )),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

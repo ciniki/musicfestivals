@@ -83,6 +83,8 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "timeslots.class1_id, "
             . "timeslots.class2_id, "
             . "timeslots.class3_id, "
+            . "timeslots.class4_id, "
+            . "timeslots.class5_id, "
             . "timeslots.flags, "
             . "timeslots.name, "
             . "timeslots.description, "
@@ -98,7 +100,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'scheduletimeslot', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'sdivision_id', 'slot_time', 'class1_id', 'class2_id', 'class3_id', 'flags', 'name', 'description', 'registrations'),
+                'fields'=>array('festival_id', 'sdivision_id', 'slot_time', 'class1_id', 'class2_id', 'class3_id', 'class4_id', 'class5_id', 'flags', 'name', 'description', 'registrations'),
                 'idlists'=>array('registrations'),
                 ),
             ));
@@ -191,10 +193,11 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             }
         }
         usort($rsp['classes'], function($a, $b) {
-            if( $a['num_registrations'] == $b['num_registrations'] ) {
-                return strcasecmp($a['name'], $b['name']);
-            }
-            return ($a['num_registrations'] > $b['num_registrations'] ? -1 : 1);
+            return strcasecmp($a['name'], $b['name']);
+//            if( $a['num_registrations'] == $b['num_registrations'] ) {
+//                return strcasecmp($a['name'], $b['name']);
+//            }
+//            return ($a['num_registrations'] > $b['num_registrations'] ? -1 : 1);
         });
     }
 
