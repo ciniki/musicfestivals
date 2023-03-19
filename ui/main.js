@@ -2624,6 +2624,10 @@ function ciniki_musicfestivals_main() {
                 'onchangeFn':'M.ciniki_musicfestivals_main.scheduletimeslot.updateRegistrations'},
             'class3_id':{'label':'Class 3', 'required':'yes', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}, 
                 'onchangeFn':'M.ciniki_musicfestivals_main.scheduletimeslot.updateRegistrations'},
+            'class4_id':{'label':'Class 4', 'required':'yes', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}, 
+                'onchangeFn':'M.ciniki_musicfestivals_main.scheduletimeslot.updateRegistrations'},
+            'class5_id':{'label':'Class 5', 'required':'yes', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}, 
+                'onchangeFn':'M.ciniki_musicfestivals_main.scheduletimeslot.updateRegistrations'},
             'name':{'label':'Name', 'type':'text'},
             }},
         '_options':{'label':'',
@@ -2632,7 +2636,9 @@ function ciniki_musicfestivals_main() {
                 var c1 = p.formValue('class1_id');
                 var c2 = p.formValue('class2_id');
                 var c3 = p.formValue('class3_id');
-                if( c1 == null && p.data.class1_id > 0 && p.data.class2_id == 0 && p.data.class3_id == 0 ) { return 'yes'; }
+                var c4 = p.formValue('class4_id');
+                var c5 = p.formValue('class5_id');
+                if( c1 == null && p.data.class1_id > 0 && p.data.class2_id == 0 && p.data.class3_id == 0 && p.data.class4_id == 0 && p.data.class5_id == 0 ) { return 'yes'; }
                 return (c1 != null && c1 > 0 && (c2 == null || c2 == 0) && (c3 == null || c3 == 0) ? 'yes' : 'hidden');
                 },
             'fields':{
@@ -2660,7 +2666,7 @@ function ciniki_musicfestivals_main() {
     }
     this.scheduletimeslot.updateRegistrations = function() {
         this.sections._registrations.visible = 'hidden';
-        if( this.formValue('flags1') == 'on' && this.formValue('class1_id') > 0 && this.formValue('class2_id') == 0 && this.formValue('class3_id') == 0 && this.data.classes != null ) {
+        if( this.formValue('flags1') == 'on' && this.formValue('class1_id') > 0 && this.formValue('class2_id') == 0 && this.formValue('class3_id') == 0 && this.formValue('class4_id') == 0 && this.formValue('class5_id') == 0 && this.data.classes != null ) {
             for(var i in this.data.classes) {
                 if( this.data.classes[i].id == this.formValue('class1_id') ) {
                     if( this.data.classes[i].registrations != null ) {
@@ -2695,6 +2701,8 @@ function ciniki_musicfestivals_main() {
                 p.sections.general.fields.class1_id.options = rsp.classes;
                 p.sections.general.fields.class2_id.options = rsp.classes;
                 p.sections.general.fields.class3_id.options = rsp.classes;
+                p.sections.general.fields.class4_id.options = rsp.classes;
+                p.sections.general.fields.class5_id.options = rsp.classes;
                 p.sections._registrations.visible = 'hidden';
                 if( rsp.scheduletimeslot.class1_id > 0 && rsp.classes != null ) {
                     for(var i in rsp.classes) {

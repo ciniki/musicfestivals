@@ -183,6 +183,9 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             $rsp['classes'][$cid]['num_registrations'] = (isset($class['registrations']) ? count($class['registrations']) : 0);
             if( $rsp['classes'][$cid]['num_registrations'] > 0 ) {
                 $rsp['classes'][$cid]['name'] .= ' (' . $rsp['classes'][$cid]['num_registrations'] . ')';
+            } else {
+                unset($rsp['classes'][$cid]);
+                continue;
             }
             if( isset($class['registrations']) ) {
                 foreach($class['registrations'] as $rid => $reg) {
