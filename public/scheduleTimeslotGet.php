@@ -145,6 +145,8 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         . "FORMAT(classes.fee, 2) AS fee, "
         . "registrations.id AS registration_id, "
         . "registrations.display_name, "
+        . "registrations.title1, "
+        . "registrations.timeslot_sequence, "
         . "IFNULL(TIME_FORMAT(rtimeslots.slot_time, '%h:%i %p'), '') AS regtime "
 //        . "COUNT(registrations.id) AS num_registrations "
         . "FROM ciniki_musicfestival_sections AS sections "
@@ -168,11 +170,13 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
 //        . "GROUP BY classes.id "
 //        . "ORDER BY num_registrations DESC, sections.name, classes.code "
-        . "ORDER BY classes.id, sections.name, classes.code "
+        . "ORDER BY classes.id, registrations.timeslot_sequence, sections.name, classes.code "
         . "";
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'classes', 'fname'=>'id', 'fields'=>array('id', 'name', 'fee')),
-        array('container'=>'registrations', 'fname'=>'registration_id', 'fields'=>array('id'=>'registration_id', 'name'=>'display_name', 'time'=>'regtime')),
+        array('container'=>'registrations', 'fname'=>'registration_id', 
+            'fields'=>array('id'=>'registration_id', 'name'=>'display_name', 'time'=>'regtime', 'title1', 'timeslot_sequence'),
+            ),
         ));
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

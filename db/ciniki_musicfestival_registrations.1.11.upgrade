@@ -1,0 +1,5 @@
+#
+# Add sequence for timeslot
+#
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN timeslot_sequence tinyint unsigned not null AFTER timeslot_id;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.11';

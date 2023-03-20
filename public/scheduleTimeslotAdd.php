@@ -85,6 +85,19 @@ function ciniki_musicfestivals_scheduleTimeslotAdd(&$ciniki) {
     }
 
     //
+    // Check for any sequence updates
+    //
+    foreach($ciniki['request']['args'] as $k => $v) {   
+        if( preg_match("/^seq_(.*)$/", $k, $m) ) {
+            error_log('Found: ' . $m[1]);
+            $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.registration', $m[1], array('timeslot_sequence'=>$v), 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+        }
+    }
+
+    //
     // Commit the transaction
     //
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.musicfestivals');

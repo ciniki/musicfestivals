@@ -195,6 +195,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'competitor5_id'=>array('name'=>'Competitor 5', 'ref'=>'ciniki.musicfestivals.competitor', 'default'=>'0'),
             'class_id'=>array('name'=>'Class', 'ref'=>'ciniki.musicfestivals.class'),
             'timeslot_id'=>array('name'=>'Timeslot', 'ref'=>'ciniki.musicfestivals.scheduletimeslot', 'default'=>'0'),
+            'timeslot_sequence'=>array('name'=>'Timeslot Sequence', 'default'=>'0'),
             'title1'=>array('name'=>'Title', 'default'=>''),
             'perf_time1'=>array('name'=>'Performance Time', 'default'=>''),
             'title2'=>array('name'=>'2nd Title', 'default'=>''),

@@ -568,7 +568,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             foreach(['music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3'] as $fid) {
                 $field = $fields[$fid];
                 if( isset($_POST["f-{$field['id']}"]) && $_POST["f-{$field['id']}"] != '' ) {
-                    if( isset($_FILES["file-{$field['id']}"]["name"]) ) {
+                    if( isset($_FILES["file-{$field['id']}"]["name"]) 
+                        && isset($_FILES["file-{$field['id']}"]["tmp_name"]) 
+                        ) {
                         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'storageFileAdd');
                         $rc = ciniki_core_storageFileAdd($ciniki, $tnid, 'ciniki.musicfestivals.registration', array(
                             'uuid' => $registration['uuid'] . '_' . $field['storage_suffix'],

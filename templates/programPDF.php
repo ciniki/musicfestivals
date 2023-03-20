@@ -157,7 +157,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
     } elseif( isset($args['ipv']) && $args['ipv'] == 'participation' ) {
         $strsql .= "AND registrations.participation = 1 ";
     }
-    $strsql .= "ORDER BY divisions.division_date, division_id, slot_time, registrations.public_name "
+    $strsql .= "ORDER BY divisions.division_date, division_id, slot_time, registrations.timeslot_sequence, registrations.public_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(

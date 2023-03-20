@@ -2638,17 +2638,71 @@ function ciniki_musicfestivals_main() {
                 var c3 = p.formValue('class3_id');
                 var c4 = p.formValue('class4_id');
                 var c5 = p.formValue('class5_id');
-                if( c1 == null && p.data.class1_id > 0 && p.data.class2_id == 0 && p.data.class3_id == 0 && p.data.class4_id == 0 && p.data.class5_id == 0 ) { return 'yes'; }
-                return (c1 != null && c1 > 0 && (c2 == null || c2 == 0) && (c3 == null || c3 == 0) ? 'yes' : 'hidden');
+//                if( c1 == null && p.data.class1_id > 0 && p.data.class2_id == 0 && p.data.class3_id == 0 && p.data.class4_id == 0 && p.data.class5_id == 0 ) { return 'yes'; }
+                if( c1 == null && p.data.class1_id > 0 ) { 
+                    return 'yes'; 
+                }
+//                return (c1 != null && c1 > 0 && (c2 == null || c2 == 0) && (c3 == null || c3 == 0) ? 'yes' : 'hidden');
+                return (c1 != null && c1 > 0 ? 'yes' : 'hidden');
                 },
             'fields':{
                 'flags1':{'label':'Split Class', 'type':'flagtoggle', 'default':'off', 'bit':0x01, 'field':'flags', 
-                    'onchange':'M.ciniki_musicfestivals_main.scheduletimeslot.updateRegistrations'},
+                    'fn':'M.ciniki_musicfestivals_main.scheduletimeslot.updateRegistrations'},
             }},
-        '_registrations':{'label':'Registrations', 
+        '_registrations1':{'label':'Class 1 Registrations', 
             'visible':'hidden',
             'fields':{
-                'registrations':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':[]},
+                'registrations1':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':[], 
+                    'fn':'M.ciniki_musicfestivals_main.scheduletimeslot.updateSorting',
+                    },
+            }},
+        '_registrations2':{'label':'Class 2 Registrations', 
+            'visible':'hidden',
+            'fields':{
+                'registrations2':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':[],
+                    'fn':'M.ciniki_musicfestivals_main.scheduletimeslot.updateSorting',
+                    },
+            }},
+        '_registrations3':{'label':'Class 3 Registrations', 
+            'visible':'hidden',
+            'fields':{
+                'registrations3':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':[],
+                    'fn':'M.ciniki_musicfestivals_main.scheduletimeslot.updateSorting',
+                    },
+            }},
+        '_registrations4':{'label':'Class 4 Registrations', 
+            'visible':'hidden',
+            'fields':{
+                'registrations4':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':[],
+                    'fn':'M.ciniki_musicfestivals_main.scheduletimeslot.updateSorting',
+                    },
+            }},
+        '_registrations5':{'label':'Class 5 Registrations', 
+            'visible':'hidden',
+            'fields':{
+                'registrations5':{'label':'', 'hidelabel':'yes', 'type':'idlist', 'list':[],
+                    'fn':'M.ciniki_musicfestivals_main.scheduletimeslot.updateSorting',
+                    },
+            }},
+        '_sorting1':{'label':'Class 1 Registrations - Sorting', 
+            'visible':'hidden',
+            'fields':{
+            }},
+        '_sorting2':{'label':'Class 2 Registrations - Sorting', 
+            'visible':'hidden',
+            'fields':{
+            }},
+        '_sorting3':{'label':'Class 3 Registrations - Sorting', 
+            'visible':'hidden',
+            'fields':{
+            }},
+        '_sorting4':{'label':'Class 4 Registrations - Sorting', 
+            'visible':'hidden',
+            'fields':{
+            }},
+        '_sorting5':{'label':'Class 5 Registrations - Sorting', 
+            'visible':'hidden',
+            'fields':{
             }},
         '_description':{'label':'Description', 'fields':{
             'description':{'label':'Description', 'hidelabel':'yes', 'type':'textarea'},
@@ -2660,27 +2714,218 @@ function ciniki_musicfestivals_main() {
                 'fn':'M.ciniki_musicfestivals_main.scheduletimeslot.remove();'},
             }},
         };
-    this.scheduletimeslot.fieldValue = function(s, i, d) { return this.data[i]; }
+    this.scheduletimeslot.fieldValue = function(s, i, d) { 
+        if( i == 'registrations1' || i == 'registrations2' || i == 'registrations3' || i == 'registrations4' || i == 'registrations5' ) {
+            return this.data.registrations;
+        }
+        return this.data[i]; 
+        }
     this.scheduletimeslot.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.musicfestivals.scheduleTimeslotHistory', 'args':{'tnid':M.curTenantID, 'scheduletimeslot_id':this.scheduletimeslot_id, 'field':i}};
     }
     this.scheduletimeslot.updateRegistrations = function() {
-        this.sections._registrations.visible = 'hidden';
-        if( this.formValue('flags1') == 'on' && this.formValue('class1_id') > 0 && this.formValue('class2_id') == 0 && this.formValue('class3_id') == 0 && this.formValue('class4_id') == 0 && this.formValue('class5_id') == 0 && this.data.classes != null ) {
+        var c1_id = this.formValue('class1_id');
+        var c2_id = this.formValue('class2_id');
+        var c3_id = this.formValue('class3_id');
+        var c4_id = this.formValue('class4_id');
+        var c5_id = this.formValue('class5_id');
+        this.sections._registrations1.visible = 'hidden';
+        this.sections._registrations2.visible = 'hidden';
+        this.sections._registrations3.visible = 'hidden';
+        this.sections._registrations4.visible = 'hidden';
+        this.sections._registrations5.visible = 'hidden';
+        if( this.formValue('flags1') == 'on' && this.formValue('class1_id') > 0 && this.data.classes != null ) {
             for(var i in this.data.classes) {
-                if( this.data.classes[i].id == this.formValue('class1_id') ) {
+                if( this.data.classes[i].id == c1_id ) {
                     if( this.data.classes[i].registrations != null ) {
-                        this.sections._registrations.visible = 'yes';
-                        this.sections._registrations.fields.registrations.list = this.data.classes[i].registrations;
+                        this.sections._registrations1.visible = 'yes';
+                        this.sections._registrations1.fields.registrations1.list = this.data.classes[i].registrations;
+                    }
+                }
+                if( this.data.classes[i].id == c2_id ) {
+                    if( this.data.classes[i].registrations != null ) {
+                        this.sections._registrations2.visible = 'yes';
+                        this.sections._registrations2.fields.registrations2.list = this.data.classes[i].registrations;
+                    }
+                }
+                if( this.data.classes[i].id == c3_id ) {
+                    if( this.data.classes[i].registrations != null ) {
+                        this.sections._registrations3.visible = 'yes';
+                        this.sections._registrations3.fields.registrations3.list = this.data.classes[i].registrations;
+                    }
+                }
+                if( this.data.classes[i].id == c4_id ) {
+                    if( this.data.classes[i].registrations != null ) {
+                        this.sections._registrations4.visible = 'yes';
+                        this.sections._registrations4.fields.registrations4.list = this.data.classes[i].registrations;
+                    }
+                }
+                if( this.data.classes[i].id == c5_id ) {
+                    if( this.data.classes[i].registrations != null ) {
+                        this.sections._registrations5.visible = 'yes';
+                        this.sections._registrations5.fields.registrations5.list = this.data.classes[i].registrations;
                     }
                 }
             }
         }
-        this.showHideSection('_options');
-        this.showHideSection('_registrations');
-        if( this.sections._registrations.visible == 'yes' ) {
-            this.refreshSection('_registrations');
+        this.showHideSection('_registrations1');
+        this.showHideSection('_registrations2');
+        this.showHideSection('_registrations3');
+        this.showHideSection('_registrations4');
+        this.showHideSection('_registrations5');
+        if( this.sections._registrations1.visible == 'yes' ) {
+            this.refreshSection('_registrations1');
         }
+        if( this.sections._registrations2.visible == 'yes' ) {
+            this.refreshSection('_registrations2');
+        }
+        if( this.sections._registrations3.visible == 'yes' ) {
+            this.refreshSection('_registrations3');
+        }
+        if( this.sections._registrations4.visible == 'yes' ) {
+            this.refreshSection('_registrations4');
+        }
+        if( this.sections._registrations5.visible == 'yes' ) {
+            this.refreshSection('_registrations5');
+        }
+        this.updateSorting();
+    }
+    this.scheduletimeslot.updateSorting = function() {
+        var c1_id = this.formValue('class1_id');
+        var c2_id = this.formValue('class2_id');
+        var c3_id = this.formValue('class3_id');
+        var c4_id = this.formValue('class4_id');
+        var c5_id = this.formValue('class5_id');
+        // Update the class registrations
+        this.sections._sorting1.fields = {};
+        this.sections._sorting2.fields = {};
+        this.sections._sorting3.fields = {};
+        this.sections._sorting4.fields = {};
+        this.sections._sorting5.fields = {};
+        this.sections._sorting1.visible = 'hidden';
+        this.sections._sorting2.visible = 'hidden';
+        this.sections._sorting3.visible = 'hidden';
+        this.sections._sorting4.visible = 'hidden';
+        this.sections._sorting5.visible = 'hidden';
+        for(var i in this.data.classes) {
+            if( c1_id > 0 && this.data.classes[i].id == c1_id ) {
+                for(var j in this.data.classes[i].registrations) {
+                    if( this.formValue('flags1') == 'on' ) {
+                        var t = this.formValue('registrations1');
+                        if( t == '' ) {
+                            break;
+                        } 
+                        var r = t.split(/,/);
+                        if( r.indexOf(this.data.classes[i].registrations[j].id) < 0 ) {
+                            continue;
+                        }
+                    }
+                    this.sections._sorting1.visible = 'yes';
+                    this.sections._sorting1.fields['seq_' + this.data.classes[i].registrations[j].id] = {
+                        'label':this.data.classes[i].registrations[j].name + ' - ' + this.data.classes[i].registrations[j].title1,
+                        'type':'text', 
+                        'size':'small',
+                        };
+                    this.data['seq_' + this.data.classes[i].registrations[j].id] = this.data.classes[i].registrations[j].timeslot_sequence;
+                }
+            }
+            if( c2_id > 0 && this.data.classes[i].id == c2_id ) {
+                for(var j in this.data.classes[i].registrations) {
+                    if( this.formValue('flags1') == 'on' ) {
+                        var t = this.formValue('registrations2');
+                        if( t == '' ) {
+                            break;
+                        } 
+                        var r = t.split(/,/);
+                        if( r.indexOf(this.data.classes[i].registrations[j].id) < 0 ) {
+                            continue;
+                        }
+                    }
+                    this.sections._sorting2.visible = 'yes';
+                    this.sections._sorting2.fields['seq_' + this.data.classes[i].registrations[j].id] = {
+                        'label':this.data.classes[i].registrations[j].name + ' - ' + this.data.classes[i].registrations[j].title1,
+                        'type':'text', 
+                        'size':'small',
+                        };
+                    this.data['seq_' + this.data.classes[i].registrations[j].id] = this.data.classes[i].registrations[j].timeslot_sequence;
+                }
+            }
+            if( c3_id > 0 && this.data.classes[i].id == c3_id ) {
+                for(var j in this.data.classes[i].registrations) {
+                    if( this.formValue('flags1') == 'on' ) {
+                        var t = this.formValue('registrations3');
+                        if( t == '' ) {
+                            break;
+                        } 
+                        var r = t.split(/,/);
+                        if( r.indexOf(this.data.classes[i].registrations[j].id) < 0 ) {
+                            continue;
+                        }
+                    }
+                    this.sections._sorting3.visible = 'yes';
+                    this.sections._sorting3.fields['seq_' + this.data.classes[i].registrations[j].id] = {
+                        'label':this.data.classes[i].registrations[j].name + ' - ' + this.data.classes[i].registrations[j].title1,
+                        'type':'text', 
+                        'size':'small',
+                        };
+                    this.data['seq_' + this.data.classes[i].registrations[j].id] = this.data.classes[i].registrations[j].timeslot_sequence;
+                }
+            }
+            if( c4_id > 0 && this.data.classes[i].id == c4_id ) {
+                for(var j in this.data.classes[i].registrations) {
+                    if( this.formValue('flags1') == 'on' ) {
+                        var t = this.formValue('registrations4');
+                        if( t == '' ) {
+                            break;
+                        } 
+                        var r = t.split(/,/);
+                        if( r.indexOf(this.data.classes[i].registrations[j].id) < 0 ) {
+                            continue;
+                        }
+                    }
+                    this.sections._sorting4.visible = 'yes';
+                    this.sections._sorting4.fields['seq_' + this.data.classes[i].registrations[j].id] = {
+                        'label':this.data.classes[i].registrations[j].name + ' - ' + this.data.classes[i].registrations[j].title1,
+                        'type':'text', 
+                        'size':'small',
+                        };
+                    this.data['seq_' + this.data.classes[i].registrations[j].id] = this.data.classes[i].registrations[j].timeslot_sequence;
+                }
+            }
+            if( c5_id > 0 && this.data.classes[i].id == c5_id ) {
+                for(var j in this.data.classes[i].registrations) {
+                    if( this.formValue('flags1') == 'on' ) {
+                        var t = this.formValue('registrations5');
+                        if( t == '' ) {
+                            break;
+                        } 
+                        var r = t.split(/,/);
+                        if( r.indexOf(this.data.classes[i].registrations[j].id) < 0 ) {
+                            continue;
+                        }
+                    }
+                    this.sections._sorting5.visible = 'yes';
+                    this.sections._sorting5.fields['seq_' + this.data.classes[i].registrations[j].id] = {
+                        'label':this.data.classes[i].registrations[j].name + ' - ' + this.data.classes[i].registrations[j].title1,
+                        'type':'text', 
+                        'size':'small',
+                        };
+                    this.data['seq_' + this.data.classes[i].registrations[j].id] = this.data.classes[i].registrations[j].timeslot_sequence;
+                }
+            }
+        }
+        this.showHideSection('_options');
+        this.refreshSection('_sorting1');
+        this.refreshSection('_sorting2');
+        this.refreshSection('_sorting3');
+        this.refreshSection('_sorting4');
+        this.refreshSection('_sorting5');
+        this.showHideSection('_sorting1');
+        this.showHideSection('_sorting2');
+        this.showHideSection('_sorting3');
+        this.showHideSection('_sorting4');
+        this.showHideSection('_sorting5'); 
+        return true;
     }
     this.scheduletimeslot.open = function(cb, sid, did, fid, list) {
         if( sid != null ) { this.scheduletimeslot_id = sid; }
@@ -2703,21 +2948,22 @@ function ciniki_musicfestivals_main() {
                 p.sections.general.fields.class3_id.options = rsp.classes;
                 p.sections.general.fields.class4_id.options = rsp.classes;
                 p.sections.general.fields.class5_id.options = rsp.classes;
-                p.sections._registrations.visible = 'hidden';
+/*                p.sections._registrations1.visible = 'hidden';
                 if( rsp.scheduletimeslot.class1_id > 0 && rsp.classes != null ) {
                     for(var i in rsp.classes) {
                         if( rsp.classes[i].id == rsp.scheduletimeslot.class1_id ) {
                             if( rsp.classes[i].registrations != null ) {
                                 if( (rsp.scheduletimeslot.flags&0x01) > 0 ) {
-                                    p.sections._registrations.visible = 'yes';
+                                    p.sections._registrations1.visible = 'yes';
                                 }
-                                p.sections._registrations.fields.registrations.list = rsp.classes[i].registrations;
+                                p.sections._registrations1.fields.registrations1.list = rsp.classes[i].registrations;
                             }
                         }
                     }
-                }
+                } */
                 p.refresh();
                 p.show(cb);
+                p.updateRegistrations();
             });
     }
     this.scheduletimeslot.save = function(cb) {
@@ -2725,6 +2971,7 @@ function ciniki_musicfestivals_main() {
         if( !this.checkForm() ) { return false; }
         if( this.scheduletimeslot_id > 0 ) {
             var c = this.serializeForm('no');
+            console.log(c);
             if( c != '' ) {
                 M.api.postJSONCb('ciniki.musicfestivals.scheduleTimeslotUpdate', 
                     {'tnid':M.curTenantID, 'scheduletimeslot_id':this.scheduletimeslot_id, 'festival_id':this.festival_id}, c, function(rsp) {
@@ -2739,6 +2986,7 @@ function ciniki_musicfestivals_main() {
             }
         } else {
             var c = this.serializeForm('yes');
+            console.log(c);
             M.api.postJSONCb('ciniki.musicfestivals.scheduleTimeslotAdd', {'tnid':M.curTenantID, 'festival_id':this.festival_id}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
