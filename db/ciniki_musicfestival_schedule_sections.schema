@@ -19,7 +19,10 @@
 #
 # flags:                The options for the timeslot section.
 #
-#                           0x01 - Release comments & certificates for download.
+#                           0x01 - Show schedule timeslots for registrations.
+#                           0x02 - Release comments & certificates for download.
+#                           0x04 - 
+#                           0x08 - 
 #
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.
