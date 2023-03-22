@@ -88,6 +88,7 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
                     . "WHERE class_id = '" . ciniki_core_dbQuote($ciniki, $args["class{$i}_id"]) . "' "
                     . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
                 $rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.musicfestivals', 'registrations', 'id');
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.456', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
