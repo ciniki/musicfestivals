@@ -52,7 +52,8 @@
 #
 # class_id:             The class the registration is for.
 #
-# timeslot_id:          The ID of the time this registration is attached to, If the timeslot is a partial registration list.
+# timeslot_id:          The ID of the time this registration is attached to. 
+#                       Used to be for only split classes, now for all classes.
 # timeslot_sequence:    The order to display this registration in for the timeslot.
 # 
 # title1:               The title and composer of the 1st piece they will perform.

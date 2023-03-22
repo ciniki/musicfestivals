@@ -48,6 +48,54 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
+
+    //
+    // Get the current timeslot flags
+    //
+    $strsql = "SELECT timeslots.id, "
+        . "timeslots.festival_id, "
+        . "timeslots.class1_id, "
+        . "timeslots.class2_id, "
+        . "timeslots.class3_id, "
+        . "timeslots.class4_id, "
+        . "timeslots.class5_id, "
+        . "timeslots.flags "
+        . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
+        . "WHERE timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND timeslots.id = '" . ciniki_core_dbQuote($ciniki, $args['scheduletimeslot_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'scheduletimeslot');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.457', 'msg'=>'Unable to load scheduletimeslot', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['scheduletimeslot']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.458', 'msg'=>'Unable to find requested scheduletimeslot'));
+    }
+    $scheduletimeslot = $rc['scheduletimeslot'];
+
+    //
+    // Get the of registrations for each class if not split
+    //
+    $flags = $scheduletimeslot['flags'];
+    if( isset($args['flags']) ) {   
+        $flags = $args['flags'];
+    }
+    if( ($flags&0x01) == 0 ) {
+        for($i = 1; $i <= 5; $i++) {
+            if( isset($args["class{$i}_id"]) && $args["class{$i}_id"] > 0 ) {
+                $strsql = "SELECT registrations.id "
+                    . "FROM ciniki_musicfestival_registrations AS registrations "
+                    . "WHERE class_id = '" . ciniki_core_dbQuote($ciniki, $args["class{$i}_id"]) . "' "
+                    . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "";
+                $rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.musicfestivals', 'registrations', 'id');
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.456', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+                }
+                $args["registrations{$i}"] = isset($rc['registrations']) ? $rc['registrations'] : array();
+            }
+        }
+    }
     
     //
     // Get the current list of registrations
@@ -102,8 +150,8 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
     // Add any registrations
     //
     if( isset($args['registrations1']) ) {
+        error_log('added registrations');
         foreach($args['registrations1'] as $reg_id) {
-//            if( !in_array($reg_id, $registrations) ) {
             if( !isset($registrations[$reg_id]) ) {
                 $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.registration', $reg_id, array('timeslot_id'=>$args['scheduletimeslot_id']), 0x04);
                 if( $rc['stat'] != 'ok' ) {

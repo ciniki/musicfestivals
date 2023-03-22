@@ -71,6 +71,24 @@ function ciniki_musicfestivals_scheduleTimeslotDelete(&$ciniki) {
     }
 
     //
+    // Get the list of registrations for this timeslot
+    //
+    $strsql = "SELECT registrations.id, "
+        . "registrations.timeslot_sequence "
+        . "FROM ciniki_musicfestival_registrations AS registrations "
+        . "WHERE registrations.timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['scheduletimeslot_id']) . "' "
+        . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'registrations', 'fname'=>'id', 'fields'=>array('id', 'timeslot_sequence')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.455', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+    }
+    $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
+
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
@@ -82,6 +100,18 @@ function ciniki_musicfestivals_scheduleTimeslotDelete(&$ciniki) {
     $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.musicfestivals');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
+    }
+
+    //
+    // Remove the registrations
+    //
+    foreach($registrations as $reg) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+        $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.registration', $reg['id'], array('timeslot_id'=>0), 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
     }
 
     //

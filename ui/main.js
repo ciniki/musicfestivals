@@ -2404,7 +2404,10 @@ function ciniki_musicfestivals_main() {
     this.schedulesection.sections = {
         'general':{'label':'', 'fields':{
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
-            'flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'Release Comments & Certificates'}}},
+            'flags':{'label':'Options', 'type':'flags', 'flags':{
+                '1':{'name':'Release Schedule'},
+                '2':{'name':'Release Comments & Certificates'},
+                }},
             }},
         'adjudicators':{'label':'Adjudicators', 'fields':{
             'adjudicator1_id':{'label':'First', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},

@@ -1139,11 +1139,27 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
             . "CONCAT_WS(' - ', classes.code, classes.name) AS codename, "
+            . "IFNULL(TIME_FORMAT(timeslots.slot_time, '%l:%i %p'), '') AS timeslot_time, "
+            . "IFNULL(DATE_FORMAT(divisions.division_date, '%b %D, %Y'), '') AS timeslot_date, "
+            . "IFNULL(divisions.address, '') AS timeslot_address, "
+            . "IFNULL(sections.flags, 0) AS timeslot_flags, "
             . "IFNULL(invoices.status, 0) AS invoice_status "
             . "FROM ciniki_musicfestival_registrations AS registrations "
             . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "registrations.class_id = classes.id "
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON (" 
+                . "registrations.timeslot_id = timeslots.id "
+                . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+                . "timeslots.sdivision_id = divisions.id "
+                . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_schedule_sections AS sections ON ("
+                . "divisions.ssection_id = sections.id "
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
                 . "registrations.invoice_id = invoices.id "
@@ -1155,7 +1171,10 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'status', 'invoice_status', 'invoice_id', 'display_name', 'class_code', 'class_name', 'codename', 'fee', 'title1'),
+                'fields'=>array('id', 'status', 'invoice_status', 'invoice_id', 'display_name', 
+                    'class_code', 'class_name', 'codename', 'fee', 'title1',
+                    'timeslot_time', 'timeslot_date', 'timeslot_address', 'timeslot_flags',
+                    ),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -1188,7 +1207,6 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             }
             */
         }
-
     
         if( $form_errors != '' ) { 
             $blocks[] = array(
@@ -1310,6 +1328,13 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     . "<input type='hidden' name='action' value='view' />"
                     . "<input class='button' type='submit' name='submit' value='View'>"
                     . "</form>";
+                $paid_registrations[$rid]['scheduled'] = '';
+                if( ($registration['timeslot_flags']&0x01) == 0x01 
+                    && $registration['timeslot_time'] != ''
+                    && $registration['timeslot_date'] != ''
+                    ) {
+                    $paid_registrations[$rid]['scheduled'] = $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] . '<br/>' . $registration['timeslot_address'];
+                }
             }
             $blocks[] = array(
                 'type' => 'table',
@@ -1320,6 +1345,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
                     array('label' => 'Class', 'fold-label'=>'Class', 'field' => 'codename', 'class' => 'alignleft'),
                     array('label' => 'Title', 'fold-label'=>'Title', 'field' => 'title1', 'class' => 'alignleft'),
+                    array('label' => 'Scheduled', 'fold-label'=>'Scheduled', 'field' => 'scheduled', 'class' => 'alignleft'),
                     array('label' => '', 'field' => 'viewbutton', 'class' => 'buttons alignright'),
                     ),
                 'rows' => $paid_registrations,
