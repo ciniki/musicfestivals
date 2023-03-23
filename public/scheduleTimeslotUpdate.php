@@ -82,10 +82,12 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
     }
     if( ($flags&0x01) == 0 ) {
         for($i = 1; $i <= 5; $i++) {
-            if( isset($args["class{$i}_id"]) && $args["class{$i}_id"] > 0 ) {
+            if( (isset($args["class{$i}_id"]) && $args["class{$i}_id"] > 0) 
+                || (!isset($args["class{$i}_id"]) && $scheduletimeslot["class{$i}_id"] > 0) 
+                ) {
                 $strsql = "SELECT registrations.id "
                     . "FROM ciniki_musicfestival_registrations AS registrations "
-                    . "WHERE class_id = '" . ciniki_core_dbQuote($ciniki, $args["class{$i}_id"]) . "' "
+                    . "WHERE class_id = '" . ciniki_core_dbQuote($ciniki, isset($args["class{$i}_id"]) ? $args["class{$i}_id"] : $scheduletimeslot["class{$i}_id"]) . "' "
                     . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
