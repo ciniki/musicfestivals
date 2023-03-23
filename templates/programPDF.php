@@ -155,7 +155,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
     }
     if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
         $strsql .= "AND registrations.participation = 0 ";
-    } elseif( isset($args['ipv']) && $args['ipv'] == 'participation' ) {
+    } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
         $strsql .= "AND registrations.participation = 1 ";
     }
     $strsql .= "ORDER BY divisions.division_date, division_id, slot_time, registrations.timeslot_sequence, registrations.public_name "
