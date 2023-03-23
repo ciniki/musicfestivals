@@ -46,7 +46,8 @@ $strsql = "SELECT "
     . "timeslots.class3_id, "
     . "timeslots.class4_id, "
     . "timeslots.class5_id, "
-    . "registrations.id AS reg_id "
+    . "registrations.id AS reg_id, "
+    . "registrations.timeslot_id AS reg_timeslot_id "
     . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
     . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
         . "timeslots.class1_id = class1.id " 
@@ -83,7 +84,7 @@ $strsql = "SELECT "
 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
     array('container'=>'registrations', 'fname'=>'reg_id', 
-        'fields'=>array('timeslot_id', 'reg_id', 'tnid', 'class1_id', 'class2_id', 'class3_id', 'class4_id', 'class5_id'),
+        'fields'=>array('timeslot_id', 'reg_id', 'tnid', 'class1_id', 'class2_id', 'class3_id', 'class4_id', 'class5_id', 'reg_timeslot_id'),
         ),
     ));
 if( $rc['stat'] != 'ok' ) {
@@ -92,10 +93,12 @@ if( $rc['stat'] != 'ok' ) {
 $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
 
 foreach($registrations as $reg) {
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-    $rc = ciniki_core_objectUpdate($ciniki, $reg['tnid'], 'ciniki.musicfestivals.registration', $reg['reg_id'], array('timeslot_id'=>$reg['timeslot_id']), 0x04);
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.460', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
+    if( $reg['reg_timeslot_id'] == 0 ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+        $rc = ciniki_core_objectUpdate($ciniki, $reg['tnid'], 'ciniki.musicfestivals.registration', $reg['reg_id'], array('timeslot_id'=>$reg['timeslot_id']), 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.460', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
+        }
     }
 }
 
