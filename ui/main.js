@@ -1989,14 +1989,14 @@ function ciniki_musicfestivals_main() {
 
                 this.sections._class.fields.title2.visible = (c.flags&0x1000) == 0x1000 ? 'yes' : 'no';
                 this.sections._class.fields.perf_time2.visible = (c.flags&0x1000) == 0x1000 ? 'yes' : 'no';
-                this.sections._class.fields.title3.visible = (c.flags&0x2000) == 0x2000 ? 'yes' : 'no';
-                this.sections._class.fields.perf_time3.visible = (c.flags&0x2000) == 0x2000 ? 'yes' : 'no';
+                this.sections._class.fields.title3.visible = (c.flags&0x4000) == 0x4000 ? 'yes' : 'no';
+                this.sections._class.fields.perf_time3.visible = (c.flags&0x4000) == 0x4000 ? 'yes' : 'no';
                 this.sections._class.fields.video_url1.visible = (participation == 1 ? 'yes' : 'no');
                 this.sections._class.fields.video_url2.visible = (participation == 1 && (c.flags&0x1000) == 0x1000 ? 'yes' : 'no');
-                this.sections._class.fields.video_url3.visible = (participation == 1 && (c.flags&0x2000) == 0x2000 ? 'yes' : 'no');
+                this.sections._class.fields.video_url3.visible = (participation == 1 && (c.flags&0x4000) == 0x4000 ? 'yes' : 'no');
                 this.sections._class.fields.music_orgfilename1.visible = (participation == 1 ? 'yes' : 'no');
                 this.sections._class.fields.music_orgfilename2.visible = (participation == 1 && (c.flags&0x1000) == 0x1000 ? 'yes' : 'no');
-                this.sections._class.fields.music_orgfilename3.visible = (participation == 1 && (c.flags&0x2000) == 0x2000 ? 'yes' : 'no');
+                this.sections._class.fields.music_orgfilename3.visible = (participation == 1 && (c.flags&0x4000) == 0x4000 ? 'yes' : 'no');
 
                 this.sections._display_name.visible = (c.flags&0x70) > 0 ? 'yes' : 'hidden';
                 this.sections.competitor2_details.visible = (c.flags&0x10) == 0x10 ? 'yes' : 'hidden';
