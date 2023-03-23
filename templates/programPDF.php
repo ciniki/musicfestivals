@@ -289,8 +289,8 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
         //
         if( isset($section['adjudicator1_id']) && $section['adjudicator1_id'] > 0 ) {
             $strsql = "SELECT c.display_name AS name, "
-                . "c.primary_image_id, "
-                . "c.full_bio "
+                . "a.image_id, "
+                . "a.description "
                 . "FROM ciniki_musicfestival_adjudicators AS a "
                 . "LEFT JOIN ciniki_customers AS c ON ("
                     . "a.customer_id = c.id "
@@ -303,8 +303,8 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
-            if( isset($rc['customer']['full_bio']) && $rc['customer']['full_bio'] != '' ) {
-                $bio = $rc['customer']['full_bio'];
+            if( isset($rc['customer']['description']) && $rc['customer']['description'] != '' ) {
+                $bio = $rc['customer']['description'];
                 $pdf->AddPage();
                 
                 //
@@ -320,8 +320,8 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
                 //
                 // Add image
                 //
-                if( isset($rc['customer']['primary_image_id']) && $rc['customer']['primary_image_id'] > 0 ) {
-                    $rc = ciniki_images_loadImage($ciniki, $tnid, $rc['customer']['primary_image_id'], 'original');
+                if( isset($rc['customer']['image_id']) && $rc['customer']['image_id'] > 0 ) {
+                    $rc = ciniki_images_loadImage($ciniki, $tnid, $rc['customer']['image_id'], 'original');
                     if( $rc['stat'] == 'ok' ) {
                         $image = $rc['image'];
                         $height = $image->getImageHeight();
