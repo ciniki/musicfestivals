@@ -86,8 +86,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
         . "divisions.address, "
         . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, "
         . "timeslots.id AS timeslot_id, "
-        . "timeslots.name AS timeslot_name, "
-        . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
+//        . "timeslots.name AS timeslot_name, "
         . "timeslots.class1_id, "
         . "timeslots.class2_id, "
         . "timeslots.class3_id, "
@@ -99,6 +98,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
         . "IFNULL(class4.name, '') AS class4_name, "
         . "IFNULL(class5.name, '') AS class5_name, "
         . "timeslots.name AS timeslot_name, "
+        . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
         . "timeslots.description, "
         . "registrations.id AS reg_id, "
         . "registrations.display_name, "
@@ -116,7 +116,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
             . "divisions.id = timeslots.sdivision_id " 
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "INNER JOIN ciniki_musicfestival_classes AS class1 ON ("
+        . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
             . "timeslots.class1_id = class1.id " 
             . "AND class1.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
@@ -136,7 +136,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
             . "timeslots.class5_id = class5.id " 
             . "AND class5.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+        . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
 /*            . "(timeslots.class1_id = registrations.class_id "  
                 . "OR timeslots.class2_id = registrations.class_id "
                 . "OR timeslots.class3_id = registrations.class_id "
@@ -145,27 +145,37 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
                 . ") "
             . "AND ((timeslots.flags&0x01) = 0 OR timeslots.id = registrations.timeslot_id) " */
             . "timeslots.id = registrations.timeslot_id "
-            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
+            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
+    if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
+        $strsql .= "AND registrations.participation = 0 ";
+    } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
+        $strsql .= "AND registrations.participation = 1 ";
+    }
+    $strsql .= ") "
         . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "";
     if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
         $strsql .= "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
     }
-    if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
-        $strsql .= "AND registrations.participation = 0 ";
-    } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
-        $strsql .= "AND registrations.participation = 1 ";
-    }
     $strsql .= "ORDER BY divisions.division_date, division_id, slot_time, registrations.timeslot_sequence, registrations.public_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'name'=>'section_name', 'adjudicator1_id', 'adjudicator2_id', 'adjudicator3_id')),
-        array('container'=>'divisions', 'fname'=>'division_id', 'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'address')),
-        array('container'=>'timeslots', 'fname'=>'timeslot_id', 'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 'class1_id', 'class2_id', 'class3_id', 'class4_id', 'class5_id', 'description', 'class1_name', 'class2_name', 'class3_name', 'class4_name', 'class5_name')),
-        array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title1', 'title2', 'title3')),
+        array('container'=>'sections', 'fname'=>'section_id', 
+            'fields'=>array('id'=>'section_id', 'name'=>'section_name', 'adjudicator1_id', 'adjudicator2_id', 'adjudicator3_id',
+            )),
+        array('container'=>'divisions', 'fname'=>'division_id', 
+            'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'address',
+            )),
+        array('container'=>'timeslots', 'fname'=>'timeslot_id', 
+            'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 
+                'class1_id', 'class2_id', 'class3_id', 'class4_id', 'class5_id', 'description', 
+                'class1_name', 'class2_name', 'class3_name', 'class4_name', 'class5_name',
+                )),
+        array('container'=>'registrations', 'fname'=>'reg_id', 
+            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title1', 'title2', 'title3',
+            )),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
