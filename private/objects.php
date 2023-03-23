@@ -35,6 +35,8 @@ function ciniki_musicfestivals_objects($ciniki) {
             'document_logo_id'=>array('name'=>'Document Header Logo', 'ref'=>'ciniki.images.image', 'default'=>'0'),
             'document_header_msg'=>array('name'=>'Document Header Message', 'default'=>''),
             'document_footer_msg'=>array('name'=>'Document Footer Message', 'default'=>''),
+            'comments_grade_label'=>array('name'=>'Comments Grade Label', 'default'=>''),
+            'comments_footer_msg'=>array('name'=>'Comments PDF Footer Message', 'default'=>''),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );

@@ -47,11 +47,14 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
         . "ciniki_musicfestivals.permalink, "
         . "ciniki_musicfestivals.start_date, "
         . "ciniki_musicfestivals.end_date, "
+        . "ciniki_musicfestivals.flags, "
         . "ciniki_musicfestivals.primary_image_id, "
         . "ciniki_musicfestivals.description, "
         . "ciniki_musicfestivals.document_logo_id, "
         . "ciniki_musicfestivals.document_header_msg, "
-        . "ciniki_musicfestivals.document_footer_msg "
+        . "ciniki_musicfestivals.document_footer_msg, "
+        . "ciniki_musicfestivals.comments_grade_label, "
+        . "ciniki_musicfestivals.comments_footer_msg "
         . "FROM ciniki_musicfestivals "
         . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_musicfestivals.id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
@@ -59,8 +62,10 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'festivals', 'fname'=>'id', 
-            'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'primary_image_id', 'description', 
-                'document_logo_id', 'document_header_msg', 'document_footer_msg')),
+            'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'flags', 'primary_image_id', 'description', 
+                'document_logo_id', 'document_header_msg', 'document_footer_msg',
+                'comments_grade_label', 'comments_footer_msg',
+                )),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.109', 'msg'=>'Festival not found', 'err'=>$rc['err']));
@@ -122,7 +127,11 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "registrations.title1, "
             . "registrations.title2, "
             . "registrations.title3, "
+            . "registrations.participation, "
+            . "IFNULL(TIME_FORMAT(timeslots.slot_time, '%l:%i %p'), '') AS timeslot_time, "
+            . "IFNULL(DATE_FORMAT(divisions.division_date, '%b %D, %Y'), '') AS timeslot_date, "
             . "IFNULL(classes.name, '') AS class_name, "
+            . "IFNULL(classes.flags, 0) AS class_flags, "
             . "IFNULL(registrations.competitor2_id, 0) AS competitor2_id, "
             . "IFNULL(comments.id, 0) AS comment_id, "
             . "IFNULL(comments.adjudicator_id, 0) AS adjudicator_id, "
@@ -133,6 +142,14 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "registrations.class_id = classes.id "
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+                . "registrations.timeslot_id = timeslots.id " 
+                . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+                . "timeslots.sdivision_id = divisions.id " 
+                . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "LEFT JOIN ciniki_musicfestival_comments AS comments ON ("
                 . "registrations.id = comments.registration_id "
@@ -153,6 +170,8 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "timeslots.class3_id, "
             . "timeslots.class4_id, "
             . "timeslots.class5_id, "
+            . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS timeslot_time, "
+            . "DATE_FORMAT(divisions.division_date, '%b %D, %Y') AS timeslot_date, "
             . "IFNULL(class1.name, '') AS class1_name, "
             . "IFNULL(class2.name, '') AS class2_name, "
             . "IFNULL(class3.name, '') AS class3_name, "
@@ -167,7 +186,9 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "registrations.title1, "
             . "registrations.title2, "
             . "registrations.title3, "
+            . "registrations.participation, "
             . "IFNULL(classes.name, '') AS class_name, "
+            . "IFNULL(classes.flags, 0) AS class_flags, "
             . "IFNULL(registrations.competitor2_id, 0) AS competitor2_id, "
             . "IFNULL(comments.id, 0) AS comment_id, "
             . "IFNULL(comments.adjudicator_id, 0) AS adjudicator_id, "
@@ -239,7 +260,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
         array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'name'=>'section_name')),
         array('container'=>'divisions', 'fname'=>'division_id', 'fields'=>array('id'=>'division_id', 'name'=>'division_name')),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'class1_id', 'class2_id', 'class3_id', 'class4_id', 'class5_id', 'description', 'class1_name', 'class2_name', 'class3_name', 'class4_name', 'class5_name')),
-        array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title1', 'title2', 'title3', 'class_name', 'competitor2_id')),
+        array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title1', 'title2', 'title3', 'class_name', 'class_flags', 'competitor2_id', 'timeslot_date', 'timeslot_time', 'participation')),
         array('container'=>'comments', 'fname'=>'comment_id', 'fields'=>array('id'=>'comment_id', 'adjudicator_id', 'comments', 'grade', 'score')),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -288,7 +309,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                 if( $available_ratio < $image_ratio ) {
                     $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, $img_width, 0, 'JPEG', '', 'L', 2, '150');
                 } else {
-                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, 0, $this->header_height-5, 'JPEG', '', 'L', 2, '150');
+                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-8, 'JPEG', '', 'L', 2, '150');
                 }
             }
 
@@ -437,13 +458,27 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         $pdf->SetDrawColor(232);
                         $border = 'T';
                         $lh = 8;
+                        //
+                        // Check if timeslot date/time to be displayed
+                        //
+                        if( ($festival['flags']&0x40) == 0x40 
+                            && $reg['timeslot_time'] != '' && $reg['timeslot_date'] != ''
+                            && $reg['participation'] != 1
+                            ) {
+                            $pdf->SetFont('helvetica', 'B', 12);
+                            $pdf->MultiCell($w[0], $lh, 'Date: ', $border, 'R', 0, 0, '', '');
+                            $pdf->SetFont('helvetica', '', 12);
+                            $pdf->MultiCell($w[1], $lh, $reg['timeslot_date'] . ' - ' . $reg['timeslot_time'], $border, 'L', 0, 0, '', '');
+                            $pdf->Ln($lh);
+                            $border = '';
+                        }
                         $pdf->SetFont('helvetica', '', 12);
-                        $lh = $pdf->getNumLines($reg['class_name'], $w[1]) * 8;
+                        $lh = $pdf->getStringHeight($w[1], $reg['class_name']);
                         $pdf->SetFont('helvetica', 'B', 12);
                         $pdf->MultiCell($w[0], $lh, 'Class: ', $border, 'R', 0, 0, '', '');
                         $pdf->SetFont('helvetica', '', 12);
                         $pdf->MultiCell($w[1], $lh, $reg['class_name'], $border, 'L', 0, 0, '', '');
-                        $pdf->Ln($lh);
+                        $pdf->Ln($lh-1);
                         $pdf->SetFont('helvetica', 'B', 12);
 
                         $border = ($reg['title1'] != '' ? '' : 'B');
@@ -469,9 +504,9 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                             $pdf->MultiCell($w[1], $lh, $reg['title1'], $border, 'L', 0, 0, '', '');
                             $pdf->Ln($lh);
                         }
-                        if( $reg['title2'] != '' ) {
+                        if( ($reg['class_flags']&0x1000) == 0x1000 && $reg['title2'] != '' ) {
                             $lh = ($pdf->getNumLines($reg['title2'], $w[1]) * 6) + 3;
-                            if( $reg['title3'] == '' ) {
+                            if( ($reg['class_flags']&0x4000) == 0x4000 && $reg['title3'] == '' ) {
                                 $border = 'B';
                             }
                             $pdf->SetFont('helvetica', 'B', 12);
@@ -480,7 +515,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                             $pdf->MultiCell($w[1], $lh, $reg['title2'], $border, 'L', 0, 0, '', '');
                             $pdf->Ln($lh);
                         }
-                        if( $reg['title3'] != '' ) {
+                        if( ($reg['class_flags']&0x4000) == 0x4000 && $reg['title3'] != '' ) {
                             $lh = ($pdf->getNumLines($reg['title3'], $w[1]) * 6) + 3;
                             $border = 'B';
                             $pdf->SetFont('helvetica', 'B', 12);
@@ -506,16 +541,21 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                             $pdf->Cell(45, 12, "Adjudicator's Signature ", 0, false, 'L', 0, '', 0, false);
                             $pdf->Cell(85, 12, "", 'B', false, 'L', 0, '', 0, false);
                         }
-                        $pdf->Cell(30, 12, "Mark ", 0, false, 'R', 0, '', 0, false);
+                        if( isset($festival['comments_grade_label']) && $festival['comments_grade_label'] != '' ) {
+                            $pdf->Cell(30, 12, $festival['comments_grade_label'] . ' ', 0, false, 'R', 0, '', 0, false);
+                        } else {
+                            $pdf->Cell(30, 12, "Mark ", 0, false, 'R', 0, '', 0, false);
+                        }
                         $pdf->Cell(20, 12, $comment['grade'], 'B', false, 'L', 0, '', 0, false);
                         $pdf->Ln(14);
                         
-//                        $pdf->SetTextColor(128);
-//                        $pdf->SetFont('helvetica', 'I', 10);
-//                        $pdf->Cell(180, 10, "Levels are as follows:", 0, false, 'L', 0, '', 0, false);
-//                        $pdf->Ln(6);
-//                        $pdf->SetFont('helvetica', 'BI', 10);
-//                        $pdf->Cell(180, 10, "G = Gold (85 and above)  S = Silver (80-84)  B = Bronze (79 and under)", 0, false, 'L', 0, '', 0, false);
+                        if( isset($festival['comments_footer_msg']) && $festival['comments_footer_msg'] != '' ) {
+                            $pdf->Ln(5);
+                            $pdf->SetTextColor(128);
+                            $pdf->SetFont('helvetica', '', 10);
+                            $pdf->Cell(180, 10, $festival['comments_footer_msg'], 0, false, 'C', 0, '', 0, false);
+                        }
+
                         $pdf->SetTextColor(0);
                     }
                 }

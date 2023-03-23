@@ -188,7 +188,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             . "ciniki_musicfestivals.description, "
             . "ciniki_musicfestivals.document_logo_id, "
             . "ciniki_musicfestivals.document_header_msg, "
-            . "ciniki_musicfestivals.document_footer_msg "
+            . "ciniki_musicfestivals.document_footer_msg, "
+            . "ciniki_musicfestivals.comments_grade_label, "
+            . "ciniki_musicfestivals.comments_footer_msg "
             . "FROM ciniki_musicfestivals "
             . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_musicfestivals.id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
@@ -199,7 +201,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'status', 'flags', 
                     'earlybird_date', 'live_date', 'virtual_date', 'edit_end_dt', 'upload_end_dt',
                     'primary_image_id', 'description', 
-                    'document_logo_id', 'document_header_msg', 'document_footer_msg'),
+                    'document_logo_id', 'document_header_msg', 'document_footer_msg',
+                    'comments_grade_label', 'comments_footer_msg',
+                    ),
                 'utctotz'=>array('start_date'=>array('timezone'=>'UTC', 'format'=>$date_format),
                     'end_date'=>array('timezone'=>'UTC', 'format'=>$date_format),
                     'earlybird_date'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),

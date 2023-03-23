@@ -1,0 +1,6 @@
+#
+# Adding comments sheets options
+#
+ALTER TABLE ciniki_musicfestivals ADD COLUMN comments_grade_label varchar(50) not null AFTER document_footer_msg;
+ALTER TABLE ciniki_musicfestivals ADD COLUMN comments_footer_msg varchar(250) not null AFTER comments_grade_label;
+ALTER TABLE ciniki_musicfestivals COMMENT='v1.05';

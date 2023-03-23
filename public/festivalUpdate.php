@@ -34,6 +34,8 @@ function ciniki_musicfestivals_festivalUpdate(&$ciniki) {
         'document_logo_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Document Header Logo'),
         'document_header_msg'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Document Header Message'),
         'document_footer_msg'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Document Footer Message'),
+        'comments_grade_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Comments Grade Label'),
+        'comments_footer_msg'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Comments Footer Message'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

@@ -1126,6 +1126,13 @@ function ciniki_musicfestivals_main() {
             'fields':{
                 'document_footer_msg':{'label':'', 'hidelabel':'yes', 'type':'text'},
             }},
+        '_comments_pdf':{'label':'Comments PDF Options', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
+            'fields':{
+                'flags6':{'label':'Timeslot Date/Time', 'type':'flagtoggle', 'default':'off', 'bit':0x40, 'field':'flags'},
+                'comments_grade_label':{'label':'Grade Label', 'default':'Mark', 'type':'text'},
+                'comments_footer_msg':{'label':'Footer Message', 'type':'text'},
+            }},
         '_registration_parent_msg':{'label':'Registration Message - Parents', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
             'fields':{
@@ -1183,6 +1190,7 @@ function ciniki_musicfestivals_main() {
         this.showHideSection('_document_logo_id');
         this.showHideSection('_document_header_msg');
         this.showHideSection('_document_footer_msg');
+        this.showHideSection('_comments_pdf');
         this.showHideSection('_registration_parent_msg');
         this.showHideSection('_registration_teacher_msg');
         this.showHideSection('_registration_adult_msg');

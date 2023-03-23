@@ -67,7 +67,8 @@ function ciniki_musicfestivals_registrationCommentsPDF($ciniki) {
     // Return the pdf
     //
     if( isset($rc['pdf']) ) {
-        $rc['pdf']->Output($rc['filename'], 'D');
+        $rc['pdf']->Output($rc['filename'], 'I');
+//        $rc['pdf']->Output($rc['filename'], 'D');
     }
 
     return array('stat'=>'exit');
