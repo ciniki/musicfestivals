@@ -140,11 +140,12 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             . "AND class3.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
-            . "(timeslots.class1_id = registrations.class_id "  
-                . "OR timeslots.class2_id = registrations.class_id "
-                . "OR timeslots.class3_id = registrations.class_id "
-                . ") "
-            . "AND ((timeslots.flags&0x01) = 0 OR timeslots.id = registrations.timeslot_id) "
+//            . "(timeslots.class1_id = registrations.class_id "  
+//                . "OR timeslots.class2_id = registrations.class_id "
+//                . "OR timeslots.class3_id = registrations.class_id "
+//                . ") "
+//            . "AND ((timeslots.flags&0x01) = 0 OR timeslots.id = registrations.timeslot_id) "
+            . "timeslots.id = registrations.timeslot_id "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_comments AS comments ON ("
@@ -331,38 +332,38 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                         'description' => $registration["title{$i}"],
 //                        'value' => $registration["title{$i}"],
                         );
-                    if( $registration["music{$i}_orgfilename"] != '' ) {
+                    if( $registration["music_orgfilename{$i}"] != '' ) {
                         $download_url = "{$request['ssl_domain_base_url']}/account/musicfestivaladjudications"
                             . '/' . $request['uri_split'][($request['cur_uri_pos']+2)]
                             . '/' . $request['uri_split'][($request['cur_uri_pos']+3)]
                             . '/' . $registration['uuid']
                             . '/music' . $i . '.pdf'
                             . "";
-                        $section['fields']["music{$i}_orgfilename"] = array(
-                            'id' => "music{$i}_orgfilename",
+                        $section['fields']["music_orgfilename{$i}"] = array(
+                            'id' => "music_orgfilename{$i}",
                             'ftype' => 'button',
                             'label' => 'Music',
                             'size' => 'medium',
                             'target' => '_blank',
                             'href' => $download_url,
-                            'value' => $registration["music{$i}_orgfilename"],
+                            'value' => $registration["music_orgfilename{$i}"],
                             );
                     } else {
-                        $section['fields']["music{$i}_orgfilename"] = array(
-                            'id' => "music{$i}_orgfilename",
+                        $section['fields']["music_orgfilename{$i}"] = array(
+                            'id' => "music_orgfilename{$i}",
                             'ftype' => 'content',
                             'label' => ($i == 2 ? '2nd ' : ($i == 3 ? '3rd ' : ' ')) . 'Music PDF',
                             'size' => 'medium',
                             'description' => "No music file provided",
                             );
                     }
-                    if( isset($registration["video{$i}_url"]) && $registration["video{$i}_url"] != '' ) {
+                    if( isset($registration["video_url{$i}"]) && $registration["video_url{$i}"] != '' ) {
                         $section['fields']["reg{$registration['id']}-video{$i}"] = array(   
                             'id' => "reg{$registration['id']}-video{$i}",
                             'ftype' => 'videocontent',
                             'size' => 'large',
                             'label' => ($i == 2 ? '2nd ' : ($i == 3 ? '3rd ' : ' ')) . 'Video',
-                            'url' => $registration["video{$i}_url"],
+                            'url' => $registration["video_url{$i}"],
                             );
                     }
                 }

@@ -659,7 +659,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "IF(timeslots.name='', IFNULL(class1.name, ''), timeslots.name) AS timeslot_name, "
                     . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
                     . "timeslots.class1_id, "
-                    . "timeslots.class2_id, "
+/*                    . "timeslots.class2_id, "
                     . "timeslots.class3_id, "
                     . "timeslots.class4_id, "
                     . "timeslots.class5_id, "
@@ -667,7 +667,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "IFNULL(class2.name, '') AS class2_name, "
                     . "IFNULL(class3.name, '') AS class3_name, "
                     . "IFNULL(class4.name, '') AS class4_name, "
-                    . "IFNULL(class5.name, '') AS class5_name, "
+                    . "IFNULL(class5.name, '') AS class5_name, " */
             //        . "timeslots.name AS timeslot_name, "
                     . "timeslots.description, "
                     . "registrations.id AS reg_id, "
@@ -739,8 +739,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'timeslots', 'fname'=>'timeslot_id', 
                         'fields'=>array('id'=>'timeslot_id', 'permalink'=>'timeslot_uuid', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 
-                            'class1_id', 'class2_id', 'class3_id', 'class4_id', 'class5_id',
-                            'description', 'class1_name', 'class2_name', 'class3_name', 'class4_name', 'class5_name',
+                            'class1_id', //'class2_id', 'class3_id', 'class4_id', 'class5_id',
+                            'description', //'class1_name', 'class2_name', 'class3_name', 'class4_name', 'class5_name',
                             )),
                     array('container'=>'registrations', 'fname'=>'reg_id', 
                         'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name',
