@@ -24,6 +24,7 @@ function ciniki_musicfestivals_wng_accountCustomerTypeProcess(&$ciniki, $tnid, &
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival']['id']) . "' "
         . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+        . "LIMIT 1 "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'customer');
     if( $rc['stat'] != 'ok' ) {
