@@ -116,7 +116,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'teacherRegistrationsPDF');
         $rc = ciniki_musicfestivals_templates_teacherRegistrationsPDF($ciniki, $tnid, array(
             'festival_id' => $festival['id'],
-            'billing_customer_id' => $request['session']['customer']['id'],
+            'teacher_customer_id' => $request['session']['customer']['id'],
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.444', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
@@ -1165,6 +1165,10 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 . "registrations.invoice_id = invoices.id "
                 . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
+//            . "WHERE ("
+//                . "registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+//                . "OR registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+//                . ") "
             . "WHERE registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
@@ -1252,8 +1256,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             } else {
                 $blocks[] = array(
                     'type' => 'text',
-                    'class' => 'limit-width limit-width-60',
-                    'title' => $festival['name'] . ' Registrations',
+                    'class' => 'limit-width limit-width-60', 'title' => $festival['name'] . ' Registrations',
                     'content' => 'No pending registrations',
                     );
             }
