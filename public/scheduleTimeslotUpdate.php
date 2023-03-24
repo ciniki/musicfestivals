@@ -153,7 +153,6 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
     // Add any registrations
     //
     if( isset($args['registrations1']) ) {
-        error_log('added registrations');
         foreach($args['registrations1'] as $reg_id) {
             if( !isset($registrations[$reg_id]) ) {
                 $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.registration', $reg_id, array('timeslot_id'=>$args['scheduletimeslot_id']), 0x04);
