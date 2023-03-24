@@ -98,6 +98,26 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
                 $args["registrations{$i}"] = isset($rc['registrations']) ? $rc['registrations'] : array();
             }
         }
+    } else {
+        for($i = 1; $i <= 5; $i++) {
+            if( !isset($args["registrations{$i}"]) 
+                && ((isset($args["class{$i}_id"]) && $args["class{$i}_id"] > 0) 
+                || (!isset($args["class{$i}_id"]) && $scheduletimeslot["class{$i}_id"] > 0) 
+                )) {
+                $strsql = "SELECT registrations.id "
+                    . "FROM ciniki_musicfestival_registrations AS registrations "
+                    . "WHERE class_id = '" . ciniki_core_dbQuote($ciniki, isset($args["class{$i}_id"]) ? $args["class{$i}_id"] : $scheduletimeslot["class{$i}_id"]) . "' "
+                    . "AND timeslot_id = '" . ciniki_core_dbQuote($ciniki,$args['scheduletimeslot_id']) . "' "
+                    . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
+                $rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.musicfestivals', 'registrations', 'id');
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.456', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+                }
+                $args["registrations{$i}"] = isset($rc['registrations']) ? $rc['registrations'] : array();
+            }
+        }
     }
     
     //
