@@ -146,17 +146,17 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
             . "AND ((timeslots.flags&0x01) = 0 OR timeslots.id = registrations.timeslot_id) " */
             . "timeslots.id = registrations.timeslot_id "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
-    if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
-        $strsql .= "AND registrations.participation = 0 ";
-    } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
-        $strsql .= "AND registrations.participation = 1 ";
-    }
     $strsql .= ") "
         . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "";
     if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
         $strsql .= "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
+    }
+    if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
+        $strsql .= "AND (registrations.participation < 1 || ISNULL(registrations.participation) ) ";
+    } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
+        $strsql .= "AND registrations.participation = 1 ";
     }
     $strsql .= "ORDER BY divisions.division_date, division_id, slot_time, registrations.timeslot_sequence, registrations.public_name "
         . "";

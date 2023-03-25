@@ -94,11 +94,12 @@ $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
 
 foreach($registrations as $reg) {
     if( $reg['reg_timeslot_id'] == 0 ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+    error_log(print_r($reg,true));
+/*        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
         $rc = ciniki_core_objectUpdate($ciniki, $reg['tnid'], 'ciniki.musicfestivals.registration', $reg['reg_id'], array('timeslot_id'=>$reg['timeslot_id']), 0x04);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.460', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
-        }
+        } */
     }
 }
 

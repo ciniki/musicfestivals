@@ -25,6 +25,7 @@ function ciniki_musicfestivals_commentsPDF($ciniki) {
         'schedulesection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Section'),
         'teacher_customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Teacher'),
         'names'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name Format'),
+        'ipv'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'In Person/Virtual'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

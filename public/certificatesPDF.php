@@ -24,6 +24,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'schedulesection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Section'),
         'names'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name Format'),
+        'ipv'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'In Person/Virtual'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -217,6 +218,11 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
         . "";
     if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
         $strsql .= "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
+    }
+    if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
+        $strsql .= "AND registrations.participation = 0 ";
+    } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
+        $strsql .= "AND registrations.participation = 1 ";
     }
     $strsql .= "ORDER BY divisions.division_date, division_id, slot_time "
         . "";
