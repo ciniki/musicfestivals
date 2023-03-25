@@ -368,13 +368,16 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     }
                     if( isset($timeslot['registrations']) && count($timeslot['registrations']) > 0 ) {
                         if( $description != '' ) {
-                            $description .= "\n\n";
+                            $description .= "\n";
                         }
                         foreach($timeslot['registrations'] as $reg) {
                             if( isset($args['names']) && $args['names'] == 'private' ) {
-                                $description .= ($description != '' ? "\n" : '') . $reg['name'] . ($reg['title1'] != '' ? ' - ' . $reg['title1'] : '');
+                                $description .= ($description != '' ? "\n" : '') . $reg['name'];
                             } else {
-                                $description .= ($description != '' ? "\n" : '') . $reg['public_name'] . ($reg['title1'] != '' ? ' - ' . $reg['title1'] : '');
+                                $description .= ($description != '' ? "\n" : '') . $reg['public_name'];
+                            }
+                            if( !isset($args['titles']) || $args['titles'] == 'yes' ) {
+                                $description .= ($reg['title1'] != '' ? ' - ' . $reg['title1'] : '');
                             }
                         }
                     }

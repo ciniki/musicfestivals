@@ -313,6 +313,7 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._tabs.selected == 'schedule' && M.ciniki_musicfestivals_main.festival.schedulesection_id>0? 'yes' : 'no'; },
             'fields':{
                 'names':{'label':'Full Names', 'type':'toggle', 'default':'public', 'toggles':{'public':'No', 'private':'yes'}},
+                's_titles':{'label':'Titles', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                 's_ipv':{'label':'Type', 'type':'toggle', 'default':'all', 'toggles':{'all':'All', 'inperson':'In Person', 'virtual':'Virtual'}},
             }},
         'schedule_buttons':{'label':'', 'aside':'yes',
@@ -487,6 +488,7 @@ function ciniki_musicfestivals_main() {
             'schedulesection_id':this.schedulesection_id,
             'names':this.formValue('names'),
             'ipv':this.formValue('s_ipv'),
+            'titles':this.formValue('s_titles'),
             };
         M.api.openPDF('ciniki.musicfestivals.schedulePDF',args);
     }
