@@ -719,13 +719,16 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     $update_args[$field['id']] = $field['value'];
                 }
             }
-            if( $selected_class['id'] != $registration['class_id'] ) {
-                $update_args['class_id'] = $selected_class['id'];
+            if( !isset($registration['status']) || $registration['status'] < 50 ) {
+                if( $selected_class['id'] != $registration['class_id'] ) {
+                    $update_args['class_id'] = $selected_class['id'];
+                }
+                if( isset($new_fee) && $new_fee != $registration['fee'] ) {
+                    $update_args['fee'] = $new_fee;
+                    $registration['fee'] = $new_fee;
+                }
             }
-            if( isset($new_fee) && $new_fee != $registration['fee'] ) {
-                $update_args['fee'] = $new_fee;
-                $registration['fee'] = $new_fee;
-            }
+
             //
             // Update the registration
             //
