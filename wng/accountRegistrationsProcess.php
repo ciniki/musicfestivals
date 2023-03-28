@@ -1131,7 +1131,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         //
         $strsql = "SELECT registrations.id, "
             . "registrations.status, "
-            . "registrations.invoice_id, ";
+            . "registrations.invoice_id, "
+            . "registrations.participation, ";
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
             $strsql .= "registrations.pn_display_name AS display_name, ";
         } else {
@@ -1180,7 +1181,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
                 'fields'=>array('id', 'status', 'invoice_status', 'invoice_id', 'display_name', 
-                    'class_code', 'class_name', 'codename', 'fee', 'title1',
+                    'class_code', 'class_name', 'codename', 'fee', 'title1', 'participation',
                     'timeslot_time', 'timeslot_date', 'timeslot_address', 'timeslot_flags',
                     ),
                 ),
@@ -1188,6 +1189,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.300', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
         }
+            error_log(print_r($rc,true));
         $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
         $cart_registrations = array();
         $etransfer_registrations = array();
@@ -1340,7 +1342,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     && $registration['timeslot_time'] != ''
                     && $registration['timeslot_date'] != ''
                     ) {
-                    $paid_registrations[$rid]['scheduled'] = $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] . '<br/>' . $registration['timeslot_address'];
+                    error_log(print_r($registration,true));
+                    if( $registration['participation'] == 1 ) {
+                        $paid_registrations[$rid]['scheduled'] = 'Virtual';
+                    } else {
+                        $paid_registrations[$rid]['scheduled'] = $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] . '<br/>' . $registration['timeslot_address'];
+                    }
                 }
             }
             $blocks[] = array(
