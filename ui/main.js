@@ -3117,13 +3117,13 @@ function ciniki_musicfestivals_main() {
                             'type':'text', 
                             'size':'small',
                             };
-                        if( M.modFlagOn('ciniki.musicfestivals', 0x08) ) {
+/*                        if( M.modFlagOn('ciniki.musicfestivals', 0x08) ) {
                             p.sections['comments_' + i].fields['placement_' + rsp.timeslot.registrations[i].id + '_' + rsp.adjudicators[j].id] = {
                                 'label':'Placement', 
                                 'type':'text', 
                                 'size':'large',
                                 };
-                        }
+                        }*/
                     }
                 }
                 p.refresh();
