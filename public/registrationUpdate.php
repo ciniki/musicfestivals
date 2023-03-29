@@ -45,6 +45,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         'music_orgfilename1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
         'music_orgfilename2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
         'music_orgfilename3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
+        'placement'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Placement'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         'internal_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Interal Notes'),
         ));

@@ -132,7 +132,11 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $tnid, $args)
     // Go through the certificates to print
     //
     foreach($args['certificates'] as $certificate) {
-        $pdf->AddPage();
+        if( isset($certificate['orientation']) && $certificate['orientation'] == 'P' ) {
+            $pdf->AddPage('P');
+        } else {
+            $pdf->AddPage();
+        }
         $pdf->SetCellPaddings(1, 0, 1, 0);
 
         if( isset($certificate['image_id']) && $certificate['image_id'] > 0 ) {
@@ -144,7 +148,11 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $tnid, $args)
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.302', 'msg'=>'No image specified', 'err'=>$rc['err']));
             }
-            $pdf->Image($rc['filename'], 0, 0, 279, 216, '', '', '', false, 300, '', false, false, 0);
+            if( isset($certificate['orientation']) && $certificate['orientation'] == 'P' ) {
+                $pdf->Image($rc['filename'], 0, 0, 216, 279, '', '', '', false, 300, '', false, false, 0);
+            } else {
+                $pdf->Image($rc['filename'], 0, 0, 279, 216, '', '', '', false, 300, '', false, false, 0);
+            }
             // Don't use blob for same image!!!!
             //$pdf->Image('@'.$rc['image']->getImageBlob(), 0, 0, 279, 216, '', '', '', false, 300, '', false, false, 0);
         }

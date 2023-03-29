@@ -1891,6 +1891,9 @@ function ciniki_musicfestivals_main() {
                 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(3);',
                 },
+            'placement':{'label':'Placement', 'type':'text',
+                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x08); },
+                },
             }},
 /*        'music_buttons':{'label':'', 
             'visible':function() { return (M.ciniki_musicfestivals_main.registration.data.festival.flags&0x02) == 0x02 ? 'yes' : 'no'},
@@ -4011,6 +4014,7 @@ function ciniki_musicfestivals_main() {
         }},
         'general':{'label':'Certificate', 'fields':{
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
+            'orientation':{'label':'Orientation', 'type':'toggle', 'toggles':{'L':'Landscape', 'P':'Portrait'}},
 // FIXME: Add section support and min score support
 //            'section_id':{'label':'Section', 'type':'select', 'options':{}, 'complex_options':{'name':'name', 'value':'id'}},
 //            'min_score':{'label':'Minimum Score', 'type':'text', 'size':'small'},
@@ -4142,6 +4146,7 @@ function ciniki_musicfestivals_main() {
                 'class':'Class',
                 'participant':'Participant',
                 'adjudicator':'Adjudicator',
+                'placement':'Placement',
                 'text':'Text',
                 }},
             'xpos':{'label':'X Position', 'required':'yes', 'type':'text'},

@@ -1,0 +1,5 @@
+#
+# Add field for placement on registration
+#
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN placement varchar(250) not null AFTER music_orgfilename3;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.12';

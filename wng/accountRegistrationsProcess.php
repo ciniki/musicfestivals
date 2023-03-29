@@ -1189,7 +1189,6 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.300', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
         }
-            error_log(print_r($rc,true));
         $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
         $cart_registrations = array();
         $etransfer_registrations = array();
@@ -1342,7 +1341,6 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     && $registration['timeslot_time'] != ''
                     && $registration['timeslot_date'] != ''
                     ) {
-                    error_log(print_r($registration,true));
                     if( $registration['participation'] == 1 ) {
                         $paid_registrations[$rid]['scheduled'] = 'Virtual';
                     } else {

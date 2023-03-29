@@ -1,0 +1,5 @@
+#
+# Added orientation field
+#
+ALTER TABLE ciniki_musicfestival_certificates ADD COLUMN orientation varchar(50) not null AFTER image_id;
+ALTER TABLE ciniki_musicfestival_certificates COMMENT='v1.02';

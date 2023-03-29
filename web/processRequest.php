@@ -341,7 +341,6 @@ function ciniki_musicfestivals_web_processRequest(&$ciniki, $settings, $tnid, $a
 
 /*    elseif( $display == 'section' && $adjudicator == 'yes' && isset($uri_split[0]) && $uri_split[0] != '' ) {
         $display_name = urldecode($uri_split[0]);
-        error_log($display_name);
         $base_url = $args['base_url'] . '/' . $section['permalink'];
         $page['breadcrumbs'][] = array('name'=>$section['name'], 'url'=>$base_url);
         $page['breadcrumbs'][] = array('name'=>$display_name, 'url'=>$base_url . '/'. $uri_split[0]);
