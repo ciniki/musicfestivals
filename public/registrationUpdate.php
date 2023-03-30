@@ -117,7 +117,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     //
     if( isset($_FILES) ) {
         foreach($_FILES as $field_name => $file) {
-            $file_name = 0;
+            $file_num = 0;
             if( $field_name == 'music_orgfilename1' ) {
                 $file_num = 1;
             } elseif( $field_name == 'music_orgfilename2' ) {
@@ -134,8 +134,8 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
             if( !isset($file['tmp_name']) || $file['tmp_name'] == '' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.53', 'msg'=>'No file specified.'));
             }
-            $args["music{$file_num}_orgfilename"] = $file['name'];
-            $args['extension'] = preg_replace('/^.*\.([a-zA-Z]+)$/', '$1', $args["music{$file_num}_orgfilename"]);
+            $args["music_orgfilename{$file_num}"] = $file['name'];
+            $args['extension'] = preg_replace('/^.*\.([a-zA-Z]+)$/', '$1', $args["music_orgfilename{$file_num}"]);
 
             //
             // Check the extension is a PDF, currently only accept PDF files
