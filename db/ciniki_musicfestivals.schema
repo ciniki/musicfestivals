@@ -30,7 +30,7 @@
 #                           0x10 -
 #                           0x20 -
 #                           0x40 - Comments PDF include Date/Time
-#                           0x80 -
+#                           0x80 - Certificates PDF include Pronoun
 #
 # earlybird_date:       The UTC Date and Time when earlybird pricing ends.
 # live_date:            The UTC Date and Time when live pricing ends.

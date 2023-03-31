@@ -1135,9 +1135,14 @@ function ciniki_musicfestivals_main() {
         '_comments_pdf':{'label':'Comments PDF Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
             'fields':{
-                'flags6':{'label':'Timeslot Date/Time', 'type':'flagtoggle', 'default':'off', 'bit':0x40, 'field':'flags'},
+                'flags7':{'label':'Timeslot Date/Time', 'type':'flagtoggle', 'default':'off', 'bit':0x40, 'field':'flags'},
                 'comments_grade_label':{'label':'Grade Label', 'default':'Mark', 'type':'text'},
                 'comments_footer_msg':{'label':'Footer Message', 'type':'text'},
+            }},
+        '_certificates_pdf':{'label':'Certificates PDF Options', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
+            'fields':{
+                'flags8':{'label':'Include Pronouns', 'type':'flagtoggle', 'default':'off', 'bit':0x80, 'field':'flags'},
             }},
         '_registration_parent_msg':{'label':'Registration Message - Parents', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
@@ -1197,6 +1202,7 @@ function ciniki_musicfestivals_main() {
         this.showHideSection('_document_header_msg');
         this.showHideSection('_document_footer_msg');
         this.showHideSection('_comments_pdf');
+        this.showHideSection('_certificates_pdf');
         this.showHideSection('_registration_parent_msg');
         this.showHideSection('_registration_teacher_msg');
         this.showHideSection('_registration_adult_msg');

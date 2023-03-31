@@ -62,6 +62,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
     $strsql = "SELECT ciniki_musicfestivals.id, "
         . "ciniki_musicfestivals.name, "
         . "ciniki_musicfestivals.permalink, "
+        . "ciniki_musicfestivals.flags, "
         . "ciniki_musicfestivals.start_date, "
         . "ciniki_musicfestivals.end_date, "
         . "ciniki_musicfestivals.primary_image_id, "
@@ -76,7 +77,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'festivals', 'fname'=>'id', 
-            'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'primary_image_id', 'description', 
+            'fields'=>array('name', 'permalink', 'flags', 'start_date', 'end_date', 'primary_image_id', 'description', 
                 'document_logo_id', 'document_header_msg', 'document_footer_msg')),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -157,7 +158,8 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
         . "timeslots.name AS timeslot_name, "
         . "timeslots.description, "
         . "registrations.id AS reg_id, ";
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+//    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+    if( ($festival['flags']&0x80) == 0x80 ) {
         $strsql .= "registrations.pn_display_name AS display_name, "
             . "registrations.pn_public_name AS public_name, ";
     } else {
