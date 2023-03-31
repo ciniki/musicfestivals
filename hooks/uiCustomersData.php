@@ -206,7 +206,9 @@ function ciniki_musicfestivals_hooks_uiCustomersData($ciniki, $tnid, $args) {
         . "registrations.video_url3, "
         . "registrations.music_orgfilename1, "
         . "registrations.music_orgfilename2, "
-        . "registrations.music_orgfilename3 "
+        . "registrations.music_orgfilename3, "
+        . "IFNULL(DATE_FORMAT(timeslots.slot_time, '%H:%i %p'), '') AS timeslot_time, "
+        . "IFNULL(DATE_FORMAT(sdivisions.division_date, '%M %d, %Y'), '') AS division_date "
         . "FROM ciniki_musicfestival_registrations AS registrations "
         . "INNER JOIN ciniki_musicfestivals AS festivals ON ("
             . "registrations.festival_id = festivals.id "
@@ -227,6 +229,14 @@ function ciniki_musicfestivals_hooks_uiCustomersData($ciniki, $tnid, $args) {
         . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
             . "categories.section_id = sections.id "
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+            . "registrations.timeslot_id = timeslots.id "
+            . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS sdivisions ON ("
+            . "timeslots.sdivision_id = sdivisions.id "
+            . "AND sdivisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
@@ -254,6 +264,7 @@ function ciniki_musicfestivals_hooks_uiCustomersData($ciniki, $tnid, $args) {
                 'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 
                 'fee', 'payment_type',
                 'video_url1', 'video_url2', 'video_url3', 'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3',
+                'timeslot_time', 'division_date',
                 ),
             'maps'=>array(
                 'rtype_text'=>$maps['registration']['rtype'],
@@ -301,16 +312,17 @@ function ciniki_musicfestivals_hooks_uiCustomersData($ciniki, $tnid, $args) {
         $sections['ciniki.musicfestivals.registrations'] = array(
             'label' => 'Registrations',
             'type' => 'simplegrid', 
-            'num_cols' => 4,
-            'headerValues' => array('Festival', 'Class', 'Registrant', 'Status'),
-            'cellClasses' => array('', ''),
+            'num_cols' => 5,
+            'headerValues' => array('Festival', 'Class', 'Registrant', 'Timeslot', 'Status'),
+            'cellClasses' => array('', '', '', 'multiline', ''),
             'noData' => 'No registrations',
             'editApp' => array('app'=>'ciniki.musicfestivals.main', 'args'=>array('registration_id'=>'d.id;')),
             'cellValues' => array(
                 '0' => "d.name",
                 '1' => "d.class_code",
                 '2' => "d.display_name",
-                '3' => "d.status_text",
+                '3' => "M.multiline(d.division_date, d.timeslot_time)",
+                '4' => "d.status_text",
                 ),
             'data' => $rc['registrations'],
             );
