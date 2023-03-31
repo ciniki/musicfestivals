@@ -151,7 +151,7 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $tnid, $args)
             if( isset($certificate['orientation']) && $certificate['orientation'] == 'P' ) {
                 $pdf->Image($rc['filename'], 0, 0, 216, 279, '', '', '', false, 300, '', false, false, 0);
             } else {
-                $pdf->Image($rc['filename'], 0, 0, 279, 216, '', '', '', false, 300, '', false, false, 0);
+                $pdf->Image($rc['filename'], 0, 0, 280, 216, '', '', '', false, 300, '', false, false, 0);
             }
             // Don't use blob for same image!!!!
             //$pdf->Image('@'.$rc['image']->getImageBlob(), 0, 0, 279, 216, '', '', '', false, 300, '', false, false, 0);
