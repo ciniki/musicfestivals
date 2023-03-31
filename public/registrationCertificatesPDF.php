@@ -321,7 +321,7 @@ function ciniki_musicfestivals_registrationCertificatesPDF($ciniki) {
                                 $certificate['fields'][$fid]['text'] = $reg['class_name'];
                             }
                             elseif( $field['field'] == 'title' ) {
-                                $certificate['fields'][$fid]['text'] = $reg['title1'];
+                                $certificate['fields'][$fid]['text'] = $reg['title'];
                             }
                             elseif( $field['field'] == 'timeslotdate' ) {
                                 $certificate['fields'][$fid]['text'] = $reg['division_date_text'];
