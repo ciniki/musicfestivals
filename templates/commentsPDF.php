@@ -110,6 +110,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "'' AS division_name, "
             . "1 AS timeslot_id, "
             . "'' AS timeslot_name, "
+            . "sections.adjudicator1_id AS section_adjudicator_id, "
             . "0 AS class1_id, "
             . "0 AS class2_id, "
             . "0 AS class3_id, "
@@ -151,6 +152,10 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                 . "timeslots.sdivision_id = divisions.id " 
                 . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_musicfestival_schedule_sections AS sections ON ("
+                . "divisions.ssection_id = sections.id " 
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
             . "LEFT JOIN ciniki_musicfestival_comments AS comments ON ("
                 . "registrations.id = comments.registration_id "
                 . "AND comments.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -166,6 +171,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
     } else {
         $strsql = "SELECT sections.id AS section_id, "
             . "sections.name AS section_name, "
+            . "sections.adjudicator1_id AS section_adjudicator_id, "
             . "divisions.id AS division_id, "
             . "divisions.name AS division_name, "
             . "timeslots.id AS timeslot_id, "
@@ -230,13 +236,14 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                 . "AND class5.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
-                . "(timeslots.class1_id = registrations.class_id "  
+/*                . "(timeslots.class1_id = registrations.class_id "  
                     . "OR timeslots.class2_id = registrations.class_id "
                     . "OR timeslots.class3_id = registrations.class_id "
                     . "OR timeslots.class4_id = registrations.class_id "
                     . "OR timeslots.class5_id = registrations.class_id "
                     . ") "
-                . "AND ((timeslots.flags&0x01) = 0 OR timeslots.id = registrations.timeslot_id) "
+                . "AND ((timeslots.flags&0x01) = 0 OR timeslots.id = registrations.timeslot_id) " */
+                . "timeslots.id = registrations.timeslot_id "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
@@ -271,7 +278,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
         array('container'=>'divisions', 'fname'=>'division_id', 'fields'=>array('id'=>'division_id', 'name'=>'division_name')),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'class1_id', 'class2_id', 'class3_id', 'class4_id', 'class5_id', 'description', 'class1_name', 'class2_name', 'class3_name', 'class4_name', 'class5_name')),
         array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title1', 'title2', 'title3', 'class_name', 'class_flags', 'competitor2_id', 'timeslot_date', 'timeslot_time', 'participation')),
-        array('container'=>'comments', 'fname'=>'comment_id', 'fields'=>array('id'=>'comment_id', 'adjudicator_id', 'comments', 'grade', 'score')),
+        array('container'=>'comments', 'fname'=>'comment_id', 'fields'=>array('id'=>'comment_id', 'adjudicator_id', 'comments', 'grade', 'score', 'section_adjudicator_id')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -295,6 +302,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
         public $header_image = null;
         public $header_title = '';
         public $header_sub_title = '';
+        public $header_subsub_title = '';
         public $header_msg = '';
         public $header_height = 0;      // The height of the image and address
         public $footer_msg = '';
@@ -312,12 +320,12 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                 $height = $this->header_image->getImageHeight();
                 $width = $this->header_image->getImageWidth();
                 $image_ratio = $width/$height;
-                $img_width = 60;
+                $img_width = 65;
                 $available_ratio = $img_width/$this->header_height;
                 // Check if the ratio of the image will make it too large for the height,
                 // and scaled based on either height or width.
                 if( $available_ratio < $image_ratio ) {
-                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, $img_width, 0, 'JPEG', '', 'L', 2, '150');
+                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, 0, 'JPEG', '', 'L', 2, '150');
                 } else {
                     $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-8, 'JPEG', '', 'L', 2, '150');
                 }
@@ -336,6 +344,12 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             $this->setX($this->left_margin + $img_width);
             $this->Cell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
             $this->Ln(6);
+            if( $this->header_subsub_title != '' ) {
+                $this->SetFont('times', 'B', 14);
+                $this->setX($this->left_margin + $img_width);
+                $this->Cell(180-$img_width, 10, $this->header_subsub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
+                $this->Ln(6);
+            }
 
             $this->SetFont('times', 'B', 12);
             $this->setX($this->left_margin + $img_width);
@@ -377,6 +391,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
     $pdf->header_height = 0;
     $pdf->header_title = $festival['name'];
     $pdf->header_sub_title = '';
+    $pdf->header_subsub_title = '';
     $pdf->header_msg = $festival['document_header_msg'];
     $pdf->footer_msg = '';
 
@@ -464,6 +479,14 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
 
                 foreach($timeslot['registrations'] as $reg) {
                     foreach($reg['comments'] as $comment) {
+                        if( ($festival['flags']&0x20) == 0x20 
+                            && isset($adjudicators[$comment['section_adjudicator_id']]['name'])
+                            && $adjudicators[$comment['section_adjudicator_id']]['name'] != '' 
+                            ) {
+                            $pdf->header_subsub_title = $adjudicators[$comment['section_adjudicator_id']]['name'];
+                        } else {
+                            $pdf->header_subsub_title = '';
+                        }
                         $pdf->AddPage();
                         $pdf->SetDrawColor(232);
                         $border = 'T';

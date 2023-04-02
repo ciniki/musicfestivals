@@ -1135,6 +1135,7 @@ function ciniki_musicfestivals_main() {
         '_comments_pdf':{'label':'Comments PDF Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
             'fields':{
+                'flags6':{'label':'Header Adjudicator Name', 'type':'flagtoggle', 'default':'off', 'bit':0x20, 'field':'flags'},
                 'flags7':{'label':'Timeslot Date/Time', 'type':'flagtoggle', 'default':'off', 'bit':0x40, 'field':'flags'},
                 'comments_grade_label':{'label':'Grade Label', 'default':'Mark', 'type':'text'},
                 'comments_footer_msg':{'label':'Footer Message', 'type':'text'},
