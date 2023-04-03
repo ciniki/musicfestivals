@@ -340,7 +340,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
                 // Add full bio
                 //
                 $pdf->SetFont('', '', 11);
-                $pdf->MultiCell($fw, 10, $bio, 0, 'J', false, 1, '', '', true, 0, false, true, 0, 'T', false);
+                $pdf->MultiCell($fw, 10, $bio . "\n", 0, 'J', false, 1, '', '', true, 0, false, true, 0, 'T', false);
             }
         }
 
