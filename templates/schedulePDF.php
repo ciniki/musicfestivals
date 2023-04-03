@@ -404,11 +404,15 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 }
                 
                 $pdf->SetFont('', 'B');
-                $pdf->Cell($w[0], $lh, $timeslot['time'], $border, 0, 'R', 0);
-                $pdf->Cell($w[1], $lh, '', $border, 0, 'R', 0);
-                $pdf->Cell($w[2], $lh, $name, $border, 0, 'L', 0);
+                $lh = $pdf->getStringHeight($w[2], $name);
+//                $pdf->Cell($w[0], $lh, $timeslot['time'], $border, 0, 'R', 0);
+//                $pdf->Cell($w[1], $lh, '', $border, 0, 'R', 0);
+//                $pdf->Cell($w[2], $lh, $name, $border, 0, 'L', 0);
+                $pdf->Multicell($w[0], $lh, $timeslot['time'], $border, 'R', 0, 0);
+                $pdf->Multicell($w[1], $lh, '', $border, 'R', 0, 0);
+                $pdf->Multicell($w[2], $lh, $name, $border, 'L', 0, 1);
                 $pdf->SetFont('', '');
-                $pdf->Ln($lh);
+//                $pdf->Ln($lh);
     
                 if( $description != '' ) {
                     $pdf->writeHTMLCell($w[0], $d_height, '', '', '', '', 0, false, true, 'L', 1);
