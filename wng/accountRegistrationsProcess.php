@@ -1279,8 +1279,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     );
             }
             $blocks[] = $buttons;
-        } elseif( ($festival['flags']&0x09) == 0x09 ) {
-            error_log(print_r($festival,true));
+//        } elseif( ($festival['flags']&0x09) == 0x09 ) {
+//            error_log(print_r($festival,true));
         } else {
             $blocks[] = array(
                 'type' => 'text',
