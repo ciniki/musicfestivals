@@ -565,9 +565,13 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
 
                         // Position at 15 mm from bottom
                         $pdf->SetDrawColor(50);
-                        $pdf->SetY(-45);
+                        if( !isset($festival['comments_footer_msg']) || $festival['comments_footer_msg'] == '' ) {
+                            $pdf->SetY(-25);
+                        } else {
+                            $pdf->SetY(-45);
+                        }
                         $pdf->SetFont('helvetica', 'I', 12);
-                        if( $comment['grade'] != '' && isset($adjudicators[$comment['adjudicator_id']]['name']) ) {
+                        if( $comment['score'] != '' && isset($adjudicators[$comment['adjudicator_id']]['name']) ) {
                             $pdf->Cell(45, 12, "            Adjudicator", 0, false, 'L', 0, '', 0, false);
                             $pdf->Cell(85, 12, $adjudicators[$comment['adjudicator_id']]['name'], 'B', false, 'L', 0, '', 0, false);
                         } else {
@@ -579,7 +583,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         } else {
                             $pdf->Cell(30, 12, "Mark ", 0, false, 'R', 0, '', 0, false);
                         }
-                        $pdf->Cell(20, 12, $comment['grade'], 'B', false, 'L', 0, '', 0, false);
+                        $pdf->Cell(20, 12, $comment['score'], 'B', false, 'L', 0, '', 0, false);
                         $pdf->Ln(14);
                         
                         if( isset($festival['comments_footer_msg']) && $festival['comments_footer_msg'] != '' ) {
