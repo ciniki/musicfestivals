@@ -259,7 +259,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             }
             // Open file in browser
             header('Content-Disposition: inline;filename="' 
-                . preg_replace("/\.pdf/", '', $registration[$request['uri_split'][($request['cur_uri_pos']+5)] . '_orgfilename']) 
+                . $registration[preg_replace("/music([1-3])\.pdf/", 'music_orgfilename$1', $request['uri_split'][($request['cur_uri_pos']+5)])]
                 . '"');
             // Download file to filesystem
             header('Content-Length: ' . filesize($storage_filename));
