@@ -2430,13 +2430,14 @@ function ciniki_musicfestivals_main() {
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
             'flags':{'label':'Options', 'type':'flags', 'flags':{
                 '1':{'name':'Release Schedule'},
-                '2':{'name':'Release Comments & Certificates'},
+                '2':{'name':'Release Comments'},
+                '3':{'name':'Release Certificates'},
                 }},
             }},
         'adjudicators':{'label':'Adjudicators', 'fields':{
             'adjudicator1_id':{'label':'First', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
-            'adjudicator2_id':{'label':'Second', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
-            'adjudicator3_id':{'label':'Third', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
+//            'adjudicator2_id':{'label':'Second', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
+//            'adjudicator3_id':{'label':'Third', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.schedulesection.save();'},

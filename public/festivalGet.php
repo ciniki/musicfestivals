@@ -763,7 +763,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             $num_registrations++;
                             if( isset($registration['comments']) ) {
                                 foreach($registration['comments'] as $comment) {
-                                    if( $comment['comments'] != '' && $comment['grade'] != '' && $comment['score'] != '' ) {
+                                    if( $comment['comments'] != '' && $comment['score'] != '' ) {
                                         if( !isset($num_completed[$comment['adjudicator_id']]) ) {
                                             $num_completed[$comment['adjudicator_id']] = 1;
                                         } else {

@@ -269,6 +269,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "competitor4_id, "
             . "competitor5_id, "
             . "class_id, "
+            . "timeslot_id, "
             . "title1, "
             . "perf_time1, "
             . "title2, "
@@ -303,6 +304,27 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             $registration = $rc['registration'];
             if( isset($_POST['action']) && $_POST['action'] == 'view' ) {
                 $display = 'view';
+            } 
+            elseif( isset($_POST['action']) && $_POST['action'] == 'comments' ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'commentsPDF');
+                $rc = ciniki_musicfestivals_templates_commentsPDF($ciniki, $tnid, array(
+                    'festival_id' => $festival['id'],
+                    'registration_id' => $registration['registration_id'],
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.463', 'msg'=>'Unable to load comments', 'err'=>$rc['err']));
+                }
+                if( isset($rc['pdf']) ) {
+                    header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+                    header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+                    header('Cache-Control: no-cache, must-revalidate');
+                    header('Pragma: no-cache');
+                    header('Content-Type: application/pdf');
+                    header('Cache-Control: max-age=0');
+                    $rc['pdf']->Output($rc['filename'], 'I');
+                    return array('stat'=>'exit');
+                }
+
 //            } elseif( isset($_POST['action']) && $_POST['action'] == 'update' ) {
 //                $display = 'update';
             } else {
@@ -327,6 +349,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "competitor4_id, "
             . "competitor5_id, "
             . "class_id, "
+            . "timeslot_id, "
             . "title1, "
             . "perf_time1, "
             . "title2, "
@@ -1086,6 +1109,81 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             'fields' => $fields,
             'js' => $js,
             );
+        if( $registration['timeslot_id'] > 0 ) {
+            //
+            // Get the timeslot and schedule information
+            //
+            $num_adjudicators = 1;
+            $strsql = "SELECT sections.id, "
+                . "sections.flags, "
+                . "sections.adjudicator1_id, "
+                . "sections.adjudicator2_id, "
+                . "sections.adjudicator3_id "
+                . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
+                . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+                    . "timeslots.sdivision_id = divisions.id "
+                    . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_musicfestival_schedule_sections AS sections ON ("
+                    . "divisions.ssection_id = sections.id "
+                    . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . ") "
+                . "WHERE timeslots.id = '" . ciniki_core_dbQuote($ciniki, $registration['timeslot_id']) . "' "
+                . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'schedule');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.461', 'msg'=>'Unable to load schedule', 'err'=>$rc['err']));
+            }
+            //
+            // Check if released comments
+            //
+            if( isset($rc['schedule']['flags']) && ($rc['schedule']['flags']&0x02) == 0x02 ) {
+                if( $rc['schedule']['adjudicator1_id'] > 0 ) {
+                    $num_adjudicators = 1;
+                }
+                if( $rc['schedule']['adjudicator2_id'] > 0 ) {
+                    $num_adjudicators++;
+                }
+                if( $rc['schedule']['adjudicator3_id'] > 0 ) {
+                    $num_adjudicators++;
+                }
+
+                $strsql = "SELECT comments.id, "
+                    . "comments.adjudicator_id, "
+                    . "comments.comments, "
+                    . "comments.score "
+                    . "FROM ciniki_musicfestival_comments AS comments "
+                    . "WHERE comments.registration_id = '" . ciniki_core_dbQuote($ciniki, $registration['registration_id']) . "' "
+                    . "AND comments.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . "AND comments.comments <> '' "
+                    . "AND comments.score <> '' "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'comments', 'fname'=>'id', 
+                        'fields'=>array('id', 'adjudicator_id', 'comments', 'score'),
+                        ),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.462', 'msg'=>'Unable to load comments', 'err'=>$rc['err']));
+                }
+                if( isset($rc['comments']) && count($rc['comments']) >= $num_adjudicators ) {
+                    $blocks[] = array(
+                        'type' => 'html',
+                        'class' => 'aligncenter',
+                        'html' => "<div class='block-text aligncenter'><div class='wrap'><div class='content'>"
+                            . "<form action='' target='_blank' method='POST'>"
+                            . "<input type='hidden' name='f-registration_id' value='{$registration['registration_id']}' />"
+                            . "<input type='hidden' name='action' value='comments' />"
+                            . "<input class='button' type='submit' name='submit' value='Download Adjudicators Comments'>"
+                            . "</form>"
+                            . "<br/>"
+                            . "</div></div></div>",
+                        );
+                }
+            }
+        }
     }
     //
     // Show the delete form
