@@ -114,6 +114,6 @@ function ciniki_musicfestivals_wng_listProcess(&$ciniki, $tnid, &$request, $sect
             );
     }
 
-    return array('stat'=>'ok', 'blocks'=>$blocks);
+    return array('stat'=>'ok', 'stop'=>'yes', 'clear'=>'yes', 'blocks'=>$blocks);
 }
 ?>
