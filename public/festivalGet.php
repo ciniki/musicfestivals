@@ -33,6 +33,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'section_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sections'),
         'teacher_customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Teacher'),
         'competitors'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitors'),
+        'city_prov'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitors From City Province'),
+        'province'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitors From Province'),
         'adjudicators'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicators'),
         'certificates'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Certificates'),
         'photos'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Photos'),
@@ -515,16 +517,25 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             // Get the list of teachers and number of registrations
             //
             $strsql = "SELECT registrations.teacher_customer_id, "
-                . "c.display_name, "
-                . "COUNT(registrations.id) AS num_registrations "
-                . "FROM ciniki_musicfestival_registrations AS registrations "
+                . "c.display_name, ";
+            if( ($festival['flags']&0x02) == 0x02 && isset($args['ipv']) ) {
+                if( $args['ipv'] == 'inperson' ) {
+                    $strsql .= "SUM(IF(registrations.participation=0,1,0)) AS num_registrations ";
+                } elseif( $args['ipv'] == 'virtual' ) {
+                    $strsql .= "SUM(registrations.participation) AS num_registrations ";
+                } else {
+                    $strsql .= "COUNT(registrations.id) AS num_registrations ";
+                }
+            } else {
+                $strsql .= "COUNT(registrations.id) AS num_registrations ";
+            }
+            $strsql .= "FROM ciniki_musicfestival_registrations AS registrations "
                 . "LEFT JOIN ciniki_customers AS c ON ("
                     . "registrations.teacher_customer_id = c.id "
                     . "AND c.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "WHERE registrations.teacher_customer_id != 0 "
                 . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-                . $ipv_sql
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "GROUP BY registrations.teacher_customer_id "
                 . "ORDER BY c.display_name "
@@ -981,6 +992,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $strsql .= "'' AS pronoun, ";
             }
             $strsql .= "IF((competitors.flags&0x01) = 0x01, 'Signed', '') AS waiver_signed, "
+                . "competitors.city, "
+                . "competitors.province, "
                 . "IFNULL(classes.code, '') AS classcodes "
                 . "FROM ciniki_musicfestival_competitors AS competitors "
                 . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
@@ -1005,7 +1018,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'competitors', 'fname'=>'id', 
-                    'fields'=>array('id', 'festival_id', 'name', 'pronoun', 'waiver_signed', 'classcodes'),
+                    'fields'=>array('id', 'festival_id', 'name', 'pronoun', 'waiver_signed', 
+                        'city', 'province', 'classcodes',
+                        ),
                     'dlists'=>array('classcodes'=>', '),
                     ),
                 ));
@@ -1013,6 +1028,86 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 return $rc;
             }
             $festival['competitors'] = isset($rc['competitors']) ? $rc['competitors'] : array();
+
+            $festival['competitor_cities'] = array();
+            $festival['competitor_provinces'] = array();
+            $total_comp = count($festival['competitors']);
+            $blank_city_prov = 0;
+            $blank_prov = 0;
+            foreach($festival['competitors'] as $cid => $comp) {
+                $city_prov = $comp['city'] . ', ' . $comp['province'];
+                if( $city_prov == ', ' ) {
+                    $city_prov = '';
+                }
+                if( $city_prov == '' ) {
+                    $blank_city_prov++;
+                }
+                elseif( isset($festival['competitor_cities'][$city_prov]) ) {
+                    $festival['competitor_cities'][$city_prov]['num_competitors']++;
+                } 
+                else {
+                    $festival['competitor_cities'][$city_prov] = array(
+                        'name' => $comp['city'] . ', ' . $comp['province'],
+                        'city' => $comp['city'],
+                        'province' => $comp['province'],
+                        'num_competitors' => 1,
+                        );
+                }
+                if( $comp['province'] == '' ) {
+                    $blank_prov++;
+                }
+                elseif( isset($festival['competitor_provinces'][$comp['province']]) ) {
+                    $festival['competitor_provinces'][$comp['province']]['num_competitors']++;
+                } 
+                else {
+                    $festival['competitor_provinces'][$comp['province']] = array(
+                        'name' => $comp['province'],
+                        'province' => $comp['province'],
+                        'num_competitors' => 1,
+                        );
+                }
+                
+                if( isset($args['city_prov']) && $args['city_prov'] != 'All' && $args['city_prov'] != '' ) {
+                    if( ($args['city_prov'] == 'Blank' && $city_prov != '')
+                        || ($args['city_prov'] != 'Blank' && $city_prov != $args['city_prov'])
+                        ) {
+                        unset($festival['competitors'][$cid]);
+                    }
+                }
+                if( isset($args['province']) && $args['province'] != 'All' && $args['province'] != '' ) {
+                    if( ($args['province'] == 'Blank' && $comp['province'] != '')
+                        || ($args['province'] != 'Blank' && $comp['province'] != $args['province'])
+                        ) {
+                        unset($festival['competitors'][$cid]);
+                    }
+                }
+            }
+            uasort($festival['competitor_cities'], function($a, $b) {
+                return strcmp($a['name'], $b['name']);
+                });
+            if( $blank_city_prov > 0 ) {
+                array_unshift($festival['competitor_cities'], array(
+                    'name' => 'Blank',
+                    'num_competitors' => $blank_city_prov,
+                    ));
+            }
+            array_unshift($festival['competitor_cities'], array(
+                'name' => 'All',
+                'num_competitors' => $total_comp,
+                ));
+            uasort($festival['competitor_provinces'], function($a, $b) {
+                return strcmp($a['name'], $b['name']);
+                });
+            if( $blank_prov > 0 ) {
+                array_unshift($festival['competitor_provinces'], array(
+                    'name' => 'Blank',
+                    'num_competitors' => $blank_prov,
+                    ));
+            }
+            array_unshift($festival['competitor_provinces'], array(
+                'name' => 'All',
+                'num_competitors' => $total_comp,
+                ));
         }
 
         //
