@@ -46,6 +46,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'action'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Action'),
         'entry_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Entry'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sequence'),
+        'ipv'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'In Person/Virtual'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -245,6 +246,18 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         $festival['num_registrations'] = '';
 
         //
+        // Setup ipv (in person/live) sql
+        //
+        $ipv_sql = '';
+        if( ($festival['flags']&0x02) == 0x02 && isset($args['ipv']) ) {
+            if( $args['ipv'] == 'inperson' ) {
+                $ipv_sql .= "AND registrations.participation = 0 ";
+            } elseif( $args['ipv'] == 'virtual' ) {
+                $ipv_sql .= "AND registrations.participation = 1 ";
+            }
+        }
+
+        //
         // Get the list of sections
         //
         if( isset($args['sections']) && $args['sections'] == 'yes' ) {
@@ -265,6 +278,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . ") "
                 . "LEFT JOIN ciniki_musicfestival_registrations AS registrations USE INDEX (festival_id_2) ON ("
                     . "classes.id = registrations.class_id "
+                    . $ipv_sql
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -312,6 +326,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . ") "
                 . "LEFT JOIN ciniki_musicfestival_registrations AS registrations USE INDEX (festival_id_2) ON ("
                     . "classes.id = registrations.class_id "
+                    . $ipv_sql
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "WHERE categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -365,6 +380,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . ") "
                 . "LEFT JOIN ciniki_musicfestival_registrations AS registrations USE INDEX (festival_id_2) ON ("
                     . "classes.id = registrations.class_id "
+                    . $ipv_sql
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -450,6 +466,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . $ipv_sql
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "";
             if( isset($args['section_id']) && $args['section_id'] > 0 ) {
@@ -497,18 +514,19 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             //
             // Get the list of teachers and number of registrations
             //
-            $strsql = "SELECT r.teacher_customer_id, "
+            $strsql = "SELECT registrations.teacher_customer_id, "
                 . "c.display_name, "
-                . "COUNT(r.id) AS num_registrations "
-                . "FROM ciniki_musicfestival_registrations AS r "
+                . "COUNT(registrations.id) AS num_registrations "
+                . "FROM ciniki_musicfestival_registrations AS registrations "
                 . "LEFT JOIN ciniki_customers AS c ON ("
-                    . "r.teacher_customer_id = c.id "
+                    . "registrations.teacher_customer_id = c.id "
                     . "AND c.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
-                . "WHERE r.teacher_customer_id != 0 "
-                . "AND r.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-                . "AND r.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "GROUP BY r.teacher_customer_id "
+                . "WHERE registrations.teacher_customer_id != 0 "
+                . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . $ipv_sql
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "GROUP BY registrations.teacher_customer_id "
                 . "ORDER BY c.display_name "
                 . "";
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(

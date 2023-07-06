@@ -62,7 +62,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
                 //
                 // Update the setting
                 //
-                $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.setting', $settings[$field]['id'],
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.setting', $settings[$field]['id'],
                     array('detail_value'=>$args[$field]), 
                     0x04);
                 if( $rc['stat'] != 'ok' ) {
@@ -72,7 +72,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
                 //
                 // Add the setting
                 //
-                $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.setting', 
+                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.setting', 
                     array('festival_id'=>$festival_id, 'detail_key'=>$field, 'detail_value'=>$args[$field]), 
                     0x04);
                 if( $rc['stat'] != 'ok' ) {

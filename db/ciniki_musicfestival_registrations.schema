@@ -77,8 +77,10 @@
 #                           120 - Other
 #                           121 - Paid Online
 #
-# virtual:              Set to 1 when the registration is doing the class virtually, otherwise
+# participation:        Set to 1 when the registration is doing the class virtually, otherwise
 #                       assumed to be in person.
+#
+# virtual:              **deprecated**
 #
 # videolink:            The URL to view the video for the submission. Used for virtual music festivals.
 # music_orgfilename:    The original filename of the PDF uploaded for sheet music.
