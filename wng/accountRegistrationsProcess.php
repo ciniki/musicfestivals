@@ -113,11 +113,19 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     // Check if request to download PDF
     //
     if( isset($_GET['pdf']) && $_GET['pdf'] == 'yes' ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'teacherRegistrationsPDF');
-        $rc = ciniki_musicfestivals_templates_teacherRegistrationsPDF($ciniki, $tnid, array(
-            'festival_id' => $festival['id'],
-            'billing_customer_id' => $request['session']['customer']['id'],
-            ));
+        if( $customer_type == 20 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'teacherRegistrationsPDF');
+            $rc = ciniki_musicfestivals_templates_teacherRegistrationsPDF($ciniki, $tnid, array(
+                'festival_id' => $festival['id'],
+                'billing_customer_id' => $request['session']['customer']['id'],
+                ));
+        } else {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'parentRegistrationsPDF');
+            $rc = ciniki_musicfestivals_templates_parentRegistrationsPDF($ciniki, $tnid, array(
+                'festival_id' => $festival['id'],
+                'billing_customer_id' => $request['session']['customer']['id'],
+                ));
+        }
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.444', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
         }
@@ -1485,7 +1493,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             //
             // Add button to download PDF list of registrations
             //
-            if( $customer_type == 20 ) {
+//            if( $customer_type == 20 ) {
                 $blocks[] = array(
                     'type' => 'buttons',
                     'class' => 'limit-width limit-width-60 aligncenter',
@@ -1495,7 +1503,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                         'url' => "/account/musicfestivalregistrations?pdf=yes",
                         )),
                     );
-            }
+//            }
         }
         if( count($cancelled_registrations) > 0 ) {
             $blocks[] = array(
