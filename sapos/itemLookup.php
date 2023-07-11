@@ -7,9 +7,7 @@
 // Arguments
 // =========
 // 
-// Returns
-// =======
-//
+// Returns // ======= //
 function ciniki_musicfestivals_sapos_itemLookup($ciniki, $tnid, $args) {
 
     if( !isset($args['object']) || $args['object'] == '' 
@@ -50,8 +48,18 @@ function ciniki_musicfestivals_sapos_itemLookup($ciniki, $tnid, $args) {
             . "classes.name, "
             . "classes.earlybird_fee, "
             . "classes.fee, "
-            . "classes.virtual_fee "
+            . "classes.virtual_fee, "
+            . "categories.name AS category_name, "
+            . "sections.name AS section_name "
             . "FROM ciniki_musicfestival_classes AS classes "
+            . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
+                . "classes.category_id = categories.id "
+                . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_sections AS sections ON ("
+                . "categories.section_id = sections.id "
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
             . "WHERE classes.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
             . "AND classes.id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -66,7 +74,11 @@ function ciniki_musicfestivals_sapos_itemLookup($ciniki, $tnid, $args) {
         $item = $rc['class'];
         
         $item['flags'] = 0x28;
-        $item['description'] = $item['name'];
+        if( ($festival['flags']&0x0100) == 0x0100 ) {
+            $item['description'] = $item['section_name'] . ' - ' . $item['category_name'] . ' - ' . $item['name'];
+        } else {
+            $item['description'] = $item['name'];
+        }
         $item['object'] = 'ciniki.musicfestivals.class';
         $item['object_id'] = $item['id'];
         $item['price_id'] = 0;

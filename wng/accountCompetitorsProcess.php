@@ -58,15 +58,15 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     // Check for any sections that have different end date
     //
     if( ($festival['flags']&0x09) == 0x09 ) {
-        $strsql = "SELECT s.id AS section_id, "
-            . "s.name AS section_name, "
-            . "s.live_end_dt, "
-            . "s.virtual_end_dt "
-            . "FROM ciniki_musicfestival_sections AS s "
-            . "WHERE s.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
-            . "AND s.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND (s.flags&0x01) = 0 "
-            . "ORDER BY s.sequence, s.name "
+        $strsql = "SELECT sections.id AS section_id, "
+            . "sections.name AS section_name, "
+            . "sections.live_end_dt, "
+            . "sections.virtual_end_dt "
+            . "FROM ciniki_musicfestival_sections AS sections "
+            . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND (sections.flags&0x01) = 0 "
+            . "ORDER BY sections.sequence, sections.name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(

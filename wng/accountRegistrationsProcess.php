@@ -420,6 +420,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     }
     if( isset($rc['selected_class']) ) {
         $selected_class = $rc['selected_class'];
+        if( ($festival['flags']&0x0100) == 0x0100 ) {
+            $selected_class['name'] = $selected_class['category_name'] . ' - ' . $selected_class['name'];
+        }
     }
 
     //
@@ -645,6 +648,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'quantity' => 1,
                 'flags' => 0x08,
                 'code' => $selected_class['code'],
+                //'description' => (($festival['flags']&0x0100) == 0x0100 ? $selected_class['category_name'] . ' - ' : '') . $selected_class['name'],
                 'description' => $selected_class['name'],
                 'unit_amount' => $registration['fee'],
                 'unit_discount_amount' => 0,
@@ -1239,17 +1243,27 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         $strsql .= "registrations.title1, "
             . "registrations.fee, "
             . "classes.code AS class_code, "
+            . "sections.name AS section_name, "
+            . "categories.name AS category_name, "
             . "classes.name AS class_name, "
             . "CONCAT_WS(' - ', classes.code, classes.name) AS codename, "
             . "IFNULL(TIME_FORMAT(timeslots.slot_time, '%l:%i %p'), '') AS timeslot_time, "
             . "IFNULL(DATE_FORMAT(divisions.division_date, '%b %D, %Y'), '') AS timeslot_date, "
             . "IFNULL(divisions.address, '') AS timeslot_address, "
-            . "IFNULL(sections.flags, 0) AS timeslot_flags, "
+            . "IFNULL(ssections.flags, 0) AS timeslot_flags, "
             . "IFNULL(invoices.status, 0) AS invoice_status "
             . "FROM ciniki_musicfestival_registrations AS registrations "
-            . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+            . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "registrations.class_id = classes.id "
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
+                . "classes.category_id = categories.id "
+                . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_sections AS sections ON ("
+                . "categories.section_id = sections.id "
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON (" 
                 . "registrations.timeslot_id = timeslots.id "
@@ -1259,9 +1273,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 . "timeslots.sdivision_id = divisions.id "
                 . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
-            . "LEFT JOIN ciniki_musicfestival_schedule_sections AS sections ON ("
-                . "divisions.ssection_id = sections.id "
-                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "LEFT JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
+                . "divisions.ssection_id = ssections.id "
+                . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
                 . "registrations.invoice_id = invoices.id "
@@ -1279,7 +1293,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
                 'fields'=>array('id', 'status', 'invoice_status', 'invoice_id', 'display_name', 
-                    'class_code', 'class_name', 'codename', 'fee', 'title1', 'participation',
+                    'class_code', 'class_name', 'section_name', 'category_name', 'codename', 
+                    'fee', 'title1', 'participation',
                     'timeslot_time', 'timeslot_date', 'timeslot_address', 'timeslot_flags',
                     ),
                 ),
@@ -1292,7 +1307,10 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         $etransfer_registrations = array();
         $paid_registrations = array();
         $cancelled_registrations = array();
-        foreach($registrations as $reg) {
+        foreach($registrations as $rid => $reg) {
+            if( ($festival['flags']&0x0100) == 0x0100 ) {
+                $reg['codename'] = $reg['class_code'] . ' - ' . $reg['section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name'];
+            }
             if( $reg['invoice_status'] == 10 ) {
                 $cart_registrations[] = $reg;
             } elseif( $reg['invoice_status'] == 42 ) {

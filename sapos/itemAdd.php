@@ -35,8 +35,18 @@ function ciniki_musicfestivals_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item)
             . "classes.name, "
             . "classes.earlybird_fee, "
             . "classes.fee, "
-            . "classes.virtual_fee "
+            . "classes.virtual_fee, "
+            . "categories.name AS category_name, "
+            . "sections.name AS section_name "
             . "FROM ciniki_musicfestival_classes AS classes "
+            . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
+                . "classes.category_id = categories.id "
+                . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_sections AS sections ON ("
+                . "categories.section_id = sections.id "
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
             . "WHERE classes.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
             . "AND classes.id = '" . ciniki_core_dbQuote($ciniki, $item['object_id']) . "' "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -49,6 +59,12 @@ function ciniki_musicfestivals_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item)
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.399', 'msg'=>'Unable to find requested class'));
         }
         $class = $rc['class'];
+
+        if( ($festival['flags']&0x0100) == 0x0100 ) {
+            $class['name'] = $class['section_name'] . ' - ' . $class['category_name'] . ' - ' . $class['name'];
+        } else {
+            $class['name'] = $class['name'];
+        }
 
         $fee = 0;
         $participation = 0;

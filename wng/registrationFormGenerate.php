@@ -168,6 +168,19 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         $sections[$sid]['upload'] = $section_upload;
         if( isset($section['classes']) ) {
             foreach($section['classes'] as $cid => $section_class) {
+                //
+                // Check syllabus class name format
+                //
+                if( $section_class['code'] != '' ) {
+                    if( ($festival['flags']&0x0100) == 0x0100 ) {
+                        $sections[$sid]['classes'][$cid]['codename'] = $section_class['code'] . ' - ' . $section_class['category_name'] . ' - ' . $section_class['name'];
+                    } else {
+                        $sections[$sid]['classes'][$cid]['codename'] = $section_class['code'] . ' - ' . $section_class['name'];
+                    }
+                }
+                elseif( ($festival['flags']&0x0100) == 0x0100 ) {
+                    $section['classes'][$cid]['name'] = $section_class['category_name'] . ' - ' . $section_class['name'];
+                }
                 if( ($section_class['flags']&0x10) == 0x10 ) {
                     $classes_2c[] = $cid;
                 }
@@ -185,9 +198,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 }
                 if( ($section_class['flags']&0x8000) == 0x8000 ) {
                     $classes_3to[] = $cid;
-                }
-                if( $section_class['code'] != '' ) {
-                    $sections[$sid]['classes'][$cid]['codename'] = $section_class['code'] . ' - ' . $section_class['name'];
                 }
                 if( isset($_GET['cl']) && $_GET['cl'] == $section_class['uuid'] ) {
                     $selected_sid = $sid;

@@ -82,6 +82,9 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
     if( ($old_festival['flags']&0x80) == 0x80 && ($new_festival['flags']&0x80) == 0 ) {
         $new_flags = $old_festival['flags'] | 0x80;
     }
+    if( ($old_festival['flags']&0x0100) == 0x0100 && ($new_festival['flags']&0x0100) == 0 ) {
+        $new_flags = $old_festival['flags'] | 0x0100;
+    }
     if( $new_flags != $new_festival['flags'] ) {
         $update_args['flags'] = $new_flags;
     }

@@ -1222,6 +1222,11 @@ function ciniki_musicfestivals_main() {
             'fields':{
                 'flags8':{'label':'Include Pronouns', 'type':'flagtoggle', 'default':'off', 'bit':0x80, 'field':'flags'},
             }},
+        '_syllabus':{'label':'Syllabus Options', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
+            'fields':{
+                'flags5':{'label':'Include Section/Category as Class Name', 'type':'flagtoggle', 'default':'off', 'bit':0x0100, 'field':'flags'},
+            }},
         '_registration_parent_msg':{'label':'Registration Message - Parents', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
             'fields':{
@@ -1281,6 +1286,7 @@ function ciniki_musicfestivals_main() {
         this.showHideSection('_document_footer_msg');
         this.showHideSection('_comments_pdf');
         this.showHideSection('_certificates_pdf');
+        this.showHideSection('_syllabus');
         this.showHideSection('_registration_parent_msg');
         this.showHideSection('_registration_teacher_msg');
         this.showHideSection('_registration_adult_msg');
@@ -1760,7 +1766,7 @@ function ciniki_musicfestivals_main() {
     }
     this.class.cellValue = function(s, i, j, d) {
         switch(j) {
-            case 0: return d.display_name + M.subdue(' (',d.pronoun,')');
+            case 0: return d.display_name; // + M.subdue(' (',d.pronoun,')');
             case 1: return d.teacher_name;
             case 2: return d.status_text;
         }

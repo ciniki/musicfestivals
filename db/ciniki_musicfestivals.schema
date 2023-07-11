@@ -27,10 +27,14 @@
 #                           0x02 - Virtual Music Festival (Enable video links and PDF music uploads)
 #                           0x04 - Virtual Pricing
 #                           0x08 - Section End Dates
-#                           0x10 -
+#                           0x10 - 
 #                           0x20 - Comments PDF include Adjudicator name in header
 #                           0x40 - Comments PDF include Date/Time
 #                           0x80 - Certificates PDF include Pronoun
+#                           0x0100 - Include Section/Category as part of Invoice item description
+#                           0x0200 - 
+#                           0x0400 - 
+#                           0x0800 - 
 #
 # earlybird_date:       The UTC Date and Time when earlybird pricing ends.
 # live_date:            The UTC Date and Time when live pricing ends.
@@ -60,7 +64,7 @@ create table ciniki_musicfestivals (
     start_date date not null,
     end_date date not null,
     status tinyint unsigned not null,
-    flags tinyint unsigned not null,
+    flags int unsigned not null,
     earlybird_date datetime not null,
     live_date datetime not null,
     virtual_date datetime not null,
