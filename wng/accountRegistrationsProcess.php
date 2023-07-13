@@ -247,8 +247,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             // Search teachers from all previous festivals
 //            . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
             . "";
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'teachers', 'fname'=>'id', 'fields'=>array('id', 'name'=>'display_name')),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -1010,16 +1010,24 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             if( isset($field['id']) && $field['id'] == 'action' ) {
                 $fields[$fid]['value'] = 'view';
             }
-            if( $field['ftype'] == 'select' ) {
+            if( $field['ftype'] == 'select' 
+                && isset($field['id']) && $field['id'] == 'teacher_customer_id'
+                && $field['value'] == 0
+                ) {
+                $fields[$fid]['value'] = 'No Teacher';
+                $fields[$fid]['ftype'] = 'text';
+            } elseif( $field['ftype'] == 'select' ) {
                 $fields[$fid]['ftype'] = 'text';
                 if( isset($field['options'][$field['value']]['codename']) ) {
                     $fields[$fid]['value'] = $field['options'][$field['value']]['codename'];
-                } elseif( isset($field['options'][$field['value']]['name']) ) {
+                } 
+                elseif( isset($field['options'][$field['value']]['name']) ) {
                     $fields[$fid]['value'] = $field['options'][$field['value']]['name'];
                 }
                 elseif( isset($field['options'][$field['value']]) ) {
                     $fields[$fid]['value'] = $field['options'][$field['value']];
-                } else {
+                } 
+                else {
                     $fields[$fid]['value'] = '';
                 }
             }
@@ -1107,7 +1115,11 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $fields[$fid]['editable'] = 'yes';
                 $editable = 'yes';
             } 
-            elseif( in_array($fid, ['video_url1', 'video_url2', 'video_url3'])
+//            if( $fid == 'teacher_share' && $festival['edit'] == 'yes' ) {
+//                $fields[$fid]['editable'] = 'yes';
+//                $editable = 'yes';
+//            } 
+            if( in_array($fid, ['video_url1', 'video_url2', 'video_url3'])
                 && $festival['upload'] == 'yes' 
                 ) {
                 $fields[$fid]['editable'] = 'yes';

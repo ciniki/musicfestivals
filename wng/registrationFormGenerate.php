@@ -821,7 +821,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 . "C.gE('f-action').value='editcompetitor';"
                 . "var f=C.gE('addregform');"
                 . "var i=C.aE('input','f-competitor_id','hidden');"
-                . "console.log(t);"
                 . "i.setAttribute('name','f-competitor_id');"
                 . "i.setAttribute('value',t);"
                 . "f.appendChild(i);"
