@@ -26,7 +26,7 @@
 # flags:                The options for the competitor.
 #
 #                           0x01 - Waiver signed
-#                           0x02 - Share with teacher
+#                           0x02 - 
 #                           0x04 - 
 #                           0x08 - 
 #

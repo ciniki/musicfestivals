@@ -1,0 +1,5 @@
+#
+# Add field for placement on registration
+#
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN flags smallint unsigned not null AFTER status;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.13';

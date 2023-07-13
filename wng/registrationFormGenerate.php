@@ -66,35 +66,35 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     //
     // Load the sections and classes
     //
-    $strsql = "SELECT s.id AS section_id, "
-        . "s.name AS section_name, "
-        . "s.live_end_dt, "
-        . "s.virtual_end_dt, "
-        . "s.edit_end_dt, "
-        . "s.upload_end_dt, "
-        . "ca.name AS category_name, "
-        . "cl.id AS class_id, "
-        . "cl.uuid AS class_uuid, "
-        . "cl.code AS class_code, "
-        . "cl.name AS class_name, "
-        . "CONCAT_WS(' - ', s.name, cl.code, cl.name) AS sectionclassname, "
-        . "cl.flags AS class_flags, "
-        . "cl.earlybird_fee, "
-        . "cl.fee, "
-        . "cl.virtual_fee "
-        . "FROM ciniki_musicfestival_sections AS s "
-        . "INNER JOIN ciniki_musicfestival_categories AS ca ON ("
-            . "s.id = ca.section_id "
-            . "AND ca.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+    $strsql = "SELECT sections.id AS section_id, "
+        . "sections.name AS section_name, "
+        . "sections.live_end_dt, "
+        . "sections.virtual_end_dt, "
+        . "sections.edit_end_dt, "
+        . "sections.upload_end_dt, "
+        . "categories.name AS category_name, "
+        . "classes.id AS class_id, "
+        . "classes.uuid AS class_uuid, "
+        . "classes.code AS class_code, "
+        . "classes.name AS class_name, "
+        . "CONCAT_WS(' - ', sections.name, classes.code, classes.name) AS sectionclassname, "
+        . "classes.flags AS class_flags, "
+        . "classes.earlybird_fee, "
+        . "classes.fee, "
+        . "classes.virtual_fee "
+        . "FROM ciniki_musicfestival_sections AS sections "
+        . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
+            . "sections.id = categories.section_id "
+            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "INNER JOIN ciniki_musicfestival_classes AS cl ON ("
-            . "ca.id = cl.category_id "
-            . "AND cl.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
+            . "categories.id = classes.category_id "
+            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE s.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
-        . "AND s.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND (s.flags&0x01) = 0 "
-        . "ORDER BY s.sequence, s.name, ca.sequence, ca.name, cl.sequence, cl.name "
+        . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+        . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND (sections.flags&0x01) = 0 "
+        . "ORDER BY sections.sequence, sections.name, categories.sequence, categories.name, classes.sequence, classes.name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -482,6 +482,19 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'id' => '-1',
             'name' => 'Add Teacher',
             );
+        $fields['teacher_share'] = array(
+            'id' => 'teacher_share',
+            'label' => 'Share registration with Teacher',
+            'ftype' => 'checkbox',
+            'size' => 'medium',
+            'class' => isset($_POST['f-teacher_customer_id']) && $_POST['f-teacher_customer_id'] != 0 ? '' : (isset($registration['teacher_customer_id']) && $registration['teacher_customer_id'] != 0 ? '' : 'hidden'),
+            'value' => isset($_POST["f-teacher_share"]) ? $_POST["f-teacher_share"] : (isset($registration["teacher_share"]) ? $registration["teacher_share"] : 'off'),
+            );
+        if( isset($_POST["f-teacher_share"]) ) {
+            $fields['teacher_share']['value'] = $_POST["f-teacher_share"];
+        } elseif( isset($_POST["f-teacher_customer_id"]) ) {
+            $fields['teacher_share']['value'] = 'off';
+        }
     }
 
     $fields['line-a'] = array(
@@ -828,6 +841,11 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         . "};"
         . "function teacherSelected(){"
             . "var t=C.gE('f-teacher_customer_id').value;"
+            . "if(t!=0){"
+                . "C.rC(C.gE('f-teacher_share').parentNode,'hidden');"
+            . "}else{"
+                . "C.aC(C.gE('f-teacher_share').parentNode,'hidden');"
+            . "}"
             . "if(t==-1){"
                 . "C.rC(C.gE('f-teacher_name').parentNode,'hidden');"
                 . "C.rC(C.gE('f-teacher_phone').parentNode,'hidden');"

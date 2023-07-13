@@ -185,6 +185,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'billing_customer_id'=>array('name'=>'Billing', 'ref'=>'ciniki.customers.customer', 'default'=>'0'),
             'rtype'=>array('name'=>'Type'),
             'status'=>array('name'=>'Status'),
+            'flags'=>array('name'=>'Options', 'default'=>'0'),
             'invoice_id'=>array('name'=>'Status', 'default'=>'0'),
             'display_name'=>array('name'=>'Name', 'default'=>''),
             'public_name'=>array('name'=>'Public Name', 'default'=>''),

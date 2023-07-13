@@ -370,7 +370,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             'ftype' => 'content',
             'required' => 'yes',
             'size' => 'large',
-            'class' => 'hidden',
+//            'class' => 'hidden',
             'value' => '',
             );
         $fields['terms'] = array(
@@ -379,7 +379,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             'ftype' => 'checkbox',
             'size' => 'large',
             'required' => 'yes',
-            'class' => 'hidden',
+//            'class' => 'hidden',
             'value' => (isset($competitor['flags']) && ($competitor['flags']&0x01) == 0x01 ? 'on' : ''),
             );
         if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' ) {

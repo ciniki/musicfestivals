@@ -65,6 +65,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'billing_customer_id'=>'0',
             'rtype'=>30,
             'status'=>'',
+            'flags'=>0,
             'invoice_id'=>'0',
             'display_name'=>'',
             'competitor1_id'=>'0',
@@ -104,6 +105,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "ciniki_musicfestival_registrations.billing_customer_id, "
             . "ciniki_musicfestival_registrations.rtype, "
             . "ciniki_musicfestival_registrations.status, "
+            . "ciniki_musicfestival_registrations.flags, "
             . "ciniki_musicfestival_registrations.invoice_id, "
             . "ciniki_musicfestival_registrations.display_name, "
             . "ciniki_musicfestival_registrations.competitor1_id, "
@@ -137,8 +139,10 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'billing_customer_id', 'rtype', 'status', 'invoice_id',
-                    'display_name', 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 
+                'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'billing_customer_id', 
+                    'rtype', 'status', 'flags', 'invoice_id', 'display_name', 
+                    'competitor1_id', 'competitor2_id', 'competitor3_id', 
+                    'competitor4_id', 'competitor5_id', 
                     'class_id', 
                     'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 
                     'fee', 'payment_type', 

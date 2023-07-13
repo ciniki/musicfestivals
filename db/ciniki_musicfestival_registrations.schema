@@ -33,6 +33,13 @@
 #                           50 - Paid
 #                           60 - Cancelled
 #
+# flags:                The options for the registration.
+#
+#                           0x01 - Share with teacher (valid only when customer type is not teacher)
+#                           0x02 - 
+#                           0x04 - 
+#                           0x08 - 
+#
 # invoice_id:           The ID of the invoice in ciniki.sapos if paid online.
 #
 # display_name:         Individuals, this field is ignored. 
@@ -100,6 +107,7 @@ create table ciniki_musicfestival_registrations (
     billing_customer_id int not null,
     rtype tinyint unsigned not null,
     status tinyint unsigned not null,
+    flags smallint unsigned not null,
     invoice_id int not null,
     display_name varchar(250) not null,
     public_name varchar(250) not null,
@@ -138,4 +146,4 @@ create table ciniki_musicfestival_registrations (
     index (festival_id, teacher_customer_id, billing_customer_id),
     index (festival_id, class_id, tnid),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.12';
+) ENGINE='InnoDB', COMMENT='v1.13';
