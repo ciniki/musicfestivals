@@ -70,7 +70,7 @@ function ciniki_musicfestivals_commentsPDF($ciniki) {
     // Return the pdf
     //
     if( isset($rc['pdf']) ) {
-        $rc['pdf']->Output($rc['filename'], 'D');
+        $rc['pdf']->Output($rc['filename'], 'I');
     }
 
     return array('stat'=>'exit');

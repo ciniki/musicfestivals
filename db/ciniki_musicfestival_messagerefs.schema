@@ -1,0 +1,50 @@
+#
+# Description
+# -----------
+# This table stores the objects that an email/sms will/did pull recipients from.
+# There can be multiple objects linked to 1 message.
+#
+# When a message is sent, all competitors and teachers found in the sections, classes, etc are
+# added as competitor and teacher objects. This allows tracking of who a message was actually
+# sent to vrs who is currently in a section.
+#
+# Objects:
+# ciniki.musicfestivals.section (section ID)
+# ciniki.musicfestivals.category (category ID)
+# ciniki.musicfestivals.class (class ID)
+# ciniki.musicfestivals.schedulesection (schedule section ID)
+# ciniki.musicfestivals.scheduledivision (schedule section ID)
+# ciniki.musicfestivals.competitor (competitor ID)
+# ciniki.musicfestivals.teacher (customer ID)
+#
+# When wanting to message a registration, it should be added as a
+# list of competitors and/or teachers
+#
+# Fields
+# -------
+# id:               The id of the art catalog item.
+# uuid:             The Universal Unique ID.
+# tnid:             The tenant the item is attached to.
+#
+# message_id:       The ID of the mail message the object reference is attached to.
+# object:           The object to collect emails for.
+# object_id:        The ID of the object.
+#
+# date_added:       The UTC date and time the record was added.
+# last_updated:     The UTC date and time the record was last updated.
+#
+create table ciniki_musicfestival_messagerefs (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    message_id int not null,
+    object varchar(250) not null,
+    object_id varchar(250) not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key(id),
+    index (tnid, uuid, last_updated),
+    index (message_id, object, object_id)
+) ENGINE='InnoDB', COMMENT='v1.01';

@@ -43,7 +43,7 @@ function ciniki_musicfestivals_registrationsPDF($ciniki) {
     }
     
     if( isset($rc['pdf']) ) {
-        $rc['pdf']->Output($rc['filename'], 'D');
+        $rc['pdf']->Output($rc['filename'], 'I');
     }
 
     return array('stat'=>'exit');

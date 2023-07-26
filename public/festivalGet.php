@@ -44,6 +44,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'list_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'List'),
         'listsection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'List Section'),
         'sponsors'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sponsors'),
+        'messages'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Messages List'),
+        'messages_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Messages Status'),
         'emails_list'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Emails List'),
         'action'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Action'),
         'entry_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Entry'),
@@ -1277,6 +1279,74 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 return $rc;
             }
             $festival['certificates'] = isset($rc['certificates']) ? $rc['certificates'] : array();
+        }
+
+        //
+        // Get the list of messages if requested
+        //
+        if( isset($args['messages']) && $args['messages'] == 'yes' ) {
+            //
+            // Get the count on statuses
+            //
+            $strsql = "SELECT messages.status, COUNT(*) AS num_messages "
+                . "FROM ciniki_musicfestival_messages AS messages "
+                . "WHERE messages.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND messages.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "GROUP BY messages.status "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
+            $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.musicfestivals', 'statuses');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.476', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+            }
+            $statuses = isset($rc['statuses']) ? $rc['statuses'] : array();
+            $festival['message_statuses'] = array(
+                array(
+                    'label' => 'Draft', 
+                    'status' => 10, 
+                    'num_messages' => (isset($statuses['10']) ? $statuses['10'] : 0),
+                    ),
+                array(
+                    'label' => 'Scheduled', 
+                    'status' => 30, 
+                    'num_messages' => (isset($statuses['30']) ? $statuses['30'] : 0),
+                    ),
+                array(
+                    'label' => 'Sent', 
+                    'status' => 50, 
+                    'num_messages' => (isset($statuses['50']) ? $statuses['50'] : 0),
+                    ),
+                );
+
+            //
+            // Get the list of messages
+            //
+            if( !isset($args['messages_status']) ) {
+                $args['messages_status'] = 10;
+            }
+            $strsql = "SELECT messages.id, "
+                . "messages.subject, ";
+            if( $args['messages_status'] == 50 ) {
+                $strsql .= "DATE_FORMAT('%b %e, %Y %l:%i %p', messages.dt_sent) AS date_text ";
+            } elseif( $args['messages_status'] == 50 ) {
+                $strsql .= "DATE_FORMAT('%b %e, %Y %l:%i %p', messages.dt_scheduled) AS date_text ";
+            } else {
+                $strsql .= "DATE_FORMAT('%b %e, %Y %l:%i %p', messages.date_added) AS date_text ";
+            }
+            $strsql .= "FROM ciniki_musicfestival_messages AS messages "
+                . "WHERE messages.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND messages.status = '" . ciniki_core_dbQuote($ciniki, $args['messages_status']) . "' "
+                . "AND messages.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'messages', 'fname'=>'id', 
+                    'fields'=>array('id', 'subject', 'date_text')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.477', 'msg'=>'Unable to load messages', 'err'=>$rc['err']));
+            }
+            $festival['messages'] = isset($rc['messages']) ? $rc['messages'] : array();
         }
 
         //

@@ -44,6 +44,13 @@ function ciniki_musicfestivals_maps($ciniki) {
             '121'=>'Online',
         ),
     );
+    $maps['message'] = array(
+        'status'=>array(
+            '10'=>'Draft',
+            '30'=>'Scheduled',
+            '50'=>'Sent',
+        ),
+    );
 
     return array('stat'=>'ok', 'maps'=>$maps);
 }

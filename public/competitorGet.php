@@ -22,6 +22,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'competitor_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Competitor'),
+        'emails'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitor Emails'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -143,6 +144,22 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
         if( $competitor['study_level'] != '' ) { $details[] = array('label'=>'Study/Level', 'value'=>$competitor['study_level']); }
         if( $competitor['instrument'] != '' ) { $details[] = array('label'=>'Instrument', 'value'=>$competitor['instrument']); }
         if( ($competitor['flags']&0x01) == 0x01 ) { $details[] = array('label'=>'Waiver', 'value'=>'Signed'); }
+    }
+
+    //
+    // Get the emails sent to the competitor
+    //
+    if( isset($args['emails']) && $args['emails'] == 'yes' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'objectMessages');
+        $rc = ciniki_mail_hooks_objectMessages($ciniki, $args['tnid'], array(
+            'object' => 'ciniki.musicfestivals.competitor',
+            'object_id' => $args['competitor_id'],
+            'xml' => 'no',
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $competitor['emails'] = isset($rc['messages']) ? $rc['messages'] : array();
     }
 
     return array('stat'=>'ok', 'competitor'=>$competitor, 'details'=>$details);

@@ -67,7 +67,7 @@ function ciniki_musicfestivals_festivalSyllabusPDF($ciniki) {
     // Return the pdf
     //
     if( isset($rc['pdf']) ) {
-        $rc['pdf']->Output('Syllabus.pdf', 'D');
+        $rc['pdf']->Output('Syllabus.pdf', 'I');
     }
 
     return array('stat'=>'exit');

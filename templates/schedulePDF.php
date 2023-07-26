@@ -252,6 +252,11 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     $pdf->header_msg = $festival['document_header_msg'];
     $pdf->footer_msg = '';
 
+    if( isset($args['footerdate']) && $args['footerdate'] == 'yes' ) {
+        $dt = new DateTime('now', new DateTimezone($intl_timezone));
+        $pdf->footer_msg = $dt->format("M j, Y");
+    }
+
     //
     // Set the minimum header height
     //

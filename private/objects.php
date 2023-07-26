@@ -435,6 +435,35 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );
+    $objects['message'] = array(
+        'name' => 'Mail',
+        'sync' => 'yes',
+        'o_name' => 'message',
+        'o_container' => 'messages',
+        'table' => 'ciniki_musicfestival_messages',
+        'fields' => array(
+            'festival_id' => array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'subject' => array('name'=>'Subject'),
+            'status' => array('name'=>'Status', 'default'=>'10'),
+            'content' => array('name'=>'Content', 'default'=>''),
+            'dt_scheduled' => array('name'=>'Scheduled Date', 'default'=>''),
+            'dt_sent' => array('name'=>'Sent Date', 'default'=>''),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
+    $objects['messageref'] = array(
+        'name' => 'Mail Object',
+        'sync' => 'yes',
+        'o_name' => 'messageref',
+        'o_container' => 'messagerefs',
+        'table' => 'ciniki_musicfestival_messagerefs',
+        'fields' => array(
+            'message_id' => array('name'=>'message', 'ref'=>'ciniki.musicfestivals.message'),
+            'object' => array('name'=>'Object'),
+            'object_id' => array('name'=>'Object ID'),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
     $objects['setting'] = array(
         'name' => 'Setting',
         'sync' => 'yes',

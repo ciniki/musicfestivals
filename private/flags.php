@@ -28,7 +28,7 @@ function ciniki_musicfestivals_flags(&$ciniki) {
         // 0x0100
         array('flag'=>array('bit'=>'9', 'name'=>'Main Menu Festivals')),
         array('flag'=>array('bit'=>'10', 'name'=>'Email Lists')),
-//        array('flag'=>array('bit'=>'11', 'name'=>'')),
+        array('flag'=>array('bit'=>'11', 'name'=>'Messages')),
 //        array('flag'=>array('bit'=>'12', 'name'=>'')),
         // 0x1000
 //        array('flag'=>array('bit'=>'13', 'name'=>'')),

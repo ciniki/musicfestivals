@@ -426,7 +426,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
     // Return the pdf
     //
     if( isset($rc['pdf']) ) {
-        $rc['pdf']->Output($filename . '.pdf', 'D');
+        $rc['pdf']->Output($filename . '.pdf', 'I');
     }
 
     return array('stat'=>'exit');
