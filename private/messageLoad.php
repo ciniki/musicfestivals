@@ -848,22 +848,24 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
         // Load 100 competitors at a time so we don't overload SQL limits
         //
         $rsp['message']['competitors'] = array();
-        for($i = 0; $i < count($competitor_ids); $i+=100) {
-            $strsql = "SELECT competitors.id, "
-                . "competitors.name, "
-                . "competitors.email "
-                . "FROM ciniki_musicfestival_competitors AS competitors "
-                . "WHERE competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . "AND competitors.id IN (" . ciniki_core_dbQuoteIDs($ciniki, array_splice($competitor_ids, $i, 100)) . ") "
-                . "ORDER BY competitors.name "
-                . "";
-            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
-            if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.474', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
-            }
-            if( isset($rc['rows']) ) {
-                foreach($rc['rows'] as $row) {
-                    $rsp['message']['competitors'][$row['id']] = $row;
+        if( count($competitor_ids) > 0 ) {
+            for($i = 0; $i < count($competitor_ids); $i+=100) {
+                $strsql = "SELECT competitors.id, "
+                    . "competitors.name, "
+                    . "competitors.email "
+                    . "FROM ciniki_musicfestival_competitors AS competitors "
+                    . "WHERE competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . "AND competitors.id IN (" . ciniki_core_dbQuoteIDs($ciniki, array_splice($competitor_ids, $i, 100)) . ") "
+                    . "ORDER BY competitors.name "
+                    . "";
+                $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.474', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+                }
+                if( isset($rc['rows']) ) {
+                    foreach($rc['rows'] as $row) {
+                        $rsp['message']['competitors'][$row['id']] = $row;
+                    }
                 }
             }
         }
@@ -872,26 +874,28 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
         // Load the teachers, should always be smaller number than competitors
         //
         $rsp['message']['teachers'] = array();
-        $strsql = "SELECT customers.id, "
-            . "customers.display_name AS name, "
-            . "emails.email "
-            . "FROM ciniki_customers AS customers "
-            . "INNER JOIN ciniki_customer_emails AS emails ON ("
-                . "customers.id = emails.customer_id "
-                . "AND (emails.flags&0x10) = 0 "
-                . "AND emails.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "WHERE customers.id IN (" . ciniki_core_dbQuoteIDs($ciniki, $teacher_ids) . ") "
-            . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "ORDER BY customers.display_name "
-            . "";
-        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.474', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
-        }
-        if( isset($rc['rows']) ) {
-            foreach($rc['rows'] as $row) {
-                $rsp['message']['teachers'][] = $row;
+        if( count($teacher_ids) > 0 ) {
+            $strsql = "SELECT customers.id, "
+                . "customers.display_name AS name, "
+                . "emails.email "
+                . "FROM ciniki_customers AS customers "
+                . "INNER JOIN ciniki_customer_emails AS emails ON ("
+                    . "customers.id = emails.customer_id "
+                    . "AND (emails.flags&0x10) = 0 "
+                    . "AND emails.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . ") "
+                . "WHERE customers.id IN (" . ciniki_core_dbQuoteIDs($ciniki, $teacher_ids) . ") "
+                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "ORDER BY customers.display_name "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.474', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+            }
+            if( isset($rc['rows']) ) {
+                foreach($rc['rows'] as $row) {
+                    $rsp['message']['teachers'][] = $row;
+                }
             }
         }
     }
