@@ -107,7 +107,7 @@ function ciniki_musicfestivals_messageSend(&$ciniki) {
             } else {
                 $num_sent++;
             }
-
+            $ciniki['emailqueue'][] = array('mail_id'=>$rc['id'], 'tnid'=>$args['tnid']);
         }
         foreach($message['competitors'] as $competitor) {
             $rc = ciniki_mail_hooks_addMessage($ciniki, $args['tnid'], array(
@@ -125,6 +125,7 @@ function ciniki_musicfestivals_messageSend(&$ciniki) {
             } else {
                 $num_sent++;
             }
+            $ciniki['emailqueue'][] = array('mail_id'=>$rc['id'], 'tnid'=>$args['tnid']);
         }
 
         //
