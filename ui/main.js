@@ -2554,12 +2554,17 @@ function ciniki_musicfestivals_main() {
             'fields':{
                 'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea'},
             }},
-        'emails':{'label':'Competitor Emails', 'type':'simplegrid', 'num_cols':2,
+        'messages':{'label':'Draft Emails', 'type':'simplegrid', 'num_cols':2,
+            'visible':function() { return M.ciniki_musicfestivals_main.competitor.sections._tabs.selected == 'emails' ? 'yes' : 'hidden';},
+            'headerValues':['Status', 'Subject'],
+            'noData':'No drafts or scheduled emails',
+            'addTxt':'Send Email',
+            'addFn':'M.ciniki_musicfestivals_main.competitor.save("M.ciniki_musicfestivals_main.competitor.addmessage();");',
+            },
+        'emails':{'label':'Send Emails', 'type':'simplegrid', 'num_cols':2,
             'visible':function() { return M.ciniki_musicfestivals_main.competitor.sections._tabs.selected == 'emails' ? 'yes' : 'hidden';},
             'headerValues':['Date Sent', 'Subject'],
             'noData':'No emails sent',
-            'addTxt':'Send Email',
-            'addFn':'M.ciniki_musicfestivals_main.competitor.save("M.ciniki_musicfestivals_main.competitor.addmessage();");',
             },
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.competitor.save();'},
@@ -2571,7 +2576,7 @@ function ciniki_musicfestivals_main() {
     this.competitor.fieldValue = function(s, i, d) { return this.data[i]; }
     this.competitor.switchTab = function(t) {
         this.sections._tabs.selected = t;
-        this.refreshSections(['_tabs', '_address','_notes','emails']);
+        this.refreshSections(['_tabs', '_address','_notes','messages', 'emails']);
     }
     this.competitor.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.musicfestivals.competitorHistory', 'args':{'tnid':M.curTenantID, 'competitor_id':this.competitor_id, 'field':i}};
@@ -2591,6 +2596,12 @@ function ciniki_musicfestivals_main() {
         return 'M.ciniki_musicfestivals_main.competitor.open(null,\'' + d.id + '\');';
     }
     this.competitor.cellValue = function(s, i, j, d) {
+        if( s == 'messages' ) {
+            switch(j) {
+                case 0: return d.status_text;
+                case 1: return d.subject;
+            }
+        }
         if( s == 'emails' ) {
             switch(j) {
                 case 0: return (d.status != 30 ? d.status_text : d.date_sent);
@@ -2599,9 +2610,11 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.competitor.rowFn = function(s, i, d) {
+        if( s == 'messages' ) {
+            return 'M.ciniki_musicfestivals_main.competitor.save("M.ciniki_musicfestivals_main.message.open(\'M.ciniki_musicfestivals_main.competitor.open();\',\'' + d.id + '\');");';
+        }
         if( s == 'emails' ) {
             return 'M.startApp(\'ciniki.mail.main\',null,\'M.ciniki_musicfestivals_main.competitor.reopen();\',\'mc\',{\'message_id\':\'' + d.id + '\'});';
-//            return 'M.ciniki_musicfestivals_main.competitor.save("M.ciniki_musicfestivals_main.message.open(\'M.ciniki_musicfestivals_main.competitor.open();\',\'' + d.message_id + '\');");';
         }
     }
     this.competitor.addmessage = function() {
