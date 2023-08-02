@@ -1,0 +1,5 @@
+#
+# Added flags for excluding competitors and/or teachers
+#
+ALTER TABLE ciniki_musicfestival_messages ADD COLUMN flags tinyint unsigned not null AFTER status;
+ALTER TABLE ciniki_musicfestival_messages COMMENT='v1.02';
