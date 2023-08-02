@@ -47,6 +47,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
         . "messages.festival_id, "
         . "messages.subject, "
         . "messages.status, "
+        . "messages.flags, "
         . "messages.content, "
         . "messages.dt_scheduled, "
         . "messages.dt_scheduled AS dt_scheduled_text, "
@@ -62,7 +63,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'messages', 'fname'=>'id', 
             'fields'=>array(
-                'id', 'festival_id', 'subject', 'status', 'content', 'dt_scheduled',
+                'id', 'festival_id', 'subject', 'status', 'flags', 'content', 'dt_scheduled',
                 'dt_scheduled_text', 'dt_sent', 'dt_sent_text'),
             'utctotz'=>array(
                 'dt_scheduled_text'=>array('format'=>'M j, Y g:i A', 'timezone'=>$intl_timezone),
@@ -450,23 +451,25 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             }
             $registrations = isset($rc['rows']) ? $rc['rows'] : array();
             foreach($registrations as $reg) {
-                if( $reg['teacher_customer_id'] > 0 ) {
+                if( ($rsp['message']['flags']&0x02) == 0 && $reg['teacher_customer_id'] > 0 ) {
                     $teacher_ids[] = $reg['teacher_customer_id'];
                 }
-                if( $reg['competitor1_id'] > 0 ) {
-                    $competitor_ids[] = $reg['competitor1_id'];
-                }
-                if( $reg['competitor2_id'] > 0 ) {
-                    $competitor_ids[] = $reg['competitor2_id'];
-                }
-                if( $reg['competitor3_id'] > 0 ) {
-                    $competitor_ids[] = $reg['competitor3_id'];
-                }
-                if( $reg['competitor4_id'] > 0 ) {
-                    $competitor_ids[] = $reg['competitor4_id'];
-                }
-                if( $reg['competitor5_id'] > 0 ) {
-                    $competitor_ids[] = $reg['competitor5_id'];
+                if( ($rsp['message']['flags']&0x01) == 0 ) {
+                    if( $reg['competitor1_id'] > 0 ) {
+                        $competitor_ids[] = $reg['competitor1_id'];
+                    }
+                    if( $reg['competitor2_id'] > 0 ) {
+                        $competitor_ids[] = $reg['competitor2_id'];
+                    }
+                    if( $reg['competitor3_id'] > 0 ) {
+                        $competitor_ids[] = $reg['competitor3_id'];
+                    }
+                    if( $reg['competitor4_id'] > 0 ) {
+                        $competitor_ids[] = $reg['competitor4_id'];
+                    }
+                    if( $reg['competitor5_id'] > 0 ) {
+                        $competitor_ids[] = $reg['competitor5_id'];
+                    }
                 }
             }
         }
@@ -640,13 +643,17 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                                 $include_reg = 'yes';
                             }
                             if( $include_reg == 'yes' && isset($class['registrations']) ) {
-                                if( isset($rsp['teachers'][$reg['teacher_customer_id']]) ) {
+                                if( ($rsp['message']['flags']&0x02) == 0 
+                                    && isset($rsp['teachers'][$reg['teacher_customer_id']]) 
+                                    ) {
                                     $rsp['teachers'][$reg['teacher_customer_id']]['included'] = 'yes';
                                 }
-                                foreach($class['registrations'] AS $rid => $reg) {
-                                    for($i = 1; $i <= 5; $i++) {
-                                        if( isset($rsp['competitors'][$reg["competitor{$i}_id"]]) ) {
-                                            $rsp['competitors'][$reg["competitor{$i}_id"]]['included'] = 'yes';
+                                if( ($rsp['message']['flags']&0x01) == 0 ) {
+                                    foreach($class['registrations'] AS $rid => $reg) {
+                                        for($i = 1; $i <= 5; $i++) {
+                                            if( isset($rsp['competitors'][$reg["competitor{$i}_id"]]) ) {
+                                                $rsp['competitors'][$reg["competitor{$i}_id"]]['included'] = 'yes';
+                                            }
                                         }
                                     }
                                 }
@@ -767,13 +774,17 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                                 $include_reg = 'yes';
                             }
                             if( $include_reg == 'yes' && isset($timeslot['registrations']) ) {
-                                if( isset($rsp['teachers'][$reg['teacher_customer_id']]) ) {
+                                if( ($rsp['message']['flags']&0x02) == 0 
+                                    && isset($rsp['teachers'][$reg['teacher_customer_id']]) 
+                                    ) {
                                     $rsp['teachers'][$reg['teacher_customer_id']]['included'] = 'yes';
                                 }
-                                foreach($timeslot['registrations'] AS $rid => $reg) {
-                                    for($i = 1; $i <= 5; $i++) {
-                                        if( isset($rsp['competitors'][$reg["competitor{$i}_id"]]) ) {
-                                            $rsp['competitors'][$reg["competitor{$i}_id"]]['included'] = 'yes';
+                                if( ($rsp['message']['flags']&0x01) == 0 ) {
+                                    foreach($timeslot['registrations'] AS $rid => $reg) {
+                                        for($i = 1; $i <= 5; $i++) {
+                                            if( isset($rsp['competitors'][$reg["competitor{$i}_id"]]) ) {
+                                                $rsp['competitors'][$reg["competitor{$i}_id"]]['included'] = 'yes';
+                                            }
                                         }
                                     }
                                 }

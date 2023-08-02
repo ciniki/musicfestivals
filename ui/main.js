@@ -5128,6 +5128,24 @@ function ciniki_musicfestivals_main() {
             // # teachers
             // 'dt_sent':{'label':'Year', 'type':'text'},
             },
+        'excluded':{'label':'', 'aside':'yes', 'fields':{
+            'flags1':{'label':'Include', 'type':'flagspiece', 'default':'off', 'mask':0x03,
+            'field':'flags', 'toggle':'yes', 'join':'yes',
+
+            'flags':{'0':{'name':'Everybody'},'2':{'name':'Only Competitors'}, '1':{'name':'Only Teachers'}},
+            'onchange':'M.ciniki_musicfestivals_main.messagerefs.updateFlags',
+                },
+            }},
+/*        '_excluded':{'label':'', 'aside':'yes', 'fields':{
+            'flags1':{'label':'Exclude Competitors', 'type':'flagtoggle', 'default':'off', 'bit':0x01,
+                'field':'flags',
+                'onchange':'M.ciniki_musicfestivals_main.messagerefs.updateFlags',
+            },
+            'flags2':{'label':'Exclude Teachers', 'type':'flagtoggle', 'default':'off', 'bit':0x02,
+                'field':'flags',
+                'onchange':'M.ciniki_musicfestivals_main.messagerefs.updateFlags',
+                },
+            }}, */
         'objects':{'label':'Recipients', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
             'cellClasses':['label', ''],
             'noData':'No Recipients',
@@ -5331,6 +5349,31 @@ function ciniki_musicfestivals_main() {
             this.switchTab('timeslots');
         }
     }
+    this.messagerefs.updateFlags = function() {
+        var f = this.data.message.flags;
+        if( (this.formValue('flags1')&0x01) == 0x01 ) {
+            f |= 0x01;
+        } else {
+            f &= 0xFFFE;
+        }
+        if( (this.formValue('flags1')&0x02) == 0x02 ) {
+            f |= 0x02;
+        } else {
+            f &= 0xFFFD;
+        }
+        if( f != this.data.message.flags ) {
+            M.api.getJSONCb('ciniki.musicfestivals.messageGet', {'tnid':M.curTenantID, 
+                'message_id':this.message_id, 
+                'allrefs':'yes', 
+                'section_id':this.section_id, 
+                'category_id':this.category_id,
+                'schedule_id':this.schedule_id, 
+                'division_id':this.division_id,
+                'action':'updateflags',
+                'flags':f,
+                }, this.openFinish);
+        } 
+    }
     this.messagerefs.addObject = function(o, oid) {
         M.api.getJSONCb('ciniki.musicfestivals.messageGet', {'tnid':M.curTenantID, 
             'message_id':this.message_id, 
@@ -5376,6 +5419,7 @@ function ciniki_musicfestivals_main() {
         }
         var p = M.ciniki_musicfestivals_main.messagerefs;
         p.data = rsp;
+        p.data.flags = rsp.message.flags;
         p.data.details = rsp.message.details;
         p.data.objects = rsp.message.objects;
         p.refresh();

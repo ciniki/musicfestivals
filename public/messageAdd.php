@@ -23,6 +23,7 @@ function ciniki_musicfestivals_messageAdd(&$ciniki) {
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'subject'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Subject'),
         'status'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Status'),
+        'flags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Options'),
         'content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Content'),
         'dt_scheduled'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Date Scheduled'),
         'dt_sent'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Date Sent'),

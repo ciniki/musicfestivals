@@ -28,6 +28,7 @@ function ciniki_musicfestivals_messageGet($ciniki) {
         'schedule_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule'),
         'division_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Division'),
         'action'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Action'),
+        'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Flags'),
         'object'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Object'),
         'object_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Object ID'),
         ));
@@ -62,7 +63,7 @@ function ciniki_musicfestivals_messageGet($ciniki) {
     //
     // Check if action to add object
     //
-    if( isset($args['action']) && $args['action'] == 'removeref' 
+    elseif( isset($args['action']) && $args['action'] == 'removeref' 
         && isset($args['object']) && $args['object'] != '' 
         && isset($args['object_id']) && $args['object_id'] != ''
         ) {
@@ -88,6 +89,18 @@ function ciniki_musicfestivals_messageGet($ciniki) {
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.489', 'msg'=>'Unable to add the messageref', 'err'=>$rc['err']));
             }
+        }
+    } 
+    //
+    // Check if there is an update the message flags
+    //
+    elseif( isset($args['action']) && $args['action'] == 'updateflags' 
+        && isset($args['flags']) && $args['flags'] != '' 
+        ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+        $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.message', $args['message_id'], array('flags'=>$args['flags']), 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.498', 'msg'=>'Unable to update the message', 'err'=>$rc['err']));
         }
     }
 
@@ -115,6 +128,7 @@ function ciniki_musicfestivals_messageGet($ciniki) {
             'festival_id'=>'',
             'subject'=>'',
             'status'=>'10',
+            'flags' => 0,
             'content'=>'',
             'dt_scheduled'=>'',
             'dt_sent'=>'',
