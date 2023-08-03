@@ -91,6 +91,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
         $class = array('id'=>0,
             'festival_id'=>(isset($args['festival_id']) ? $args['festival_id'] : 0),
             'category_id'=>(isset($args['category_id']) ? $args['category_id'] : 0),
+            'section_id'=>0,
             'code'=>'',
             'name'=>'',
             'level'=>'',

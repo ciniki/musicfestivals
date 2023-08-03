@@ -136,7 +136,7 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
         $classes = $rc['classes'];
         $classes_ids = array();
         foreach($classes as $k => $v) {
-            $classes_ids[] = $v['category_id'];
+            $classes_ids[] = $v['id'];
         }
     } else {
         $classes = array();
@@ -172,6 +172,6 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
     $festival = $rc['festival'];
     
 
-    return array('stat'=>'ok', 'section'=>$section, 'classes'=>$classes, 'nplists'=>$classes_ids, 'festival'=>$festival);
+    return array('stat'=>'ok', 'section'=>$section, 'classes'=>$classes, 'nplists'=>array('classes'=>$classes_ids), 'festival'=>$festival);
 }
 ?>

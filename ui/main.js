@@ -1980,7 +1980,7 @@ function ciniki_musicfestivals_main() {
             'category_id':{'label':'Category', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}},
             'code':{'label':'Code', 'type':'text', 'size':'small'},
             'name':{'label':'Name', 'type':'text'},
-            'level':{'label':'Level', 'type':'text',
+            'level':{'label':'Level', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes',
                 'visible':function() {return M.modFlagSet('ciniki.musicfestivals', 0x1000); },
                 },
             'sequence':{'label':'Order', 'type':'text'},
@@ -2033,6 +2033,26 @@ function ciniki_musicfestivals_main() {
     }
     this.class.rowFn = function(s, i, d) {
         return 'M.ciniki_musicfestivals_main.registration.open(\'M.ciniki_musicfestivals_main.class.open();\',\'' + d.id + '\',0,0,M.ciniki_musicfestivals_main.class.festival_id, null,\'festival\');';
+    }
+    this.class.liveSearchCb = function(s, i, value) {
+        if( i == 'level' ) {
+            M.api.getJSONBgCb('ciniki.musicfestivals.classFieldSearch', {'tnid':M.curTenantID, 'field':i, 'start_needle':value, 'festival_id':M.ciniki_musicfestivals_main.class.festival_id, 'limit':15}, 
+                function(rsp) {
+                    M.ciniki_musicfestivals_main.class.liveSearchShow(s, i, M.gE(M.ciniki_musicfestivals_main.class.panelUID + '_' + i), rsp.results); 
+                });
+        }
+    }
+    this.class.liveSearchResultValue = function(s, f, i, j, d) {
+        return d.name;
+    }
+    this.class.liveSearchResultRowFn = function(s, f, i, j, d) {
+        if( f == 'level' ) {
+            return 'M.ciniki_musicfestivals_main.class.updateField(\'' + s + '\',\'' + f + '\',\'' + escape(d.name) + '\');';
+        }
+    }
+    this.class.updateField = function(s, f, r) {
+        M.gE(this.panelUID + '_' + f).value = unescape(r);
+        this.removeLiveSearch(s, f);
     }
     this.class.open = function(cb, iid, cid, fid, list) {
         if( iid != null ) { this.class_id = iid; }
@@ -5147,7 +5167,6 @@ function ciniki_musicfestivals_main() {
     }
     this.message.schedulenow = function() {
         var sd = M.ciniki_musicfestivals_main.messageschedule.formValue('dt_scheduled');
-        console.log(sd);
         if( sd != this.data.dt_scheduled ) {
             M.api.getJSONCb('ciniki.musicfestivals.messageUpdate', {'tnid':M.curTenantID, 'message_id':this.message_id, 'dt_scheduled':sd, 'status':30}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
