@@ -31,7 +31,7 @@ function ciniki_musicfestivals_flags(&$ciniki) {
         array('flag'=>array('bit'=>'11', 'name'=>'Messages')),
 //        array('flag'=>array('bit'=>'12', 'name'=>'')),
         // 0x1000
-//        array('flag'=>array('bit'=>'13', 'name'=>'')),
+        array('flag'=>array('bit'=>'13', 'name'=>'Class Levels')),
 //        array('flag'=>array('bit'=>'14', 'name'=>'')),
 //        array('flag'=>array('bit'=>'15', 'name'=>'')),
 //        array('flag'=>array('bit'=>'16', 'name'=>'')),
