@@ -93,6 +93,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
             'category_id'=>(isset($args['category_id']) ? $args['category_id'] : 0),
             'code'=>'',
             'name'=>'',
+            'level'=>'',
             'permalink'=>'',
             'sequence'=>$seq,
             'flags'=>'0',
@@ -112,6 +113,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
             . "ciniki_musicfestival_classes.code, "
             . "ciniki_musicfestival_classes.name, "
             . "ciniki_musicfestival_classes.permalink, "
+            . "ciniki_musicfestival_classes.level, "
             . "ciniki_musicfestival_classes.sequence, "
             . "ciniki_musicfestival_classes.flags, "
             . "ciniki_musicfestival_classes.earlybird_fee, "
@@ -123,7 +125,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'classes', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 
+                'fields'=>array('festival_id', 'category_id', 'code', 'name', 'permalink', 'level', 'sequence', 'flags', 
                     'earlybird_fee', 'fee', 'virtual_fee'),
                 ),
             ));
