@@ -702,7 +702,12 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         if( $customer_type == 10 ) {
             $fields['parent']['value'] = $request['session']['customer']['display_name'];
         } elseif( $customer_type == 30 ) {
-            $fields['name']['value'] = $request['session']['customer']['display_name'];
+            if( $ctype == 50 ) {
+                $fields['name']['value'] = $request['session']['customer']['display_name'];
+            } else {
+                $fields['first']['value'] = $request['session']['customer']['first'];
+                $fields['last']['value'] = $request['session']['customer']['last'];
+            }
         }
         if( $customer_type == 10 || $customer_type == 30 ) {
             $fields['email']['value'] = $request['session']['customer']['email'];
@@ -780,7 +785,13 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     //
     if( $display == 'form' ) {
         $guidelines = '';
-        if( $customer_type == 10 && isset($festival['competitor-parent-msg']) ) {
+        if( $customer_type == 10 && $ctype == 50 && isset($festival['competitor-group-parent-msg']) ) {
+            $guidelines = $festival['competitor-group-parent-msg'];
+        } elseif( $customer_type == 20 && $ctype == 50 && isset($festival['competitor-group-teacher-msg']) ) {
+            $guidelines = $festival['competitor-group-teacher-msg'];
+        } elseif( $customer_type == 30 && $ctype == 50 && isset($festival['competitor-group-adult-msg']) ) {
+            $guidelines = $festival['competitor-group-adult-msg'];
+        } elseif( $customer_type == 10 && isset($festival['competitor-parent-msg']) ) {
             $guidelines = $festival['competitor-parent-msg'];
         } elseif( $customer_type == 20 && isset($festival['competitor-teacher-msg']) ) {
             $guidelines = $festival['competitor-teacher-msg'];

@@ -117,6 +117,9 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
         'competitor-parent-msg',
         'competitor-teacher-msg',
         'competitor-adult-msg',
+        'competitor-group-parent-msg',
+        'competitor-group-teacher-msg',
+        'competitor-group-adult-msg',
         );
     $update_args = array();
     foreach($setting_keys as $k) {

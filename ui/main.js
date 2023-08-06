@@ -1405,35 +1405,50 @@ function ciniki_musicfestivals_main() {
             'fields':{
                 'flags5':{'label':'Include Section/Category as Class Name', 'type':'flagtoggle', 'default':'off', 'bit':0x0100, 'field':'flags'},
             }},
-        '_registration_parent_msg':{'label':'Registration Message - Parents', 
+        '_registration_parent_msg':{'label':'Registration Form Intro - Parents', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
             'fields':{
                 'registration-parent-msg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
             }},
-        '_registration_teacher_msg':{'label':'Registration Message - Teachers', 
+        '_registration_teacher_msg':{'label':'Registration Form Intro - Teachers', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
             'fields':{
                 'registration-teacher-msg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
             }},
-        '_registration_adult_msg':{'label':'Registration Message - Adults', 
+        '_registration_adult_msg':{'label':'Registration Form Intro - Adults', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
             'fields':{
                 'registration-adult-msg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
             }},
-        '_competitor_parent_msg':{'label':'Competitor Message - Parents', 
+        '_competitor_parent_msg':{'label':'Individual Competitor Form Intro - Parents', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
             'fields':{
                 'competitor-parent-msg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
             }},
-        '_competitor_teacher_msg':{'label':'Competitor Message - Teachers', 
+        '_competitor_teacher_msg':{'label':'Individual Competitor Form Intro - Teachers', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
             'fields':{
                 'competitor-teacher-msg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
             }},
-        '_competitor_adult_msg':{'label':'Competitor Message - Adults', 
+        '_competitor_adult_msg':{'label':'Individual Competitor Form Intro - Adults', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
             'fields':{
                 'competitor-adult-msg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+            }},
+        '_competitor_group_parent_msg':{'label':'Group/Ensemble Competitor Form Intro - Parents', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
+            'fields':{
+                'competitor-group-parent-msg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+            }},
+        '_competitor_group_teacher_msg':{'label':'Group/Ensemble Competitor Form Intro - Teachers', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
+            'fields':{
+                'competitor-group-teacher-msg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+            }},
+        '_competitor_group_adult_msg':{'label':'Group/Ensemble Competitor Form Intro - Adults', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
+            'fields':{
+                'competitor-group-adult-msg':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
             }},
         '_waiver':{'label':'Waiver Message', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
@@ -1471,6 +1486,9 @@ function ciniki_musicfestivals_main() {
         this.showHideSection('_competitor_parent_msg');
         this.showHideSection('_competitor_teacher_msg');
         this.showHideSection('_competitor_adult_msg');
+        this.showHideSection('_competitor_group_parent_msg');
+        this.showHideSection('_competitor_group_teacher_msg');
+        this.showHideSection('_competitor_group_adult_msg');
         this.showHideSection('_waiver');
         this.refreshSection('_tabs');
     }
