@@ -480,6 +480,13 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     'msg' => 'You must specify the competitor ' . $field['label'] . '.',
                     );
             }
+            elseif( isset($field['id']) && $field['id'] == 'email' 
+                && !preg_match("/^[^@ ]+@[A-Za-z0-9\.\-]+\.[a-zA-Z]+$/", $field['value']) 
+                ) {
+                $errors[] = array(
+                    'msg' => 'Invalid email address format.',
+                    );
+            }
         }
         if( isset($festival['waiver-msg']) && $festival['waiver-msg'] != '' 
             && (!isset($fields['terms']['value']) || $fields['terms']['value'] != 'on') 
