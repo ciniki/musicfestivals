@@ -44,7 +44,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         $_POST = $request['session']['account-musicfestivals-registration-saved'];
         if( isset($request['session']['account-musicfestivals-registration-saved']['new-id']) ) {
             for($i=1;$i<5;$i++) {
-                if( isset($_POST["f-competitor{$i}_id"]) && $_POST["f-competitor{$i}_id"] == -1 ) {
+                if( isset($_POST["f-competitor{$i}_id"]) 
+                    && ($_POST["f-competitor{$i}_id"] == -1 || $_POST["f-competitor{$i}_id"] == -2) 
+                    ) {
                     $_POST["f-competitor{$i}_id"] = $request['session']['account-musicfestivals-registration-saved']['new-id'];
                 }
             }

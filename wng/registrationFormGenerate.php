@@ -416,9 +416,13 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'options' => $competitors,
             'value' => $comp_id,
             );
-        $fields["competitor{$i}_id"]['options']['add'] = array(
+        $fields["competitor{$i}_id"]['options']['addindividual'] = array(
             'id' => '-1',
-            'name' => 'Add Competitor',
+            'name' => 'Add Individual Competitor',
+            );
+        $fields["competitor{$i}_id"]['options']['addgroup'] = array(
+            'id' => '-2',
+            'name' => 'Add Group/Ensemble',
             );
             //
             // DO NOT ADD EDIT BUTTON
@@ -488,7 +492,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'ftype' => 'checkbox',
             'size' => 'medium',
             'class' => isset($_POST['f-teacher_customer_id']) && $_POST['f-teacher_customer_id'] != 0 ? '' : (isset($registration['teacher_customer_id']) && $registration['teacher_customer_id'] != 0 ? '' : 'hidden'),
-            'value' => isset($_POST["f-teacher_share"]) ? $_POST["f-teacher_share"] : (isset($registration["teacher_share"]) ? $registration["teacher_share"] : 'off'),
+            'value' => isset($_POST["f-teacher_share"]) ? $_POST["f-teacher_share"] : (isset($registration["teacher_share"]) ? $registration["teacher_share"] : 'on'),
             );
         if( isset($_POST["f-teacher_share"]) ) {
             $fields['teacher_share']['value'] = $_POST["f-teacher_share"];
@@ -807,7 +811,13 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             . "if(t==-1){"
                 . "C.gE('f-action').value='addcompetitor';"
                 . "var f=C.gE('addregform');"
-                . "f.action='{$request['ssl_domain_base_url']}/account/musicfestivalcompetitors?add=yes';"
+                . "f.action='{$request['ssl_domain_base_url']}/account/musicfestivalcompetitors?add=individual';"
+                . "f.submit();"
+            . "} "
+            . "else if(t==-2){"
+                . "C.gE('f-action').value='addcompetitor';"
+                . "var f=C.gE('addregform');"
+                . "f.action='{$request['ssl_domain_base_url']}/account/musicfestivalcompetitors?add=group';"
                 . "f.submit();"
 //            . "}else if(t>0){"
 //                . "C.rC(e.parentNode,'hidden');"

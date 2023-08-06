@@ -1,7 +1,12 @@
 #
 # Description
 # -----------
-# This table stores the competitors for a music festival
+# This table stores the competitors for a music festival.
+#
+# When the competitor is a person, first and last name are editted and then
+# stored as name and public name.
+#
+# When a competitor is group/ensemble they enter name/public name.
 #
 # Fields
 # ------
@@ -14,14 +19,16 @@
 #                       This is the same as in the registrations so we know who
 #                       "owns" this competitor and has rights to change their information.
 #
-# name:                 The name of the competitor.
-# public_name:          The public name of the competitor, should only be set when auto generator is incorrect.
-# pronoun:              The competitors pronoun.
-#
 # ctype:                The type of competitor record:
 #
 #                           10 - Individual
 #                           50 - Group
+#
+# first:                The first name of the competitor.
+# last:                 The last name of the competitor.
+# name:                 The name of the competitor.
+# public_name:          The public name of the competitor, should only be set when auto generator is incorrect.
+# pronoun:              The competitors pronoun.
 #
 # flags:                The options for the competitor.
 #
@@ -30,11 +37,14 @@
 #                           0x04 - 
 #                           0x08 - 
 #
+# conductor:            The conductor for a group or ensemble, not used for individual.
+# num_people:           The number of people in the ensemble.
 # parent:               The name of the parent.
 # address:              The address for the competitor.
 # city:                 The city for the competitor.
 # province:             The province for the competitor.
 # postal:               The postal/zip code for the competitor
+# country:              The country for the competitor.
 # phone_home:           The home phone number for the competitor.
 # phone_cell:           The cell phone of the competitor.
 # email:                The email address of the competitor.
@@ -53,15 +63,21 @@ create table ciniki_musicfestival_competitors (
     tnid int not null,
     festival_id int not null,
     billing_customer_id int not null,
+    ctype tinyint unsigned not null,
+    first varchar(250) not null,
+    last varchar(250) not null,
     name varchar(250) not null,
     public_name varchar(250) not null,
     pronoun varchar(50) not null,
     flags smallint unsigned not null,
+    conductor varchar(250) not null,
+    num_people int not null,
     parent varchar(250) not null,
     address varchar(250) not null,
     city varchar(250) not null,
     province varchar(250) not null,
     postal varchar(250) not null,
+    country varchar(250) not null,
     phone_home varchar(250) not null,
     phone_cell varchar(250) not null,
     email varchar(250) not null,
@@ -74,4 +90,4 @@ create table ciniki_musicfestival_competitors (
     primary key (id),
     unique index (uuid),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.04';
+) ENGINE='InnoDB', COMMENT='v1.05';

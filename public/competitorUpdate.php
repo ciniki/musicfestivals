@@ -18,15 +18,21 @@ function ciniki_musicfestivals_competitorUpdate(&$ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'competitor_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Competitor'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
+        'ctype'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Competitor Type'),
+        'first'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'First Name'),
+        'last'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Last Name'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
         'public_name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Public Name'),
         'pronoun'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Pronoun'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
+        'conductor'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Conductor'),
+        'num_people'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Number of People'),
         'parent'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Parent'),
         'address'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address'),
         'city'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'City'),
         'province'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Province'),
         'postal'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Postal Code'),
+        'country'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Country'),
         'phone_home'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Home Phone'),
         'phone_cell'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Cell Phone'),
         'email'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Email'),
@@ -54,8 +60,12 @@ function ciniki_musicfestivals_competitorUpdate(&$ciniki) {
     // Get the competitor
     //
     $strsql = "SELECT ciniki_musicfestival_competitors.id, "
+        . "ciniki_musicfestival_competitors.ctype, "
+        . "ciniki_musicfestival_competitors.first, "
+        . "ciniki_musicfestival_competitors.last, "
         . "ciniki_musicfestival_competitors.name, "
-        . "ciniki_musicfestival_competitors.public_name "
+        . "ciniki_musicfestival_competitors.public_name, "
+        . "ciniki_musicfestival_competitors.pronoun "
         . "FROM ciniki_musicfestival_competitors "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['competitor_id']) . "' "
@@ -69,18 +79,24 @@ function ciniki_musicfestivals_competitorUpdate(&$ciniki) {
     }
     $competitor = $rc['competitor'];
 
+    $ctype = (isset($args['ctype']) ? $args['ctype'] : $competitor['ctype']);
+    if( $ctype == 10 && (isset($args['first']) || isset($args['last'])) ) {
+        $args['name'] = (isset($args['first']) ? $args['first'] : $competitor['first'])
+            . ' ' . (isset($args['last']) ? $args['last'] : $competitor['last']);
+        $public_name = (isset($args['first']) ? $args['first'][0] : $competitor['first'][0])
+            . '. ' . (isset($args['last']) ? $args['last'] : $competitor['last']);
+    } elseif( $ctype == 50 && isset($args['name']) ) {
+        $public_name = $args['name']; 
+    }
+    if( $ctype == 50 && ((isset($args['pronoun']) && $args['pronoun'] != '') || $competitor['pronoun'] != '') ) {
+        $args['pronoun'] = '';
+    }
+    
     //
-    // If the public_name is same as calculated, the keep as blank, the public name is an override only field.
+    // Check if public name should be updated
     //
-    if( isset($args['public_name']) && $args['public_name'] != '' ) {
-        if( isset($args['name']) ) {
-            $public_name = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $args['name']); 
-        } else {
-            $public_name = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $competitor['name']); 
-        }
-        if( isset($args['public_name']) && $args['public_name'] == $public_name ) {
-            $args['public_name'] = '';
-        }
+    if( isset($public_name) && $public_name != $competitor['public_name'] ) {
+        $args['public_name'] = $public_name;
     }
 
     //

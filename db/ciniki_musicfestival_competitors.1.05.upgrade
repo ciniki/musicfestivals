@@ -1,0 +1,11 @@
+#
+# Added upgrades to competitors
+#
+ALTER TABLE ciniki_musicfestival_competitors ADD COLUMN ctype tinyint unsigned not null AFTER billing_customer_id;
+ALTER TABLE ciniki_musicfestival_competitors ADD COLUMN first varchar(250) not null AFTER ctype;
+ALTER TABLE ciniki_musicfestival_competitors ADD COLUMN last varchar(250) not null AFTER first;
+UPDATE ciniki_musicfestival_competitors SET ctype = 10, last = name;
+ALTER TABLE ciniki_musicfestival_competitors ADD COLUMN conductor varchar(250) not null AFTER flags;
+ALTER TABLE ciniki_musicfestival_competitors ADD COLUMN num_people int not null AFTER conductor;
+ALTER TABLE ciniki_musicfestival_competitors ADD COLUMN country varchar(250) not null AFTER postal;
+ALTER TABLE ciniki_musicfestival_competitors COMMENT='v1.05';

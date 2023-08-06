@@ -179,20 +179,27 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     //
     // Check if competitor specified and load
     //
+    $ctype = 10;
     if( isset($_POST['f-competitor_id']) && $_POST['f-competitor_id'] > 0 ) {
         $competitor_id = $_POST['f-competitor_id'];
         $strsql = "SELECT id AS competitor_id, "
             . "uuid, "
             . "billing_customer_id, "
+            . "ctype, "
+            . "first, "
+            . "last, "
             . "name, "
-            . "flags, "
             . "public_name, "
             . "pronoun, "
+            . "flags, "
+            . "conductor, "
+            . "num_people, "
             . "parent, "
             . "address, "
             . "city, "
             . "province, "
             . "postal, "
+            . "country, "
             . "phone_home, "
             . "phone_cell, "
             . "email, "
@@ -217,10 +224,13 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             $display = 'list';
         } else {
             $competitor = $rc['competitor'];
+            $ctype = $rc['competitor']['ctype'];
             $display = 'form';
         }
     }
-
+    elseif( isset($_GET['add']) && $_GET['add'] == 'group' ) {
+        $ctype = 50;
+    }
 
     //
     // Setup the fields for the competitor
@@ -232,39 +242,88 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             'ftype' => 'hidden',
             'value' => (isset($_POST['f-competitor_id']) ? trim($_POST['f-competitor_id']) : (isset($competitor) ? $competitor['id'] : 0)),
             ),
+        'ctype' => array(
+            'id' => 'ctype',
+            'label' => '',
+            'ftype' => 'hidden',
+            'value' => (isset($_POST['f-ctype']) ? trim($_POST['f-ctype']) : $ctype),
+            ),
         'action' => array(
             'id' => 'action',
             'label' => '',
             'ftype' => 'hidden',
             'value' => 'update',
             ),
-        'name' => array(
+        );
+    if( $ctype == 50 ) {
+        $fields['name'] = array(
             'id' => 'name',
-            'label' => 'First & Last Name OR Ensemble',
+            'label' => 'Group/Ensemble Name',
+            'ftype' => 'text',
+            'required' => 'yes',
+            'size' => 'large',
+            'class' => '',
+            'value' => (isset($_POST['f-name']) ? trim($_POST['f-name']) : (isset($competitor['name']) ? $competitor['name'] : '')),
+            );
+        $fields['conductor'] = array(
+            'id' => 'conductor',
+            'label' => 'Conductor',
+            'ftype' => 'text',
+            'required' => 'no',
+            'size' => 'small',
+            'class' => '',
+            'value' => (isset($_POST['f-conductor']) ? trim($_POST['f-conductor']) : (isset($competitor['conductor']) ? $competitor['conductor'] : '')),
+            );
+        $fields['num_people'] = array(
+            'id' => 'num_people',
+            'label' => 'Number of People',
+            'ftype' => 'text',
+            'required' => 'yes',
+            'size' => 'tiny',
+            'class' => '',
+            'value' => (isset($_POST['f-num_people']) ? trim($_POST['f-num_people']) : (isset($competitor['num_people']) ? $competitor['num_people'] : '')),
+            );
+    } else {
+        $fields['first'] = array(
+            'id' => 'first',
+            'label' => 'First',
+            'ftype' => 'text',
+            'required' => 'yes',
+            'size' => 'small',
+            'class' => '',
+            'value' => (isset($_POST['f-first']) ? trim($_POST['f-first']) : (isset($competitor['first']) ? $competitor['first'] : '')),
+            );
+        $fields['last'] = array(
+            'id' => 'last',
+            'label' => 'Last',
             'ftype' => 'text',
             'required' => 'yes',
             //'size' => ($customer_type == 30 ? 'large' : 'medium'),
-            'size' => 'medium',
-            'class' => '',
-            'value' => (isset($_POST['f-name']) ? trim($_POST['f-name']) : (isset($competitor['name']) ? $competitor['name'] : '')),
-            ),
-        );
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
-        $fields['pronoun'] = array(
-            'id' => 'pronoun',
-            'label' => 'Pronoun',
-            'ftype' => 'text',
             'size' => 'small',
             'class' => '',
-            'value' => (isset($_POST['f-pronoun']) ? trim($_POST['f-pronoun']) : (isset($competitor['pronoun']) ? $competitor['pronoun'] :'')),
+            'value' => (isset($_POST['f-last']) ? trim($_POST['f-last']) : (isset($competitor['last']) ? $competitor['last'] : '')),
             );
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+            $fields['pronoun'] = array(
+                'id' => 'pronoun',
+                'label' => 'Pronoun',
+                'ftype' => 'text',
+                'size' => 'tiny',
+                'class' => '',
+                'value' => (isset($_POST['f-pronoun']) ? trim($_POST['f-pronoun']) : (isset($competitor['pronoun']) ? $competitor['pronoun'] :'')),
+                );
+        }
     }
+    $fields['newline1'] = array(
+        'id' => 'newline1',
+        'ftype' => 'newline',
+        );
     $fields['parent'] = array(
         'id' => 'parent',
-        'label' => 'Parent',
+        'label' => ($ctype == 50 ? 'Contact Person' : 'Parent'),
         'ftype' => ($customer_type == 30 ? 'hidden' : 'text'),
         'required' => ($customer_type == 30 ? 'no' : 'yes'),
-        'size' => 'medium',
+        'size' => 'large',
         'class' => '',
         'value' => (isset($_POST['f-parent']) ? trim($_POST['f-parent']) : (isset($competitor['parent']) ? $competitor['parent'] :'')),
         );
@@ -273,7 +332,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         'label' => 'Address',
         'ftype' => 'text',
         'required' => 'yes',
-        'size' => 'large',
+        'size' => 'small',
         'class' => '',
         'value' => (isset($_POST['f-address']) ? trim($_POST['f-address']) : (isset($competitor['address']) ? $competitor['address'] :'')),
         );
@@ -282,9 +341,13 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         'label' => 'City',
         'ftype' => 'text',
         'required' => 'yes',
-        'size' => 'small-medium',
+        'size' => 'small',
         'class' => '',
         'value' => (isset($_POST['f-city']) ? trim($_POST['f-city']) : (isset($competitor['city']) ? $competitor['city'] :'')),
+        );
+    $fields['newline2'] = array(
+        'id' => 'newline2',
+        'ftype' => 'newline',
         );
     $fields['province'] = array(
         'id' => 'province',
@@ -303,6 +366,19 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         'size' => 'small',
         'class' => '',
         'value' => (isset($_POST['f-postal']) ? trim($_POST['f-postal']) : (isset($competitor['postal']) ? $competitor['postal'] :'')),
+        );
+    $fields['country'] = array(
+        'id' => 'country',
+        'label' => 'Country',
+        'ftype' => 'text',
+        'required' => 'yes',
+        'size' => 'small',
+        'class' => '',
+        'value' => (isset($_POST['f-country']) ? trim($_POST['f-country']) : (isset($competitor['country']) ? $competitor['country'] :'Canada')),
+        );
+    $fields['newline3'] = array(
+        'id' => 'newline3',
+        'ftype' => 'newline',
         );
     $fields['phone_cell'] = array(
         'id' => 'phone_cell',
@@ -413,10 +489,19 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                 );
         }
         //
+        // Create name
+        //
+        if( $ctype == 50 ) {
+            $name = $_POST['f-name'];
+        } else {
+            $name = $_POST['f-first'] . ' ' . $_POST['f-last'];
+        }
+
+        //
         // Check for duplicate child
         //
         if( $fields['competitor_id']['value'] == 0 
-            || (isset($_POST['f-name']) && isset($competitor['name']) && $_POST['f-name'] != $competitor['name']) 
+//            || (isset($_POST['f-name']) && isset($competitor['name']) && $_POST['f-name'] != $competitor['name']) 
             ) {
             //
             // Check for a duplicate name
@@ -425,7 +510,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                 . "FROM ciniki_musicfestival_competitors AS competitors "
                 . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
-                . "AND name = '" . ciniki_core_dbQuote($ciniki, $fields['name']['value']) . "' "
+                . "AND name = '" . ciniki_core_dbQuote($ciniki, $name) . "' "
                 . "AND parent = '" . ciniki_core_dbQuote($ciniki, $fields['parent']['value']) . "' "
                 . "AND billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
                 . "";
@@ -451,15 +536,14 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                 $competitor = array(
                     'festival_id' => $festival['id'],
                     'billing_customer_id' => $request['session']['customer']['id'],
-                    'name' => $fields['name']['value'],
-                    'public_name' => preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $fields['name']['value']),
-                    'pronoun' => (isset($fields['pronoun']['value']) ? $fields['pronoun']['value'] : ''),
+                    'ctype' => $fields['ctype']['value'],
                     'flags' => ($fields['terms']['value'] == 'on' ? 0x01 : 0),
                     'parent' => $fields['parent']['value'],
                     'address' => $fields['address']['value'],
                     'city' => $fields['city']['value'],
                     'province' => $fields['province']['value'],
                     'postal' => $fields['postal']['value'],
+                    'country' => $fields['country']['value'],
                     'phone_home' => $fields['phone_home']['value'],
                     'phone_cell' => $fields['phone_cell']['value'],
                     'email' => $fields['email']['value'],
@@ -468,6 +552,24 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     'instrument' => $fields['instrument']['value'],
                     'notes' => $fields['comp_notes']['value'],
                     );
+                if( $fields['ctype']['value'] == 50 ) {
+                    $competitor['first'] = '';
+                    $competitor['last'] = '';
+                    $competitor['name'] = $fields['name']['value'];
+                    $competitor['public_name'] = $fields['name']['value'];
+                    $competitor['pronoun'] = '';
+                    $competitor['conductor'] = $fields['conductor']['value'];
+                    $competitor['num_people'] = $fields['num_people']['value'];
+                } else {
+                    $competitor['first'] = $fields['first']['value'];
+                    $competitor['last'] = $fields['last']['value'];
+                    $competitor['name'] = $competitor['first'] . ' ' . $competitor['last'];
+                    $competitor['public_name'] = $competitor['first'][0] . '. ' . $competitor['last'];
+                    $competitor['pronoun'] = (isset($fields['pronoun']['value']) ? $fields['pronoun']['value'] : '');
+                    $competitor['conductor'] = '';
+                    $competitor['num_people'] = '';
+                }
+
                 //
                 // Add the competitor
                 //
@@ -487,7 +589,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             else {
                 $update_args = array();
                 foreach($fields as $field) {
-                    if( $field['ftype'] == 'content' || $field['ftype'] == 'hidden' || $field['id'] == 'terms' ) {
+                    if( $field['ftype'] == 'content' || $field['ftype'] == 'hidden' || $field['ftype'] == 'newline' || $field['id'] == 'terms' ) {
                         continue;
                     }
                     if( isset($field['id']) && $field['id'] == 'comp_notes' ) {
@@ -498,6 +600,21 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     elseif( !isset($competitor[$field['id']]) || (isset($field['value']) && $field['value'] != $competitor[$field['id']]) ) {
                         $update_args[$field['id']] = $field['value'];
                     }
+                }
+                if( $ctype == 10 && (isset($update_args['first']) || isset($update_args['last'])) ) {
+                    $name = (isset($update_args['first']) ? $update_args['first'] : $competitor['first']) 
+                        . ' ' . (isset($update_args['last']) ? $update_args['last'] : $competitor['last']);
+                    $public_name = (isset($update_args['first']) ? $update_args['first'][0] : $competitor['first'][0]) 
+                        . ' ' . (isset($update_args['last']) ? $update_args['last'] : $competitor['last']);
+                    if( $name != $competitor['name'] ) {
+                        $update_args['name'] = $name;
+                    }
+                    if( $public_name != $competitor['public_name'] ) {
+                        $update_args['public_name'] = $public_name;
+                    }
+                }
+                elseif( $ctype == 50 && isset($update_args['name']) ) {
+                    $update_args['public_name'] = $update_args['name'];
                 }
                 //
                 // Update the competitor
@@ -572,9 +689,8 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         } else {
             $display = 'delete';
         }
-
     }
-    elseif( isset($_GET['add']) && $_GET['add'] == 'yes' ) {
+    elseif( isset($_GET['add']) && ($_GET['add'] == 'individual' || $_GET['add'] == 'group') ) {
         $competitor_id = 0;
         if( $customer_type == 10 ) {
             $fields['parent']['value'] = $request['session']['customer']['display_name'];
@@ -611,6 +727,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                 $fields['city']['value'] = $rc['address']['city'];
                 $fields['province']['value'] = $rc['address']['province'];
                 $fields['postal']['value'] = $rc['address']['postal'];
+                $fields['country']['value'] = $rc['address']['country'];
             }
             //
             // Lookup phones
@@ -667,7 +784,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         $blocks[] = array(
             'type' => 'form',
             'guidelines' => $guidelines,
-            'title' => ($competitor_id > 0 ? 'Update Competitor' : 'Add Competitor'),
+            'title' => ($competitor_id > 0 ? 'Update' : 'Add') . ($ctype == 50 ? ' Group/Ensemble' : ' Individual Competitor'),
             'class' => 'limit-width limit-width-60',
             'problem-list' => $form_errors,
             'cancel-label' => 'Cancel',
@@ -732,7 +849,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                         . "<input class='button' type='submit' name='f-delete' value='Remove'>"
                         . "</form>";
                 }
-                $add_button = "<a class='button' href='{$request['ssl_domain_base_url']}/account/musicfestivalcompetitors?add=yes'>Add</a>";
+//                $add_button = "<a class='button' href='{$request['ssl_domain_base_url']}/account/musicfestivalcompetitors?add=yes'>Add</a>";
             }
             $columns = array(
                 array('label' => 'Name', 'field' => 'name', 'class' => 'alignleft')
@@ -776,10 +893,16 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             $blocks[] = array(
                 'type' => 'buttons',
                 'class' => 'limit-width limit-width-40 aligncenter',
-                'list' => array(array(
-                    'text' => 'Add Competitor',
-                    'url' => "/account/musicfestivalcompetitors?add=yes",
-                    )),
+                'list' => array(
+                    array(
+                        'text' => 'Add Individual',
+                        'url' => "/account/musicfestivalcompetitors?add=individual",
+                        ),
+                    array(
+                        'text' => 'Add Group/Ensemble',
+                        'url' => "/account/musicfestivalcompetitors?add=group",
+                        ),
+                    ),
                 );
             if( isset($customer_switch_type_block) ) {
                 $blocks[] = $customer_switch_type_block;

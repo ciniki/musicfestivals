@@ -22,15 +22,21 @@ function ciniki_musicfestivals_competitorAdd(&$ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'billing_customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Billing Customer'),
-        'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'),
+        'ctype'=>array('required'=>'yes', 'blank'=>'no', 'validlist'=>array(10, 50), 'name'=>'Competitor Type'),
+        'first'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'First Name'),
+        'last'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Last Name'),
+        'name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name'),
         'public_name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Public Name'),
         'pronoun'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Pronoun'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
+        'conductor'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Conductor'),
+        'num_people'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Number of People'),
         'parent'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Parent'),
         'address'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address'),
         'city'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'City'),
         'province'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Province'),
         'postal'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Postal Code'),
+        'country'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Country'),
         'phone_home'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Home Phone'),
         'phone_cell'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Cell Phone'),
         'email'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Email'),
@@ -54,13 +60,29 @@ function ciniki_musicfestivals_competitorAdd(&$ciniki) {
     }
 
     //
-    // If the public_name is same as calculated, the keep as blank, the public name is an override only field.
+    // Check the names
     //
-    $public_name = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $args['name']); 
-    if( isset($args['public_name']) && $args['public_name'] == $public_name ) {
-        $args['public_name'] = '';
+    if( $args['ctype'] == 10 ) {
+        if( !isset($args['first']) || $args['first'] == '' ) {
+            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.502', 'msg'=>'You must specifiy a first name'));
+        }
+        if( !isset($args['last']) || $args['last'] == '' ) {
+            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.503', 'msg'=>'You must specifiy a last name'));
+        }
+        $args['name'] = $args['first'] . ' ' . $args['last'];
+        if( !isset($args['public_name']) || $args['public_name'] == '' ) {
+            $args['public_name'] = $args['first'][0] . '. ' . $args['last'];
+        }
+    } elseif( $args['ctype'] == 50 ) {
+        if( !isset($args['name']) || $args['name'] == '' ) {
+            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.504', 'msg'=>'You must specifiy a name'));
+        }
+        $args['public_name'] = $args['name']; 
+        $args['first'] = '';
+        $args['last'] = '';
+        $args['pronoun'] = '';
     }
-
+    
     //
     // Start transaction
     //

@@ -24,6 +24,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'competitor_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Competitor'),
         'emails'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitor Emails'),
+        'registrations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitor Registrations'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -71,15 +72,21 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
     if( $args['competitor_id'] == 0 ) {
         $competitor = array('id'=>0,
             'festival_id'=>'',
+            'ctype'=>'10',
+            'first'=>'',
+            'last'=>'',
             'name'=>'',
             'public_name'=>'',
             'pronoun'=>'',
             'flags'=>'0',
+            'conductor'=>'',
+            'num_people'=>'',
             'parent'=>'',
             'address'=>'',
             'city'=>'',
             'province'=>'',
             'postal'=>'',
+            'country'=>'',
             'phone_home'=>'',
             'phone_cell'=>'',
             'email'=>'',
@@ -97,15 +104,21 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
     else {
         $strsql = "SELECT ciniki_musicfestival_competitors.id, "
             . "ciniki_musicfestival_competitors.festival_id, "
+            . "ciniki_musicfestival_competitors.ctype, "
+            . "ciniki_musicfestival_competitors.first, "
+            . "ciniki_musicfestival_competitors.last, "
             . "ciniki_musicfestival_competitors.name, "
             . "ciniki_musicfestival_competitors.public_name, "
             . "ciniki_musicfestival_competitors.pronoun, "
             . "ciniki_musicfestival_competitors.flags, "
+            . "ciniki_musicfestival_competitors.conductor, "
+            . "ciniki_musicfestival_competitors.num_people, "
             . "ciniki_musicfestival_competitors.parent, "
             . "ciniki_musicfestival_competitors.address, "
             . "ciniki_musicfestival_competitors.city, "
             . "ciniki_musicfestival_competitors.province, "
             . "ciniki_musicfestival_competitors.postal, "
+            . "ciniki_musicfestival_competitors.country, "
             . "ciniki_musicfestival_competitors.phone_home, "
             . "ciniki_musicfestival_competitors.phone_cell, "
             . "ciniki_musicfestival_competitors.email, "
@@ -120,8 +133,9 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'competitors', 'fname'=>'id', 
-                'fields'=>array('id', 'festival_id', 'name', 'public_name', 'pronoun', 'flags',
-                    'parent', 'address', 'city', 'province', 'postal', 'phone_home', 'phone_cell', 
+                'fields'=>array('id', 'festival_id', 'ctype', 'first', 'last', 'name', 'public_name', 'pronoun', 
+                    'flags', 'conductor', 'num_people', 
+                    'parent', 'address', 'city', 'province', 'postal', 'country', 'phone_home', 'phone_cell', 
                     'email', '_age', 'study_level', 'instrument', 'notes'),
                 ),
             ));
@@ -135,6 +149,9 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
         $competitor['age'] = $competitor['_age'];
         if( $competitor['public_name'] == '' ) {
             $competitor['public_name'] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $competitor['name']); 
+        }
+        if( $competitor['num_people'] == 0 ) {
+            $competitor['num_people'] = '';
         }
         $details = array();
         $details[] = array('label'=>'Name', 'value'=>$competitor['name']);
@@ -336,6 +353,12 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
             return $rc;
         }
         $competitor['emails'] = isset($rc['messages']) ? $rc['messages'] : array();
+    }
+
+    //
+    // Get the list of registrations for the competitor
+    //
+    if( isset($args['registrations']) && $args['registrations'] == 'yes' ) {
     }
 
     return array('stat'=>'ok', 'competitor'=>$competitor, 'details'=>$details);
