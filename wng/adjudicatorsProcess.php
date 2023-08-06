@@ -41,20 +41,21 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
         . "customers.sort_name, "
         . "adjudicators.image_id, "
         . "adjudicators.description, "
-        . "sections.name AS section "
+        . "adjudicators.discipline "
+//        . "sections.name AS section "
         . "FROM ciniki_musicfestival_adjudicators AS adjudicators "
         . "INNER JOIN ciniki_customers AS customers ON ("
             . "adjudicators.customer_id = customers.id "
             . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "LEFT JOIN ciniki_musicfestival_schedule_sections AS sections ON ("
-            . "("
-                . "adjudicators.id = sections.adjudicator1_id "
-                . "OR adjudicators.id = sections.adjudicator2_id "
-                . "OR adjudicators.id = sections.adjudicator3_id "
-                . ") "
-            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
+//        . "LEFT JOIN ciniki_musicfestival_schedule_sections AS sections ON ("
+//            . "("
+//                . "adjudicators.id = sections.adjudicator1_id "
+//                . "OR adjudicators.id = sections.adjudicator2_id "
+//                . "OR adjudicators.id = sections.adjudicator3_id "
+//                . ") "
+//            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+//            . ") "
         . "WHERE adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
         . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY customers.sort_name "
@@ -62,7 +63,7 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'adjudicators', 'fname'=>'id', 
-            'fields'=>array('id', 'customer_id', 'display_name', 'section', 'image_id', 'description', 'sort_name'),
+            'fields'=>array('id', 'customer_id', 'display_name', 'discipline', 'image_id', 'description', 'sort_name'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -87,7 +88,7 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
                 'type' => 'contentphoto', 
                 'image-position' => 'top-' . $side,
                 'title' => $adjudicator['display_name']
-                    . (isset($adjudicator['section']) && $adjudicator['section'] != '' ? ' - ' . $adjudicator['section'] : ''), 
+                    . (isset($adjudicator['discipline']) && $adjudicator['discipline'] != '' ? ' - ' . $adjudicator['discipline'] : ''), 
                 'image-id' => (isset($adjudicator['image_id']) && $adjudicator['image_id'] > 0  ? $adjudicator['image_id'] : 0),
                 'content' => $adjudicator['description'],
                 );

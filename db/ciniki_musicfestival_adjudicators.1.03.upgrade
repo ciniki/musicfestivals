@@ -1,0 +1,5 @@
+#
+# Add discipline field
+#
+ALTER TABLE ciniki_musicfestival_adjudicators ADD COLUMN discipline varchar(250) not null AFTER image_id;
+ALTER TABLE ciniki_musicfestival_adjudicators COMMENT='v1.03';

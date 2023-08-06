@@ -3687,6 +3687,9 @@ function ciniki_musicfestivals_main() {
             'changeTxt':'Change customer',
             'changeFn':'M.startApp(\'ciniki.customers.edit\',null,\'M.ciniki_musicfestivals_main.adjudicator.updateCustomer();\',\'mc\',{\'next\':\'M.ciniki_musicfestivals_main.adjudicator.updateCustomer\',\'customer_id\':0});',
             },
+        '_discipline':{'label':'Discipline', 'fields':{
+            'discipline':{'label':'', 'hidelabel':'yes', 'type':'text'},
+            }},
         '_description':{'label':'Full Bio', 'fields':{
             'description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'xlarge'},
             }},
