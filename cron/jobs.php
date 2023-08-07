@@ -20,6 +20,7 @@ function ciniki_musicfestivals_cron_jobs(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'messageQueue');
 
     $dt = new DateTime('now', new DateTimezone('UTC'));
+    $dt->add(new DateInterval('PT5M'));
     $last_dt = clone $dt;
     $last_dt->sub(new DateInterval('P1D'));
 
