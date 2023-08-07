@@ -23,41 +23,42 @@ function ciniki_musicfestivals_messageQueue(&$ciniki, $tnid, $args) {
         $errors = '';
         $num_errors = 0;
         $num_sent = 0;
+        $emails = array();
         ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
         foreach($args['message']['teachers'] as $teacher) {
-            $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
-                'customer_id'=>$teacher['id'],
-                'customer_email'=>$teacher['name'],
-                'customer_name'=>$teacher['email'],
-                'subject'=>$args['message']['subject'],
-                'text_content'=>$args['message']['content'],
-    //            'attachments'=>array(array('content'=>$report['pdf']->Output($filename . '.pdf', 'S'), 'filename'=>$filename . '.pdf')),
-                ));
-            if( $rc['stat'] != 'ok' ) {
-                $errors .= $rc['err']['code'] . ' - ' . $rc['err']['msg'];
-                $num_errors++;
-            } else {
-                $num_sent++;
+            if( !isset($emails[$teacher['email']]) ) {
+                $emails[$teacher['email']] = array(
+                    'customer_id'=>$teacher['id'],
+                    'customer_email'=>$teacher['name'],
+                    'customer_name'=>$teacher['email'],
+                    'subject'=>$args['message']['subject'],
+                    'text_content'=>$args['message']['content'],
+                    );
             }
-            $ciniki['emailqueue'][] = array('mail_id'=>$rc['id'], 'tnid'=>$tnid);
         }
         foreach($args['message']['competitors'] as $competitor) {
-            $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
-                'customer_email'=>$competitor['name'],
-                'customer_name'=>$competitor['email'],
-                'object'=>'ciniki.musicfestivals.competitor',
-                'object_id'=>$competitor['id'],
-                'subject'=>$args['message']['subject'],
-                'text_content'=>$args['message']['content'],
-    //            'attachments'=>array(array('content'=>$report['pdf']->Output($filename . '.pdf', 'S'), 'filename'=>$filename . '.pdf')),
-                ));
+            if( !isset($emails[$competitor['email']]) ) {
+                $emails[$competitor['email']] = array(
+                    'customer_email'=>$competitor['name'],
+                    'customer_name'=>$competitor['email'],
+                    'object'=>'ciniki.musicfestivals.competitor',
+                    'object_id'=>$competitor['id'],
+                    'subject'=>$args['message']['subject'],
+                    'text_content'=>$args['message']['content'],
+                    //'attachments'=>array(array('content'=>$report['pdf']->Output($filename . '.pdf', 'S'), 'filename'=>$filename . '.pdf')),
+                    );
+            }
+        }
+
+        foreach($emails as $email) {
+            $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, $email);
             if( $rc['stat'] != 'ok' ) {
                 $errors .= $rc['err']['code'] . ' - ' . $rc['err']['msg'];
                 $num_errors++;
             } else {
                 $num_sent++;
+                $ciniki['emailqueue'][] = array('mail_id'=>$rc['id'], 'tnid'=>$tnid);
             }
-            $ciniki['emailqueue'][] = array('mail_id'=>$rc['id'], 'tnid'=>$tnid);
         }
 
         //

@@ -1327,17 +1327,24 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $strsql = "SELECT messages.id, "
                 . "messages.subject, ";
             if( $args['messages_status'] == 50 ) {
-                $strsql .= "DATE_FORMAT('%b %e, %Y %l:%i %p', messages.dt_sent) AS date_text ";
-            } elseif( $args['messages_status'] == 50 ) {
-                $strsql .= "DATE_FORMAT('%b %e, %Y %l:%i %p', messages.dt_scheduled) AS date_text ";
+                $strsql .= "DATE_FORMAT(messages.dt_sent, '%b %e, %Y %l:%i %p') AS date_text ";
+            } elseif( $args['messages_status'] == 30 ) {
+                $strsql .= "DATE_FORMAT(messages.dt_scheduled, '%b %e, %Y %l:%i %p') AS date_text ";
             } else {
-                $strsql .= "DATE_FORMAT('%b %e, %Y %l:%i %p', messages.date_added) AS date_text ";
+                $strsql .= "DATE_FORMAT(messages.date_added, '%b %e, %Y %l:%i %p') AS date_text ";
             }
             $strsql .= "FROM ciniki_musicfestival_messages AS messages "
                 . "WHERE messages.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND messages.status = '" . ciniki_core_dbQuote($ciniki, $args['messages_status']) . "' "
                 . "AND messages.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "";
+            if( $args['messages_status'] == 50 ) {
+                $strsql .= "ORDER BY dt_sent DESC ";
+            } elseif( $args['messages_status'] == 30 ) {
+                $strsql .= "ORDER BY dt_scheduled DESC ";
+            } else {
+                $strsql .= "ORDER BY date_added DESC ";
+            }
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'messages', 'fname'=>'id', 
@@ -1425,9 +1432,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             }
                         }
                     }
-
                 }
-                
             }
             if( $args['emails_list'] == 'all' || $args['emails_list'] == 'teachers' ) {
                 $strsql = "SELECT teacher_emails.id, "    
