@@ -51,7 +51,7 @@ function ciniki_musicfestivals_festivalCopy($ciniki) {
             return $rc;
         }
         if( !isset($rc['festival']['id']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.120', 'msg'=>'No previous festival found'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.535', 'msg'=>'No previous festival found'));
         }
         $args['old_festival_id'] = $rc['festival']['id'];
     }

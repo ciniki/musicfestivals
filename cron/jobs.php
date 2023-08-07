@@ -62,10 +62,10 @@ function ciniki_musicfestivals_cron_jobs(&$ciniki) {
             'emails' => 'yes',
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.492', 'msg'=>'Unable to load message', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.531', 'msg'=>'Unable to load message', 'err'=>$rc['err']));
         }
         if( !isset($rc['message']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.493', 'msg'=>'No message found', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.532', 'msg'=>'No message found', 'err'=>$rc['err']));
         }
         $message = isset($rc['message']) ? $rc['message'] : array();
 
@@ -73,7 +73,7 @@ function ciniki_musicfestivals_cron_jobs(&$ciniki) {
         // Make sure the message has the correct status
         //
         if( $message['status'] != 30 ) {
-            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.494', 'msg'=>'Email has already been sent'));
+            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.533', 'msg'=>'Email has already been sent'));
         }
         
         //

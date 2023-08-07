@@ -43,6 +43,30 @@ function ciniki_musicfestivals_trophyAdd(&$ciniki) {
     }
 
     //
+    // Setup permalink
+    //
+    if( !isset($args['permalink']) || $args['permalink'] == '' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+        $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['name']);
+    }
+
+    //
+    // Make sure the permalink is unique
+    //
+    $strsql = "SELECT id, name, permalink "
+        . "FROM ciniki_musicfestival_trophies "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( $rc['num_rows'] > 0 ) {
+        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.506', 'msg'=>'You already have an trophy with this name, please choose another.'));
+    }
+
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');

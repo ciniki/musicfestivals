@@ -204,7 +204,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'reg');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.478', 'msg'=>'Unable to load reg', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.528', 'msg'=>'Unable to load reg', 'err'=>$rc['err']));
         }
         if( isset($rc['rows']) ) {
             foreach($rc['rows'] as $row) {
@@ -230,7 +230,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'class');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.478', 'msg'=>'Unable to load reg', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.529', 'msg'=>'Unable to load reg', 'err'=>$rc['err']));
             }
             if( isset($rc['rows']) ) {
                 foreach($rc['rows'] as $row) {

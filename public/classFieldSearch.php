@@ -50,7 +50,7 @@ function ciniki_musicfestivals_classFieldSearch($ciniki) {
     //
     if( $args['field'] != 'level'
         ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.38', 'msg'=>'Unvalid search field'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.547', 'msg'=>'Unvalid search field'));
     }
 
     $strsql = "SELECT DISTINCT " . $args['field'] . " AS name "

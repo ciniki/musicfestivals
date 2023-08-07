@@ -71,6 +71,31 @@ function ciniki_musicfestivals_trophyDelete(&$ciniki) {
     }
 
     //
+    // Get the list of winners and classes
+    //
+    $strsql = "SELECT id, uuid "
+        . "FROM ciniki_musicfestivals_trophy_winners "
+        . "WHERE trophy_id = '" . ciniki_core_dbQuote($ciniki, $args['trophy_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'winner');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.548', 'msg'=>'Unable to load winners', 'err'=>$rc['err']));
+    }
+    $winners = isset($rc['rows']) ? $rc['rows'] : array();
+
+    $strsql = "SELECT id, uuid "
+        . "FROM ciniki_musicfestivals_trophy_classes "
+        . "WHERE trophy_id = '" . ciniki_core_dbQuote($ciniki, $args['trophy_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'class');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.549', 'msg'=>'Unable to load classes', 'err'=>$rc['err']));
+    }
+    $classes = isset($rc['rows']) ? $rc['rows'] : array();
+
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
@@ -82,6 +107,26 @@ function ciniki_musicfestivals_trophyDelete(&$ciniki) {
     $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.musicfestivals');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
+    }
+
+    //
+    // Remove winners and trophies
+    //
+    foreach($winners as $winner) {
+        $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.musicfestivals.trophywinner',
+            $winner['id'], $winner['uuid'], 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
+    }
+    foreach($classes as $class) {
+        $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.musicfestivals.trophyclass',
+            $class['id'], $class['uuid'], 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
     }
 
     //

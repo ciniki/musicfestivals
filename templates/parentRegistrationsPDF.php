@@ -17,14 +17,14 @@ function ciniki_musicfestivals_templates_parentRegistrationsPDF(&$ciniki, $tnid,
     // Make sure festival_id was passed in
     //
     if( !isset($args['festival_id']) || $args['festival_id'] <= 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.147', 'msg'=>'No festival specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.524', 'msg'=>'No festival specified'));
     }
 
     //
     // Make sure billing_customer_id was passed in
     //
     if( !isset($args['billing_customer_id']) || $args['billing_customer_id'] <= 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.148', 'msg'=>'No parent specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.525', 'msg'=>'No parent specified'));
     }
 
     //
@@ -140,7 +140,7 @@ function ciniki_musicfestivals_templates_parentRegistrationsPDF(&$ciniki, $tnid,
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.126', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.523', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
         }
         $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
     } else {
@@ -181,7 +181,7 @@ function ciniki_musicfestivals_templates_parentRegistrationsPDF(&$ciniki, $tnid,
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.125', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.520', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
         }
         $competitors = isset($rc['competitors']) ? $rc['competitors'] : array();
     } else {
@@ -215,10 +215,10 @@ function ciniki_musicfestivals_templates_parentRegistrationsPDF(&$ciniki, $tnid,
                 )),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.107', 'msg'=>'Festival not found', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.521', 'msg'=>'Festival not found', 'err'=>$rc['err']));
     }
     if( !isset($rc['festivals'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.187', 'msg'=>'Unable to find Festival'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.522', 'msg'=>'Unable to find Festival'));
     }
     $festival = $rc['festivals'][0];
 

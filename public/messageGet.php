@@ -57,7 +57,7 @@ function ciniki_musicfestivals_messageGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
         $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.messageref', $args, 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.489', 'msg'=>'Unable to add the messageref', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.537', 'msg'=>'Unable to add the messageref', 'err'=>$rc['err']));
         }
     }
     //
@@ -87,7 +87,7 @@ function ciniki_musicfestivals_messageGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
             $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.musicfestivals.messageref', $row['id'], $row['uuid'], 0x04);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.489', 'msg'=>'Unable to add the messageref', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.538', 'msg'=>'Unable to add the messageref', 'err'=>$rc['err']));
             }
         }
     } 

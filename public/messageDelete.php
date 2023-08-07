@@ -50,7 +50,7 @@ function ciniki_musicfestivals_messageDelete(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['message']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.484', 'msg'=>'Mail does not exist.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.536', 'msg'=>'Mail does not exist.'));
     }
     $message = $rc['message'];
 

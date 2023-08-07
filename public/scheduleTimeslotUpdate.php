@@ -93,7 +93,7 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
                 $rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.musicfestivals', 'registrations', 'id');
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.456', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.540', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
                 }
                 $args["registrations{$i}"] = isset($rc['registrations']) ? $rc['registrations'] : array();
             }
@@ -113,7 +113,7 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
                 $rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.musicfestivals', 'registrations', 'id');
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.456', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.539', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
                 }
                 $args["registrations{$i}"] = isset($rc['registrations']) ? $rc['registrations'] : array();
             }
@@ -134,7 +134,7 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
         array('container'=>'registrations', 'fname'=>'id', 'fields'=>array('id', 'timeslot_sequence')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.455', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.534', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
     }
     $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
      

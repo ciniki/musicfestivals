@@ -1469,7 +1469,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.316', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.544', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
                 }
                 $teachers = isset($rc['teachers']) ? $rc['teachers'] : array();
                 foreach($teachers as $teacher) {

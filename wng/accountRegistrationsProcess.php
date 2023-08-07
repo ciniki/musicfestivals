@@ -207,7 +207,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.298', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.545', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
     }
     $sections = isset($rc['sections']) ? $rc['sections'] : array();
 
@@ -828,7 +828,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 //$rc = ciniki_sapos_hooks_invoiceObjectItem($ciniki, $tnid, $request['session']['cart']['id'], 'ciniki.musicfestivals.registration', $registration_id);
                 $rc = ciniki_sapos_hooks_invoiceObjectItem($ciniki, $tnid, $registration['invoice_id'], 'ciniki.musicfestivals.registration', $registration_id);
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.420', 'msg'=>'Unable to get invoice item', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.541', 'msg'=>'Unable to get invoice item', 'err'=>$rc['err']));
                 }
                 $item = $rc['item'];
 
@@ -858,7 +858,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'wng', 'cartItemUpdate');
                     $rc = ciniki_sapos_wng_cartItemUpdate($ciniki, $tnid, $request, $update_item_args);
                     if( $rc['stat'] != 'ok' ) {
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.417', 'msg'=>'Unable to update invoice', 'err'=>$rc['err']));
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.546', 'msg'=>'Unable to update invoice', 'err'=>$rc['err']));
                     }
                 }
             }

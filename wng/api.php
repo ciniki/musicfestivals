@@ -21,7 +21,7 @@ function ciniki_musicfestivals_wng_api(&$ciniki, $tnid, &$request) {
     // Check to make sure the module is enabled
     //
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
-        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.429', 'msg'=>"I'm sorry, the page you requested does not exist."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.526', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
 
     //
