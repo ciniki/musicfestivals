@@ -5511,12 +5511,15 @@ function ciniki_musicfestivals_main() {
                 'onchange':'M.ciniki_musicfestivals_main.messagerefs.updateFlags',
                 },
             }}, */
-        'objects':{'label':'Recipients', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
-            'cellClasses':['label', ''],
+        'objects':{'label':'Recipients', 'type':'simplegrid', 'num_cols':3, 'aside':'yes',
+            'cellClasses':['label', '', 'alignright'],
             'noData':'No Recipients',
 //            'addTxt':'Add Recipient(s)',
 //            'addFn':'M.ciniki_musicfestivals_main.message.addobjects();',
             },
+        '_extract':{'label':'', 'aside':'yes', 'buttons':{
+            'extract':{'label':'Extract Recipients', 'fn':'M.ciniki_musicfestivals_main.messagerefs.extractRecipients();'},
+            }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'sections', 'tabs':{
             'sections':{'label':'Syllabus', 'fn':'M.ciniki_musicfestivals_main.messagerefs.switchTab("sections");'},
             'categories':{'label':'Categories', 
@@ -5615,6 +5618,7 @@ function ciniki_musicfestivals_main() {
             switch(j) {
                 case 0: return d.type;
                 case 1: return d.label;
+                case 2: return '<span class="faicon">&#xf014;</span>&nbsp;';
             }
         }
         if( s == 'sections' || s == 'categories' || s == 'classes' || s == 'schedule' || s == 'divisions' || s == 'timeslots' || s == 'competitors' || s == 'teachers' ) {
@@ -5642,6 +5646,12 @@ function ciniki_musicfestivals_main() {
             }
         }
     }
+    this.messagerefs.cellFn = function(s, i, j, d) {
+        if( s == 'objects' && j == 2 ) {    
+            console.log(d);
+            return 'M.ciniki_musicfestivals_main.messagerefs.removeObject(\'' + d.object + '\',\'' + d.object_id + '\');';
+        }
+    }
     this.messagerefs.rowClass = function(s, i, d) {
         if( (d.partial != null && d.partial == 'yes') ) {
             return 'statusorange';
@@ -5659,6 +5669,17 @@ function ciniki_musicfestivals_main() {
             }
         }
         return '';
+    }
+    this.messagerefs.extractRecipients = function() {
+        M.api.getJSONCb('ciniki.musicfestivals.messageGet', {'tnid':M.curTenantID, 
+            'message_id':this.message_id, 
+            'allrefs':'yes', 
+            'section_id':this.section_id, 
+            'category_id':this.category_id,
+            'schedule_id':this.schedule_id, 
+            'division_id':this.division_id,
+            'action':'extractrecipients',
+            }, this.openFinish);
     }
     this.messagerefs.switchTab = function(t) {
         this.sections._tabs.selected = t;

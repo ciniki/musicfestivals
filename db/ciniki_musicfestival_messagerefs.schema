@@ -46,5 +46,5 @@ create table ciniki_musicfestival_messagerefs (
     last_updated datetime not null,
     primary key(id),
     index (tnid, uuid, last_updated),
-    index (message_id, object, object_id)
+    unique index (message_id, object, object_id)
 ) ENGINE='InnoDB', COMMENT='v1.01';

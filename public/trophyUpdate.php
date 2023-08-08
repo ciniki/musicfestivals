@@ -60,7 +60,7 @@ function ciniki_musicfestivals_trophyUpdate(&$ciniki) {
             return $rc;
         }
         if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.506', 'msg'=>'You already have an trophy with this name, please choose another.'));
+            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.558', 'msg'=>'You already have an trophy with this name, please choose another.'));
         }
     }
 
