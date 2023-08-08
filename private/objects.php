@@ -228,6 +228,20 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );
+    $objects['tag'] = array(
+        'name'=>'Registration Tag',
+        'o_name'=>'tag',
+        'o_container'=>'tags',
+        'sync'=>'yes',
+        'table'=>'ciniki_musicfestival_registration_tags',
+        'fields'=>array(
+            'registration_id'=>array('name'=>'Registration', 'ref'=>'ciniki.musicfestivals.registration'),
+            'tag_type'=>array('name'=>'Tag Type'),
+            'tag_name'=>array('name'=>'Tag Name'),
+            'permalink'=>array('name'=>'Permalink'),
+            ),
+        'history_table'=>'ciniki_musicfestivals_history',
+        );
     $objects['comment'] = array(
         'name'=>'Adjudication Comment',
         'o_name'=>'comment',

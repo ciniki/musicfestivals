@@ -290,6 +290,32 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                 $registration['taxtype_id'] = 0;
             }
         }
+
+        //
+        // Get the categories and tags for the customer
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x2000) ) {
+            $strsql = "SELECT tag_type, tag_name AS lists "
+                . "FROM ciniki_musicfestival_registration_tags "
+                . "WHERE registration_id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
+                . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "ORDER BY tag_type, tag_name "
+                . "";
+            $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'tags', 'fname'=>'tag_type', 'name'=>'tags',
+                    'fields'=>array('tag_type', 'lists'), 'dlists'=>array('lists'=>'::')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            if( isset($rc['tags']) ) {
+                foreach($rc['tags'] as $tags) {
+                    if( $tags['tags']['tag_type'] == 10 ) {
+                        $registration['tags'] = $tags['tags']['lists'];
+                    }
+                }
+            }
+        }
     }
 
     $rsp = array('stat'=>'ok', 'registration'=>$registration, 'competitors'=>array(), 'classes'=>array());
@@ -418,6 +444,39 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
     }
     foreach($rc['settings'] as $k => $v) {
         $rsp['registration']['festival'][$k] = $v;
+    }
+
+    //
+    // Get the complete list of tags
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x2000) ) {
+        $rsp['tags'] = array();
+        $strsql = "SELECT DISTINCT tags.tag_type, tags.tag_name AS names "
+            . "FROM ciniki_musicfestival_registration_tags AS tags "
+            . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                . "tags.registration_id = registrations.id "
+                . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND tags.tag_type = 10 "
+            . "ORDER BY tags.tag_type, tags.tag_name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
+            array('container'=>'tags', 'fname'=>'tag_type', 'fields'=>array('type'=>'tag_type', 'names'), 
+                'dlists'=>array('names'=>'::')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['tags']) ) {
+            foreach($rc['tags'] as $type) {
+                if( $type['type'] == 10 ) {
+                    $rsp['tags'] = explode('::', $type['names']);
+                }
+            }
+        }
     }
 
     return $rsp;

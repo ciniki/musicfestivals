@@ -49,6 +49,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         'placement'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Placement'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         'internal_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Interal Notes'),
+        'tags'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Registration Tags'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -252,6 +253,20 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.313', 'msg'=>'Unable to update invoice', 'err'=>$rc['err']));
                 }
             }
+        }
+    }
+
+    //
+    // Update the tags
+    //
+    if( isset($args['tags']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
+        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.musicfestivals', 'tag', $args['tnid'],
+            'ciniki_musicfestival_registration_tags', 'ciniki_musicfestivals_history',
+            'registration_id', $args['registration_id'], 10, $args['tags']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
         }
     }
 

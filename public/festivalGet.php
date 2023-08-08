@@ -51,6 +51,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'entry_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Entry'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sequence'),
         'ipv'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'In Person/Virtual'),
+        'registration_tag'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registration Tag'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -452,8 +453,15 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "registrations.music_orgfilename1, "
                 . "registrations.music_orgfilename2, "
                 . "registrations.music_orgfilename3 "
-                . "FROM ciniki_musicfestival_registrations AS registrations "
-                . "LEFT JOIN ciniki_customers AS teachers ON ("
+                . "FROM ciniki_musicfestival_registrations AS registrations ";
+            if( isset($args['registration_tag']) && $args['registration_tag'] != '' ) {
+                $strsql .= "INNER JOIN ciniki_musicfestival_registration_tags AS tags ON ("
+                    . "registrations.id = tags.registration_id "
+                    . "AND tags.tag_name = '" . ciniki_core_dbQuote($ciniki, $args['registration_tag']) . "' "
+                    . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") ";
+            }
+            $strsql .= "LEFT JOIN ciniki_customers AS teachers ON ("
                     . "registrations.teacher_customer_id = teachers.id "
                     . "AND teachers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
@@ -478,6 +486,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             } elseif( isset($args['teacher_customer_id']) && $args['teacher_customer_id'] > 0 ) {
                 $strsql .= "AND registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' ";
             }
+                error_log(print_r($strsql,true));
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'registrations', 'fname'=>'id', 
@@ -550,6 +559,43 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             }
             if( isset($rc['teachers']) ) {
                 $festival['registration_teachers'] = $rc['teachers'];
+            }
+
+            //
+            // Get the list of tags
+            //
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x2000) ) {
+                $strsql = "SELECT tags.tag_name AS name, ";
+                if( ($festival['flags']&0x02) == 0x02 && isset($args['ipv']) ) {
+                    if( $args['ipv'] == 'inperson' ) {
+                        $strsql .= "SUM(IF(registrations.participation=0,1,0)) AS num_registrations ";
+                    } elseif( $args['ipv'] == 'virtual' ) {
+                        $strsql .= "SUM(registrations.participation) AS num_registrations ";
+                    } else {
+                        $strsql .= "COUNT(registrations.id) AS num_registrations ";
+                    }
+                } else {
+                    $strsql .= "COUNT(registrations.id) AS num_registrations ";
+                }
+                $strsql .= "FROM ciniki_musicfestival_registration_tags AS tags "
+                    . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                        . "tags.registration_id = registrations.id "
+                        . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                        . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "GROUP BY tags.tag_name "
+                    . "ORDER BY tags.tag_name "
+                    . "";
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'tags', 'fname'=>'name', 'fields'=>array('name', 'num_registrations')),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                if( isset($rc['tags']) ) {
+                    $festival['registration_tags'] = $rc['tags'];
+                }
             }
         }
 
