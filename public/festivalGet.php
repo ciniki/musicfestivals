@@ -137,7 +137,6 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.285', 'msg'=>'Unable to move entry', 'err'=>$rc['err']));
         }
     }
-//        error_log(print_r($args,true));
 
     //
     // Setup the arrays for the lists of next/prev ids
@@ -486,7 +485,6 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             } elseif( isset($args['teacher_customer_id']) && $args['teacher_customer_id'] > 0 ) {
                 $strsql .= "AND registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' ";
             }
-                error_log(print_r($strsql,true));
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'registrations', 'fname'=>'id', 

@@ -220,6 +220,51 @@ function ciniki_musicfestivals_messageGet($ciniki) {
                     }
                 }
             }
+        } else {
+            if( isset($rc['teachers']) ) {
+                uasort($rc['teachers'], function($a, $b) {
+                    if( isset($a['added']) && isset($b['added']) ) {
+                        return strcmp($a['name'], $b['name']);
+                    } elseif( isset($a['added']) ) {
+                        return -1;
+                    } elseif( isset($b['added']) ) {
+                        return 1;
+                    }
+                    if( isset($a['included']) && isset($b['included']) ) {
+                        return strcmp($a['name'], $b['name']);
+                    }
+                    elseif( isset($a['included']) ) {
+                        return -1;
+                    } 
+                    elseif( isset($b['included']) ) {
+                        return 1;
+                    }
+                    return strcmp($a['name'], $b['name']);
+                });
+                $rc['teachers'] = array_values($rc['teachers']);
+            }
+            if( isset($rc['competitors']) ) {
+                uasort($rc['competitors'], function($a, $b) {
+                    if( isset($a['added']) && isset($b['added']) ) {
+                        return strcmp($a['name'], $b['name']);
+                    } elseif( isset($a['added']) ) {
+                        return -1;
+                    } elseif( isset($b['added']) ) {
+                        return 1;
+                    }
+                    if( isset($a['included']) && isset($b['included']) ) {
+                        return strcmp($a['name'], $b['name']);
+                    }
+                    elseif( isset($a['included']) ) {
+                        return -1;
+                    } 
+                    elseif( isset($b['included']) ) {
+                        return 1;
+                    }
+                    return strcmp($a['name'], $b['name']);
+                });
+                $rc['competitors'] = array_values($rc['competitors']);
+            }
         }
 
         return $rc;

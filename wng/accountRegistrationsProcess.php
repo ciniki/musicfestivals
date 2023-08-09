@@ -120,6 +120,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             $rc = ciniki_musicfestivals_templates_teacherRegistrationsPDF($ciniki, $tnid, array(
                 'festival_id' => $festival['id'],
                 'teacher_customer_id' => $request['session']['customer']['id'],
+                'shared' => 'yes',
                 ));
         } else {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'parentRegistrationsPDF');

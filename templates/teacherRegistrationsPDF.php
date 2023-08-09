@@ -130,9 +130,11 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
         if( isset($args['teacher_customer_id']) ) {
             $strsql .= "AND (registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' "
                 . "OR ("
-                    . "registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' "
-                    . "AND (registrations.flags&0x01) = 0x01 "
-                    . ") "
+                    . "registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' ";
+            if( isset($args['shared']) && $args['shared'] == 'yes' ) {
+                $strsql .= "AND (registrations.flags&0x01) = 0x01 ";
+            }
+            $strsql .= ") "
                 . ") ";
         } else {
             $strsql .= "AND registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['billing_customer_id']) . "' ";
@@ -235,9 +237,11 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
                         . ") "
                     . "AND (registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' "
                         . "OR ("
-                            . "registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' "
-                            . "AND (registrations.flags&0x01) = 0x01 "
-                        . ") "
+                            . "registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' ";
+                if( isset($args['shared']) && $args['shared'] == 'yes' ) {
+                    $strsql .= "AND (registrations.flags&0x01) = 0x01 ";
+                }
+                $strsql .= ") "
                     . ") "
 //                    . "AND registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' "
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
