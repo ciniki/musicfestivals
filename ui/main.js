@@ -1808,6 +1808,7 @@ function ciniki_musicfestivals_main() {
     this.classes.nplist = [];
     this.classes.sections = {
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'fees', 
+            'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x40); },
             'tabs':{
                 'fees':{'label':'Fees', 'fn':'M.ciniki_musicfestivals_main.classes.switchTab("fees");'},
                 'trophies':{'label':'Trophies', 'fn':'M.ciniki_musicfestivals_main.classes.switchTab("trophies");'},
