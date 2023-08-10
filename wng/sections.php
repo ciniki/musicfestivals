@@ -215,6 +215,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             'module' => 'Music Festivals',
             'settings' => array(
                 'title' => array('label'=>'Title', 'type'=>'text'),
+                'syllabus-page' => array('label'=>'Syllabus Page', 'type'=>'select', 'pages'=>'yes'),
                 ),
             );
     }

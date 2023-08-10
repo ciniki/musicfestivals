@@ -232,6 +232,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         . "classes.code, "
         . "classes.name, "
         . "classes.permalink, "
+        . "classes.level, "
         . "classes.sequence, "
         . "classes.flags, "
         . "earlybird_fee, "
@@ -249,16 +250,38 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'categories', 'fname'=>'category_id', 
-            'fields'=>array('name'=>'category_name', 'image_id'=>'category_image_id', 'synopsis'=>'category_synopsis', 'description'=>'category_description')),
+            'fields'=>array('name'=>'category_name', 'image_id'=>'category_image_id', 'synopsis'=>'category_synopsis', 'description'=>'category_description',
+            )),
         array('container'=>'classes', 'fname'=>'id', 
-            'fields'=>array('id', 'uuid', 'festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 
-                'earlybird_fee', 'fee', 'virtual_fee')),
+            'fields'=>array('id', 'uuid', 'festival_id', 'category_id', 'code', 'name', 
+                'permalink', 'level', 'sequence', 'flags', 
+                'earlybird_fee', 'fee', 'virtual_fee',
+                )),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
+    $levels = array();
     if( isset($rc['categories']) ) {
         $categories = $rc['categories'];
+        //
+        // Get the filters
+        //
+        foreach($categories as $category) {
+            if( isset($category['classes']) && count($category['classes']) > 0 ) {
+                foreach($category['classes'] as $cid => $class) {
+                    if( $class['level'] != '' && !in_array($class['level'], $levels) ) {
+                        $levels[] = $class['level'];
+                    }
+                }
+            }
+        }
+        if( count($levels) > 0 ) {
+            $blocks[] = array(
+                
+                );
+        }
+
         foreach($categories as $category) {
             $blocks[] = array(
                 'type' => 'text', 
