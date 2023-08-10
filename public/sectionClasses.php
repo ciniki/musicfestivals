@@ -131,18 +131,18 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
                 . ") "
             . "WHERE categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
-            . "ORDER BY categories.sequence, categories.name, classes.sequence, classes.name "
+            . "ORDER BY categories.sequence, categories.name, classes.sequence, classes.name, trophies.category, trophies.name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'classes', 'fname'=>'id', 
                 'fields'=>array('id', 'joined_sequence', 'category_id', 'category_name', 'permalink', 'category_sequence', 
                     'code', 'class_name', 'class_sequence', 'level', 'trophies'),
-                'dlist'=>array('trophies'=>', '),
+                'dlists'=>array('trophies'=>', '),
                 ),
             ));
-
-    } else {
+    } 
+    else {
         $strsql = "SELECT categories.id AS category_id, "
             . "categories.name AS category_name, "
             . "categories.permalink, "

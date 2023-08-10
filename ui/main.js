@@ -2168,7 +2168,7 @@ function ciniki_musicfestivals_main() {
         return '';
     }
     this.class.addTrophy = function() {
-        M.ciniki_musicfestivals_main.classtrophy.open(this.class_id);
+        M.ciniki_musicfestivals_main.classtrophy.open('M.ciniki_musicfestivals_main.class.open();',this.class_id);
     }
     this.class.attachTrophy = function(i) {
         M.api.getJSONCb('ciniki.musicfestivals.classTrophyAdd', {'tnid':M.curTenantID, 'class_id':this.class_id, 'trophy_id':i}, function(rsp) {
@@ -2316,7 +2316,7 @@ function ciniki_musicfestivals_main() {
             p.show(cb);
         });
     }
-    this.classtrophy.addClose('Cancel');
+    this.classtrophy.addClose('Back');
 
     //
     // Registration
