@@ -230,6 +230,13 @@ function ciniki_musicfestivals_messageGet($ciniki) {
                     } elseif( isset($b['added']) ) {
                         return 1;
                     }
+                    if( isset($a['students']) && isset($b['students']) ) {
+                        return strcmp($a['name'], $b['name']);
+                    } elseif( isset($a['students']) ) {
+                        return -1;
+                    } elseif( isset($b['students']) ) {
+                        return 1;
+                    }
                     if( isset($a['included']) && isset($b['included']) ) {
                         return strcmp($a['name'], $b['name']);
                     }

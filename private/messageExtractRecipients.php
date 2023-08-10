@@ -30,7 +30,10 @@ function ciniki_musicfestivals_messageExtractRecipients(&$ciniki, $tnid, $messag
     // Setup teachers as objects
     //
     foreach($teachers as $teacher) {
-        if( isset($teacher['included']) && $teacher['included'] == 'yes' ) {
+        if( (isset($teacher['added']) && $teacher['added'] == 'yes')
+            || (isset($teacher['included']) && $teacher['included'] == 'yes')
+            || (isset($teacher['students']) && $teacher['students'] == 'yes')
+            ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
             $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.messageref', array(
                 'message_id' => $message_id,
