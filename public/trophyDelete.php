@@ -74,7 +74,7 @@ function ciniki_musicfestivals_trophyDelete(&$ciniki) {
     // Get the list of winners and classes
     //
     $strsql = "SELECT id, uuid "
-        . "FROM ciniki_musicfestivals_trophy_winners "
+        . "FROM ciniki_musicfestival_trophy_winners "
         . "WHERE trophy_id = '" . ciniki_core_dbQuote($ciniki, $args['trophy_id']) . "' "
         . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
@@ -85,7 +85,7 @@ function ciniki_musicfestivals_trophyDelete(&$ciniki) {
     $winners = isset($rc['rows']) ? $rc['rows'] : array();
 
     $strsql = "SELECT id, uuid "
-        . "FROM ciniki_musicfestivals_trophy_classes "
+        . "FROM ciniki_musicfestival_trophy_classes "
         . "WHERE trophy_id = '" . ciniki_core_dbQuote($ciniki, $args['trophy_id']) . "' "
         . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
