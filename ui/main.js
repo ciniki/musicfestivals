@@ -5470,6 +5470,15 @@ function ciniki_musicfestivals_main() {
     this.message.addButton('save', 'Save', 'M.ciniki_musicfestivals_main.message.save();');
     this.message.addButton('next', 'Next');
     this.message.addLeftButton('prev', 'Prev');
+    this.message.helpSections = function() {
+        return {
+            'help':{'label':'Substitutions', 'type':'htmlcontent',
+                'html':'The following substitutions are available in the Message:<br/><br/>'
+                    + '{_first_} = Teacher/Individual first name, Group/Ensemble full name<br/>'
+                    + '{_name_} = Teacher/Individual/Group full name<br/>'
+                    },
+            };
+    }
 
     //
     // This panel will let the user select a date and time to send the scheduled message
