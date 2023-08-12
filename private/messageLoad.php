@@ -133,6 +133,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
         'divisions' => array(),
         'timeslots' => array(),
         'students' => array(),
+        'teachers' => array(),
         'tags' => array(),
         );
     $object_ids = array();
@@ -360,7 +361,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 'type' => 'Teacher & Students',
                 'label' => $label,
             );
-            $ref_ids['teachers'][] = $ref['object_id'];
+            $ref_ids['students'][] = $ref['object_id'];
         } 
 /*        elseif( $ref['object'] == 'ciniki.musicfestivals.students' ) {
             $strsql = "SELECT customers.display_name AS name "
@@ -631,7 +632,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             //
             // Check if category is automatically included in section
             //
-            if( in_array($tid, $ref_ids['teachers']) ) {
+            if( in_array($tid, $ref_ids['students']) ) {
                 if( isset($teacher['registrations']) ) {
                     foreach($teacher['registrations'] AS $rid => $reg) {
                         if( ($rsp['message']['flags']&0x02) == 0 
@@ -1041,6 +1042,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             for($i = 0; $i < count($competitor_ids); $i+=100) {
                 $strsql = "SELECT competitors.id, "
                     . "competitors.name, "
+                    . "IF(competitors.ctype=50,competitors.name,competitors.first) AS first, "
                     . "competitors.email "
                     . "FROM ciniki_musicfestival_competitors AS competitors "
                     . "WHERE competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -1066,6 +1068,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
         $rsp['message']['teachers'] = array();
         if( count($teacher_ids) > 0 ) {
             $strsql = "SELECT customers.id, "
+                . "customers.first AS first, "
                 . "customers.display_name AS name, "
                 . "emails.email "
                 . "FROM ciniki_customers AS customers "

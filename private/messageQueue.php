@@ -27,24 +27,30 @@ function ciniki_musicfestivals_messageQueue(&$ciniki, $tnid, $args) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
         foreach($args['message']['teachers'] as $teacher) {
             if( !isset($emails[$teacher['email']]) ) {
+                $content = $args['message']['content'];
+                $content = str_replace('{_first_}', $teacher['first'], $content);
+                $content = str_replace('{_name_}', $teacher['name'], $content);
                 $emails[$teacher['email']] = array(
                     'customer_id'=>$teacher['id'],
                     'customer_email'=>$teacher['email'],
                     'customer_name'=>$teacher['name'],
                     'subject'=>$args['message']['subject'],
-                    'text_content'=>$args['message']['content'],
+                    'text_content'=>$content,
                     );
             }
         }
         foreach($args['message']['competitors'] as $competitor) {
             if( !isset($emails[$competitor['email']]) ) {
+                $content = $args['message']['content'];
+                $content = str_replace('{_first_}', $competitor['first'], $content);
+                $content = str_replace('{_name_}', $competitor['name'], $content);
                 $emails[$competitor['email']] = array(
                     'customer_email'=>$competitor['email'],
                     'customer_name'=>$competitor['name'],
                     'object'=>'ciniki.musicfestivals.competitor',
                     'object_id'=>$competitor['id'],
                     'subject'=>$args['message']['subject'],
-                    'text_content'=>$args['message']['content'],
+                    'text_content'=>$content,
                     //'attachments'=>array(array('content'=>$report['pdf']->Output($filename . '.pdf', 'S'), 'filename'=>$filename . '.pdf')),
                     );
             }

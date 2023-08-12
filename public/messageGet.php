@@ -208,7 +208,7 @@ function ciniki_musicfestivals_messageGet($ciniki) {
         if( $rc['message']['status'] > 10 ) {
             if( isset($rc['teachers']) ) {
                 foreach($rc['teachers'] as $tid => $teacher) {
-                    if( !isset($teacher['added']) && !isset($teacher['included']) ) {
+                    if( !isset($teacher['added']) && !isset($teacher['included']) && !isset($teacher['students']) ) {
                         unset($rc['teachers'][$tid]);
                     }
                 }
