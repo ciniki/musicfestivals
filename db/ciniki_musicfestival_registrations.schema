@@ -64,11 +64,11 @@
 # timeslot_sequence:    The order to display this registration in for the timeslot.
 # 
 # title1:               The title and composer of the 1st piece they will perform.
-# perf_time1:           The time of the 1st performance in minutes.
+# perf_time1:           The time of the 1st performance in seconds.
 # title2:               The title and composer of the 2nd piece they will perform.
-# perf_time2:           The time of the 2nd performance in minutes.
+# perf_time2:           The time of the 2nd performance in seconds.
 # title3:               The title and composer of the 3rd piece they will perform.
-# perf_time3:           The time of the 3rd performance in minutes.
+# perf_time3:           The time of the 3rd performance in seconds.
 #
 # fee:                  The entry fee for the registration.
 #

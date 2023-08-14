@@ -608,15 +608,20 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'label' => $title,
             'value' => isset($_POST["f-title{$i}"]) ? $_POST["f-title{$i}"] : (isset($registration["title{$i}"]) ? $registration["title{$i}"] : ''),
             );
+        $perf_time = (isset($_POST["f-perf_time{$i}-min"]) ? ($_POST["f-perf_time{$i}-min"]*60) : (isset($registration["perf_time{$i}"]) ? (intval($registration["perf_time{$i}"]/60)*60) : 0))
+            + (isset($_POST["f-perf_time{$i}-sec"]) ? $_POST["f-perf_time{$i}-sec"] : (isset($registration["perf_time{$i}"]) ? ($registration["perf_time{$i}"] % 60) :0));
         $fields["perf_time{$i}"] = array(
             'id' => "perf_time{$i}",
             'flex-basis' => '8em',
             'required' => $required,
             'class' => $class,
-            'ftype' => 'text',
+//            'ftype' => 'text',
+            'ftype' => 'minsec',
+            'second-interval' => 5,
+            'max-minutes' => 30,
             'size' => 'tiny',
-            'label' => 'Time',
-            'value' => isset($_POST["f-perf_time{$i}"]) ? $_POST["f-perf_time{$i}"] : (isset($registration["perf_time{$i}"]) ? $registration["perf_time{$i}"] : ''),
+            'label' => 'Piece Length',
+            'value' => $perf_time,
             );
         $fields["video_url{$i}"] = array(
             'id' => "video_url{$i}",

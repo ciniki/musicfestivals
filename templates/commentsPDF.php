@@ -528,7 +528,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
 
                         if( $reg['title1'] != '' ) {
                             $lh = ($pdf->getNumLines($reg['title1'], $w[1]) * 6) + 3;
-                            if( $reg['title2'] == '' && $reg['title3'] == '' ) {
+                            if( ($reg['class_flags']&0x1000) == 0 || (($reg['class_flags']&0x1000) == 0x4000 && $reg['title1'] == '') ) {
                                 $border = 'B';
                             }
                             $pdf->SetFont('helvetica', 'B', 12);
@@ -539,7 +539,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         }
                         if( ($reg['class_flags']&0x1000) == 0x1000 && $reg['title2'] != '' ) {
                             $lh = ($pdf->getNumLines($reg['title2'], $w[1]) * 6) + 3;
-                            if( ($reg['class_flags']&0x4000) == 0x4000 && $reg['title3'] == '' ) {
+                            if( ($reg['class_flags']&0x4000) == 0 || (($reg['class_flags']&0x4000) == 0x4000 && $reg['title3'] == '') ) {
                                 $border = 'B';
                             }
                             $pdf->SetFont('helvetica', 'B', 12);

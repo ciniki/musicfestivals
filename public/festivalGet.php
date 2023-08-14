@@ -959,7 +959,14 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "class1.name AS class1_name, "
                     . "timeslots.name, "
                     . "timeslots.description, "
-                    . "registrations.id AS reg_id, ";
+                    . "registrations.id AS reg_id, "
+                    . "registrations.title1, "
+                    . "registrations.perf_time1, "
+                    . "registrations.title2, "
+                    . "registrations.perf_time2, "
+                    . "registrations.title3, "
+                    . "registrations.perf_time3, "
+                    . "";
                 if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
                     $strsql .= "registrations.pn_display_name AS display_name ";
                 } else {
@@ -989,7 +996,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'scheduletimeslots', 'fname'=>'id', 'fields'=>array('id', 'festival_id', 'sdivision_id', 'slot_time_text', 'class1_id', 'name', 'description', 'class1_name')),
-                    array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name')),
+                    array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name',
+                        'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3',
+                        )),
                     ));
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
@@ -998,6 +1007,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     $festival['schedule_timeslots'] = $rc['scheduletimeslots'];
                     $nplists['schedule_timeslots'] = array();
                     foreach($festival['schedule_timeslots'] as $iid => $scheduletimeslot) {
+                        $perf_time = '';
                         //
                         // Check if class is set, then use class name
                         //
@@ -1010,11 +1020,28 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             // Add the registrations to the description
                             //
                             if( isset($scheduletimeslot['registrations']) ) {
+                                $perf_time = 0;
                                 foreach($scheduletimeslot['registrations'] as $reg) {
-                                    $festival['schedule_timeslots'][$iid]['description'] .= ($festival['schedule_timeslots'][$iid]['description'] != '' ? "\n":'') . $reg['name'];
+                                    $ptime = 0;
+                                    for($i = 1; $i <= 3; $i++) {
+                                        if( $reg["perf_time{$i}"] != '' && $reg["perf_time{$i}"] > 0 ) {
+                                            $ptime += $reg["perf_time{$i}"];
+                                        }
+                                    }
+                                    $perf_time += $ptime;
+                                    $ptime_text = ' [?]';
+                                    if( $ptime > 0 ) {
+                                        $ptime_text = ' [' . intval($ptime/60) . ':' . str_pad(($ptime%60), 2, '0', STR_PAD_LEFT) . ']';
+                                    }
+                                    $festival['schedule_timeslots'][$iid]['description'] .= ($festival['schedule_timeslots'][$iid]['description'] != '' ? "\n":'') . $reg['name'] . $ptime_text;
                                 }
                                 unset($festival['schedule_timeslots'][$iid]['registrations']);
                             }
+                        }
+                        if( $perf_time != '' && $perf_time > 0 ) {
+                            $festival['schedule_timeslots'][$iid]['perf_time_text'] = '[' . intval($perf_time/60) . ':' . str_pad(($perf_time%60), 2, '0', STR_PAD_LEFT) . ']';
+                        } elseif( $perf_time != '' && $perf_time == 0 ) {
+                            $festival['schedule_timeslots'][$iid]['perf_time_text'] = '[?]';
                         }
                         $nplists['schedule_timeslots'][] = $scheduletimeslot['id'];
                     }

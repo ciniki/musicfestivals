@@ -96,7 +96,9 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         . "registrations.id AS reg_id, "
         . "registrations.display_name, "
         . "registrations.public_name, "
-        . "registrations.title1 "
+        . "registrations.title1, "
+        . "registrations.title2, "
+        . "registrations.title3 "
         . "FROM ciniki_musicfestival_schedule_sections AS sections "
         . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
             . "sections.id = divisions.ssection_id " 
@@ -155,7 +157,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'name'=>'section_name')),
         array('container'=>'divisions', 'fname'=>'division_id', 'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'address')),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 'class1_id', 'class2_id', 'class3_id', 'class4_id', 'class5_id', 'description', 'class1_name', 'class2_name', 'class3_name', 'class4_name', 'class5_name')),
-        array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title1')),
+        array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title1', 'title2', 'title3')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -337,11 +339,11 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             } else {
                 $s_height = 0;
             }
-            if( $pdf->getY() > $pdf->getPageHeight() - $lh - 70 - $s_height) {
+            if( $pdf->getY() > $pdf->getPageHeight() - $lh - 80 - $s_height) {
                 $pdf->AddPage();
                 $newpage = 'yes';
             } elseif( $newpage == 'no' ) {
-                $pdf->Ln();
+                $pdf->Ln(15);
             }
             $newpage = 'no';
 
@@ -354,8 +356,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             }
             $pdf->SetFont('', '', '12');
             if( $address != '' ) {
-                $pdf->MultiCell(180, $lh, $address, 0, 'L', 0, 2);
-                $pdf->Ln(2);
+                $pdf->MultiCell(180, '', $address, 0, 'L', 0, 2);
             }
             $fill = 1;
             
@@ -367,70 +368,125 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             foreach($division['timeslots'] as $timeslot) {
                 $name = $timeslot['name'];
                 $description = $timeslot['description'];
-                if( $timeslot['class1_id'] > 0 ) {  
+                $reg_list = array();
+                $reg_list_height = 0;
+                if( $timeslot['class1_id'] > 0 ) {
                     if( $name == '' && $timeslot['class1_name'] != '' ) {
                         $name = $timeslot['class1_name'];
                     }
                     if( isset($timeslot['registrations']) && count($timeslot['registrations']) > 0 ) {
-                        if( $description != '' ) {
-                            $description .= "\n";
-                        }
+                        $pdf->SetFont('', '', '12');
+                        $pdf->SetCellPadding(0);
                         foreach($timeslot['registrations'] as $reg) {
+                            $row = array();
                             if( isset($args['names']) && $args['names'] == 'private' ) {
-                                $description .= ($description != '' ? "\n" : '') . $reg['name'];
+                                $row['name'] = $reg['name'];
                             } else {
-                                $description .= ($description != '' ? "\n" : '') . $reg['public_name'];
+                                $row['name'] = $reg['public_name'];
                             }
-                            if( !isset($args['titles']) || $args['titles'] == 'yes' ) {
-                                $description .= ($reg['title1'] != '' ? ' - ' . $reg['title1'] : '');
+                            if( isset($args['titles']) && $args['titles'] == 'yes' ) {
+                                $row['dash_width'] = $pdf->getStringWidth('-', '', '') + 3;
+                                $row['name_width'] = $pdf->getStringWidth($row['name'], '', '') + 0.25;
+                                $row['title_width'] = $pdf->getStringWidth($reg['title1'], '', '') + 0.25;
+                                if( ($row['name_width'] + $row['dash_width'] + $row['title_width']) > $w[2] 
+                                    && $row['name_width'] > ($w[2]*0.5) 
+                                    ) {
+                                    $row['name_width'] = ($w[2]*0.5);
+                                }
+                                $row['title_width'] = $w[2] - $row['name_width'] - $row['dash_width'] - 1;
+                                $row['name_height'] = $pdf->getStringHeight(($row['name_width']), $row['name']);
+                                $row['height'] = $row['name_height'];
+                                $row['title1'] = $reg['title1'];
+                                $row['titles_height'] = $pdf->getStringHeight($row['title_width'], $row['title1']);
+                                if( $reg['title2'] != '' ) {
+                                    $row['title2'] = $reg['title2'];
+                                    $row['titles_height'] += $pdf->getStringHeight($row['title_width'], $row['title2']);
+                                }
+                                if( $reg['title3'] != '' ) {
+                                    $row['title3'] = $reg['title3'];
+                                    $row['titles_height'] += $pdf->getStringHeight($row['title_width'], $row['title3']);
+                                }
+                                if( $row['titles_height'] > $row['height'] ) {
+                                    $row['height'] = $row['titles_height'];
+                                }
+                            } else {
+                                $row['name_width'] = $w[2];
+                                $row['title_width'] = 0;
+                                $row['height'] = $pdf->getStringHeight($w[2], $row['name']);
                             }
+                            $reg_list[] = $row;
+                            $reg_list_height += $row['height'];
                         }
+                        $pdf->SetCellPadding(1);
                     }
+                }
+                if( ($reg_list_height > 0 && $pdf->getY() > ($pdf->getPageHeight() - 37 - $reg_list_height)) 
+                    || ($reg_list_height == 0 && $pdf->getY() > ($pdf->getPageHeight() - 40)) 
+                    ) {
+                    $pdf->setCellPadding(0);
+                    $pdf->SetFont('', '', '12');
+                    $pdf->Cell(180, '', '', 'B', 0, 'R', 0);
+                    $pdf->setCellPadding(1);
+                    $pdf->AddPage();
+                    $pdf->SetFont('', 'B', '16');
+                    if( $pdf->getStringWidth($division['date'] . ' - ' . $division['name'] . ' (continued...)', '', 'B', 16) > 180 ) {
+                        $pdf->MultiCell(180, 10, $division['date'] . "\n" . $division['name'] . ' (continued...)', 0, 'L', 0);
+                    } else {
+                        $pdf->Cell(180, 10, $division['date'] . ' - ' . $division['name'] . ' (continued...)', 0, 0, 'L', 0);
+                        $pdf->Ln(10);
+                    }
+                    $pdf->SetFont('', '', '12');
+                    if( $address != '' ) {
+                        $pdf->MultiCell(180, '', $address, 0, 'L', 0, 2);
+                        $pdf->Ln(5);
+                    }
+                } else {
+                    $pdf->Ln(5);
                 }
 
-                if( $description != '' ) {
-                    $d_height = $pdf->getStringHeight($w[2], $description);
-                    if( $pdf->getY() > $pdf->getPageHeight() - 50 - $d_height) {
-                        $pdf->AddPage();
-                        $pdf->SetFont('', 'B', '16');
-                        // $pdf->Cell(180, 10, $division['name'] . ' - ' . $division['date'] . ' (continued...)', 0, 0, 'L', 0);
-                        if( $pdf->getStringWidth($division['date'] . ' - ' . $division['name'] . ' (continued...)', '', 'B', 16) > 180 ) {
-                            $pdf->MultiCell(180, 10, $division['date'] . "\n" . $division['name'] . ' (continued...)', 0, 'L', 0);
-                        } else {
-                            $pdf->Cell(180, 10, $division['date'] . ' - ' . $division['name'] . ' (continued...)', 0, 0, 'L', 0);
-                            $pdf->Ln(10);
-                        }
-                        $pdf->SetFont('', '', '12');
-                        if( $address != '' ) {
-                            $pdf->MultiCell(180, $lh, $address, 0, 'L', 0, 2);
-                            $pdf->Ln(2);
-                        }
-                    }
-                }
-                
                 $pdf->SetFont('', 'B');
                 $lh = $pdf->getStringHeight($w[2], $name);
-//                $pdf->Cell($w[0], $lh, $timeslot['time'], $border, 0, 'R', 0);
-//                $pdf->Cell($w[1], $lh, '', $border, 0, 'R', 0);
-//                $pdf->Cell($w[2], $lh, $name, $border, 0, 'L', 0);
                 $pdf->Multicell($w[0], $lh, $timeslot['time'], $border, 'R', 0, 0);
                 $pdf->Multicell($w[1], $lh, '', $border, 'R', 0, 0);
                 $pdf->Multicell($w[2], $lh, $name, $border, 'L', 0, 1);
                 $pdf->SetFont('', '');
-//                $pdf->Ln($lh);
-    
-                if( $description != '' ) {
-                    $pdf->writeHTMLCell($w[0], $d_height, '', '', '', '', 0, false, true, 'L', 1);
-                    $pdf->writeHTMLCell($w[1], $d_height, '', '', '', '', 0, false, true, 'L', 1);
-                    $pdf->writeHTMLCell($w[2], $d_height, '', '', preg_replace("/\n/", "<br/>", $description), '', 0, false, true, 'L', 1);
-                    $pdf->Ln();
+   
+                $pdf->SetCellPadding(0);
+                foreach($reg_list as $row) {
+                    $pdf->MultiCell($w[0], $row['height'], '', 0, 'L', 0, 0);
+                    $pdf->MultiCell($w[1]+1, $row['height'], '', 0, 'L', 0, 0);
+                    if( isset($args['titles']) && $args['titles'] == 'yes' ) {
+                        $pdf->MultiCell($row['name_width'], $row['name_height'], $row['name'], 0, 'L', 0, 0);
+                        if( $row['title1'] != '' ) {
+                            $pdf->MultiCell($row['dash_width'], '', '-', 0, 'C', 0, 0);
+                            $pdf->MultiCell($row['title_width'], '', $row['title1'], 0, 'L', 0, 1);
+                        } else {
+                            $pdf->Ln(5);
+                        }
+                        if( isset($row['title2']) && $row['title2'] != '' ) {
+                            $pdf->MultiCell($w[0] + $w[1] + $row['name_width'] + 1, $row['height'], '', 0, 'L', 0, 0);
+                            $pdf->MultiCell($row['dash_width'], '', '-', 0, 'C', 0, 0);
+                            $pdf->MultiCell($row['title_width'], '', $row['title2'], 0, 'L', 0, 1);
+                        }
+                        if( isset($row['title3']) && $row['title3'] != '' ) {
+                            $pdf->MultiCell($w[0] + $w[1] + $row['name_width'] + 1, $row['height'], '', 0, 'L', 0, 0);
+                            $pdf->MultiCell($row['dash_width'], '', '-', 0, 'C', 0, 0);
+                            $pdf->MultiCell($row['title_width'], '', $row['title3'], 0, 'L', 0, 1);
+                        }
+                        if( $row['name_height'] > $row['titles_height'] ) {    
+                            $pdf->Ln($row['name_height'] - $row['titles_height']);
+                        }
+                    } else {
+                        $pdf->MultiCell($w[2], $row['height'], $row['name'], 0, 'L', 0, 1);
+                    }
+                    $pdf->Ln(1);
                 }
-                $pdf->Ln(5);
+                $pdf->SetCellPadding(1);
 
                 $fill=!$fill;
                 $border = 'T';
             }
-            $pdf->Cell($w[0]+$w[1]+$w[2], 1, '', 'T', 0, 'R', 0);
+            $pdf->Cell($w[0]+$w[1]+$w[2], 1, '', 'B', 0, 'R', 0);
         }
     }
 
