@@ -44,6 +44,12 @@ function ciniki_musicfestivals_registrationHistory($ciniki) {
     if( $args['field'] == 'fee' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryReformat');
         return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', $args['tnid'], 'ciniki_musicfestival_registrations', $args['registration_id'], $args['field'], 'currency');
+    } elseif( $args['field'] == 'perf_time1' || $args['field'] == 'perf_time2' || $args['field'] == 'perf_time3' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryReformat');
+        return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', $args['tnid'], 'ciniki_musicfestival_registrations', $args['registration_id'], $args['field'], 'minsec');
+    } elseif( $args['field'] == 'tags' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryTags');
+        return ciniki_core_dbGetModuleHistoryTags($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', $args['tnid'], 'ciniki_musicfestival_registration_tags', $args['registration_id'], 'tag_name', 'registration_id', 10);
     }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
