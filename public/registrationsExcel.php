@@ -324,11 +324,11 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Class Code', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Class Name', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Title', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Time', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Time(sec)', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '2nd Title', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '2nd Time', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '2nd Time(sec)', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '3rd Title', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '3rd Time', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '3rd Time(sec)', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Fee', false);
         if( ($festival['flags']&0x02) == 0x02 ) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Virtual', false);
