@@ -55,9 +55,11 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'competitor-parent-msg',
         'competitor-teacher-msg',
         'competitor-adult-msg',
+        'competitor-individual-study-level',
         'competitor-group-parent-msg',
         'competitor-group-teacher-msg',
         'competitor-group-adult-msg',
+        'competitor-group-study-level',
         );
     foreach($valid_settings as $field) {
         if( isset($args[$field]) ) {
