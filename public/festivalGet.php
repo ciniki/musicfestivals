@@ -35,6 +35,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'competitors'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitors'),
         'city_prov'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitors From City Province'),
         'province'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitors From Province'),
+        'invoices'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Invoices'),
+        'invoice_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Invoice Status'),
         'adjudicators'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicators'),
         'certificates'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Certificates'),
         'photos'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Photos'),
@@ -1181,6 +1183,98 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 'name' => 'All',
                 'num_competitors' => $total_comp,
                 ));
+        }
+        
+        //
+        // Get the list of invoices for this festival
+        //
+        if( isset($args['invoices']) && $args['invoices'] == 'yes' ) {
+            //
+            // Load maps
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'private', 'maps');
+            $rc = ciniki_sapos_maps($ciniki);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $sapos_maps = $rc['maps'];
+            $sapos_maps['invoice']['status'][50] = 'Paid';
+
+            //
+            // Get the list of statuses
+            //
+            $strsql = "SELECT invoices.status, "
+                . "COUNT(DISTINCT invoices.id) AS num_invoices "
+                . "FROM ciniki_musicfestival_registrations AS registrations "
+                . "INNER JOIN ciniki_sapos_invoices AS invoices ON ("
+                    . "registrations.invoice_id = invoices.id "
+                    . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "GROUP BY invoices.status "
+                . "ORDER BY invoices.status "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'statuses', 'fname'=>'status', 'fields'=>array('status', 'num_invoices')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.565', 'msg'=>'Unable to load statuses', 'err'=>$rc['err']));
+            }
+            $festival['invoice_statuses'] = isset($rc['statuses']) ? $rc['statuses'] : array();
+            $num_invoices = 0;
+            foreach($festival['invoice_statuses'] as $sid => $s) {
+                $num_invoices += $s['num_invoices'];
+                $festival['invoice_statuses'][$sid]['status_text'] = $sapos_maps['invoice']['status'][$s['status']];
+            }
+            array_unshift($festival['invoice_statuses'], array(
+                'status' => '',
+                'status_text' => 'All',
+                'num_invoices' => $num_invoices,
+                ));
+
+            // 
+            // Get the invoices
+            //
+            $strsql = "SELECT invoices.id, "
+                . "invoices.invoice_number, "
+                . "invoices.status, "
+                . "invoices.status AS status_text, "
+                . "invoices.total_amount, "
+                . "invoices.balance_amount, "
+                . "registrations.display_name AS competitor_names, "
+                . "customers.display_name AS customer_name "
+                . "FROM ciniki_musicfestival_registrations AS registrations "
+                . "INNER JOIN ciniki_sapos_invoices AS invoices ON ("
+                    . "registrations.invoice_id = invoices.id ";
+            if( isset($args['invoice_status']) && $args['invoice_status'] != '' && $args['invoice_status'] > 0 ) {
+                $strsql .= "AND invoices.status = '" . ciniki_core_dbQuote($ciniki, $args['invoice_status']) . "' ";
+            }
+            $strsql .= "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "LEFT JOIN ciniki_customers AS customers ON ("
+                    . "invoices.customer_id = customers.id "
+                    . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "ORDER BY invoice_number "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'invoices', 'fname'=>'id', 
+                    'fields'=>array('id', 'invoice_number', 'status', 'status_text', 'total_amount', 'balance_amount',
+                        'customer_name', 'competitor_names',
+                        ),
+                    'dlists'=>array('competitor_names'=>', '),
+                    'maps'=>array('status_text'=>$sapos_maps['invoice']['status']),
+                    ),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.564', 'msg'=>'Unable to load invoices', 'err'=>$rc['err']));
+            }
+            $festival['invoices'] = isset($rc['invoices']) ? $rc['invoices'] : array();
         }
 
         //
