@@ -111,7 +111,7 @@ function ciniki_musicfestivals_main() {
     this.festival.section_id = 0;
     this.festival.schedulesection_id = 0;
     this.festival.scheduledivision_id = 0;
-    this.festival.invoice_status = 0;
+    this.festival.invoice_typestatus = '';
     this.festival.list_id = 0;
     this.festival.listsection_id = 0;
     this.festival.nplists = {};
@@ -952,7 +952,7 @@ function ciniki_musicfestivals_main() {
             case 'competitor_cities': return 'M.ciniki_musicfestivals_main.festival.openCompetitorCity(\'' + escape(d.name) + '\');';
             case 'competitor_provinces': return 'M.ciniki_musicfestivals_main.festival.openCompetitorProv(\'' + escape(d.name) + '\');';
             case 'competitors': return 'M.ciniki_musicfestivals_main.competitor.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.id + '\',M.ciniki_musicfestivals_main.festival.festival_id);';
-            case 'invoice_statuses': return 'M.ciniki_musicfestivals_main.festival.openInvoiceStatus(\'' + d.status + '\');';
+            case 'invoice_statuses': return 'M.ciniki_musicfestivals_main.festival.openInvoiceStatus(\'' + d.typestatus + '\');';
             case 'invoices': return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_musicfestivals_main.festival.open();\',\'mc\',{\'invoice_id\':\'' + d.id + '\'});';
             case 'adjudicators': return 'M.ciniki_musicfestivals_main.adjudicator.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.id + '\',0,M.ciniki_musicfestivals_main.festival.festival_id, M.ciniki_musicfestivals_main.festival.nplists.adjudicators);';
             case 'certificates': return 'M.ciniki_musicfestivals_main.certificate.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.id + '\');';
@@ -998,7 +998,10 @@ function ciniki_musicfestivals_main() {
         if( s == 'message_statuses' && this.messages_status == d.status ) {
             return 'highlight';
         }
-        if( this.invoice_status == 0 && s == 'invoices' ) {
+        if( s == 'invoice_statuses' && this.invoice_typestatus == d.typestatus ) {
+            return 'highlight';
+        }
+        if( s == 'invoices' && this.invoice_typestatus == '' && s == 'invoices' ) {
             switch(d.status) {  
                 case '10': return 'statusorange';
                 case '15': return 'statusorange';
@@ -1126,7 +1129,7 @@ function ciniki_musicfestivals_main() {
     }
     this.festival.openInvoiceStatus = function(s) {
         this.lastY = 0;
-        this.invoice_status = s;
+        this.invoice_typestatus = s;
         this.open();
     }
     this.festival.invoiceTransaction = function(i, t) {
@@ -1219,19 +1222,19 @@ function ciniki_musicfestivals_main() {
             args['list_id'] = this.list_id;
             args['listsection_id'] = this.listsection_id;
         } else if( this.isSelected('more', 'invoices') == 'yes' ) {
-            this.size = 'large narrowaside';
+            this.size = 'xlarge narrowaside';
             args['invoices'] = 'yes';
-            if( this.invoice_status > 0 ) {
-                args['invoice_status'] = this.invoice_status;
+            if( this.invoice_typestatus > 0 ) {
+                args['invoice_typestatus'] = this.invoice_typestatus;
             }
         } else if( this.isSelected('more', 'adjudicators') == 'yes' ) {
-            this.size = 'large';
+            this.size = 'xlarge';
             args['adjudicators'] = 'yes';
         } else if( this.isSelected('more', 'files') == 'yes' ) {
-            this.size = 'large';
+            this.size = 'xlarge';
             args['files'] = 'yes';
         } else if( this.isSelected('more', 'certificates') == 'yes' ) {
-            this.size = 'large';
+            this.size = 'xlarge';
             args['certificates'] = 'yes';
         } else if( this.sections._tabs.selected == 'messages' ) {
             args['messages'] = 'yes';
@@ -1249,7 +1252,7 @@ function ciniki_musicfestivals_main() {
             args['emails_list'] = this.sections.emails_tabs.selected;
         } else if( this.isSelected('more', 'sponsors') == 'yes' ) {
         //} else if( this.sections._tabs.selected == 'sponsors' ) {
-            this.size = 'large';
+            this.size = 'xlarge';
             args['sponsors'] = 'yes';
         } else if( this.isSelected('more', 'sponsors-old') == 'yes' ) {
             args['sponsors'] = 'yes';
@@ -5977,6 +5980,7 @@ function ciniki_musicfestivals_main() {
     }
 
     this.tenantInit = function() {
+        this.festival.typestatus = '';
         this.festival.sections.ipv_tabs.selected = 'all';
         this.festival.city_prov = 'All';
         this.festival.province = 'All';

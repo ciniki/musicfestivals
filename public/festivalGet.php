@@ -36,7 +36,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'city_prov'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitors From City Province'),
         'province'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitors From Province'),
         'invoices'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Invoices'),
-        'invoice_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Invoice Status'),
+        'invoice_typestatus'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Invoice Status'),
         'adjudicators'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicators'),
         'certificates'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Certificates'),
         'photos'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Photos'),
@@ -1203,11 +1203,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             //
             // Get the list of statuses
             //
-            $strsql = "SELECT invoices.status, "
+            $strsql = "SELECT CONCAT_WS('.', invoices.invoice_type, invoices.status) AS typestatus, "
                 . "COUNT(DISTINCT invoices.id) AS num_invoices "
                 . "FROM ciniki_musicfestival_registrations AS registrations "
                 . "INNER JOIN ciniki_sapos_invoices AS invoices ON ("
                     . "registrations.invoice_id = invoices.id "
+                    . "AND invoices.invoice_type <> 20 "
                     . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
@@ -1217,7 +1218,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-                array('container'=>'statuses', 'fname'=>'status', 'fields'=>array('status', 'num_invoices')),
+                array('container'=>'statuses', 'fname'=>'typestatus', 'fields'=>array('typestatus', 'num_invoices')),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.565', 'msg'=>'Unable to load statuses', 'err'=>$rc['err']));
@@ -1226,10 +1227,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $num_invoices = 0;
             foreach($festival['invoice_statuses'] as $sid => $s) {
                 $num_invoices += $s['num_invoices'];
-                $festival['invoice_statuses'][$sid]['status_text'] = $sapos_maps['invoice']['status'][$s['status']];
+                $festival['invoice_statuses'][$sid]['status_text'] = $sapos_maps['invoice']['typestatus'][$s['typestatus']];
             }
             array_unshift($festival['invoice_statuses'], array(
-                'status' => '',
+                'typestatus' => '',
                 'status_text' => 'All',
                 'num_invoices' => $num_invoices,
                 ));
@@ -1247,9 +1248,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "customers.display_name AS customer_name "
                 . "FROM ciniki_musicfestival_registrations AS registrations "
                 . "INNER JOIN ciniki_sapos_invoices AS invoices ON ("
-                    . "registrations.invoice_id = invoices.id ";
-            if( isset($args['invoice_status']) && $args['invoice_status'] != '' && $args['invoice_status'] > 0 ) {
-                $strsql .= "AND invoices.status = '" . ciniki_core_dbQuote($ciniki, $args['invoice_status']) . "' ";
+                    . "registrations.invoice_id = invoices.id "
+                    . "AND invoices.invoice_type <> 20 ";
+            if( isset($args['invoice_typestatus']) && $args['invoice_typestatus'] != '' && $args['invoice_typestatus'] > 0 ) {
+                list($itype, $istatus) = explode('.', $args['invoice_typestatus']);
+                $strsql .= "AND invoices.invoice_type = '" . ciniki_core_dbQuote($ciniki, $itype) . "' ";
+                $strsql .= "AND invoices.status = '" . ciniki_core_dbQuote($ciniki, $istatus) . "' ";
             }
             $strsql .= "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
