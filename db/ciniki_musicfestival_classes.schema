@@ -40,6 +40,8 @@
 # earlybird_fee:        The earlybird fee for the class.
 # fee:                  The fee for the class.
 # virtual_fee:          The fee for the class.
+# earlybird_plus_fee:   The Earlybird Adjudication Plus fee for the class.
+# plus_fee:             The Adjudication Plus fee for the class.
 #
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.
@@ -59,6 +61,8 @@ create table ciniki_musicfestival_classes (
     earlybird_fee decimal(19,6) not null,
     fee decimal(19,6) not null,
     virtual_fee decimal(19,6) not null,
+    earlybird_plus_fee decimal(19,6) not null,
+    plus_fee decimal(19,6) not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
@@ -67,4 +71,4 @@ create table ciniki_musicfestival_classes (
     unique index (festival_id, code),
     index (festival_id, category_id, tnid),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.05';
+) ENGINE='InnoDB', COMMENT='v1.06';

@@ -164,6 +164,8 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
         . "i.earlybird_fee, "
         . "i.fee, "
         . "i.virtual_fee, "
+        . "i.earlybird_plus_fee, "
+        . "i.plus_fee, "
         . "trophies.trophy_id "
         . "FROM ciniki_musicfestival_sections AS s "
         . "LEFT JOIN ciniki_musicfestival_categories AS c ON ("
@@ -189,7 +191,7 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
         array('container'=>'categories', 'fname'=>'cid',
             'fields'=>array('name'=>'cn', 'permalink'=>'cp', 'sequence'=>'co', 'primary_image_id'=>'ci', 'synopsis'=>'cs', 'description'=>'cd')),
         array('container'=>'classes', 'fname'=>'iid',
-            'fields'=>array('code', 'name'=>'iname', 'permalink'=>'ip', 'sequence'=>'io', 'flags', 'earlybird_fee', 'fee', 'virtual_fee')),
+            'fields'=>array('code', 'name'=>'iname', 'permalink'=>'ip', 'sequence'=>'io', 'flags', 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee')),
         array('container'=>'trophies', 'fname'=>'trophy_id',
             'fields'=>array('trophy_id')),
         ));

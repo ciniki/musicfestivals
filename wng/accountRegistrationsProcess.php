@@ -470,7 +470,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 ) {
                 continue;
             }
-            if( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == '-1' && $field['id'] == 'participation' ) {
+            if( isset($field['required']) && $field['required'] == 'yes' && $field['value'] < 0 && $field['id'] == 'participation' ) {
                 $errors[] = array(
                     'msg' => 'You must specify how you want to participate.',
                     );
@@ -592,7 +592,10 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             } else {
                 $registration['fee'] = $selected_class['fee'];
             }
-            if( ($festival['flags']&0x04) == 0x04 && $fields['participation']['value'] == 1 && $selected_class['virtual_fee'] > 0 ) {
+            if( ($festival['flags']&0x10) == 0x10 && $fields['participation']['value'] == 2 && $selected_class['plus_fee'] > 0 ) {
+                $registration['fee'] = $selected_class['plus_fee'];
+            }
+            elseif( ($festival['flags']&0x04) == 0x04 && $fields['participation']['value'] == 1 && $selected_class['virtual_fee'] > 0 ) {
                 $registration['fee'] = $selected_class['virtual_fee'];
             }
 
@@ -668,7 +671,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'flags' => 0x08,
                 'code' => $selected_class['code'],
                 //'description' => (($festival['flags']&0x0100) == 0x0100 ? $selected_class['category_name'] . ' - ' : '') . $selected_class['name'],
-                'description' => $selected_class['name'],
+                'description' => $selected_class['name'] . ($registration['participation'] == 2 ? ' (Adjudication Plus)' : ''),
                 'unit_amount' => $registration['fee'],
                 'unit_discount_amount' => 0,
                 'unit_discount_percentage' => 0,
@@ -714,7 +717,10 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             } else {
                 $new_fee = $selected_class['fee'];
             }
-            if( ($festival['flags']&0x04) == 0x04 && $fields['participation']['value'] == 1 && $selected_class['virtual_fee'] > 0 ) {
+            if( ($festival['flags']&0x10) == 0x10 && $fields['participation']['value'] == 2 && $selected_class['plus_fee'] > 0 ) {
+                $new_fee = $selected_class['plus_fee'];
+            } 
+            elseif( ($festival['flags']&0x04) == 0x04 && $fields['participation']['value'] == 1 && $selected_class['virtual_fee'] > 0 ) {
                 $new_fee = $selected_class['virtual_fee'];
             }
 
@@ -783,6 +789,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     $registration['fee'] = $new_fee;
                 }
             }
+            if( isset($update_args['participation']) ) {
+                $registration['participation'] = $update_args['participation'];
+            }
 
             //
             // Update the registration
@@ -845,8 +854,14 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 if( $item['code'] != $selected_class['code'] ) {
                     $update_item_args['code'] = $selected_class['code'];
                 }
-                if( $item['description'] != $selected_class['name'] ) {
-                    $update_item_args['description'] = $selected_class['name'];
+                $description = $selected_class['name'];
+                if( $registration['participation'] == 1 ) {
+                    $description .= ' (Virtual)';
+                } elseif( $registration['participation'] == 2) {
+                    $description .= ' (Adjudication Plus)';
+                }
+                if( $item['description'] != $description ) {
+                    $update_item_args['description'] = $description;
                 }
                 if( $item['unit_amount'] != $registration['fee'] ) {
                     $update_item_args['unit_amount'] = $registration['fee'];
@@ -1040,6 +1055,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     $fields[$fid]['value'] = 'in person on a date to be scheduled';
                 } elseif( $field['value'] == 1 ) {
                     $fields[$fid]['value'] = 'virtually and submit a video';
+                } elseif( $field['value'] == 2 ) {
+                    $fields[$fid]['value'] = 'Adjudication Plus';
                 }
             }
             if( isset($field['id']) && $field['id'] == 'class_id' ) {
@@ -1284,6 +1301,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         }
         $strsql .= "registrations.title1, "
             . "registrations.fee, "
+            . "registrations.participation, "
             . "classes.code AS class_code, "
             . "sections.name AS section_name, "
             . "categories.name AS category_name, "
@@ -1346,7 +1364,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'fields'=>array('id', 'status', 'invoice_status', 'invoice_id', 
                     'billing_customer_id', 'teacher_customer_id', 'display_name', 
                     'class_code', 'class_name', 'section_name', 'category_name', 'codename', 
-                    'fee', 'title1', 'participation',
+                    'fee', 'participation', 'title1', 'participation',
                     'timeslot_time', 'timeslot_date', 'timeslot_address', 'timeslot_flags',
                     ),
                 ),
@@ -1363,6 +1381,11 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         foreach($registrations as $rid => $reg) {
             if( ($festival['flags']&0x0100) == 0x0100 ) {
                 $reg['codename'] = $reg['class_code'] . ' - ' . $reg['section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name'];
+            }
+            if( $reg['participation'] == 1 ) {
+                $reg['codename'] .= ' (Virtual)';
+            } elseif( $reg['participation'] == 2 ) {
+                $reg['codename'] .= ' (Adjudication Plus)';
             }
             if( $reg['teacher_customer_id'] == $request['session']['customer']['id']
                 && $reg['billing_customer_id'] != $request['session']['customer']['id']
@@ -1514,7 +1537,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     && $registration['timeslot_time'] != ''
                     && $registration['timeslot_date'] != ''
                     ) {
-                    if( $registration['participation'] == 1 ) {
+                    if( $registration['participation'] == 2 ) {
+                        $paid_registrations[$rid]['scheduled'] = 'Adjudication Plus';
+                    } elseif( $registration['participation'] == 1 ) {
                         $paid_registrations[$rid]['scheduled'] = 'Virtual';
                     } else {
                         $paid_registrations[$rid]['scheduled'] = $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] . '<br/>' . $registration['timeslot_address'];

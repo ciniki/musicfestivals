@@ -93,6 +93,10 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         $festival['earlybird'] = ($earlybird_dt > $dt ? 'yes' : 'no');
         $festival['live'] = ($live_dt > $dt ? 'yes' : 'no');
         $festival['virtual'] = ($virtual_dt > $dt ? 'yes' : 'no');
+        if( ($festival['flags']&0x10) == 0x10 ) {   // Adjudication Plus
+            $festival['earlybird_plus_live'] = $festival['earlybird'];
+            $festival['plus_live'] = $festival['live'];
+        }
     }
 
     //
@@ -127,6 +131,9 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     if( $section['live_end_dt'] != '' && $section['live_end_dt'] != '0000-00-00 00:00:00' ) {
         $live_dt = new DateTime($section['live_end_dt'], new DateTimezone('UTC'));
         $festival['live'] = ($live_dt > $dt ? 'yes' : 'no');
+        if( ($festival['flags']&0x10) == 0x10 ) {   // Adjudication Plus
+            $festival['plus_live'] = $festival['live'];
+        }
     }
     if( $section['virtual_end_dt'] != '' && $section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
         $virtual_dt = new DateTime($section['virtual_end_dt'], new DateTimezone('UTC'));
@@ -186,6 +193,9 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 $festival['virtual'] = 'no';
             }
         }
+        if( ($festival['flags']&0x10) == 0x10 ) {   // Adjudication Plus
+            $festival['plus_live'] = $festival['live'];
+        }
     }
   
     if( isset($section['description']) && $section['description'] != '' ) {
@@ -237,7 +247,9 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         . "classes.flags, "
         . "earlybird_fee, "
         . "fee, "
-        . "virtual_fee "
+        . "virtual_fee, "
+        . "earlybird_plus_fee, "
+        . "plus_fee "
         . "FROM ciniki_musicfestival_categories AS categories "
         . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
             . "categories.id = classes.category_id "
@@ -255,7 +267,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         array('container'=>'classes', 'fname'=>'id', 
             'fields'=>array('id', 'uuid', 'festival_id', 'category_id', 'code', 'name', 
                 'permalink', 'level', 'sequence', 'flags', 
-                'earlybird_fee', 'fee', 'virtual_fee',
+                'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
                 )),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -292,7 +304,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 //
                 // Process the classes to determine which fee to show
                 //
-                $live_label = $festival['earlybird'] == 'yes' ? 'Earlybird' : 'Live';
+                $live_label = $festival['earlybird'] == 'yes' ? 'Earlybird' : 'Fee';
                 foreach($category['classes'] as $cid => $class) {
                     if( $festival['live'] == 'yes' ) {
                         if( isset($festival['earlybird']) && $festival['earlybird'] == 'yes' && $class['earlybird_fee'] > 0 ) {
@@ -306,12 +318,27 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                         $category['classes'][$cid]['live_fee'] = 'closed';
                     }
                     if( ($festival['flags']&0x04) == 0x04 ) {
+                        $live_label = $festival['earlybird'] == 'yes' ? 'Earlybird Live' : 'Live';
                         if( $festival['virtual'] == 'yes' && $class['virtual_fee'] > 0 ) {
                             $category['classes'][$cid]['virtual_fee'] = '$' . number_format($class['virtual_fee'], 2);
                         } elseif( $festival['virtual'] == 'yes' ) {
                             $category['classes'][$cid]['virtual_fee'] = 'n/a';
                         } else {
                             $category['classes'][$cid]['virtual_fee'] = 'closed';
+                        }
+                    }
+                    if( ($festival['flags']&0x10) == 0x10 && isset($festival['plus_live']) ) {
+                        $live_label = 'Regular Fee';
+                        if( $festival['plus_live'] == 'yes' ) {
+                            if( isset($festival['earlybird_plus']) && $festival['earlybird_plus'] == 'yes' && $class['earlybird_plus_fee'] > 0 ) {
+                                $category['classes'][$cid]['plus_live_fee'] = '$' . number_format($class['earlybird_plus_fee'], 2);
+                            } elseif( $festival['plus_live'] == 'yes' && $class['plus_fee'] > 0 ) {
+                                $category['classes'][$cid]['plus_live_fee'] = '$' . number_format($class['plus_fee'], 2);
+                            } else {
+                                $category['classes'][$cid]['plus_live_fee'] = 'n/a';
+                            }
+                        } else {
+                            $category['classes'][$cid]['plus_live_fee'] = 'closed';
                         }
                     }
                     $category['classes'][$cid]['fullname'] = $class['code'] . ' - ' . $class['name'];
@@ -325,7 +352,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 // Check if online registrations enabled, and online registrations enabled for this class
                 //
                 if( ($festival['flags']&0x06) == 0x06 ) {   // Virtual option & Virtual Pricing
-                    $blocks[] = array(
+                    $block = array(
                         'type' => 'table', 
                         'section' => 'classes', 
                         'headers' => ($festival['flags']&0x04) == 0x04 ? 'yes' : 'no',
@@ -335,12 +362,12 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     //                            array('label'=>'Course', 'field'=>'name', 'class'=>''),
                             array('label'=>$live_label, 'fold-label'=>$live_label, 'field'=>'live_fee', 'class'=>'aligncenter fold-alignleft'),
                             array('label'=>'Virtual', 'fold-label'=>'Virtual', 'field'=>'virtual_fee', 'class'=>'aligncenter fold-alignleft'),
-                            array('label'=>'', 'field'=>'register', 'class'=>'alignright buttons'),
+//                            array('label'=>'', 'field'=>'register', 'class'=>'alignright buttons'),
                             ),
                         'rows' => $category['classes'],
                         );
                 } else {
-                    $blocks[] = array(
+                    $block = array(
                         'type' => 'table', 
                         'section' => 'classes', 
                         'headers' => 'no',
@@ -348,11 +375,17 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                         'columns' => array(
                             array('label'=>'Class', 'fold-label'=>'Class', 'field'=>'fullname', 'class'=>''),
                             array('label'=>$live_label, 'fold-label'=>$live_label, 'field'=>'live_fee', 'class'=>'aligncenter fold-alignleft'),
-                            array('label'=>'', 'field'=>'register', 'class'=>'alignright buttons'),
                             ),
                         'rows' => $category['classes'],
                         );
                 }
+                if( isset($festival['plus_live']) ) {
+                    $block['headers'] = 'yes';
+                    $block['columns'][] = array('label'=>'Adjudication Plus Fee', 'fold-label'=>'Adjudication Plus Fee', 'field'=>'plus_live_fee', 'class'=>'aligncenter fold-alignleft');
+                    
+                }
+                $block['columns'][] = array('label'=>'', 'field'=>'register', 'class'=>'alignright buttons');
+                $blocks[] = $block;
             }
         }
     }

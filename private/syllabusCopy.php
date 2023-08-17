@@ -38,7 +38,9 @@ function ciniki_musicfestivals_syllabusCopy(&$ciniki, $tnid, $festival_id, $old_
         . "i.flags, "
         . "i.earlybird_fee, "
         . "i.fee, "
-        . "i.virtual_fee "
+        . "i.virtual_fee, "
+        . "i.earlybird_plus_fee "
+        . "i.plus_fee "
         . "FROM ciniki_musicfestival_sections AS s "
         . "LEFT JOIN ciniki_musicfestival_categories AS c ON ("
             . "s.id = c.section_id "
@@ -59,7 +61,7 @@ function ciniki_musicfestivals_syllabusCopy(&$ciniki, $tnid, $festival_id, $old_
         array('container'=>'categories', 'fname'=>'cid',
             'fields'=>array('name'=>'cn', 'permalink'=>'cp', 'sequence'=>'co', 'primary_image_id'=>'ci', 'synopsis'=>'cs', 'description'=>'cd')),
         array('container'=>'classes', 'fname'=>'iid',
-            'fields'=>array('code', 'name'=>'iname', 'permalink'=>'ip', 'sequence'=>'io', 'flags', 'earlybird_fee', 'fee', 'virtual_fee')),
+            'fields'=>array('code', 'name'=>'iname', 'permalink'=>'ip', 'sequence'=>'io', 'flags', 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.104', 'msg'=>'Previous syllabus not found', 'err'=>$rc['err']));

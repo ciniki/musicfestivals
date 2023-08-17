@@ -88,6 +88,7 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
         . "registrations.perf_time2, "
         . "registrations.title3, "
         . "registrations.perf_time3, "
+        . "registrations.participation, "
         . "registrations.notes, "
         . "competitors.id AS competitor_id, "
         . "competitors.notes AS competitor_notes "
@@ -97,8 +98,11 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
             . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "INNER JOIN ciniki_musicfestival_sections AS sections ON ("
-            . "categories.section_id = sections.id "
-            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "categories.section_id = sections.id ";
+        if( isset($args['section_id']) && $args['section_id'] > 0 ) {
+            $strsql .= "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' ";
+        }
+        $strsql .= "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "classes.id = registrations.class_id "
@@ -125,7 +129,7 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 
-                'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 'notes',
+                'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 'notes', 'participation',
             )),
         array('container'=>'competitors', 'fname'=>'competitor_id', 
             'fields'=>array('id'=>'competitor_id', 'notes'=>'competitor_notes'),
@@ -138,6 +142,19 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
         $classes = $rc['classes'];
         foreach($classes as $cid => $class) {
             $classes[$cid]['num_reg'] = count($class['registrations']);
+            if( isset($class['registrations']) ) {
+                foreach($class['registrations'] AS $rid => $reg) {
+                    if( $reg['perf_time1'] != '' && $reg['perf_time1'] > 0 ) {
+                        $classes[$cid]['registrations'][$rid]['perf_time1'] = intval($reg['perf_time1']/60) . ':' . str_pad($reg['perf_time1'] % 60, 2, '0', STR_PAD_LEFT);
+                    }
+                    if( $reg['perf_time2'] != '' && $reg['perf_time2'] > 0 ) {
+                        $classes[$cid]['registrations'][$rid]['perf_time2'] = intval($reg['perf_time2']/60) . ':' . str_pad($reg['perf_time2'] % 60, 2, '0', STR_PAD_LEFT);
+                    }
+                    if( $reg['perf_time3'] != '' && $reg['perf_time3'] > 0 ) {
+                        $classes[$cid]['registrations'][$rid]['perf_time3'] = intval($reg['perf_time3']/60) . ':' . str_pad($reg['perf_time3'] % 60, 2, '0', STR_PAD_LEFT);
+                    }
+                }
+            }
         }
     } else {
         $classes = array();
@@ -223,7 +240,7 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
         public function Footer() {
             // Position at 15 mm from bottom
             $this->SetY(-15);
-            $this->SetFont('helvetica', 'B', 10);
+            $this->SetFont('helvetica', '', 10);
             $this->Cell(90, 10, $this->footer_msg, 0, false, 'L', 0, '', 0, false, 'T', 'M');
             $this->SetFont('helvetica', '', 10);
             $this->Cell(90, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
@@ -276,6 +293,9 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
+    $dt = new DateTime('now', new DateTimezone($intl_timezone));
+    $pdf->footer_msg = $dt->format("M j, Y");
+
     // set font
     $pdf->SetFont('times', 'BI', 10);
     $pdf->SetCellPadding(1);
@@ -293,7 +313,7 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
     // Go through the sections, divisions and classes
     //
     $cw = array(25, 5, 150);
-    $w = array(10, 55, 90, 25);
+    $w = array(10, 60, 100, 10);
     $nw = array(20, 160);
     $lh = 6;
     $border = 'T';
@@ -302,37 +322,89 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
             $pdf->AddPage();
         }
         $pdf->SetFont('', 'B', 14);
-        $pdf->Cell($cw[0] + $cw[1] + $cw[2], $lh, $class['code'] . ' - ' . $class['name'], $border, 1, 'L', 0);
+        $pdf->MultiCell($cw[0] + $cw[1] + $cw[2], $lh, $class['code'] . ' - ' . $class['name'], $border, 'L', 0, 1);
 //        $pdf->Cell($cw[1], $lh, '', $border, 0, 'R', 0);
 //        $pdf->Cell($cw[2], $lh, $class['name'], $border, 1, 'L', 0);
         $pdf->SetFont('', '', 12);
+
+        //
+        // Get the sizing for rows
+        //
+        $reg_list = array();
+        $reg_list_height = 0;
+        $pdf->SetCellPadding(0.25);
         foreach($class['registrations'] as $reg) {
-            $notes = $reg['notes'];
+            $row = array();
+            $row['name'] = $reg['name'];
+            $row['participation'] = $reg['participation'];
+            $row['name_height'] = $pdf->getStringHeight($w[1]-1, $row['name']);
+            $row['height'] = $row['name_height'];
+            $row['title1'] = $reg['title1'];
+            $row['perf_time1'] = $reg['perf_time1'];
+            $row['title1_height'] = $pdf->getStringHeight($w[2], $row['title1']);
+            $row['titles_height'] = $row['title1_height'];
+            if( $reg['title2'] != '' ) {
+                $row['title2'] = $reg['title2'];
+                $row['perf_time2'] = $reg['perf_time2'];
+                $row['title2_height'] = $pdf->getStringHeight($w[2], $row['title2']);
+                $row['titles_height'] = $row['title2_height'];
+            }
+            if( $reg['title3'] != '' ) {
+                $row['title3'] = $reg['title3'];
+                $row['perf_time3'] = $reg['perf_time3'];
+                $row['title3_height'] = $pdf->getStringHeight($w[2], $row['title3']);
+                $row['titles_height'] = $row['title3_height'];
+            }
+            if( $row['titles_height'] > $row['height'] ) {
+                $row['height'] = $row['titles_height'];
+            }
+            $row['notes'] = $reg['notes'];
+            if( isset($reg['competitors']) ) {
+                foreach($reg['competitors'] as $competitor) {
+                    if( $competitor['notes'] != '' ) {
+                        $row['notes'] .= ($row['notes'] != '' ? "\n" : '') . $competitor['notes'];
+                    }
+                }
+            }
+            $row['notes_height'] = $pdf->getStringHeight($nw[1], $row['notes']);
+            $reg_list[] = $row;
+            $reg_list_height += $row['height']; } $pdf->SetCellPadding(1);
+
+//        foreach($class['registrations'] as $reg) {
+        foreach($reg_list as $row) {
+/*            $notes = $reg['notes'];
             if( isset($reg['competitors']) ) {
                 foreach($reg['competitors'] as $competitor) {
                     if( $competitor['notes'] != '' ) {
                         $notes .= ($notes != '' ? "\n" : '') . $competitor['notes'];
                     }
                 }
-            }
-            if( $reg['title2'] != '' ) {
+            } */
+/*            if( $reg['title2'] != '' ) {
                 $reg['title1'] .= "<br/>" . $reg['title2'];
                 $reg['perf_time1'] .= "<br/>" . $reg['perf_time2'];
             }
             if( $reg['title3'] != '' ) {
                 $reg['title1'] .= "<br/>" . $reg['title3'];
                 $reg['perf_time1'] .= "<br/>" . $reg['perf_time3'];
-            }
-            $d_height = $pdf->getStringHeight($w[1], $reg['name']);
+            } */
+/*            $d_height = $pdf->getStringHeight($w[1], $reg['name']);
             if( $pdf->getStringHeight($w[2], $reg['title1']) > $d_height ) {
                 $d_height = $pdf->getStringHeight($w[2], $reg['title1']);
+            }
+            if( $reg['title2'] != '' ) {
+                $d_height += $pdf->getStringHeight($w[2], $reg['title2']);
+            }
+            if( $reg['title3'] != '' ) {
+                $d_height += $pdf->getStringHeight($w[2], $reg['title3']);
             }
             $n_height = 0;
             if( $notes != '' ) {
                 $n_height = $pdf->getStringHeight($nw[1], $notes);
-            }
+            } */
 
-            if( $pdf->getY() > ($pdf->getPageHeight() - 30 - $d_height - $n_height) ) {
+//            if( $pdf->getY() > ($pdf->getPageHeight() - 30 - $d_height - $n_height) ) {
+            if( $pdf->getY() > ($pdf->getPageHeight() - 30 - $row['height'] - $row['notes_height']) ) {
                 $pdf->AddPage();
                 $pdf->SetFont('', 'B', 14);
                 $pdf->Cell($cw[0], $lh, $class['code'], $border, 0, 'R', 0);
@@ -341,14 +413,41 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
                 $pdf->SetFont('', '', 12);
             }
    
-            $pdf->writeHTMLCell($w[0], $d_height, '', '', '', '', 0, false, true, 'L', 1);
-            $pdf->writeHTMLCell($w[1], $d_height, '', '', $reg['name'], 0, 0, false, true, 'L', 1);
-            $pdf->writeHTMLCell($w[2], $d_height, '', '', $reg['title1'], 0, 0, false, true, 'L', 1);
-            $pdf->writeHTMLCell($w[3], $d_height, '', '', $reg['perf_time1'], 0, 1, false, true, 'L', 1);
+            //$pdf->writeHTMLCell($w[0], $d_height, '', '', '', '', 0, false, true, 'L', 1);
+            //$pdf->writeHTMLCell($w[1], $d_height, '', '', $reg['name'], 0, 0, false, true, 'L', 1);
+            //$pdf->writeHTMLCell($w[2], $d_height, '', '', $reg['title1'], 0, 0, false, true, 'L', 1);
+            //$pdf->writeHTMLCell($w[3], $d_height, '', '', $reg['perf_time1'], 0, 1, false, true, 'L', 1);
+            $pdf->SetFont('', 'B', 12);
+            $pdf->MultiCell($w[0], '', ($row['participation'] == 2 ? '[+]' : ''), 0, 'R', 0, 0);
+            $pdf->SetFont('', '', 12);
+            $pdf->MultiCell($w[1], $row['name_height'], $row['name'], 0, 'L', 0, 0);
+            $pdf->MultiCell($w[2], $row['title1_height'], $row['title1'], 0, 'L', 0, 0);
+            $pdf->MultiCell($w[3], $row['title1_height'], $row['perf_time1'], 0, 'R', 0, 0);
+            if( $row['name_height'] > $row['title1_height'] ) {
+                $pdf->Ln($row['name_height']-2);
+            } else {
+                $pdf->Ln($row['title1_height']-2);
+            }
+            if( isset($row['title2']) && $row['title2'] != '' ) {
+                $pdf->MultiCell($w[0] + $w[1], '', '', 0, 'L', 0, 0);
+                $pdf->MultiCell($w[2], $row['title2_height'], $row['title2'], 0, 'L', 0, 0);
+                $pdf->MultiCell($w[3], $row['title2_height'], $row['perf_time2'], 0, 'R', 0, 1);
+            }
+            if( isset($row['title3']) && $row['title3'] != '' ) {
+                $pdf->MultiCell($w[0] + $w[1], '', '', 0, 'L', 0, 0);
+                $pdf->MultiCell($w[2], $row['title3_height'], $row['title3'], 0, 'L', 0, 0);
+                $pdf->MultiCell($w[3], $row['title3_height'], $row['perf_time3'], 0, 'R', 0, 1);
+            }
 
-            if( $notes != '' ) {
-                $pdf->writeHTMLCell($nw[0], $n_height, '', '', '', 0, 0, false, true, 'L', 1);
-                $pdf->writeHTMLCell($nw[1], $n_height, '', '', '**' . preg_replace("/\n/", "<br/>", $notes), 0, 1, false, true, 'L', 1);
+            if( $row['notes'] != '' ) {
+                $pdf->Ln(2);
+                $pdf->MultiCell($nw[0], '', '', 0, 'L', 0, 0);
+                $pdf->MultiCell($nw[1], '', '**' . $row['notes'], 0, 'L', 0, 1);
+                $pdf->Ln(3);
+//                $pdf->writeHTMLCell($nw[0], $row['notes_height']+2, '', '', '', 0, 0, false, true, 'L', 1);
+//                $pdf->writeHTMLCell($nw[1], $row['notes_height']+2, '', '', '**' . preg_replace("/\n/", "<br/>", $row['notes']), 0, 1, false, true, 'L', 1);
+            } else {
+                $pdf->Ln(3);
             }
         }
         $pdf->Ln();

@@ -126,6 +126,8 @@ function ciniki_musicfestivals_objects($ciniki) {
             'earlybird_fee'=>array('name'=>'Earlybird Fee', 'type'=>'currency', 'default'=>'0'),
             'fee'=>array('name'=>'Fee', 'type'=>'currency', 'default'=>'0'),
             'virtual_fee'=>array('name'=>'Virtual Fee', 'type'=>'currency', 'default'=>'0'),
+            'earlybird_plus_fee'=>array('name'=>'Earlybird Plus Fee', 'type'=>'currency', 'default'=>'0'),
+            'plus_fee'=>array('name'=>'Plus Fee', 'type'=>'currency', 'default'=>'0'),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );

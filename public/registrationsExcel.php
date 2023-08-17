@@ -330,6 +330,9 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '3rd Title', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '3rd Time(sec)', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Fee', false);
+        if( ($festival['flags']&0x10) == 0x10 ) {
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Regular/Plus', false);
+        }
         if( ($festival['flags']&0x02) == 0x02 ) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Virtual', false);
         }
@@ -433,6 +436,9 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['title3'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['perf_time3'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['fee'], false);
+            if( ($festival['flags']&0x10) == 0x10 ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, ($registration['participation'] == 2 ? 'Plus' : 'Regular'), false);
+            }
             if( ($festival['flags']&0x02) == 0x02 ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, ($registration['participation'] == 1 ? 'Virtual' : 'In Person'), false);
             }

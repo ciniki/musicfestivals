@@ -350,7 +350,9 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         . "classes.flags, "
         . "FORMAT(classes.earlybird_fee, 2) AS earlybird_fee, "
         . "FORMAT(classes.fee, 2) AS fee, "
-        . "FORMAT(classes.virtual_fee, 2) AS virtual_fee "
+        . "FORMAT(classes.virtual_fee, 2) AS virtual_fee, "
+        . "FORMAT(classes.earlybird_plus_fee, 2) AS earlybird_plus_fee, "
+        . "FORMAT(classes.plus_fee, 2) AS plus_fee "
         . "FROM ciniki_musicfestival_sections AS sections "
         . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
             . "sections.id = categories.section_id "
@@ -366,7 +368,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         . "";
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'classes', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'flags', 'earlybird_fee', 'fee', 'virtual_fee')),
+            'fields'=>array('id', 'name', 'flags', 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee')),
         ));
     if( $rc['stat'] != 'ok' ) { 
         return $rc;

@@ -27,7 +27,7 @@
 #                           0x02 - Virtual Music Festival (Enable video links and PDF music uploads)
 #                           0x04 - Virtual Pricing
 #                           0x08 - Section End Dates
-#                           0x10 - 
+#                           0x10 - Adjudication Plus
 #                           0x20 - Comments PDF include Adjudicator name in header
 #                           0x40 - Comments PDF include Date/Time
 #                           0x80 - Certificates PDF include Pronoun

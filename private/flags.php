@@ -16,7 +16,7 @@ function ciniki_musicfestivals_flags(&$ciniki) {
     //
     $flags = array(
         // 0x01
-//        array('flag'=>array('bit'=>'1', 'name'=>'')), // Registrations **flag not yet implemented**
+//        array('flag'=>array('bit'=>'1', 'name'=>'')), 
         array('flag'=>array('bit'=>'2', 'name'=>'Online Registrations')),
         array('flag'=>array('bit'=>'3', 'name'=>'Timeslot Photos')),
         array('flag'=>array('bit'=>'4', 'name'=>'Placement')),  // Used for placement field for adjudicators comments
@@ -29,11 +29,11 @@ function ciniki_musicfestivals_flags(&$ciniki) {
         array('flag'=>array('bit'=>'9', 'name'=>'Main Menu Festivals')),
         array('flag'=>array('bit'=>'10', 'name'=>'Email Lists')),
         array('flag'=>array('bit'=>'11', 'name'=>'Messages')),
-//        array('flag'=>array('bit'=>'12', 'name'=>'')),
+        array('flag'=>array('bit'=>'12', 'name'=>'Adjudication Plus')),
         // 0x1000
         array('flag'=>array('bit'=>'13', 'name'=>'Class Levels')),
         array('flag'=>array('bit'=>'14', 'name'=>'Registration Tags')),
-//        array('flag'=>array('bit'=>'15', 'name'=>'')),
+        array('flag'=>array('bit'=>'15', 'name'=>'Virtual Entries')),
 //        array('flag'=>array('bit'=>'16', 'name'=>'')),
         );
     //
