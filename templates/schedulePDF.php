@@ -98,7 +98,8 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         . "registrations.public_name, "
         . "registrations.title1, "
         . "registrations.title2, "
-        . "registrations.title3 "
+        . "registrations.title3, "
+        . "registrations.participation "
         . "FROM ciniki_musicfestival_schedule_sections AS sections "
         . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
             . "sections.id = divisions.ssection_id " 
@@ -154,10 +155,21 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'name'=>'section_name')),
-        array('container'=>'divisions', 'fname'=>'division_id', 'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'address')),
-        array('container'=>'timeslots', 'fname'=>'timeslot_id', 'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 'class1_id', 'class2_id', 'class3_id', 'class4_id', 'class5_id', 'description', 'class1_name', 'class2_name', 'class3_name', 'class4_name', 'class5_name')),
-        array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title1', 'title2', 'title3')),
+        array('container'=>'sections', 'fname'=>'section_id', 
+            'fields'=>array('id'=>'section_id', 'name'=>'section_name'),
+            ),
+        array('container'=>'divisions', 'fname'=>'division_id', 
+            'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'address'),
+            ),
+        array('container'=>'timeslots', 'fname'=>'timeslot_id', 
+            'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 
+                'class1_id', 'class2_id', 'class3_id', 'class4_id', 'class5_id', 'description', 
+                'class1_name', 'class2_name', 'class3_name', 'class4_name', 'class5_name',
+                ),
+            ),
+        array('container'=>'registrations', 'fname'=>'reg_id', 
+            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title1', 'title2', 'title3', 'participation'),
+            ),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -384,6 +396,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                             } else {
                                 $row['name'] = $reg['public_name'];
                             }
+                            $row['participation'] = $reg['participation'];
                             if( isset($args['titles']) && $args['titles'] == 'yes' ) {
                                 $row['dash_width'] = $pdf->getStringWidth('-', '', '') + 3;
                                 $row['name_width'] = $pdf->getStringWidth($row['name'], '', '') + 0.25;
@@ -454,7 +467,11 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 $pdf->SetCellPadding(0);
                 foreach($reg_list as $row) {
                     $pdf->MultiCell($w[0], $row['height'], '', 0, 'L', 0, 0);
-                    $pdf->MultiCell($w[1]+1, $row['height'], '', 0, 'L', 0, 0);
+                    if( $row['participation'] == 2 ) {
+                        $pdf->MultiCell($w[1]+1, $row['height'], '+', 0, 'C', 0, 0);
+                    } else {
+                        $pdf->MultiCell($w[1]+1, $row['height'], '', 0, 'L', 0, 0);
+                    }
                     if( isset($args['titles']) && $args['titles'] == 'yes' ) {
                         $pdf->MultiCell($row['name_width'], $row['name_height'], $row['name'], 0, 'L', 0, 0);
                         if( $row['title1'] != '' ) {
