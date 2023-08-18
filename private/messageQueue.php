@@ -17,6 +17,37 @@
 function ciniki_musicfestivals_messageQueue(&$ciniki, $tnid, $args) {
 
     //
+    // Load the attachments
+    //
+    $attachments = array();
+    if( isset($args['message']['files']) ) {
+        //
+        // Get the tenant storage directory
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+        $rc = ciniki_tenants_hooks_storageDir($ciniki, $args['tnid'], array());
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $tenant_storage_dir = $rc['storage_dir'];
+
+        //
+        // Load the files
+        //
+        foreach($args['message']['files'] as $file) {
+            $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/messages/' 
+                . $args['message']['uuid'][0] . '/' 
+                . $args['message']['uuid'] . '_' . $file['filename'];
+            if( is_file($storage_filename) ) {
+                $attachments[] = array(
+                    'filename' => $file['filename'],
+                    'content' => file_get_contents($storage_filename),
+                    );
+            }
+        }
+    }
+
+    //
     // Send message
     //
     if( isset($args['send']) && $args['send'] == 'all' ) {
@@ -51,12 +82,16 @@ function ciniki_musicfestivals_messageQueue(&$ciniki, $tnid, $args) {
                     'object_id'=>$competitor['id'],
                     'subject'=>$args['message']['subject'],
                     'text_content'=>$content,
-                    //'attachments'=>array(array('content'=>$report['pdf']->Output($filename . '.pdf', 'S'), 'filename'=>$filename . '.pdf')),
                     );
             }
         }
 
         foreach($emails as $email) {
+            //
+            // Add the attachments
+            //
+            $email['attachments'] = $attachments;
+
             $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, $email);
             if( $rc['stat'] != 'ok' ) {
                 $errors .= $rc['err']['code'] . ' - ' . $rc['err']['msg'];
@@ -65,6 +100,7 @@ function ciniki_musicfestivals_messageQueue(&$ciniki, $tnid, $args) {
                 $num_sent++;
                 $ciniki['emailqueue'][] = array('mail_id'=>$rc['id'], 'tnid'=>$tnid);
             }
+            unset($email['attachments']);
         }
 
         //
@@ -112,7 +148,7 @@ function ciniki_musicfestivals_messageQueue(&$ciniki, $tnid, $args) {
             'customer_name'=>$name,
             'subject'=>$args['message']['subject'],
             'text_content'=>$args['message']['content'],
-//            'attachments'=>array(array('content'=>$report['pdf']->Output($filename . '.pdf', 'S'), 'filename'=>$filename . '.pdf')),
+            'attachments'=>$attachments,
             ));
         if( $rc['stat'] != 'ok' ) {
             return $rc;

@@ -23,6 +23,7 @@ function ciniki_musicfestivals_messageUpdate(&$ciniki) {
         'flags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Options'),
         'content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Content'),
         'dt_scheduled'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Scheduled Date'),
+        'delfile'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Remove File'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -38,6 +39,8 @@ function ciniki_musicfestivals_messageUpdate(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
+
+    
 
     //
     // Start transaction

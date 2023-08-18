@@ -28,6 +28,8 @@
 #
 # content:          The content of the message.
 #
+# files:            The files to attach to the message.
+#
 # dt_scheduled:     The UTC date and time the message is/was scheduled to be sent.
 #                   This is only used when status is 20.
 #
@@ -47,6 +49,7 @@ create table ciniki_musicfestival_messages (
     status tinyint unsigned not null,
     flags tinyint unsigned not null,
     content text not null,
+    files text not null,
     dt_scheduled datetime not null,
     dt_sent datetime not null,
 
@@ -55,4 +58,4 @@ create table ciniki_musicfestival_messages (
     primary key(id),
     index (tnid, uuid, last_updated),
     index (festival_id, dt_sent)
-) ENGINE='InnoDB', COMMENT='v1.02';
+) ENGINE='InnoDB', COMMENT='v1.03';

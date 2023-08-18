@@ -484,6 +484,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'status' => array('name'=>'Status', 'default'=>'10'),
             'flags' => array('name'=>'Options', 'default'=>'0'),
             'content' => array('name'=>'Content', 'default'=>''),
+            'files' => array('name'=>'Files', 'default'=>''),
             'dt_scheduled' => array('name'=>'Scheduled Date', 'default'=>''),
             'dt_sent' => array('name'=>'Sent Date', 'default'=>''),
             ),

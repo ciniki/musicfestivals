@@ -44,11 +44,13 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
     // Load the message details
     //
     $strsql = "SELECT messages.id, "
+        . "messages.uuid, "
         . "messages.festival_id, "
         . "messages.subject, "
         . "messages.status, "
         . "messages.flags, "
         . "messages.content, "
+        . "messages.files, "
         . "messages.dt_scheduled, "
         . "messages.dt_scheduled AS dt_scheduled_text, "
 //        . "DATE_FORMAT(messages.dt_scheduled, '%b %e, %Y %l:%i %p') AS dt_scheduled_text, "
@@ -63,8 +65,9 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'messages', 'fname'=>'id', 
             'fields'=>array(
-                'id', 'festival_id', 'subject', 'status', 'flags', 'content', 'dt_scheduled',
-                'dt_scheduled_text', 'dt_sent', 'dt_sent_text'),
+                'id', 'uuid', 'festival_id', 'subject', 'status', 'flags', 'content', 'files', 
+                'dt_scheduled', 'dt_scheduled_text', 'dt_sent', 'dt_sent_text',
+                ),
             'utctotz'=>array(
                 'dt_scheduled_text'=>array('format'=>'M j, Y g:i A', 'timezone'=>$intl_timezone),
                 'dt_sent_text'=>array('format'=>'M j, Y g:i A', 'timezone'=>$intl_timezone),
@@ -79,6 +82,9 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
     }
     $rsp = array('stat' => 'ok', 'message' => $rc['messages'][0]);
     $rsp['message']['objects'] = array();
+    if( $rsp['message']['files'] != '' ) {
+        $rsp['message']['files'] = unserialize($rsp['message']['files']);
+    }
 
     if( isset($maps['message']['status'][$rsp['message']['status']]) ) {
         $rsp['message']['status_text'] = $maps['message']['status'][$rsp['message']['status']];

@@ -1,0 +1,5 @@
+#
+# Added flags for excluding competitors and/or teachers
+#
+ALTER TABLE ciniki_musicfestival_messages ADD COLUMN files text not null AFTER content;
+ALTER TABLE ciniki_musicfestival_messages COMMENT='v1.03';

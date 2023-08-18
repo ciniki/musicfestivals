@@ -40,7 +40,7 @@ function ciniki_musicfestivals_messageDelete(&$ciniki) {
     //
     // Get the current settings for the mail
     //
-    $strsql = "SELECT id, uuid, status "
+    $strsql = "SELECT id, uuid, status, files "
         . "FROM ciniki_musicfestival_messages "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['message_id']) . "' "
@@ -53,6 +53,12 @@ function ciniki_musicfestivals_messageDelete(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.536', 'msg'=>'Mail does not exist.'));
     }
     $message = $rc['message'];
+
+    if( $message['files'] != '' ) {
+        $files = unserialize($message['files']);
+    } else {
+        $files = array();
+    }
 
     //
     // Only allow deletes if message is unsent
@@ -92,6 +98,16 @@ function ciniki_musicfestivals_messageDelete(&$ciniki) {
     }
 
     //
+    // Get the tenant storage directory
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+    $rc = ciniki_tenants_hooks_storageDir($ciniki, $args['tnid'], array());
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $tenant_storage_dir = $rc['storage_dir'];
+
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
@@ -115,6 +131,21 @@ function ciniki_musicfestivals_messageDelete(&$ciniki) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
             return $rc;
         }
+    }
+
+    //
+    // Remove the files
+    //
+    foreach($files as $fid => $file) {
+        //
+        // Remove file
+        //
+        $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/messages/' 
+            . $message['uuid'][0] . '/' . $message['uuid'] . '_' . $file['filename'];
+        if( is_file($storage_filename) ) {
+            unlink($storage_filename);
+        }
+        unset($files[$fid]);
     }
 
     //
