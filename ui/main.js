@@ -5404,6 +5404,9 @@ function ciniki_musicfestivals_main() {
                 return M.faBtn('&#xf019;', 'Download', 'M.ciniki_musicfestivals_main.message.fileDownload(\'' + escape(d.filename) + '\');')
                     + M.faBtn('&#xf014;', 'Delete', 'M.ciniki_musicfestivals_main.message.fileDelete(\'' + escape(d.filename) + '\');');
             }
+            if( this.data.status > 10 && j == 1 ) {
+                return M.faBtn('&#xf019;', 'Download', 'M.ciniki_musicfestivals_main.message.fileDownload(\'' + escape(d.filename) + '\');');
+            }
             return '';
         }
     }
