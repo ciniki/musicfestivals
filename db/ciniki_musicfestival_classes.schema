@@ -15,8 +15,6 @@
 # name:                 The name for the class.
 # permalink:            The permalink for the class, a combination of code and name.
 #
-# level:                The level used for filtering on website (Junior, Intermediate, Ages 4-9, Grades 1-4, etc)
-#
 # sequence:             The order to display the classes in.
 # flags:                The options for the class.
 #
@@ -55,7 +53,6 @@ create table ciniki_musicfestival_classes (
     code varchar(50) not null,
     name varchar(150) not null,
     permalink varchar(150) not null,
-    level varchar(50) not null,
     sequence tinyint unsigned not null,
     flags int unsigned not null,
     earlybird_fee decimal(19,6) not null,

@@ -94,7 +94,6 @@ function ciniki_musicfestivals_classGet($ciniki) {
             'section_id'=>0,
             'code'=>'',
             'name'=>'',
-            'level'=>'',
             'permalink'=>'',
             'sequence'=>$seq,
             'flags'=>'0',
@@ -113,10 +112,10 @@ function ciniki_musicfestivals_classGet($ciniki) {
         $strsql = "SELECT ciniki_musicfestival_classes.id, "
             . "ciniki_musicfestival_classes.festival_id, "
             . "ciniki_musicfestival_classes.category_id, "
+            . "ciniki_musicfestival_categories.section_id, "
             . "ciniki_musicfestival_classes.code, "
             . "ciniki_musicfestival_classes.name, "
             . "ciniki_musicfestival_classes.permalink, "
-            . "ciniki_musicfestival_classes.level, "
             . "ciniki_musicfestival_classes.sequence, "
             . "ciniki_musicfestival_classes.flags, "
             . "ciniki_musicfestival_classes.earlybird_fee, "
@@ -125,12 +124,16 @@ function ciniki_musicfestivals_classGet($ciniki) {
             . "ciniki_musicfestival_classes.earlybird_plus_fee, "
             . "ciniki_musicfestival_classes.plus_fee "
             . "FROM ciniki_musicfestival_classes "
+            . "INNER JOIN ciniki_musicfestival_categories ON ( "
+                . "ciniki_musicfestival_classes.category_id = ciniki_musicfestival_categories.id "
+                . "AND ciniki_musicfestival_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "WHERE ciniki_musicfestival_classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_musicfestival_classes.id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'classes', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'category_id', 'code', 'name', 'permalink', 'level', 'sequence', 'flags', 
+                'fields'=>array('festival_id', 'category_id', 'section_id', 'code', 'name', 'permalink', 'sequence', 'flags', 
                     'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee'),
                 ),
             ));
@@ -146,6 +149,33 @@ function ciniki_musicfestivals_classGet($ciniki) {
         $class['virtual_fee'] = number_format($class['virtual_fee'], 2);
         $class['earlybird_plus_fee'] = number_format($class['earlybird_plus_fee'], 2);
         $class['plus_fee'] = number_format($class['plus_fee'], 2);
+
+        //
+        // Get the tags for the class
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x1000) ) {
+            $strsql = "SELECT tag_type, tag_name AS lists "
+                . "FROM ciniki_musicfestival_class_tags "
+                . "WHERE class_id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
+                . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "ORDER BY tag_type, tag_name "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
+            $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'tags', 'fname'=>'tag_type', 'name'=>'tags',
+                    'fields'=>array('tag_type', 'lists'), 'dlists'=>array('lists'=>'::')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            if( isset($rc['tags']) ) {
+                foreach($rc['tags'] as $tags) {
+                    if( $tags['tags']['tag_type'] == 20 ) {
+                        $class['levels'] = $tags['tags']['lists'];
+                    }
+                }
+            }
+        }
     }
 
     //
@@ -198,7 +228,8 @@ function ciniki_musicfestivals_classGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
+                'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 
+                    'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
                     'class_id', 'class_code', 'class_name', 
                     'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 'fee', 'payment_type',
                     ),
@@ -274,6 +305,47 @@ function ciniki_musicfestivals_classGet($ciniki) {
         }
     }
 
+    //
+    // Get the complete list of tags
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x1000) ) {
+        $rsp['tags'] = array();
+        $strsql = "SELECT DISTINCT tags.tag_type, tags.tag_name AS names "
+            . "FROM ciniki_musicfestival_class_tags AS tags "
+            . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
+                . "tags.class_id = classes.id "
+                . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
+                . "classes.category_id = categories.id "
+                . "AND categories.section_id = '" . ciniki_core_dbQuote($ciniki, $class['section_id']) . "' " 
+                . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY tags.tag_type, tags.tag_sort_name, tags.tag_name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
+            array('container'=>'tags', 'fname'=>'tag_type', 'fields'=>array('type'=>'tag_type', 'names'), 
+                'dlists'=>array('names'=>'::')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['tags']) ) {
+            foreach($rc['tags'] as $type) {
+                if( $type['type'] == 20 ) {
+                    $rsp['levels'] = explode('::', $type['names']);
+/*                    $rsp['levels'] = array();
+                    $i = 1;
+                    foreach(explode('::', $type['names']) as $name) {
+                        $rsp['levels']['_' . $i++] = $name;
+                    } */
+                }
+            }
+        }
+    }
+        error_log(print_r($rsp['levels'],true));
     return $rsp;
 }
 ?>

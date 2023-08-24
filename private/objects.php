@@ -120,7 +120,6 @@ function ciniki_musicfestivals_objects($ciniki) {
             'code'=>array('name'=>'Code'),
             'name'=>array('name'=>'Name'),
             'permalink'=>array('name'=>'Permalink', 'default'=>''),
-            'level'=>array('name'=>'Level', 'default'=>''),
             'sequence'=>array('name'=>'Order', 'default'=>'1'),
             'flags'=>array('name'=>'Options', 'default'=>'0'),
             'earlybird_fee'=>array('name'=>'Earlybird Fee', 'type'=>'currency', 'default'=>'0'),
@@ -128,6 +127,21 @@ function ciniki_musicfestivals_objects($ciniki) {
             'virtual_fee'=>array('name'=>'Virtual Fee', 'type'=>'currency', 'default'=>'0'),
             'earlybird_plus_fee'=>array('name'=>'Earlybird Plus Fee', 'type'=>'currency', 'default'=>'0'),
             'plus_fee'=>array('name'=>'Plus Fee', 'type'=>'currency', 'default'=>'0'),
+            ),
+        'history_table'=>'ciniki_musicfestivals_history',
+        );
+    $objects['classtag'] = array(
+        'name'=>'Class Tag',
+        'o_name'=>'tag',
+        'o_container'=>'tags',
+        'sync'=>'yes',
+        'table'=>'ciniki_musicfestival_class_tags',
+        'fields'=>array(
+            'class_id'=>array('name'=>'Class', 'ref'=>'ciniki.musicfestivals.class'),
+            'tag_type'=>array('name'=>'Tag Type'),
+            'tag_name'=>array('name'=>'Tag Name'),
+            'tag_sort_name'=>array('name'=>'Tag Sort Name'),
+            'permalink'=>array('name'=>'Permalink'),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );

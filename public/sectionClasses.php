@@ -111,7 +111,6 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
             . "classes.code, "
             . "classes.name AS class_name, "
             . "classes.sequence AS class_sequence, "
-            . "classes.level "
             . "trophies.name AS trophies "
             . "FROM ciniki_musicfestival_categories AS categories "
             . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
@@ -134,7 +133,7 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'classes', 'fname'=>'id', 
                 'fields'=>array('id', 'joined_sequence', 'category_id', 'category_name', 'permalink', 'category_sequence', 
-                    'code', 'class_name', 'class_sequence', 'level', 'trophies'),
+                    'code', 'class_name', 'class_sequence', 'trophies'),
                 'dlists'=>array('trophies'=>', '),
                 ),
             ));
@@ -149,12 +148,12 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
             . "classes.code, "
             . "classes.name AS class_name, "
             . "classes.sequence AS class_sequence, "
-            . "classes.level, "
             . "classes.earlybird_fee, "
             . "classes.fee, "
             . "classes.virtual_fee, "
             . "classes.earlybird_plus_fee, "
             . "classes.plus_fee, "
+            . "GROUP_CONCAT(DISTINCT classtags.tag_name ORDER BY classtags.tag_sort_name SEPARATOR ', ') AS levels, "
             . "COUNT(registrations.id) AS num_registrations "
             . "FROM ciniki_musicfestival_categories AS categories "
             . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
@@ -165,6 +164,10 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
                 . "classes.id = registrations.class_id "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_musicfestival_class_tags AS classtags ON ("
+                . "classes.id = classtags.class_id "
+                . "AND classtags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "WHERE categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
             . "GROUP BY classes.id "
@@ -174,7 +177,7 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'classes', 'fname'=>'id', 
                 'fields'=>array('id', 'joined_sequence', 'category_id', 'category_name', 'permalink', 'category_sequence', 
-                    'code', 'class_name', 'class_sequence', 'level', 
+                    'code', 'class_name', 'class_sequence', 'levels',
                     'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 'num_registrations'),
                 ),
             ));

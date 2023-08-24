@@ -242,7 +242,6 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         . "classes.code, "
         . "classes.name, "
         . "classes.permalink, "
-        . "classes.level, "
         . "classes.sequence, "
         . "classes.flags, "
         . "earlybird_fee, "
@@ -266,14 +265,14 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             )),
         array('container'=>'classes', 'fname'=>'id', 
             'fields'=>array('id', 'uuid', 'festival_id', 'category_id', 'code', 'name', 
-                'permalink', 'level', 'sequence', 'flags', 
+                'permalink', 'sequence', 'flags', 
                 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
                 )),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-    $levels = array();
+//    $levels = array();
     if( isset($rc['categories']) ) {
         $categories = $rc['categories'];
         //
@@ -288,11 +287,11 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 }
             }
         }
-        if( count($levels) > 0 ) {
+/*        if( count($levels) > 0 ) {
             $blocks[] = array(
                 
                 );
-        }
+        } */
 
         foreach($categories as $category) {
             $blocks[] = array(

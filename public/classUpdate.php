@@ -21,7 +21,6 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
         'category_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Category'),
         'code'=>array('required'=>'no', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Code'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'),
-        'level'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Level'),
         'permalink'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Permalink'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
@@ -30,6 +29,7 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
         'virtual_fee'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Virtual Fee'),
         'earlybird_plus_fee'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Earlybird Plus Fee'),
         'plus_fee'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Plus Fee'),
+        'levels'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Level Tags'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -115,6 +115,18 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;
+    }
+
+    //
+    // Update the tags
+    //
+    if( isset($args['levels']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'classTagsUpdate');
+        $rc = ciniki_musicfestivals_classTagsUpdate($ciniki, $args['tnid'], $args['class_id'], 20, $args['levels']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
     }
 
     //
