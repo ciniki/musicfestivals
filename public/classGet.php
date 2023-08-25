@@ -336,11 +336,6 @@ function ciniki_musicfestivals_classGet($ciniki) {
             foreach($rc['tags'] as $type) {
                 if( $type['type'] == 20 ) {
                     $rsp['levels'] = explode('::', $type['names']);
-/*                    $rsp['levels'] = array();
-                    $i = 1;
-                    foreach(explode('::', $type['names']) as $name) {
-                        $rsp['levels']['_' . $i++] = $name;
-                    } */
                 }
             }
         }
