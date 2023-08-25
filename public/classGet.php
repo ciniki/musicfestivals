@@ -345,7 +345,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
             }
         }
     }
-        error_log(print_r($rsp['levels'],true));
+
     return $rsp;
 }
 ?>

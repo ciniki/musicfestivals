@@ -228,6 +228,45 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     }
 
     //
+    // Get the levels for this section
+    //
+    $strsql = "SELECT DISTINCT tags.tag_name, tags.permalink "
+        . "FROM ciniki_musicfestival_categories AS categories "
+        . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
+            . "categories.id = classes.category_id "
+            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestival_class_tags AS tags ON ("
+            . "classes.id = tags.class_id "
+            . "AND tags.tag_type = 20 "
+            . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $section['id']) . "' "
+        . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "ORDER BY tags.tag_sort_name, tags.tag_name "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'tags', 'fname'=>'permalink', 
+            'fields'=>array('name'=>'tag_name', 'permalink'),
+            ),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.547', 'msg'=>'Unable to load tags', 'err'=>$rc['err']));
+    }
+    $levels = array(
+        array('text'=>'All', 'url'=>''),
+        );
+    if( count($rc['tags']) > 0 ) {
+        foreach($rc['tags'] as $tag) {
+            $levels[] = array(
+                'text' => $tag['name'],
+                'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $section['permalink'] . '?level=' . $tag['permalink'],
+                );
+        }
+    }
+
+    //
     // Load the syllabus for the section
     //
     $strsql = "SELECT classes.id, "
@@ -272,26 +311,17 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-//    $levels = array();
     if( isset($rc['categories']) ) {
         $categories = $rc['categories'];
         //
         // Get the filters
         //
-        foreach($categories as $category) {
-            if( isset($category['classes']) && count($category['classes']) > 0 ) {
-                foreach($category['classes'] as $cid => $class) {
-                    if( $class['level'] != '' && !in_array($class['level'], $levels) ) {
-                        $levels[] = $class['level'];
-                    }
-                }
-            }
-        }
-/*        if( count($levels) > 0 ) {
+        if( count($levels) > 0 ) {
             $blocks[] = array(
-                
+                'type' => 'buttons',
+                'list' => $levels,
                 );
-        } */
+        }
 
         foreach($categories as $category) {
             $blocks[] = array(
