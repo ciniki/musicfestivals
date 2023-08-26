@@ -230,39 +230,57 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     //
     // Get the levels for this section
     //
-    $strsql = "SELECT DISTINCT tags.tag_name, tags.permalink "
-        . "FROM ciniki_musicfestival_categories AS categories "
-        . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
-            . "categories.id = classes.category_id "
-            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "INNER JOIN ciniki_musicfestival_class_tags AS tags ON ("
-            . "classes.id = tags.class_id "
-            . "AND tags.tag_type = 20 "
-            . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $section['id']) . "' "
-        . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "ORDER BY tags.tag_sort_name, tags.tag_name "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'tags', 'fname'=>'permalink', 
-            'fields'=>array('name'=>'tag_name', 'permalink'),
-            ),
-        ));
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.547', 'msg'=>'Unable to load tags', 'err'=>$rc['err']));
-    }
-    $levels = array(
-        array('text'=>'All', 'url'=>''),
-        );
-    if( count($rc['tags']) > 0 ) {
-        foreach($rc['tags'] as $tag) {
-            $levels[] = array(
-                'text' => $tag['name'],
-                'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $section['permalink'] . '?level=' . $tag['permalink'],
-                );
+    $level_strsql = '';
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x1000) ) {
+        $strsql = "SELECT DISTINCT tags.tag_name, tags.permalink "
+            . "FROM ciniki_musicfestival_categories AS categories "
+            . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
+                . "categories.id = classes.category_id "
+                . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_class_tags AS tags ON ("
+                . "classes.id = tags.class_id "
+                . "AND tags.tag_type = 20 "
+                . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $section['id']) . "' "
+            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "ORDER BY tags.tag_sort_name, tags.tag_name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'tags', 'fname'=>'permalink', 
+                'fields'=>array('name'=>'tag_name', 'permalink'),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.547', 'msg'=>'Unable to load tags', 'err'=>$rc['err']));
+        }
+        $levels = array(
+            array(
+                'text' => 'All Classes',
+//                'class' => (!isset($_GET['level']) ? 'selected' : ''),
+                'selected' => (!isset($_GET['level']) ? 'yes' : ''),
+                'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $section['permalink'],
+                ),
+            );
+        if( count($rc['tags']) > 0 ) {
+            foreach($rc['tags'] as $tag) {
+                if( isset($_GET['level']) && $_GET['level'] == $tag['permalink'] ) {
+                    $level_strsql = "INNER JOIN ciniki_musicfestival_class_tags AS tags ON ("
+                        . "classes.id = tags.class_id "
+                        . "AND tags.tag_type = 20 "
+                        . "AND tags.permalink = '" . ciniki_core_dbQuote($ciniki, $tag['permalink']) . "' "
+                        . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                        . ") ";
+                }
+                $levels[] = array(
+                    'text' => $tag['name'],
+//                    'class' => (isset($_GET['level']) && $_GET['level'] == $tag['permalink'] ? 'selected' : ''),
+                    'selected' => (isset($_GET['level']) && $_GET['level'] == $tag['permalink'] ? 'yes' : ''),
+                    'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $section['permalink'] . '?level=' . $tag['permalink'],
+                    );
+            }
         }
     }
 
@@ -293,6 +311,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             . "categories.id = classes.category_id "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
+        . $level_strsql 
         . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $section['id']) . "' "
         . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY categories.sequence, categories.name, classes.sequence, classes.name "
@@ -316,11 +335,12 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         //
         // Get the filters
         //
-        if( count($levels) > 0 ) {
-//            $blocks[] = array(
-//                'type' => 'buttons',
-//                'list' => $levels,
-//                );
+        if( isset($levels) && count($levels) > 1 ) {
+            $blocks[] = array(
+                'id' => 'filter',
+                'type' => 'dropdown',
+                'list' => $levels,
+                );
         }
 
         foreach($categories as $category) {
