@@ -317,10 +317,10 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         // Get the filters
         //
         if( count($levels) > 0 ) {
-            $blocks[] = array(
-                'type' => 'buttons',
-                'list' => $levels,
-                );
+//            $blocks[] = array(
+//                'type' => 'buttons',
+//                'list' => $levels,
+//                );
         }
 
         foreach($categories as $category) {
