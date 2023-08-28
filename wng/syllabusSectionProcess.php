@@ -264,7 +264,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $section['permalink'],
                 ),
             );
-        if( count($rc['tags']) > 0 ) {
+        if( isset($rc['tags']) && count($rc['tags']) > 0 ) {
             foreach($rc['tags'] as $tag) {
                 if( isset($_GET['level']) && $_GET['level'] == $tag['permalink'] ) {
                     $level_strsql = "INNER JOIN ciniki_musicfestival_class_tags AS tags ON ("
