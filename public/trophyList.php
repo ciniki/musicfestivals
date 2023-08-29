@@ -50,13 +50,13 @@ function ciniki_musicfestivals_trophyList($ciniki) {
             . "FROM ciniki_musicfestival_trophies AS trophies "
             . "LEFT JOIN ciniki_musicfestival_trophy_classes AS classes ON ("
                 . "trophies.id = classes.trophy_id "
+                . "AND classes.class_id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "HAVING ISNULL(classes.class_id) "
             . "ORDER BY trophies.category, trophies.name "
             . "";
-
     } else {
         $strsql = "SELECT ciniki_musicfestival_trophies.id, "
             . "ciniki_musicfestival_trophies.name, "
