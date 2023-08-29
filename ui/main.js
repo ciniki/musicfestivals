@@ -1870,7 +1870,7 @@ function ciniki_musicfestivals_main() {
                 'trophies':{'label':'Trophies', 'fn':'M.ciniki_musicfestivals_main.classes.switchTab("trophies");'},
             }},
         'classes':{'label':'Classes', 'type':'simplegrid', 'num_cols':7,
-            'headerValues':['Order', 'Category', 'Code', 'Class', 'Level', 'Earlybird', 'Live', 'Virtual'],
+            'headerValues':['Order', 'Category', 'Code', 'Class', 'Levels', 'Earlybird', 'Live', 'Virtual'],
             'sortable':'yes',
             'sortTypes':['text', 'text', 'text', 'text', 'number', 'number', 'number'],
             'dataMaps':['joined_sequence', 'category_name', 'code', 'class_name', 'level', 'earlybird_fee', 'fee', 'virtual_fee'],
@@ -1918,16 +1918,16 @@ function ciniki_musicfestivals_main() {
             p.sections.classes.headerValues = ['Order', 'Category', 'Code', 'Class'];
             p.sections.classes.sortTypes = ['text', 'text', 'text', 'text'];
             p.sections.classes.dataMaps = ['joined_sequence', 'category_name', 'code', 'class_name'];
-            if( M.modFlagOn('ciniki.musicfestivals', 0x1000) ) {
-                p.sections.classes.headerValues.push('Level');
-                p.sections.classes.sortTypes.push('text');
-                p.sections.classes.dataMaps.push('levels');
-            }
             if( p.sections._tabs.selected == 'trophies' ) {
                 p.sections.classes.headerValues.push('Trophies');
                 p.sections.classes.sortTypes.push('text');
                 p.sections.classes.dataMaps.push('trophies');
             } else {
+                if( M.modFlagOn('ciniki.musicfestivals', 0x1000) ) {
+                    p.sections.classes.headerValues.push('Levels');
+                    p.sections.classes.sortTypes.push('text');
+                    p.sections.classes.dataMaps.push('levels');
+                }
                 p.sections.classes.headerValues.push('Earlybird');
                 p.sections.classes.sortTypes.push('number');
                 p.sections.classes.dataMaps.push('earlybird_fee');
