@@ -52,7 +52,8 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
     $strsql = "SELECT classes.id, "
         . "classes.code, "
         . "classes.category_id, "
-        . "classes.name "
+        . "classes.name, "
+        . "classes.sequence "
         . "FROM ciniki_musicfestival_classes AS classes "
         . "WHERE classes.id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
         . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -123,6 +124,19 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
     if( isset($args['levels']) ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'classTagsUpdate');
         $rc = ciniki_musicfestivals_classTagsUpdate($ciniki, $args['tnid'], $args['class_id'], 20, $args['levels']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
+    }
+
+    //
+    // Check if sequences should be updated
+    //
+    if( isset($args['sequence']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'sequencesUpdate');
+        $rc = ciniki_core_sequencesUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.class', 
+            'category_id', $class['category_id'], $args['sequence'], $class['sequence']);
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
             return $rc;

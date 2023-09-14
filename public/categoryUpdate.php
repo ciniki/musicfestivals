@@ -46,7 +46,8 @@ function ciniki_musicfestivals_categoryUpdate(&$ciniki) {
     //
     $strsql = "SELECT categories.id, "
         . "categories.section_id, "
-        . "categories.name "
+        . "categories.name, "
+        . "categories.sequence "
         . "FROM ciniki_musicfestival_categories AS categories "
         . "WHERE categories.id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
         . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -105,6 +106,19 @@ function ciniki_musicfestivals_categoryUpdate(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;
+    }
+
+    //
+    // Check if sequences should be updated
+    //
+    if( isset($args['sequence']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'sequencesUpdate');
+        $rc = ciniki_core_sequencesUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.category', 
+            'section_id', $category['section_id'], $args['sequence'], $category['sequence']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
     }
 
     //

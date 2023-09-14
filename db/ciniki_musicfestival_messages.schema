@@ -28,7 +28,7 @@
 #
 # content:          The content of the message.
 #
-# files:            The files to attach to the message.
+# files:            The PHP Serialized list of files to attach to the message.
 #
 # dt_scheduled:     The UTC date and time the message is/was scheduled to be sent.
 #                   This is only used when status is 20.
