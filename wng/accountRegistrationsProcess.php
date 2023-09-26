@@ -578,7 +578,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'participation' => (isset($fields['participation']['value']) ? $fields['participation']['value'] : ''),
                 'notes' => $fields['notes']['value'],
                 );
-            if( isset($fields['teacher_share']) && $field['teacher_share'] == 'yes' ) {
+            if( isset($fields['teacher_share']['value']) && $fields['teacher_share']['value'] == 'yes' ) {
                 $registration['flags'] |= 0x01;
             }
             if( ($selected_class['flags']&0x20) == 0x20 ) {

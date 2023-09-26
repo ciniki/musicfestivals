@@ -517,9 +517,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         }
     }
 
-    $fields['line-a'] = array(
-        'ftype' => 'line',
-        );
 
     //
     // Check if virtual performance option is available
@@ -530,6 +527,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     }
     // Virtual
     if( ($festival['flags']&0x02) == 0x02 ) {
+        $fields['line-virtual'] = array(
+            'ftype' => 'line',
+            );
         $fields['participation'] = array(
             'id' => 'participation',
             'label' => 'I would like to participate',
@@ -578,12 +578,15 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 unset($fields['participation']['options'][0]);
             }
         }
-        $fields['line-b'] = array(
-            'ftype' => 'line',
-            );
+//        $fields['line-b'] = array(
+//            'ftype' => 'line',
+//            );
     }
     // Adjudication Plus
     if( ($festival['flags']&0x10) == 0x10 ) {
+        $fields['line-participation'] = array(
+            'ftype' => 'line',
+            );
         $fields['participation'] = array(
             'id' => 'participation',
             'label' => 'Adjudication Level',
@@ -605,9 +608,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         $fields['participation']['options'][0] .= ' - $' . number_format($selected_class['fee'], 2);
         $fields['participation']['options'][2] .= ' - $' . number_format($selected_class['plus_fee'], 2);
 
-        $fields['line-b'] = array(
-            'ftype' => 'line',
-            );
     }
 
 
@@ -633,9 +633,14 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         $music_class = $class;
         if( $participation != 1 ) {
             $video_class = 'hidden';
-            $music_class = 'hidden';
+            $music_class = (($festival['flags']&0x0200) == 0x0200 ? $class : 'hidden');
         }
 
+        $fields["line-title-{$i}"] = array(
+            'id' => "line-title-{$i}",
+            'ftype' => 'line',
+            'class' => $class,
+            );
         $title = 'Title & Composer e.g. Prelude op.39, no.19 (D. Kabalevsky)';
         if( $i == 2 ) {
             $title = '2nd Title & Composer';
@@ -691,7 +696,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             );
     }
 
-    $fields['line-c'] = array(
+    $fields['line-notes'] = array(
         'ftype' => 'line',
         );
 
@@ -756,7 +761,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         . "var cls3t=[" . implode(',', $classes_3t) . "];" // 3 title & times
         . "var cls3to=[" . implode(',', $classes_3to) . "];" // 3 title & times
         . "var video=0;"
-        . "var music=0;"
+        . "var music=" . (($festival['flags']&0x0200) == 0x0200 ? '1' : '0') . ";"
         . $js_prices
         . "function sectionSelected(){"
             . "var s=C.gE('f-section').value;"
@@ -774,12 +779,10 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             . "var c=C.gE('f-participation').value;"
             // Live 
             . "video=c;"
-            . "music=c;"
-            . "console.log(c);"
+            . "music=" . (($festival['flags']&0x0200) == 0x0200 ? '1' : 'c') . ";"
             . "sectionSelected();"
         . "};"
         . "function classSelected(sid){"
-            . "console.log('selected: ' + sid);"
             . "var c=C.gE('f-section-'+sid+'-class').value;"
             . "if(video==1){"
                 . "C.rC(C.gE('f-video_url1').parentNode,'hidden');"
@@ -803,6 +806,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     . "C.aC(C.gE('f-competitor3_id').parentNode,'hidden');"
                 . "}"
                 . "if(cls3t.indexOf(parseInt(c))>=0){"
+                    . "C.rC(C.gE('f-line-title-2'),'hidden');"
                     . "C.rC(C.gE('f-title2').parentNode,'hidden');"
                     . "C.rC(C.gE('f-perf_time2-min').parentNode.parentNode,'hidden');"
                     . "if(video==1){"
@@ -815,6 +819,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     . "}else{"
                         . "C.aC(C.gE('f-music_orgfilename2').parentNode,'hidden');"
                     . "}"
+                    . "C.rC(C.gE('f-line-title-3'),'hidden');"
                     . "C.rC(C.gE('f-title3').parentNode,'hidden');"
                     . "C.rC(C.gE('f-perf_time3-min').parentNode.parentNode,'hidden');"
                     . "if(video==1){"
@@ -828,6 +833,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                         . "C.aC(C.gE('f-music_orgfilename3').parentNode,'hidden');"
                     . "}"
                 . "}else if(cls2t.indexOf(parseInt(c))>=0){"
+                    . "C.rC(C.gE('f-line-title-2'),'hidden');"
                     . "C.rC(C.gE('f-title2').parentNode,'hidden');"
                     . "C.rC(C.gE('f-perf_time2-min').parentNode.parentNode,'hidden');"
                     . "if(video==1){"
@@ -840,15 +846,18 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     . "}else{"
                         . "C.aC(C.gE('f-music_orgfilename2').parentNode,'hidden');"
                     . "}"
+                    . "C.aC(C.gE('f-line-title-3'),'hidden');"
                     . "C.aC(C.gE('f-title3').parentNode,'hidden');"
                     . "C.aC(C.gE('f-perf_time3-min').parentNode.parentNode,'hidden');"
                     . "C.aC(C.gE('f-video_url3').parentNode,'hidden');"
                     . "C.aC(C.gE('f-music_orgfilename3').parentNode,'hidden');"
                 . "}else{"
+                    . "C.aC(C.gE('f-line-title-2'),'hidden');"
                     . "C.aC(C.gE('f-title2').parentNode,'hidden');"
                     . "C.aC(C.gE('f-perf_time2-min').parentNode.parentNode,'hidden');"
                     . "C.aC(C.gE('f-video_url2').parentNode,'hidden');"
                     . "C.aC(C.gE('f-music_orgfilename2').parentNode,'hidden');"
+                    . "C.aC(C.gE('f-line-title-3'),'hidden');"
                     . "C.aC(C.gE('f-title3').parentNode,'hidden');"
                     . "C.aC(C.gE('f-perf_time3-min').parentNode.parentNode,'hidden');"
                     . "C.aC(C.gE('f-video_url3').parentNode,'hidden');"

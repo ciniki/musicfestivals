@@ -98,9 +98,35 @@ function ciniki_musicfestivals_classTagsUpdate(&$ciniki, $tnid, $class_id, $type
             //
             $tag_sort_name = $tag;
             switch($tag_sort_name) {
-                case 'Junior': $tag_sort_name = 'B - Junior'; break;
-                case 'Intermediate': $tag_sort_name = 'C - Intermediate'; break;
-                case 'Senior': $tag_sort_name = 'D - Senior'; break;
+                case 'All Levels': $tag_sort_name = 'A - All Levels'; break;
+                case 'Preparatory / Beginner': $tag_sort_name = 'A - Preparatory / Beginner'; break;
+                case 'Primary / Elementary': $tag_sort_name = 'B - Primary / Elementary'; break;
+                case 'Primary Division': $tag_sort_name = 'B - Primary Division'; break;
+                case 'Beginner 6 & Under': $tag_sort_name = 'C - Beginner 6 & Under'; break;
+                case 'Ages 8 & Under': $tag_sort_name = 'C - Ages 8 & Under'; break;
+                case 'Ages 9 & 10': $tag_sort_name = 'D - Ages 9 & 10'; break;
+                case 'Junior': $tag_sort_name = 'E - Junior'; break;
+                case 'Junior Division': $tag_sort_name = 'E - Junior Division'; break;
+                case 'Junior 7 - 12': $tag_sort_name = 'E - Junior 7 - 12'; break;
+                case 'Junior 12 & Under': $tag_sort_name = 'E - Junior 12 & Under'; break;
+                case 'Ages 11 & 12': $tag_sort_name = 'E - Ages 11 & 12'; break;
+                case 'Intermediate': $tag_sort_name = 'G - Intermediate'; break;
+                case 'Intermediate Division': $tag_sort_name = 'G - Intermediate Division'; break;
+                case 'Intermediate 13 - 18': $tag_sort_name = 'G - Intermediate 13 - 18'; break;
+                case 'Senior': $tag_sort_name = 'J - Senior'; break;
+                case 'Senior 13 - 28': $tag_sort_name = 'J - Senior 13 - 28'; break;
+                case 'Ages 13 & 14': $tag_sort_name = 'J - Ages 13 & 14'; break;
+                case 'Secondary Division': $tag_sort_name = 'K - Secondary Division'; break;
+                case 'Diploma / Advanced': $tag_sort_name = 'M - Diploma / Advanced'; break;
+                case 'Open': $tag_sort_name = 'O - Open'; break;
+                case 'Ages 15 & 16': $tag_sort_name = 'O - Ages 15 & 16'; break;
+                case 'Later Stages / Adult': $tag_sort_name = 'S - Later Stages / Adult'; break;
+                case 'Later Stages / Adult 29 & Over': $tag_sort_name = 'S - Later Stages / Adult 29 & Over'; break;
+                case 'Ages 17 & 18': $tag_sort_name = 'T - Ages 17 & 18'; break;
+                case '18 & Under': $tag_sort_name = 'T - 18 & Under'; break;
+                case 'Ages 19 - 28': $tag_sort_name = 'U - Ages 19 - 28'; break;
+                case '19 & Over': $tag_sort_name = 'U - 19 & Over'; break;
+                case 'Ages 29 & Over': $tag_sort_name = 'V - Ages 29 & Over'; break;
             }
 
             $permalink = ciniki_core_makePermalink($ciniki, $tag);

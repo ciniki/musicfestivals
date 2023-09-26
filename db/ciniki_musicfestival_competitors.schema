@@ -71,7 +71,7 @@ create table ciniki_musicfestival_competitors (
     pronoun varchar(50) not null,
     flags smallint unsigned not null,
     conductor varchar(250) not null,
-    num_people int not null,
+    num_people varchar(50) not null,
     parent varchar(250) not null,
     address varchar(250) not null,
     city varchar(250) not null,
