@@ -55,6 +55,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             'layout' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
                 'tradingcards' => 'Trading Cards',
                 'imagebuttons' => 'Image Buttons',
+                'buttons' => 'Buttons',
                 )),
             'image-ratio' => array('label' => 'Image Ratio (Image Buttons Only)', 
                 'type'=>'select', 
