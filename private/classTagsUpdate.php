@@ -117,7 +117,7 @@ function ciniki_musicfestivals_classTagsUpdate(&$ciniki, $tnid, $class_id, $type
                 case 'Open': $tag_sort_name = 'O - Open'; break;
                 case 'Ages 15 & 16': $tag_sort_name = 'O - Ages 15 & 16'; break;
                 case 'Later Stages / Adult': $tag_sort_name = 'S - Later Stages / Adult'; break;
-                case 'Later Stages / Adult 29 & Over': $tag_sort_name = 'S - Later Stages / Adult 29 & Over'; break;
+                case 'Later Stages / Adult (29 & Over)': $tag_sort_name = 'S - Later Stages / Adult 29 & Over'; break;
                 case 'Ages 17 & 18': $tag_sort_name = 'T - Ages 17 & 18'; break;
                 case '18 & Under': $tag_sort_name = 'T - 18 & Under'; break;
                 case 'Ages 19 - 28': $tag_sort_name = 'U - Ages 19 - 28'; break;

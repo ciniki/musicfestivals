@@ -26,6 +26,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'sections'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sections'),
         'categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Categories'),
         'classes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Classes'),
+        'levels'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Levels'),
         'registrations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registrations'),
         'schedule'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule'),
         'ssection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Section'),
@@ -147,6 +148,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'sections'=>array(),
         'categories'=>array(),
         'classes'=>array(),
+        'levels'=>array(),
         'registrations'=>array(),
         'schedule_sections'=>array(),
         'schedule_divisions'=>array(),
@@ -415,6 +417,31 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             } else {
                 $festival['classes'] = array();
             }
+        }
+
+        //
+        // Get the list of levels
+        //
+        if( isset($args['levels']) && $args['levels'] == 'yes' ) {
+            $strsql = "SELECT DISTINCT tags.tag_name, tags.tag_sort_name "
+                . "FROM ciniki_musicfestival_classes AS classes "
+                . "INNER JOIN ciniki_musicfestival_class_tags AS tags ON ("
+                    . "classes.id = tags.class_id "
+                    . "AND tags.tag_type = 20 "
+                    . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE classes.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "ORDER BY tags.tag_sort_name, tags.tag_name "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'levels', 'fname'=>'tag_name', 'fields'=>array('tag_name', 'tag_sort_name')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.578', 'msg'=>'Unable to load levels', 'err'=>$rc['err']));
+            }
+            $festival['levels'] = isset($rc['levels']) ? $rc['levels'] : array();
         }
 
         //
