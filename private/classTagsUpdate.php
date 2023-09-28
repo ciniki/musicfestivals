@@ -93,6 +93,8 @@ function ciniki_musicfestivals_classTagsUpdate(&$ciniki, $tnid, $class_id, $type
             }
             $uuid = $rc['uuid'];
 
+/*          Moved to UI and allow user to change tag_name and tag_sort_name
+
             //
             // Setup the overrides for the sort name to make the levels sort properly
             //
@@ -129,7 +131,7 @@ function ciniki_musicfestivals_classTagsUpdate(&$ciniki, $tnid, $class_id, $type
                 case 'Intermediate Division': $tag_sort_name = 'Y - Intermediate Division'; break;
                 case 'Secondary Division': $tag_sort_name = 'Z - Secondary Division'; break;
             }
-
+*/
             $permalink = ciniki_core_makePermalink($ciniki, $tag);
 
             // 
