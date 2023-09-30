@@ -22,7 +22,7 @@ function ciniki_musicfestivals_classTagUpdate(&$ciniki) {
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'old_tag_name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Old Name'),
         'new_tag_name'=>array('required'=>'no', 'blank'=>'no', 'trim'=>'yes', 'name'=>'New Name'),
-        'old_tag_sort_name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Old Sort Name'),
+        'old_tag_sort_name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Old Sort Name'),
         'new_tag_sort_name'=>array('required'=>'no', 'blank'=>'no', 'trim'=>'yes', 'name'=>'New Sort Name'),
         ));
     if( $rc['stat'] != 'ok' ) {

@@ -92,13 +92,13 @@ function ciniki_musicfestivals_classTagsUpdate(&$ciniki, $tnid, $class_id, $type
                 return $rc;
             }
             $uuid = $rc['uuid'];
+            $tag_sort_name = $tag;
 
 /*          Moved to UI and allow user to change tag_name and tag_sort_name
 
             //
             // Setup the overrides for the sort name to make the levels sort properly
             //
-            $tag_sort_name = $tag;
             switch($tag_sort_name) {
                 case 'All Levels': $tag_sort_name = 'A - All Levels'; break;
                 case 'Preparatory / Beginner': $tag_sort_name = 'A - Preparatory / Beginner'; break;
