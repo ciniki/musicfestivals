@@ -552,7 +552,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     'festival_id' => $festival['id'],
                     'billing_customer_id' => $request['session']['customer']['id'],
                     'ctype' => $fields['ctype']['value'],
-                    'flags' => ($fields['terms']['value'] == 'on' ? 0x01 : 0),
+                    'flags' => (isset($fields['terms']['value']) && $fields['terms']['value'] == 'on' ? 0x01 : 0),
                     'parent' => $fields['parent']['value'],
                     'address' => $fields['address']['value'],
                     'city' => $fields['city']['value'],
