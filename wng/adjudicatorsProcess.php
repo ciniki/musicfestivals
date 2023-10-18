@@ -39,6 +39,7 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
         . "adjudicators.customer_id, "
         . "customers.display_name, "
         . "customers.sort_name, "
+        . "customers.permalink, "
         . "adjudicators.image_id, "
         . "adjudicators.description, "
         . "adjudicators.discipline "
@@ -60,10 +61,10 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
         . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY customers.sort_name "
         . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'adjudicators', 'fname'=>'id', 
-            'fields'=>array('id', 'customer_id', 'display_name', 'discipline', 'image_id', 'description', 'sort_name'),
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'adjudicators', 'fname'=>'permalink', 
+            'fields'=>array('id', 'customer_id', 'display_name', 'discipline', 'image-id'=>'image_id', 'description', 'sort_name', 'permalink'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -82,18 +83,52 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
         //
         // Add the adjudicators
         //
-        $side = 'right';
-        foreach($adjudicators as $adjudicator) {
+        if( isset($request['uri_split'][($request['cur_uri_pos']+1)]) ) {
+            if( isset($adjudicators[$request['uri_split'][($request['cur_uri_pos']+1)]]) ) {
+                $adjudicator = $adjudicators[$request['uri_split'][($request['cur_uri_pos']+1)]];
+                $blocks[] = array(
+                    'type' => 'contentphoto',
+                    'image-id' => $adjudicator['image-id'],
+                    'title' => $adjudicator['display_name'],
+                    'subtitle' => $adjudicator['discipline'],
+                    'content' => $adjudicator['description'],
+                    );
+                return array('stat'=>'ok', 'blocks'=>$blocks);
+            } else {
+                $blocks[] = array(
+                    'type' => 'msg', 
+                    'level' => 'error',
+                    'content' => 'Could not find the adjudicator you requested.', 
+                    );
+            }
+        }
+
+        if( isset($s['layout']) && $s['layout'] == 'imagebuttons' ) {
+            foreach($adjudicators as $aid => $adjudicator) {
+                $adjudicators[$aid]['title'] = $adjudicator['display_name'];
+                $adjudicators[$aid]['subtitle'] = $adjudicator['discipline'];
+                $adjudicators[$aid]['image-ratio'] = '1-1';
+                $adjudicators[$aid]['title-position'] = 'overlay-bottomhalf';
+                $adjudicators[$aid]['url'] = $request['page']['path'] . '/' . $adjudicator['permalink'];
+            }
             $blocks[] = array(
-                'type' => 'contentphoto', 
-                'image-position' => 'top-' . $side,
-                'title' => $adjudicator['display_name']
-                    . (isset($adjudicator['discipline']) && $adjudicator['discipline'] != '' ? ' - ' . $adjudicator['discipline'] : ''), 
-                'image-id' => (isset($adjudicator['image_id']) && $adjudicator['image_id'] > 0  ? $adjudicator['image_id'] : 0),
-                'content' => $adjudicator['description'],
+                'type' => 'imagebuttons',
+                'items' => $adjudicators,
                 );
-            $side = $side == 'right' ? 'left' : 'right';
-        } 
+        } else {
+            $side = 'right';
+            foreach($adjudicators as $adjudicator) {
+                $blocks[] = array(
+                    'type' => 'contentphoto', 
+                    'image-position' => 'top-' . $side,
+                    'title' => $adjudicator['display_name']
+                        . (isset($adjudicator['discipline']) && $adjudicator['discipline'] != '' ? ' - ' . $adjudicator['discipline'] : ''), 
+                    'image-id' => (isset($adjudicator['image-id']) && $adjudicator['image-id'] > 0  ? $adjudicator['image-id'] : 0),
+                    'content' => $adjudicator['description'],
+                    );
+                $side = $side == 'right' ? 'left' : 'right';
+            } 
+        }
     } else {
         $blocks[] = array(
             'type' => 'text', 

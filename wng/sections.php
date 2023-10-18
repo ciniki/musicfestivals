@@ -123,6 +123,13 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'complex_options'=>array('value'=>'id', 'name'=>'name'),
                 'options'=>$festivals,
                 ),
+            'layout' => array('label'=>'Format', 'type'=>'toggle', 'default'=>'contentphoto', 
+                'toggles'=>array('contentphoto'=>'Bio & Photos', 'imagebutton'=>'Image Buttons'),
+                ),
+            'layout' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
+                'contentphoto' => 'Content + Photo',
+                'imagebuttons' => 'Image Buttons',
+                )),
             ),
         );
 
