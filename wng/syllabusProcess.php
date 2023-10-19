@@ -202,7 +202,6 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     //
     elseif( isset($s['layout']) && $s['layout'] == 'imagebuttons' ) {
         foreach($sections as $sid => $section) {
-            $sections[$sid]['url'] = $request['page']['path'] . '/' . $section['permalink'];
             $sections[$sid]['image-ratio'] = (isset($s['image-ratio']) ? $s['image-ratio'] : '4-3');
             $sections[$sid]['title-position'] = (isset($s['title-position']) ? $s['title-position'] : 'overlay-bottomhalf');
             $sections[$sid]['url'] = $request['page']['path'] . '/' . $section['permalink'];

@@ -115,14 +115,28 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
                 'type' => 'imagebuttons',
                 'items' => $adjudicators,
                 );
-        } else {
+        } 
+        elseif( isset($s['layout']) && $s['layout'] == 'tradingcards' ) {
+            foreach($adjudicators as $aid => $adjudicator) {
+                $adjudicators[$aid]['title'] = $adjudicator['display_name'];
+                $adjudicators[$aid]['subtitle'] = $adjudicator['discipline'];
+                $adjudicators[$aid]['button-class'] = isset($s['button-class']) && $s['button-class'] != '' ? $s['button-class'] : 'button';
+                $adjudicators[$aid]['button-1-text'] = 'Read Bio';
+                $adjudicators[$aid]['button-1-url'] = $request['page']['path'] . '/' . $adjudicator['permalink'];
+            }
+            $blocks[] = array(
+                'type' => 'tradingcards',
+                'items' => $adjudicators,
+                );
+        } 
+        else {
             $side = 'right';
             foreach($adjudicators as $adjudicator) {
                 $blocks[] = array(
                     'type' => 'contentphoto', 
                     'image-position' => 'top-' . $side,
-                    'title' => $adjudicator['display_name']
-                        . (isset($adjudicator['discipline']) && $adjudicator['discipline'] != '' ? ' - ' . $adjudicator['discipline'] : ''), 
+                    'title' => $adjudicator['display_name'],
+                    'subtitle' => $adjudicator['discipline'], 
                     'image-id' => (isset($adjudicator['image-id']) && $adjudicator['image-id'] > 0  ? $adjudicator['image-id'] : 0),
                     'content' => $adjudicator['description'],
                     );

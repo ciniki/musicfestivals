@@ -129,6 +129,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             'layout' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
                 'contentphoto' => 'Content + Photo',
                 'imagebuttons' => 'Image Buttons',
+                'tradingcards' => 'Trading Cards',
                 )),
             ),
         );
