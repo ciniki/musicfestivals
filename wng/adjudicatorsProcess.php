@@ -92,6 +92,8 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
                     'title' => $adjudicator['display_name'],
                     'subtitle' => $adjudicator['discipline'],
                     'content' => $adjudicator['description'],
+                    'image-position' => (isset($s['image-position']) && $s['image-position'] != '' ? $s['image-position'] : ''),
+                    'image-size' => (isset($s['image-size']) && $s['image-size'] != '' ? $s['image-size'] : ''),
                     );
                 return array('stat'=>'ok', 'blocks'=>$blocks);
             } else {
@@ -138,6 +140,8 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
                     'title' => $adjudicator['display_name'],
                     'subtitle' => $adjudicator['discipline'], 
                     'image-id' => (isset($adjudicator['image-id']) && $adjudicator['image-id'] > 0  ? $adjudicator['image-id'] : 0),
+                    'image-position' => (isset($s['image-position']) && $s['image-position'] != '' ? $s['image-position'] : ''),
+                    'image-size' => (isset($s['image-size']) && $s['image-size'] != '' ? $s['image-size'] : ''),
                     'content' => $adjudicator['description'],
                     );
                 $side = $side == 'right' ? 'left' : 'right';
