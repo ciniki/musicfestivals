@@ -331,7 +331,7 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
         . "lists.name, "
         . "lists.category, "
         . "lists.intro, "
-        . "sections.id AS fid, "
+        . "sections.id AS sid, "
         . "sections.name AS sname, "
         . "sections.sequence AS sequence "
         . "FROM ciniki_musicfestival_lists AS lists "
