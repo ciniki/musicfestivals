@@ -217,6 +217,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     if( isset($s['section-pdf']) && ($s['section-pdf'] == 'top' || $s['section-pdf'] == 'both') ) {
         $blocks[] = array(
             'type' => 'buttons',
+            'class' => 'buttons-top-' . $section['permalink'],
             'list' => array(
                 array(
                     'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $section['permalink'] . '/download.pdf',
@@ -445,6 +446,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     if( isset($s['section-pdf']) && ($s['section-pdf'] == 'bottom' || $s['section-pdf'] == 'both') ) {
         $blocks[] = array(
             'type' => 'buttons',
+            'class' => 'buttons-bottom-' . $section['permalink'],
             'list' => array(
                 array(
                     'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $section['permalink'] . '/download.pdf',
