@@ -377,7 +377,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                 }
 
             } elseif( ($festival['flags']&0x04) ) {
-                $w = array(105, 25, 25);
+                $w = array(130, 25, 25);
                 $pdf->SetFont('', 'B', '12');
                 $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
                 $pdf->Cell($w[1], $lh, 'Live', 1, 0, 'C', $fill);
@@ -398,9 +398,8 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                         $pdf->SetFont('', 'B', '12');
                         $fill = 1;
                         $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
-                        $pdf->Cell($w[1], $lh, 'Earlybird', 1, 0, 'C', $fill);
-                        $pdf->Cell($w[2], $lh, 'Live', 1, 0, 'C', $fill);
-                        $pdf->Cell($w[3], $lh, 'Virtual', 1, 0, 'C', $fill);
+                        $pdf->Cell($w[1], $lh, 'Live', 1, 0, 'C', $fill);
+                        $pdf->Cell($w[2], $lh, 'Virtual', 1, 0, 'C', $fill);
                         $pdf->Ln($lh);
                         $pdf->SetFont('', '', '12');
                         $fill = 0;
