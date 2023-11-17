@@ -111,17 +111,44 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     //
     // Get the list of sections
     //
-    $strsql = "SELECT sections.id, "
-        . "sections.permalink, "
-        . "sections.name, "
-        . "sections.primary_image_id, "
-        . "sections.synopsis "
-        . "FROM ciniki_musicfestival_sections AS sections "
-        . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
-        . "AND (sections.flags&0x01) = 0 "
-        . "ORDER BY sections.sequence, sections.name "
-        . "";
+    if( isset($s['display-live-virtual']) && in_array($s['display-live-virtual'], ['live','virtual']) ) {
+        $strsql = "SELECT sections.id, "
+            . "sections.permalink, "
+            . "sections.name, "
+            . "sections.primary_image_id, "
+            . "sections.synopsis "
+            . "FROM ciniki_musicfestival_sections AS sections "
+            . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
+                . "sections.id = categories.section_id "
+                . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
+                . "categories.id = classes.category_id ";
+        if( $s['display-live-virtual'] == 'live' ) {
+            $strsql .= "AND classes.fee > 0 ";
+        } else {
+            $strsql .= "AND classes.virtual_fee > 0 ";
+        }
+        $strsql .= "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
+            . "AND (sections.flags&0x01) = 0 "
+            . "ORDER BY sections.sequence, sections.name "
+            . "";
+    } else {
+        $strsql = "SELECT sections.id, "
+            . "sections.permalink, "
+            . "sections.name, "
+            . "sections.primary_image_id, "
+            . "sections.synopsis "
+            . "FROM ciniki_musicfestival_sections AS sections "
+            . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
+            . "AND (sections.flags&0x01) = 0 "
+            . "ORDER BY sections.sequence, sections.name "
+            . "";
+    }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'permalink', 

@@ -309,8 +309,13 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         . "plus_fee "
         . "FROM ciniki_musicfestival_categories AS categories "
         . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
-            . "categories.id = classes.category_id "
-            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "categories.id = classes.category_id ";
+    if( isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'live' ) {
+        $strsql .= "AND classes.fee > 0 ";
+    } elseif( isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'virtual' ) {
+        $strsql .= "AND classes.virtual_fee > 0 ";
+    }
+        $strsql .= "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . $level_strsql 
         . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $section['id']) . "' "
