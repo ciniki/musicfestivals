@@ -104,8 +104,13 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
-            . "categories.id = classes.category_id "
-            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "categories.id = classes.category_id ";
+    if( isset($args['live-virtual']) && $args['live-virtual'] == 'live' ) {
+        $strsql .= "AND classes.fee > 0 ";
+    } elseif( isset($args['live-virtual']) && $args['live-virtual'] == 'live' ) {
+        $strsql .= "AND classes.virtual_fee > 0 ";
+    }
+    $strsql .= "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
         . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -370,13 +375,21 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                     }
                     $pdf->MultiCell($w[0], $lh, $class['code'] . ' - ' . $class['name'], 1, 'L', $fill, 0);
                     $pdf->Cell($w[1], $lh, numfmt_format_currency($intl_currency_fmt, $class['earlybird_fee'], $intl_currency), 1, 0, 'C', $fill);
-                    $pdf->Cell($w[2], $lh, numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency), 1, 0, 'C', $fill);
-                    $pdf->Cell($w[3], $lh, numfmt_format_currency($intl_currency_fmt, $class['virtual_fee'], $intl_currency), 1, 0, 'C', $fill);
+                    if( $class['fee'] > 0 ) {
+                        $pdf->Cell($w[2], $lh, numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency), 1, 0, 'C', $fill);
+                    } else {
+                        $pdf->Cell($w[2], $lh, 'n/a', 1, 0, 'C', $fill);
+                    }
+                    if( $class['virtual_fee'] > 0 ) {
+                        $pdf->Cell($w[3], $lh, numfmt_format_currency($intl_currency_fmt, $class['virtual_fee'], $intl_currency), 1, 0, 'C', $fill);
+                    } else {
+                        $pdf->Cell($w[3], $lh, 'n/a', 1, 0, 'C', $fill);
+                    }
                     $pdf->Ln($lh);
                     $fill=!$fill;
                 }
 
-            } elseif( ($festival['flags']&0x04) ) {
+            } elseif( ($festival['flags']&0x04) && (!isset($args['live-virtual']) || !in_array($args['live-virtual'], ['live','virtual'])) ) {
                 $w = array(130, 25, 25);
                 $pdf->SetFont('', 'B', '12');
                 $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
@@ -405,12 +418,61 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                         $fill = 0;
                     }
                     $pdf->MultiCell($w[0], $lh, $class['code'] . ' - ' . $class['name'], 1, 'L', $fill, 0);
-                    $pdf->Cell($w[1], $lh, numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency), 1, 0, 'C', $fill);
-                    $pdf->Cell($w[2], $lh, numfmt_format_currency($intl_currency_fmt, $class['virtual_fee'], $intl_currency), 1, 0, 'C', $fill);
+                    if( $class['fee'] > 0 ) {
+                        $pdf->Cell($w[1], $lh, numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency), 1, 0, 'C', $fill);
+                    } else {
+                        $pdf->Cell($w[1], $lh, 'n/a', 1, 0, 'C', $fill);
+                    }
+                    if( $class['virtual_fee'] > 0 ) {
+                        $pdf->Cell($w[2], $lh, numfmt_format_currency($intl_currency_fmt, $class['virtual_fee'], $intl_currency), 1, 0, 'C', $fill);
+                    } else {
+                        $pdf->Cell($w[2], $lh, 'n/a', 1, 0, 'C', $fill);
+                    }
+                    //$pdf->Cell($w[1], $lh, numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency), 1, 0, 'C', $fill);
+                    //$pdf->Cell($w[2], $lh, numfmt_format_currency($intl_currency_fmt, $class['virtual_fee'], $intl_currency), 1, 0, 'C', $fill);
                     $pdf->Ln($lh);
                     $fill=!$fill;
                 }
-
+            } elseif( isset($args['live-virtual']) && in_array($args['live-virtual'], ['live','virtual']) ) {
+                $w = array(150, 30);
+                $lh = $pdf->getStringHeight($w[0], 'Class');
+                $pdf->SetFont('', 'B', '12');
+                $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
+                if( $args['live-virtual'] == 'live' ) {
+                    $pdf->Cell($w[1], $lh, 'Live', 1, 0, 'C', $fill);
+                } elseif( $args['live-virtual'] == 'virtual' ) {
+                    $pdf->Cell($w[1], $lh, 'Virtual', 1, 0, 'C', $fill);
+                }
+                $pdf->Ln($lh);
+                $pdf->SetFont('', '', '12');
+                $fill = 0;
+                foreach($category['classes'] as $class) {
+                    $lh = $pdf->getStringHeight($w[0], $class['code'] . ' - ' . $class['name']);
+                    if( $pdf->getY() > $pdf->getPageHeight() - $lh - 20) {
+                        $pdf->AddPage();
+                        $pdf->SetFont('', 'B', '18');
+                        $pdf->MultiCell(180, 10, $category['name'] . ' (continued)', 0, 'L', 0, 1);
+                        $pdf->SetFont('', 'B', '12');
+                        $fill = 1;
+                        $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
+                        if( $args['live-virtual'] == 'live' ) {
+                            $pdf->Cell($w[1], $lh, 'Live', 1, 0, 'C', $fill);
+                        } elseif( $args['live-virtual'] == 'virtual' ) {
+                            $pdf->Cell($w[1], $lh, 'Virtual', 1, 0, 'C', $fill);
+                        }
+                        $pdf->Ln($lh);
+                        $pdf->SetFont('', '', '12');
+                        $fill = 0;
+                    }
+                    $pdf->MultiCell($w[0], $lh, $class['code'] . ' - ' . $class['name'], 1, 'L', $fill, 0);
+                    if( $args['live-virtual'] == 'live' ) {
+                        $pdf->MultiCell($w[1], $lh, '$' . number_format($class['fee'], 2), 1, 'C', $fill, 0);
+                    } elseif( $args['live-virtual'] == 'virtual' ) {
+                        $pdf->MultiCell($w[1], $lh, '$' . number_format($class['virtual_fee'], 2), 1, 'C', $fill, 0);
+                    }
+                    $pdf->Ln($lh);
+                    $fill=!$fill;
+                }
             } else {
                 $w = array(30, 120, 30);
                 foreach($category['classes'] as $class) {

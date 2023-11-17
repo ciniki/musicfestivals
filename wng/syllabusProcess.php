@@ -33,6 +33,15 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     }
 
     //
+    // Check if syllabus is displaying just live or just virtual
+    //
+    if( isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'live' ) {
+        $lv_word = 'Live ';
+    } elseif( isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'virtual' ) {
+        $lv_word = 'Virtual ';
+    }
+
+    //
     // Get the music festival details
     //
     $dt = new DateTime('now', new DateTimezone('UTC'));
@@ -72,6 +81,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'syllabusPDF');
         $rc = ciniki_musicfestivals_templates_syllabusPDF($ciniki, $tnid, array(
             'festival_id' => $s['festival-id'],
+            'live-virtual' => isset($s['display-live-virtual']) ? $s['display-live-virtual'] : '',
             ));
         if( isset($rc['pdf']) ) {
             $filename = $festival['name'];
@@ -197,7 +207,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
                 array(
                     'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/download.pdf',
                     'target' => '_blank',
-                    'text' => 'Download Complete Syllabus PDF',
+                    'text' => "Download Complete " . (isset($lv_word) && $lv_word != '' ? "{$lv_word} " : '') . "Syllabus PDF",
                     ),
                 ),
             );
@@ -266,7 +276,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
                 array(
                     'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/download.pdf',
                     'target' => '_blank',
-                    'text' => 'Download Complete Syllabus PDF',
+                    'text' => "Download Complete " . (isset($lv_word) && $lv_word != '' ? "{$lv_word} " : '') . "Syllabus PDF",
                     ),
                 ),
             );

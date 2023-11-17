@@ -25,6 +25,14 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     $s = $section['settings'];
     $blocks = array();
 
+    //
+    // Check if syllabus is displaying just live or just virtual
+    //
+    if( isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'live' ) {
+        $lv_word = 'Live ';
+    } elseif( isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'virtual' ) {
+        $lv_word = 'Virtual ';
+    }
 
     //
     // Make sure a festival was specified
@@ -153,6 +161,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         $rc = ciniki_musicfestivals_templates_syllabusPDF($ciniki, $tnid, array(
             'festival_id' => $s['festival-id'],
             'section_id' => $section['id'],
+            'live-virtual' => isset($s['display-live-virtual']) ? $s['display-live-virtual'] : '',
             ));
         if( isset($rc['pdf']) ) {
             $filename = $festival['name'] . ' - ' . $section['name'];
@@ -222,7 +231,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 array(
                     'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $section['permalink'] . '/download.pdf',
                     'target' => '_blank',
-                    'text' => 'Download Syllabus PDF for ' . $section['name'],
+                    'text' => 'Download ' . (isset($lv_word) && $lv_word != '' ? "{$lv_word} " : '') . 'Syllabus PDF for ' . $section['name'],
                     ),
                 ),
             );
@@ -455,7 +464,8 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             'list' => array(
                 array(
                     'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $section['permalink'] . '/download.pdf',
-                    'text' => 'Download Syllabus PDF for ' . $section['name'],
+                    'target' => '_blank',
+                    'text' => 'Download ' . (isset($lv_word) && $lv_word != '' ? "{$lv_word} " : '') . 'Syllabus PDF for ' . $section['name'],
                     ),
                 ),
             );
