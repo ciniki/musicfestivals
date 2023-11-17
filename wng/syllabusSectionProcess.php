@@ -473,6 +473,6 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
 
 
 
-    return array('stat'=>'ok', 'blocks'=>$blocks);
+    return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
 }
 ?>
