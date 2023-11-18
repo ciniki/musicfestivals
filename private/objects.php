@@ -62,6 +62,7 @@ function ciniki_musicfestivals_objects($ciniki) {
         'fields'=>array(
             'festival_id'=>array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
             'customer_id'=>array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
+            'flags'=>array('name'=>'Options', 'default'=>0),
             'image_id'=>array('name'=>'Image', 'ref'=>'ciniki.images.image', 'default'=>0),
             'discipline'=>array('name'=>'Discipline', 'default'=>''),
             'description'=>array('name'=>'Bio', 'default'=>''),
@@ -127,6 +128,8 @@ function ciniki_musicfestivals_objects($ciniki) {
             'virtual_fee'=>array('name'=>'Virtual Fee', 'type'=>'currency', 'default'=>'0'),
             'earlybird_plus_fee'=>array('name'=>'Earlybird Plus Fee', 'type'=>'currency', 'default'=>'0'),
             'plus_fee'=>array('name'=>'Plus Fee', 'type'=>'currency', 'default'=>'0'),
+            'min_titles'=>array('name'=>'Minimum Titles', 'default'=>'1'),
+            'max_titles'=>array('name'=>'Maximum Titles', 'default'=>'1'),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );

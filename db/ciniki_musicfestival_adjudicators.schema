@@ -15,6 +15,11 @@
 #
 # flags:                The options for the adjudicator. ** future **
 #
+#                           0x01 - Live Festival
+#                           0x02 - Virtual Festival
+#                           0x04 - 
+#                           0x08 - 
+#
 # image_id:             The ID of the image for the adjudicator.
 #
 # discipline:           The discipline they will be adjudicating.

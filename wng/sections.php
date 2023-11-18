@@ -158,6 +158,15 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 )),
             ),
         );
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x4000) ) {
+        $sections['ciniki.musicfestivals.adjudicators']['settings']['display-live-virtual'] = array(
+            'label'=>'Classes', 
+            'type'=>'toggle', 'default'=>'all', 'toggles'=>array(
+                'all' => 'All',
+                'live' => 'Live',
+                'virtual' => 'Virtual',
+                ));
+    }
 
     //
     // Section to display the photos for a festival

@@ -102,6 +102,8 @@ function ciniki_musicfestivals_classGet($ciniki) {
             'virtual_fee'=>'',
             'earlybird_plus_fee'=>'',
             'plus_fee'=>'',
+            'min_titles' => 1,
+            'max_titles' => 1,
         );
     }
 
@@ -122,7 +124,9 @@ function ciniki_musicfestivals_classGet($ciniki) {
             . "ciniki_musicfestival_classes.fee, "
             . "ciniki_musicfestival_classes.virtual_fee, "
             . "ciniki_musicfestival_classes.earlybird_plus_fee, "
-            . "ciniki_musicfestival_classes.plus_fee "
+            . "ciniki_musicfestival_classes.plus_fee, "
+            . "ciniki_musicfestival_classes.min_titles, "
+            . "ciniki_musicfestival_classes.max_titles "
             . "FROM ciniki_musicfestival_classes "
             . "INNER JOIN ciniki_musicfestival_categories ON ( "
                 . "ciniki_musicfestival_classes.category_id = ciniki_musicfestival_categories.id "
@@ -134,7 +138,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'classes', 'fname'=>'id', 
                 'fields'=>array('festival_id', 'category_id', 'section_id', 'code', 'name', 'permalink', 'sequence', 'flags', 
-                    'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee'),
+                    'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 'min_titles', 'max_titles'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

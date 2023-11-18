@@ -29,6 +29,8 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
         'virtual_fee'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Virtual Fee'),
         'earlybird_plus_fee'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Earlybird Plus Fee'),
         'plus_fee'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Plus Fee'),
+        'min_titles'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Minimum Titles'),
+        'max_titles'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Maximum Titles'),
         'levels'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Level Tags'),
         ));
     if( $rc['stat'] != 'ok' ) {

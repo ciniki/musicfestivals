@@ -26,8 +26,8 @@
 #                           0x20 - Enable Third competitor
 #                           0x40 - Enable Fourth competitor
 #                           0x80 - Enable Fifth competitor **future**
-#                           0x0100 - 
-#                           0x0200 - 
+#                           0x0100 - Second Competitor optional
+#                           0x0200 - Third Competitor optional
 #                           0x0400 - 
 #                           0x0800 - 
 #                           0x1000 - Enable Second title & time
@@ -40,6 +40,9 @@
 # virtual_fee:          The fee for the class.
 # earlybird_plus_fee:   The Earlybird Adjudication Plus fee for the class.
 # plus_fee:             The Adjudication Plus fee for the class.
+#
+# min_titles:           The minimum number of titles that must be performed. (enabled by provicials flag)
+# max_title:            The maximum number of titles that can be performed.
 #
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.
@@ -60,6 +63,8 @@ create table ciniki_musicfestival_classes (
     virtual_fee decimal(19,6) not null,
     earlybird_plus_fee decimal(19,6) not null,
     plus_fee decimal(19,6) not null,
+    min_titles tinyint unsigned not null,
+    max_titles tinyint unsigned not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
@@ -68,4 +73,4 @@ create table ciniki_musicfestival_classes (
     unique index (festival_id, code),
     index (festival_id, category_id, tnid),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.06';
+) ENGINE='InnoDB', COMMENT='v1.07';

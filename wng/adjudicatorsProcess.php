@@ -57,8 +57,13 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
 //                . ") "
 //            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
 //            . ") "
-        . "WHERE adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
-        . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "WHERE adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' ";
+    if( isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'live' ) {
+        $strsql .= "AND ((adjudicators.flags&0x01) = 0x01 OR (adjudicators.flags&0x03) = 0) ";
+    } elseif( isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'virtual' ) {
+        $strsql .= "AND ((adjudicators.flags&0x02) = 0x02 OR (adjudicators.flags&0x03) = 0) ";
+    }
+    $strsql .= "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY customers.sort_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
