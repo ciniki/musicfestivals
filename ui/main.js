@@ -1363,7 +1363,7 @@ function ciniki_musicfestivals_main() {
                 this.sections.messages.headerValues[1] = 'Sent';
             }
         } else if( this.sections._tabs.selected == 'members' ) {
-            this.size = 'xlarge';
+            this.size = 'full';
             args['members'] = 'yes';
         } else if( this.isSelected('more', 'emails') == 'yes' ) {
             args['sections'] = 'yes';
