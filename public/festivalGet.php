@@ -1559,6 +1559,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         if( isset($args['members']) && $args['members'] == 'yes' ) {
             $strsql = "SELECT members.id, "
                 . "members.name, "
+                . "members.category, "
                 . "members.status, "
                 . "members.status AS status_text, "
                 . "IFNULL(fmembers.reg_start_dt, '') AS reg_start_dt_display, "
@@ -1582,7 +1583,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'members', 'fname'=>'id', 
-                    'fields'=>array('id', 'name', 'status', 'reg_start_dt_display', 'reg_end_dt_display', 'num_registrations'),
+                    'fields'=>array('id', 'name', 'category', 'status', 'reg_start_dt_display', 'reg_end_dt_display', 'num_registrations'),
                     'utctotz'=>array(
                         'reg_start_dt_display' => array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
                         'reg_end_dt_display' => array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
