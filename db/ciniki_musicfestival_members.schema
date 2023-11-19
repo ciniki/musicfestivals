@@ -1,0 +1,37 @@
+#
+# Description
+# -----------
+# This table stores the 
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# festival_id:              The ID of the provincial festival that the member festival is part of
+# member_id:                The ID of member festival.
+#
+# reg_start_dt:             The UTC Date and Time that registrations open for the member festival.
+# reg_end_dt:               The UTC Date and Time that registrations close for the member festival.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_musicfestival_members (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    festival_id int not null,
+    member_id int not null,
+    reg_start_dt datetime not null,
+    reg_end_dt datetime not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    unique index (festival_id, member_id),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

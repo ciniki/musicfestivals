@@ -520,6 +520,36 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );
+    $objects['member'] = array(
+        'name' => 'Member Festival',
+        'sync' => 'yes',
+        'o_name' => 'member',
+        'o_container' => 'members',
+        'table' => 'ciniki_musicfestivals_members',
+        'fields' => array(
+            'name' => array('name'=>'Name'),
+            'permalink' => array('name'=>'Permalink'),
+            'category' => array('name'=>'Category', 'default'=>''),
+            'synopsis' => array('name'=>'Synopsis', 'default'=>''),
+            'status' => array('name'=>'Status', 'default'=>'10'),
+            'customer_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer', 'default'=>'0'),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
+    $objects['festivalmember'] = array(
+        'name' => 'Festival Member',
+        'sync' => 'yes',
+        'o_name' => 'member',
+        'o_container' => 'members',
+        'table' => 'ciniki_musicfestival_members',
+        'fields' => array(
+            'festival_id' => array('name'=>'Festival'),
+            'member_id' => array('name'=>'Member'),
+            'reg_start_dt' => array('name'=>'Registrations Open'),
+            'reg_end_dt' => array('name'=>'Registrations Close'),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
     $objects['setting'] = array(
         'name' => 'Setting',
         'sync' => 'yes',
