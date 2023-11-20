@@ -314,7 +314,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             //
             // Determine if new page should be started
             //
-            if( $pdf->getY() > $pdf->getPageHeight() - 50 - $s_height - $lh) {
+            if( $newpage == 'no' && $pdf->getY() > $pdf->getPageHeight() - 50 - $s_height - $lh) {
                 $pdf->AddPage();
                 $newpage = 'yes';
             } elseif( $newpage == 'no' ) {
@@ -325,7 +325,8 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             $pdf->MultiCell(180, 5, $category['name'], 0, 'L', 0, 1);
             $pdf->SetFont('', '', '12');
             if( $description != '' ) {
-                $pdf->MultiCell(180, $lh, $description, 0, 'L', 0, 2);
+//                $pdf->MultiCell(180, $lh, $description, 0, 'L', 0, 2);
+                $pdf->writeHTMLCell(180, '', '', '', preg_replace("/\n/", '<br/>', $description), 0, 1);
 //                $pdf->Ln(2);
             }
             $fill = 1;
