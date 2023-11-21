@@ -263,6 +263,55 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             );
     }
 
+    //
+    // Options for Provincials
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+        //
+        // Load categories available
+        //
+        $strsql = "SELECT DISTINCT members.category "
+            . "FROM ciniki_musicfestivals_members AS members "
+            . "WHERE members.status < 90 "
+            . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'categories', 'fname'=>'category', 'fields'=>array('id'=>'category', 'name'=>'category')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.351', 'msg'=>'Unable to load member categories', 'err'=>$rc['err']));
+        }
+        $categories = isset($rc['categories']) ? $rc['categories'] : array();
+
+        $sections['ciniki.musicfestivals.members'] = array(
+            'name' => 'Members',
+            'module' => 'Music Festivals',
+            'settings' => array(
+                'title' => array('label'=>'Title', 'type'=>'text'),
+                'content' => array('label'=>'Intro', 'type'=>'textarea'),
+                'festival-id' => array('label'=>'Festival', 'type'=>'select', 
+                    'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                    'options'=>$festivals,
+                    ),
+                'display-format' => array('label'=>'Display', 'type'=>'toggle', 'default'=>'both', 'toggles'=>array(
+                    'alpha' => 'Alphabetical',
+                    'categories' => 'Categories',
+                    'both' => 'Both',
+                    )),
+                ),
+            );
+        array_unshift($categories, array('id'=>0, 'name'=>'None'));
+        for($i = 1; $i < 10; $i++) {
+            $sections['ciniki.musicfestivals.members']['settings']["category-{$i}"] = array(
+                'label' => "Category {$i}", 
+                'type' => 'select', 
+                'complex_options' => array('value'=>'id', 'name'=>'name'), 
+                'options' => $categories,
+                );
+        }
+    }
+
     return array('stat'=>'ok', 'sections'=>$sections);
 }
 ?>
