@@ -20,6 +20,8 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         'festival_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Festival'),
         'teacher_customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Teacher'),
         'billing_customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Billing'),
+        'accompanist_customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Accompanist'),
+        'member_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Member Festival'),
         'rtype'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Type'),
         'status'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Status'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),

@@ -63,6 +63,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'festival_id'=>$args['festival_id'],
             'teacher_customer_id'=>'0',
             'billing_customer_id'=>'0',
+            'accompanist_customer_id'=>'0',
+            'member_id'=>'0',
             'rtype'=>30,
             'status'=>'',
             'flags'=>0,
@@ -103,6 +105,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "ciniki_musicfestival_registrations.festival_id, "
             . "ciniki_musicfestival_registrations.teacher_customer_id, "
             . "ciniki_musicfestival_registrations.billing_customer_id, "
+            . "ciniki_musicfestival_registrations.accompanist_customer_id, "
+            . "ciniki_musicfestival_registrations.member_id, "
             . "ciniki_musicfestival_registrations.rtype, "
             . "ciniki_musicfestival_registrations.status, "
             . "ciniki_musicfestival_registrations.flags, "
@@ -140,6 +144,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
                 'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'billing_customer_id', 
+                    'accompanist_customer_id', 'member_id',
                     'rtype', 'status', 'flags', 'invoice_id', 'display_name', 
                     'competitor1_id', 'competitor2_id', 'competitor3_id', 
                     'competitor4_id', 'competitor5_id', 
@@ -172,6 +177,45 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             $registration['teacher_details'] = $rc['details'];
         } else {
             $registration['teacher_details'] = array();
+        }
+
+        //
+        // Get the member festival
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+            $strsql = "SELECT members.name "
+                . "FROM ciniki_musicfestivals_members AS members "
+                . "WHERE members.id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' "
+                . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'member');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.590', 'msg'=>'Unable to load member', 'err'=>$rc['err']));
+            }
+            if( isset($rc['member']) ) {
+                $registration['member_details'] = array(
+                    array('label'=>'Name', 'value'=>$rc['member']['name']),
+                    );
+            } else {
+                $registration['member_details'] = array();
+            }
+        }
+       
+        //
+        // Get the Accompanist details
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) 
+            && isset($registration['accompanist_customer_id']) && $registration['accompanist_customer_id'] > 0 
+            ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
+            $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['tnid'], 
+                array('customer_id'=>$registration['accompanist_customer_id'], 'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $registration['accompanist_details'] = $rc['details'];
+        } else {
+            $registration['accompanist_details'] = array();
         }
        
         //

@@ -93,12 +93,13 @@ function ciniki_musicfestivals_hooks_customerMerge($ciniki, $tnid, $args) {
     //
     // Get the list of registrations to update
     //
-    $strsql = "SELECT id, teacher_customer_id, billing_customer_id "
+    $strsql = "SELECT id, teacher_customer_id, billing_customer_id, accompanist_customer_id "
         . "FROM ciniki_musicfestival_registrations "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ("
             . "teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
             . "OR billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
+            . "OR accompanist_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
             . ") "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'items');
@@ -113,6 +114,9 @@ function ciniki_musicfestivals_hooks_customerMerge($ciniki, $tnid, $args) {
         }
         if( $row['billing_customer_id'] == $args['secondary_customer_id'] ) {
             $update_args['billing_customer_id'] = $args['primary_customer_id'];
+        }
+        if( $row['accompanist_customer_id'] == $args['secondary_customer_id'] ) {
+            $update_args['accompanist_customer_id'] = $args['primary_customer_id'];
         }
         $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $row['id'], $update_args, 0x04);
         if( $rc['stat'] != 'ok' ) {

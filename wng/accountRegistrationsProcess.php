@@ -261,6 +261,33 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     }
 
     //
+    // Load the Accompanists
+    //
+    $accompanists = array();
+    if( $customer_type != 20 ) {
+        $strsql = "SELECT customers.id, "
+            . "customers.display_name "
+            . "FROM ciniki_musicfestival_registrations AS registrations "
+            . "INNER JOIN ciniki_customers AS customers ON ("
+                . "registrations.accompanist_customer_id = customers.id "
+                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            // Search accompanists from all previous festivals
+//            . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'accompanists', 'fname'=>'id', 'fields'=>array('id', 'name'=>'display_name')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.297', 'msg'=>'Unable to load accompanists', 'err'=>$rc['err']));
+        }
+        $accompanists = isset($rc['accompanists']) ? $rc['accompanists'] : array();
+    }
+
+    //
     // Load the registration specified
     //
     if( isset($_POST['f-registration_id']) && $_POST['f-registration_id'] > 0 ) {
@@ -269,6 +296,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "uuid, "
             . "teacher_customer_id, "
             . "billing_customer_id, "
+            . "accompanist_customer_id, "
+            . "member_id, "
             . "rtype, "
             . "status, "
             . "flags, "
@@ -315,6 +344,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         } else {
             $registration = $rc['registration'];
             $registration['teacher_share'] = ($registration['flags']&0x01) == 0x01 ? 'on' : 'off';
+            $registration['accompanist_share'] = ($registration['flags']&0x02) == 0x02 ? 'on' : 'off';
             if( isset($_POST['action']) && $_POST['action'] == 'view' ) {
                 $display = 'view';
             } 
@@ -351,6 +381,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "uuid, "
             . "teacher_customer_id, "
             . "billing_customer_id, "
+            . "accompanist_customer_id, "
+            . "member_id, "
             . "rtype, "
             . "status, "
             . "flags, "
@@ -398,6 +430,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             $registration = $rc['registration'];
             $registration_id = $registration['registration_id'];
             $registration['teacher_share'] = ($registration['flags']&0x01) == 0x01 ? 'on' : 'off';
+            $registration['accompanist_share'] = ($registration['flags']&0x02) == 0x02 ? 'on' : 'off';
             $display = 'form';
             if( isset($_GET['ru']) && $_GET['ru'] != '' ) {
                 if( strncmp('http', $_GET['ru'], 4) == 0 ) {
@@ -420,6 +453,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         'display' => $display,
         'competitors' => $competitors,
         'teachers' => $teachers,
+        'accompanists' => $accompanists,
         'registration' => isset($registration) ? $registration : array(),
         'customer_type' => $customer_type,
         'customer_id' => $request['session']['customer']['id'],
@@ -470,6 +504,11 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 ) {
                 continue;
             }
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) 
+                && ($fields['accompanist_customer_id'] != -1 && $field['id'] == 'accompanist_email')
+                ) {
+                continue;
+            }
             if( isset($field['required']) && $field['required'] == 'yes' && $field['value'] < 0 && $field['id'] == 'participation' ) {
                 $errors[] = array(
                     'msg' => 'You must specify how you want to participate.',
@@ -508,6 +547,35 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                         );
                 } else {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.370', 'msg'=>'Unable to create teacher', 'err'=>$rc['err']));
+                }
+            }
+        }
+
+        //
+        // Check if accompanist needs to be setup
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) 
+            && $fields['accompanist_customer_id']['value'] == -1 
+            ) {
+            if( $fields['accompanist_email']['value'] == '' ) {
+                $errors[] = array(
+                    'msg' => "You must specify your accompanist's email.",
+                    );
+            } else {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accompanistCreate');
+                $rc = ciniki_musicfestivals_wng_accompanistCreate($ciniki, $tnid, $request, array());
+                if( $rc['stat'] == 'ok' ) {
+                    $fields['accompanist_customer_id']['value'] = $rc['accompanist_customer_id'];
+                }
+                elseif( $rc['stat'] == '404' ) {
+                    return $rc;
+                }
+                elseif( $rc['stat'] == 'error' ) {
+                    $errors[] = array(
+                        'msg' => $rc['err']['msg'],
+                        );
+                } else {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.370', 'msg'=>'Unable to create accompanist', 'err'=>$rc['err']));
                 }
             }
         }
@@ -578,8 +646,14 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'participation' => (isset($fields['participation']['value']) ? $fields['participation']['value'] : ''),
                 'notes' => $fields['notes']['value'],
                 );
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) ) {
+                $registration['accompanist_customer_id'] = $fields['accompanist_customer_id']['value'];
+            }
             if( isset($fields['teacher_share']['value']) && $fields['teacher_share']['value'] == 'yes' ) {
                 $registration['flags'] |= 0x01;
+            }
+            if( isset($fields['accompanist_share']['value']) && $fields['accompanist_share']['value'] == 'yes' ) {
+                $registration['flags'] |= 0x02;
             }
             if( ($selected_class['flags']&0x20) == 0x20 ) {
                 $registration['rtype'] = 60;
@@ -731,6 +805,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     || $field['id'] == 'teacher_name'
                     || $field['id'] == 'teacher_email'
                     || $field['id'] == 'teacher_phone'
+                    || $field['id'] == 'accompanist_name'
+                    || $field['id'] == 'accompanist_email'
+                    || $field['id'] == 'accompanist_phone'
                     || $field['ftype'] == 'button'
                     || $field['ftype'] == 'newline'
                     ) {
@@ -745,6 +822,15 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                         $update_args['flags'] = $registration['flags'];
                     } elseif( ($registration['flags']&0x01) == 0x01 && $field['value'] == 'off' ) {
                         $registration['flags'] = ($registration['flags']&0xFFFE);
+                        $update_args['flags'] = $registration['flags'];
+                    }
+                }
+                if( $field['id'] == 'accompanist_share' ) {
+                    if( ($registration['flags']&0x02) == 0 && $field['value'] == 'on' ) {
+                        $registration['flags'] |= 0x02;
+                        $update_args['flags'] = $registration['flags'];
+                    } elseif( ($registration['flags']&0x02) == 0x02 && $field['value'] == 'off' ) {
+                        $registration['flags'] = ($registration['flags']&0xFFFD);
                         $update_args['flags'] = $registration['flags'];
                     }
                 }
@@ -1034,6 +1120,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 ) {
                 $fields[$fid]['value'] = 'No Teacher';
                 $fields[$fid]['ftype'] = 'text';
+            } elseif( $field['ftype'] == 'select' 
+                && isset($field['id']) && $field['id'] == 'accompanist_customer_id'
+                && $field['value'] == 0
+                ) {
+                $fields[$fid]['value'] = 'No Accompanist';
+                $fields[$fid]['ftype'] = 'text';
             } elseif( $field['ftype'] == 'select' ) {
                 $fields[$fid]['ftype'] = 'text';
                 if( isset($field['options'][$field['value']]['codename']) ) {
@@ -1293,6 +1385,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "registrations.invoice_id, "
             . "registrations.billing_customer_id, "
             . "registrations.teacher_customer_id, "
+            . "registrations.accompanist_customer_id, "
+            . "registrations.member_id, "
             . "registrations.participation, ";
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
             $strsql .= "registrations.pn_display_name AS display_name, ";
@@ -1351,6 +1445,10 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     . "registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
                     . "AND (registrations.flags&0x01) = 0x01 "
                     . ") "
+                . " OR ("
+                    . "registrations.accompanist_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+                    . "AND (registrations.flags&0x02) = 0x02 "
+                    . ") "
                 . ") ";
         } else {
             $strsql .= "WHERE registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' ";
@@ -1362,7 +1460,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
                 'fields'=>array('id', 'status', 'invoice_status', 'invoice_id', 
-                    'billing_customer_id', 'teacher_customer_id', 'display_name', 
+                    'billing_customer_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 'display_name', 
                     'class_code', 'class_name', 'section_name', 'category_name', 'codename', 
                     'fee', 'participation', 'title1', 'participation',
                     'timeslot_time', 'timeslot_date', 'timeslot_address', 'timeslot_flags',

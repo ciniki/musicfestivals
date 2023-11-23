@@ -1,0 +1,5 @@
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN accompanist_customer_id int not null AFTER billing_customer_id;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.15';
+DROP INDEX festival_id ON ciniki_musicfestival_registrations;
+CREATE INDEX festival_id ON ciniki_musicfestival_registrations(festival_id, teacher_customer_id, billing_customer_id, accompanist_customer_id, member_id);
+

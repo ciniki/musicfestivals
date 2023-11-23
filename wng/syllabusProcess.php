@@ -235,7 +235,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     } 
 
     //
-    // Default to gallery
+    // Display as image buttons
     //
     elseif( isset($s['layout']) && $s['layout'] == 'imagebuttons' ) {
         foreach($sections as $sid => $section) {

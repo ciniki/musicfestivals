@@ -33,12 +33,22 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     $competitors = $args['competitors'];
 
     //
-    // Make sure competitors where passed in arguments
+    // Make sure teachers where passed in arguments
     //
     if( !isset($args['teachers']) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.345', 'msg'=>"No teachers specified"));
     }
     $teachers = $args['teachers'];
+
+    //
+    // Make sure teachers where passed in arguments
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) ) {
+        if( !isset($args['accompanists']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.591', 'msg'=>"No accompanists specified"));
+        }
+        $accompanists = $args['accompanists'];
+    }
 
     //
     // Make sure competitors where passed in arguments
@@ -517,6 +527,68 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         }
     }
 
+    //
+    // Add the accompanist field
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) ) {
+        $fields["accompanist_customer_id"] = array(
+            'id' => "accompanist_customer_id",
+            'ftype' => 'select',
+            'size' => 'large',
+            'label' => "Accompanist",
+            'blank-label' => 'No Accompanist',
+            'onchange' => "accompanistSelected()",
+            'options' => $accompanists,
+            'complex_options' => array(
+                'value' => 'id',
+                'name' => 'name',
+                ),
+            'value' => isset($_POST["f-accompanist_customer_id"]) ? $_POST["f-accompanist_customer_id"] : (isset($registration["accompanist_customer_id"]) ? $registration["accompanist_customer_id"] : 0),
+            );
+        $fields['accompanist_name'] = array(
+            'id' => 'accompanist_name',
+            'label' => 'Accompanist Name',
+            'ftype' => 'text',
+            'size' => 'large',
+            'class' => isset($_POST['f-accompanist_customer_id']) && $_POST['f-accompanist_customer_id'] == -1 ? '' : 'hidden',
+            'value' => isset($_POST['f-accompanist_name']) ? $_POST['f-accompanist_name'] : '',
+            );
+        $fields['accompanist_email'] = array(
+            'id' => 'accompanist_email',
+            'label' => 'Accompanist Email',
+            'ftype' => 'text',
+            'size' => 'medium',
+            'required' => 'yes',
+            'class' => isset($_POST['f-accompanist_customer_id']) && $_POST['f-accompanist_customer_id'] == -1 ? '' : 'hidden',
+            'value' => isset($_POST['f-accompanist_email']) ? $_POST['f-accompanist_email'] : '',
+            );
+        $fields['accompanist_phone'] = array(
+            'id' => 'accompanist_phone',
+            'label' => 'Accompanist Phone',
+            'ftype' => 'text',
+            'size' => 'medium',
+            'class' => isset($_POST['f-accompanist_customer_id']) && $_POST['f-accompanist_customer_id'] == -1 ? '' : 'hidden',
+            'value' => isset($_POST['f-accompanist_phone']) ? $_POST['f-accompanist_phone'] : '',
+            );
+        $fields["accompanist_customer_id"]['options']['add'] = array(
+            'id' => '-1',
+            'name' => 'Add Accompanist',
+            );
+        $fields['accompanist_share'] = array(
+            'id' => 'accompanist_share',
+            'label' => 'Share registration with Accompanist',
+            'ftype' => 'checkbox',
+            'size' => 'medium',
+            'class' => isset($_POST['f-accompanist_customer_id']) && $_POST['f-accompanist_customer_id'] != 0 ? '' : (isset($registration['accompanist_customer_id']) && $registration['accompanist_customer_id'] != 0 ? '' : 'hidden'),
+            'value' => isset($_POST["f-accompanist_share"]) ? $_POST["f-accompanist_share"] : (isset($registration["accompanist_share"]) ? $registration["accompanist_share"] : 'on'),
+            );
+        if( isset($_POST["f-accompanist_share"]) ) {
+            $fields['accompanist_share']['value'] = $_POST["f-accompanist_share"];
+        } elseif( isset($_POST["f-accompanist_customer_id"]) ) {
+            $fields['accompanist_share']['value'] = 'off';
+        }
+    }
+
 
     //
     // Check if virtual performance option is available
@@ -934,10 +1006,31 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 . "C.rC(C.gE('f-teacher_name').parentNode,'hidden');"
                 . "C.rC(C.gE('f-teacher_phone').parentNode,'hidden');"
                 . "C.rC(C.gE('f-teacher_email').parentNode,'hidden');"
+                . "C.gE('f-teacher_share').checked=true;"
             . "}else{"
                 . "C.aC(C.gE('f-teacher_name').parentNode,'hidden');"
                 . "C.aC(C.gE('f-teacher_phone').parentNode,'hidden');"
                 . "C.aC(C.gE('f-teacher_email').parentNode,'hidden');"
+                . "C.gE('f-teacher_share').checked=true;"
+            . "}"
+        . "}; "
+        . "function accompanistSelected(){"
+            . "var t=C.gE('f-accompanist_customer_id').value;"
+            . "if(t!=0){"
+                . "C.rC(C.gE('f-accompanist_share').parentNode,'hidden');"
+            . "}else{"
+                . "C.aC(C.gE('f-accompanist_share').parentNode,'hidden');"
+            . "}"
+            . "if(t==-1){"
+                . "C.rC(C.gE('f-accompanist_name').parentNode,'hidden');"
+                . "C.rC(C.gE('f-accompanist_phone').parentNode,'hidden');"
+                . "C.rC(C.gE('f-accompanist_email').parentNode,'hidden');"
+                . "C.gE('f-accompanist_share').checked=true;"
+            . "}else{"
+                . "C.aC(C.gE('f-accompanist_name').parentNode,'hidden');"
+                . "C.aC(C.gE('f-accompanist_phone').parentNode,'hidden');"
+                . "C.aC(C.gE('f-accompanist_email').parentNode,'hidden');"
+                . "C.gE('f-accompanist_share').checked=true;"
             . "}"
         . "}; ";
 

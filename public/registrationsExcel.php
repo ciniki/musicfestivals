@@ -80,6 +80,8 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         . "registrations.participation, "
         . "registrations.notes AS reg_notes, "
         . "registrations.teacher_customer_id, "
+        . "registrations.accompanist_customer_id, "
+        . "registrations.member_id, "
         . "competitors.id AS competitor_id, "
         . "competitors.name AS competitor_name, "
         . "competitors.pronoun, "
@@ -258,7 +260,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'name'=>'section_name')),
             array('container'=>'registrations', 'fname'=>'reg_id', 
-                'fields'=>array('id'=>'section_id', 'teacher_customer_id', 
+                'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 
                     'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 'fee'=>'reg_fee', 
                     'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 'payment_type', 
                     'participation', 'notes'=>'reg_notes'),
@@ -340,6 +342,14 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Teacher', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Teacher Email', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Teacher Phone', false);
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) ) {
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Accompanist', false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Accompanist Email', false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Accompanist Phone', false);
+        }
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Member', false);
+        }
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Notes', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Pronoun', false);
@@ -422,6 +432,69 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     }
                 }
             }
+            $registration['accompanist_name'] = '';
+            $registration['accompanist_phone'] = '';
+            $registration['accompanist_email'] = '';
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) 
+                && $registration['accompanist_customer_id'] > 0 
+                ) {
+                if( isset($accompanists[$registration['accompanist_customer_id']]) ) {
+                    $registration['accompanist_name'] = $accompanists[$registration['accompanist_customer_id']]['accompanist_name'];
+                    $registration['accompanist_phone'] = $accompanists[$registration['accompanist_customer_id']]['accompanist_phone'];
+                    $registration['accompanist_email'] = $accompanists[$registration['accompanist_customer_id']]['accompanist_email'];
+                } else {
+                    $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['tnid'], 
+                        array('customer_id'=>$registration['accompanist_customer_id'], 'phones'=>'yes', 'emails'=>'yes'));
+                    if( $rc['stat'] != 'ok' ) {
+                        return $rc;
+                    }
+                    if( isset($rc['customer']) ) {
+                        $registration['accompanist_name'] = $rc['customer']['display_name'];
+                        if( isset($rc['customer']['phones']) ) {
+                            foreach($rc['customer']['phones'] as $phone) {
+                                $registration['accompanist_phone'] .= ($registration['accompanist_phone'] != '' ? ', ' : '') . $phone['phone_number'];
+                            }
+                        }
+                        if( isset($rc['customer']['emails']) ) {
+                            foreach($rc['customer']['emails'] as $email) {
+                                $registration['accompanist_email'] .= ($registration['accompanist_email'] != '' ? ', ' : '') . $email['email']['address'];
+                            }
+                        }
+
+                        $accompanists[$registration['accompanist_customer_id']] = array(
+                            'accompanist_name'=>$registration['accompanist_name'],
+                            'accompanist_phone'=>$registration['accompanist_phone'],
+                            'accompanist_email'=>$registration['accompanist_email'],
+                            );
+                    }
+                }
+            }
+            $registration['member_name'] = '';
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
+                && $registration['member_id'] > 0 
+                ) {
+                if( isset($members[$registration['member_id']]) ) {
+                    $registration['member_name'] = $members[$registration['member_id']]['member_name'];
+                } else {
+                    $strsql = "SELECT members.name "
+                        . "FROM ciniki_musicfestivals_members AS members "
+                        . "WHERE members.id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' "
+                        . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . "";
+                    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'member');
+                    if( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.590', 'msg'=>'Unable to load member', 'err'=>$rc['err']));
+                    }
+                    if( isset($rc['member']) ) {
+                        $registration['member_name'] = $rc['member']['name'];
+                    } else {
+                        $registration['member_name'] = '';
+                    }
+                    $members[$registration['member_id']] = array(
+                        'member_name' => $registration['member_name'],
+                        );
+                }
+            }
 
             $col = 0;
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['display_name'], false);
@@ -446,6 +519,14 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['teacher_name'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['teacher_email'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['teacher_phone'], false);
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['accompanist_name'], false);
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['accompanist_email'], false);
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['accompanist_phone'], false);
+            }
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['member_name'], false);
+            }
             $notes = $registration['notes'];
             if( isset($registration['competitors']) ) {
                 foreach($registration['competitors'] as $competitor) {
