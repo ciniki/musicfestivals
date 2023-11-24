@@ -83,6 +83,7 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
         //
         $blocks[] = array(
             'type' => 'title', 
+            'level' => $section['sequence'] == 1 ? 1 : 2,
             'title' => isset($s['title']) ? $s['title'] : 'Adjudicators',
             );
         //

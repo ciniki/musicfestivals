@@ -175,6 +175,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     //
     $blocks[] = array(
         'type' => 'title', 
+        'level' => $section['sequence'] == 1 ? 1 : 2,
         'title' => isset($s['title']) ? $s['title'] : 'Syllabus',
         );
 
