@@ -210,12 +210,14 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     if( isset($section['description']) && $section['description'] != '' ) {
         $blocks[] = array(
             'type' => 'text',
+            'level' => 1,
             'title' => (isset($s['title']) ? $s['title'] : 'Syllabus') . ' - ' . $section['name'],
             'content' => $section['description'],
             );
     } else {
         $blocks[] = array(
             'type' => 'title', 
+            'level' => 1,
             'title' => (isset($s['title']) ? $s['title'] : 'Syllabus') . ' - ' . $section['name'],
             );
     }
