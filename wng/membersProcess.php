@@ -78,6 +78,7 @@ function ciniki_musicfestivals_wng_membersProcess(&$ciniki, $tnid, &$request, $s
         $blocks[] = array(
             'type' => (!isset($s['content']) || $s['content'] == '' ? 'title' : 'text'),
             'title' => isset($s['title']) ? $s['title'] : '',
+            'level' => $section['sequence'] == 1 ? 1 : 2,
             'content' => isset($s['content']) ? $s['content'] : '',
             );
     }
