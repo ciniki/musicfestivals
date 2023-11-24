@@ -93,14 +93,14 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
                 $adjudicator = $adjudicators[$request['uri_split'][($request['cur_uri_pos']+1)]];
                 $blocks[] = array(
                     'type' => 'contentphoto',
-                    'image-id' => $adjudicator['image-id'],
                     'title' => $adjudicator['display_name'],
                     'subtitle' => $adjudicator['discipline'],
+                    'image-id' => $adjudicator['image-id'],
                     'content' => $adjudicator['description'],
                     'image-position' => (isset($s['image-position']) && $s['image-position'] != '' ? $s['image-position'] : ''),
                     'image-size' => (isset($s['image-size']) && $s['image-size'] != '' ? $s['image-size'] : ''),
                     );
-                return array('stat'=>'ok', 'blocks'=>$blocks);
+                return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
             } else {
                 $blocks[] = array(
                     'type' => 'msg', 

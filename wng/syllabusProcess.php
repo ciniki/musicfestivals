@@ -189,6 +189,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
             ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'syllabusSectionProcess');
             return ciniki_musicfestivals_wng_syllabusSectionProcess($ciniki, $tnid, $request, $section);
         } else {
+            $request['cur_uri_pos']--;
             $blocks[] = array(
                 'type' => 'msg',
                 'level' => 'error',
