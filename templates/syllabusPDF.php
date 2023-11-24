@@ -285,7 +285,8 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             $pdf->SetFont('', 'B', '18');
             $pdf->MultiCell(180, 5, $section['name'], 0, 'L', 0, 1);
             $pdf->SetFont('', '', '12');
-            $pdf->MultiCell(180, 5, $section['description'], 0, 'L', 0, 1);
+//            $pdf->MultiCell(180, 5, $section['description'], 0, 'L', 0, 1);
+            $pdf->writeHTMLCell(180, '', '', '', preg_replace("/\n/", '<br/>', $section['description']), 0, 1);
         }
 
         //
