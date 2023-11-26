@@ -57,6 +57,9 @@ function ciniki_musicfestivals_wng_process(&$ciniki, $tnid, &$request, $section)
     } elseif( $section['ref'] == 'ciniki.musicfestivals.members' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'membersProcess');
         return ciniki_musicfestivals_wng_membersProcess($ciniki, $tnid, $request, $section);
+    } elseif( $section['ref'] == 'ciniki.musicfestivals.recommendations' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'recommendationsProcess');
+        return ciniki_musicfestivals_wng_recommendationsProcess($ciniki, $tnid, $request, $section);
     }
 
     return array('stat'=>'ok');

@@ -107,6 +107,9 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
             . "ciniki_musicfestival_sections.primary_image_id, "
             . "ciniki_musicfestival_sections.synopsis, "
             . "ciniki_musicfestival_sections.description, "
+            . "ciniki_musicfestival_sections.live_description, "
+            . "ciniki_musicfestival_sections.virtual_description, "
+            . "ciniki_musicfestival_sections.recommendations_description, "
             . "ciniki_musicfestival_sections.live_end_dt, "
             . "ciniki_musicfestival_sections.virtual_end_dt, "
             . "ciniki_musicfestival_sections.edit_end_dt, "
@@ -121,6 +124,7 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
             array('container'=>'sections', 'fname'=>'id', 
                 'fields'=>array('festival_id', 'name', 'permalink', 'sequence', 'flags', 
                     'primary_image_id', 'synopsis', 'description',
+                    'live_description', 'virtual_description', 'recommendations_description', 
                     'live_end_dt', 'virtual_end_dt', 'edit_end_dt', 'upload_end_dt',
                     ),
                 'utctotz'=>array(
