@@ -1845,7 +1845,7 @@ function ciniki_musicfestivals_main() {
 //            'fields':{'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'}},
 //            },
         '_description':{'label':'Description', 
-            'visible':function() { return !M.modFlagOn('ciniki.musicfestivals', 0x020000) && M.ciniki_musicfestivals_main.section.sections._tabs.selected == 'synopsis' ? 'yes' : 'hidden'; },
+            'visible':function() { return /*!M.modFlagOn('ciniki.musicfestivals', 0x020000) && */M.ciniki_musicfestivals_main.section.sections._tabs.selected == 'synopsis' ? 'yes' : 'hidden'; },
             'fields':{'description':{'label':'', 'hidelabel':'yes', 'type':'textarea'}},
             },
         '_live_description':{'label':'Live Description', 
