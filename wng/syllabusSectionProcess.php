@@ -114,9 +114,21 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         . "sections.permalink, "
         . "sections.name, "
         . "sections.primary_image_id, "
-        . "sections.synopsis, "
-        . "sections.description, "
-        . "sections.live_end_dt, "
+        . "sections.synopsis, ";
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x020000) 
+        && isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'live'
+        ) {
+        $strsql .= "sections.live_description AS description, ";
+    } 
+    elseif( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x020000) 
+        && isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'virtual'
+        ) {
+        $strsql .= "sections.virtual_description AS description, ";
+    } 
+    else {
+        $strsql .= "sections.description, ";
+    }
+    $strsql .= "sections.live_end_dt, "
         . "sections.virtual_end_dt "
         . "FROM ciniki_musicfestival_sections AS sections "
         . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "

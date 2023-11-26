@@ -1,0 +1,4 @@
+ALTER TABLE ciniki_musicfestival_sections ADD COLUMN live_description text not null AFTER description;
+ALTER TABLE ciniki_musicfestival_sections ADD COLUMN virtual_description text not null AFTER live_description;
+ALTER TABLE ciniki_musicfestival_sections ADD COLUMN recommendations_description text not null AFTER virtual_description;
+ALTER TABLE ciniki_musicfestival_sections COMMENT='v1.05';
