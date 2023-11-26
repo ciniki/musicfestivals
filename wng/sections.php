@@ -321,6 +321,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'complex_options'=>array('value'=>'id', 'name'=>'name'),
                     'options'=>$festivals,
                     ),
+                'notify-emails' => array('label'=>'Notify Email', 'type'=>'text'),
                 ),
             );
     }

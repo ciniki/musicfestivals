@@ -555,6 +555,48 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );
+    $objects['recommendation'] = array(
+        'name' => 'Adjudicator Recommendation',
+        'sync' => 'yes',
+        'o_name' => 'recommendation',
+        'o_container' => 'recommendations',
+        'table' => 'ciniki_musicfestival_recommendations',
+        'fields' => array(
+            'festival_id' => array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'member_id' => array('name'=>'Member Festival', 'ref'=>'ciniki.musicfestivals.member'),
+            'section_id' => array('name'=>'Syllabus Section', 'ref'=>'ciniki.musicfestivals.section'),
+            'adjudicator_name' => array('name'=>'Adjudicator Name'),
+            'adjudicator_phone' => array('name'=>'Adjudicator Phone', 'default'=>''),
+            'adjudicator_email' => array('name'=>'Adjudicator Email', 'default'=>''),
+            'acknowledgement' => array('name'=>'Acknowledgement', 'default'=>''),
+            'date_submitted' => array('name'=>'Date Submitted'),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
+    $objects['recommendationentry'] = array(
+        'name' => 'Adjudicator Recommendation Entry',
+        'sync' => 'yes',
+        'o_name' => 'entry',
+        'o_container' => 'entries',
+        'table' => 'ciniki_musicfestival_recommendation_entries',
+        'fields' => array(
+            'recommendation_id' => array('name'=>'', 'ref'=>'ciniki.musicfestivals.recommendation'),
+            'class_id' => array('name'=>'', 'ref'=>'ciniki.musicfestivals.class'),
+            'recommendation_1' => array('name'=>'1st Recommendation', 'default'=>''),
+            'recommendation_mark_1' => array('name'=>'1st Recommendation Mark', 'default'=>''),
+            'recommendation_2' => array('name'=>'2nd Recommendation', 'default'=>''),
+            'recommendation_mark_2' => array('name'=>'2nd Recommendation Mark', 'default'=>''),
+            'recommendation_3' => array('name'=>'3rd Recommendation', 'default'=>''),
+            'recommendation_mark_3' => array('name'=>'3rd Recommendation Mark', 'default'=>''),
+            'alternate_1' => array('name'=>'1st Alternate', 'default'=>''),
+            'alternate_mark_1' => array('name'=>'1st Alternate Mark', 'default'=>''),
+            'alternate_2' => array('name'=>'2nd Alternate', 'default'=>''),
+            'alternate_mark_2' => array('name'=>'2nd Alternate Mark', 'default'=>''),
+            'alternate_3' => array('name'=>'3rd Alternate', 'default'=>''),
+            'alternate_mark_3' => array('name'=>'3rd Alternate Mark', 'default'=>''),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
     $objects['setting'] = array(
         'name' => 'Setting',
         'sync' => 'yes',

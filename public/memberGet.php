@@ -67,6 +67,8 @@ function ciniki_musicfestivals_memberGet($ciniki) {
             'reg_start_dt' => '',
             'reg_end_dt' => '',
             'customer_id' => '0',
+            'customer' => array(),
+            'customer_details' => array(),
         );
     }
 
@@ -108,6 +110,23 @@ function ciniki_musicfestivals_memberGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.586', 'msg'=>'Unable to find Member Festival'));
         }
         $member = $rc['members'][0];
+
+        //
+        // If the customer is specified, load the details
+        //
+        if( isset($member['customer_id']) && $member['customer_id'] > 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
+            $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['tnid'], 
+                array('customer_id'=>$member['customer_id'], 'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $member['customer'] = $rc['customer'];
+            $member['customer_details'] = $rc['details'];
+        } else {
+            $member['customer'] = array();
+            $member['customer_details'] = array();
+        }
     }
 
     return array('stat'=>'ok', 'member'=>$member);

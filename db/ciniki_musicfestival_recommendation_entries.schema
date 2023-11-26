@@ -1,0 +1,57 @@
+#
+# Description
+# -----------
+# This table stores the adjudicator recommended entries for classes.
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# recommendation_id:        The ID of the recommendation submission the entries are for.
+# class_id:                 The ID of the class in the syllabus the recommendations are for.
+#
+# recommendation_1:         The name for the 1st recommendation.
+# recommendation_mark_1:    The mark for the 1st recommendation.
+# recommendation_2:         The name for the 2nd recommendation.
+# recommendation_mark_2:    The mark for the 2nd recommendation.
+# recommendation_3:         The name for the 3rd recommendation.
+# recommendation_mark_3:    The mark for the 3rd recommendation.
+# alternate_1:              The name for the 1st alternate.
+# alternate_mark_1:         The mark for the 1st alternate.
+# alternate_2:              The name for the 2nd alternate.
+# alternate_mark_2:         The mark for the 2nd alternate.
+# alternate_3:              The name for the 3rd alternate.
+# alternate_mark_3:         The mark for the 3rd alternate.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_musicfestival_recommendation_entries (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    recommendation_id int not null,
+    class_id int not null,
+    recommendation_1 varchar(250) not null,
+    recommendation_mark_1 varchar(250) not null,
+    recommendation_2 varchar(250) not null,
+    recommendation_mark_2 varchar(250) not null,
+    recommendation_3 varchar(250) not null,
+    recommendation_mark_3 varchar(250) not null,
+    alternate_1 varchar(250) not null,
+    alternate_mark_1 varchar(250) not null,
+    alternate_2 varchar(250) not null,
+    alternate_mark_2 varchar(250) not null,
+    alternate_3 varchar(250) not null,
+    alternate_mark_3 varchar(250) not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    index (recommendation_id, class_id),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

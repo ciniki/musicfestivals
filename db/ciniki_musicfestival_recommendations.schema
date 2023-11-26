@@ -1,0 +1,47 @@
+#
+# Description
+# -----------
+# This table stores the adjudicator recommendations for provincial festival.
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# festival_id:              The festival the submissions is for.
+# member_id:                The member festival the submission is from.
+# section_id:               The section the recommendation submission is for.
+#
+# adjudicator_name:         The name of the adjudicator.
+# adjudicator_phone:        The phone number of the adjudicator.
+# adjudicator_email:        The email of the adjudicator.
+#
+# acknowledgement:          Has the adjudicator acknowledged the information submitted is correct.
+# date_submitted:           The UTC date and time the recommendations were submitted.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_musicfestival_recommendations (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    festival_id int not null,
+    member_id int not null,
+    section_id int not null,
+    adjudicator_name varchar(250) not null,
+    adjudicator_phone varchar(250) not null,
+    adjudicator_email varchar(250) not null,
+
+    acknowledgement varchar(10) not null,
+    date_submitted datetime not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    index (festival_id, member_id, section_id),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';
