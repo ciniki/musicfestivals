@@ -384,16 +384,22 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
             //
             // Check to make sure at least 1 class is specified
             //
-            $submitted_classes = array();
+            $entries = array();
             foreach($classes as $cid => $class) {
-                $class_args = array();
+                $class_entries = array();
                 $class_email_content = "";
                 if( isset($_POST["f-recommendation_1_{$cid}"]) && trim($_POST["f-recommendation_1_{$cid}"]) != '' ) {
                     if( !isset($_POST["f-recommendation_mark_1_{$cid}"]) || trim($_POST["f-recommendation_mark_1_{$cid}"]) == '' ) {
                         $form_errors .= "You must specify a Mark for your 1st Recommendation in " . $class['name'] . ".<br/>";
                     } else {
-                        $class_args['recommendation_1'] = $_POST["f-recommendation_1_{$cid}"];
-                        $class_args['recommendation_mark_1'] = $_POST["f-recommendation_mark_1_{$cid}"];
+                        $class_entries[] = array(
+                            'class_id' => $class['id'],
+                            'position' => 1,
+                            'name' => $_POST["f-recommendation_1_{$cid}"],
+                            'mark' => $_POST["f-recommendation_mark_1_{$cid}"],
+                            );
+//                        $class_args['recommendation_1'] = $_POST["f-recommendation_1_{$cid}"];
+//                        $class_args['recommendation_mark_1'] = $_POST["f-recommendation_mark_1_{$cid}"];
                         $class_email_content .= "1st Recommendation: " . $_POST["f-recommendation_1_{$cid}"] . ", mark: " . $_POST["f-recommendation_mark_1_{$cid}"] . "<br/>";
                     }
                 }
@@ -401,8 +407,14 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                     if( !isset($_POST["f-recommendation_mark_2_{$cid}"]) || trim($_POST["f-recommendation_mark_2_{$cid}"]) == '' ) {
                         $form_errors .= "You must specify a Mark for your 2nd Recommendation in " . $class['name'] . ".<br/>";
                     } else {
-                        $class_args['recommendation_2'] = $_POST["f-recommendation_2_{$cid}"];
-                        $class_args['recommendation_mark_2'] = $_POST["f-recommendation_mark_2_{$cid}"];
+                        $class_entries[] = array(
+                            'class_id' => $class['id'],
+                            'position' => 2,
+                            'name' => $_POST["f-recommendation_2_{$cid}"],
+                            'mark' => $_POST["f-recommendation_mark_2_{$cid}"],
+                            );
+//                        $class_args['recommendation_2'] = $_POST["f-recommendation_2_{$cid}"];
+//                        $class_args['recommendation_mark_2'] = $_POST["f-recommendation_mark_2_{$cid}"];
                         $class_email_content .= "2nd Recommendation: " . $_POST["f-recommendation_2_{$cid}"] . ", mark: " . $_POST["f-recommendation_mark_2_{$cid}"] . "<br/>";
                     }
                 }
@@ -410,8 +422,14 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                     if( !isset($_POST["f-recommendation_mark_3_{$cid}"]) || trim($_POST["f-recommendation_mark_3_{$cid}"]) == '' ) {
                         $form_errors .= "You must specify a Mark for your 3rd Recommendation in " . $class['name'] . ".<br/>";
                     } else {
-                        $class_args['recommendation_3rd'] = $_POST["f-recommendation_3_{$cid}"];
-                        $class_args['recommendation_mark_3rd'] = $_POST["f-recommendation_mark_3_{$cid}"];
+                        $class_entries[] = array(
+                            'class_id' => $class['id'],
+                            'position' => 3,
+                            'name' => $_POST["f-recommendation_3_{$cid}"],
+                            'mark' => $_POST["f-recommendation_mark_3_{$cid}"],
+                            );
+//                        $class_args['recommendation_3rd'] = $_POST["f-recommendation_3_{$cid}"];
+//                        $class_args['recommendation_mark_3rd'] = $_POST["f-recommendation_mark_3_{$cid}"];
                         $class_email_content .= "3rd Recommendation: " . $_POST["f-recommendation_3_{$cid}"] . ", mark: " . $_POST["f-recommendation_mark_3_{$cid}"] . "<br/>";
                     }
                 }
@@ -419,8 +437,14 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                     if( !isset($_POST["f-alternate_mark_1_{$cid}"]) || trim($_POST["f-alternate_mark_1_{$cid}"]) == '' ) {
                         $form_errors .= "You must specify a Mark for your 1st Alternate in " . $class['name'] . ".<br/>";
                     } else {
-                        $class_args['alternate_1'] = $_POST["f-alternate_1_{$cid}"];
-                        $class_args['alternate_mark_1'] = $_POST["f-alternate_mark_1_{$cid}"];
+                        $class_entries[] = array(
+                            'class_id' => $class['id'],
+                            'position' => 101,
+                            'name' => $_POST["f-alternate_1_{$cid}"],
+                            'mark' => $_POST["f-alternate_mark_1_{$cid}"],
+                            );
+//                        $class_args['alternate_1'] = $_POST["f-alternate_1_{$cid}"];
+//                        $class_args['alternate_mark_1'] = $_POST["f-alternate_mark_1_{$cid}"];
                         $class_email_content .= "1st Alternate: " . $_POST["f-alternate_1_{$cid}"] . ", mark: " . $_POST["f-alternate_mark_1_{$cid}"] . "<br/>";
                     }
                 }
@@ -428,8 +452,14 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                     if( !isset($_POST["f-alternate_mark_2_{$cid}"]) || trim($_POST["f-alternate_mark_2_{$cid}"]) == '' ) {
                         $form_errors .= "You must specify a Mark for your 2nd Alternate in " . $class['name'] . ".<br/>";
                     } else {
-                        $class_args['alternate_2'] = $_POST["f-alternate_2_{$cid}"];
-                        $class_args['alternate_mark_2'] = $_POST["f-alternate_mark_2_{$cid}"];
+                        $class_entries[] = array(
+                            'class_id' => $class['id'],
+                            'position' => 102,
+                            'name' => $_POST["f-alternate_2_{$cid}"],
+                            'mark' => $_POST["f-alternate_mark_2_{$cid}"],
+                            );
+//                        $class_args['alternate_2'] = $_POST["f-alternate_2_{$cid}"];
+//                        $class_args['alternate_mark_2'] = $_POST["f-alternate_mark_2_{$cid}"];
                         $class_email_content .= "2nd Alternate: " . $_POST["f-alternate_2_{$cid}"] . ", mark: " . $_POST["f-alternate_mark_2_{$cid}"] . "<br/>";
                     }
                 }
@@ -437,8 +467,14 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                     if( !isset($_POST["f-alternate_mark_3_{$cid}"]) || trim($_POST["f-alternate_mark_3_{$cid}"]) == '' ) {
                         $form_errors .= "You must specify a Mark for your 3rd Alternate in " . $class['name'] . ".<br/>";
                     } else {
-                        $class_args['alternate_3rd'] = $_POST["f-alternate_3_{$cid}"];
-                        $class_args['alternate_mark_3rd'] = $_POST["f-alternate_mark_3_{$cid}"];
+                        $class_entries[] = array(
+                            'class_id' => $class['id'],
+                            'position' => 103,
+                            'name' => $_POST["f-alternate_3_{$cid}"],
+                            'mark' => $_POST["f-alternate_mark_3_{$cid}"],
+                            );
+//                        $class_args['alternate_3rd'] = $_POST["f-alternate_3_{$cid}"];
+//                        $class_args['alternate_mark_3rd'] = $_POST["f-alternate_mark_3_{$cid}"];
                         $class_email_content .= "3rd Alternate: " . $_POST["f-alternate_3_{$cid}"] . ", mark: " . $_POST["f-alternate_mark_3_{$cid}"] . "<br/>";
                     }
                 }
@@ -446,16 +482,17 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                 //
                 // Check if at least 1 recommendation or alternate specified
                 //
-                if( count($class_args) > 0 ) {
-                    $class_args['class_id'] = $class['id'];
-                    $submitted_classes[] = $class_args;
+                if( count($class_entries) > 0 ) {
+                    foreach($class_entries as $entry) {
+                        $entries[] = $entry;
+                    }
                     $email_content .= "<b>{$class['code']} - {$class['name']}</b><br/>"
                         . $class_email_content
                         . "<br/>";
                 }
             }
 
-            if( count($submitted_classes) == 0 && $form_errors == '' ) {
+            if( count($entries) == 0 && $form_errors == '' ) {
                 $form_errors .= "You must specify at least 1 class recommendation.<br/>";
             }
 
@@ -487,10 +524,10 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                 }
                 $recommendation_id = $rc['id'];
 
-                foreach($submitted_classes as $class_args) {
+                foreach($entries as $entry) {
                     if( $form_errors == '' ) {
-                        $class_args['recommendation_id'] = $recommendation_id;
-                        $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.recommendationentry', $class_args, 0x04);
+                        $entry['recommendation_id'] = $recommendation_id;
+                        $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.recommendationentry', $entry, 0x04);
                         if( $rc['stat'] != 'ok' ) {
                             $form_errors .= "We had an expected error, please contact us for help.";
                             error_log(print_r($rc, true));

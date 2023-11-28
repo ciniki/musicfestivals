@@ -12,6 +12,17 @@
 # recommendation_id:        The ID of the recommendation submission the entries are for.
 # class_id:                 The ID of the class in the syllabus the recommendations are for.
 #
+# position:                 
+#                               1 - 1st Recommendation
+#                               2 - 2nd Recommendation
+#                               3 - 3rd Recommendation
+#                               101 - 1st Alternate
+#                               102 - 2nd Alternate
+#                               103 - 3rd Alternate
+#
+# name:                     The recommended name.
+# mark:                     The mark they received.
+#
 # recommendation_1:         The name for the 1st recommendation.
 # recommendation_mark_1:    The mark for the 1st recommendation.
 # recommendation_2:         The name for the 2nd recommendation.
@@ -35,18 +46,21 @@ create table ciniki_musicfestival_recommendation_entries (
 
     recommendation_id int not null,
     class_id int not null,
-    recommendation_1 varchar(250) not null,
-    recommendation_mark_1 varchar(250) not null,
-    recommendation_2 varchar(250) not null,
-    recommendation_mark_2 varchar(250) not null,
-    recommendation_3 varchar(250) not null,
-    recommendation_mark_3 varchar(250) not null,
-    alternate_1 varchar(250) not null,
-    alternate_mark_1 varchar(250) not null,
-    alternate_2 varchar(250) not null,
-    alternate_mark_2 varchar(250) not null,
-    alternate_3 varchar(250) not null,
-    alternate_mark_3 varchar(250) not null,
+    position smallint unsigned not null,
+    name varchar(250) not null,
+    mark varchar(50) not null,
+#    recommendation_1 varchar(250) not null,
+#    recommendation_mark_1 varchar(250) not null,
+#    recommendation_2 varchar(250) not null,
+#    recommendation_mark_2 varchar(250) not null,
+#    recommendation_3 varchar(250) not null,
+#    recommendation_mark_3 varchar(250) not null,
+#    alternate_1 varchar(250) not null,
+#    alternate_mark_1 varchar(250) not null,
+#    alternate_2 varchar(250) not null,
+#    alternate_mark_2 varchar(250) not null,
+#    alternate_3 varchar(250) not null,
+#    alternate_mark_3 varchar(250) not null,
 
     date_added datetime not null,
     last_updated datetime not null,

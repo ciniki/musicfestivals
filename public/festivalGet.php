@@ -27,6 +27,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Categories'),
         'classes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Classes'),
         'levels'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Levels'),
+        'recommendations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicator Recommendations'),
+        'class_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Class'),
         'registrations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registrations'),
         'schedule'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule'),
         'ssection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Section'),
@@ -305,6 +307,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             if( isset($rc['sections']) ) {
                 $festival['sections'] = $rc['sections'];
                 foreach($festival['sections'] as $iid => $section) {
+                    if( isset($args['section_id']) && $args['section_id'] == $section['id'] ) {
+                        $selected_section = $section;
+                    }
                     $nplists['sections'][] = $section['id'];
                 }
             } else {
@@ -1791,6 +1796,114 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             }
             if( isset($rc['sponsors']) ) {
                 $festival['sponsors-old'] = $rc['sponsors'];
+            }
+        }
+
+        //
+        // Get the recommendations 
+        //
+        if( isset($args['recommendations']) && $args['recommendations'] == 'yes' ) {
+            if( !isset($args['section_id']) || $args['section_id'] == '' || $args['section_id'] == 0 ) {
+                $args['section_id'] = $festival['sections'][0]['id'];
+                $festival['section_id'] = $args['section_id'];
+            }
+            foreach($festival['sections'] as $section) {
+                if( $section['id'] == $args['section_id'] ) {
+                    break;
+                }
+            }
+
+            //
+            // Get the list of classes for this section
+            //
+            $strsql = "SELECT classes.id, "
+                . "classes.code, "
+                . "classes.name, "
+                . "COUNT(entries.id) AS num_entries "
+                . "FROM ciniki_musicfestival_categories AS categories "
+                . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+                    . "categories.id = classes.category_id "
+                    . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "LEFT JOIN ciniki_musicfestival_recommendation_entries AS entries ON ("
+                    . "classes.id = entries.class_id "
+                    . "AND entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
+                . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "GROUP BY classes.id "
+                . "ORDER BY categories.sequence, classes.sequence, classes.code, classes.name "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'classes', 'fname'=>'id', 'fields'=>array('id', 'code', 'name', 'num_entries')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.597', 'msg'=>'Unable to load classes', 'err'=>$rc['err']));
+            }
+            $festival['recommendation_classes'] = isset($rc['classes']) ? $rc['classes'] : array();
+
+            if( !isset($args['class_id']) || $args['class_id'] == '' || $args['class_id'] == 0 ) {
+                $args['class_id'] = $festival['recommendation_classes'][0]['id'];
+                $festival['class_id'] = $args['class_id'];
+            }
+            foreach($festival['recommendation_classes'] as $cid => $class) {
+                $festival['recommendation_classes'][$cid]['name'] = str_replace($section['name'] . ' - ', '', $festival['recommendation_classes'][$cid]['name']);
+                if( preg_match("/^([^-]+) - /", $section['name'], $m) ) {
+                    if( $m[1] != '' ) {
+                        $festival['recommendation_classes'][$cid]['name'] = str_replace($m[1] . ' - ', '', $festival['recommendation_classes'][$cid]['name']);
+                    }
+                }
+            }
+
+            //
+            // Get the list of recommendations
+            //
+            if( isset($args['class_id']) && $args['class_id'] > 0 ) {
+                $strsql = "SELECT entries.id, "
+                    . "entries.position, "
+                    . "entries.name, "
+                    . "entries.mark, "
+                    . "recommendations.id AS recommendation_id, "
+                    . "recommendations.date_submitted, "
+                    . "members.name AS member_name "
+                    . "FROM ciniki_musicfestival_recommendation_entries AS entries "
+                    . "LEFT JOIN ciniki_musicfestival_recommendations AS recommendations ON ("
+                        . "entries.recommendation_id = recommendations.id "
+                        . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_musicfestivals_members AS members ON ("
+                        . "recommendations.member_id = members.id "
+                        . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE entries.class_id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
+                    . "AND entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "ORDER BY recommendations.date_submitted, entries.position "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'entries', 'fname'=>'id', 
+                        'fields'=>array('id', 'position', 'name', 'mark',
+                            'date_submitted', 'member_name'),
+                        'utctotz'=>array(
+                            'date_submitted'=> array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                            ),
+                        ),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.598', 'msg'=>'Unable to load entries', 'err'=>$rc['err']));
+                }
+                $festival['recommendation_entries'] = isset($rc['entries']) ? $rc['entries'] : array();
+                foreach($festival['recommendation_entries'] as $eid => $entry) {
+                    switch($entry['position']) {
+                        case 1: $festival['recommendation_entries'][$eid]['position'] = '1st Recommendation'; break;
+                        case 2: $festival['recommendation_entries'][$eid]['position'] = '2nd Recommendation'; break;
+                        case 3: $festival['recommendation_entries'][$eid]['position'] = '3rd Recommendation'; break;
+                        case 101: $festival['recommendation_entries'][$eid]['position'] = '1st Alternate'; break;
+                        case 102: $festival['recommendation_entries'][$eid]['position'] = '2nd Alternate'; break;
+                        case 103: $festival['recommendation_entries'][$eid]['position'] = '3rd Alternate'; break;
+                    }
+                }
             }
         }
 
