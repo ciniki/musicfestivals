@@ -23,19 +23,6 @@
 # name:                     The recommended name.
 # mark:                     The mark they received.
 #
-# recommendation_1:         The name for the 1st recommendation.
-# recommendation_mark_1:    The mark for the 1st recommendation.
-# recommendation_2:         The name for the 2nd recommendation.
-# recommendation_mark_2:    The mark for the 2nd recommendation.
-# recommendation_3:         The name for the 3rd recommendation.
-# recommendation_mark_3:    The mark for the 3rd recommendation.
-# alternate_1:              The name for the 1st alternate.
-# alternate_mark_1:         The mark for the 1st alternate.
-# alternate_2:              The name for the 2nd alternate.
-# alternate_mark_2:         The mark for the 2nd alternate.
-# alternate_3:              The name for the 3rd alternate.
-# alternate_mark_3:         The mark for the 3rd alternate.
-#
 # date_added:               The UTC date and time the record was added.
 # last_updated:             The UTC date and time the record was last update.
 #
@@ -49,18 +36,6 @@ create table ciniki_musicfestival_recommendation_entries (
     position smallint unsigned not null,
     name varchar(250) not null,
     mark varchar(50) not null,
-#    recommendation_1 varchar(250) not null,
-#    recommendation_mark_1 varchar(250) not null,
-#    recommendation_2 varchar(250) not null,
-#    recommendation_mark_2 varchar(250) not null,
-#    recommendation_3 varchar(250) not null,
-#    recommendation_mark_3 varchar(250) not null,
-#    alternate_1 varchar(250) not null,
-#    alternate_mark_1 varchar(250) not null,
-#    alternate_2 varchar(250) not null,
-#    alternate_mark_2 varchar(250) not null,
-#    alternate_3 varchar(250) not null,
-#    alternate_mark_3 varchar(250) not null,
 
     date_added datetime not null,
     last_updated datetime not null,
