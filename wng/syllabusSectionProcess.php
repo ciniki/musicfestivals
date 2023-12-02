@@ -223,7 +223,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         $blocks[] = array(
             'type' => 'text',
             'level' => 1,
-            'title' => (isset($s['title']) ? $s['title'] : 'Syllabus') . ' - ' . $section['name'],
+            'title' => (isset($s['title']) ? $s['title'] . ($s['title'] != '' ? ' - ' : '') : 'Syllabus - ') . $section['name'],
             'content' => $section['description'],
             );
     } else {

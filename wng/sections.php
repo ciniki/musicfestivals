@@ -48,6 +48,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         'module' => 'Music Festivals',
         'settings' => array(
             'title' => array('label'=>'Title', 'type'=>'text'),
+            'content' => array('label'=>'Intro', 'type'=>'textarea'),
             'festival-id' => array('label'=>'Festival', 'type'=>'select', 
                 'complex_options'=>array('value'=>'id', 'name'=>'name'),
                 'options'=>$festivals,
