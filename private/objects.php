@@ -601,6 +601,21 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );
+    $objects['socialpost'] = array(
+        'name' => 'Social Post',
+        'sync' => 'yes',
+        'o_name' => 'socialpost',
+        'o_container' => 'socialposts',
+        'table' => 'ciniki_musicfestivals_socialposts',
+        'fields' => array(
+            'user_id' => array('name'=>'Add By', 'ref'=>'ciniki.users.user'),
+            'flags' => array('name'=>'Options', 'default'=>'0'),
+            'image_id' => array('name'=>'Image', 'ref'=>'ciniki.images.image'),
+            'content' => array('name'=>'Content', 'default'=>''),
+            'notes' => array('name'=>'Notes', 'default'=>''),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
     
     return array('stat'=>'ok', 'objects'=>$objects);
 }

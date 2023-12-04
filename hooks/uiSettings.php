@@ -69,6 +69,25 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
         }
     }
 
+    //
+    // Social media post ideas
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x100000)
+        && isset($ciniki['tenant']['modules']['ciniki.musicfestivals'])
+        && (isset($args['permissions']['owners'])
+            || isset($args['permissions']['employees'])
+            || isset($args['permissions']['resellers'])
+            || ($ciniki['session']['user']['perms']&0x01) == 0x01
+            )
+        ) {
+        $menu_item = array(
+            'priority'=>1150,
+            'label'=>'Social Media Sharing',
+            'edit'=>array('app'=>'ciniki.musicfestivals.socialposts'),
+            );
+        $rsp['menu_items'][] = $menu_item;
+    }
+
     return $rsp;
 }
 ?>
