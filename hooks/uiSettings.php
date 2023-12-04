@@ -82,7 +82,7 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
         ) {
         $menu_item = array(
             'priority'=>1150,
-            'label'=>'Social Media Sharing',
+            'label'=>'Social Content Sharing',
             'edit'=>array('app'=>'ciniki.musicfestivals.socialposts'),
             );
         $rsp['menu_items'][] = $menu_item;
