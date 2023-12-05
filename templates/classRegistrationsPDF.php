@@ -313,7 +313,7 @@ function ciniki_musicfestivals_templates_classRegistrationsPDF(&$ciniki, $tnid, 
     // Go through the sections, divisions and classes
     //
     $cw = array(25, 5, 150);
-    $w = array(10, 60, 100, 10);
+    $w = array(10, 60, 98, 12);
     $nw = array(20, 160);
     $lh = 6;
     $border = 'T';
