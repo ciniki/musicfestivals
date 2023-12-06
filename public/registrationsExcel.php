@@ -316,7 +316,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             $objPHPExcelWorksheet = $objPHPExcel->createSheet($num);
         }
         $title = str_split($section['name'], 31);
-        $objPHPExcelWorksheet->setTitle(preg_replace("/[\/]/", "-", $title[0]));
+        $objPHPExcelWorksheet->setTitle(preg_replace("/[\/\:]/", "-", $title[0]));
 
         $col = 0;
         $row = 1;
