@@ -100,10 +100,10 @@ function ciniki_musicfestivals_socialPostGet($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.615', 'msg'=>'Social Post not found', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.628', 'msg'=>'Social Post not found', 'err'=>$rc['err']));
         }
         if( !isset($rc['socialposts'][0]) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.616', 'msg'=>'Unable to find Social Post'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.629', 'msg'=>'Unable to find Social Post'));
         }
         $socialpost = $rc['socialposts'][0];
     }

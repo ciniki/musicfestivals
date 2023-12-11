@@ -22,7 +22,7 @@ function ciniki_musicfestivals_wng_accompanistCreate(&$ciniki, $tnid, $request, 
     // Check to make sure the module is enabled
     //
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
-        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.369', 'msg'=>"I'm sorry, the page you requested does not exist."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.642', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
 
     if( !isset($_POST['f-accompanist_name']) 
@@ -47,7 +47,7 @@ function ciniki_musicfestivals_wng_accompanistCreate(&$ciniki, $tnid, $request, 
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.375', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.643', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
         }
         if( isset($rc['item']) ) {
             return array('stat'=>'ok', 'accompanist_customer_id'=>$rc['item']['customer_id']);
@@ -67,7 +67,7 @@ function ciniki_musicfestivals_wng_accompanistCreate(&$ciniki, $tnid, $request, 
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.376', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.637', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
         }
         if( isset($rc['item']) ) {
             return array('stat'=>'ok', 'accompanist_customer_id'=>$rc['item']['id']);
@@ -78,7 +78,7 @@ function ciniki_musicfestivals_wng_accompanistCreate(&$ciniki, $tnid, $request, 
     // Check that both name and email were specified
     //
     if( $_POST['f-accompanist_name'] == '' && isset($_POST['f-accompanist_email']) && $_POST['f-accompanist_email'] != '' ) {
-        return array('stat'=>'error', 'err'=>array('code'=>'ciniki.musicfestivals.377', 'msg'=>"You must specifiy the Teacher's Name"));
+        return array('stat'=>'error', 'err'=>array('code'=>'ciniki.musicfestivals.638', 'msg'=>"You must specifiy the Teacher's Name"));
     }
 
     //
@@ -90,7 +90,7 @@ function ciniki_musicfestivals_wng_accompanistCreate(&$ciniki, $tnid, $request, 
         'email_address'=>$_POST['f-accompanist_email'],
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'error', 'err'=>array('code'=>'ciniki.musicfestivals.374', 'msg'=>"We had a problem saving the accompanist, please try again or contact us for help."));
+        return array('stat'=>'error', 'err'=>array('code'=>'ciniki.musicfestivals.639', 'msg'=>"We had a problem saving the accompanist, please try again or contact us for help."));
     }
 
     return array('stat'=>'ok', 'accompanist_customer_id'=>$rc['id']);

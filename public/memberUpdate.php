@@ -69,10 +69,10 @@ function ciniki_musicfestivals_memberUpdate(&$ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.585', 'msg'=>'Member Festival not found', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.632', 'msg'=>'Member Festival not found', 'err'=>$rc['err']));
     }
     if( !isset($rc['members'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.586', 'msg'=>'Unable to find Member Festival'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.636', 'msg'=>'Unable to find Member Festival'));
     }
     $member = $rc['members'][0];
 

@@ -60,7 +60,7 @@ function ciniki_musicfestivals_classTagUpdate(&$ciniki) {
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.579', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.627', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
         }
         $rows = isset($rc['rows']) ? $rc['rows'] : array();
         foreach($rows as $row) {
@@ -102,7 +102,7 @@ function ciniki_musicfestivals_classTagUpdate(&$ciniki) {
                 'tag_sort_name' => $args['new_tag_sort_name'],
                 ), 0x04);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.580', 'msg'=>'Unable to update the classtag', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.626', 'msg'=>'Unable to update the classtag', 'err'=>$rc['err']));
             }
         }
     }

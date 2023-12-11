@@ -70,7 +70,7 @@ function ciniki_musicfestivals_wng_membersProcess(&$ciniki, $tnid, &$request, $s
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.581', 'msg'=>'Unable to load members', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.635', 'msg'=>'Unable to load members', 'err'=>$rc['err']));
     }
     $members = isset($rc['members']) ? $rc['members'] : array();
 

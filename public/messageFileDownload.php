@@ -50,10 +50,10 @@ function ciniki_musicfestivals_messageFileDownload(&$ciniki) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'message');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.566', 'msg'=>'Unable to load message', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.640', 'msg'=>'Unable to load message', 'err'=>$rc['err']));
     }
     if( !isset($rc['message']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.567', 'msg'=>'Unable to find requested message'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.641', 'msg'=>'Unable to find requested message'));
     }
     $message = $rc['message'];
 

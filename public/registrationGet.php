@@ -273,7 +273,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'member');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.590', 'msg'=>'Unable to load member', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.654', 'msg'=>'Unable to load member', 'err'=>$rc['err']));
             }
             if( isset($rc['member']) ) {
                 $registration['member_details'] = array(

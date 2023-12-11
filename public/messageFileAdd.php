@@ -58,15 +58,15 @@ function ciniki_musicfestivals_messageFileAdd(&$ciniki) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'message');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.566', 'msg'=>'Unable to load message', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.633', 'msg'=>'Unable to load message', 'err'=>$rc['err']));
     }
     if( !isset($rc['message']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.567', 'msg'=>'Unable to find requested message'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.634', 'msg'=>'Unable to find requested message'));
     }
     $message = $rc['message'];
 
     if( $message['status'] != 10 ) {
-        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.568', 'msg'=>'Message must be in Draft Mode to add files.'));
+        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.645', 'msg'=>'Message must be in Draft Mode to add files.'));
     }
 
     if( $message['files'] != '' ) {
@@ -76,7 +76,7 @@ function ciniki_musicfestivals_messageFileAdd(&$ciniki) {
     }
     foreach($files as $file) {
         if( $file['filename'] == $args['filename'] ) {
-            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.568', 'msg'=>'You already have an attachment with that name.'));
+            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.646', 'msg'=>'You already have an attachment with that name.'));
         }
     }
 

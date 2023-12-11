@@ -1932,7 +1932,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.598', 'msg'=>'Unable to load entries', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.656', 'msg'=>'Unable to load entries', 'err'=>$rc['err']));
                 }
                 $festival['recommendation_entries'] = isset($rc['entries']) ? $rc['entries'] : array();
                 foreach($festival['recommendation_entries'] as $eid => $entry) {

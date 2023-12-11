@@ -67,7 +67,7 @@ function ciniki_musicfestivals_messageExtractRecipients(&$ciniki, $tnid, $messag
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
                 $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.musicfestivals.messageref', $ref['id'], null, 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.538', 'msg'=>'Unable to remove the messageref', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.644', 'msg'=>'Unable to remove the messageref', 'err'=>$rc['err']));
                 }
                 
             }

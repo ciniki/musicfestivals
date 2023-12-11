@@ -285,7 +285,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             array('container'=>'categories', 'fname'=>'category', 'fields'=>array('id'=>'category', 'name'=>'category')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.351', 'msg'=>'Unable to load member categories', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.650', 'msg'=>'Unable to load member categories', 'err'=>$rc['err']));
         }
         $categories = isset($rc['categories']) ? $rc['categories'] : array();
 
