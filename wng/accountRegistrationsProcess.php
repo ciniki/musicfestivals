@@ -264,7 +264,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     // Load the Accompanists
     //
     $accompanists = array();
-    if( $customer_type != 20 ) {
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) ) {
         $strsql = "SELECT customers.id, "
             . "customers.display_name "
             . "FROM ciniki_musicfestival_registrations AS registrations "

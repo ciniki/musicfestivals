@@ -134,13 +134,14 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     //
     $classes_2c = array();  // Class id's with 2 competitors
     $classes_3c = array();  // Class id's with 3 competitors
-    $classes_2t = array();  // Class id's with 2 title & times
-    $classes_2to = array();  // Class id's with 2 title & times (2nd optional)
-    $classes_3t = array();  // Class id's with 3 title & times
-    $classes_3to = array();  // Class id's with 3 title & times (3rd optional)
-    $classes_instrument = array();  // Class id's with required instrument field
-    $classes_min_titles = array(); // Class ids and their min titles
-    $classes_max_titles = array(); // Class ids and their max titles
+//    $classes_2t = array();  // Class id's with 2 title & times
+//    $classes_2to = array();  // Class id's with 2 title & times (2nd optional)
+//    $classes_3t = array();  // Class id's with 3 title & times
+//    $classes_3to = array();  // Class id's with 3 title & times (3rd optional)
+//    $classes_instrument = array();  // Class id's with required instrument field
+    $js_classes = array(); // Class array that will be in javascript: flags, min_titles, max_titles
+//    $classes_min_titles = array(); // Class ids and their min titles
+//    $classes_max_titles = array(); // Class ids and their max titles
     $live_prices = array();
     $virtual_prices = array();
     $dt = new DateTime('now', new DateTimezone('UTC'));
@@ -188,6 +189,11 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         $sections[$sid]['upload'] = $section_upload;
         if( isset($section['classes']) ) {
             foreach($section['classes'] as $cid => $section_class) {
+                $js_classes[$cid] = array(
+                    'f' => $section_class['flags'],
+                    'mit' => $section_class['min_titles'],
+                    'mat' => $section_class['max_titles'],
+                    );
                 //
                 // Check syllabus class name format
                 //
@@ -201,17 +207,17 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 elseif( ($festival['flags']&0x0100) == 0x0100 ) {
                     $section['classes'][$cid]['name'] = $section_class['category_name'] . ' - ' . $section_class['name'];
                 }
-                if( ($section_class['flags']&0x04) == 0x04 ) {
-                    $classes_instrument[] = $cid;
-                }
+//                if( ($section_class['flags']&0x04) == 0x04 ) {
+//                    $classes_instrument[] = $cid;
+//                }
                 if( ($section_class['flags']&0x10) == 0x10 ) {
                     $classes_2c[] = $cid;
                 }
                 if( ($section_class['flags']&0x20) == 0x20 ) {
                     $classes_3c[] = $cid;
                 }
-                $classes_min_titles[$cid] = $section_class['min_titles'];
-                $classes_max_titles[$cid] = $section_class['max_titles'];
+//                $classes_min_titles[$cid] = $section_class['min_titles'];
+//                $classes_max_titles[$cid] = $section_class['max_titles'];
                 if( isset($_GET['cl']) && $_GET['cl'] == $section_class['uuid'] ) {
                     $selected_sid = $sid;
                     $selected_cid = $cid;
@@ -600,6 +606,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         $fields["accompanist_customer_id"] = array(
             'id' => "accompanist_customer_id",
             'ftype' => 'select',
+            'class' => (isset($selected_class) && ($selected_class['flags']&0x3000) > 0 ? '' : 'hidden'),
             'size' => 'large',
             'label' => "Accompanist",
             'blank-label' => 'No Accompanist',
@@ -958,9 +965,10 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         . "var sids=[" . implode(',', array_keys($sections)) . "];"
         . "var cls2c=[" . implode(',', $classes_2c) . "];" // 2 competitor classes (duets)
         . "var cls3c=[" . implode(',', $classes_3c) . "];" // 3 competitor classes (trios)
-        . "var clsIns=[" . implode(',', $classes_instrument) . "];" // Instrument required classes
-        . "var clsmint=" . json_encode($classes_min_titles) . ";"
-        . "var clsmaxt=" . json_encode($classes_max_titles) . ";"
+//        . "var clsIns=[" . implode(',', $classes_instrument) . "];" // Instrument required classes
+//        . "var clsmint=" . json_encode($classes_min_titles) . ";"
+//        . "var clsmaxt=" . json_encode($classes_max_titles) . ";"
+        . "var classes=" . json_encode($js_classes) . ";"
 //        . "var cls2t=[" . implode(',', $classes_2t) . "];" // 2 title & times
 //        . "var cls2to=[" . implode(',', $classes_2to) . "];" // 2 title & times
 //        . "var cls3t=[" . implode(',', $classes_3t) . "];" // 3 title & times
@@ -1010,13 +1018,23 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     . "C.aC(C.gE('f-competitor2_id').parentNode,'hidden');"
                     . "C.aC(C.gE('f-competitor3_id').parentNode,'hidden');"
                 . "}"
-                . "if(clsIns.indexOf(parseInt(c))>=0){"
+                . "if(classes[c]!=null&&(classes[c].f&0x04)==0x04){"
                     . "C.rC(C.gE('f-instrument').parentNode,'hidden');"
                 . "}else{"
                     . "C.aC(C.gE('f-instrument').parentNode,'hidden');"
                 . "}"
+                . "if(classes[c]!=null&&(classes[c].f&0x3000)>0){"
+                    . "C.rC(C.gE('f-accompanist_customer_id').parentNode,'hidden');"
+                    . "if((classes[c].f&0x1000)>0){"
+                        . "C.aC(C.gE('f-accompanist_customer_id').parentNode,'required');"
+                    . "}else{"
+                        . "C.rC(C.gE('f-accompanist_customer_id').parentNode,'required');"
+                    . "}"
+                . "}else{"
+                    . "C.aC(C.gE('f-accompanist_customer_id').parentNode,'hidden');"
+                . "}"
                 . "for(var i=2;i<=8;i++){"
-                    . "if(clsmaxt[c]!=null && i<=clsmaxt[c]){"
+                    . "if(classes[c]!=null&&i<=classes[c].mat){"
                         . "C.rC(C.gE('f-line-title-'+i),'hidden');"
                         . "C.rC(C.gE('f-title'+i).parentNode,'hidden');"
                         . "C.rC(C.gE('f-perf_time'+i+'-min').parentNode.parentNode,'hidden');";
@@ -1024,9 +1042,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                             $js .= "C.rC(C.gE('f-composer'+i).parentNode,'hidden');";
                             $js .= "C.rC(C.gE('f-movements'+i).parentNode,'hidden');";
                         }
-                        $js .= "if(clsmint[c]!=null && i<=clsmint[c]){"
+                        $js .= "if(classes[c]!=null&&i<=classes[c].mit){"
                             . "C.aC(C.gE('f-title'+i).parentNode,'required');"
-                            . "console.log('title'+i+' required');"
                             . "C.aC(C.gE('f-perf_time'+i+'-min').parentNode.parentNode,'required');";
                             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x040000) ) {
                                 $js .= "C.aC(C.gE('f-composer'+i).parentNode,'required');";
@@ -1034,7 +1051,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                             }
                         $js .= "}else{"
                             . "C.rC(C.gE('f-title'+i).parentNode,'required');"
-                            . "console.log('title'+i+' NOT required');"
                             . "C.rC(C.gE('f-perf_time'+i+'-min').parentNode.parentNode,'required');";
                             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x040000) ) {
                                 $js .= "C.rC(C.gE('f-composer'+i).parentNode,'required');";
