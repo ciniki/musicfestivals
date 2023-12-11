@@ -210,18 +210,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 if( ($section_class['flags']&0x20) == 0x20 ) {
                     $classes_3c[] = $cid;
                 }
-/*                if( ($section_class['flags']&0x1000) == 0x1000 ) {
-                    $classes_2t[] = $cid;
-                }
-                if( ($section_class['flags']&0x2000) == 0x2000 ) {
-                    $classes_2to[] = $cid;
-                }
-                if( ($section_class['flags']&0x4000) == 0x4000 ) {
-                    $classes_3t[] = $cid;
-                }
-                if( ($section_class['flags']&0x8000) == 0x8000 ) {
-                    $classes_3to[] = $cid;
-                } */
                 $classes_min_titles[$cid] = $section_class['min_titles'];
                 $classes_max_titles[$cid] = $section_class['max_titles'];
                 if( isset($_GET['cl']) && $_GET['cl'] == $section_class['uuid'] ) {
@@ -339,12 +327,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
 //            }
 //            if( ($selected_class['flags']&0x20) == 0x20 ) {
 //                $comp_required = 3;
-//            }
-//            if( ($selected_class['flags']&0x1000) == 0x1000 ) {
-//                $titles_required = 2;
-//            }
-//            if( ($selected_class['flags']&0x4000) == 0x4000 ) {
-//                $titles_required = 3;
 //            }
         }
     }
@@ -787,13 +769,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         $css_class = '';
         $css_class = ($i > 1 ? 'hidden' : '');
         $required = 'yes';
-/*        if( isset($selected_class) && $i == 2 && (($selected_class['flags']&0x1000) == 0x1000 || ($selected_class['flags']&0x4000) == 0x4000) ) {
-            $class = '';
-        }
-        elseif( isset($selected_class) && $i == 3 && (($selected_class['flags']&0x4000) == 0x4000) ) {
-            $class = '';
-        } */
-//        if( isset($selected_class) && $i == 2 && ($selected_class['flags']&0x2000) == 0x2000 ) {
         if( isset($selected_class) && $i <= $selected_class['max_titles'] ) {
             $css_class = '';
         }
@@ -804,9 +779,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             $required = 'no';
             $css_class = '';
         }
-//        if( isset($selected_class) && $i == 3 && ($selected_class['flags']&0x8000) == 0x8000 ) {
-//            $required = 'no';
-//        }
         $video_class = $css_class;
         $music_class = $css_class;
         if( $participation != 1 ) {

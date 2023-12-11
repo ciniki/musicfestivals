@@ -120,12 +120,43 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
         . "registrations.title1, "
         . "registrations.title2, "
         . "registrations.title3, "
+        . "registrations.title4, "
+        . "registrations.title5, "
+        . "registrations.title6, "
+        . "registrations.title7, "
+        . "registrations.title8, "
+        . "registrations.composer1, "
+        . "registrations.composer2, "
+        . "registrations.composer3, "
+        . "registrations.composer4, "
+        . "registrations.composer5, "
+        . "registrations.composer6, "
+        . "registrations.composer7, "
+        . "registrations.composer8, "
+        . "registrations.movements1, "
+        . "registrations.movements2, "
+        . "registrations.movements3, "
+        . "registrations.movements4, "
+        . "registrations.movements5, "
+        . "registrations.movements6, "
+        . "registrations.movements7, "
+        . "registrations.movements8, "
         . "registrations.video_url1, "
         . "registrations.video_url2, "
         . "registrations.video_url3, "
+        . "registrations.video_url4, "
+        . "registrations.video_url5, "
+        . "registrations.video_url6, "
+        . "registrations.video_url7, "
+        . "registrations.video_url8, "
         . "registrations.music_orgfilename1, "
         . "registrations.music_orgfilename2, "
         . "registrations.music_orgfilename3, "
+        . "registrations.music_orgfilename4, "
+        . "registrations.music_orgfilename5, "
+        . "registrations.music_orgfilename6, "
+        . "registrations.music_orgfilename7, "
+        . "registrations.music_orgfilename8, "
 //        . "registrations.placement, "
         . "IFNULL(comments.adjudicator_id, 0) AS adjudicator_id, "
         . "IFNULL(comments.id, 0) AS comment_id, "
@@ -133,6 +164,9 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
         . "IFNULL(comments.grade, '') AS grade, "
         . "IFNULL(comments.score, '') AS score, "
         . "regclass.flags AS reg_flags, "
+        . "registrations.participation AS participation, "
+        . "regclass.min_titles AS min_titles, "
+        . "regclass.max_titles AS max_titles, "
         . "regclass.name AS reg_class_name "
         . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
         . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
@@ -186,10 +220,12 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
                 'class1_name', 'class2_name', 'class3_name', 'class4_name', 'class5_name',
                 )),
         array('container'=>'registrations', 'fname'=>'reg_id', 
-            'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name', 'reg_flags',
-                'title1', 'title2', 'title3',
-                'video_url1', 'video_url2', 'video_url3', 
-                'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3',
+            'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name', 
+                'reg_flags', 'participation', 'min_titles', 'max_titles',
+                'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
+                'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8', 
+                'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3', 'music_orgfilename4', 
+                'music_orgfilename5', 'music_orgfilename6', 'music_orgfilename7', 'music_orgfilename8',
                 'reg_class_name', 
 //                'placement',
                 )),

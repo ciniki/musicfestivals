@@ -104,18 +104,51 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         . "registrations.title1, "
         . "registrations.title2, "
         . "registrations.title3, "
+        . "registrations.title4, "
+        . "registrations.title5, "
+        . "registrations.title6, "
+        . "registrations.title7, "
+        . "registrations.title8, "
+        . "registrations.composer1, "
+        . "registrations.composer2, "
+        . "registrations.composer3, "
+        . "registrations.composer4, "
+        . "registrations.composer5, "
+        . "registrations.composer6, "
+        . "registrations.composer7, "
+        . "registrations.composer8, "
+        . "registrations.movements1, "
+        . "registrations.movements2, "
+        . "registrations.movements3, "
+        . "registrations.movements4, "
+        . "registrations.movements5, "
+        . "registrations.movements6, "
+        . "registrations.movements7, "
+        . "registrations.movements8, "
         . "registrations.video_url1, "
         . "registrations.video_url2, "
         . "registrations.video_url3, "
+        . "registrations.video_url4, "
+        . "registrations.video_url5, "
+        . "registrations.video_url6, "
+        . "registrations.video_url7, "
+        . "registrations.video_url8, "
         . "registrations.music_orgfilename1, "
         . "registrations.music_orgfilename2, "
         . "registrations.music_orgfilename3, "
+        . "registrations.music_orgfilename4, "
+        . "registrations.music_orgfilename5, "
+        . "registrations.music_orgfilename6, "
+        . "registrations.music_orgfilename7, "
+        . "registrations.music_orgfilename8, "
 //        . "registrations.placement, "
         . "IFNULL(comments.id, 0) AS comment_id, "
         . "IFNULL(comments.comments, '') AS comments, "
         . "IFNULL(comments.grade, '') AS grade, "
         . "IFNULL(comments.score, '') AS score, "
         . "regclass.flags AS reg_class_flags, "
+        . "regclass.min_titles, "
+        . "regclass.max_titles, "
         . "regclass.name AS reg_class_name "
         . "FROM ciniki_musicfestival_schedule_sections AS sections "
         . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
@@ -178,10 +211,15 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 'class1_id', 'class2_id', 'class3_id', 'description', 'class1_name', 'class2_name', 'class3_name',
                 )),
         array('container'=>'registrations', 'fname'=>'reg_uuid', 
-            'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name', 'title1', 'title2', 'title3',
-                'video_url1', 'video_url2', 'video_url3', 
-                'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3', 
-                'reg_class_flags', 'class_name'=>'reg_class_name', 'comment_id', 'comments', 'grade', 'score', 
+            'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name', 
+                'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
+                'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
+                'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
+                'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3', 'music_orgfilename4', 
+                'music_orgfilename5', 'music_orgfilename6', 'music_orgfilename7', 'music_orgfilename8',
+                'reg_class_flags', 'min_titles', 'max_titles', 'class_name'=>'reg_class_name', 
+                'comment_id', 'comments', 'grade', 'score', 
 //                'placement',
                 )),
         ));
@@ -314,23 +352,15 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 'label' => $registration['name'] . ' - ' . $registration['class_name'],
                 'fields' => array(),
                 );
-            $num_titles = 1;
-            if( ($registration['reg_class_flags']&0x4000) == 0x4000 ) {
-                $num_titles = 3;
-            } elseif( ($registration['reg_class_flags']&0x1000) == 0x1000 ) {
-                $num_titles = 2;
-            }
-            for($i = 1; $i <= $num_titles; $i++) {
+            for($i = 1; $i <= $registration['max_titles']; $i++) {
                 if( $registration["title{$i}"] != '' ) {
                     $section['fields']["title{$i}"] = array(
                         'id' => "title{$i}",
                         'ftype' => 'content',
-//                        'ftype' => 'text',
-                        'label' => ($i == 2 ? '2nd ' : ($i == 3 ? '3rd ' : ' ')) . 'Title',
+                        'label' => ($registration['max_titles'] > 1 ? 'Title #' . $i : 'Title'),
                         'editable' => 'no',
                         'size' => 'medium',
                         'description' => $registration["title{$i}"],
-//                        'value' => $registration["title{$i}"],
                         );
                     if( $registration["music_orgfilename{$i}"] != '' ) {
                         $download_url = "{$request['ssl_domain_base_url']}/account/musicfestivaladjudications"
@@ -352,7 +382,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                         $section['fields']["music_orgfilename{$i}"] = array(
                             'id' => "music_orgfilename{$i}",
                             'ftype' => 'content',
-                            'label' => ($i == 2 ? '2nd ' : ($i == 3 ? '3rd ' : ' ')) . 'Music PDF',
+                            'label' => 'Music PDF',
                             'size' => 'medium',
                             'description' => "No music file provided",
                             );
@@ -362,7 +392,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                             'id' => "reg{$registration['id']}-video{$i}",
                             'ftype' => 'videocontent',
                             'size' => 'large',
-                            'label' => ($i == 2 ? '2nd ' : ($i == 3 ? '3rd ' : ' ')) . 'Video',
+                            'label' => ($registration['max_titles'] > 1 ? 'Video #' . $i : 'Video'),
                             'url' => $registration["video_url{$i}"],
                             );
                     }
