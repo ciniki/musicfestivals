@@ -1834,6 +1834,9 @@ function ciniki_musicfestivals_main() {
                 'competitor-individual-study-level':{'label':'Study Level', 'type':'toggle', 'default':'optional', 'toggles':{
                     'options':'Optional', 'required':'Required', 'hidden':'Hidden',
                     }},
+                'competitor-individual-instrument':{'label':'Instrument', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'options':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
             }},
         '_competitor_group_parent_msg':{'label':'Group/Ensemble Competitor Form', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'competitors' ? 'yes' : 'hidden'; },
@@ -1842,6 +1845,9 @@ function ciniki_musicfestivals_main() {
                 'competitor-group-teacher-msg':{'label':'Teacher Intro', 'type':'textarea', 'size':'medium'},
                 'competitor-group-adult-msg':{'label':'Adult Intro', 'type':'textarea', 'size':'medium'},
                 'competitor-group-study-level':{'label':'Study Level', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'options':'Optional', 'required':'Required', 'hidden':'Hidden',
+                    }},
+                'competitor-group-instrument':{'label':'Instrument', 'type':'toggle', 'default':'optional', 'toggles':{
                     'options':'Optional', 'required':'Required', 'hidden':'Hidden',
                     }},
             }},

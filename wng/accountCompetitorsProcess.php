@@ -415,12 +415,20 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         'class' => '',
         'value' => (isset($_POST['f-age']) ? trim($_POST['f-age']) : (isset($competitor['age']) ? $competitor['age'] :'')),
             );
+    if( $ctype == 50 && isset($festival['competitor-group-instrument']) ) {
+        $ins = $festival['competitor-group-instrument'];
+    } elseif( isset($festival['competitor-individual-instrument']) ) {
+        $ins = $festival['competitor-individual-instrument'];
+    } else {
+        $ins = '';
+    }
     $fields['instrument'] = array(
         'id' => 'instrument',
         'label' => 'Instrument',
         'ftype' => 'text',
         'size' => 'small',
-        'class' => '',
+        'required' => ($ins == 'required' ? 'yes' : 'no'),
+        'class' => $ins,
         'value' => (isset($_POST['f-instrument']) ? trim($_POST['f-instrument']) : (isset($competitor['instrument']) ? $competitor['instrument'] :'')),
         );
     if( $ctype == 50 && isset($festival['competitor-group-study-level']) ) {
