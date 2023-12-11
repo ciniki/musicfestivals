@@ -51,12 +51,15 @@ function ciniki_musicfestivals_wng_categoryListsProcess(&$ciniki, $tnid, &$reque
         . "lists.name AS text "
         . "FROM ciniki_musicfestival_lists AS lists "
         . "INNER JOIN ciniki_musicfestivals AS festivals ON ("
-            . "lists.festival_id = festivals.id "
-            . "AND festivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "lists.festival_id = festivals.id ";
+            if( isset($s['festival-id']) && $s['festival-id'] > 0 ) {
+                $strsql .= "AND festivals.id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' ";
+            }
+            $strsql .= "AND festivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE lists.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND lists.category = '" . ciniki_core_dbQuote($ciniki, $s['category']) . "' "
-        . "ORDER BY festivals.start_date DESC "
+        . "ORDER BY festivals.start_date DESC, lists.category, lists.name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(

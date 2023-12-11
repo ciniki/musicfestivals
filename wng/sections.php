@@ -211,6 +211,10 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'module' => 'Music Festivals',
                 'settings' => array(
                     'title' => array('label'=>'Title', 'type'=>'text'),
+                    'festival-id' => array('label'=>'Festival', 'type'=>'select', 
+                        'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                        'options'=>$festivals,
+                        ),
                     'category' => array('label'=>'Category', 'type'=>'select', 'options'=>$categories),
                     'amount-visible' => array('label'=>'Amount Visible', 'type'=>'toggle', 'default'=>'yes', 'toggles'=>array(
                         'no' => 'No',
