@@ -24,6 +24,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         'section_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus Section'),
         'teacher_customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Teacher'),
         'registration_tag'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registration Tag'),
+        'member_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Member'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -133,8 +134,8 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'reg_id', 
-                'fields'=>array('id'=>'section_id', 'teacher_customer_id', 
-                    'display_name', 'category_id', 'category_name', 'class_code', 'class_name', 'fee'=>'reg_fee', 
+                'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 
+                    'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 'fee'=>'reg_fee', 
                     'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 'payment_type', 
                     'participation', 'notes'=>'reg_notes'),
                 ),
@@ -187,8 +188,8 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'reg_id', 
-                'fields'=>array('id'=>'section_id', 'teacher_customer_id', 
-                    'display_name', 'category_id', 'category_name', 'class_code', 'class_name', 'fee'=>'reg_fee', 
+                'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 
+                    'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 'fee'=>'reg_fee', 
                     'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 'payment_type', 
                     'participation', 'notes'=>'reg_notes'),
                 ),
@@ -224,6 +225,79 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         }
         $sections[0]['name'] = $rc['teacher']['display_name'];
         $filename .= ' - ' . $rc['teacher']['display_name'];
+    } 
+    //
+    // Get the registrations for a member
+    //
+    elseif( isset($args['member_id']) && $args['member_id'] > 0 ) {
+        $strsql .= "FROM ciniki_musicfestival_registrations AS registrations "
+            . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+                . "registrations.class_id = classes.id "
+                . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
+                . "classes.category_id = categories.id "
+                . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+                . "categories.section_id = sections.id "
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ("
+                . "("
+                    . "registrations.competitor1_id = competitors.id "
+                    . "OR registrations.competitor2_id = competitors.id "
+                    . "OR registrations.competitor3_id = competitors.id "
+                    . "OR registrations.competitor4_id = competitors.id "
+                    . "OR registrations.competitor5_id = competitors.id "
+                    . ") "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE registrations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' "
+            . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY registrations.id "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'registrations', 'fname'=>'reg_id', 
+                'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 
+                    'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 'fee'=>'reg_fee', 
+                    'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 'payment_type', 
+                    'participation', 'notes'=>'reg_notes'),
+                ),
+            array('container'=>'competitors', 'fname'=>'competitor_id', 
+                'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
+                    'phone_home', 'phone_cell', 'email', 'age', 'study_level', 'instrument', 'notes'),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $sections = array(
+            array(
+                'id' => 0,
+                'name' => 'Member',
+                'registrations' => $rc['registrations'],
+                ),
+            );
+        //
+        // Get member name
+        //
+        $strsql = "SELECT name "
+            . "FROM ciniki_musicfestivals_members "
+            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'member');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.620', 'msg'=>'Unable to load member', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['member']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.621', 'msg'=>'Unable to find requested member'));
+        }
+        $sections[0]['name'] = $rc['member']['name'];
+        $filename .= ' - ' . $rc['member']['name'];
     } 
     else {
         $strsql .= "FROM ciniki_musicfestival_sections AS sections "
@@ -478,7 +552,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 } else {
                     $strsql = "SELECT members.name "
                         . "FROM ciniki_musicfestivals_members AS members "
-                        . "WHERE members.id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' "
+                        . "WHERE members.id = '" . ciniki_core_dbQuote($ciniki, $registration['member_id']) . "' "
                         . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                         . "";
                     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'member');

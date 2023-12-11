@@ -631,32 +631,67 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                 elseif( $ctype == 50 && isset($update_args['name']) ) {
                     $update_args['public_name'] = $update_args['name'];
                 }
+                
+                //
+                // Check if the competitor is part of any submitted/paid registrations and then 
+                // nothing can be changed
+                //
+                $strsql = "SELECT COUNT(*) AS num "
+                    . "FROM ciniki_musicfestival_registrations "
+                    . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . "AND status >= 7 "    // E-transfer pending, applied or paid
+                    . "AND ("
+                        . "competitor1_id = '" . ciniki_core_dbQuote($ciniki, $competitor['competitor_id']) . "' "
+                        . "OR competitor2_id = '" . ciniki_core_dbQuote($ciniki, $competitor['competitor_id']) . "' "
+                        . "OR competitor3_id = '" . ciniki_core_dbQuote($ciniki, $competitor['competitor_id']) . "' "
+                        . "OR competitor4_id = '" . ciniki_core_dbQuote($ciniki, $competitor['competitor_id']) . "' "
+                        . "OR competitor5_id = '" . ciniki_core_dbQuote($ciniki, $competitor['competitor_id']) . "' "
+                        . ") "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+                $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.358', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+                }
+                $num_items = isset($rc['num']) ? $rc['num'] : '';
+
+                if( $num_items > 0 ) {
+                    $blocks[] = array(
+                        'type' => 'msg',
+                        'class' => 'limit-width limit-width-60',
+                        'level' => 'error',
+                        'content' => "There " . ($num_items > 1 ? 'are' : 'is') . " {$num_items} registration" . ($num_items > 1 ? 's' : '') . " for {$competitor['name']}. Please contact us with any changes to competitor information.",
+                        );
+                    $display = 'list';
+                }
                 //
                 // Update the competitor
                 //
-                if( count($update_args) > 0 ) {
-                    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-                    $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.competitor', $competitor_id, $update_args, 0x04);
-                    if( $rc['stat'] != 'ok' ) {
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.357', 'msg'=>'Unable to update the competitor', 'err'=>$rc['err']));
+                else {
+                    if( count($update_args) > 0 ) {
+                        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+                        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.competitor', $competitor_id, $update_args, 0x04);
+                        if( $rc['stat'] != 'ok' ) {
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.357', 'msg'=>'Unable to update the competitor', 'err'=>$rc['err']));
+                        }
+
+                        //
+                        // Update any registration this competitor is a part of
+                        //
+                        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'competitorUpdateNames');
+                        $rc = ciniki_musicfestivals_competitorUpdateNames($ciniki, $tnid, $festival['id'], $competitor_id);
+                        if( $rc['stat'] != 'ok' ) {
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.328', 'msg'=>'Unable to update registrations', 'err'=>$rc['err']));
+                        }
                     }
 
-                    //
-                    // Update any registration this competitor is a part of
-                    //
-                    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'competitorUpdateNames');
-                    $rc = ciniki_musicfestivals_competitorUpdateNames($ciniki, $tnid, $festival['id'], $competitor_id);
-                    if( $rc['stat'] != 'ok' ) {
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.328', 'msg'=>'Unable to update registrations', 'err'=>$rc['err']));
+                    if( isset($request['session']['account-musicfestivals-competitor-form-return']) ) {
+                        header("Location: {$request['session']['account-musicfestivals-competitor-form-return']}");
+                        exit;
                     }
-                }
-
-                if( isset($request['session']['account-musicfestivals-competitor-form-return']) ) {
-                    header("Location: {$request['session']['account-musicfestivals-competitor-form-return']}");
+                    header("Location: {$request['ssl_domain_base_url']}/account/musicfestivalcompetitors");
                     exit;
                 }
-                header("Location: {$request['ssl_domain_base_url']}/account/musicfestivalcompetitors");
-                exit;
             }
         }
     }

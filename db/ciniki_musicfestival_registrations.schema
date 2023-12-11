@@ -68,6 +68,8 @@
 # timeslot_sequence:    The order to display this registration in for the timeslot.
 # 
 # title1:               The title and composer of the 1st piece they will perform.
+# composer1:            The composer of the 1st piece they will perform.
+# movements1:           The movements or musical of the 1st piece they will perform.
 # perf_time1:           The time of the 1st performance in seconds.
 # title2:               The title and composer of the 2nd piece they will perform.
 # perf_time2:           The time of the 2nd performance in seconds.
@@ -95,6 +97,8 @@
 #
 # videolink:            The URL to view the video for the submission. Used for virtual music festivals.
 # music_orgfilename:    The original filename of the PDF uploaded for sheet music.
+#
+# instrument:           The instrument they will use (depends on class).
 #
 # notes:                Any notes for the registration.
 # internal_notes:       Any internal admin notes for the registration viewable only by admins.
@@ -128,22 +132,59 @@ create table ciniki_musicfestival_registrations (
     timeslot_id int not null,
     timeslot_sequence tinyint unsigned not null,
     title1 varchar(250) not null,
+    composer1 varchar(150) not null,
+    movements1 varchar(150) not null,
     perf_time1 varchar(50) not null,
     title2 varchar(250) not null,
+    composer2 varchar(150) not null,
+    movements2 varchar(150) not null,
     perf_time2 varchar(50) not null,
     title3 varchar(250) not null,
+    composer3 varchar(150) not null,
+    movements3 varchar(150) not null,
     perf_time3 varchar(50) not null,
+    title4 varchar(250) not null,
+    composer4 varchar(150) not null,
+    movements4 varchar(150) not null,
+    perf_time4 varchar(50) not null,
+    title5 varchar(250) not null,
+    composer5 varchar(150) not null,
+    movements5 varchar(150) not null,
+    perf_time5 varchar(50) not null,
+    title6 varchar(250) not null,
+    composer6 varchar(150) not null,
+    movements6 varchar(150) not null,
+    perf_time6 varchar(50) not null,
+    title7 varchar(250) not null,
+    composer7 varchar(150) not null,
+    movements7 varchar(150) not null,
+    perf_time7 varchar(50) not null,
+    title8 varchar(250) not null,
+    composer8 varchar(150) not null,
+    movements8 varchar(150) not null,
+    perf_time8 varchar(50) not null,
     fee decimal(19,4) not null, 
     payment_type tinyint unsigned not null,
     participation tinyint unsigned not null,
     video_url1 varchar(500) not null,
     video_url2 varchar(500) not null,
     video_url3 varchar(500) not null,
+    video_url4 varchar(150) not null,
+    video_url5 varchar(150) not null,
+    video_url6 varchar(150) not null,
+    video_url7 varchar(150) not null,
+    video_url8 varchar(150) not null,
     music_orgfilename1 varchar(250) not null,
     music_orgfilename2 varchar(250) not null,
     music_orgfilename3 varchar(250) not null,
+    music_orgfilename4 varchar(250) not null,
+    music_orgfilename5 varchar(250) not null,
+    music_orgfilename6 varchar(250) not null,
+    music_orgfilename7 varchar(250) not null,
+    music_orgfilename8 varchar(250) not null,
+    instrument varchar(250) not null,
     placement varchar(250) not null,
-    notes varchar(5000) not null,
+    notes text not null,
     internal_notes text not null,
     date_added datetime not null,
     last_updated datetime not null,
@@ -152,4 +193,4 @@ create table ciniki_musicfestival_registrations (
     index (festival_id, teacher_customer_id, billing_customer_id, accompanist_customer_id, member_id),
     index (festival_id, class_id, tnid),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.15';
+) ENGINE='InnoDB', COMMENT='v1.16';

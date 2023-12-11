@@ -22,7 +22,7 @@ function ciniki_musicfestivals_registrationMusicPDF($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'registration_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Registration'),
-        'num'=>array('required'=>'yes', 'blank'=>'no', 'validlist'=>array(1,2,3), 'name'=>'Title Number (1,2,3)'),
+        'num'=>array('required'=>'yes', 'blank'=>'no', 'validlist'=>array(1,2,3,4,5,6,7,8), 'name'=>'Title Number (1,2,3)'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -47,7 +47,12 @@ function ciniki_musicfestivals_registrationMusicPDF($ciniki) {
         . "registrations.festival_id, "
         . "registrations.music_orgfilename1, "
         . "registrations.music_orgfilename2, "
-        . "registrations.music_orgfilename3 "
+        . "registrations.music_orgfilename3, "
+        . "registrations.music_orgfilename4, "
+        . "registrations.music_orgfilename5, "
+        . "registrations.music_orgfilename6, "
+        . "registrations.music_orgfilename7, "
+        . "registrations.music_orgfilename8 "
         . "FROM ciniki_musicfestival_registrations AS registrations "
         . "WHERE registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "

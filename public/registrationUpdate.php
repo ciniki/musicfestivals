@@ -34,20 +34,57 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         'competitor5_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitor 5'),
         'class_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Class'),
         'title1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Title'),
+        'composer1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Composer'),
+        'movements1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Movements'),
         'perf_time1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Performance Time'),
-        'title2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2n Title'),
-        'perf_time2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2n Performance Time'),
+        'title2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2nd Title'),
+        'composer2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2nd Composer'),
+        'movements2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2nd Movements'),
+        'perf_time2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2nd Performance Time'),
         'title3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'3rd Title'),
+        'composer3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'3rd Composer'),
+        'movements3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'3rd Movements'),
         'perf_time3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'3rd Performance Time'),
+        'title4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'4th Title'),
+        'composer4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'4th Composer'),
+        'movements4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'4th Movements'),
+        'perf_time4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'4th Performance Time'),
+        'title5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'5th Title'),
+        'composer5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'5th Composer'),
+        'movements5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'5th Movements'),
+        'perf_time5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'5th Performance Time'),
+        'title6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'6th Title'),
+        'composer6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'6th Composer'),
+        'movements6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'6th Movements'),
+        'perf_time6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'6th Performance Time'),
+        'title7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'7th Title'),
+        'composer7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'7th Composer'),
+        'movements7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'7th Movements'),
+        'perf_time7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'7th Performance Time'),
+        'title8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'8th Title'),
+        'composer8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'8th Composer'),
+        'movements8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'8th Movements'),
+        'perf_time8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'8th Performance Time'),
         'fee'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Fee'),
         'payment_type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Payment Type'),
         'participation'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Virtual'),
         'video_url1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
         'video_url2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
         'video_url3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
+        'video_url4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
+        'video_url5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
+        'video_url6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
+        'video_url7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
+        'video_url8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
         'music_orgfilename1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
         'music_orgfilename2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
         'music_orgfilename3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
+        'music_orgfilename4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
+        'music_orgfilename5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
+        'music_orgfilename6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
+        'music_orgfilename7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
+        'music_orgfilename8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
+        'instrument'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Instrument'),
         'placement'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Placement'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         'internal_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Interal Notes'),
@@ -122,12 +159,8 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     if( isset($_FILES) ) {
         foreach($_FILES as $field_name => $file) {
             $file_num = 0;
-            if( $field_name == 'music_orgfilename1' ) {
-                $file_num = 1;
-            } elseif( $field_name == 'music_orgfilename2' ) {
-                $file_num = 2;
-            } elseif( $field_name == 'music_orgfilename3' ) {
-                $file_num = 3;
+            if( preg_match("/music_orgfilename([1-8])/", $field_name, $m) ) {
+                $file_num = $m[1];
             } else {
                 error_log('UNKNOWN FILE: ' . $field_name);
                 continue;

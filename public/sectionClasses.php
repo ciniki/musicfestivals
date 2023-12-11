@@ -153,6 +153,8 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
             . "classes.virtual_fee, "
             . "classes.earlybird_plus_fee, "
             . "classes.plus_fee, "
+            . "classes.min_titles, "
+            . "classes.max_titles, "
             . "GROUP_CONCAT(DISTINCT classtags.tag_name ORDER BY classtags.tag_sort_name SEPARATOR ', ') AS levels, "
             . "COUNT(registrations.id) AS num_registrations "
             . "FROM ciniki_musicfestival_categories AS categories "
@@ -178,7 +180,8 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
             array('container'=>'classes', 'fname'=>'id', 
                 'fields'=>array('id', 'joined_sequence', 'category_id', 'category_name', 'permalink', 'category_sequence', 
                     'code', 'class_name', 'class_sequence', 'levels',
-                    'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 'num_registrations'),
+                    'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 'min_titles', 'max_titles', 
+                    'num_registrations'),
                 ),
             ));
     }

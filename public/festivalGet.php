@@ -518,6 +518,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "";
             if( isset($args['section_id']) && $args['section_id'] > 0 ) {
                 $strsql .= "HAVING section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' ";
+            } elseif( isset($args['member_id']) && $args['member_id'] > 0 ) {
+                $strsql .= "AND registrations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' ";
             } elseif( isset($args['teacher_customer_id']) && $args['teacher_customer_id'] > 0 ) {
                 $strsql .= "AND registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' ";
             }
@@ -630,6 +632,40 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 if( isset($rc['tags']) ) {
                     $festival['registration_tags'] = $rc['tags'];
                 }
+            }
+            //
+            // Get the list of members
+            //
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+                $strsql = "SELECT members.id, "
+                    . "members.name, "
+                    . "COUNT(registrations.id) AS num_registrations "
+                    . "FROM ciniki_musicfestivals_members AS members "
+                    . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                        . "members.id = registrations.member_id ";
+                        if( ($festival['flags']&0x02) == 0x02 && isset($args['ipv']) ) {
+                            if( $args['ipv'] == 'inperson' ) {
+                                $strsql .= "AND registrations.participation = 0 ";
+                            } elseif( $args['ipv'] == 'virtual' ) {
+                                $strsql .= "AND registrations.participation = 1 ";
+                            }
+                        }
+                        $strsql .= "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                        . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE members.status = 10 "
+                    . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "GROUP BY members.id "
+                    . "ORDER BY members.name "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'members', 'fname'=>'id', 'fields'=>array('id', 'name', 'num_registrations')),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.619', 'msg'=>'Unable to load members', 'err'=>$rc['err']));
+                }
+                $festival['registration_members'] = isset($rc['members']) ? $rc['members'] : array();
             }
         }
 

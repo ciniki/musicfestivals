@@ -20,8 +20,8 @@
 #
 #                           0x01 - Online registration
 #                           0x02 - Multireg - Allow for same student to register multiple times.
-#                           0x04 - 
-#                           0x08 - 
+#                           0x04 - Instrument required on registration
+#                           0x08 - Instrument optional **future placeholder, not implemented**
 #                           0x10 - Enable Second competitor
 #                           0x20 - Enable Third competitor
 #                           0x40 - Enable Fourth competitor
@@ -30,10 +30,10 @@
 #                           0x0200 - Third Competitor optional
 #                           0x0400 - 
 #                           0x0800 - 
-#                           0x1000 - Enable Second title & time
-#                           0x2000 - Second title & time optional
-#                           0x4000 - Enable Third title & time
-#                           0x8000 - Third title & time Optional
+#                           0x1000 - Enable Second title & time **deprecated, replaced with min/max_titles
+#                           0x2000 - Second title & time optional **deprecated, replaced with min/max_titles
+#                           0x4000 - Enable Third title & time **deprecated, replaced with min/max_titles
+#                           0x8000 - Third title & time Optional **deprecated, replaced with min/max_titles
 #
 # earlybird_fee:        The earlybird fee for the class.
 # fee:                  The fee for the class.
@@ -41,8 +41,8 @@
 # earlybird_plus_fee:   The Earlybird Adjudication Plus fee for the class.
 # plus_fee:             The Adjudication Plus fee for the class.
 #
-# min_titles:           The minimum number of titles that must be performed. (enabled by provicials flag)
-# max_title:            The maximum number of titles that can be performed.
+# min_titles:           The minimum number of titles that must be performed.
+# max_titles:           The maximum number of titles that can be performed.
 #
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.

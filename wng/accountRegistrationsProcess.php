@@ -312,19 +312,56 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "class_id, "
             . "timeslot_id, "
             . "title1, "
+            . "composer1, "
+            . "movements1, "
             . "perf_time1, "
             . "title2, "
+            . "composer2, "
+            . "movements2, "
             . "perf_time2, "
             . "title3, "
+            . "composer3, "
+            . "movements3, "
             . "perf_time3, "
+            . "title4, "
+            . "composer4, "
+            . "movements4, "
+            . "perf_time4, "
+            . "title5, "
+            . "composer5, "
+            . "movements5, "
+            . "perf_time5, "
+            . "title6, "
+            . "composer6, "
+            . "movements6, "
+            . "perf_time6, "
+            . "title7, "
+            . "composer7, "
+            . "movements7, "
+            . "perf_time7, "
+            . "title8, "
+            . "composer8, "
+            . "movements8, "
+            . "perf_time8, "
             . "fee, "
             . "participation, "
             . "video_url1, "
             . "video_url2, "
             . "video_url3, "
+            . "video_url4, "
+            . "video_url5, "
+            . "video_url6, "
+            . "video_url7, "
+            . "video_url8, "
             . "music_orgfilename1, "
             . "music_orgfilename2, "
             . "music_orgfilename3, "
+            . "music_orgfilename4, "
+            . "music_orgfilename5, "
+            . "music_orgfilename6, "
+            . "music_orgfilename7, "
+            . "music_orgfilename8, "
+            . "instrument, "
             . "notes "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $registration_id) . "' "
@@ -397,19 +434,56 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "class_id, "
             . "timeslot_id, "
             . "title1, "
+            . "composer1, "
+            . "movements1, "
             . "perf_time1, "
             . "title2, "
+            . "composer2, "
+            . "movements2, "
             . "perf_time2, "
             . "title3, "
+            . "composer3, "
+            . "movements3, "
             . "perf_time3, "
+            . "title4, "
+            . "composer4, "
+            . "movements4, "
+            . "perf_time4, "
+            . "title5, "
+            . "composer5, "
+            . "movements5, "
+            . "perf_time5, "
+            . "title6, "
+            . "composer6, "
+            . "movements6, "
+            . "perf_time6, "
+            . "title7, "
+            . "composer7, "
+            . "movements7, "
+            . "perf_time7, "
+            . "title8, "
+            . "composer8, "
+            . "movements8, "
+            . "perf_time8, "
             . "fee, "
             . "participation, "
             . "video_url1, "
             . "video_url2, "
             . "video_url3, "
+            . "video_url4, "
+            . "video_url5, "
+            . "video_url6, "
+            . "video_url7, "
+            . "video_url8, "
             . "music_orgfilename1, "
             . "music_orgfilename2, "
             . "music_orgfilename3, "
+            . "music_orgfilename4, "
+            . "music_orgfilename5, "
+            . "music_orgfilename6, "
+            . "music_orgfilename7, "
+            . "music_orgfilename8, "
+            . "instrument, "
             . "notes "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE uuid = '" . ciniki_core_dbQuote($ciniki, $registration_uuid) . "' "
@@ -492,14 +566,15 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 || ($field['id'] == 'parent' && $customer_type == 30)
                 || (($selected_class['flags']&0x20) == 0 && $field['id'] == 'competitor3_id')
                 || (($selected_class['flags']&0x10) == 0 && $field['id'] == 'competitor2_id')
-                || (($selected_class['flags']&0x8000) == 0x8000 && $field['id'] == 'title3')
-                || (($selected_class['flags']&0x8000) == 0x8000 && $field['id'] == 'perf_time3')
-                || (($selected_class['flags']&0x4000) == 0 && $field['id'] == 'title3')
-                || (($selected_class['flags']&0x4000) == 0 && $field['id'] == 'perf_time3')
-                || (($selected_class['flags']&0x2000) == 0x2000 && $field['id'] == 'title2')
-                || (($selected_class['flags']&0x2000) == 0x2000 && $field['id'] == 'perf_time2')
-                || (($selected_class['flags']&0x1000) == 0 && $field['id'] == 'title2')
-                || (($selected_class['flags']&0x1000) == 0 && $field['id'] == 'perf_time2')
+                || (($selected_class['flags']&0x04) == 0 && $field['id'] == 'instrument')
+//                || (($selected_class['flags']&0x8000) == 0x8000 && $field['id'] == 'title3')
+//                || (($selected_class['flags']&0x8000) == 0x8000 && $field['id'] == 'perf_time3')
+//                || (($selected_class['flags']&0x4000) == 0 && $field['id'] == 'title3')
+//                || (($selected_class['flags']&0x4000) == 0 && $field['id'] == 'perf_time3')
+//                || (($selected_class['flags']&0x2000) == 0x2000 && $field['id'] == 'title2')
+//                || (($selected_class['flags']&0x2000) == 0x2000 && $field['id'] == 'perf_time2')
+//                || (($selected_class['flags']&0x1000) == 0 && $field['id'] == 'title2')
+//                || (($selected_class['flags']&0x1000) == 0 && $field['id'] == 'perf_time2')
                 || ($customer_type != 20 && $fields['teacher_customer_id'] != -1 && $field['id'] == 'teacher_email')
                 ) {
                 continue;
@@ -509,7 +584,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 ) {
                 continue;
             }
-            if( isset($field['required']) && $field['required'] == 'yes' && $field['value'] < 0 && $field['id'] == 'participation' ) {
+            if( isset($field['required']) && $field['required'] == 'yes' && $field['value'] <= 0 && $field['id'] == 'member_id' ) {
+                $errors[] = array(
+                    'msg' => 'You must specify the festival that recommended you.',
+                    );
+            }
+            elseif( isset($field['required']) && $field['required'] == 'yes' && $field['value'] < 0 && $field['id'] == 'participation' ) {
                 $errors[] = array(
                     'msg' => 'You must specify how you want to participate.',
                     );
@@ -619,6 +699,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'festival_id' => $festival['id'],
                 'billing_customer_id' => $request['session']['customer']['id'],
                 'teacher_customer_id' => ($customer_type == 20 ? $request['session']['customer']['id'] : $fields['teacher_customer_id']['value']),
+                'accompanist_customer_id' => isset($fields['accompanist_customer_id']['value']) ? $fields['accompanist_customer_id']['value'] : 0,
+                'member_id' => isset($fields['member_id']['value']) ? $fields['member_id']['value'] : 0,
                 'rtype' => 30,
                 'status' => 6,
                 'flags' => 0,
@@ -630,22 +712,61 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'competitor3_id' => $fields['competitor3_id']['value'],
                 'class_id' => $selected_class['id'],
                 'timeslot_id' => 0,
-                'title1' => $fields['title1']['value'],
+/*                'title1' => $fields['title1']['value'],
+                'composer1' => isset($fields['composer1']['value']) ? $fields['composer1']['value'] : '',
+                'movements1' => isset($fields['movements1']['value']) ? $fields['movements1']['value'] : '',
                 'perf_time1' => $fields['perf_time1']['value'],
+                'video_url1' => isset($fields['video_url1']['value']) ? $fields['video_url1']['value'] : '',
                 'title2' => $fields['title2']['value'],
+                'composer2' => isset($fields['composer2']['value']) ? $fields['composer2']['value'] : '',
+                'movements2' => isset($fields['movements2']['value']) ? $fields['movements2']['value'] : '',
                 'perf_time2' => $fields['perf_time2']['value'],
-                'title3' => $fields['title3']['value'],
-                'perf_time3' => $fields['perf_time3']['value'],
-                'video_url1' => $fields['video_url1']['value'],
-                'video_url2' => $fields['video_url2']['value'],
-                'video_url3' => $fields['video_url3']['value'],
+                'title3' => isset($fields['title3']['value']) ? $fields['title3']['value'] : '',
+                'composer3' => isset($fields['composer3']['value']) ? $fields['composer3']['value'] : '',
+                'movements3' => isset($fields['movements3']['value']) ? $fields['movements3']['value'] : '',
+                'perf_time3' => isset($fields['perf_time3']['value']) ? $fields['perf_time3']['value'] : '',
+                'title4' => isset($fields['title4']['value']) ? $fields['title4']['value'] : '',
+                'composer4' => isset($fields['composer4']['value']) ? $fields['composer4']['value'] : '',
+                'movements4' => isset($fields['movements4']['value']) ? $fields['movements4']['value'] : '',
+                'perf_time4' => isset($fields['perf_time4']['value']) ? $fields['perf_time4']['value'] : '',
+                'title4' => isset($fields['title4']['value']) ? $fields['title4']['value'] : '',
+                'composer4' => isset($fields['composer4']['value']) ? $fields['composer4']['value'] : '',
+                'movements4' => isset($fields['movements4']['value']) ? $fields['movements4']['value'] : '',
+                'perf_time4' => isset($fields['perf_time4']['value']) ? $fields['perf_time4']['value'] : '',
+                'title4' => isset($fields['title4']['value']) ? $fields['title4']['value'] : '',
+                'composer4' => isset($fields['composer4']['value']) ? $fields['composer4']['value'] : '',
+                'movements4' => isset($fields['movements4']['value']) ? $fields['movements4']['value'] : '',
+                'perf_time4' => isset($fields['perf_time4']['value']) ? $fields['perf_time4']['value'] : '',
+                'title4' => isset($fields['title4']['value']) ? $fields['title4']['value'] : '',
+                'composer4' => isset($fields['composer4']['value']) ? $fields['composer4']['value'] : '',
+                'movements4' => isset($fields['movements4']['value']) ? $fields['movements4']['value'] : '',
+                'perf_time4' => isset($fields['perf_time4']['value']) ? $fields['perf_time4']['value'] : '',
+                'title4' => isset($fields['title4']['value']) ? $fields['title4']['value'] : '',
+                'composer4' => isset($fields['composer4']['value']) ? $fields['composer4']['value'] : '',
+                'movements4' => isset($fields['movements4']['value']) ? $fields['movements4']['value'] : '',
+                'perf_time4' => isset($fields['perf_time4']['value']) ? $fields['perf_time4']['value'] : '', */
+/*                'video_url2' => isset($fields['video_url1']['value'] ? $fields['video_url2']['value'] : '',
+                'video_url3' => isset($fields['video_url1']['value'] ? $fields['video_url3']['value'] : '',
+                'video_url4' => isset($fields['video_url4']['value']) ? $fields['video_url4']['value'] : '',
+                'video_url5' => isset($fields['video_url5']['value']) ? $fields['video_url5']['value'] : '',
+                'video_url6' => isset($fields['video_url6']['value']) ? $fields['video_url6']['value'] : '',
+                'video_url7' => isset($fields['video_url7']['value']) ? $fields['video_url7']['value'] : '',
+                'video_url8' => isset($fields['video_url8']['value']) ? $fields['video_url8']['value'] : '', */
 //                'music_orgfilename1' => $fields['music_orgfilename1']['value'],
 //                'music_orgfilename2' => $fields['music_orgfilename2']['value'],
 //                'music_orgfilename3' => $fields['music_orgfilename3']['value'],
+                'instrument' => isset($fields['instrument']['value']) ? $fields['instrument']['value'] : '',
                 'payment_type' => 0,
                 'participation' => (isset($fields['participation']['value']) ? $fields['participation']['value'] : ''),
                 'notes' => $fields['notes']['value'],
                 );
+            for($i = 1; $i <= 8; $i++) {
+                $registration["title{$i}"] = isset($fields["title{$i}"]['value']) ? $fields["title{$i}"]['value'] : '';
+                $registration["composer{$i}"] = isset($fields["composer{$i}"]['value']) ? $fields["composer{$i}"]['value'] : '';
+                $registration["movements{$i}"] = isset($fields["movements{$i}"]['value']) ? $fields["movements{$i}"]['value'] : '';
+                $registration["perf_time{$i}"] = isset($fields["perf_time{$i}"]['value']) ? $fields["perf_time{$i}"]['value'] : '';
+                $registration["video_url{$i}"] = isset($fields["video_url{$i}"]['value']) ? $fields["video_url{$i}"]['value'] : '';
+            }
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) ) {
                 $registration['accompanist_customer_id'] = $fields['accompanist_customer_id']['value'];
             }
@@ -687,7 +808,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             //
             // Check for music uploads
             //
-            foreach(['music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3'] as $fid) {
+            foreach(['music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3', 'music_orgfilename4', 'music_orgfilename5', 'music_orgfilename6', 'music_orgfilename7', 'music_orgfilename8'] as $fid) {
                 $field = $fields[$fid];
                 if( isset($_POST["f-{$field['id']}"]) && $_POST["f-{$field['id']}"] != '' ) {
                     if( isset($_FILES["file-{$field['id']}"]["name"]) 
@@ -750,7 +871,16 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'unit_discount_amount' => 0,
                 'unit_discount_percentage' => 0,
                 'taxtype_id' => 0,
-                'notes' => $registration['display_name'] . ($registration['title1'] != '' ? ' - ' . $registration['title1'] : ''),
+//                'notes' => $registration['display_name'] . ($registration['title1'] != '' ? ' - ' . $registration['title1'] : ''),
+                'notes' => $registration['display_name'] 
+                    . ($registration['title1'] != '' ? ' - ' . $registration['title1'] : '')
+                    . ($registration['title2'] != '' ? ', ' . $registration['title2'] : '')
+                    . ($registration['title3'] != '' ? ', ' . $registration['title3'] : '')
+                    . ($registration['title4'] != '' ? ', ' . $registration['title4'] : '')
+                    . ($registration['title5'] != '' ? ', ' . $registration['title5'] : '')
+                    . ($registration['title6'] != '' ? ', ' . $registration['title6'] : '')
+                    . ($registration['title7'] != '' ? ', ' . $registration['title7'] : '')
+                    . ($registration['title8'] != '' ? ', ' . $registration['title8'] : ''),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.309', 'msg'=>'Unable to add to cart', 'err'=>$rc['err']));
@@ -838,7 +968,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 // Skip fields when editing a pending or paid registration
                 //
                 if( isset($registration['status']) && $registration['status'] != 6 
-                    && !in_array($field['id'], ['title1', 'title2', 'title3', 'perf_time1', 'perf_time2', 'perf_time3', 'video_url1', 'video_url2', 'video_url3', 'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3'])
+                    && !preg_match("/(title|composer|movements|perf_time|video_url|music_orgfilename)/", $field['id'])
+//                    && !in_array($field['id'], ['title1', 'title2', 'title3', 'perf_time1', 'perf_time2', 'perf_time3', 'video_url1', 'video_url2', 'video_url3', 'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3'])
                     ) {
                     continue;
                 }
@@ -907,14 +1038,16 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     $registration['display_name'] = $rc['display_name'];
                     $registration['public_name'] = $rc['public_name'];
                 }
-                if( isset($update_args['title1']) ) {
-                    $registration['title1'] = $update_args['title1'];
-                }
-                if( isset($update_args['title2']) ) {
-                    $registration['title2'] = $update_args['title2'];
-                }
-                if( isset($update_args['title3']) ) {
-                    $registration['title3'] = $update_args['title3'];
+                for($i = 1; $i <= 8; $i++) {
+                    if( isset($update_args["title{$i}"]) ) {
+                        $registration["title{$i}"] = $update_args["title{$i}"];
+                    }
+                    if( isset($update_args["composer{$i}"]) ) {
+                        $registration["composer{$i}"] = $update_args["composer{$i}"];
+                    }
+                    if( isset($update_args["movements{$i}"]) ) {
+                        $registration["movements{$i}"] = $update_args["movements{$i}"];
+                    }
                 }
 
                 //
@@ -935,7 +1068,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $notes = $registration['display_name'] 
                     . ($registration['title1'] != '' ? ' - ' . $registration['title1'] : '')
                     . ($registration['title2'] != '' ? ', ' . $registration['title2'] : '')
-                    . ($registration['title3'] != '' ? ', ' . $registration['title3'] : '');
+                    . ($registration['title3'] != '' ? ', ' . $registration['title3'] : '')
+                    . ($registration['title4'] != '' ? ', ' . $registration['title4'] : '')
+                    . ($registration['title5'] != '' ? ', ' . $registration['title5'] : '')
+                    . ($registration['title6'] != '' ? ', ' . $registration['title6'] : '')
+                    . ($registration['title7'] != '' ? ', ' . $registration['title7'] : '')
+                    . ($registration['title8'] != '' ? ', ' . $registration['title8'] : '');
 
                 if( $item['code'] != $selected_class['code'] ) {
                     $update_item_args['code'] = $selected_class['code'];
@@ -1221,7 +1359,11 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     . "";
                 $fields[$fid]['ftype'] = 'textarea';
             }
-            if( in_array($fid, ['title1', 'title2', 'title3', 'perf_time1', 'perf_time2', 'perf_time3'])
+//            if( in_array($fid, ['title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
+//                'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
+//                'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+//                'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8'])
+            if( preg_match("/(title|composer|movements|perf_time|video_url|music_orgfilename)/", $fid)
                 && $festival['edit'] == 'yes' 
                 ) {
                 $fields[$fid]['editable'] = 'yes';
@@ -1231,13 +1373,14 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
 //                $fields[$fid]['editable'] = 'yes';
 //                $editable = 'yes';
 //            } 
-            if( in_array($fid, ['video_url1', 'video_url2', 'video_url3'])
+            if( in_array($fid, ['video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8'])
                 && $festival['upload'] == 'yes' 
                 ) {
                 $fields[$fid]['editable'] = 'yes';
                 $editable = 'yes';
             } 
-            elseif( in_array($fid, ['music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3'])
+            elseif( preg_match("/music_orgfilename/", $fid) 
+//            elseif( in_array($fid, ['music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3', 'music_orgfilename4', 'music_orgfilename5', 'music_orgfilename6', 'music_orgfilename7', 'music_orgfilename8'])
                 && $festival['upload'] == 'yes' 
                 ) {
                 $fields[$fid]['editable'] = 'yes';

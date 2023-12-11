@@ -99,22 +99,22 @@ function ciniki_musicfestivals_wng_accountCustomerTypeProcess(&$ciniki, $tnid, &
             $blocks[] = array(
                 'type' => 'text', 
                 'class' => 'aligncenter',
-                'content' => 'In order to better serve you, we need to know who you are.',
+                'content' => (isset($args['festival']['customer-type-intro-msg']) && $args['festival']['customer-type-intro-msg'] != '' ? $args['festival']['customer-type-intro-msg'] : 'In order to better serve you, we need to know who you are.'),
                 );
             $blocks[] = array(
                 'type' => 'buttons',
                 'class' => 'aligncenter decisionbuttons width-30',
                 'list' => array(
                     array(
-                        'text' => 'I am a Parent registering my Children',
+                        'text' => (isset($args['festival']['customer-type-parent-button-label']) && $args['festival']['customer-type-parent-button-label'] != '' ? $args['festival']['customer-type-parent-button-label'] : 'I am a Parent registering my Children'),
                         'url' => "{$args['base_url']}?ctype=10" . $additional_args,
                         ),
                     array(
-                        'text' => 'I am a Teacher registering my Students',
+                        'text' => (isset($args['festival']['customer-type-teacher-button-label']) && $args['festival']['customer-type-teacher-button-label'] != '' ? $args['festival']['customer-type-teacher-button-label'] : 'I am a Teacher registering my Students'),
                         'url' => "{$args['base_url']}?ctype=20" . $additional_args,
                         ),
                     array(
-                        'text' => 'I am an Adult registering Myself',
+                        'text' => (isset($args['festival']['customer-type-adult-button-label']) && $args['festival']['customer-type-adult-button-label'] != '' ? $args['festival']['customer-type-adult-button-label'] : 'I am an Adult registering Myself'),
                         'url' => "{$args['base_url']}?ctype=30" . $additional_args,
                         ),
                     ));
