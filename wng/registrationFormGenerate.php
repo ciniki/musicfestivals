@@ -608,6 +608,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'ftype' => 'select',
             'class' => (isset($selected_class) && ($selected_class['flags']&0x3000) > 0 ? '' : 'hidden'),
             'size' => 'large',
+            'required' => (isset($selected_class) && ($selected_class['flags']&0x1000) > 0 ? 'yes' : 'no'),
             'label' => "Accompanist",
             'blank-label' => 'No Accompanist',
             'onchange' => "accompanistSelected()",
