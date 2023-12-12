@@ -405,8 +405,10 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.649', 'msg'=>'Unable to load members', 'err'=>$rc['err']));
         }
         $members = isset($rc['members']) ? $rc['members'] : array();
+        $js_members = array();
         $dt = new DateTime('now', new DateTimezone('UTC'));
         foreach($members as $mid => $member) {
+            $js_members[$member['id']] = array('s'=>0);  // Closed
             if( $member['reg_start_dt'] == '' ) {
                 $members[$mid]['name'] .= ' - Not yet open';
             } else {
@@ -418,15 +420,22 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     $diff = $dt->diff($edt);
                     if( $diff->days < 1 ) {
                         $members[$mid]['name'] .= ' - Late fee $25';
+                        $js_members[$member['id']]['s'] = 1;
+                        $js_members[$member['id']]['l'] = 25;
                     } elseif( $diff->days < 2 ) {
                         $members[$mid]['name'] .= ' - Late fee $50';
+                        $js_members[$member['id']]['s'] = 1;
+                        $js_members[$member['id']]['l'] = 50;
                     } elseif( $diff->days < 3 ) {
                         $members[$mid]['name'] .= ' - Late fee $75';
+                        $js_members[$member['id']]['s'] = 1;
+                        $js_members[$member['id']]['l'] = 75;
                     } else {
                         $members[$mid]['name'] .= ' - Closed';
                     }
                 } else {
                     $members[$mid]['name'] .= ' - Open';
+                    $js_members[$member['id']]['s'] = 1;
                 }
             }
         }
@@ -444,9 +453,21 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'blank' => 'no',
             'size' => 'large',
             'required' => 'yes',
-            'options' => $members,
+            'options' => $members, 
             'value' => (isset($_POST['f-member_id']) ? $_POST['f-member_id'] : (isset($registration['member_id']) ? $registration['member_id'] : 0)),
+            'onchange' => 'memberSelected()',
             );
+        $fields['member_break'] = array(
+            'id' => 'member_break',
+            'ftype' => 'break',
+            'class' => 'member-break hidden',
+            );
+        if( $fields['member_id']['value'] > 0 
+            && isset($js_members[$fields['member_id']['value']]) 
+            && $js_members[$fields['member_id']['value']]['s'] == 1
+            ) {
+            $fields['member_break']['class'] = 'member-break';  
+        }
     }
 
     $fields['section'] = array(
@@ -948,16 +969,29 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         $js_prices .=  "var clslp=" . json_encode($live_prices) . ";" // live prices
             . "var clsvp=" . json_encode($virtual_prices) . ";" // virtual prices
             . "";
+        $js_set_prices .= 'var latefee="";';
+        if( isset($js_members) ) {
+            $js_set_prices .= "var mid=C.gE('f-member_id').value;"
+                . "if(members[mid]!=null&&members[mid]['l']!=null){"
+                    . "latefee=' + $'+members[mid].l+' late fee';"
+                . "}";
+        }
         $js_set_prices .= ""
             . "var s=C.gE('f-participation');"
             . "var v=s.value;"
             . "s.options.length=0;"
             . "s.appendChild(new Option('Please choose how you will participate',-1));"
             . "if(clslp[c]!=null){"
-                . "s.appendChild(new Option('in person on a date to be scheduled - '+clslp[c], 0,0,(v==0?1:0)));"
+                . "if(clsvp[c]==null){"
+                    . "v=0;"
+                . "}"
+                . "s.appendChild(new Option('in person on a date to be scheduled - '+clslp[c]+latefee, 0,0,(v==0?1:0)));"
             . "}"
             . "if(clsvp[c]!=null){"
-                . "s.appendChild(new Option('virtually and submit a video - '+clsvp[c], 1,0,(v==1?1:0)));"
+                . "if(clslp[c]==null){"
+                    . "v=1;"
+                . "}"
+                . "s.appendChild(new Option('virtually and submit a video - '+clsvp[c]+latefee, 1,0,(v==1?1:0)));"
             . "}"
             . "";
     }
@@ -969,12 +1003,15 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
 //        . "var clsIns=[" . implode(',', $classes_instrument) . "];" // Instrument required classes
 //        . "var clsmint=" . json_encode($classes_min_titles) . ";"
 //        . "var clsmaxt=" . json_encode($classes_max_titles) . ";"
-        . "var classes=" . json_encode($js_classes) . ";"
+        . "var classes=" . json_encode($js_classes) . ";";
+        if( isset($js_members) ) {
+            $js .= "var members=" . json_encode($js_members) . ";";
+        }
 //        . "var cls2t=[" . implode(',', $classes_2t) . "];" // 2 title & times
 //        . "var cls2to=[" . implode(',', $classes_2to) . "];" // 2 title & times
 //        . "var cls3t=[" . implode(',', $classes_3t) . "];" // 3 title & times
 //        . "var cls3to=[" . implode(',', $classes_3to) . "];" // 3 title & times
-        . "var video=0;"
+    $js .= "var video=0;"
         . "var music=" . (($festival['flags']&0x0200) == 0x0200 ? '1' : '0') . ";"
         . $js_prices
         . "function sectionSelected(){"
@@ -995,6 +1032,17 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             . "video=c;"
             . "music=" . (($festival['flags']&0x0200) == 0x0200 ? '1' : 'c') . ";"
             . "sectionSelected();"
+        . "};"
+        . "function memberSelected(){"
+            . "var v=C.gE('f-member_id').value;"
+            . "if(members[v]!=null&&members[v]['s']==1){"
+                . "sectionSelected();"
+                . "C.rC(C.gE('member_break'),'hidden');"
+                . "C.rC(C.gE('addregform_submit_buttons'),'hidden');"
+            . "}else{"
+                . "C.aC(C.gE('member_break'),'hidden');"
+                . "C.aC(C.gE('addregform_submit_buttons'),'hidden');"
+            . "}"
         . "};"
         . "function classSelected(sid){"
             . "var c=C.gE('f-section-'+sid+'-class').value;"
@@ -1023,8 +1071,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     . "C.rC(C.gE('f-instrument').parentNode,'hidden');"
                 . "}else{"
                     . "C.aC(C.gE('f-instrument').parentNode,'hidden');"
-                . "}"
-                . "if(classes[c]!=null&&(classes[c].f&0x3000)>0){"
+                . "}";
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) ) {
+                $js .= "if(classes[c]!=null&&(classes[c].f&0x3000)>0){"
                     . "C.rC(C.gE('f-accompanist_customer_id').parentNode,'hidden');"
                     . "if((classes[c].f&0x1000)>0){"
                         . "C.aC(C.gE('f-accompanist_customer_id').parentNode,'required');"
@@ -1033,8 +1082,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     . "}"
                 . "}else{"
                     . "C.aC(C.gE('f-accompanist_customer_id').parentNode,'hidden');"
-                . "}"
-                . "for(var i=2;i<=8;i++){"
+                . "}";
+            }
+            $js .= "for(var i=2;i<=8;i++){"
                     . "if(classes[c]!=null&&i<=classes[c].mat){"
                         . "C.rC(C.gE('f-line-title-'+i),'hidden');"
                         . "C.rC(C.gE('f-title'+i).parentNode,'hidden');"

@@ -288,6 +288,33 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     }
 
     //
+    // Load the members
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+        $strsql = "SELECT members.id, "
+            . "members.name, "
+            . "IFNULL(festivalmembers.reg_start_dt, '') AS reg_start_dt, "
+            . "IFNULL(festivalmembers.reg_end_dt, '') AS reg_end_dt "
+            . "FROM ciniki_musicfestivals_members AS members "
+            . "LEFT JOIN ciniki_musicfestival_members AS festivalmembers ON ("
+                . "members.id = festivalmembers.member_id "
+                . "AND festivalmembers.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+                . "AND festivalmembers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE members.status = 10 "
+            . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "ORDER BY members.name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'members', 'fname'=>'id', 'fields'=>array('id', 'name', 'reg_start_dt', 'reg_end_dt')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.649', 'msg'=>'Unable to load members', 'err'=>$rc['err']));
+        }
+        $members = isset($rc['members']) ? $rc['members'] : array();
+    }
+
+    //
     // Load the registration specified
     //
     if( isset($_POST['f-registration_id']) && $_POST['f-registration_id'] > 0 ) {
@@ -1233,6 +1260,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             'guidelines' => $guidelines,
             'title' => ($registration_id > 0 ? 'Update Registration' : 'Add Registration'),
             'class' => 'limit-width limit-width-60',
+            'submit-buttons-class' => (isset($members) ? 'hidden' : ''),
             'problem-list' => $form_errors,
             'cancel-label' => 'Cancel',
             'js-submit' => 'formSubmit();',
