@@ -395,8 +395,8 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                         $class_entries[] = array(
                             'class_id' => $class['id'],
                             'position' => 1,
-                            'name' => $_POST["f-recommendation_1_{$cid}"],
-                            'mark' => $_POST["f-recommendation_mark_1_{$cid}"],
+                            'name' => trim($_POST["f-recommendation_1_{$cid}"]),
+                            'mark' => trim($_POST["f-recommendation_mark_1_{$cid}"]),
                             );
 //                        $class_args['recommendation_1'] = $_POST["f-recommendation_1_{$cid}"];
 //                        $class_args['recommendation_mark_1'] = $_POST["f-recommendation_mark_1_{$cid}"];
@@ -410,8 +410,8 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                         $class_entries[] = array(
                             'class_id' => $class['id'],
                             'position' => 2,
-                            'name' => $_POST["f-recommendation_2_{$cid}"],
-                            'mark' => $_POST["f-recommendation_mark_2_{$cid}"],
+                            'name' => trim($_POST["f-recommendation_2_{$cid}"]),
+                            'mark' => trim($_POST["f-recommendation_mark_2_{$cid}"]),
                             );
 //                        $class_args['recommendation_2'] = $_POST["f-recommendation_2_{$cid}"];
 //                        $class_args['recommendation_mark_2'] = $_POST["f-recommendation_mark_2_{$cid}"];
@@ -425,8 +425,8 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                         $class_entries[] = array(
                             'class_id' => $class['id'],
                             'position' => 3,
-                            'name' => $_POST["f-recommendation_3_{$cid}"],
-                            'mark' => $_POST["f-recommendation_mark_3_{$cid}"],
+                            'name' => trim($_POST["f-recommendation_3_{$cid}"]),
+                            'mark' => trim($_POST["f-recommendation_mark_3_{$cid}"]),
                             );
 //                        $class_args['recommendation_3rd'] = $_POST["f-recommendation_3_{$cid}"];
 //                        $class_args['recommendation_mark_3rd'] = $_POST["f-recommendation_mark_3_{$cid}"];
@@ -440,8 +440,8 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                         $class_entries[] = array(
                             'class_id' => $class['id'],
                             'position' => 101,
-                            'name' => $_POST["f-alternate_1_{$cid}"],
-                            'mark' => $_POST["f-alternate_mark_1_{$cid}"],
+                            'name' => trim($_POST["f-alternate_1_{$cid}"]),
+                            'mark' => trim($_POST["f-alternate_mark_1_{$cid}"]),
                             );
 //                        $class_args['alternate_1'] = $_POST["f-alternate_1_{$cid}"];
 //                        $class_args['alternate_mark_1'] = $_POST["f-alternate_mark_1_{$cid}"];
@@ -455,8 +455,8 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                         $class_entries[] = array(
                             'class_id' => $class['id'],
                             'position' => 102,
-                            'name' => $_POST["f-alternate_2_{$cid}"],
-                            'mark' => $_POST["f-alternate_mark_2_{$cid}"],
+                            'name' => trim($_POST["f-alternate_2_{$cid}"]),
+                            'mark' => trim($_POST["f-alternate_mark_2_{$cid}"]),
                             );
 //                        $class_args['alternate_2'] = $_POST["f-alternate_2_{$cid}"];
 //                        $class_args['alternate_mark_2'] = $_POST["f-alternate_mark_2_{$cid}"];
@@ -470,8 +470,8 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                         $class_entries[] = array(
                             'class_id' => $class['id'],
                             'position' => 103,
-                            'name' => $_POST["f-alternate_3_{$cid}"],
-                            'mark' => $_POST["f-alternate_mark_3_{$cid}"],
+                            'name' => trim($_POST["f-alternate_3_{$cid}"]),
+                            'mark' => trim($_POST["f-alternate_mark_3_{$cid}"]),
                             );
 //                        $class_args['alternate_3rd'] = $_POST["f-alternate_3_{$cid}"];
 //                        $class_args['alternate_mark_3rd'] = $_POST["f-alternate_mark_3_{$cid}"];
