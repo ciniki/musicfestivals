@@ -1,0 +1,3 @@
+ALTER TABLE ciniki_musicfestival_categories ADD COLUMN groupname varchar(150) not null AFTER permalink;
+ALTER TABLE ciniki_musicfestival_categories COMMENT='v1.02';
+CREATE index groupname ON ciniki_musicfestival_categories(groupname);
