@@ -117,6 +117,8 @@ function ciniki_musicfestivals_templates_recommendationsExcel(&$ciniki, $tnid, $
         $strsql .= "AND classes.id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' ";
     } elseif( isset($args['section_id']) && $args['section_id'] > 0 ) {
         $strsql .= "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' ";
+    } elseif( isset($args['member_id']) && $args['member_id'] > 0 ) {
+        $strsql .= "AND recommendations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' ";
     }
     $strsql .= "ORDER BY sections.sequence, categories.sequence, classes.sequence, recommendations.date_submitted, entries.position "
         . "";

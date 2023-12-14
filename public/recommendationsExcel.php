@@ -22,6 +22,7 @@ function ciniki_musicfestivals_recommendationsExcel(&$ciniki) {
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Adjudicator Recommendation'),
         'recommendation_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Recommendation'),
         'section_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Section'),
+        'member_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Member'),
         'class_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Class'),
         ));
     if( $rc['stat'] != 'ok' ) {

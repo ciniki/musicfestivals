@@ -670,7 +670,7 @@ function ciniki_musicfestivals_main() {
         'recommendation_classes':{'label':'Classes', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._tabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'classes' ? 'yes' : 'no'; },
             },
-        'recommendation_buttons':{'label':'', 'aside':'yes',
+        'recommendation_buttons1':{'label':'', 'aside':'yes',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._tabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'classes' ? 'yes' : 'no'; },
             'buttons':{
                 'sectionexcel':{'label':'Section Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadRecommendationsSectionExcel();'},
@@ -682,6 +682,11 @@ function ciniki_musicfestivals_main() {
             'headerClasses':['', '', 'alignright', 'alignright'],
             'cellClasses':['', '', 'alignright', 'alignright'],
             }, 
+        'recommendation_buttons2':{'label':'', 'aside':'no',
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._tabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'submissions' && M.ciniki_musicfestivals_main.festival.member_id > 0 ? 'yes' : 'no'; },
+            'buttons':{
+                'memberexcel':{'label':'Download Member Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadRecommendationsMemberExcel();'},
+            }},
         'recommendation_entries':{'label':'Recommendations', 'type':'simplegrid', 'num_cols':4,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._tabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'classes' ? 'yes' : 'no'; },
             'headerValues':['Name', 'Position', 'Festival', 'Date Submitted'],
@@ -779,6 +784,13 @@ function ciniki_musicfestivals_main() {
         var args = {'tnid':M.curTenantID,
             'festival_id':this.festival_id,
             'section_id':this.section_id,
+            };
+        M.api.openFile('ciniki.musicfestivals.recommendationsExcel',args);
+    }
+    this.festival.downloadRecommendationsMemberExcel = function() {
+        var args = {'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'member_id':this.member_id,
             };
         M.api.openFile('ciniki.musicfestivals.recommendationsExcel',args);
     }
