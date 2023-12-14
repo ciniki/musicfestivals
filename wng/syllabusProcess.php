@@ -219,19 +219,24 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
             ) {
             $request['cur_uri_pos']++;
             $groupname = urldecode($request['uri_split'][($request['cur_uri_pos']+1)]);
-            if( isset($sections[$request['uri_split'][$request['cur_uri_pos']]]['groups'][$groupname]) ) {
+            if( $groupname == 'Other' ) {
+                $section['groupname'] = '';
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'syllabusSectionProcess');
+                return ciniki_musicfestivals_wng_syllabusSectionProcess($ciniki, $tnid, $request, $section);
+            }
+            elseif( isset($sections[$request['uri_split'][$request['cur_uri_pos']]]['groups'][$groupname]) ) {
                 $section['groupname'] = $groupname;
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'syllabusSectionProcess');
                 return ciniki_musicfestivals_wng_syllabusSectionProcess($ciniki, $tnid, $request, $section);
             } else {
                 $request['cur_uri_pos']--;
-                $blocks[] = array(
-                    'type' => 'msg',
-                    'level' => 'error',
-                    'content' => 'Section not found',
-                    );
             }
         }
+        $blocks[] = array(
+            'type' => 'msg',
+            'level' => 'error',
+            'content' => 'Section not found',
+            );
     } 
     elseif( isset($request['uri_split'][($request['cur_uri_pos']+1)])
         && $request['uri_split'][($request['cur_uri_pos']+1)] != '' 
