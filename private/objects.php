@@ -105,6 +105,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'section_id'=>array('name'=>'Section', 'ref'=>'ciniki.musicfestivals.section'),
             'name'=>array('name'=>'Name'),
             'permalink'=>array('name'=>'Permalink', 'default'=>''),
+            'groupname'=>array('name'=>'Group', 'default'=>''),
             'sequence'=>array('name'=>'Order', 'default'=>'1'),
             'primary_image_id'=>array('name'=>'Image', 'ref'=>'ciniki.images.image', 'default'=>'0'),
             'synopsis'=>array('name'=>'Synopsis', 'default'=>''),

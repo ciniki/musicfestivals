@@ -23,6 +23,9 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.215', 'msg'=>"No festival specified"));
     }
     $s = $section['settings'];
+    if( isset($section['groupname']) ) {
+        $groupname = $section['groupname'];
+    }
     $blocks = array();
 
     //
@@ -342,8 +345,11 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             . ") "
         . $level_strsql 
         . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $section['id']) . "' "
-        . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "ORDER BY categories.sequence, categories.name, classes.sequence, classes.name "
+        . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
+    if( isset($groupname) ) {
+        $strsql .= "AND categories.groupname = '" . ciniki_core_dbQuote($ciniki, $groupname) . "' ";
+    } 
+    $strsql .= "ORDER BY categories.sequence, categories.name, classes.sequence, classes.name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(

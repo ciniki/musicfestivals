@@ -1808,6 +1808,7 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
             'fields':{
                 'flags9':{'label':'Include Section/Category as Class Name', 'type':'flagtoggle', 'default':'off', 'bit':0x0100, 'field':'flags'},
+                'flags11':{'label':'Category Group Names', 'type':'flagtoggle', 'default':'off', 'bit':0x0400, 'field':'flags'},
             }},
         '_customer_types':{'label':'Customer Type Buttons', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
@@ -2345,6 +2346,9 @@ function ciniki_musicfestivals_main() {
         'general':{'label':'', 'aside':'yes', 'fields':{
             'section_id':{'label':'Section', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}},
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
+            'groupname':{'label':'Group', 'type':'text',
+                'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x0400) == 0x0400 ? 'yes' : 'no'; },
+                },
             'sequence':{'label':'Order', 'required':'yes', 'type':'text'},
             }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'classes', 'tabs':{

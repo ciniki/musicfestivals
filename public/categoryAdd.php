@@ -24,6 +24,7 @@ function ciniki_musicfestivals_categoryAdd(&$ciniki) {
         'section_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Section'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'),
         'permalink'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Permalink'),
+        'groupname'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Group Name'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Synopsis'),
