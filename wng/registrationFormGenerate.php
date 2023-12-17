@@ -993,6 +993,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 . "}"
                 . "s.appendChild(new Option('virtually and submit a video - '+clsvp[c]+latefee, 1,0,(v==1?1:0)));"
             . "}"
+            . "video=v;"
+            . "music=" . (($festival['flags']&0x0200) == 0x0200 ? '1' : 'v') . ";"
             . "";
     }
 
@@ -1046,6 +1048,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         . "};"
         . "function classSelected(sid){"
             . "var c=C.gE('f-section-'+sid+'-class').value;"
+            . $js_set_prices
             . "if(video==1){"
                 . "C.rC(C.gE('f-video_url1').parentNode,'hidden');"
             . "}else{"
@@ -1202,7 +1205,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     . "C.aC(C.gE('f-title3').parentNode.children[0],'required');"
                     . "C.aC(C.gE('f-perf_time3-min').parentNode.parentNode.children[0],'required');"
                 . "}" */
-                . $js_set_prices
             . "}"
         . "};"
         . "function competitorSelected(c) {"
