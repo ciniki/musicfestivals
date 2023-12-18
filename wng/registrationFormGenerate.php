@@ -50,6 +50,13 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         $accompanists = $args['accompanists'];
     }
 
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+        if( !isset($args['members']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.658', 'msg'=>"No accompanists specified"));
+        }
+        $members = $args['members'];
+    }
+
     //
     // Make sure competitors where passed in arguments
     //
@@ -345,6 +352,16 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             }
         }
     }
+    if( isset($_POST['f-member_id']) && $_POST['f-member_id'] > 0 ) {
+        if( isset($members[$_POST['f-member_id']]) ) {
+            $selected_member = $members[$_POST['f-member_id']];
+        } 
+    }
+    elseif( isset($registration['member_id']) && $registration['member_id'] > 0 ) {
+        if( isset($members[$registration['member_id']]) ) {
+            $selected_member = $members[$registration['member_id']];
+        } 
+    }
 
     //
     // Select the first section and class if nothing selected
@@ -383,60 +400,16 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     // Add member festivals to dropdown
     //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
-        $strsql = "SELECT members.id, "
-            . "members.name, "
-            . "IFNULL(festivalmembers.reg_start_dt, '') AS reg_start_dt, "
-            . "IFNULL(festivalmembers.reg_end_dt, '') AS reg_end_dt "
-            . "FROM ciniki_musicfestivals_members AS members "
-            . "LEFT JOIN ciniki_musicfestival_members AS festivalmembers ON ("
-                . "members.id = festivalmembers.member_id "
-                . "AND festivalmembers.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
-                . "AND festivalmembers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "WHERE members.status = 10 "
-            . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "ORDER BY members.name "
-            . "";
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-            array('container'=>'members', 'fname'=>'id', 'fields'=>array('id', 'name', 'reg_start_dt', 'reg_end_dt')),
-            ));
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.649', 'msg'=>'Unable to load members', 'err'=>$rc['err']));
-        }
-        $members = isset($rc['members']) ? $rc['members'] : array();
         $js_members = array();
         $dt = new DateTime('now', new DateTimezone('UTC'));
         foreach($members as $mid => $member) {
             $js_members[$member['id']] = array('s'=>0);  // Closed
-            if( $member['reg_start_dt'] == '' ) {
-                $members[$mid]['name'] .= ' - Not yet open';
-            } else {
-                $sdt = new DateTime($member['reg_start_dt'], new DateTimezone('UTC'));
-                $edt = new DateTime($member['reg_end_dt'], new DateTimezone('UTC'));
-                if( $dt < $sdt ) {
-                    $members[$mid]['name'] .= ' - Not yet open';
-                } elseif( $dt > $edt ) {
-                    $diff = $dt->diff($edt);
-                    if( $diff->days < 1 ) {
-                        $members[$mid]['name'] .= ' - Late fee $25';
-                        $js_members[$member['id']]['s'] = 1;
-                        $js_members[$member['id']]['l'] = 25;
-                    } elseif( $diff->days < 2 ) {
-                        $members[$mid]['name'] .= ' - Late fee $50';
-                        $js_members[$member['id']]['s'] = 1;
-                        $js_members[$member['id']]['l'] = 50;
-                    } elseif( $diff->days < 3 ) {
-                        $members[$mid]['name'] .= ' - Late fee $75';
-                        $js_members[$member['id']]['s'] = 1;
-                        $js_members[$member['id']]['l'] = 75;
-                    } else {
-                        $members[$mid]['name'] .= ' - Closed';
-                    }
-                } else {
-                    $members[$mid]['name'] .= ' - Open';
-                    $js_members[$member['id']]['s'] = 1;
+            if( isset($member['open']) && $member['open'] == 'yes' ) {
+                $js_members[$member['id']]['s'] = 1;
+                if( isset($member['latefee']) ) {
+                    $js_members[$member['id']]['l'] = $member['latefee'];
                 }
+                
             }
         }
         array_unshift($members, array(
@@ -460,7 +433,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         $fields['member_break'] = array(
             'id' => 'member_break',
             'ftype' => 'break',
-            'class' => 'member-break hidden',
+            'class' => 'member-break' . ($args['display'] == 'view' ? '' : ' hidden'),
             );
         if( $fields['member_id']['value'] > 0 
             && isset($js_members[$fields['member_id']['value']]) 
@@ -733,6 +706,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 && isset($selected_class['live_fee']) && $selected_class['live_fee'] > 0 
                 ) {
                 $fields['participation']['options'][0] .= ' - $' . number_format($selected_class['live_fee'], 2);
+                if( isset($selected_member['latefee']) ) {
+                    $fields['participation']['options'][0] .= ' + $' . $selected_member['latefee'] . ' late fee';
+                }
             } else {
                 unset($fields['participation']['options'][-1]);
                 unset($fields['participation']['options'][0]);
@@ -742,6 +718,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 && isset($selected_class['virtual_fee']) && $selected_class['virtual_fee'] > 0 
                 ) {
                 $fields['participation']['options'][1] .= ' - $' . number_format($selected_class['virtual_fee'], 2);
+                if( isset($selected_member['latefee']) ) {
+                    $fields['participation']['options'][1] .= ' + $' . $selected_member['latefee'] . ' late fee';
+                }
             } else {
                 if( isset($fields['participation']['options'][-1]) ) {
                     unset($fields['participation']['options'][-1]);
@@ -1295,6 +1274,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     }
     if( isset($selected_class) ) {
         $rsp['selected_class'] = $selected_class;
+    }
+    if( isset($selected_member) ) {
+        $rsp['selected_member'] = $selected_member;
     }
     return $rsp;
 }

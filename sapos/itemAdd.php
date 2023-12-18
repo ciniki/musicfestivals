@@ -136,6 +136,10 @@ function ciniki_musicfestivals_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item)
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.412', 'msg'=>'Unable to add the registration', 'err'=>$rc['err']));
         }
         $reg_id = $rc['id'];
+
+        //
+        // Check if member late fee needs to be added
+        //
         
         return array('stat'=>'ok', 'object'=>'ciniki.musicfestivals.registration', 'object_id'=>$reg_id);
     }

@@ -89,11 +89,37 @@ function ciniki_musicfestivals_templates_parentRegistrationsPDF(&$ciniki, $tnid,
             . "registrations.class_id, "
             . "registrations.timeslot_id, "
             . "registrations.title1, "
+            . "registrations.composer1, "
+            . "registrations.movements1, "
             . "registrations.perf_time1, "
             . "registrations.title2, "
+            . "registrations.composer2, "
+            . "registrations.movements2, "
             . "registrations.perf_time2, "
             . "registrations.title3, "
+            . "registrations.composer3, "
+            . "registrations.movements3, "
             . "registrations.perf_time3, "
+            . "registrations.title4, "
+            . "registrations.composer4, "
+            . "registrations.movements4, "
+            . "registrations.perf_time4, "
+            . "registrations.title5, "
+            . "registrations.composer5, "
+            . "registrations.movements5, "
+            . "registrations.perf_time5, "
+            . "registrations.title6, "
+            . "registrations.composer6, "
+            . "registrations.movements6, "
+            . "registrations.perf_time6, "
+            . "registrations.title7, "
+            . "registrations.composer7, "
+            . "registrations.movements7, "
+            . "registrations.perf_time7, "
+            . "registrations.title8, "
+            . "registrations.composer8, "
+            . "registrations.movements8, "
+            . "registrations.perf_time8, "
             . "registrations.fee, "
             . "registrations.payment_type, "
             . "registrations.notes, "
@@ -132,7 +158,14 @@ function ciniki_musicfestivals_templates_parentRegistrationsPDF(&$ciniki, $tnid,
                     'display_name', 'public_name', 'competitor1_id', 'parent', 
                     'competitor2_id', 'competitor3_id', 
                     'competitor4_id', 'competitor5_id', 'class_id', 'timeslot_id', 
-                    'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 
+                    'title1', 'composer1', 'movements1', 'perf_time1', 
+                    'title2', 'composer2', 'movements2', 'perf_time2', 
+                    'title3', 'composer3', 'movements3', 'perf_time3', 
+                    'title4', 'composer4', 'movements4', 'perf_time4', 
+                    'title5', 'composer5', 'movements5', 'perf_time5', 
+                    'title6', 'composer6', 'movements6', 'perf_time6', 
+                    'title7', 'composer7', 'movements7', 'perf_time7', 
+                    'title8', 'composer8', 'movements8', 'perf_time8', 
                     'fee', 'payment_type', 'notes',
                     'section_name', 'category_name',
                     'class_code', 'class_name', 'class_flags'),
@@ -462,14 +495,17 @@ function ciniki_musicfestivals_templates_parentRegistrationsPDF(&$ciniki, $tnid,
         } else {
             $description = $registration['class_code'] . ' - ' . $registration['class_name'];
         }
-        if( $registration['title1'] != '' ) {
-            $description .= "\n" . $registration['title1'];
-        }
-        if( $registration['title2'] != '' ) {
-            $description .= "\n" . $registration['title2'];
-        }
-        if( $registration['title3'] != '' ) {
-            $description .= "\n" . $registration['title3'];
+        for($i = 1; $i <= 8; $i++) {
+            if( $registration["title{$i}"] != '' ) {
+                $line = $registration["title{$i}"];
+                if( $registration["composer{$i}"] != '' ) {
+                    $line .= ' - ' . $registration["composer{$i}"];
+                }
+                if( $registration["movements{$i}"] != '' ) {
+                    $line .= ', ' . $registration["movements{$i}"];
+                }
+                $description .= "\n" . $line;
+            }
         }
         $lh = $pdf->getStringHeight($r[1], $description);
 

@@ -397,6 +397,10 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         'class' => '',
         'value' => (isset($_POST['f-phone_home']) ? trim($_POST['f-phone_home']) : (isset($competitor['phone_home']) ? $competitor['phone_home'] :'')),
         );
+    $fields['newline4'] = array(
+        'id' => 'newline4',
+        'ftype' => 'newline',
+        );
     $fields['email'] = array(
         'id' => 'email',
         'label' => 'Email',
