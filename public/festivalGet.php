@@ -460,6 +460,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "sections.id AS section_id, "
                 . "registrations.teacher_customer_id, "
                 . "teachers.display_name AS teacher_name, "
+                . "classes.flags AS class_flags, "
+                . "classes.min_titles, "
+                . "classes.max_titles, "
                 . "registrations.billing_customer_id, "
                 . "registrations.rtype, "
                 . "registrations.rtype AS rtype_text, "
@@ -474,20 +477,56 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "classes.code AS class_code, "
                 . "classes.name AS class_name, "
                 . "registrations.title1, "
+                . "registrations.composer1, "
+                . "registrations.movements1, "
                 . "registrations.perf_time1, "
+                . "registrations.video_url1, "
+                . "registrations.music_orgfilename1, "
                 . "registrations.title2, "
+                . "registrations.composer2, "
+                . "registrations.movements2, "
                 . "registrations.perf_time2, "
+                . "registrations.video_url2, "
+                . "registrations.music_orgfilename2, "
                 . "registrations.title3, "
+                . "registrations.composer3, "
+                . "registrations.movements3, "
                 . "registrations.perf_time3, "
+                . "registrations.video_url3, "
+                . "registrations.music_orgfilename3, "
+                . "registrations.title4, "
+                . "registrations.composer4, "
+                . "registrations.movements4, "
+                . "registrations.perf_time4, "
+                . "registrations.video_url4, "
+                . "registrations.music_orgfilename4, "
+                . "registrations.title5, "
+                . "registrations.composer5, "
+                . "registrations.movements5, "
+                . "registrations.perf_time5, "
+                . "registrations.video_url5, "
+                . "registrations.music_orgfilename5, "
+                . "registrations.title6, "
+                . "registrations.composer6, "
+                . "registrations.movements6, "
+                . "registrations.perf_time6, "
+                . "registrations.video_url6, "
+                . "registrations.music_orgfilename6, "
+                . "registrations.title7, "
+                . "registrations.composer7, "
+                . "registrations.movements7, "
+                . "registrations.perf_time7, "
+                . "registrations.video_url7, "
+                . "registrations.music_orgfilename7, "
+                . "registrations.title8, "
+                . "registrations.composer8, "
+                . "registrations.movements8, "
+                . "registrations.perf_time8, "
+                . "registrations.video_url8, "
+                . "registrations.music_orgfilename8, "
                 . "FORMAT(registrations.fee, 2) AS fee, "
                 . "registrations.payment_type, "
-                . "registrations.participation, "
-                . "registrations.video_url1, "
-                . "registrations.video_url2, "
-                . "registrations.video_url3, "
-                . "registrations.music_orgfilename1, "
-                . "registrations.music_orgfilename2, "
-                . "registrations.music_orgfilename3 "
+                . "registrations.participation "
                 . "FROM ciniki_musicfestival_registrations AS registrations ";
             if( isset($args['registration_tag']) && $args['registration_tag'] != '' ) {
                 $strsql .= "INNER JOIN ciniki_musicfestival_registration_tags AS tags ON ("
@@ -528,11 +567,16 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 array('container'=>'registrations', 'fname'=>'id', 
                     'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 
                         'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
-                        'class_id', 'class_code', 'class_name', 
-                        'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 
+                        'class_id', 'class_code', 'class_name', 'class_flags', 'min_titles', 'max_titles',
                         'fee', 'payment_type', 'participation', 
-                        'video_url1', 'video_url2', 'video_url3', 
-                        'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3',
+                        'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
+                        'title2', 'composer2', 'movements2', 'perf_time2', 'video_url2', 'music_orgfilename2',
+                        'title3', 'composer3', 'movements3', 'perf_time3', 'video_url3', 'music_orgfilename3',
+                        'title4', 'composer4', 'movements4', 'perf_time4', 'video_url4', 'music_orgfilename4',
+                        'title5', 'composer5', 'movements5', 'perf_time5', 'video_url5', 'music_orgfilename5',
+                        'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
+                        'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
+                        'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
                         ),
                     'maps'=>array(
                         'rtype_text'=>$maps['registration']['rtype'],

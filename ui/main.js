@@ -515,12 +515,12 @@ function ciniki_musicfestivals_main() {
             'headerValues':['Class', 'Registrant', 'Video Link', 'PDF', 'Status'],
             'cellClasses':['', '', '', '', ''],
             },
-        'videos':{'label':'Registrations', 'type':'simplegrid', 'num_cols':5,
+        'videos':{'label':'Registrations', 'type':'simplegrid', 'num_cols':4,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._tabs.selected == 'videos' ? 'yes' : 'no'; },
-            'headerValues':['Class', 'Registrant', 'Video Link', 'PDF', 'Status', ''],
+            'headerValues':['Class', 'Registrant/Title', 'Video Link/PDF', 'Status', ''],
             'sortable':'yes',
             'sortTypes':['text', 'text', 'text', 'text', 'altnumber', ''],
-            'cellClasses':['', 'multiline', '', '', '', 'alignright'],
+            'cellClasses':['multiline', 'multiline', 'multiline', '', '', 'alignright'],
 //            'addTxt':'Add Registration',
 //            'addFn':'M.ciniki_musicfestivals_main.registration.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,0,0,M.ciniki_musicfestivals_main.festival.festival_id,null);',
             },
@@ -727,7 +727,37 @@ function ciniki_musicfestivals_main() {
     }
     this.festival.sectionData = function(s) {
         if( s == 'videos' ) {
-            return this.data.registrations;
+            this.data.videos = [];
+            for(var i in this.data.registrations) {
+                for(var j = 1; j <= 8; j++) {
+                    if( j <= this.data.registrations[i].min_titles ||
+                        (j <= this.data.registrations[i].max_titles && this.data.registrations[i]['title'+j] != '')
+                        ) {
+                        var title = '#' + j + ' ' + this.data.registrations[i]['title'+j];
+                        if( M.modFlagOn('ciniki.musicfestivals', 0x040000) ) {
+                            if( this.data.registrations[i]['composer'+j] != '' ) {
+                                title += ' - ' + this.data.registrations[i]['composer'+j];
+                            }
+                            if( this.data.registrations[i]['movements'+j] != '' ) {
+                                title += ', ' + this.data.registrations[i]['movements'+j];
+                            }
+                        }
+                        this.data.videos.push({
+                            'id': this.data.registrations[i].id,
+                            'class_code': this.data.registrations[i].class_code,
+                            'class_name': this.data.registrations[i].class_name,
+                            'display_name': this.data.registrations[i].display_name,
+                            'title': title,
+                            'composer': this.data.registrations[i]['composer'+j],
+                            'movements': this.data.registrations[i]['movements'+j],
+                            'video_url': this.data.registrations[i]['video_url'+j],
+                            'music_orgfilename': this.data.registrations[i]['music_orgfilename'+j],
+                            'status_text': this.data.registrations[i].status_text,
+                            });
+                    }
+                }
+            }
+            return this.data.videos;
         }
         return M.panel.prototype.sectionData.call(this, s);
     }
@@ -974,11 +1004,10 @@ function ciniki_musicfestivals_main() {
         }
         if( s == 'videos' ) {
             switch (j) {
-                case 0: return d.class_code;
-                case 1: return '<span class="maintext">' + d.display_name + '</span><span class="subtext">' + d.title1 + '</span>';
-                case 2: return M.hyperlink(d.video_url1);
-                case 3: return d.music_orgfilename;
-                case 4: return d.status_text;
+                case 0: return M.multiline(d.class_code, d.class_name);
+                case 1: return M.multiline(d.display_name, d.title);
+                case 2: return M.multiline(M.hyperlink(d.video_url), d.music_orgfilename);
+                case 3: return d.status_text;
             }
         }
         if( s == 'competitor_cities' ) {

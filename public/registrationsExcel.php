@@ -72,11 +72,53 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         . "registrations.display_name, "
         . "registrations.fee AS reg_fee, "
         . "registrations.title1, "
+        . "registrations.composer1, "
+        . "registrations.movements1, "
         . "registrations.perf_time1, "
+        . "registrations.video_url1, "
+        . "registrations.music_orgfilename1, "
         . "registrations.title2, "
+        . "registrations.composer2, "
+        . "registrations.movements2, "
         . "registrations.perf_time2, "
+        . "registrations.video_url2, "
+        . "registrations.music_orgfilename2, "
         . "registrations.title3, "
+        . "registrations.composer3, "
+        . "registrations.movements3, "
         . "registrations.perf_time3, "
+        . "registrations.video_url3, "
+        . "registrations.music_orgfilename3, "
+        . "registrations.title4, "
+        . "registrations.composer4, "
+        . "registrations.movements4, "
+        . "registrations.perf_time4, "
+        . "registrations.video_url4, "
+        . "registrations.music_orgfilename4, "
+        . "registrations.title5, "
+        . "registrations.composer5, "
+        . "registrations.movements5, "
+        . "registrations.perf_time5, "
+        . "registrations.video_url5, "
+        . "registrations.music_orgfilename5, "
+        . "registrations.title6, "
+        . "registrations.composer6, "
+        . "registrations.movements6, "
+        . "registrations.perf_time6, "
+        . "registrations.video_url6, "
+        . "registrations.music_orgfilename6, "
+        . "registrations.title7, "
+        . "registrations.composer7, "
+        . "registrations.movements7, "
+        . "registrations.perf_time7, "
+        . "registrations.video_url7, "
+        . "registrations.music_orgfilename7, "
+        . "registrations.title8, "
+        . "registrations.composer8, "
+        . "registrations.movements8, "
+        . "registrations.perf_time8, "
+        . "registrations.video_url8, "
+        . "registrations.music_orgfilename8, "
         . "registrations.payment_type, "
         . "registrations.participation, "
         . "registrations.notes AS reg_notes, "
@@ -136,8 +178,15 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             array('container'=>'registrations', 'fname'=>'reg_id', 
                 'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 
                     'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 'fee'=>'reg_fee', 
-                    'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 'payment_type', 
-                    'participation', 'notes'=>'reg_notes'),
+                    'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
+                    'title2', 'composer2', 'movements2', 'perf_time2', 'video_url2', 'music_orgfilename2',
+                    'title3', 'composer3', 'movements3', 'perf_time3', 'video_url3', 'music_orgfilename3',
+                    'title4', 'composer4', 'movements4', 'perf_time4', 'video_url4', 'music_orgfilename4',
+                    'title5', 'composer5', 'movements5', 'perf_time5', 'video_url5', 'music_orgfilename5',
+                    'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
+                    'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
+                    'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
+                    'payment_type', 'participation', 'notes'=>'reg_notes'),
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
                 'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
@@ -190,8 +239,15 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             array('container'=>'registrations', 'fname'=>'reg_id', 
                 'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 
                     'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 'fee'=>'reg_fee', 
-                    'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 'payment_type', 
-                    'participation', 'notes'=>'reg_notes'),
+                    'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
+                    'title2', 'composer2', 'movements2', 'perf_time2', 'video_url2', 'music_orgfilename2',
+                    'title3', 'composer3', 'movements3', 'perf_time3', 'video_url3', 'music_orgfilename3',
+                    'title4', 'composer4', 'movements4', 'perf_time4', 'video_url4', 'music_orgfilename4',
+                    'title5', 'composer5', 'movements5', 'perf_time5', 'video_url5', 'music_orgfilename5',
+                    'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
+                    'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
+                    'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
+                    'payment_type', 'participation', 'notes'=>'reg_notes'),
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
                 'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
@@ -263,8 +319,15 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             array('container'=>'registrations', 'fname'=>'reg_id', 
                 'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 
                     'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 'fee'=>'reg_fee', 
-                    'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 'payment_type', 
-                    'participation', 'notes'=>'reg_notes'),
+                    'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
+                    'title2', 'composer2', 'movements2', 'perf_time2', 'video_url2', 'music_orgfilename2',
+                    'title3', 'composer3', 'movements3', 'perf_time3', 'video_url3', 'music_orgfilename3',
+                    'title4', 'composer4', 'movements4', 'perf_time4', 'video_url4', 'music_orgfilename4',
+                    'title5', 'composer5', 'movements5', 'perf_time5', 'video_url5', 'music_orgfilename5',
+                    'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
+                    'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
+                    'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
+                    'payment_type', 'participation', 'notes'=>'reg_notes'),
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
                 'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
@@ -336,8 +399,15 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             array('container'=>'registrations', 'fname'=>'reg_id', 
                 'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 
                     'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 'fee'=>'reg_fee', 
-                    'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 'payment_type', 
-                    'participation', 'notes'=>'reg_notes'),
+                    'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
+                    'title2', 'composer2', 'movements2', 'perf_time2', 'video_url2', 'music_orgfilename2',
+                    'title3', 'composer3', 'movements3', 'perf_time3', 'video_url3', 'music_orgfilename3',
+                    'title4', 'composer4', 'movements4', 'perf_time4', 'video_url4', 'music_orgfilename4',
+                    'title5', 'composer5', 'movements5', 'perf_time5', 'video_url5', 'music_orgfilename5',
+                    'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
+                    'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
+                    'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
+                    'payment_type', 'participation', 'notes'=>'reg_notes'),
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
                 'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
@@ -399,12 +469,20 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Category', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Class Code', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Class Name', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Title', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Time(sec)', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '2nd Title', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '2nd Time(sec)', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '3rd Title', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '3rd Time(sec)', false);
+        for($i = 1; $i <= 8; $i++) {
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, "Title #{$i}", false);
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x040000) ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, "Composer", false);
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, "Movements", false);
+            }
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Time(sec)', false);
+            if( ($festival['flags']&0x02) == 0x02 ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Video URL', false);
+            }
+            if( ($festival['flags']&0x0202) > 0 ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Music File', false);
+            }
+        }
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Fee', false);
         if( ($festival['flags']&0x10) == 0x10 ) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Regular/Plus', false);
@@ -576,12 +654,20 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['category_name'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['class_code'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['class_name'], false);
-            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['title1'], false);
-            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['perf_time1'], false);
-            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['title2'], false);
-            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['perf_time2'], false);
-            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['title3'], false);
-            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['perf_time3'], false);
+            for($i = 1; $i <= 8; $i++) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration["title{$i}"], false);
+                if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x040000) ) {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration["composer{$i}"], false);
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration["movements{$i}"], false);
+                }
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration["perf_time{$i}"], false);
+                if( ($festival['flags']&0x02) == 0x02 ) {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration["video_url{$i}"], false);
+                }
+                if( ($festival['flags']&0x0202) > 0 ) {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration["music_orgfilename{$i}"], false);
+                }
+            }
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['fee'], false);
             if( ($festival['flags']&0x10) == 0x10 ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, ($registration['participation'] == 2 ? 'Plus' : 'Regular'), false);
