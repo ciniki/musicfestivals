@@ -89,6 +89,9 @@ function ciniki_musicfestivals_sapos_itemSearch($ciniki, $tnid, $args) {
             if( $festival['earlybird'] == 'yes' && $item['earlybird_fee'] > 0 ) {
                 $item['unit_amount'] = $item['earlybird_fee'];
             }
+            if( isset($festival['virtual']) && $festival['virtual'] == 'yes' && $item['fee'] == 0 ) {
+                $item['unit_amount'] = $item['virtual_fee'];
+            }
             if( ($festival['flags']&0x04) == 0x04 ) {   
                 $virtual = $item;
 //                $item['description'] .= ' (Live)';

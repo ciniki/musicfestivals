@@ -3564,6 +3564,7 @@ function ciniki_musicfestivals_main() {
             this.sections.general.fields.first.visible = 'no';
             this.sections.general.fields.last.visible = 'no';
             this.sections.general.fields.name.visible = 'yes';
+            this.sections.general.fields.name.required = 'yes';
             this.sections.general.fields.public_name.visible = 'no';
             this.sections.general.fields.pronoun.visible = 'no';
             this.sections.general.fields.conductor.visible = 'yes';
@@ -3573,6 +3574,7 @@ function ciniki_musicfestivals_main() {
             this.sections.general.fields.first.visible = 'yes';
             this.sections.general.fields.last.visible = 'yes';
             this.sections.general.fields.name.visible = 'no';
+            this.sections.general.fields.name.required = 'no';
             this.sections.general.fields.public_name.visible = 'yes';
             this.sections.general.fields.pronoun.visible = M.modFlagSet('ciniki.musicfestivals', 0x80);
             this.sections.general.fields.conductor.visible = 'no';
