@@ -89,7 +89,7 @@ function ciniki_musicfestivals_wng_membersProcess(&$ciniki, $tnid, &$request, $s
     if( isset($s['display-format']) && ($s['display-format'] == 'both' || $s['display-format'] == 'alphabetical') ) {
         $content = '';
         foreach($members as $member) {
-            $content .= "<a title='{$member['name']}' href='javascript:tctoggle(\"{$member['id-permalink']}\",\"yes\");'>{$member['name']}</a>";
+            $content .= "<a title='{$member['name']}' href='javascript:C.gE(\"{$member['id-permalink']}\").scrollIntoView();C.tC(C.gE(\"{$member['id-permalink']}\"),\"collapsed\");'>{$member['name']}</a>";
         }
         if( $content != '' ) {
             $blocks[] = array(
