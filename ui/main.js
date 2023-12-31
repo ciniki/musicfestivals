@@ -2648,7 +2648,7 @@ function ciniki_musicfestivals_main() {
             'addTxt':'Add Trophy',
             'addFn':'M.ciniki_musicfestivals_main.class.save("M.ciniki_musicfestivals_main.class.addTrophy();");',
             },
-        '_buttons':{'label':'', 'aside':'yes', 'buttons':{
+        '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.class.save();'},
             'delete':{'label':'Delete', 
                 'visible':function() {return M.ciniki_musicfestivals_main.class.class_id > 0 ? 'yes' : 'no'; },
