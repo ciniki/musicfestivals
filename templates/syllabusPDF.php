@@ -86,6 +86,8 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         . "sections.name AS section_name, "
         . "sections.synopsis AS section_synopsis, "
         . "sections.description AS section_description, "
+        . "sections.live_description AS section_live_description, "
+        . "sections.virtual_description AS section_virtual_description, "
         . "categories.id AS category_id, "
         . "categories.name AS category_name, "
         . "categories.synopsis AS category_synopsis, "
@@ -126,7 +128,9 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'section_id', 
-            'fields'=>array('name'=>'section_name', 'synopsis'=>'section_synopsis', 'description'=>'section_description')),
+            'fields'=>array('name'=>'section_name', 'synopsis'=>'section_synopsis', 'description'=>'section_description',
+                'live_description'=>'section_live_description', 'virtual_description'=>'section_virtual_description',
+                )),
         array('container'=>'categories', 'fname'=>'category_id', 
             'fields'=>array('name'=>'category_name', 'synopsis'=>'category_synopsis', 'description'=>'category_description')),
         array('container'=>'classes', 'fname'=>'id', 
@@ -275,6 +279,11 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
     //
     $w = array(30, 120, 30);
     foreach($sections as $section) {
+        if( isset($args['live-virtual']) && $args['live-virtual'] == 'live' && $section['live_description'] != '' ) {
+            $section['description'] = $section['live_description'];
+        } elseif( isset($args['live-virtual']) && $args['live-virtual'] == 'virtual' && $section['virtual_description'] != '' ) {
+            $section['description'] = $section['virtual_description'];
+        }
         //
         // Start a new section
         //
