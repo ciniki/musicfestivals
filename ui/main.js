@@ -4502,7 +4502,6 @@ function ciniki_musicfestivals_main() {
                 }
                 var p = M.ciniki_musicfestivals_main.timeslotcomments;
                 p.data = rsp.timeslot;
-                console.log(rsp);
                 p.sections = {};
                 for(var i in rsp.timeslot.registrations) {
                     var registration = rsp.timeslot.registrations[i];
