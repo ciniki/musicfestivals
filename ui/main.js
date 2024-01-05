@@ -2172,7 +2172,7 @@ function ciniki_musicfestivals_main() {
         '_recommendations_description':{'label':'Adjudicator Recommendations Description', 
             'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x010000) && M.ciniki_musicfestivals_main.section.sections._tabs.selected == 'recommendations' ? 'yes' : 'hidden'; },
             'fields':{
-                'recommendations_description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'xlarge'}},
+                'recommendations_description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'}},
             },
         'categories':{'label':'Categories', 'type':'simplegrid', 'num_cols':1,
             'visible':function() { return M.ciniki_musicfestivals_main.section.sections._tabs.selected == 'categories' ? 'yes' : 'hidden'; },
@@ -2703,15 +2703,16 @@ function ciniki_musicfestivals_main() {
                 'toggles':{'1':'1', '2':'2', '3':'3', '4':'4', '5':'5', '6':'6', '7':'7', '8':'8'},
                 },
             'flags17':{'label':'Virtual - Video', 'type':'flagspiece', 'mask':0x030000, 'field':'flags', 'join':'yes', 'toggle':'yes',
-                'visible':function() { return M.ciniki_musicfestivals_main.festival.isVirtual(); },
+//                'visible':function() { return M.ciniki_musicfestivals_main.festival.isVirtual(); },
+                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); }, //Provincials only
                 'flags':{'0':{'name':'Optional'}, '17':{'name':'Required'}, '18':{'name':'Hidden'}},
                 },
             'flags21':{'label':'Virtual - Music', 'type':'flagspiece', 'mask':0x300000, 'field':'flags', 'join':'yes', 'toggle':'yes',
-                'visible':function() { return M.ciniki_musicfestivals_main.festival.isVirtual(); },
+//                'visible':function() { return M.ciniki_musicfestivals_main.festival.isVirtual(); },
+                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); }, //Provincials only
                 'flags':{'0':{'name':'Optional'}, '21':{'name':'Required'}, '22':{'name':'Hidden'}},
                 },
 //            'flags23':{'label':'Live Music PDF', 'type':'flagspiece', 'mask':0xC00000, 'field':'flags', 'join':'yes', 'toggle':'yes',
-//                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); }, //Provincials only
 //                'flags':{'0':{'name':'Hidden'}, '23':{'name':'Required'}, '24':{'name':'Optional'}},
 //                },
             }},
