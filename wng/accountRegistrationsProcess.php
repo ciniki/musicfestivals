@@ -645,6 +645,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             foreach($fields as $field) {
                 if( $field['ftype'] == 'line'
                     || ($field['id'] == 'parent' && $customer_type == 30)
+                    || (($selected_class['flags']&0x40) == 0 && $field['id'] == 'competitor4_id')
                     || (($selected_class['flags']&0x20) == 0 && $field['id'] == 'competitor3_id')
                     || (($selected_class['flags']&0x10) == 0 && $field['id'] == 'competitor2_id')
                     || (($selected_class['flags']&0x04) == 0 && $field['id'] == 'instrument')
@@ -793,6 +794,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'competitor1_id' => $fields['competitor1_id']['value'],
                 'competitor2_id' => $fields['competitor2_id']['value'],
                 'competitor3_id' => $fields['competitor3_id']['value'],
+                'competitor4_id' => $fields['competitor4_id']['value'],
                 'class_id' => $selected_class['id'],
                 'timeslot_id' => 0,
 /*                'title1' => $fields['title1']['value'],

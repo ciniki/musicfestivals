@@ -77,9 +77,9 @@ function ciniki_musicfestivals_recommendationDelete(&$ciniki) {
     }
     $entries = isset($rc['entries']) ? $rc['entries'] : array();
 
-    if( count($entries) > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.623', 'msg'=>'There are still entries for this submission, they must be removed first.'));
-    }
+//    if( count($entries) > 0 ) {
+//        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.623', 'msg'=>'There are still entries for this submission, they must be removed first.'));
+//    }
 
     //
     // Remove this submission from any mail entries

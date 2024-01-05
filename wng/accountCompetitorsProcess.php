@@ -410,15 +410,37 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         'class' => '',
         'value' => (isset($_POST['f-email']) ? trim($_POST['f-email']) : (isset($competitor['email']) ? $competitor['email'] :'')),
             );
-    $fields['age'] = array(
-        'id' => 'age',
-        'label' => 'Age' . (isset($festival['age-restriction-msg']) ? ' ' . $festival['age-restriction-msg'] : ''),
-        'ftype' => 'text',
-        'required' => 'yes',
-        'size' => 'small',
-        'class' => '',
-        'value' => (isset($_POST['f-age']) ? trim($_POST['f-age']) : (isset($competitor['age']) ? $competitor['age'] :'')),
-            );
+    if( $ctype == 50 ) {
+        if( !isset($festival['competitor-group-age']) || $festival['competitor-group-age'] != 'hidden' ) {
+            $fields['age'] = array(
+                'id' => 'age',
+                'label' => 'Age' . (isset($festival['age-restriction-msg']) ? ' ' . $festival['age-restriction-msg'] : ''),
+                'ftype' => 'text',
+                'required' => (!isset($festival['competitor-group-age']) || $festival['competitor-group-age'] == 'required' ? 'yes' : 'no'),
+                'size' => 'small',
+                'class' => '',
+                'value' => (isset($_POST['f-age']) ? trim($_POST['f-age']) : (isset($competitor['age']) ? $competitor['age'] :'')),
+                );
+            if( isset($festival['competitor-group-age-label']) && $festival['competitor-group-age-label'] != '' ) {
+                $fields['age']['label'] = $festival['competitor-group-age-label'];
+            }
+        }
+    } else {
+        if( !isset($festival['competitor-individual-age']) || $festival['competitor-individual-age'] != 'optional' ) {
+            $fields['age'] = array(
+                'id' => 'age',
+                'label' => 'Age' . (isset($festival['age-restriction-msg']) ? ' ' . $festival['age-restriction-msg'] : ''),
+                'ftype' => 'text',
+                'required' => (!isset($festival['competitor-individual-age']) || $festival['competitor-individual-age'] == 'required' ? 'yes' : 'no'),
+                'size' => 'small',
+                'class' => '',
+                'value' => (isset($_POST['f-age']) ? trim($_POST['f-age']) : (isset($competitor['age']) ? $competitor['age'] :'')),
+                    );
+            if( isset($festival['competitor-individual-age-label']) && $festival['competitor-individual-age-label'] != '' ) {
+                $fields['age']['label'] = $festival['competitor-individual-age-label'];
+            }
+        }
+    }
     if( $ctype == 50 && isset($festival['competitor-group-instrument']) ) {
         $ins = $festival['competitor-group-instrument'];
     } elseif( isset($festival['competitor-individual-instrument']) ) {

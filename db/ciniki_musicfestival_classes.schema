@@ -32,8 +32,16 @@
 #                           0x0800 - 
 #                           0x1000 - Accompanist Required
 #                           0x2000 - Accompanist Optional
-#                           0x4000 - 
-#                           0x8000 - 
+#                           0x4000 - Individual Registration
+#                           0x8000 - Group/Ensemble Registration
+#                           0x010000 - Virtual Entry Youtube URL Required
+#                           0x020000 - Virtual Entry Youtube URL Hidden
+#                           0x040000 - Live Entry Music PDF Required **future**
+#                           0x080000 - Virtual Entry Music PDF Required **future**
+#                           0x100000 - Virtual Entry Music PDF Required
+#                           0x200000 - Virtual Entry Music PDF Hidden
+#                           0x400000 - Live Entry Music PDF Required **future**
+#                           0x800000 - Live Entry Music PDF Optional **future**
 #
 # earlybird_fee:        The earlybird fee for the class.
 # fee:                  The fee for the class.
