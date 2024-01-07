@@ -64,7 +64,6 @@ function ciniki_musicfestivals_wng_memberdeadlinesProcess(&$ciniki, $tnid, &$req
         array('container'=>'members', 'fname'=>'id', 
             'fields'=>array('id', 'name', 'category', 'status', 
                 'reg_start_dt_display', 'reg_end_dt_display', 'reg_late_dt_display', 'latedays',
-                'num_registrations',
                 ),
             'utctotz'=>array(
                 'reg_start_dt_display' => array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i A'),
