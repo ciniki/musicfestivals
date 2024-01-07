@@ -1652,6 +1652,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "members.status AS status_text, "
                 . "IFNULL(fmembers.reg_start_dt, '') AS reg_start_dt_display, "
                 . "IFNULL(fmembers.reg_end_dt, '') AS reg_end_dt_display, "
+                . "IFNULL(fmembers.latedays, '') AS latedays, "
                 . "COUNT(registrations.id) AS num_registrations "
                 . "FROM ciniki_musicfestivals_members AS members "
                 . "LEFT JOIN ciniki_musicfestival_members AS fmembers ON ("
@@ -1671,7 +1672,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'members', 'fname'=>'id', 
-                    'fields'=>array('id', 'name', 'category', 'status', 'reg_start_dt_display', 'reg_end_dt_display', 'num_registrations'),
+                    'fields'=>array('id', 'name', 'category', 'status', 'reg_start_dt_display', 'reg_end_dt_display', 'latedays',
+                        'num_registrations',
+                        ),
                     'utctotz'=>array(
                         'reg_start_dt_display' => array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
                         'reg_end_dt_display' => array('timezone'=>$intl_timezone, 'format'=>$datetime_format),

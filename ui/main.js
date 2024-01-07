@@ -683,12 +683,14 @@ function ciniki_musicfestivals_main() {
             'headerValues':['Subject', 'Date'],
             'noData':'No Messages',
             },
-        'members':{'label':'Member Festivals', 'type':'simplegrid', 'num_cols':5,
+        'members':{'label':'Member Festivals', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'members'); },
-            'headerValues':['Name', 'Category', 'Provincial Open', 'Provincial Close', 'Registrations'],
+            'headerValues':['Name', 'Category', 'Provincial Open', 'Provincial Close', 'Late', 'Registrations'],
+            'headerClasses':['', '', '', '', 'alignright', 'alignright'],
+            'cellClasses':['', '', '', '', 'alignright', 'alignright'],
             'noData':'No Member Festivals',
             'sortable':'yes',
-            'sortTypes':['text', 'text', 'date', 'date', 'number'],
+            'sortTypes':['text', 'text', 'date', 'date', 'number', 'number'],
             'addTxt':'Add Member',
             'addFn':'M.ciniki_musicfestivals_main.member.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.festival_id);',
             },
@@ -1112,7 +1114,8 @@ function ciniki_musicfestivals_main() {
                 case 1: return d.category;
                 case 2: return d.reg_start_dt_display;
                 case 3: return d.reg_end_dt_display;
-                case 4: return d.num_registrations;
+                case 4: return d.latedays;
+                case 5: return d.num_registrations;
             }
         }
         if( s == 'lists' ) {
