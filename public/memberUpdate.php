@@ -25,6 +25,7 @@ function ciniki_musicfestivals_memberUpdate(&$ciniki) {
         'customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer'),
         'reg_start_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Registrations Open'),
         'reg_end_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Registrations Close'),
+        'latedays'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Late Days'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -52,7 +53,8 @@ function ciniki_musicfestivals_memberUpdate(&$ciniki) {
         . "members.customer_id, "
         . "IFNULL(fmembers.id, 0) AS fmember_id, "
         . "IFNULL(fmembers.reg_start_dt, '') AS reg_start_dt, "
-        . "IFNULL(fmembers.reg_end_dt, '') AS reg_end_dt "
+        . "IFNULL(fmembers.reg_end_dt, '') AS reg_end_dt, "
+        . "IFNULL(fmembers.latedays, '') AS latedays "
         . "FROM ciniki_musicfestivals_members AS members "
         . "LEFT JOIN ciniki_musicfestival_members AS fmembers ON ("
             . "members.id = fmembers.member_id "
@@ -65,7 +67,7 @@ function ciniki_musicfestivals_memberUpdate(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'members', 'fname'=>'id', 
-            'fields'=>array('name', 'category', 'synopsis', 'status', 'customer_id', 'fmember_id', 'reg_start_dt', 'reg_end_dt'),
+            'fields'=>array('name', 'category', 'synopsis', 'status', 'customer_id', 'fmember_id', 'reg_start_dt', 'reg_end_dt', 'latedays'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {

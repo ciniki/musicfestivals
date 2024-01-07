@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_members ADD COLUMN latedays int not null AFTER reg_end_dt;
+ALTER TABLE ciniki_musicfestival_members COMMENT='v1.02';

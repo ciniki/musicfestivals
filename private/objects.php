@@ -590,6 +590,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'member_id' => array('name'=>'Member'),
             'reg_start_dt' => array('name'=>'Registrations Open'),
             'reg_end_dt' => array('name'=>'Registrations Close'),
+            'latedays' => array('name'=>'Late Days', 'default'=>'0'),
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );

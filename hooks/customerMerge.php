@@ -125,6 +125,27 @@ function ciniki_musicfestivals_hooks_customerMerge($ciniki, $tnid, $args) {
         $updated++;
     }
 
+    //
+    // Get the list of member admins to update
+    //
+    $strsql = "SELECT id, customer_id "
+        . "FROM ciniki_musicfestivals_members "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'items');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.667', 'msg'=>'Unable to find adjudicators', 'err'=>$rc['err']));
+    }
+    $items = $rc['rows'];
+    foreach($items as $i => $row) {
+        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.member', $row['id'], array('customer_id'=>$args['primary_customer_id']), 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.668', 'msg'=>'Unable to find adjudicators.', 'err'=>$rc['err']));
+        }
+        $updated++;
+    }
+
     if( $updated > 0 ) {
         //
         // Update the last_change date in the tenant modules

@@ -6720,6 +6720,7 @@ function ciniki_musicfestivals_main() {
                 }},
             'reg_start_dt':{'label':'Reg Start', 'type':'datetime'},
             'reg_end_dt':{'label':'Reg End', 'type':'datetime'},
+            'latedays':{'label':'Late Days', 'type':'number', 'size':'small'},
             }},
         'customer_details':{'label':'Admin', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
             'cellClasses':['label', ''],

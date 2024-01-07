@@ -293,7 +293,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         $strsql = "SELECT members.id, "
             . "members.name, "
             . "IFNULL(festivalmembers.reg_start_dt, '') AS reg_start_dt, "
-            . "IFNULL(festivalmembers.reg_end_dt, '') AS reg_end_dt "
+            . "IFNULL(festivalmembers.reg_end_dt, '') AS reg_end_dt, "
+            . "IFNULL(festivalmembers.latedays, 0) AS latedays "
             . "FROM ciniki_musicfestivals_members AS members "
             . "LEFT JOIN ciniki_musicfestival_members AS festivalmembers ON ("
                 . "members.id = festivalmembers.member_id "
@@ -306,7 +307,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-            array('container'=>'members', 'fname'=>'id', 'fields'=>array('id', 'name', 'reg_start_dt', 'reg_end_dt')),
+            array('container'=>'members', 'fname'=>'id', 'fields'=>array('id', 'name', 'reg_start_dt', 'reg_end_dt', 'latedays')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.649', 'msg'=>'Unable to load members', 'err'=>$rc['err']));
@@ -324,15 +325,15 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     $members[$mid]['name'] .= ' - Not yet open';
                 } elseif( $dt > $edt ) {
                     $diff = $dt->diff($edt);
-                    if( $diff->days < 1 ) {
+                    if( $diff->days < 1 && $member['latedays'] >= 1 ) {
                         $members[$mid]['name'] .= ' - Late fee $25';
                         $members[$mid]['open'] = 'yes';
                         $members[$mid]['latefee'] = 25;
-                    } elseif( $diff->days < 2 ) {
+                    } elseif( $diff->days < 2 && $member['latedays'] >= 2 ) {
                         $members[$mid]['name'] .= ' - Late fee $50';
                         $members[$mid]['open'] = 'yes';
                         $members[$mid]['latefee'] = 50;
-                    } elseif( $diff->days < 3 ) {
+                    } elseif( $diff->days < 3 && $member['latedays'] >= 3 ) {
                         $members[$mid]['name'] .= ' - Late fee $75';
                         $members[$mid]['open'] = 'yes';
                         $members[$mid]['latefee'] = 75;
