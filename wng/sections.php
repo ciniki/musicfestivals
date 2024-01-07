@@ -330,6 +330,19 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'notify-emails' => array('label'=>'Notify Email', 'type'=>'text'),
                 ),
             );
+
+        $sections['ciniki.musicfestivals.memberdeadlines'] = array(
+            'name' => 'Entry Deadlines',
+            'module' => 'Music Festivals',
+            'settings' => array(
+                'title' => array('label'=>'Title', 'type'=>'text'),
+                'content' => array('label'=>'Intro', 'type'=>'textarea'),
+                'festival-id' => array('label'=>'Festival', 'type'=>'select', 
+                    'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                    'options'=>$festivals,
+                    ),
+                ),
+            );
     }
 
     return array('stat'=>'ok', 'sections'=>$sections);
