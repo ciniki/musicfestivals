@@ -47,7 +47,9 @@ function ciniki_musicfestivals_wng_membersProcess(&$ciniki, $tnid, &$request, $s
         . "members.status AS status_text, "
         . "members.synopsis, "
         . "IFNULL(fmembers.reg_start_dt, '') AS reg_start_dt_display, "
-        . "IFNULL(fmembers.reg_end_dt, '') AS reg_end_dt_display "
+        . "IFNULL(fmembers.reg_end_dt, '') AS reg_end_dt_display, "
+        . "IFNULL(DATE_ADD(fmembers.reg_end_dt, INTERVAL fmembers.latedays DAY), '') AS reg_late_dt_display, "
+        . "IFNULL(fmembers.latedays, '') AS latedays "
         . "FROM ciniki_musicfestivals_members AS members "
         . "LEFT JOIN ciniki_musicfestival_members AS fmembers ON ("
             . "members.id = fmembers.member_id "
@@ -62,10 +64,11 @@ function ciniki_musicfestivals_wng_membersProcess(&$ciniki, $tnid, &$request, $s
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'members', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'title'=>'name', 'permalink', 'id-permalink'=>'permalink', 'category', 'status', 'synopsis', 'reg_start_dt_display', 'reg_end_dt_display'),
+            'fields'=>array('id', 'name', 'title'=>'name', 'permalink', 'id-permalink'=>'permalink', 'category', 'status', 'synopsis', 'reg_start_dt_display', 'reg_end_dt_display', 'reg_late_dt_display', 'latedays'),
             'utctotz'=>array(
-                'reg_start_dt_display' => array('timezone'=>$intl_timezone, 'format'=>'M b, Y'),
-                'reg_end_dt_display' => array('timezone'=>$intl_timezone, 'format'=>'M b, Y'),
+                'reg_start_dt_display' => array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i A'),
+                'reg_end_dt_display' => array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i A'),
+                'reg_late_dt_display' => array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i A'),
                 ),
             ),
         ));
@@ -108,6 +111,17 @@ function ciniki_musicfestivals_wng_membersProcess(&$ciniki, $tnid, &$request, $s
         $categories = array();
         foreach($members as $member) {
             $member['synopsis'] = preg_replace("/\n([A-Za-z ]+): /", "\n<b>$1</b>: ", $member['synopsis']);
+            if( isset($s['display-synopsis']) && $s['display-synopsis'] == 'no' ) {
+                $member['synopsis'] = '';
+            }
+            if( isset($s['display-deadlines']) && $s['display-deadlines'] == 'yes' ) {
+                $member['synopsis'] .= ($member['synopsis'] != '' ? "\n\n<div class='line'></div>" : '')
+                    . "<b class='subheading'>Provincial Registration Dates</b>\n\n"
+                    . "<b>Registration Open</b>: " . $member['reg_start_dt_display'] . "\n"
+                    . "<b>Registration Close</b>: " . $member['reg_end_dt_display'] . "\n"
+                    . "<i>Late entries will be accepted until " . $member['reg_late_dt_display'] . "</i>"
+                    . "";
+            }
             $categories[$member['category']][] = $member;
         }
         for($i = 1; $i < 10; $i++) {

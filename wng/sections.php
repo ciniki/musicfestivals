@@ -305,6 +305,14 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'categories' => 'Categories',
                     'both' => 'Both',
                     )),
+                'display-synopsis' => array('label'=>'Include Synopsis', 'type'=>'toggle', 'default'=>'yes', 'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
+                'display-deadlines' => array('label'=>'Include Deadlines', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
                 ),
             );
         array_unshift($categories, array('id'=>0, 'name'=>'None'));
