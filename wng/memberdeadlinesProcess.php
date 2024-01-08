@@ -57,7 +57,7 @@ function ciniki_musicfestivals_wng_memberdeadlinesProcess(&$ciniki, $tnid, &$req
         . "WHERE members.status = 10 " // Active
         . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "GROUP BY members.id "
-        . "ORDER BY fmembers.reg_end_dt, members.name "
+        . "ORDER BY members.name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
