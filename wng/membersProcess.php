@@ -116,7 +116,7 @@ function ciniki_musicfestivals_wng_membersProcess(&$ciniki, $tnid, &$request, $s
             }
             if( isset($s['display-deadlines']) && $s['display-deadlines'] == 'yes' ) {
                 $member['synopsis'] .= ($member['synopsis'] != '' ? "\n\n<div class='line'></div>" : '')
-                    . "<b class='subheading'>Provincial Registration Dates</b>\n\n"
+                    . "<b class='subheading'>Provincial Registration Dates</b>"
                     . "<b>Registration Open</b>: " . $member['reg_start_dt_display'] . "\n"
                     . "<b>Registration Close</b>: " . $member['reg_end_dt_display'] . "\n"
                     . "<i>Late entries will be accepted until " . $member['reg_late_dt_display'] . "</i>"
