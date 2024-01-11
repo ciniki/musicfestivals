@@ -2699,6 +2699,10 @@ function ciniki_musicfestivals_main() {
                 'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x8000); },
                 'flags':{'0':{'name':'None'}, '13':{'name':'Required'}, '14':{'name':'Optional'}},
                 },
+            'flags25':{'label':'Backtrack', 'type':'flagspiece', 'mask':0x03000000, 'field':'flags', 'join':'yes', 'toggle':'yes',
+                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); }, 
+                'flags':{'0':{'name':'None'}, '25':{'name':'Required'}, '26':{'name':'Optional'}},
+                },
             'min_titles':{'label':'Minimum Titles', 'type':'toggle', 'default':'1', 
                 'toggles':{'1':'1', '2':'2', '3':'3', '4':'4', '5':'5', '6':'6', '7':'7', '8':'8'},
                 },
@@ -3055,6 +3059,9 @@ function ciniki_musicfestivals_main() {
             'music_orgfilename1':{'label':'Music', 'type':'file', 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(1);',
                 },
+            'backtrack1':{'label':'Backtrack', 'type':'file', 'visible':'no',
+                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(1);',
+                },
             'title2':{'label':'2nd Title', 'type':'text', 'separator':'yes', 'visible':'no'},
             'composer2':{'label':'Composer', 'type':'text', 'visible':'no'},
             'movements2':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
@@ -3062,6 +3069,9 @@ function ciniki_musicfestivals_main() {
             'video_url2':{'label':'Video', 'type':'text', 'visible':'no'},
             'music_orgfilename2':{'label':'Music', 'type':'file', 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(2);',
+                },
+            'backtrack2':{'label':'Backtrack', 'type':'file', 'visible':'no',
+                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(2);',
                 },
             'title3':{'label':'3rd Title', 'type':'text', 'separator':'yes', 'visible':'no'},
             'composer3':{'label':'Composer', 'type':'text', 'visible':'no'},
@@ -3071,6 +3081,9 @@ function ciniki_musicfestivals_main() {
             'music_orgfilename3':{'label':'Music', 'type':'file', 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(3);',
                 },
+            'backtrack3':{'label':'Backtrack', 'type':'file', 'visible':'no',
+                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(3);',
+                },
             'title4':{'label':'4th Title', 'type':'text', 'separator':'yes', 'visible':'no'},
             'composer4':{'label':'Composer', 'type':'text', 'visible':'no'},
             'movements4':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
@@ -3078,6 +3091,9 @@ function ciniki_musicfestivals_main() {
             'video_url4':{'label':'Video', 'type':'text', 'visible':'no'},
             'music_orgfilename4':{'label':'Music', 'type':'file', 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(4);',
+                },
+            'backtrack4':{'label':'Backtrack', 'type':'file', 'visible':'no',
+                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(4);',
                 },
             'title5':{'label':'5th Title', 'type':'text', 'separator':'yes', 'visible':'no'},
             'composer5':{'label':'Composer', 'type':'text', 'visible':'no'},
@@ -3087,6 +3103,9 @@ function ciniki_musicfestivals_main() {
             'music_orgfilename5':{'label':'Music', 'type':'file', 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(5);',
                 },
+            'backtrack5':{'label':'Backtrack', 'type':'file', 'visible':'no',
+                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(5);',
+                },
             'title6':{'label':'6th Title', 'type':'text', 'separator':'yes', 'visible':'no'},
             'composer6':{'label':'Composer', 'type':'text', 'visible':'no'},
             'movements6':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
@@ -3094,6 +3113,9 @@ function ciniki_musicfestivals_main() {
             'video_url6':{'label':'Video', 'type':'text', 'visible':'no'},
             'music_orgfilename6':{'label':'Music', 'type':'file', 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(6);',
+                },
+            'backtrack6':{'label':'Backtrack', 'type':'file', 'visible':'no',
+                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(6);',
                 },
             'title7':{'label':'7th Title', 'type':'text', 'separator':'yes', 'visible':'no'},
             'composer7':{'label':'Composer', 'type':'text', 'visible':'no'},
@@ -3103,6 +3125,9 @@ function ciniki_musicfestivals_main() {
             'music_orgfilename7':{'label':'Music', 'type':'file', 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(7);',
                 },
+            'backtrack7':{'label':'Backtrack', 'type':'file', 'visible':'no',
+                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(7);',
+                },
             'title8':{'label':'8th Title', 'type':'text', 'separator':'yes', 'visible':'no'},
             'composer8':{'label':'Composer', 'type':'text', 'visible':'no'},
             'movements8':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
@@ -3110,6 +3135,9 @@ function ciniki_musicfestivals_main() {
             'video_url8':{'label':'Video', 'type':'text', 'visible':'no'},
             'music_orgfilename8':{'label':'Music', 'type':'file', 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(8);',
+                },
+            'backtrack8':{'label':'Backtrack', 'type':'file', 'visible':'no',
+                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(8);',
                 },
 /*            'video_url1':{'label':'1st Video', 'type':'text', 'visible':'no'},
             'music_orgfilename1':{'label':'1st Music', 'type':'file', 'visible':'no',
@@ -3261,6 +3289,7 @@ function ciniki_musicfestivals_main() {
                         this.sections._class.fields['perf_time'+i].visible = 'yes';
                         this.sections._class.fields['video_url'+i].visible = 'yes';
                         this.sections._class.fields['music_orgfilename'+i].visible = 'yes';
+                        this.sections._class.fields['backtrack'+i].visible = ((c.flags&0x03000000) > 0 ? 'yes' : 'no');
                     } else {
                         this.sections._class.fields['title'+i].visible = 'no';
                         this.sections._class.fields['composer'+i].visible = 'no';
@@ -3268,6 +3297,7 @@ function ciniki_musicfestivals_main() {
                         this.sections._class.fields['perf_time'+i].visible = 'no';
                         this.sections._class.fields['video_url'+i].visible = 'no';
                         this.sections._class.fields['music_orgfilename'+i].visible = 'no';
+                        this.sections._class.fields['backtrack'+i].visible = 'no';
                     }
                     this.showHideFormField('_class', 'title'+i);
                     this.showHideFormField('_class', 'composer'+i);
@@ -3275,6 +3305,7 @@ function ciniki_musicfestivals_main() {
                     this.showHideFormField('_class', 'perf_time'+i);
                     this.showHideFormField('_class', 'video_url'+i);
                     this.showHideFormField('_class', 'music_orgfilename'+i);
+                    this.showHideFormField('_class', 'backtrack'+i);
                 }
 
                 this.sections._display_name.visible = (c.flags&0x70) > 0 ? 'yes' : 'hidden';
@@ -3417,6 +3448,9 @@ function ciniki_musicfestivals_main() {
     } */
     this.registration.downloadMusic = function(i) {
         M.api.openFile('ciniki.musicfestivals.registrationMusicPDF',{'tnid':M.curTenantID, 'registration_id':this.registration_id, 'num':i});
+    }
+    this.registration.downloadBacktrack = function(i) {
+        M.api.openFile('ciniki.musicfestivals.registrationBacktrackDownload',{'tnid':M.curTenantID, 'registration_id':this.registration_id, 'num':i});
     }
 //    this.registration.downloadPDF = function() {
 //        M.api.openFile('ciniki.musicfestivals.registrationMusicPDF',{'tnid':M.curTenantID, 'registration_id':this.registration_id});
@@ -4527,6 +4561,7 @@ function ciniki_musicfestivals_main() {
                             } else if( registration['music_orgfilename' + j] != '' ) {
                                 p.data['details_' + i].push({'label':'Music', 'value':registration['music_orgfilename' + j]});
                             }
+                            p.data['details_' + i].push({'label':'Backtrack', 'value':registration['backtrack' + j], 'visible':'no'});
                         }
                     }
                     // 

@@ -1,0 +1,10 @@
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN backtrack1 varchar(250) not null AFTER music_orgfilename8;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN backtrack2 varchar(250) not null AFTER backtrack1;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN backtrack3 varchar(250) not null AFTER backtrack2;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN backtrack4 varchar(250) not null AFTER backtrack3;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN backtrack5 varchar(250) not null AFTER backtrack4;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN backtrack6 varchar(250) not null AFTER backtrack5;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN backtrack7 varchar(250) not null AFTER backtrack6;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN backtrack8 varchar(250) not null AFTER backtrack7;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.17';
+

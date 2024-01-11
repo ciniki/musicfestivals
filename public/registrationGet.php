@@ -127,6 +127,14 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'music_orgfilename6'=>'',
             'music_orgfilename7'=>'',
             'music_orgfilename8'=>'',
+            'backtrack1'=>'',
+            'backtrack2'=>'',
+            'backtrack3'=>'',
+            'backtrack4'=>'',
+            'backtrack5'=>'',
+            'backtrack6'=>'',
+            'backtrack7'=>'',
+            'backtrack8'=>'',
             'instrument' => '',
             'placement' => '',
             'notes'=>'',
@@ -206,6 +214,14 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "ciniki_musicfestival_registrations.music_orgfilename6, "
             . "ciniki_musicfestival_registrations.music_orgfilename7, "
             . "ciniki_musicfestival_registrations.music_orgfilename8, "
+            . "ciniki_musicfestival_registrations.backtrack1, "
+            . "ciniki_musicfestival_registrations.backtrack2, "
+            . "ciniki_musicfestival_registrations.backtrack3, "
+            . "ciniki_musicfestival_registrations.backtrack4, "
+            . "ciniki_musicfestival_registrations.backtrack5, "
+            . "ciniki_musicfestival_registrations.backtrack6, "
+            . "ciniki_musicfestival_registrations.backtrack7, "
+            . "ciniki_musicfestival_registrations.backtrack8, "
             . "ciniki_musicfestival_registrations.instrument, "
             . "ciniki_musicfestival_registrations.placement, "
             . "ciniki_musicfestival_registrations.notes, "
@@ -236,6 +252,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
                     'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3',  'music_orgfilename4', 
                     'music_orgfilename5', 'music_orgfilename6',  'music_orgfilename7', 'music_orgfilename8',  
+                    'backtrack1', 'backtrack2', 'backtrack3',  'backtrack4', 
+                    'backtrack5', 'backtrack6',  'backtrack7', 'backtrack8',  
                     'instrument', 'placement', 'notes', 'internal_notes'),
                 ),
             ));

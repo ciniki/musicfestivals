@@ -182,6 +182,14 @@ create table ciniki_musicfestival_registrations (
     music_orgfilename6 varchar(250) not null,
     music_orgfilename7 varchar(250) not null,
     music_orgfilename8 varchar(250) not null,
+    backtrack1 varchar(250) not null,
+    backtrack2 varchar(250) not null,
+    backtrack3 varchar(250) not null,
+    backtrack4 varchar(250) not null,
+    backtrack5 varchar(250) not null,
+    backtrack6 varchar(250) not null,
+    backtrack7 varchar(250) not null,
+    backtrack8 varchar(250) not null,
     instrument varchar(250) not null,
     placement varchar(250) not null,
     notes text not null,
@@ -193,4 +201,4 @@ create table ciniki_musicfestival_registrations (
     index (festival_id, teacher_customer_id, billing_customer_id, accompanist_customer_id, member_id),
     index (festival_id, class_id, tnid),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.16';
+) ENGINE='InnoDB', COMMENT='v1.17';

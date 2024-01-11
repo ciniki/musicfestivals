@@ -42,6 +42,14 @@
 #                           0x200000 - Virtual Entry Music PDF Hidden
 #                           0x400000 - Live Entry Music PDF Required **future**
 #                           0x800000 - Live Entry Music PDF Optional **future**
+#                           0x01000000 - Backtrack Required
+#                           0x02000000 - Backtrack Optional
+#                           0x04000000 -
+#                           0x08000000 - 
+#                           0x10000000 - 
+#                           0x20000000 -
+#                           0x40000000 - 
+#                           0x80000000 - 
 #
 # earlybird_fee:        The earlybird fee for the class.
 # fee:                  The fee for the class.

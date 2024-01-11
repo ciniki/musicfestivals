@@ -802,9 +802,14 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         }
         $video_class = $css_class;
         $music_class = $css_class;
+        $backtrack_class = 'hidden';
         if( $participation != 1 ) {
             $video_class = 'hidden';
             $music_class = (($festival['flags']&0x0200) == 0x0200 ? $css_class : 'hidden');
+            $backtrack_class = 'hidden';
+        }
+        if( isset($selected_class['flags']) && ($selected_class['flags']&0x03000000) > 0 ) {
+            $backtrack_class = $css_class;
         }
         //
         // Setup the title prefix
@@ -906,6 +911,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'id' => "video_url{$i}",
             'ftype' => 'text',
 //            'flex-basis' => '19em',
+            'required' => ($participation == 1 && isset($selected_class['flags']) && ($selected_class['flags']&0x010000) ? 'yes' : 'no'),
             'class' => $video_class,
             'required' => 'no',
             'size' => 'medium',
@@ -915,7 +921,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         $fields["music_orgfilename{$i}"] = array(
             'id' => "music_orgfilename{$i}",
 //            'flex-basis' => '19em',
-            'required' => 'no',
+            'required' => ($participation == 1 && isset($selected_class['flags']) && ($selected_class['flags']&0x100000) > 0 ? 'yes' : 'no'),
             'class' => $music_class,
             'ftype' => 'file',
             'size' => 'medium',
@@ -923,6 +929,19 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'accept' => 'application/pdf',
             'label' => 'Music (PDF)',
             'value' => isset($_POST["f-music_orgfilename{$i}"]) ? $_POST["f-music_orgfilename{$i}"] : (isset($registration["music_orgfilename{$i}"]) ? $registration["music_orgfilename{$i}"] : ''),
+            );
+        $fields["backtrack{$i}"] = array(
+            'id' => "backtrack{$i}",
+//            'flex-basis' => '19em',
+            'required' => 'no',
+            'required' => isset($selected_class['flags']) && ($selected_class['flags']&0x01000000) > 0 ? 'yes' : 'no',
+            'class' => $backtrack_class,
+            'ftype' => 'file',
+            'size' => 'medium',
+            'storage_suffix' => "backtrack{$i}",
+            'accept' => 'audio/mpeg',
+            'label' => 'Backtrack (MP3)',
+            'value' => isset($_POST["f-backtrack{$i}"]) ? $_POST["f-backtrack{$i}"] : (isset($registration["backtrack{$i}"]) ? $registration["backtrack{$i}"] : ''),
             );
     }
 
@@ -1070,6 +1089,16 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 . "}else{"
                     . "C.rC(C.gE('f-music_orgfilename1').parentNode,'required');"
                 . "}"
+                . "if(classes[c]!=null&&(classes[c].f&0x01000000)==0x01000000){"
+                    . "C.aC(C.gE('f-backtrack1').parentNode,'required');"
+                . "}else{"
+                    . "C.rC(C.gE('f-backtrack1').parentNode,'required');"
+                . "}"
+                . "if(classes[c]!=null&&(classes[c].f&0x03000000)>0){"
+                    . "C.rC(C.gE('f-backtrack1').parentNode,'hidden');"
+                . "}else{"
+                    . "C.aC(C.gE('f-backtrack1').parentNode,'hidden');"
+                . "}"
                 . "if(cls4c.indexOf(parseInt(c))>=0){"
                     . "C.rC(C.gE('f-competitor2_id').parentNode,'hidden');"
                     . "C.rC(C.gE('f-competitor3_id').parentNode,'hidden');"
@@ -1173,6 +1202,16 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                         . "}else{"
                             . "C.aC(C.gE('f-music_orgfilename'+i).parentNode,'hidden');"
                         . "}"
+                        . "if(classes[c]!=null&&(classes[c].f&0x01000000)==0x01000000){"
+                            . "C.aC(C.gE('f-backtrack'+i).parentNode,'required');"
+                        . "}else{"
+                            . "C.rC(C.gE('f-backtrack'+i).parentNode,'required');"
+                        . "}"
+                        . "if(classes[c]!=null&&(classes[c].f&0x03000000)>0){"
+                            . "C.rC(C.gE('f-backtrack'+i).parentNode,'hidden');"
+                        . "}else{"
+                            . "C.aC(C.gE('f-backtrack'+i).parentNode,'hidden');"
+                        . "}"
                     . "}else{"
                         . "C.aC(C.gE('f-line-title-'+i),'hidden');"
                         . "C.aC(C.gE('f-title'+i).parentNode,'hidden');"
@@ -1183,6 +1222,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                         }
                         $js .= "C.aC(C.gE('f-video_url'+i).parentNode,'hidden');"
                         . "C.aC(C.gE('f-music_orgfilename'+i).parentNode,'hidden');"
+                        . "C.aC(C.gE('f-backtrack'+i).parentNode,'hidden');"
                     . "}"
                 . "}"
 /*                . "if(cls3t.indexOf(parseInt(c))>=0){"

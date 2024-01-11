@@ -422,6 +422,14 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "music_orgfilename6, "
             . "music_orgfilename7, "
             . "music_orgfilename8, "
+            . "backtrack1, "
+            . "backtrack2, "
+            . "backtrack3, "
+            . "backtrack4, "
+            . "backtrack5, "
+            . "backtrack6, "
+            . "backtrack7, "
+            . "backtrack8, "
             . "instrument, "
             . "notes "
             . "FROM ciniki_musicfestival_registrations "
@@ -544,6 +552,14 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "music_orgfilename6, "
             . "music_orgfilename7, "
             . "music_orgfilename8, "
+            . "backtrack1, "
+            . "backtrack2, "
+            . "backtrack3, "
+            . "backtrack4, "
+            . "backtrack5, "
+            . "backtrack6, "
+            . "backtrack7, "
+            . "backtrack8, "
             . "instrument, "
             . "notes "
             . "FROM ciniki_musicfestival_registrations "
@@ -924,6 +940,30 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     }
                 }
             }
+
+            //
+            // Check for backtrack uploads
+            //
+            foreach(['backtrack1', 'backtrack2', 'backtrack3', 'backtrack4', 'backtrack5', 'backtrack6', 'backtrack7', 'backtrack8'] as $fid) {
+                $field = $fields[$fid];
+                if( isset($_POST["f-{$field['id']}"]) && $_POST["f-{$field['id']}"] != '' ) {
+                    if( isset($_FILES["file-{$field['id']}"]["name"]) 
+                        && isset($_FILES["file-{$field['id']}"]["tmp_name"]) 
+                        ) {
+                        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'storageFileAdd');
+                        $rc = ciniki_core_storageFileAdd($ciniki, $tnid, 'ciniki.musicfestivals.registration', array(
+                            'uuid' => $registration['uuid'] . '_' . $field['storage_suffix'],
+                            'subdir' => 'files',
+                            'binary_content' => file_get_contents($_FILES["file-{$field['id']}"]['tmp_name']),
+                            ));
+                        if( $rc['stat'] != 'ok' ) {
+                            error_log('unable to store file');
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.429', 'msg'=>'Unable to store uploaded file', 'err'=>$rc['err']));
+                        }
+                        $registration[$field['id']] = $field['value'];
+                    }
+                }
+            }
             //
             // Add the registration
             //
@@ -1074,7 +1114,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 // Skip fields when editing a pending or paid registration
                 //
                 if( isset($registration['status']) && $registration['status'] != 6 
-                    && !preg_match("/(title|composer|movements|perf_time|video_url|music_orgfilename)/", $field['id'])
+                    && !preg_match("/(title|composer|movements|perf_time|video_url|music_orgfilename|backtrack)/", $field['id'])
 //                    && !in_array($field['id'], ['title1', 'title2', 'title3', 'perf_time1', 'perf_time2', 'perf_time3', 'video_url1', 'video_url2', 'video_url3', 'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3'])
                     ) {
                     continue;
@@ -1506,14 +1546,14 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $fields[$fid]['ftype'] = 'textarea';
             }
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
-                && preg_match("/(title|composer|movements|perf_time|video_url|music_orgfilename)/", $fid)
+                && preg_match("/(title|composer|movements|perf_time|video_url|music_orgfilename|backtrack)/", $fid)
                 && isset($selected_member['open']) 
                 && $selected_member['open'] == 'yes'
                 ) {
                 $fields[$fid]['editable'] = 'yes';
                 $editable = 'yes';
             }
-            elseif( preg_match("/(title|composer|movements|perf_time|video_url|music_orgfilename)/", $fid)
+            elseif( preg_match("/(title|composer|movements|perf_time|video_url|music_orgfilename|backtrack)/", $fid)
                 && $festival['edit'] == 'yes' 
                 ) {
                 $fields[$fid]['editable'] = 'yes';
@@ -1526,6 +1566,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $editable = 'yes';
             } 
             elseif( preg_match("/music_orgfilename/", $fid) 
+                && $festival['upload'] == 'yes' 
+                ) {
+                $fields[$fid]['editable'] = 'yes';
+                $editable = 'yes';
+            } 
+            elseif( preg_match("/backtrack/", $fid) 
                 && $festival['upload'] == 'yes' 
                 ) {
                 $fields[$fid]['editable'] = 'yes';
