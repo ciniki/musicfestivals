@@ -925,6 +925,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 if( isset($_POST["f-{$field['id']}"]) && $_POST["f-{$field['id']}"] != '' ) {
                     if( isset($_FILES["file-{$field['id']}"]["name"]) 
                         && isset($_FILES["file-{$field['id']}"]["tmp_name"]) 
+                        && file_exists($_FILES["file-{$field['id']}"]['tmp_name'])
                         ) {
                         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'storageFileAdd');
                         $rc = ciniki_core_storageFileAdd($ciniki, $tnid, 'ciniki.musicfestivals.registration', array(
@@ -949,6 +950,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 if( isset($_POST["f-{$field['id']}"]) && $_POST["f-{$field['id']}"] != '' ) {
                     if( isset($_FILES["file-{$field['id']}"]["name"]) 
                         && isset($_FILES["file-{$field['id']}"]["tmp_name"]) 
+                        && file_exists($_FILES["file-{$field['id']}"]['tmp_name'])
                         ) {
                         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'storageFileAdd');
                         $rc = ciniki_core_storageFileAdd($ciniki, $tnid, 'ciniki.musicfestivals.registration', array(
