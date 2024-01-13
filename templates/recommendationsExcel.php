@@ -120,7 +120,7 @@ function ciniki_musicfestivals_templates_recommendationsExcel(&$ciniki, $tnid, $
     } elseif( isset($args['member_id']) && $args['member_id'] > 0 ) {
         $strsql .= "AND recommendations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' ";
     }
-    $strsql .= "ORDER BY sections.sequence, categories.sequence, classes.sequence, recommendations.date_submitted, entries.position "
+    $strsql .= "ORDER BY sections.sequence, categories.sequence, categories.name, classes.sequence, classes.name, entries.position "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -154,7 +154,8 @@ function ciniki_musicfestivals_templates_recommendationsExcel(&$ciniki, $tnid, $
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Mark', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Position', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Festival', false);
-    $objPHPExcelWorksheet->getStyle('A1:F1')->getFont()->setBold(true);
+    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Submitted', false);
+    $objPHPExcelWorksheet->getStyle('A1:G1')->getFont()->setBold(true);
     $row++;
 
     $num = 0;
@@ -184,6 +185,7 @@ function ciniki_musicfestivals_templates_recommendationsExcel(&$ciniki, $tnid, $
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $entry['mark'], false);
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $entry['position'], false);
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $entry['member_name'], false);
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $entry['date_submitted'], false);
 
                 $row++;
             }
@@ -191,7 +193,7 @@ function ciniki_musicfestivals_templates_recommendationsExcel(&$ciniki, $tnid, $
         }
     }
 
-    for($i = 0; $i < 6; $i++) {
+    for($i = 0; $i < 7; $i++) {
         $objPHPExcelWorksheet->getColumnDimension(chr($i+65))->setAutoSize(true);
     }
     $objPHPExcelWorksheet->freezePaneByColumnAndRow(0, 2);
