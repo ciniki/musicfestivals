@@ -3092,6 +3092,10 @@ function ciniki_musicfestivals_main() {
                     '1':'virtually and submit a video online',
                 }},
             'fee':{'label':'Fee', 'type':'text', 'size':'small'},
+            'flags':{'label':'Options', 'type':'flags', 'visible':'no', 'flags':{
+                '1':{'name':'Share with Teacher'}, 
+                '2':{'name':'Share with Accompanist'},
+                }},
             'instrument':{'label':'Instrument', 'type':'text', 'visible':'no'},
             'title1':{'label':'Title', 'type':'text', 'separator':'yes'},
             'composer1':{'label':'Composer', 'type':'text', 'visible':'no'},
@@ -3297,6 +3301,21 @@ function ciniki_musicfestivals_main() {
         var festival = this.data.festival;
         var cid = this.formValue('class_id');
         var participation = this.formValue('participation');
+        var flags = {};
+        if( this.teacher_customer_id > 0 ) {
+            flags['1'] = {'name':'Share with Teacher'};
+        }
+        if( this.accompanist_customer_id > 0 ) {
+            flags['2'] = {'name':'Share with Accompanist'};
+        }
+        this.sections._class.fields.flags.flags = flags;
+        if( flags['1'] != null || flags['2'] != null ) {
+            this.sections._class.fields.flags.visible = 'yes';
+        } else {
+            this.sections._class.fields.flags.visible = 'no';
+        }
+        this.refreshFormField('_class', 'flags');
+        this.showHideFormField('_class', 'flags');
         for(var i in this.classes) {
             if( this.classes[i].id == cid ) {
                 var c = this.classes[i];
@@ -3412,6 +3431,7 @@ function ciniki_musicfestivals_main() {
                     }
                     p.refreshSection('teacher_details');
                     p.show();
+                    p.updateForm();
                 });
             } else {
                 this.data.teacher_details = [];
@@ -3419,6 +3439,7 @@ function ciniki_musicfestivals_main() {
                 this.sections.teacher_details.changeTxt = 'Add';
                 this.refreshSection('teacher_details');
                 this.show();
+                this.updateForm();
             }
         } else {
             this.show();
@@ -3444,6 +3465,7 @@ function ciniki_musicfestivals_main() {
                     }
                     p.refreshSection('accompanist_details');
                     p.show();
+                    p.updateForm();
                 });
             } else {
                 this.data.accompanist_details = [];
@@ -3451,6 +3473,7 @@ function ciniki_musicfestivals_main() {
                 this.sections.accompanist_details.changeTxt = 'Add';
                 this.refreshSection('accompanist_details');
                 this.show();
+                this.updateForm();
             }
         } else {
             this.show();

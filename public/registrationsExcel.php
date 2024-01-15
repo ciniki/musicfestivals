@@ -281,7 +281,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.552', 'msg'=>'Unable to find requested teacher'));
         }
         $sections[0]['name'] = $rc['teacher']['display_name'];
-        $filename .= ' - ' . $rc['teacher']['display_name'];
+        $filename .= ' - Teacher - ' . $rc['teacher']['display_name'];
     } 
     elseif( isset($args['accompanist_customer_id']) && $args['accompanist_customer_id'] > 0 ) {
         $strsql .= "FROM ciniki_musicfestival_registrations AS registrations "
@@ -358,7 +358,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.552', 'msg'=>'Unable to find requested accompanist'));
         }
         $sections[0]['name'] = $rc['accompanist']['display_name'];
-        $filename .= ' - ' . $rc['accompanist']['display_name'];
+        $filename .= ' - Accompanist - ' . $rc['accompanist']['display_name'];
     } 
     //
     // Get the registrations for a member
