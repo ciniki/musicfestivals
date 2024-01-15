@@ -872,10 +872,10 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) ) {
                 $registration['accompanist_customer_id'] = $fields['accompanist_customer_id']['value'];
             }
-            if( isset($fields['teacher_share']['value']) && $fields['teacher_share']['value'] == 'yes' ) {
+            if( isset($fields['teacher_share']['value']) && $fields['teacher_share']['value'] == 'on' ) {
                 $registration['flags'] |= 0x01;
             }
-            if( isset($fields['accompanist_share']['value']) && $fields['accompanist_share']['value'] == 'yes' ) {
+            if( isset($fields['accompanist_share']['value']) && $fields['accompanist_share']['value'] == 'on' ) {
                 $registration['flags'] |= 0x02;
             }
             if( ($selected_class['flags']&0x20) == 0x20 ) {

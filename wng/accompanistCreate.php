@@ -49,8 +49,8 @@ function ciniki_musicfestivals_wng_accompanistCreate(&$ciniki, $tnid, $request, 
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.643', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
         }
-        if( isset($rc['item']) ) {
-            return array('stat'=>'ok', 'accompanist_customer_id'=>$rc['item']['customer_id']);
+        if( isset($rc['rows'][0]) ) {
+            return array('stat'=>'ok', 'accompanist_customer_id'=>$rc['rows'][0]['customer_id']);
         }
     }
 
@@ -88,6 +88,8 @@ function ciniki_musicfestivals_wng_accompanistCreate(&$ciniki, $tnid, $request, 
     $rc = ciniki_customers_web_customerAdd($ciniki, $tnid, array(
         'name'=>$_POST['f-accompanist_name'],
         'email_address'=>$_POST['f-accompanist_email'],
+        'phone_label_1'=>'Home',
+        'phone_number_1'=>$_POST['f-accompanist_phone'],
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'error', 'err'=>array('code'=>'ciniki.musicfestivals.639', 'msg'=>"We had a problem saving the accompanist, please try again or contact us for help."));

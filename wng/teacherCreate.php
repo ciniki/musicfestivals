@@ -88,6 +88,8 @@ function ciniki_musicfestivals_wng_teacherCreate(&$ciniki, $tnid, $request, $arg
     $rc = ciniki_customers_web_customerAdd($ciniki, $tnid, array(
         'name'=>$_POST['f-teacher_name'],
         'email_address'=>$_POST['f-teacher_email'],
+        'phone_label_1'=>'Home',
+        'phone_number_1'=>$_POST['f-teacher_phone'],
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'error', 'err'=>array('code'=>'ciniki.musicfestivals.374', 'msg'=>"We had a problem saving the teacher, please try again or contact us for help."));
