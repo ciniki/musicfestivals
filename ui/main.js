@@ -2730,6 +2730,7 @@ function ciniki_musicfestivals_main() {
 //            'addFn':'M.ciniki_musicfestivals_main.registration.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,0,M.ciniki_musicfestivals_main.class.class_id,M.ciniki_musicfestivals_main.festival.festival_id,null,\'festival\');',
             },
         'trophies':{'label':'Trophies', 'type':'simplegrid', 'num_cols':3, 
+            'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x40); }, 
             'headerValues':['Category', 'Name'],
             'cellClasses':['', '', 'alignright'],
             'noData':'No trophies',
