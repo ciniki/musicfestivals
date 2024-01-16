@@ -596,9 +596,9 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     'phone_home' => $fields['phone_home']['value'],
                     'phone_cell' => $fields['phone_cell']['value'],
                     'email' => $fields['email']['value'],
-                    'age' => $fields['age']['value'],
-                    'study_level' => $fields['study_level']['value'],
-                    'instrument' => $fields['instrument']['value'],
+                    'age' => isset($fields['age']['value']) ? $fields['age']['value'] : '',
+                    'study_level' => isset($fields['study_level']['value']) ? $fields['study_level']['value'] : '',
+                    'instrument' => isset($fields['instrument']['value']) ? $fields['instrument']['value'] : '',
                     'notes' => $fields['comp_notes']['value'],
                     );
                 if( $fields['ctype']['value'] == 50 ) {
