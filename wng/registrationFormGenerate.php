@@ -921,7 +921,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         $fields["music_orgfilename{$i}"] = array(
             'id' => "music_orgfilename{$i}",
 //            'flex-basis' => '19em',
-            'required' => ($participation == 1 && isset($selected_class['flags']) && ($selected_class['flags']&0x100000) > 0 ? 'yes' : 'no'),
+            'required' => 'no',
+//            'required' => ($participation == 1 && isset($selected_class['flags']) && ($selected_class['flags']&0x100000) > 0 ? 'yes' : 'no'),
             'class' => $music_class,
             'ftype' => 'file',
             'size' => 'medium',
@@ -930,6 +931,11 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'label' => 'Music (PDF)',
             'value' => isset($_POST["f-music_orgfilename{$i}"]) ? $_POST["f-music_orgfilename{$i}"] : (isset($registration["music_orgfilename{$i}"]) ? $registration["music_orgfilename{$i}"] : ''),
             );
+
+        if( $participation == 1 && isset($selected_class['flags']) && ($selected_class['flags']&0x100000) > 0 
+            && $selected_class['min_titles'] >= $i ) {
+            $fields["music_orgfilename{$i}"]['required'] = 'yes';
+        }
         $fields["backtrack{$i}"] = array(
             'id' => "backtrack{$i}",
 //            'flex-basis' => '19em',
