@@ -2742,7 +2742,7 @@ function ciniki_musicfestivals_main() {
                 'flags':{'0':{'name':'None'}, '13':{'name':'Required'}, '14':{'name':'Optional'}},
                 },
             'flags25':{'label':'Backtrack', 'type':'flagspiece', 'mask':0x03000000, 'field':'flags', 'join':'yes', 'toggle':'yes',
-                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); }, 
+//                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); }, 
                 'flags':{'0':{'name':'None'}, '25':{'name':'Required'}, '26':{'name':'Optional'}},
                 },
             'min_titles':{'label':'Minimum Titles', 'type':'toggle', 'default':'1', 
