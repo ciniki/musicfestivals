@@ -2260,8 +2260,8 @@ function ciniki_musicfestivals_main() {
     }
     this.section.switchTab = function(tab) {
         this.sections._tabs.selected = tab;
-        this.refresh();
-        this.show();
+        this.showHideSections(['categories', '_description', '_live_description', '_virtual_description', '_recommendations_description']);
+        this.refreshSection('_tabs');
     }
     this.section.downloadSyllabusPDF = function() {
         M.api.openPDF('ciniki.musicfestivals.festivalSyllabusPDF', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'section_id':this.section_id});
@@ -2307,6 +2307,7 @@ function ciniki_musicfestivals_main() {
         if( !this.checkForm() ) { return false; }
         if( this.section_id > 0 ) {
             var c = this.serializeForm('no');
+            console.log(c);
             if( c != '' ) {
                 M.api.postJSONCb('ciniki.musicfestivals.sectionUpdate', {'tnid':M.curTenantID, 'section_id':this.section_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
