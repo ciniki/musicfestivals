@@ -144,6 +144,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     $classes_4c = array();  // Class id's with 4 competitors
     $js_classes = array(); // Class array that will be in javascript: flags, min_titles, max_titles
     $live_prices = array();
+    $plus_prices = array();
     $virtual_prices = array();
     $dt = new DateTime('now', new DateTimezone('UTC'));
     foreach($sections as $sid => $section) {
