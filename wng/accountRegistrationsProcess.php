@@ -679,7 +679,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     continue;
                 }
                 if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) 
-                    && ($fields['accompanist_customer_id'] != -1 && $field['id'] == 'accompanist_email')
+                    && $fields['accompanist_customer_id'] != -1 
+                    && $field['id'] == 'accompanist_email'
                     ) {
                     continue;
                 }
@@ -693,6 +694,18 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     $errors[] = array(
                         'msg' => 'You must specify how you want to participate.',
                         );
+                }
+                elseif( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == 0 && $field['ftype'] == 'minsec' ) {
+                    $errors[] = array(
+                        'msg' => 'You must specify the registration ' . (isset($field['error_label']) ? $field['error_label'] : $field['label']) . '.',
+                        );
+
+                }
+                elseif( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == 0 && strncmp($field['id'], 'competitor', 10) == 0 ) {
+                    $errors[] = array(
+                        'msg' => 'You must specify the registration ' . (isset($field['error_label']) ? $field['error_label'] : $field['label']) . '.',
+                        );
+
                 }
                 elseif( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == 0 && $field['ftype'] == 'minsec' ) {
                     $errors[] = array(

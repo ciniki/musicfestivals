@@ -483,6 +483,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     //
     for($i = 1; $i <= 4; $i++) {
         $class = ($i > 1 ? 'hidden' : '');
+        $required = ($i > 1 ? 'no' : 'yes');
         if( isset($selected_class) && $i == 2 && (($selected_class['flags']&0x8010) == 0x10 || ($selected_class['flags']&0x8020) == 0x20 || ($selected_class['flags']&0x8040) == 0x40) ) {
             $class = '';
         }
@@ -502,6 +503,18 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         } elseif( $i == 4 ) {
             $prefix = '4th ';
         }
+        if( ($selected_class['flags']&0x0110) == 0x0010 && $i == 2 ) {
+            $required = 'yes';
+        }
+        if( ($selected_class['flags']&0x0220) == 0x0020 && $i == 3 ) {
+            $required = 'yes';
+        }
+        if( ($selected_class['flags']&0x0440) == 0x0040 && $i == 4 ) {
+            $required = 'yes';
+        }
+        if( ($selected_class['flags']&0x8000) == 0x8000 && $i > 1 ) { //Group ensemble
+            $required = 'no';
+        }
 /*        if( $i > 1 ) {
             $fields["competitor{$i}_newline"] = array(
                 'id' => "competitor{$i}_newline",
@@ -514,7 +527,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'ftype' => 'select',
             'size' => 'large',
             'class' => $class,
-            'required' => ($i < 3 ? 'yes' : 'no'),
+            'required' => $required,
             'label' => ($i == 1 && isset($selected_class['flags']) && ($selected_class['flags']&0x8000) == 0x8000 ? 'Group/Ensemble' : $prefix . "Competitor"),
             'onchange' => "competitorSelected({$i})",
             'options' => $competitors,
