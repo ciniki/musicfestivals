@@ -5114,7 +5114,7 @@ function ciniki_musicfestivals_main() {
     }
     this.sponsor.remove = function() {
         M.confirm('Are you sure you want to remove sponsor?', null, function(rsp) {
-            M.api.getJSONCb('ciniki.musicfestivals.sponsorDelete', {'tnid':M.curTenantID, 'sponsor_id':M.ciniki_musisfestivals_main.sponsor.sponsor_id}, function(rsp) {
+            M.api.getJSONCb('ciniki.musicfestivals.sponsorDelete', {'tnid':M.curTenantID, 'sponsor_id':M.ciniki_musicfestivals_main.sponsor.sponsor_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
