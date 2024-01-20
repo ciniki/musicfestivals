@@ -219,7 +219,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
         ) {
         $request['cur_uri_pos']++;
         $groupname = urldecode($request['uri_split'][($request['cur_uri_pos']+1)]);
-        if( $groupname == 'Other' ) {
+        if( $groupname == 'Other' || $groupname == 'other' ) {
             $section['groupname'] = '';
             ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'syllabusSectionProcess');
             return ciniki_musicfestivals_wng_syllabusSectionProcess($ciniki, $tnid, $request, $section);
