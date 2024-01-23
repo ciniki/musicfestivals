@@ -695,17 +695,22 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                         'msg' => 'You must specify how you want to participate.',
                         );
                 }
+                elseif( isset($field['required']) && $field['required'] == 'yes' && $field['ftype'] == 'file' ) {
+                    if( $field['value'] == '' && (!isset($_FILES["file-{$field['id']}"]['name']) || $_FILES["file-{$field['id']}"]['name'] == '') ) {
+                        $errors[] = array(
+                            'msg' => 'You must specify the registration ' . (isset($field['error_label']) ? $field['error_label'] : $field['label']) . '.',
+                            );
+                    }
+                }
                 elseif( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == 0 && $field['ftype'] == 'minsec' ) {
                     $errors[] = array(
                         'msg' => 'You must specify the registration ' . (isset($field['error_label']) ? $field['error_label'] : $field['label']) . '.',
                         );
-
                 }
                 elseif( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == 0 && strncmp($field['id'], 'competitor', 10) == 0 ) {
                     $errors[] = array(
                         'msg' => 'You must specify the registration ' . (isset($field['error_label']) ? $field['error_label'] : $field['label']) . '.',
                         );
-
                 }
                 elseif( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == 0 && $field['ftype'] == 'minsec' ) {
                     $errors[] = array(
@@ -956,7 +961,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                             error_log('unable to store file');
                             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.429', 'msg'=>'Unable to store uploaded file', 'err'=>$rc['err']));
                         }
-                        $registration[$field['id']] = $field['value'];
+//                        $registration[$field['id']] = $field['value'];
+                        $registration[$field['id']] = $_FILES["file-{$field['id']}"]['name'];
                     }
                 }
             }
@@ -981,7 +987,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                             error_log('unable to store file');
                             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.429', 'msg'=>'Unable to store uploaded file', 'err'=>$rc['err']));
                         }
-                        $registration[$field['id']] = $field['value'];
+//                        $registration[$field['id']] = $field['value'];
+                        $registration[$field['id']] = $_FILES["file-{$field['id']}"]['name'];
                     }
                 }
             }
@@ -1156,7 +1163,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                             if( $rc['stat'] != 'ok' ) {
                                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.428', 'msg'=>'Unable to store uploaded file', 'err'=>$rc['err']));
                             }
-                            $update_args[$field['id']] = $field['value'];
+                            //$update_args[$field['id']] = $field['value'];
+                            $update_args[$field['id']] = $_FILES["file-{$field['id']}"]['name'];
                         }
                     }
                 }

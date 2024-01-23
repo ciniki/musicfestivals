@@ -953,9 +953,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'accept' => 'application/pdf',
             'label' => 'Music (PDF)',
             'error_label' => $prefix . ' Music (PDF)',
-            'value' => isset($_POST["f-music_orgfilename{$i}"]) ? $_POST["f-music_orgfilename{$i}"] : (isset($registration["music_orgfilename{$i}"]) ? $registration["music_orgfilename{$i}"] : ''),
+//            'value' => isset($_POST["f-music_orgfilename{$i}"]) ? $_POST["f-music_orgfilename{$i}"] : (isset($registration["music_orgfilename{$i}"]) ? $registration["music_orgfilename{$i}"] : ''),
+            'value' => (isset($registration["music_orgfilename{$i}"]) ? $registration["music_orgfilename{$i}"] : ''),
             );
-
         if( $participation == 1 && isset($selected_class['flags']) && ($selected_class['flags']&0x100000) > 0 
             && $selected_class['min_titles'] >= $i 
             ) {
@@ -965,7 +965,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'id' => "backtrack{$i}",
 //            'flex-basis' => '19em',
             'required' => 'no',
-            'required' => isset($selected_class['flags']) && ($selected_class['flags']&0x01000000) > 0 ? 'yes' : 'no',
+//            'required' => isset($selected_class['flags']) && ($selected_class['flags']&0x01000000) > 0 ? 'yes' : 'no',
             'class' => $backtrack_class,
             'ftype' => 'file',
             'size' => 'medium',
@@ -973,8 +973,14 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'accept' => 'audio/mpeg',
             'label' => 'Backtrack (MP3)',
             'error_label' => "{$prefix} Backtrack (MP3)",
-            'value' => isset($_POST["f-backtrack{$i}"]) ? $_POST["f-backtrack{$i}"] : (isset($registration["backtrack{$i}"]) ? $registration["backtrack{$i}"] : ''),
+//            'value' => isset($_POST["f-backtrack{$i}"]) ? $_POST["f-backtrack{$i}"] : (isset($registration["backtrack{$i}"]) ? $registration["backtrack{$i}"] : ''),
+            'value' => (isset($registration["backtrack{$i}"]) ? $registration["backtrack{$i}"] : ''),
             );
+        if( $participation == 1 && isset($selected_class['flags']) && ($selected_class['flags']&0x01000000) > 0 
+            && $selected_class['min_titles'] >= $i 
+            ) {
+            $fields["backtrack{$i}"]['required'] = 'yes';
+        }
     }
 
     $fields['line-notes'] = array(
