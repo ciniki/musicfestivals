@@ -583,11 +583,19 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         for($i = 1; $i <= 8; $i++) {
                             if( $reg["title{$i}"] != '' ) {
                                 if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x040000) ) {
-                                    if( $reg["movements{$i}"] != '' ) {
+                                    if( $reg["movements{$i}"] != '' 
+                                        && strtolower($reg["movements{$i}"]) != 'na'
+                                        && strtolower($reg["movements{$i}"]) != 'n/a'
+                                        && strtolower($reg["movements{$i}"]) != 'not applicable'
+                                        ) {
                                         $reg["title{$i}"] .= ', ' . $reg["movements{$i}"];
                                     }
-                                    if( $reg["composer{$i}"] != '' ) {
-                                        if( preg_match("/^\s*[Bb][Yy]\s+/", $reg["composer{$i}") ) {
+                                    if( $reg["composer{$i}"] != ''
+                                        && strtolower($reg["composer{$i}"]) != 'na'
+                                        && strtolower($reg["composer{$i}"]) != 'n/a'
+                                        && strtolower($reg["composer{$i}"]) != 'not applicable'
+                                        ) {
+                                        if( preg_match("/^\s*[Bb][Yy]\s+/", $reg["composer{$i}"]) ) {
                                             $reg["title{$i}"] .= ' ' . $reg["composer{$i}"];
                                         } else {
                                             $reg["title{$i}"] .= ' by ' . $reg["composer{$i}"];

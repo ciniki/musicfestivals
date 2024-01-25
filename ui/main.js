@@ -797,7 +797,11 @@ function ciniki_musicfestivals_main() {
                                 ) {
                                 title += ', ' + this.data.registrations[i]['movements'+j];
                             }
-                            if( this.data.registrations[i]['composer'+j] != '' ) {
+                            if( this.data.registrations[i]['composer'+j] != ''
+                                && this.data.registrations[i]['composer'+j].toLowerCase() != 'n/a' 
+                                && this.data.registrations[i]['composer'+j].toLowerCase() != 'na' 
+                                && this.data.registrations[i]['composer'+j].toLowerCase() != 'not applicable' 
+                                ) {
                                 if( this.data.registrations[i]['composer'+j].match(/^\s*[Bb][Yy]\s+/) ) {
                                     title += ' ' + this.data.registrations[i]['composer'+j];
                                 } else {
