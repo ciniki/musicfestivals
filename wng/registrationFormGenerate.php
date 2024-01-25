@@ -854,18 +854,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 'label' => "{$prefix} " . (isset($festival['registration-title-label']) && $festival['registration-title-label'] != '' ? $festival['registration-title-label'] : "Title"),
                 'value' => isset($_POST["f-title{$i}"]) ? $_POST["f-title{$i}"] : (isset($registration["title{$i}"]) ? $registration["title{$i}"] : ''),
                 );
-            $fields["composer{$i}"] = array(
-                'id' => "composer{$i}",
-                'ftype' => 'text',
-                'flex-basis' => '50%',
-                'class' => $css_class,
-                'required' => $required,
-                'size' => 'small',
-//                'label' => "Composer",
-                'label' => (isset($festival['registration-composer-label']) && $festival['registration-composer-label'] != '' ? $festival['registration-composer-label'] : "Composer"),
-                'error_label' => "{$prefix} " . (isset($festival['registration-composer-label']) && $festival['registration-composer-label'] != '' ? $festival['registration-composer-label'] : "Composer"),
-                'value' => isset($_POST["f-composer{$i}"]) ? $_POST["f-composer{$i}"] : (isset($registration["composer{$i}"]) ? $registration["composer{$i}"] : ''),
-                );
             $fields["movements{$i}"] = array(
                 'id' => "movements{$i}",
                 'ftype' => 'text',
@@ -877,6 +865,18 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 'label' => (isset($festival['registration-movements-label']) && $festival['registration-movements-label'] != '' ? $festival['registration-movements-label'] : "Movements/Musical"),
                 'error_label' => "{$prefix} " . (isset($festival['registration-movements-label']) && $festival['registration-movements-label'] != '' ? $festival['registration-movements-label'] : "Movements/Musical"),
                 'value' => isset($_POST["f-movements{$i}"]) ? $_POST["f-movements{$i}"] : (isset($registration["movements{$i}"]) ? $registration["movements{$i}"] : ''),
+                );
+            $fields["composer{$i}"] = array(
+                'id' => "composer{$i}",
+                'ftype' => 'text',
+                'flex-basis' => '50%',
+                'class' => $css_class,
+                'required' => $required,
+                'size' => 'small',
+//                'label' => "Composer",
+                'label' => (isset($festival['registration-composer-label']) && $festival['registration-composer-label'] != '' ? $festival['registration-composer-label'] : "Composer"),
+                'error_label' => "{$prefix} " . (isset($festival['registration-composer-label']) && $festival['registration-composer-label'] != '' ? $festival['registration-composer-label'] : "Composer"),
+                'value' => isset($_POST["f-composer{$i}"]) ? $_POST["f-composer{$i}"] : (isset($registration["composer{$i}"]) ? $registration["composer{$i}"] : ''),
                 );
         } else {
             $title = 'Title & Composer e.g. Prelude op.39, no.19 (D. Kabalevsky)';
