@@ -502,7 +502,11 @@ function ciniki_musicfestivals_templates_parentRegistrationsPDF(&$ciniki, $tnid,
                     $line .= ', ' . $registration["movements{$i}"];
                 }
                 if( $registration["composer{$i}"] != '' ) {
-                    $line .= ' - ' . $registration["composer{$i}"];
+                    if( preg_match("/^\s*[Bb][Yy]\s+/", $reg["composer{$i}") ) {
+                        $line .= ' ' . $registration["composer{$i}"];
+                    } else {
+                        $line .= ' by ' . $registration["composer{$i}"];
+                    }
                 }
                 $description .= "\n" . $line;
             }

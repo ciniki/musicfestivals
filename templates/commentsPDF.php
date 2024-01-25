@@ -587,7 +587,11 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                                         $reg["title{$i}"] .= ', ' . $reg["movements{$i}"];
                                     }
                                     if( $reg["composer{$i}"] != '' ) {
-                                        $reg["title{$i}"] .= ' - ' . $reg["composer{$i}"];
+                                        if( preg_match("/^\s*[Bb][Yy]\s+/", $reg["composer{$i}") ) {
+                                            $reg["title{$i}"] .= ' ' . $reg["composer{$i}"];
+                                        } else {
+                                            $reg["title{$i}"] .= ' by ' . $reg["composer{$i}"];
+                                        }
                                     }
                                 }
                                 $lh = ($pdf->getNumLines($reg["title{$i}"], $w[1]) * 6) + 3;

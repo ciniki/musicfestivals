@@ -790,11 +790,19 @@ function ciniki_musicfestivals_main() {
                         ) {
                         var title = '#' + j + ' ' + this.data.registrations[i]['title'+j];
                         if( M.modFlagOn('ciniki.musicfestivals', 0x040000) ) {
-                            if( this.data.registrations[i]['movements'+j] != '' ) {
+                            if( this.data.registrations[i]['movements'+j] != '' 
+                                && this.data.registrations[i]['movements'+j].toLowerCase() != 'n/a' 
+                                && this.data.registrations[i]['movements'+j].toLowerCase() != 'na' 
+                                && this.data.registrations[i]['movements'+j].toLowerCase() != 'not applicable' 
+                                ) {
                                 title += ', ' + this.data.registrations[i]['movements'+j];
                             }
                             if( this.data.registrations[i]['composer'+j] != '' ) {
-                                title += ' - ' + this.data.registrations[i]['composer'+j];
+                                if( this.data.registrations[i]['composer'+j].match(/^\s*[Bb][Yy]\s+/) ) {
+                                    title += ' ' + this.data.registrations[i]['composer'+j];
+                                } else {
+                                    title += ' by ' + this.data.registrations[i]['composer'+j];
+                                }
                             }
                         }
                         this.data.videos.push({
