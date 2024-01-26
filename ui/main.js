@@ -2763,6 +2763,14 @@ function ciniki_musicfestivals_main() {
             'max_titles':{'label':'Maximum Titles', 'type':'toggle', 'default':'1', 
                 'toggles':{'1':'1', '2':'2', '3':'3', '4':'4', '5':'5', '6':'6', '7':'7', '8':'8'},
                 },
+            'flags27':{'label':'Movements/Musical', 'type':'flagspiece', 'mask':0x0C000000, 'field':'flags', 'join':'yes', 'toggle':'yes',
+                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); }, // Movements/Composers fields enabled
+                'flags':{'0':{'name':'Hidden'}, '27':{'name':'Required'}, '28':{'name':'Optional'}},
+                },
+            'flags29':{'label':'Composer', 'type':'flagspiece', 'mask':0x30000000, 'field':'flags', 'join':'yes', 'toggle':'yes',
+                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); }, // Movements/Composers fields enabled
+                'flags':{'0':{'name':'Hidden'}, '29':{'name':'Required'}, '30':{'name':'Optional'}},
+                },
             'flags17':{'label':'Virtual - Video', 'type':'flagspiece', 'mask':0x030000, 'field':'flags', 'join':'yes', 'toggle':'yes',
 //                'visible':function() { return M.ciniki_musicfestivals_main.festival.isVirtual(); },
                 'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); }, //Provincials only
