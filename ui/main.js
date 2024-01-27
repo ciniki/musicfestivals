@@ -1958,6 +1958,25 @@ function ciniki_musicfestivals_main() {
                 'flags9':{'label':'Include Section/Category as Class Name', 'type':'flagtoggle', 'default':'off', 'bit':0x0100, 'field':'flags'},
                 'flags11':{'label':'Category Group Names', 'type':'flagtoggle', 'default':'off', 'bit':0x0400, 'field':'flags'},
             }},
+        // Add for 2025
+/*        '_syllabus_pdf':{'label':'Syllabus PDF Options', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
+            'fields':{
+                // Don't know which option is better
+                'syllabus-pdf-prices':{'label':'Show Earlybird Prices', 'type':'toggle', 'default':'either', 'toggles':{
+                    'either':'Earlybird OR regular',
+                    'both':'Earlybird AND Regular',
+                    }},
+                // Or these???
+                'syllabus-pdf-earlybird':{'label':'Show Earlybird Prices', 'type':'toggle', 'default':'off', 'toggles':{
+                    'valid':'Until Deadline',
+                    'always':'Always',
+                    }},
+                'syllabus-pdf-regular':{'label':'Show Regular Prices', 'type':'toggle', 'default':'off', 'toggles':{
+                    'valid':'After Earlybird',
+                    'always':'Always',
+                    }},
+            }}, */
         '_customer_types':{'label':'Customer Type Buttons', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
             'fields':{
@@ -2052,6 +2071,7 @@ function ciniki_musicfestivals_main() {
         this.showHideSection('_comments_pdf');
         this.showHideSection('_certificates_pdf');
         this.showHideSection('_syllabus');
+//        this.showHideSection('_syllabus_pdf');
         this.showHideSection('_customer_types');
         this.showHideSection('_registration_form');
         this.showHideSection('_registration_teacher_msg');

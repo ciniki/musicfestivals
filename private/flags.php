@@ -16,7 +16,7 @@ function ciniki_musicfestivals_flags(&$ciniki) {
     //
     $flags = array(
         // 0x01
-//        array('flag'=>array('bit'=>'1', 'name'=>'')), 
+        array('flag'=>array('bit'=>'1', 'name'=>'Earlybird Pricing')),  // Not yet implemented
         array('flag'=>array('bit'=>'2', 'name'=>'Online Registrations')),
         array('flag'=>array('bit'=>'3', 'name'=>'Timeslot Photos')),
         array('flag'=>array('bit'=>'4', 'name'=>'Placement')),  // Used for placement field for adjudicators comments

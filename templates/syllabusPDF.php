@@ -99,7 +99,9 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         . "classes.flags, "
         . "classes.earlybird_fee, "
         . "classes.fee, "
-        . "classes.virtual_fee "
+        . "classes.virtual_fee, "
+        . "classes.earlybird_plus_fee, "
+        . "classes.plus_fee "
         . "FROM ciniki_musicfestival_sections AS sections "
         . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
             . "sections.id = categories.section_id "
@@ -135,7 +137,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             'fields'=>array('name'=>'category_name', 'synopsis'=>'category_synopsis', 'description'=>'category_description')),
         array('container'=>'classes', 'fname'=>'id', 
             'fields'=>array('id', 'festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 
-                'earlybird_fee', 'fee', 'virtual_fee')),
+                'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -351,9 +353,58 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             //
             $fill = 1;
             //
+            // Adjudication plus
+            //
+            // Need to add code to handle adjudication plus and earlybird when before earlybird deadline
+//            if( ($festival['flags']&0x10) == 0x10 && $festival['earlybird_date'] != '0000-00-00 00:00:00' ) 
+            if( ($festival['flags']&0x10) == 0x10 ) {
+                $w = array(130, 25, 25);
+                $pdf->SetFont('', 'B', '12');
+                $lh = $pdf->getStringHeight($w[0], 'Class');
+                $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
+                $pdf->Cell($w[1], $lh, 'Regular', 1, 0, 'C', $fill);
+                $pdf->Cell($w[2], $lh, 'Plus', 1, 0, 'C', $fill);
+                $pdf->Ln($lh);
+                $pdf->SetFont('', '', '12');
+                $fill = 0;
+                foreach($category['classes'] as $class) {
+                    $lh = $pdf->getStringHeight($w[0], $class['code'] . ' - ' . $class['name']);
+                    if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 22) ) {
+                        $pdf->AddPage();
+                        // Category
+                        $pdf->SetFont('', 'B', '18');
+                        //$pdf->Cell(180, 10, $category['name'] . ' (continued)', 0, 0, 'L', 0);
+                        $pdf->MultiCell(180, 10, $category['name'] . ' (continued)', 0, 'L', 0, 1);
+                        //$pdf->Ln(12);
+                        // Headers
+                        $pdf->SetFont('', 'B', '12');
+                        $fill = 1;
+                        $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
+                        $pdf->Cell($w[1], $lh, 'Regular', 1, 0, 'C', $fill);
+                        $pdf->Cell($w[2], $lh, 'Plus', 1, 0, 'C', $fill);
+                        $pdf->Ln($lh);
+                        $pdf->SetFont('', '', '12');
+                        $fill = 0;
+                    }
+                    $pdf->MultiCell($w[0], $lh, $class['code'] . ' - ' . $class['name'], 1, 'L', $fill, 0);
+                    if( $class['fee'] > 0 ) {
+                        $pdf->Cell($w[1], $lh, '$' . number_format($class['fee'], 2), 1, 0, 'C', $fill);
+                    } else {
+                        $pdf->Cell($w[1], $lh, 'n/a', 1, 0, 'C', $fill);
+                    }
+                    if( $class['plus_fee'] > 0 ) {
+                        $pdf->Cell($w[2], $lh, '$' . number_format($class['plus_fee'], 2), 1, 0, 'C', $fill);
+                    } else {
+                        $pdf->Cell($w[2], $lh, 'n/a', 1, 0, 'C', $fill);
+                    }
+                    $pdf->Ln($lh);
+                    $fill=!$fill;
+                }
+            }
+            //
             // Earlybird & Virtual Fees
             //
-            if( ($festival['flags']&0x04) && $festival['earlybird_date'] != '0000-00-00 00:00:00' ) {
+            elseif( ($festival['flags']&0x04) == 0x04 && $festival['earlybird_date'] != '0000-00-00 00:00:00' ) {
                 $w = array(105, 25, 25, 25);
                 $pdf->SetFont('', 'B', '12');
                 $lh = $pdf->getStringHeight($w[0], 'Class');
@@ -400,7 +451,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                     $fill=!$fill;
                 }
 
-            } elseif( ($festival['flags']&0x04) && (!isset($args['live-virtual']) || !in_array($args['live-virtual'], ['live','virtual'])) ) {
+            } elseif( ($festival['flags']&0x04) == 0x04 && (!isset($args['live-virtual']) || !in_array($args['live-virtual'], ['live','virtual'])) ) {
                 $w = array(130, 25, 25);
                 $pdf->SetFont('', 'B', '12');
                 $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
