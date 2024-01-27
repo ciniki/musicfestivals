@@ -607,7 +607,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
                         && strtolower($registration["composer{$i}"]) != 'n/a'
                         && strtolower($registration["composer{$i}"]) != 'not applicable'
                         ) {
-                        if( preg_match("/^\s*[Bb][Yy]\s+/", $reg["composer{$i}"]) ) {
+                        if( preg_match("/^\s*[Bb][Yy]\s+/", $registration["composer{$i}"]) ) {
                             $line .= ' ' . $registration["composer{$i}"];
                         } else {
                             $line .= ' by ' . $registration["composer{$i}"];
