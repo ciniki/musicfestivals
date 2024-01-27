@@ -355,15 +355,29 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             //
             // Adjudication plus
             //
-            // Need to add code to handle adjudication plus and earlybird when before earlybird deadline
-//            if( ($festival['flags']&0x10) == 0x10 && $festival['earlybird_date'] != '0000-00-00 00:00:00' ) 
             if( ($festival['flags']&0x10) == 0x10 ) {
+                $earlybird = 'no';
                 $w = array(130, 25, 25);
+                if( $festival['earlybird_date'] != '0000-00-00 00:00:00' ) {
+                    $earlybird_dt = new DateTime($festival['earlybird_date'], new DateTimezone('UTC'));
+                    $now_dt = new DateTime('now', new DateTimezone('UTC'));
+                    if( $now_dt < $earlybird_dt ) {
+                        $earlybird = 'yes';
+                        $w = array(75, 25, 25, 30, 25);
+                    }
+                }
                 $pdf->SetFont('', 'B', '12');
                 $lh = $pdf->getStringHeight($w[0], 'Class');
-                $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
-                $pdf->Cell($w[1], $lh, 'Regular', 1, 0, 'C', $fill);
-                $pdf->Cell($w[2], $lh, 'Plus', 1, 0, 'C', $fill);
+                $i = 0;
+                $pdf->Cell($w[$i++], $lh, 'Class', 1, 0, 'L', $fill);
+                if( $earlybird == 'yes' ) {
+                    $pdf->Cell($w[$i++], $lh, 'Earlybird', 1, 0, 'C', $fill);
+                }
+                $pdf->Cell($w[$i++], $lh, 'Regular', 1, 0, 'C', $fill);
+                if( $earlybird == 'yes' ) {
+                    $pdf->Cell($w[$i++], $lh, 'Earlybird Plus', 1, 0, 'C', $fill);
+                }
+                $pdf->Cell($w[$i++], $lh, 'Plus', 1, 0, 'C', $fill);
                 $pdf->Ln($lh);
                 $pdf->SetFont('', '', '12');
                 $fill = 0;
@@ -373,29 +387,49 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                         $pdf->AddPage();
                         // Category
                         $pdf->SetFont('', 'B', '18');
-                        //$pdf->Cell(180, 10, $category['name'] . ' (continued)', 0, 0, 'L', 0);
                         $pdf->MultiCell(180, 10, $category['name'] . ' (continued)', 0, 'L', 0, 1);
-                        //$pdf->Ln(12);
                         // Headers
                         $pdf->SetFont('', 'B', '12');
                         $fill = 1;
-                        $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
-                        $pdf->Cell($w[1], $lh, 'Regular', 1, 0, 'C', $fill);
-                        $pdf->Cell($w[2], $lh, 'Plus', 1, 0, 'C', $fill);
+                        $i = 0;
+                        $pdf->Cell($w[$i++], $lh, 'Class', 1, 0, 'L', $fill);
+                        if( $earlybird == 'yes' ) {
+                            $pdf->Cell($w[$i++], $lh, 'Earlybird', 1, 0, 'C', $fill);
+                        }
+                        $pdf->Cell($w[$i++], $lh, 'Regular', 1, 0, 'C', $fill);
+                        if( $earlybird == 'yes' ) {
+                            $pdf->Cell($w[$i++], $lh, 'Earlybird Plus', 1, 0, 'C', $fill);
+                        }
+                        $pdf->Cell($w[$i++], $lh, 'Plus', 1, 0, 'C', $fill);
                         $pdf->Ln($lh);
                         $pdf->SetFont('', '', '12');
                         $fill = 0;
                     }
-                    $pdf->MultiCell($w[0], $lh, $class['code'] . ' - ' . $class['name'], 1, 'L', $fill, 0);
+                    $i = 0;
+                    $pdf->MultiCell($w[$i++], $lh, $class['code'] . ' - ' . $class['name'], 1, 'L', $fill, 0);
+                    if( $earlybird == 'yes' ) {
+                        if( $class['earlybird_fee'] > 0 ) {
+                            $pdf->Cell($w[$i++], $lh, '$' . number_format($class['earlybird_fee'], 2), 1, 0, 'C', $fill);
+                        } else {
+                            $pdf->Cell($w[$i++], $lh, 'n/a', 1, 0, 'C', $fill);
+                        }
+                    }
                     if( $class['fee'] > 0 ) {
-                        $pdf->Cell($w[1], $lh, '$' . number_format($class['fee'], 2), 1, 0, 'C', $fill);
+                        $pdf->Cell($w[$i++], $lh, '$' . number_format($class['fee'], 2), 1, 0, 'C', $fill);
                     } else {
-                        $pdf->Cell($w[1], $lh, 'n/a', 1, 0, 'C', $fill);
+                        $pdf->Cell($w[$i++], $lh, 'n/a', 1, 0, 'C', $fill);
+                    }
+                    if( $earlybird == 'yes' ) {
+                        if( $class['earlybird_plus_fee'] > 0 ) {
+                            $pdf->Cell($w[$i++], $lh, '$' . number_format($class['earlybird_plus_fee'], 2), 1, 0, 'C', $fill);
+                        } else {
+                            $pdf->Cell($w[$i++], $lh, 'n/a', 1, 0, 'C', $fill);
+                        }
                     }
                     if( $class['plus_fee'] > 0 ) {
-                        $pdf->Cell($w[2], $lh, '$' . number_format($class['plus_fee'], 2), 1, 0, 'C', $fill);
+                        $pdf->Cell($w[$i++], $lh, '$' . number_format($class['plus_fee'], 2), 1, 0, 'C', $fill);
                     } else {
-                        $pdf->Cell($w[2], $lh, 'n/a', 1, 0, 'C', $fill);
+                        $pdf->Cell($w[$i++], $lh, 'n/a', 1, 0, 'C', $fill);
                     }
                     $pdf->Ln($lh);
                     $fill=!$fill;
