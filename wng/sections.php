@@ -109,9 +109,9 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     }
 
     //
-    // Section to display the file download for a festival
+    // Section to display the file download for a festival - deprecated
     //
-    $sections['ciniki.musicfestivals.files'] = array(
+/*    $sections['ciniki.musicfestivals.files'] = array(
         'name' => 'Files',
         'module' => 'Music Festivals',
         'settings' => array(
@@ -121,7 +121,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'options'=>$festivals,
                 ),
             ),
-        );
+        ); */
 
     //
     // Section to display the adjudicators for a festival
