@@ -340,6 +340,7 @@ function ciniki_musicfestivals_hooks_uiCustomersData($ciniki, $tnid, $args) {
         $rsp['tabs'][] = array(
             'id' => 'ciniki.musicfestivals.festivals',
             'label' => 'Music',
+            'priority' => 3000,
             'sections' => $sections,
             );
         $sections = array();
