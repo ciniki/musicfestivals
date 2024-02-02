@@ -529,6 +529,8 @@ function ciniki_musicfestivals_main() {
                     'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x02) == 0x02 ? 'yes' : 'no'; },
                     'toggles':{'all':'All', 'inperson':'In Person', 'virtual':'Virtual'},
                     },
+                's_header':{'label':'Header', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+                's_footer':{'label':'Footer', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'footerdate':{'label':'Footer Date', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
             }},
         'schedule_buttons':{'label':'', 'aside':'yes',
@@ -843,6 +845,8 @@ function ciniki_musicfestivals_main() {
             'names':this.formValue('names'),
             'ipv':this.formValue('s_ipv'),
             'titles':this.formValue('s_titles'),
+            'header':this.formValue('s_header'),
+            'footer':this.formValue('s_footer'),
             'footerdate':this.formValue('footerdate'),
             };
         M.api.openPDF('ciniki.musicfestivals.schedulePDF',args);
@@ -3997,6 +4001,7 @@ function ciniki_musicfestivals_main() {
                 '1':{'name':'Release Schedule'},
                 '2':{'name':'Release Comments'},
                 '3':{'name':'Release Certificates'},
+                '4':{'name':'Release Results'},
                 }},
             }},
         'adjudicators':{'label':'Adjudicators', 'fields':{

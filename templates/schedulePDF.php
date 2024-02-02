@@ -190,65 +190,76 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         public $left_margin = 18;
         public $right_margin = 18;
         public $top_margin = 15;
+        public $header_visible = 'yes';
         public $header_image = null;
         public $header_title = '';
         public $header_sub_title = '';
         public $header_msg = '';
         public $header_height = 0;      // The height of the image and address
+        public $footer_visible = 'yes';
         public $footer_msg = '';
         public $tenant_details = array();
 
         public function Header() {
-            //
-            // Check if there is an image to be output in the header.   The image
-            // will be displayed in a narrow box if the contact information is to
-            // be displayed as well.  Otherwise, image is scaled to be 100% page width
-            // but only to a maximum height of the header_height (set far below).
-            //
-            $img_width = 0;
-            if( $this->header_image != null ) {
-                $height = $this->header_image->getImageHeight();
-                $width = $this->header_image->getImageWidth();
-                $image_ratio = $width/$height;
-                $img_width = 60;
-                $available_ratio = $img_width/$this->header_height;
-                // Check if the ratio of the image will make it too large for the height,
-                // and scaled based on either height or width.
-                if( $available_ratio < $image_ratio ) {
-                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, $img_width, 0, 'JPEG', '', 'L', 2, '150');
-                } else {
-                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-8, 'JPEG', '', 'L', 2, '150');
+            if( $this->header_visible == 'yes' ) {
+                //
+                // Check if there is an image to be output in the header.   The image
+                // will be displayed in a narrow box if the contact information is to
+                // be displayed as well.  Otherwise, image is scaled to be 100% page width
+                // but only to a maximum height of the header_height (set far below).
+                //
+                $img_width = 0;
+                if( $this->header_image != null ) {
+                    $height = $this->header_image->getImageHeight();
+                    $width = $this->header_image->getImageWidth();
+                    $image_ratio = $width/$height;
+                    $img_width = 60;
+                    $available_ratio = $img_width/$this->header_height;
+                    // Check if the ratio of the image will make it too large for the height,
+                    // and scaled based on either height or width.
+                    if( $available_ratio < $image_ratio ) {
+                        $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, $img_width, 0, 'JPEG', '', 'L', 2, '150');
+                    } else {
+                        $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-8, 'JPEG', '', 'L', 2, '150');
+                    }
                 }
+
+                $this->Ln(8);
+                $this->SetFont('times', 'B', 20);
+                if( $img_width > 0 ) {
+                    $this->Cell($img_width, 10, '', 0);
+                }
+                $this->setX($this->left_margin + $img_width);
+                $this->Cell(180-$img_width, 12, $this->header_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
+                $this->Ln(7);
+
+                $this->SetFont('times', 'B', 14);
+                $this->setX($this->left_margin + $img_width);
+                $this->Cell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
+                $this->Ln(6);
+
+                $this->SetFont('times', 'B', 12);
+                $this->setX($this->left_margin + $img_width);
+                $this->Cell(180-$img_width, 10, $this->header_msg, 0, false, 'R', 0, '', 0, false, 'M', 'M');
+                $this->Ln(6);
+            } else {
+                // No header
             }
 
-            $this->Ln(8);
-            $this->SetFont('times', 'B', 20);
-            if( $img_width > 0 ) {
-                $this->Cell($img_width, 10, '', 0);
-            }
-            $this->setX($this->left_margin + $img_width);
-            $this->Cell(180-$img_width, 12, $this->header_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
-            $this->Ln(7);
-
-            $this->SetFont('times', 'B', 14);
-            $this->setX($this->left_margin + $img_width);
-            $this->Cell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
-            $this->Ln(6);
-
-            $this->SetFont('times', 'B', 12);
-            $this->setX($this->left_margin + $img_width);
-            $this->Cell(180-$img_width, 10, $this->header_msg, 0, false, 'R', 0, '', 0, false, 'M', 'M');
-            $this->Ln(6);
         }
 
         // Page footer
         public function Footer() {
             // Position at 15 mm from bottom
-            $this->SetY(-15);
-            $this->SetFont('helvetica', 'B', 10);
-            $this->Cell(90, 10, $this->footer_msg, 0, false, 'L', 0, '', 0, false, 'T', 'M');
-            $this->SetFont('helvetica', '', 10);
-            $this->Cell(90, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+            if( $this->footer_visible == 'yes' ) {
+                $this->SetY(-15);
+                $this->SetFont('helvetica', 'B', 10);
+                $this->Cell(90, 10, $this->footer_msg, 0, false, 'L', 0, '', 0, false, 'T', 'M');
+                $this->SetFont('helvetica', '', 10);
+                $this->Cell(90, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+            } else {
+                // No footer
+            }
         }
     }
 
@@ -287,6 +298,16 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         if( $rc['stat'] == 'ok' ) {
             $pdf->header_image = $rc['image'];
         }
+    }
+
+    //
+    // Check if header/footer should be hidden
+    //
+    if( isset($args['header']) && $args['header'] != 'yes' ) {
+        $pdf->header_visible = 'no';
+    }
+    if( isset($args['footer']) && $args['footer'] != 'yes' ) {
+        $pdf->footer_visible = 'no';
     }
 
     //

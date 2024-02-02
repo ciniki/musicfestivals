@@ -5,8 +5,7 @@
 #
 # Fields
 # ------
-# id:                   The ID assigned to the adjudicator.
-# uuid:                 The Universal Unique ID.
+# id:                   The ID assigned to the adjudicator.  # uuid:                 The Universal Unique ID.
 # tnid:                 The tenant the adjudicator is attached to.
 #
 # festival_id:          The festival the adjudicator is attached to.
@@ -66,6 +65,8 @@
 # timeslot_id:          The ID of the time this registration is attached to. 
 #                       Used to be for only split classes, now for all classes.
 # timeslot_sequence:    The order to display this registration in for the timeslot.
+#
+# placement:            The placement for this registration in their timeslot/class. **future**
 # 
 # title1:               The title and composer of the 1st piece they will perform.
 # composer1:            The composer of the 1st piece they will perform.
