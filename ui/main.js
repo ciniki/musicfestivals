@@ -1013,7 +1013,7 @@ function ciniki_musicfestivals_main() {
             if( j == 5 && (this.data.flags&0x10) == 0x10 ) {
                 return (d.participation == 2 ? 'Plus' : '');
             } else if( j == 5 && (this.data.flags&0x02) == 0x02 ) {
-                return (d.participation == 2 ? 'Virtual' : 'In Person');
+                return (d.participation == 1 ? 'Virtual' : 'In Person');
             }
         }
         if( s == 'registration_sections' || s == 'emails_sections' ) {
