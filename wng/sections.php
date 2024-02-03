@@ -135,9 +135,9 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'complex_options'=>array('value'=>'id', 'name'=>'name'),
                 'options'=>$festivals,
                 ),
-            'layout' => array('label'=>'Format', 'type'=>'toggle', 'default'=>'contentphoto', 
-                'toggles'=>array('contentphoto'=>'Bio & Photos', 'imagebutton'=>'Image Buttons'),
-                ),
+//            'layout' => array('label'=>'Format', 'type'=>'toggle', 'default'=>'contentphoto', 
+//                'toggles'=>array('contentphoto'=>'Bio & Photos', 'imagebutton'=>'Image Buttons'),
+//                ),
             'layout' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
                 'contentphoto' => 'Content + Photo',
                 'imagebuttons' => 'Image Buttons',
@@ -169,6 +169,33 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'virtual' => 'Virtual',
                 ));
     }
+
+    //
+    // Section to display the schedules for a festival
+    //
+    $sections['ciniki.musicfestivals.schedules'] = array(
+        'name' => 'Schedules',
+        'module' => 'Music Festivals',
+        'settings' => array(
+            'title' => array('label'=>'Title', 'type'=>'text'),
+            'content' => array('label'=>'Intro', 'type'=>'textarea'),
+            'festival-id' => array('label'=>'Festival', 'type'=>'select', 
+                'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                'options'=>$festivals,
+                ),
+            'full-names' => array('label'=>'Full Names', 'type'=>'toggle', 'default'=>'no',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
+            'ipv' => array('label'=>'Live/Virtual', 'type'=>'toggle', 'default'=>'all',
+                'toggles'=>array(
+                    'all' => 'ALl',
+                    'inperson' => 'Live',
+                    'virtual' => 'Virtual',
+                    )),
+            ),
+        );
 
     //
     // Section to display the photos for a festival

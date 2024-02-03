@@ -768,6 +768,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $strsql = "SELECT sections.id, "
                 . "sections.festival_id, "
                 . "sections.name, "
+                . "sections.flags, "
+                . "sections.flags AS options, "
                 . "sections.adjudicator1_id, "
                 . "sections.adjudicator2_id, "
                 . "sections.adjudicator3_id "
@@ -778,7 +780,11 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'schedulesections', 'fname'=>'id', 
-                    'fields'=>array('id', 'festival_id', 'name', 'adjudicator1_id', 'adjudicator2_id', 'adjudicator3_id')),
+                    'fields'=>array('id', 'festival_id', 'name', 'flags', 'options', 
+                        'adjudicator1_id', 'adjudicator2_id', 'adjudicator3_id',
+                        ),
+                    'flags' => array('options'=>$maps['schedulesection']['flags']),
+                    ),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
@@ -791,6 +797,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     if( isset($args['ssection_id']) && $args['ssection_id'] == $schedulesection['id'] ) {
                         $requested_section = $schedulesection;
                     }
+                    $festival['schedule_sections'][$iid]['options'] == '';
+
                 }
             } else {
                 $festival['schedule_sections'] = array();
