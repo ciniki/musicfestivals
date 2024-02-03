@@ -183,14 +183,29 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'complex_options'=>array('value'=>'id', 'name'=>'name'),
                 'options'=>$festivals,
                 ),
+            'layout' => array('label'=>'Layout', 'type'=>'select', 'default'=>'',
+                'options'=>array(
+                    'section-buttons' => 'Section Buttons',
+                    'division-buttons' => 'Section - Division Buttons',
+                    )),
+            'division-dates' => array('label'=>'Division Dates', 'type'=>'toggle', 'default'=>'no',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
             'full-names' => array('label'=>'Full Names', 'type'=>'toggle', 'default'=>'no',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
+            'titles' => array('label'=>'Titles', 'type'=>'toggle', 'default'=>'no',
                 'toggles'=>array(
                     'no' => 'No',
                     'yes' => 'Yes',
                     )),
             'ipv' => array('label'=>'Live/Virtual', 'type'=>'toggle', 'default'=>'all',
                 'toggles'=>array(
-                    'all' => 'ALl',
+                    'all' => 'All',
                     'inperson' => 'Live',
                     'virtual' => 'Virtual',
                     )),

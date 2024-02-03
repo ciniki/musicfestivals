@@ -73,16 +73,6 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, "
         . "timeslots.id AS timeslot_id, "
         . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
-/*        . "timeslots.class1_id, "
-        . "timeslots.class2_id, "
-        . "timeslots.class3_id, "
-        . "timeslots.class4_id, "
-        . "timeslots.class5_id, "
-        . "IFNULL(class1.name, '') AS class1_name, "
-        . "IFNULL(class2.name, '') AS class2_name, "
-        . "IFNULL(class3.name, '') AS class3_name, "
-        . "IFNULL(class4.name, '') AS class4_name, "
-        . "IFNULL(class5.name, '') AS class5_name, " */
         . "timeslots.name AS timeslot_name, "
         . "timeslots.description, "
         . "registrations.id AS reg_id, "
@@ -119,26 +109,6 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             . "divisions.id = timeslots.sdivision_id " 
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-/*        . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
-            . "timeslots.class1_id = class1.id " 
-            . "AND class1.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class2 ON ("
-            . "timeslots.class2_id = class2.id " 
-            . "AND class2.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class3 ON ("
-            . "timeslots.class3_id = class3.id " 
-            . "AND class3.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class4 ON ("
-            . "timeslots.class4_id = class4.id " 
-            . "AND class4.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class5 ON ("
-            . "timeslots.class5_id = class5.id " 
-            . "AND class5.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") " */
         . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "timeslots.id = registrations.timeslot_id "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -150,6 +120,9 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "WHERE divisions.ssection_id = '" . ciniki_core_dbQuote($ciniki, $s['section-id']) . "' "
         . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
+    if( isset($s['division-id']) && $s['division-id'] > 0 ) {
+        $strsql .= "AND divisions.id = '" . ciniki_core_dbQuote($ciniki, $s['division-id']) . "' ";
+    }
     if( isset($s['ipv']) && $s['ipv'] == 'inperson' ) {
         $strsql .= "AND (registrations.participation < 1 || ISNULL(registrations.participation) ) ";
     } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
@@ -163,7 +136,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'address'),
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
-            'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 'description', 'class_name',
+            'fields'=>array('id'=>'timeslot_id', 'title'=>'timeslot_name', 'time'=>'slot_time_text', 'synopsis'=>'description', 'class_name',
                 ),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
@@ -196,51 +169,64 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
     foreach($divisions as $division) {
         if( isset($division['timeslots']) ) {
+            //
+            // Process the timeslots
+            //
             foreach($division['timeslots'] as $tid => $timeslot) {
-                $division['timeslots'][$tid]['time'] = '<b>' . str_replace(' ', '&nbsp;', $timeslot['time']) . '</b>';
-//                if( $timeslot['name'] == '' ) {
-//                    $content = '<b>' . $timeslot['class_name'] . '</b>';
-//                } else {
-                    $content = "<div class='timeslot-name'><b>" . $timeslot['name'] . '</b></div>';
-//                }
-                if( $timeslot['description'] != '' ) {
-                    $content .= "<p class='description'>" . $timeslot['description'] . "</p>";
+                if( $timeslot['title'] == '' && $timeslot['class_name'] != '' ) {
+                    $division['timeslots'][$tid]['title'] = $timeslot['class_name'];
                 }
+                $division['timeslots'][$tid]['items'] = array();
+                //
+                // Create the items table for the schedule
+                //
                 if( isset($timeslot['registrations']) ) {
                     foreach($timeslot['registrations'] as $registration) {
-                        for($i = 1; $i <= 8; $i++) {
-                            if( isset($registration["title{$i}"]) && $registration["title{$i}"] != '' ) {
-                                $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $registration, $i);
-                                if( $rc['stat'] != 'ok' ) {
-                                    return $rc;
-                                }
-                                if( isset($s['full-names']) && $s['full-names'] == 'yes' ) {
-                                    $content .= "<div class='timeslot-title'>" . $registration['display_name'] . ' - ' . $rc['title'] . '</div>';
-                                } else {
-                                    $content .= "<div class='timeslot-title'>" . $registration['public_name'] . ' - ' . $rc['title'] . '</div>';
+                        //
+                        // Setup name
+                        //
+                        $name = $registration['public_name'];
+                        if( isset($s['full-names']) && $s['full-names'] == 'yes' ) {
+                            $name = $registration['display_name'];
+                        }
+
+                        //
+                        // Check if titles required, then add line for each title, otherwise add names
+                        //
+                        if( isset($s['titles']) && $s['titles'] == 'yes' ) {
+                            for($i = 1; $i <= 8; $i++) {
+                                //
+                                // Make sure the title exists
+                                //
+                                if( isset($registration["title{$i}"]) && $registration["title{$i}"] != '' ) {
+                                    $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $registration, $i);
+                                    if( $rc['stat'] != 'ok' ) {
+                                        return $rc;
+                                    }
+                                    $division['timeslots'][$tid]['items'][] = array('name'=>$name, 'title'=>$rc['title']);
                                 }
                             }
+                        } 
+                        else {
+                            $division['timeslots'][$tid]['items'][] = array('name'=>$name);
                         }
                     }
                 }
-                $division['timeslots'][$tid]['content'] = $content;
             }
+
             $blocks[] = array(
-                'type' => 'table',
-                'title' => $division['name'] . ' - ' . $division['date'],
+                'type' => 'schedule',
+                'title' => $division['name'] . (isset($s['division-dates']) && $s['division-dates'] == 'yes' ? ' - ' . $division['date'] : ''),
                 'subtitle' => $division['address'],
-                'class' => 'musicfestival-timeslots' . ($division['address'] != '' ? ' subtitle' : ''),
-                'headers' => 'no',
-                'columns' => array(
-                    array('label'=>'Time', 'field'=>'time', 'class'=>'alignright aligntop'),
-                    array('label'=>'Competitors', 'field'=>'content', 'class'=>''),
+                'class' => 'musicfestival-timeslots limit-width limit-width-80',
+                'items' => $division['timeslots'],
+                'details-headers' => 'no',
+                'details-columns' => array(
+                    array('label'=>'Name', 'field'=>'name', 'class'=>''),
+                    array('label'=>'Title', 'field'=>'title', 'class'=>''),
                     ),
-                'rows' => $division['timeslots'],
                 );
         }
-//        $blocks[] = array(
-//            'type' => 'table',
-//            );
     }
     
     return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
