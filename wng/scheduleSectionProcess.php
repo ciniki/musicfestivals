@@ -197,12 +197,15 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     foreach($divisions as $division) {
         if( isset($division['timeslots']) ) {
             foreach($division['timeslots'] as $tid => $timeslot) {
-                $division['timeslots'][$tid]['time'] = '<b>' . $timeslot['time'] . '</b>';
+                $division['timeslots'][$tid]['time'] = '<b>' . str_replace(' ', '&nbsp;', $timeslot['time']) . '</b>';
 //                if( $timeslot['name'] == '' ) {
 //                    $content = '<b>' . $timeslot['class_name'] . '</b>';
 //                } else {
-                    $content = '<b>' . $timeslot['name'] . '</b>';
+                    $content = "<div class='timeslot-name'><b>" . $timeslot['name'] . '</b></div>';
 //                }
+                if( $timeslot['description'] != '' ) {
+                    $content .= "<p class='description'>" . $timeslot['description'] . "</p>";
+                }
                 if( isset($timeslot['registrations']) ) {
                     foreach($timeslot['registrations'] as $registration) {
                         for($i = 1; $i <= 8; $i++) {
@@ -212,9 +215,9 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                                     return $rc;
                                 }
                                 if( isset($s['full-names']) && $s['full-names'] == 'yes' ) {
-                                    $content .= "<br/>" . $registration['display_name'] . ' - ' . $rc['title'];
+                                    $content .= "<div class='timeslot-title'>" . $registration['display_name'] . ' - ' . $rc['title'] . '</div>';
                                 } else {
-                                    $content .= "<br/>" . $registration['public_name'] . ' - ' . $rc['title'];
+                                    $content .= "<div class='timeslot-title'>" . $registration['public_name'] . ' - ' . $rc['title'] . '</div>';
                                 }
                             }
                         }
