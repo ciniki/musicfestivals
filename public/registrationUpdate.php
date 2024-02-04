@@ -10,6 +10,9 @@
 // -------
 //
 function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
+
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
+
     //
     // Find all the required and optional arguments
     //
@@ -227,6 +230,29 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         . "registrations.invoice_id, "
         . "registrations.display_name, "
         . "registrations.title1, "
+        . "registrations.title2, "
+        . "registrations.title3, "
+        . "registrations.title4, "
+        . "registrations.title5, "
+        . "registrations.title6, "
+        . "registrations.title7, "
+        . "registrations.title8, "
+        . "registrations.composer1, "
+        . "registrations.composer2, "
+        . "registrations.composer3, "
+        . "registrations.composer4, "
+        . "registrations.composer5, "
+        . "registrations.composer6, "
+        . "registrations.composer7, "
+        . "registrations.composer8, "
+        . "registrations.movements1, "
+        . "registrations.movements2, "
+        . "registrations.movements3, "
+        . "registrations.movements4, "
+        . "registrations.movements5, "
+        . "registrations.movements6, "
+        . "registrations.movements7, "
+        . "registrations.movements8, "
         . "registrations.fee, "
         . "classes.code AS class_code, "
         . "classes.name AS class_name "
@@ -266,7 +292,32 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
             // Check if anything changed in the cart
             //
             $update_item_args = array();
-            $notes = $registration['display_name'] . ($registration['title1'] != '' ? ' - ' . $registration['title1'] : '');
+            //
+            // Generate notes field for invoice
+            //
+            $notes = $registration['display_name'];
+            $titles = '';
+            for($i = 1; $i <= 8; $i++) {
+                if( $registration["title{$i}"] != '' ) {
+                    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x040000) ) {
+                        $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
+                        if( isset($rc['title']) ) {
+                            $registration["title{$i}"] = $rc['title'];
+                        }
+                    }
+                    if( $titles != '' && $i > 1 ) {
+                        if( strncmp($titles, '1', 1) != 0 ) {
+                            $titles = "1. " . $titles . "\n{$i}. ";
+                        } else {
+                            $titles .= "\n{$i}. ";
+                        }
+                    }
+                    $titles .= $registration["title{$i}"];
+                }
+            }
+            if( $titles != '' ) {
+                $notes .= "\n" . $titles;
+            }
 
             if( $item['code'] != $registration['class_code'] ) {
                 $update_item_args['code'] = $registration['class_code'];

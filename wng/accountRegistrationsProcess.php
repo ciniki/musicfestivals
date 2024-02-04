@@ -12,6 +12,8 @@
 //
 function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, &$request, $args) {
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
+
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
@@ -838,49 +840,6 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'competitor4_id' => $fields['competitor4_id']['value'],
                 'class_id' => $selected_class['id'],
                 'timeslot_id' => 0,
-/*                'title1' => $fields['title1']['value'],
-                'composer1' => isset($fields['composer1']['value']) ? $fields['composer1']['value'] : '',
-                'movements1' => isset($fields['movements1']['value']) ? $fields['movements1']['value'] : '',
-                'perf_time1' => $fields['perf_time1']['value'],
-                'video_url1' => isset($fields['video_url1']['value']) ? $fields['video_url1']['value'] : '',
-                'title2' => $fields['title2']['value'],
-                'composer2' => isset($fields['composer2']['value']) ? $fields['composer2']['value'] : '',
-                'movements2' => isset($fields['movements2']['value']) ? $fields['movements2']['value'] : '',
-                'perf_time2' => $fields['perf_time2']['value'],
-                'title3' => isset($fields['title3']['value']) ? $fields['title3']['value'] : '',
-                'composer3' => isset($fields['composer3']['value']) ? $fields['composer3']['value'] : '',
-                'movements3' => isset($fields['movements3']['value']) ? $fields['movements3']['value'] : '',
-                'perf_time3' => isset($fields['perf_time3']['value']) ? $fields['perf_time3']['value'] : '',
-                'title4' => isset($fields['title4']['value']) ? $fields['title4']['value'] : '',
-                'composer4' => isset($fields['composer4']['value']) ? $fields['composer4']['value'] : '',
-                'movements4' => isset($fields['movements4']['value']) ? $fields['movements4']['value'] : '',
-                'perf_time4' => isset($fields['perf_time4']['value']) ? $fields['perf_time4']['value'] : '',
-                'title4' => isset($fields['title4']['value']) ? $fields['title4']['value'] : '',
-                'composer4' => isset($fields['composer4']['value']) ? $fields['composer4']['value'] : '',
-                'movements4' => isset($fields['movements4']['value']) ? $fields['movements4']['value'] : '',
-                'perf_time4' => isset($fields['perf_time4']['value']) ? $fields['perf_time4']['value'] : '',
-                'title4' => isset($fields['title4']['value']) ? $fields['title4']['value'] : '',
-                'composer4' => isset($fields['composer4']['value']) ? $fields['composer4']['value'] : '',
-                'movements4' => isset($fields['movements4']['value']) ? $fields['movements4']['value'] : '',
-                'perf_time4' => isset($fields['perf_time4']['value']) ? $fields['perf_time4']['value'] : '',
-                'title4' => isset($fields['title4']['value']) ? $fields['title4']['value'] : '',
-                'composer4' => isset($fields['composer4']['value']) ? $fields['composer4']['value'] : '',
-                'movements4' => isset($fields['movements4']['value']) ? $fields['movements4']['value'] : '',
-                'perf_time4' => isset($fields['perf_time4']['value']) ? $fields['perf_time4']['value'] : '',
-                'title4' => isset($fields['title4']['value']) ? $fields['title4']['value'] : '',
-                'composer4' => isset($fields['composer4']['value']) ? $fields['composer4']['value'] : '',
-                'movements4' => isset($fields['movements4']['value']) ? $fields['movements4']['value'] : '',
-                'perf_time4' => isset($fields['perf_time4']['value']) ? $fields['perf_time4']['value'] : '', */
-/*                'video_url2' => isset($fields['video_url1']['value'] ? $fields['video_url2']['value'] : '',
-                'video_url3' => isset($fields['video_url1']['value'] ? $fields['video_url3']['value'] : '',
-                'video_url4' => isset($fields['video_url4']['value']) ? $fields['video_url4']['value'] : '',
-                'video_url5' => isset($fields['video_url5']['value']) ? $fields['video_url5']['value'] : '',
-                'video_url6' => isset($fields['video_url6']['value']) ? $fields['video_url6']['value'] : '',
-                'video_url7' => isset($fields['video_url7']['value']) ? $fields['video_url7']['value'] : '',
-                'video_url8' => isset($fields['video_url8']['value']) ? $fields['video_url8']['value'] : '', */
-//                'music_orgfilename1' => $fields['music_orgfilename1']['value'],
-//                'music_orgfilename2' => $fields['music_orgfilename2']['value'],
-//                'music_orgfilename3' => $fields['music_orgfilename3']['value'],
                 'instrument' => isset($fields['instrument']['value']) ? $fields['instrument']['value'] : '',
                 'payment_type' => 0,
                 'participation' => (isset($fields['participation']['value']) ? $fields['participation']['value'] : ''),
@@ -1019,6 +978,33 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             }
 
             //
+            // Generate notes field for invoice
+            //
+            $notes = $registration['display_name'];
+            $titles = '';
+            for($i = 1; $i <= 8; $i++) {
+                if( $registration["title{$i}"] != '' ) {
+                    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x040000) ) {
+                        $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
+                        if( isset($rc['title']) ) {
+                            $registration["title{$i}"] = $rc['title'];
+                        }
+                    }
+                    if( $titles != '' && $i > 1 ) {
+                        if( strncmp($titles, '1', 1) != 0 ) {
+                            $titles = "1. " . $titles . "\n{$i}. ";
+                        } else {
+                            $titles .= "\n{$i}. ";
+                        }
+                    }
+                    $titles .= $registration["title{$i}"];
+                }
+            }
+            if( $titles != '' ) {
+                $notes .= "\n" . $titles;
+            }
+
+            //
             // Add to the cart
             //
             ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'wng', 'cartItemAdd');
@@ -1034,16 +1020,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'unit_discount_amount' => 0,
                 'unit_discount_percentage' => 0,
                 'taxtype_id' => 0,
-//                'notes' => $registration['display_name'] . ($registration['title1'] != '' ? ' - ' . $registration['title1'] : ''),
-                'notes' => $registration['display_name'] 
-                    . ($registration['title1'] != '' ? ' - ' . $registration['title1'] : '')
-                    . ($registration['title2'] != '' ? ', ' . $registration['title2'] : '')
-                    . ($registration['title3'] != '' ? ', ' . $registration['title3'] : '')
-                    . ($registration['title4'] != '' ? ', ' . $registration['title4'] : '')
-                    . ($registration['title5'] != '' ? ', ' . $registration['title5'] : '')
-                    . ($registration['title6'] != '' ? ', ' . $registration['title6'] : '')
-                    . ($registration['title7'] != '' ? ', ' . $registration['title7'] : '')
-                    . ($registration['title8'] != '' ? ', ' . $registration['title8'] : ''),
+                'notes' => $notes,
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.309', 'msg'=>'Unable to add to cart', 'err'=>$rc['err']));
@@ -1254,15 +1231,29 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 // Check if anything changed in the cart
                 //
                 $update_item_args = array();
-                $notes = $registration['display_name'] 
-                    . ($registration['title1'] != '' ? ' - ' . $registration['title1'] : '')
-                    . ($registration['title2'] != '' ? ', ' . $registration['title2'] : '')
-                    . ($registration['title3'] != '' ? ', ' . $registration['title3'] : '')
-                    . ($registration['title4'] != '' ? ', ' . $registration['title4'] : '')
-                    . ($registration['title5'] != '' ? ', ' . $registration['title5'] : '')
-                    . ($registration['title6'] != '' ? ', ' . $registration['title6'] : '')
-                    . ($registration['title7'] != '' ? ', ' . $registration['title7'] : '')
-                    . ($registration['title8'] != '' ? ', ' . $registration['title8'] : '');
+                $notes = $registration['display_name'];
+                $titles = '';
+                for($i = 1; $i <= 8; $i++) {
+                    if( $registration["title{$i}"] != '' ) {
+                        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x040000) ) {
+                            $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
+                            if( isset($rc['title']) ) {
+                                $registration["title{$i}"] = $rc['title'];
+                            }
+                        }
+                        if( $titles != '' && $i > 1 ) {
+                            if( strncmp($titles, '1', 1) != 0 ) {
+                                $titles = "1. " . $titles . "\n{$i}. ";
+                            } else {
+                                $titles .= "\n{$i}. ";
+                            }
+                        }
+                        $titles .= $registration["title{$i}"];
+                    }
+                }
+                if( $titles != '' ) {
+                    $notes .= "\n" . $titles;
+                }
 
                 if( $item['code'] != $selected_class['code'] ) {
                     $update_item_args['code'] = $selected_class['code'];
@@ -1434,7 +1425,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             'form-id' => 'addregform',
             'guidelines' => $guidelines,
             'title' => ($registration_id > 0 ? 'Update Registration' : 'Add Registration'),
-            'class' => 'limit-width limit-width-70',
+            'class' => 'limit-width limit-width-80',
             'submit-buttons-class' => (isset($members) && $fields['member_id']['value'] == 0 ? 'hidden' : ''),
             'problem-list' => $form_errors,
             'cancel-label' => 'Cancel',
@@ -1623,7 +1614,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         $blocks[] = array(
             'type' => 'form',
             'title' => 'Registration',
-            'class' => 'limit-width limit-width-70',
+            'class' => 'limit-width limit-width-80',
             'problem-list' => $form_errors,
             'cancel-label' => $editable == 'yes' ? 'Cancel' : 'Back',
             'submit-label' => 'Save',
@@ -1763,6 +1754,29 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             $strsql .= "registrations.display_name, ";
         }
         $strsql .= "registrations.title1, "
+            . "registrations.title2, "
+            . "registrations.title3, "
+            . "registrations.title4, "
+            . "registrations.title5, "
+            . "registrations.title6, "
+            . "registrations.title7, "
+            . "registrations.title8, "
+            . "registrations.composer1, "
+            . "registrations.composer2, "
+            . "registrations.composer3, "
+            . "registrations.composer4, "
+            . "registrations.composer5, "
+            . "registrations.composer6, "
+            . "registrations.composer7, "
+            . "registrations.composer8, "
+            . "registrations.movements1, "
+            . "registrations.movements2, "
+            . "registrations.movements3, "
+            . "registrations.movements4, "
+            . "registrations.movements5, "
+            . "registrations.movements6, "
+            . "registrations.movements7, "
+            . "registrations.movements8, "
             . "registrations.fee, "
             . "registrations.participation, "
             . "classes.code AS class_code, "
@@ -1831,7 +1845,10 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'fields'=>array('id', 'status', 'invoice_status', 'invoice_id', 
                     'billing_customer_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 'display_name', 
                     'class_code', 'class_name', 'section_name', 'category_name', 'codename', 
-                    'fee', 'participation', 'title1', 'participation',
+                    'fee', 'participation', 
+                    'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
+                    'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
+                    'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
                     'timeslot_time', 'timeslot_date', 'timeslot_address', 'timeslot_flags',
                     ),
                 ),
@@ -1848,6 +1865,18 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         foreach($registrations as $rid => $reg) {
             if( ($festival['flags']&0x0100) == 0x0100 ) {
                 $reg['codename'] = $reg['class_code'] . ' - ' . $reg['section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name'];
+            }
+            $reg['titles'] = '';
+            for($i = 1; $i <= 8; $i++) {
+                if( isset($reg["title{$i}"]) && $reg["title{$i}"] != '' ) {
+                    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x040000) ) {
+                        $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
+                        if( isset($rc['title']) ) {
+                            $reg["title{$i}"] = $rc['title'];
+                        }
+                    }
+                    $reg['titles'] .= ($reg['titles'] != '' ? '<br/>' : '') . "{$i}. {$reg["title{$i}"]}";
+                }
             }
             if( $reg['participation'] == 1 ) {
                 $reg['codename'] .= ' (Virtual)';
@@ -1906,12 +1935,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $blocks[] = array(
                     'type' => 'table',
                     'title' => $festival['name'] . ' Cart',
-                    'class' => 'musicfestival-registrations limit-width limit-width-70 fold-at-50',
+                    'class' => 'musicfestival-registrations limit-width limit-width-80 fold-at-50',
                     'headers' => 'yes',
                     'columns' => array(
                         array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
                         array('label' => 'Class', 'fold-label'=>'Class', 'field' => 'codename', 'class' => 'alignleft'),
-                        array('label' => 'Title', 'fold-label'=>'Title', 'field' => 'title1', 'class' => 'alignleft'),
+                        array('label' => 'Title(s)', 'fold-label'=>'Title', 'field' => 'titles', 'class' => 'alignleft'),
                         array('label' => 'Fee', 'fold-label'=>'Fee', 'field' => 'fee', 'class' => 'alignright fold-alignleft'),
                         array('label' => $add_button, 'field' => 'editbutton', 'class' => 'buttons alignright'),
                         ),
@@ -1925,13 +1954,13 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             } else {
                 $blocks[] = array(
                     'type' => 'text',
-                    'class' => 'limit-width limit-width-70', 'title' => $festival['name'] . ' Registrations',
+                    'class' => 'limit-width limit-width-80', 'title' => $festival['name'] . ' Registrations',
                     'content' => 'No pending registrations',
                     );
             }
             $buttons = array(
                 'type' => 'buttons',
-                'class' => 'limit-width limit-width-70 aligncenter',
+                'class' => 'limit-width limit-width-80 aligncenter',
                 'list' => array(array(
                     'text' => 'Add Registration',
                     'url' => "/account/musicfestivalregistrations?add=yes",
@@ -1949,7 +1978,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         } else {
             $blocks[] = array(
                 'type' => 'text',
-                'class' => 'limit-width limit-width-70',
+                'class' => 'limit-width limit-width-80',
                 'title' => $festival['name'] . ' Registrations',
                 'content' => 'Registrations closed',
                 );
@@ -1971,12 +2000,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             $blocks[] = array(
                 'type' => 'table',
                 'title' => $festival['name'] . ' E-transfers Required',
-                'class' => 'musicfestival-registrations limit-width limit-width-70 fold-at-50',
+                'class' => 'musicfestival-registrations limit-width limit-width-80 fold-at-50',
                 'headers' => 'yes',
                 'columns' => array(
                     array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
                     array('label' => 'Class', 'fold-label'=>'Class', 'field' => 'codename', 'class' => 'alignleft'),
-                    array('label' => 'Title', 'fold-label'=>'Title', 'field' => 'title1', 'class' => 'alignleft'),
+                    array('label' => 'Title(s)', 'fold-label'=>'Title', 'field' => 'titles', 'class' => 'alignleft'),
                     array('label' => 'Fee', 'fold-label'=>'Fee', 'field' => 'fee', 'class' => 'alignright fold-alignleft'),
                     array('label' => '', 'field' => 'viewbutton', 'class' => 'buttons alignright'),
                     ),
@@ -2018,12 +2047,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             $blocks[] = array(
                 'type' => 'table',
                 'title' => $festival['name'] . ' Paid Registrations',
-                'class' => 'musicfestival-registrations limit-width limit-width-70 fold-at-50',
+                'class' => 'musicfestival-registrations limit-width limit-width-80 fold-at-50',
                 'headers' => 'yes',
                 'columns' => array(
                     array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
                     array('label' => 'Class', 'fold-label'=>'Class', 'field' => 'codename', 'class' => 'alignleft'),
-                    array('label' => 'Title', 'fold-label'=>'Title', 'field' => 'title1', 'class' => 'alignleft'),
+                    array('label' => 'Title(s)', 'fold-label'=>'Title', 'field' => 'titles', 'class' => 'alignleft'),
                     array('label' => 'Scheduled', 'fold-label'=>'Scheduled', 'field' => 'scheduled', 'class' => 'alignleft'),
                     array('label' => '', 'field' => 'viewbutton', 'class' => 'buttons alignright'),
                     ),
@@ -2039,7 +2068,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             if( count($parent_registrations) == 0 ) {
                 $blocks[] = array(
                     'type' => 'buttons',
-                    'class' => 'limit-width limit-width-70 aligncenter',
+                    'class' => 'limit-width limit-width-80 aligncenter',
                     'list' => array(array(
                         'text' => 'Download Registrations PDF',
                         'target' => '_blank',
@@ -2052,12 +2081,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             $blocks[] = array(
                 'type' => 'table',
                 'title' => $festival['name'] . ' Parent Registered',
-                'class' => 'musicfestival-registrations limit-width limit-width-70 fold-at-50',
+                'class' => 'musicfestival-registrations limit-width limit-width-80 fold-at-50',
                 'headers' => 'yes',
                 'columns' => array(
                     array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
                     array('label' => 'Class', 'fold-label'=>'Class', 'field' => 'codename', 'class' => 'alignleft'),
-                    array('label' => 'Title', 'fold-label'=>'Title', 'field' => 'title1', 'class' => 'alignleft'),
+                    array('label' => 'Title(s)', 'fold-label'=>'Title', 'field' => 'titles', 'class' => 'alignleft'),
 //                    array('label' => 'Fee', 'fold-label'=>'Fee', 'field' => 'fee', 'class' => 'alignright fold-alignleft'),
 //                    array('label' => '', 'field' => 'viewbutton', 'class' => 'buttons alignright'),
                     ),
@@ -2069,7 +2098,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 );
                 $blocks[] = array(
                     'type' => 'buttons',
-                    'class' => 'limit-width limit-width-70 aligncenter',
+                    'class' => 'limit-width limit-width-80 aligncenter',
                     'list' => array(array(
                         'text' => 'Download Registrations PDF',
                         'target' => '_blank',
@@ -2081,12 +2110,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             $blocks[] = array(
                 'type' => 'table',
                 'title' => $festival['name'] . ' Cancelled Registrations',
-                'class' => 'musicfestival-registrations limit-width limit-width-70',
+                'class' => 'musicfestival-registrations limit-width limit-width-80',
                 'headers' => 'yes',
                 'columns' => array(
                     array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
                     array('label' => 'Class', 'fold-label'=>'Class', 'field' => 'codename', 'class' => 'alignleft'),
-                    array('label' => 'Title', 'fold-label'=>'Title', 'field' => 'title1', 'class' => 'alignleft'),
+                    array('label' => 'Title(s)', 'fold-label'=>'Title', 'field' => 'titles', 'class' => 'alignleft'),
                     ),
                 'rows' => $cancelled_registrations,
                 );
