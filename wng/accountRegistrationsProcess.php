@@ -985,7 +985,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             for($i = 1; $i <= 8; $i++) {
                 if( $registration["title{$i}"] != '' ) {
                     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x040000) ) {
-                        $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
+                        $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $registration, $i);
                         if( isset($rc['title']) ) {
                             $registration["title{$i}"] = $rc['title'];
                         }
@@ -1236,7 +1236,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 for($i = 1; $i <= 8; $i++) {
                     if( $registration["title{$i}"] != '' ) {
                         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x040000) ) {
-                            $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
+                            $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $registration, $i);
                             if( isset($rc['title']) ) {
                                 $registration["title{$i}"] = $rc['title'];
                             }
