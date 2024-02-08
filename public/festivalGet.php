@@ -768,6 +768,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $strsql = "SELECT sections.id, "
                 . "sections.festival_id, "
                 . "sections.name, "
+                . "sections.sequence, "
                 . "sections.flags, "
                 . "sections.flags AS options, "
                 . "sections.adjudicator1_id, "
@@ -776,11 +777,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "FROM ciniki_musicfestival_schedule_sections AS sections "
                 . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "ORDER BY sections.sequence, sections.name "
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'schedulesections', 'fname'=>'id', 
-                    'fields'=>array('id', 'festival_id', 'name', 'flags', 'options', 
+                    'fields'=>array('id', 'festival_id', 'name', 'sequence', 'flags', 'options', 
                         'adjudicator1_id', 'adjudicator2_id', 'adjudicator3_id',
                         ),
                     'flags' => array('options'=>$maps['schedulesection']['flags']),

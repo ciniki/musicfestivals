@@ -19,6 +19,7 @@ function ciniki_musicfestivals_scheduleSectionUpdate(&$ciniki) {
         'schedulesection_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Schedule Section'),
         'festival_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Festival'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
+        'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
         'adjudicator1_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'First Adjudicator'),
         'adjudicator2_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Second Adjudicator'),
         'adjudicator3_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Third Adjudicator'),
@@ -40,6 +41,26 @@ function ciniki_musicfestivals_scheduleSectionUpdate(&$ciniki) {
     }
 
     //
+    // Get the current section
+    //
+    $strsql = "SELECT id, "
+        . "festival_id, "
+        . "sequence "
+        . "FROM ciniki_musicfestival_schedule_sections "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' "
+        . "ORDER BY sequence, name "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'section');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.681', 'msg'=>'Unable to load section', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['section']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.682', 'msg'=>'Unable to find requested section'));
+    }
+    $section = $rc['section'];
+
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
@@ -59,6 +80,19 @@ function ciniki_musicfestivals_scheduleSectionUpdate(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;
+    }
+
+    //
+    // Check if sequences should be updated
+    //
+    if( isset($args['sequence']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'sequencesUpdate');
+        $rc = ciniki_core_sequencesUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.schedulesection', 
+            'festival_id', $section['festival_id'], $args['sequence'], $section['sequence']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
     }
 
     //

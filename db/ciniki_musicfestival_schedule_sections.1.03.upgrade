@@ -1,0 +1,5 @@
+#
+# Add options for timeslots sections
+#
+ALTER TABLE ciniki_musicfestival_schedule_sections ADD COLUMN sequence tinyint unsigned not null AFTER name;
+ALTER TABLE ciniki_musicfestival_schedule_sections COMMENT='v1.03';

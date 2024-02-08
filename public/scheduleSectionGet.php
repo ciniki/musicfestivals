@@ -58,9 +58,21 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
     // Return default for new Schedule Section
     //
     if( $args['schedulesection_id'] == 0 ) {
+        $strsql = "SELECT MAX(sequence) AS seq "
+            . "FROM ciniki_musicfestival_schedule_sections "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'seq');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.680', 'msg'=>'Unable to load seq', 'err'=>$rc['err']));
+        }
+        $seq = isset($rc['seq']['seq']) ? ($rc['seq']['seq']+1) : 1;
+
         $schedulesection = array('id'=>0,
             'festival_id'=>'',
             'name'=>'',
+            'sequence'=>$seq,
             'adjudicator1_id'=>0,
             'adjudicator2_id'=>0,
             'adjudicator3_id'=>0,
@@ -75,6 +87,7 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
         $strsql = "SELECT ciniki_musicfestival_schedule_sections.id, "
             . "ciniki_musicfestival_schedule_sections.festival_id, "
             . "ciniki_musicfestival_schedule_sections.name, "
+            . "ciniki_musicfestival_schedule_sections.sequence, "
             . "ciniki_musicfestival_schedule_sections.adjudicator1_id, "
             . "ciniki_musicfestival_schedule_sections.adjudicator2_id, "
             . "ciniki_musicfestival_schedule_sections.adjudicator3_id, "
@@ -86,7 +99,7 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'schedulesections', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'name', 'adjudicator1_id', 'adjudicator2_id', 'adjudicator3_id', 'flags'),
+                'fields'=>array('festival_id', 'name', 'sequence', 'adjudicator1_id', 'adjudicator2_id', 'adjudicator3_id', 'flags'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
