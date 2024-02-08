@@ -22,6 +22,7 @@ function ciniki_musicfestivals_programPDF($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
+        'schedulesection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Section'),
         'names'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name Format'),
         'ipv'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'In Person/Virtual'),
         ));
