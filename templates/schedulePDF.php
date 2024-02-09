@@ -414,8 +414,8 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 $reg_list = array();
                 $reg_list_height = 0;
                 if( isset($timeslot['registrations']) && count($timeslot['registrations']) > 0 ) {
-                    if( $name == '' && $timeslot['class1_name'] != '' ) {
-                        $name = $timeslot['class1_name'];
+                    if( $name == '' && $timeslot['class_name'] != '' ) {
+                        $name = $timeslot['class_name'];
                     }
                     $pdf->SetFont('', '', '12');
                     $pdf->SetCellPadding(0);
