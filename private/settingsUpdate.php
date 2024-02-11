@@ -39,10 +39,21 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         $settings = $rc['settings'];
     }
 
+    // FIXME: Some of the settings in db ciniki_musicfestivals need to move into settings
     //
     // Check for any settings and add/update
     //
     $valid_settings = array(
+        'schedule-division-header-format',
+        'schedule-division-header-labels',
+        'schedule-names',
+        'schedule-titles',
+        'schedule-header',
+        'schedule-footer',
+        'schedule-footerdate',
+        'schedule-section-page-break',
+        'runsheets-separate-classes',
+        'runsheets-class-format',
         'age-restriction-msg',
         'waiver-title',
         'waiver-msg',

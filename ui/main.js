@@ -574,23 +574,23 @@ function ciniki_musicfestivals_main() {
                     'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x02) == 0x02 ? 'yes' : 'no'; },
                     'toggles':{'all':'All', 'inperson':'In Person', 'virtual':'Virtual'},
                     },
-                's_division_header_format':{'label':'Division Header Format', 'type':'select', 'default':'default', 'options':{
+                'schedule-division-header-format':{'label':'Division Header Format', 'type':'select', 'default':'default', 'options':{
                     'default':'Date-Division, Address', 
                     'name-adjudicator-address':'Division, Adjudicator, Address',
                     'date-name-adjudicator-address':'Date, Division, Adjudicator, Address',
                     'name-date-adjudicator-address':'Division, Date, Adjudicator, Address',
                     }},
-                's_division_header_labels':{'label':'Division Header Labels', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'schedule-division-header-labels':{'label':'Division Header Labels', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
 //                's_division_header_adjudicator':{'label':'Include Adjudi', 'type':'toggle', 'default':'default', 'toggles':{
 //                    'default':'name - date<br/>address', 
 //                    'name-date-adjudicator-address':'Name<br/>Date: date<br/>Adjudicator: adjudicator<br/>Address: address', 
 //                    }},
-                'names':{'label':'Competitor Full Names', 'type':'toggle', 'default':'public', 'toggles':{'public':'No', 'private':'Yes'}},
-                's_titles':{'label':'Titles', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
-                's_header':{'label':'Document Header', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
-                's_footer':{'label':'Document Footer', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
-                's_footerdate':{'label':'Footer Date', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
-                's_section_page_break':{'label':'Section Page Break', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'schedule-names':{'label':'Competitor Full Names', 'type':'toggle', 'default':'public', 'toggles':{'public':'No', 'private':'Yes'}},
+                'schedule-titles':{'label':'Titles', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'schedule-header':{'label':'Document Header', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'schedule-footer':{'label':'Document Footer', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'schedule-footerdate':{'label':'Footer Date', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'schedule-section-page-break':{'label':'Section Page Break', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
             }},
         'schedule_buttons':{'label':'', 'aside':'no',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'schedule' && M.ciniki_musicfestivals_main.festival.sections.schedule_tabs.selected == 'downloads' ? 'yes' : 'no'; },
@@ -906,14 +906,14 @@ function ciniki_musicfestivals_main() {
         var args = {'tnid':M.curTenantID,
             'festival_id':this.festival_id,
             'schedulesection_id':(s==null ? this.schedulesection_id : s),
-            'division_header_format':this.formValue('s_division_header_format'),
-            'division_header_labels':this.formValue('s_division_header_labels'),
-            'names':this.formValue('names'),
+            'division_header_format':this.formValue('schedule-division-header-format'),
+            'division_header_labels':this.formValue('schedule-division-header-labels'),
+            'names':this.formValue('schedule-names'),
             'ipv':this.formValue('s_ipv'),
-            'titles':this.formValue('s_titles'),
-            'header':this.formValue('s_header'),
-            'footer':this.formValue('s_footer'),
-            'section_page_break':this.formValue('s_section_page_break'),
+            'titles':this.formValue('schedule-titles'),
+            'header':this.formValue('schedule-header'),
+            'footer':this.formValue('schedule-footer'),
+            'section_page_break':this.formValue('schedule-section-page-break'),
             'footerdate':this.formValue('s_footerdate'),
             };
         M.api.openPDF('ciniki.musicfestivals.schedulePDF',args);
@@ -2039,6 +2039,39 @@ function ciniki_musicfestivals_main() {
                 'comments_grade_label':{'label':'Grade Label', 'default':'Mark', 'type':'text'},
                 'comments_footer_msg':{'label':'Footer Message', 'type':'text'},
             }},
+        '_schedule_pdf':{'label':'Schedule PDF Default Options', 
+            // These options can be changed on the download screen
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
+            'fields':{
+                'schedule-division-header-format':{'label':'Division Header Format', 'type':'select', 'default':'default', 'options':{
+                    'default':'Date-Division, Address', 
+                    'name-adjudicator-address':'Division, Adjudicator, Address',
+                    'date-name-adjudicator-address':'Date, Division, Adjudicator, Address',
+                    'name-date-adjudicator-address':'Division, Date, Adjudicator, Address',
+                    }},
+                'schedule-division-header-labels':{'label':'Division Header Labels', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+//                's_division_header_adjudicator':{'label':'Include Adjudi', 'type':'toggle', 'default':'default', 'toggles':{
+//                    'default':'name - date<br/>address', 
+//                    'name-date-adjudicator-address':'Name<br/>Date: date<br/>Adjudicator: adjudicator<br/>Address: address', 
+//                    }},
+                'schedule-names':{'label':'Competitor Full Names', 'type':'toggle', 'default':'public', 'toggles':{'public':'No', 'private':'Yes'}},
+                'schedule-titles':{'label':'Titles', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'schedule-header':{'label':'Document Header', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'schedule-footer':{'label':'Document Footer', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'schedule-footerdate':{'label':'Footer Date', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'schedule-section-page-break':{'label':'Section Page Break', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+                // FIXME: Add fields from 
+            }},
+        '_runsheets_pdf':{'label':'Run Sheets PDF Options', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
+            'fields':{
+                'runsheets-separate-classes':{'label':'Separate Classes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}}, // Separate classes in timeslots
+                'runsheets-class-format':{'label':'Class Format', 'type':'select', 'default':'default', 'toggles':{
+                    'default':'Code - Class', 
+                    'code-section-category-name':'Code - Section - Category - Class',
+                    'code-category-name':'Code - Category - Class',
+                    }}, // Separate classes in timeslots
+            }},
         '_certificates_pdf':{'label':'Certificates PDF Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
             'fields':{
@@ -2161,6 +2194,8 @@ function ciniki_musicfestivals_main() {
         this.showHideSection('_document_header_msg');
         this.showHideSection('_document_footer_msg');
         this.showHideSection('_comments_pdf');
+        this.showHideSection('_schedule_pdf');
+        this.showHideSection('_runsheets_pdf');
         this.showHideSection('_certificates_pdf');
         this.showHideSection('_syllabus');
 //        this.showHideSection('_syllabus_pdf');
@@ -4393,6 +4428,9 @@ function ciniki_musicfestivals_main() {
             }},
         '_description':{'label':'Description', 'fields':{
             'description':{'label':'Description', 'hidelabel':'yes', 'type':'textarea'},
+            }},
+        '_runsheet_notes':{'label':'Run Sheet Notes', 'fields':{
+            'runsheet_notes':{'label':'', 'hidelabel':'yes', 'type':'textarea'},
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.scheduletimeslot.save();'},

@@ -69,6 +69,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             'class1_id'=>(isset($args['class1_id']) ? $args['class1_id'] : 0),
             'name'=>'',
             'description'=>'',
+            'runsheet_notes'=>'',
         );
     }
 
@@ -88,6 +89,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "timeslots.flags, "
             . "timeslots.name, "
             . "timeslots.description, "
+            . "timeslots.runsheet_notes, "
             . "IFNULL(registrations.id, '') AS registrations "
             . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
             . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
@@ -100,7 +102,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'scheduletimeslot', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'sdivision_id', 'slot_time', 'class1_id', 'class2_id', 'class3_id', 'class4_id', 'class5_id', 'flags', 'name', 'description', 'registrations'),
+                'fields'=>array('festival_id', 'sdivision_id', 'slot_time', 'class1_id', 'class2_id', 'class3_id', 'class4_id', 'class5_id', 'flags', 'name', 'description', 'runsheet_notes', 'registrations'),
                 'idlists'=>array('registrations'),
                 ),
             ));

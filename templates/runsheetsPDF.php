@@ -73,6 +73,23 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
     $festival = $rc['festivals'][0];
 
     //
+    // Load the settings for the festival
+    //
+    $strsql = "SELECT detail_key, detail_value "
+        . "FROM ciniki_musicfestival_settings "
+        . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
+    $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.195', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+    }
+    foreach($rc['settings'] as $k => $v) {
+        $festival[$k] = $v;
+    }
+
+    //
     // Load the schedule sections, divisions, timeslots, classes, registrations
     //
     $strsql = "SELECT ssections.id AS section_id, "
@@ -81,9 +98,13 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         . "divisions.id AS division_id, "
         . "divisions.name AS division_name, "
         . "divisions.address, "
-        . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, "
-        . "timeslots.id AS timeslot_id, "
-        . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
+        . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, ";
+    if( isset($festival['runsheets-separate-classes']) && $festival['runsheets-separate-classes'] == 'yes' ) {
+        $strsql .= "CONCAT_WS('-', timeslots.id, classes.id) AS timeslot_id, ";
+    } else {
+        $strsql .= "timeslots.id AS timeslot_id, ";
+    }
+    $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
 /*        . "timeslots.class1_id, "
         . "timeslots.class2_id, "
         . "timeslots.class3_id, "
@@ -96,6 +117,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         . "IFNULL(class5.name, '') AS class5_name, " */
         . "timeslots.name AS timeslot_name, "
         . "timeslots.description, "
+        . "timeslots.runsheet_notes, "
         . "registrations.id AS reg_id, "
         . "registrations.display_name, "
         . "registrations.public_name, "
@@ -200,11 +222,13 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
             'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 
-                'description', 'class_code', 'class_name', 'category_name', 'syllabus_section_name',
+                'description', 'runsheet_notes', 
+                'class_code', 'class_name', 'category_name', 'syllabus_section_name',
                 ),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'participation',
+                'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                 'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
@@ -432,7 +456,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
     $pdf->SetDrawColor(200);
     $pdf->SetLineWidth(0.1);
 
-    $filename = 'runsheet';
+    $filename = 'Run Sheets';
 
     //
     // Go through the sections, divisions and classes
@@ -481,19 +505,46 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             $w = array(10, 100, 15, 15, 40);
             $tw = array(10, 170);   // Title lines
             $cw = array(30, 150);   // Class lines
-            $trw = array(18, 130);   // Trophy lines
+            $trw = array(22, 128);   // Trophy lines
+            $prev_time = '';
             foreach($division['timeslots'] as $timeslot) {
 
                 if( $timeslot['name'] == '' ) {
                     // FIXME: Add check for joined section/category/class
-                    $name = $registration['class_code'] . ' - ' . $registration['class_name'];
+                    $name = $timeslot['class_code'] . ' - ' . $timeslot['class_name'];
                 } else {
                     $name = $timeslot['name'];
                 }
+                $time = $timeslot['time'];
+                if( $prev_time == $time ) {
+                    $time = '';
+                }
+                $prev_time = $time;
+
+                if( isset($festival['runsheets-separate-classes']) && $festival['runsheets-separate-classes'] == 'yes' 
+                    && $timeslot['class_code'] != '' 
+                    ) {
+                    if( isset($festival['runsheets-separate-classes']) 
+                        && $festival['runsheets-separate-classes'] == 'code-section-category-class' 
+                        ) {
+                        $name = $timeslot['class_code'] . ' - ' . $timeslot['syllabus_section_name'] . ' - ' . $timeslot['category'] . ' - ' . $timeslot['class_name']; 
+                    } elseif( isset($festival['runsheets-separate-classes']) 
+                        && $festival['runsheets-separate-classes'] == 'code-category-class' 
+                        ) {
+                        $name = $timeslot['class_code'] . ' - ' . $timeslot['category'] . ' - ' . $timeslot['class_name']; 
+                    } else {
+                        $name = $timeslot['class_code'] . ' - ' . $timeslot['class_name']; 
+                    }
+                }
+
                 //
                 // Check height required
                 //
                 $h = $pdf->getStringHeight(150, $name); 
+                if( isset($timeslot['runsheet_notes']) && $timeslot['runsheet_notes'] != '' ) {
+                    $pdf->SetFont('', '', 12);
+                    $h = $pdf->getStringHeight($cw[1], $name); 
+                }
                 $timeslot['trophies'] = array();
                 if( isset($timeslot['registrations']) && count($timeslot['registrations']) > 0 ) {
                     $pdf->SetFont('', 'B', 12);
@@ -533,16 +584,22 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
 
                 $pdf->SetFont('', 'B', '14');
                 $pdf->SetCellPaddings(0, 1, 0, 0);
-                $pdf->MultiCell($cw[0], 0, $timeslot['time'], 0, 'L', 0, 0);
+                $pdf->MultiCell($cw[0], 0, $time, 0, 'L', 0, 0);
                 $pdf->MultiCell($cw[1], 0, $name, 0, 'L', 0, 1);
                 $pdf->SetFont('', '', '11');
 
                 if( isset($timeslot['trophies']) && count($timeslot['trophies']) > 0 ) {
                     foreach($timeslot['trophies'] as $tid => $trophy) {
                         $pdf->MultiCell($cw[0], 0, '', 0, 'L', 0, 0);
-                        $pdf->MultiCell($trw[0], 0, ($tid == 0 ? 'Trophies: ' : ''), 0, 'L', 0, 0);
+                        $pdf->MultiCell($trw[0], 0, ($tid == 0 ? 'Eligible for: ' : ''), 0, 'L', 0, 0);
                         $pdf->MultiCell($cw[1], 0, $trophy, 0, 'L', 0, 1);
                     }
+                }
+                if( isset($timeslot['runsheet_notes']) && $timeslot['runsheet_notes'] != '' ) {
+                    $pdf->SetFont('', 'B', 11);
+                    $pdf->MultiCell($cw[0], 0, 'Notes', 0, 'L', 0, 0);
+                    $pdf->SetFont('', '', 11);
+                    $pdf->MultiCell($cw[1], 0, $timeslot['runsheet_notes'], 0, 'L', 0, 1);
                 }
                 $pdf->Ln(2);
 
@@ -557,13 +614,18 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     $pdf->SetFont('', '');
 
                     $pdf->SetFont('', '', '12');
-                    $pdf->SetCellPaddings(2,2,2,2);
                     $num = 1;
                     foreach($timeslot['registrations'] as $reg) {
                         if( $num > 1 ) {
 //                            $pdf->SetCellPaddings(0,0,0,0);
 //                            $pdf->Cell(180, 0, '', 'T', 1);
 //                            $pdf->Ln(1);
+                            //
+                            // Check if different classes need to be separate entries
+                            //
+                            if( isset($festival['runsheets-separate-classes']) && $festival['runsheets-separate-classes'] == 'yes' ) {
+                                $name = $registration['class_code'] . ' - ' . $registration['class_name']; 
+                            }
                         }
                         $pdf->SetCellPaddings(2,2,2,2);
                         $pdf->SetFont('', 'B');

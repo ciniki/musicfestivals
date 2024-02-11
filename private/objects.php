@@ -377,6 +377,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'class5_id'=>array('name'=>'Class 5', 'ref'=>'ciniki.musicfestivals.class', 'default'=>'0'),
             'name'=>array('name'=>'Name'),
             'description'=>array('name'=>'Description', 'default'=>''),
+            'runsheet_notes'=>array('name'=>'Runsheet Notes', 'default'=>''),
             'flags'=>array('name'=>'Options', 'default'=>'0'),
             ),
         'history_table'=>'ciniki_musicfestivals_history',

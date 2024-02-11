@@ -30,6 +30,7 @@ function ciniki_musicfestivals_scheduleTimeslotAdd(&$ciniki) {
         'class5_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Class 5'),
         'name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name'),
         'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),
+        'runsheet_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Runsheet Notes'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'registrations1'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Registrations 1'),
         'registrations2'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Registrations 2'),
