@@ -2055,6 +2055,12 @@ function ciniki_musicfestivals_main() {
 //                    'name-date-adjudicator-address':'Name<br/>Date: date<br/>Adjudicator: adjudicator<br/>Address: address', 
 //                    }},
                 'schedule-names':{'label':'Competitor Full Names', 'type':'toggle', 'default':'public', 'toggles':{'public':'No', 'private':'Yes'}},
+                'schedule-separate-classes':{'label':'Separate Classes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}}, 
+                'schedule-class-format':{'label':'Class Format', 'type':'select', 'default':'default', 'options':{
+                    'default':'Code - Class', 
+                    'code-section-category-class':'Code - Section - Category - Class',
+                    'code-category-class':'Code - Category - Class',
+                    }},
                 'schedule-titles':{'label':'Titles', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'schedule-header':{'label':'Document Header', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'schedule-footer':{'label':'Document Footer', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
@@ -2065,12 +2071,16 @@ function ciniki_musicfestivals_main() {
         '_runsheets_pdf':{'label':'Run Sheets PDF Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
             'fields':{
-                'runsheets-separate-classes':{'label':'Separate Classes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}}, // Separate classes in timeslots
-                'runsheets-class-format':{'label':'Class Format', 'type':'select', 'default':'default', 'toggles':{
+                // Separate classes in timeslots
+                'runsheets-separate-classes':{'label':'Separate Classes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}}, 
+                'runsheets-internal-notes':{'label':'Include Internal Admin Notes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'runsheets-registration-notes':{'label':'Include Registration Notes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'runsheets-competitor-notes':{'label':'Include Competitor Notes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'runsheets-class-format':{'label':'Class Format', 'type':'select', 'default':'default', 'options':{
                     'default':'Code - Class', 
-                    'code-section-category-name':'Code - Section - Category - Class',
-                    'code-category-name':'Code - Category - Class',
-                    }}, // Separate classes in timeslots
+                    'code-section-category-class':'Code - Section - Category - Class',
+                    'code-category-class':'Code - Category - Class',
+                    }},
             }},
         '_certificates_pdf':{'label':'Certificates PDF Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
