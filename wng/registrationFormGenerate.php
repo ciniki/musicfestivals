@@ -142,7 +142,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     $classes_2c = array();  // Class id's with 2 competitors
     $classes_3c = array();  // Class id's with 3 competitors
     $classes_4c = array();  // Class id's with 4 competitors
-    $js_classes = array(); // Class array that will be in javascript: flags, min_titles, max_titles
+    $js_classes = array();  // Class array that will be in javascript: flags, min_titles, max_titles
     $live_prices = array();
     $plus_prices = array();
     $virtual_prices = array();
@@ -327,7 +327,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     //
     // Check for different class submitted in form
     //
-    if( isset($_POST['f-section']) && $_POST['f-section'] > 0 ) {
+    if( isset($_POST['f-section']) && is_numeric($_POST['f-section']) && $_POST['f-section'] > 0 ) {
         $selected_section = $sections[$_POST['f-section']];
         if( isset($_POST["f-section-{$_POST['f-section']}-class"]) ) {
             $selected_class = $sections[$_POST['f-section']]['classes'][$_POST["f-section-{$_POST['f-section']}-class"]];
@@ -351,7 +351,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             }
         }
     }
-    if( isset($_POST['f-member_id']) && $_POST['f-member_id'] > 0 ) {
+    if( isset($_POST['f-member_id']) && is_numeric($_POST['f-member_id']) && $_POST['f-member_id'] > 0 ) {
         if( isset($members[$_POST['f-member_id']]) ) {
             $selected_member = $members[$_POST['f-member_id']];
         } 
@@ -375,7 +375,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             break;
         }
     }
-
 
     //
     // Setup the fields for the form
