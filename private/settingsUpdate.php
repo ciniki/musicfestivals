@@ -46,6 +46,8 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
     $valid_settings = array(
         'schedule-division-header-format',
         'schedule-division-header-labels',
+        'schedule-separate-classes',
+        'schedule-class-format',
         'schedule-names',
         'schedule-titles',
         'schedule-header',

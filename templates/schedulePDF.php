@@ -71,17 +71,38 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     $festival = $rc['festivals'][0];
 
     //
+    // Load the settings for the festival
+    //
+    $strsql = "SELECT detail_key, detail_value "
+        . "FROM ciniki_musicfestival_settings "
+        . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
+    $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.195', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+    }
+    foreach($rc['settings'] as $k => $v) {
+        $festival[$k] = $v;
+    }
+
+    //
     // Load the schedule sections, divisions, timeslots, classes, registrations
     //
-    $strsql = "SELECT sections.id AS section_id, "
-        . "sections.name AS section_name, "
+    $strsql = "SELECT ssections.id AS section_id, "
+        . "ssections.name AS section_name, "
         . "customers.display_name AS adjudicator, "
         . "divisions.id AS division_id, "
         . "divisions.name AS division_name, "
         . "divisions.address, "
-        . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, "
-        . "timeslots.id AS timeslot_id, "
-        . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
+        . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, ";
+    if( isset($festival['schedule-separate-classes']) && $festival['schedule-separate-classes'] == 'yes' ) {
+        $strsql .= "CONCAT_WS('-', timeslots.id, classes.id) AS timeslot_id, ";
+    } else {
+        $strsql .= "timeslots.id AS timeslot_id, ";
+    }
+    $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
 /*        . "timeslots.class1_id, "
         . "timeslots.class2_id, "
         . "timeslots.class3_id, "
@@ -123,10 +144,12 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         . "registrations.movements8, "
         . "registrations.participation, "
         . "classes.code AS class_code, "
-        . "classes.name AS class_name "
-        . "FROM ciniki_musicfestival_schedule_sections AS sections "
+        . "classes.name AS class_name, "
+        . "categories.name AS category_name, "
+        . "sections.name AS syllabus_section_name "
+        . "FROM ciniki_musicfestival_schedule_sections AS ssections "
         . "LEFT JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
-            . "sections.adjudicator1_id = adjudicators.id "
+            . "ssections.adjudicator1_id = adjudicators.id "
             . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_customers AS customers ON ("
@@ -134,60 +157,41 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
-            . "sections.id = divisions.ssection_id " 
+            . "ssections.id = divisions.ssection_id " 
             . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
             . "divisions.id = timeslots.sdivision_id " 
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-/*        . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
-            . "timeslots.class1_id = class1.id " 
-            . "AND class1.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class2 ON ("
-            . "timeslots.class2_id = class2.id " 
-            . "AND class2.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class3 ON ("
-            . "timeslots.class3_id = class3.id " 
-            . "AND class3.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class4 ON ("
-            . "timeslots.class4_id = class4.id " 
-            . "AND class4.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class5 ON ("
-            . "timeslots.class5_id = class5.id " 
-            . "AND class5.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") " */
         . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
-/*            . "(timeslots.class1_id = registrations.class_id "  
-                . "OR timeslots.class2_id = registrations.class_id "
-                . "OR timeslots.class3_id = registrations.class_id "
-                . "OR timeslots.class4_id = registrations.class_id "
-                . "OR timeslots.class5_id = registrations.class_id "
-                . ") "
-            . "AND ((timeslots.flags&0x01) = 0 OR timeslots.id = registrations.timeslot_id) " */
             . "timeslots.id = registrations.timeslot_id "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
-            . "registrations.class_Id = classes.id "
+            . "registrations.class_id = classes.id "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
+            . "classes.category_id = categories.id " 
+            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+            . "categories.section_id = sections.id " 
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "WHERE ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND ssections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "";
     if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
-        $strsql .= "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
+        $strsql .= "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
     }
     if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
         $strsql .= "AND (registrations.participation < 1 || ISNULL(registrations.participation) ) ";
     } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
         $strsql .= "AND registrations.participation = 1 ";
     }
-    $strsql .= "ORDER BY sections.sequence, sections.name, divisions.division_date, slot_time, registrations.timeslot_sequence, registrations.display_name "
+    $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, slot_time, registrations.timeslot_sequence, registrations.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -199,12 +203,15 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
             'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 
-                'description', 'class_code', 'class_name', 
+                'description', 'class_code', 'class_name', 'category_name', 'syllabus_section_name',
                 ),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
-            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title1', 'title2', 'title3', 'participation'),
-            ),
+            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'participation',
+                'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
+                'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
+                'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                )),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -256,7 +263,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 }
 
                 $this->Ln(8);
-                $this->SetFont('times', 'B', 20);
+                $this->SetFont('helvetica', 'B', 20);
                 if( $img_width > 0 ) {
                     $this->Cell($img_width, 10, '', 0);
                 }
@@ -264,12 +271,12 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 $this->Cell(180-$img_width, 12, $this->header_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
                 $this->Ln(7);
 
-                $this->SetFont('times', 'B', 14);
+                $this->SetFont('helvetica', 'B', 14);
                 $this->setX($this->left_margin + $img_width);
                 $this->Cell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
                 $this->Ln(6);
 
-                $this->SetFont('times', 'B', 12);
+                $this->SetFont('helvetica', 'B', 12);
                 $this->setX($this->left_margin + $img_width);
                 $this->Cell(180-$img_width, 10, $this->header_msg, 0, false, 'R', 0, '', 0, false, 'M', 'M');
                 $this->Ln(6);
@@ -415,7 +422,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
     // set font
-    $pdf->SetFont('times', 'BI', 10);
+    $pdf->SetFont('helvetica', 'BI', 10);
     $pdf->SetCellPadding(1);
 
     // add a page
@@ -429,7 +436,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     //
     // Go through the sections, divisions and classes
     //
-    $w = array(30, 5, 145);
+    $w = array(25, 5, 150);
     foreach($sections as $section) {
         if( !isset($section['divisions']) ) {
             continue;
@@ -458,6 +465,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             }
 
             $pdf->DivisionHeader($args, $section, $division, 'no');
+            $pdf->Ln(1);
 
 /*            //
             // Check if enough room
@@ -505,15 +513,38 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             //
             $fill = 0;
             $border = 'T';
+            $prev_time = '';
             foreach($division['timeslots'] as $timeslot) {
                 $name = $timeslot['name'];
+                if( $name == '' && $timeslot['class_name'] != '' ) {
+                    $name = $timeslot['class_name'];
+                }
+                if( isset($festival['schedule-separate-classes']) && $festival['schedule-separate-classes'] == 'yes' 
+                    && $timeslot['class_code'] != '' 
+                    ) {
+                    if( isset($festival['schedule-class-format']) 
+                        && $festival['schedule-class-format'] == 'code-section-category-class' 
+                        ) {
+                        $name = $timeslot['class_code'] . ' - ' . $timeslot['syllabus_section_name'] . ' - ' . $timeslot['category_name'] . ' - ' . $timeslot['class_name']; 
+                    } elseif( isset($festival['schedule-class-format']) 
+                        && $festival['schedule-class-format'] == 'code-category-class' 
+                        ) {
+                        $name = $timeslot['class_code'] . ' - ' . $timeslot['category_name'] . ' - ' . $timeslot['class_name']; 
+                    } else {
+                        $name = $timeslot['class_code'] . ' - ' . $timeslot['class_name']; 
+                    }
+                }
+                $time = $timeslot['time'];
+                if( $prev_time == $time ) {
+                    $time = '';
+                    $border = '';
+                }
+                $prev_time = $time;
+
                 $description = $timeslot['description'];
                 $reg_list = array();
                 $reg_list_height = 0;
                 if( isset($timeslot['registrations']) && count($timeslot['registrations']) > 0 ) {
-                    if( $name == '' && $timeslot['class_name'] != '' ) {
-                        $name = $timeslot['class_name'];
-                    }
                     $pdf->SetFont('', '', '12');
                     $pdf->SetCellPadding(0);
                     foreach($timeslot['registrations'] as $reg) {
@@ -538,13 +569,11 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                             $row['height'] = $row['name_height'];
                             $row['title1'] = $reg['title1'];
                             $row['titles_height'] = $pdf->getStringHeight($row['title_width'], $row['title1']);
-                            if( $reg['title2'] != '' ) {
-                                $row['title2'] = $reg['title2'];
-                                $row['titles_height'] += $pdf->getStringHeight($row['title_width'], $row['title2']);
-                            }
-                            if( $reg['title3'] != '' ) {
-                                $row['title3'] = $reg['title3'];
-                                $row['titles_height'] += $pdf->getStringHeight($row['title_width'], $row['title3']);
+                            for($i = 2; $i <= 8; $i++ ) {
+                                if( isset($reg["title{$i}"]) && $reg["title{$i}"] != '' ) {
+                                    $row["title{$i}"] = $reg["title{$i}"];
+                                    $row['titles_height'] += $pdf->getStringHeight($row['title_width'], $row["title{$i}"]);
+                                }
                             }
                             if( $row['titles_height'] > $row['height'] ) {
                                 $row['height'] = $row['titles_height'];
@@ -558,6 +587,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                         $reg_list_height += $row['height'];
                     }
                     $pdf->SetCellPadding(1);
+                    $pdf->SetCellPaddings(1,2,1,1);
                 }
                 if( ($reg_list_height > 0 && $pdf->getY() > ($pdf->getPageHeight() - 37 - $reg_list_height)) 
                     || ($reg_list_height == 0 && $pdf->getY() > ($pdf->getPageHeight() - 40)) 
@@ -583,12 +613,18 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     */
                     $pdf->DivisionHeader($args, $section, $division, 'yes');
                     $pdf->SetFont('', '', '12');
+                    $pdf->Ln(1);
+                } 
+                $pdf->Ln(2);
+                if( $time != '' ) {
+                    $pdf->SetCellPaddings(1,3,1,1);
+                } else {
+                    $pdf->SetCellPaddings(1,0,1,1);
                 }
-                $pdf->Ln(5);
 
                 $pdf->SetFont('', 'B');
                 $lh = $pdf->getStringHeight($w[2], $name);
-                $pdf->Multicell($w[0], $lh, $timeslot['time'], $border, 'R', 0, 0);
+                $pdf->Multicell($w[0], $lh, $time, $border, 'R', 0, 0);
                 $pdf->Multicell($w[1], $lh, '', $border, 'R', 0, 0);
                 $pdf->Multicell($w[2], $lh, $name, $border, 'L', 0, 1);
                 $pdf->SetFont('', '');
@@ -609,18 +645,16 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                         } else {
                             $pdf->Ln(5);
                         }
-                        if( isset($row['title2']) && $row['title2'] != '' ) {
-                            $pdf->MultiCell($w[0] + $w[1] + $row['name_width'] + 1, $row['height'], '', 0, 'L', 0, 0);
-                            $pdf->MultiCell($row['dash_width'], '', '-', 0, 'C', 0, 0);
-                            $pdf->MultiCell($row['title_width'], '', $row['title2'], 0, 'L', 0, 1);
-                        }
-                        if( isset($row['title3']) && $row['title3'] != '' ) {
-                            $pdf->MultiCell($w[0] + $w[1] + $row['name_width'] + 1, $row['height'], '', 0, 'L', 0, 0);
-                            $pdf->MultiCell($row['dash_width'], '', '-', 0, 'C', 0, 0);
-                            $pdf->MultiCell($row['title_width'], '', $row['title3'], 0, 'L', 0, 1);
+                        for($i = 2; $i <= 8; $i++) {
+                            if( isset($row["title{$i}"]) && $row["title{$i}"] != '' ) {
+                                $pdf->MultiCell($w[0] + $w[1] + $row['name_width'] + 1, $row['height'], '', 0, 'L', 0, 0);
+                                $pdf->MultiCell($row['dash_width'], '', '-', 0, 'C', 0, 0);
+                                $pdf->MultiCell($row['title_width'], '', $row["title{$i}"], 0, 'L', 0, 1);
+                            }
                         }
                         if( $row['name_height'] > $row['titles_height'] ) {    
-                            $pdf->Ln($row['name_height'] - $row['titles_height']);
+                            
+                           // $pdf->Ln($row['name_height'] - $row['titles_height']);
                         }
                     } else {
                         $pdf->MultiCell($w[2], $row['height'], $row['name'], 0, 'L', 0, 1);
@@ -631,8 +665,11 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
 
                 $fill=!$fill;
                 $border = 'T';
+                $pdf->SetCellPaddings(1,3,1,1);
             }
-            $pdf->Cell($w[0]+$w[1]+$w[2], 1, '', 'B', 1, 'R', 0);
+            $pdf->SetCellPaddings(0,0,0,0);
+            $pdf->Ln(2);
+            $pdf->Cell($w[0]+$w[1]+$w[2], 0, '', 'T', 1, 'R', 0);
         }
     }
 
