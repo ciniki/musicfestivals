@@ -217,7 +217,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
     } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
         $strsql .= "AND registrations.participation = 1 ";
     }
-    $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, slot_time, registrations.timeslot_sequence, registrations.display_name "
+    $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, slot_time, registrations.timeslot_sequence, class_code, registrations.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -549,8 +549,9 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                 $time = $timeslot['time'];
                 if( $prev_time == $time ) {
                     $time = '';
+                } else {
+                    $prev_time = $time;
                 }
-                $prev_time = $time;
 
                 if( isset($festival['runsheets-separate-classes']) && $festival['runsheets-separate-classes'] == 'yes' 
                     && $timeslot['class_code'] != '' 
@@ -647,29 +648,9 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     $pdf->SetFont('', '', '12');
                     $num = 1;
                     foreach($timeslot['registrations'] as $reg) {
-                        if( $num > 1 ) {
-//                            $pdf->SetCellPaddings(0,0,0,0);
-//                            $pdf->Cell(180, 0, '', 'T', 1);
-//                            $pdf->Ln(1);
-                            //
-                            // Check if different classes need to be separate entries
-                            //
-//                            if( isset($festival['runsheets-separate-classes']) && $festival['runsheets-separate-classes'] == 'yes' ) {
-//                                $name = $registration['class_code'] . ' - ' . $registration['class_name']; 
-//                            }
-                        }
-                        $pdf->SetCellPaddings(2,2,2,2);
-                        $pdf->SetFont('', 'B');
-                        $h = $pdf->getStringHeight($w[1], $reg['name']);
-                        $pdf->MultiCell($w[0], $h, $num, 'LTR', 'C', 0, 0);
-                        $pdf->MultiCell($w[1], $h, $reg['name'], 'BLTR', 'L', 0, 0);
-                        $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 0);
-                        $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 0);
-                        $pdf->MultiCell($w[4], $h, '', 1, 'L', 0, 1);
-                        $pdf->SetFont('', '');
-                        $border = 'LR';
-                        $pdf->SetCellPaddings(2,2,2,0);
-                        $pdf->SetFont('', '', '11');
+                        //
+                        // Setup the notes for the registration
+                        //
                         $notes = '';
                         if( isset($festival['runsheets-internal-notes']) && $festival['runsheets-internal-notes'] == 'yes'
                             && $reg['internal_notes'] != ''
@@ -705,6 +686,78 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                             ) {
                             $notes .= ($notes != '' ? "\n" : '') . $competitors[$reg['competitor4_id']]['notes'];
                         }
+
+                        //
+                        // Check height and see if we need new page
+                        //
+                        $h = 0;
+                        $pdf->SetFont('', 'B');
+                        $h += $pdf->getStringHeight($w[1], $reg['name']);
+                        for($i = 1; $i <= 8; $i++) {
+                            if( $reg["title{$i}"] != '' ) {
+                                $h += $pdf->getStringHeight($tw[1], $reg["title{$i}"]);
+                            }
+                        }
+                        if( $notes != '' ) {
+                            $pdf->SetCellPaddings(2,2,2,2);
+                            $pdf->SetFont('', '', '11');
+                            $h += $pdf->getStringHeight($tnw[2], $notes);
+                        }
+                        if( $pdf->GetY() > $pdf->getPageHeight() - $h - 32) {
+                            // The following has been added by untested
+                            $pdf->AddPage();
+                            $pdf->DivisionHeader($args, $section, $division, 'yes');
+                            // Set continued class
+                            $pdf->SetFont('', 'B', '14');
+                            $pdf->SetCellPaddings(0, 1, 0, 0);
+                            $pdf->MultiCell($cw[0], 0, $time, 0, 'L', 0, 0);
+                            $pdf->MultiCell($cw[1], 0, $name . ' (continued...)', 0, 'L', 0, 1);
+                            if( isset($timeslot['trophies']) && count($timeslot['trophies']) > 0 ) {
+                                foreach($timeslot['trophies'] as $tid => $trophy) {
+                                    $pdf->MultiCell($cw[0], 0, '', 0, 'L', 0, 0);
+                                    $pdf->MultiCell($trw[0], 0, ($tid == 0 ? 'Eligible for: ' : ''), 0, 'L', 0, 0);
+                                    $pdf->MultiCell($cw[1], 0, $trophy, 0, 'L', 0, 1);
+                                }
+                            }
+                            if( isset($timeslot['runsheet_notes']) && $timeslot['runsheet_notes'] != '' ) {
+                                $pdf->SetFont('', 'B', 11);
+                                $pdf->MultiCell($cw[0], 0, 'Notes', 0, 'L', 0, 0);
+                                $pdf->SetFont('', '', 11);
+                                $pdf->MultiCell($cw[1], 0, $timeslot['runsheet_notes'], 0, 'L', 0, 1);
+                            }
+                            $pdf->Ln(2);
+                            $pdf->SetCellPaddings(2,2,2,2);
+                            $pdf->SetFont('', 'B', '11');
+                            $pdf->MultiCell($w[0], 0, '#', 1, 'C', 1, 0);
+                            $pdf->MultiCell($w[1], 0, 'Name', 1, 'L', 1, 0);
+                            $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
+                            $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 0);
+                            $pdf->MultiCell($w[4], 0, 'Advanced to', 1, 'C', 1, 1);
+                            $pdf->SetFont('', '', '12');
+                        }
+/*                        if( $num > 1 ) {
+//                            $pdf->SetCellPaddings(0,0,0,0);
+//                            $pdf->Cell(180, 0, '', 'T', 1);
+//                            $pdf->Ln(1);
+                            //
+                            // Check if different classes need to be separate entries
+                            //
+//                            if( isset($festival['runsheets-separate-classes']) && $festival['runsheets-separate-classes'] == 'yes' ) {
+//                                $name = $registration['class_code'] . ' - ' . $registration['class_name']; 
+//                            }
+                        } */
+                        $pdf->SetCellPaddings(2,2,2,2);
+                        $pdf->SetFont('', 'B');
+                        $h = $pdf->getStringHeight($w[1], $reg['name']);
+                        $pdf->MultiCell($w[0], $h, $num, 'LTR', 'C', 0, 0);
+                        $pdf->MultiCell($w[1], $h, $reg['name'], 'BLTR', 'L', 0, 0);
+                        $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 0);
+                        $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 0);
+                        $pdf->MultiCell($w[4], $h, '', 1, 'L', 0, 1);
+                        $pdf->SetFont('', '');
+                        $border = 'LR';
+                        $pdf->SetCellPaddings(2,2,2,0);
+                        $pdf->SetFont('', '', '11');
                         for($i = 1; $i <= 8; $i++) {
                             if( $reg["title{$i}"] != '' ) {
                                 if( $reg['last_title'] == $i && $notes == '' ) {
