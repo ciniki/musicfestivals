@@ -149,6 +149,14 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         . "registrations.movements6, "
         . "registrations.movements7, "
         . "registrations.movements8, "
+        . "registrations.perf_time1, "
+        . "registrations.perf_time2, "
+        . "registrations.perf_time3, "
+        . "registrations.perf_time4, "
+        . "registrations.perf_time5, "
+        . "registrations.perf_time6, "
+        . "registrations.perf_time7, "
+        . "registrations.perf_time8, "
         . "registrations.participation, "
         . "registrations.notes, "
         . "registrations.internal_notes, "
@@ -241,6 +249,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                 'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
                 ),
             ),
         array('container'=>'trophies', 'fname'=>'trophy_id', 
@@ -572,10 +581,12 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                 //
                 // Check height required
                 //
-                $h = $pdf->getStringHeight(150, $name); 
+                $pdf->SetFont('', 'B', '14');
+                $pdf->SetCellPadding(2);
+                $h = $pdf->getStringHeight($cw[1], $name); 
                 if( isset($timeslot['runsheet_notes']) && $timeslot['runsheet_notes'] != '' ) {
                     $pdf->SetFont('', '', 12);
-                    $h = $pdf->getStringHeight($cw[1], $name); 
+                    $h += $pdf->getStringHeight($cw[1], $name); 
                 }
                 $timeslot['trophies'] = array();
                 if( isset($timeslot['registrations']) && count($timeslot['registrations']) > 0 ) {
@@ -588,13 +599,64 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                         for($i = 1; $i <= 8; $i++) {
                             if( $reg["title{$i}"] != '' ) {
                                 $timeslot['registrations'][$rid]['last_title'] = $i;
+                                $perf_time = '??';
+                                if( $reg["perf_time{$i}"] != '' && is_numeric($reg["perf_time{$i}"]) ) {
+                                    $perf_time = intval($reg["perf_time{$i}"]/60) 
+                                        . ':' 
+                                        . str_pad(($reg["perf_time{$i}"]%60), 2, '0', STR_PAD_LEFT);
+                                }
                                 $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
                                 if( isset($rc['title']) ) {
-                                    $timeslot['registrations'][$rid]["title{$i}"] = '- ' . $rc['title'];
+                                    $timeslot['registrations'][$rid]["title{$i}"] = "- [{$perf_time}] " . $rc['title'];
                                 }
                                 $h += $pdf->getStringHeight($tw[1], $timeslot['registrations'][$rid]["title{$i}"]);
                             }
                         }
+                        //
+                        // Setup the notes for the registration
+                        //
+                        $notes = '';
+                        if( isset($festival['runsheets-internal-notes']) && $festival['runsheets-internal-notes'] == 'yes'
+                            && $reg['internal_notes'] != ''
+                            ) {
+                            $notes .= ($notes != '' ? "\n" : '') . $reg['internal_notes'];
+                        }
+                        if( isset($festival['runsheets-registration-notes']) && $festival['runsheets-registration-notes'] == 'yes'
+                            && $reg['notes'] != ''
+                            ) {
+                            $notes .= ($notes != '' ? "\n" : '') . $reg['notes'];
+                        }
+                        if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes'
+                            && isset($competitors[$reg['competitor1_id']]['notes']) 
+                            && $competitors[$reg['competitor1_id']]['notes'] != '' 
+                            ) {
+                            $notes .= ($notes != '' ? "\n" : '') . $competitors[$reg['competitor1_id']]['notes'];
+                        }
+                        if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes'
+                            && isset($competitors[$reg['competitor2_id']]['notes']) 
+                            && $competitors[$reg['competitor2_id']]['notes'] != '' 
+                            ) {
+                            $notes .= ($notes != '' ? "\n" : '') . $competitors[$reg['competitor2_id']]['notes'];
+                        }
+                        if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes'
+                            && isset($competitors[$reg['competitor3_id']]['notes']) 
+                            && $competitors[$reg['competitor3_id']]['notes'] != '' 
+                            ) {
+                            $notes .= ($notes != '' ? "\n" : '') . $competitors[$reg['competitor3_id']]['notes'];
+                        }
+                        if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes'
+                            && isset($competitors[$reg['competitor4_id']]['notes']) 
+                            && $competitors[$reg['competitor4_id']]['notes'] != '' 
+                            ) {
+                            $notes .= ($notes != '' ? "\n" : '') . $competitors[$reg['competitor4_id']]['notes'];
+                        }
+                        $timeslot['registrations'][$rid]['combined_notes'] = $notes;
+                        if( $notes != '' ) {
+                            $pdf->SetCellPaddings(2,2,2,2);
+                            $pdf->SetFont('', '', '11');
+                            $h += $pdf->getStringHeight($tnw[2], $notes);
+                        }
+
                         if( isset($reg['trophies']) && count($reg['trophies']) > 0 ) {
                             foreach($reg['trophies'] as $trophy) {
                                 if( !in_array($trophy['name'], $timeslot['trophies']) ) {
@@ -649,45 +711,6 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     $num = 1;
                     foreach($timeslot['registrations'] as $reg) {
                         //
-                        // Setup the notes for the registration
-                        //
-                        $notes = '';
-                        if( isset($festival['runsheets-internal-notes']) && $festival['runsheets-internal-notes'] == 'yes'
-                            && $reg['internal_notes'] != ''
-                            ) {
-                            $notes .= ($notes != '' ? "\n" : '') . $reg['internal_notes'];
-                        }
-                        if( isset($festival['runsheets-registration-notes']) && $festival['runsheets-registration-notes'] == 'yes'
-                            && $reg['notes'] != ''
-                            ) {
-                            $notes .= ($notes != '' ? "\n" : '') . $reg['notes'];
-                        }
-                        if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes'
-                            && isset($competitors[$reg['competitor1_id']]['notes']) 
-                            && $competitors[$reg['competitor1_id']]['notes'] != '' 
-                            ) {
-                            $notes .= ($notes != '' ? "\n" : '') . $competitors[$reg['competitor1_id']]['notes'];
-                        }
-                        if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes'
-                            && isset($competitors[$reg['competitor2_id']]['notes']) 
-                            && $competitors[$reg['competitor2_id']]['notes'] != '' 
-                            ) {
-                            $notes .= ($notes != '' ? "\n" : '') . $competitors[$reg['competitor2_id']]['notes'];
-                        }
-                        if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes'
-                            && isset($competitors[$reg['competitor3_id']]['notes']) 
-                            && $competitors[$reg['competitor3_id']]['notes'] != '' 
-                            ) {
-                            $notes .= ($notes != '' ? "\n" : '') . $competitors[$reg['competitor3_id']]['notes'];
-                        }
-                        if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes'
-                            && isset($competitors[$reg['competitor4_id']]['notes']) 
-                            && $competitors[$reg['competitor4_id']]['notes'] != '' 
-                            ) {
-                            $notes .= ($notes != '' ? "\n" : '') . $competitors[$reg['competitor4_id']]['notes'];
-                        }
-
-                        //
                         // Check height and see if we need new page
                         //
                         $h = 0;
@@ -698,12 +721,12 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                                 $h += $pdf->getStringHeight($tw[1], $reg["title{$i}"]);
                             }
                         }
-                        if( $notes != '' ) {
+                        if( $reg['combined_notes'] != '' ) {
                             $pdf->SetCellPaddings(2,2,2,2);
                             $pdf->SetFont('', '', '11');
-                            $h += $pdf->getStringHeight($tnw[2], $notes);
+                            $h += $pdf->getStringHeight($tnw[2], $reg['combined_notes']);
                         }
-                        if( $pdf->GetY() > $pdf->getPageHeight() - $h - 32) {
+                        if( $pdf->GetY() > $pdf->getPageHeight() - $h - 22) {
                             // The following has been added by untested
                             $pdf->AddPage();
                             $pdf->DivisionHeader($args, $section, $division, 'yes');
@@ -760,7 +783,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                         $pdf->SetFont('', '', '11');
                         for($i = 1; $i <= 8; $i++) {
                             if( $reg["title{$i}"] != '' ) {
-                                if( $reg['last_title'] == $i && $notes == '' ) {
+                                if( $reg['last_title'] == $i && $reg['combined_notes'] == '' ) {
                                     $border = 'LBR';
                                     if( $i == 1 ) {
                                         $pdf->SetCellPaddings(2,2,2,2);
@@ -775,15 +798,15 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                                 $pdf->MultiCell($tw[1], $h, $reg["title{$i}"], $border, 'L', 0, 1);
                             }
                         }
-                        if( $notes != '' ) {
+                        if( $reg['combined_notes'] != '' ) {
                             $pdf->SetCellPaddings(2,2,2,2);
                             $pdf->SetFont('', '', '11');
-                            $h = $pdf->getStringHeight($tnw[2], $notes);
+                            $h = $pdf->getStringHeight($tnw[2], $reg['combined_notes']);
                             $pdf->MultiCell($tnw[0], $h, '', 'LBR', 'C', 0, 0);
                             $pdf->SetFont('', 'B', '11');
                             $pdf->MultiCell($tnw[1], $h, 'Notes', 'LB', 'L', 0, 0);
                             $pdf->SetFont('', '', '11');
-                            $pdf->MultiCell($tnw[2], $h, $notes, 'BR', 'L', 0, 1);
+                            $pdf->MultiCell($tnw[2], $h, $reg['combined_notes'], 'BR', 'L', 0, 1);
                         }
                         $pdf->SetFont('', '', '12');
 
