@@ -13,6 +13,8 @@
 //
 function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
+
     //
     // Load the tenant details
     //
@@ -191,7 +193,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
         $strsql .= "AND registrations.participation = 1 ";
     }
-    $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, slot_time, registrations.timeslot_sequence, registrations.display_name "
+    $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, slot_time, registrations.timeslot_sequence, class_code, registrations.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -538,8 +540,9 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 if( $prev_time == $time ) {
                     $time = '';
                     $border = '';
+                } else {
+                    $prev_time = $time;
                 }
-                $prev_time = $time;
 
                 $description = $timeslot['description'];
                 $reg_list = array();
@@ -547,7 +550,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 if( isset($timeslot['registrations']) && count($timeslot['registrations']) > 0 ) {
                     $pdf->SetFont('', '', '12');
                     $pdf->SetCellPadding(0);
-                    foreach($timeslot['registrations'] as $reg) {
+                    foreach($timeslot['registrations'] as $rid => $reg) {
                         $row = array();
                         if( isset($args['names']) && $args['names'] == 'private' ) {
                             $row['name'] = $reg['name'];
@@ -567,11 +570,16 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                             $row['title_width'] = $w[2] - $row['name_width'] - $row['dash_width'] - 1;
                             $row['name_height'] = $pdf->getStringHeight(($row['name_width']), $row['name']);
                             $row['height'] = $row['name_height'];
-                            $row['title1'] = $reg['title1'];
-                            $row['titles_height'] = $pdf->getStringHeight($row['title_width'], $row['title1']);
-                            for($i = 2; $i <= 8; $i++ ) {
+//                            $row['title1'] = $reg['title1'];
+//                            $row['titles_height'] = $pdf->getStringHeight($row['title_width'], $row['title1']);
+                            $row['titles_height'] = 0;
+                            for($i = 1; $i <= 8; $i++ ) {
                                 if( isset($reg["title{$i}"]) && $reg["title{$i}"] != '' ) {
-                                    $row["title{$i}"] = $reg["title{$i}"];
+                                    $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
+                                    if( isset($rc['title']) ) {
+                                        $timeslot['registrations'][$rid]["title{$i}"] = $rc['title'];
+                                    }
+                                    $row["title{$i}"] = $timeslot['registrations'][$rid]["title{$i}"];
                                     $row['titles_height'] += $pdf->getStringHeight($row['title_width'], $row["title{$i}"]);
                                 }
                             }
@@ -614,13 +622,16 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     $pdf->DivisionHeader($args, $section, $division, 'yes');
                     $pdf->SetFont('', '', '12');
                     $pdf->Ln(1);
-                } 
-                $pdf->Ln(2);
-                if( $time != '' ) {
-                    $pdf->SetCellPaddings(1,3,1,1);
+                    $border = 'T';
+                    $pdf->SetCellPaddings(1,2,1,1);
                 } else {
-                    $pdf->SetCellPaddings(1,0,1,1);
+                    if( $time != '' ) {
+                        $pdf->SetCellPaddings(1,3,1,1);
+                    } else {
+                        $pdf->SetCellPaddings(1,0,1,1);
+                    }
                 }
+                $pdf->Ln(2);
 
                 $pdf->SetFont('', 'B');
                 $lh = $pdf->getStringHeight($w[2], $name);
