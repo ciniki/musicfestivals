@@ -355,7 +355,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 );
             for($i = 1; $i <= $registration['max_titles']; $i++) {
                 if( $registration["title{$i}"] != '' ) {
-                    $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
+                    $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $registration, $i);
                     if( isset($rc['title']) ) {
                         $registration["title{$i}"] = $rc['title'];
                     }
