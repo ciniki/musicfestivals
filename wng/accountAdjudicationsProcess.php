@@ -13,6 +13,7 @@
 function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, &$request, $args) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'videoProcess');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
 
     $blocks = array();
 
@@ -354,6 +355,10 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 );
             for($i = 1; $i <= $registration['max_titles']; $i++) {
                 if( $registration["title{$i}"] != '' ) {
+                    $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
+                    if( isset($rc['title']) ) {
+                        $registration["title{$i}"] = $rc['title'];
+                    }
                     $section['fields']["title{$i}"] = array(
                         'id' => "title{$i}",
                         'ftype' => 'content',
