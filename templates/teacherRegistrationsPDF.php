@@ -13,6 +13,8 @@
 //
 function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid, $args) {
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
+
     //
     // Make sure festival_id was passed in
     //
@@ -594,8 +596,11 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
             }
             for($i = 1; $i <= 8; $i++) {
                 if( $registration["title{$i}"] != '' ) {
-                    $line = $registration["title{$i}"];
-                    if( $registration["movements{$i}"] != ''
+                    $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $registration, $i);
+                    if( isset($rc['title']) ) {
+                        $line = $rc['title'];
+                    }
+/*                    if( $registration["movements{$i}"] != ''
                         && strtolower($registration["movements{$i}"]) != 'na'
                         && strtolower($registration["movements{$i}"]) != 'n/a'
                         && strtolower($registration["movements{$i}"]) != 'not applicable'
@@ -612,7 +617,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
                         } else {
                             $line .= ' by ' . $registration["composer{$i}"];
                         }
-                    }
+                    } */
                     $description .= "\n" . $line;
                 }
             }
