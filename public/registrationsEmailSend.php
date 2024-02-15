@@ -54,11 +54,37 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
         . "classes.code AS class_code, "
         . "classes.name AS class_name, "
         . "registrations.title1, "
-        . "registrations.perf_time1, "
         . "registrations.title2, "
-        . "registrations.perf_time2, "
         . "registrations.title3, "
+        . "registrations.title4, "
+        . "registrations.title5, "
+        . "registrations.title6, "
+        . "registrations.title7, "
+        . "registrations.title8, "
+        . "registrations.composer1, "
+        . "registrations.composer2, "
+        . "registrations.composer3, "
+        . "registrations.composer4, "
+        . "registrations.composer5, "
+        . "registrations.composer6, "
+        . "registrations.composer7, "
+        . "registrations.composer8, "
+        . "registrations.movements1, "
+        . "registrations.movements2, "
+        . "registrations.movements3, "
+        . "registrations.movements4, "
+        . "registrations.movements5, "
+        . "registrations.movements6, "
+        . "registrations.movements7, "
+        . "registrations.movements8, "
+        . "registrations.perf_time1, "
+        . "registrations.perf_time2, "
         . "registrations.perf_time3, "
+        . "registrations.perf_time4, "
+        . "registrations.perf_time5, "
+        . "registrations.perf_time6, "
+        . "registrations.perf_time7, "
+        . "registrations.perf_time8, "
         . "IF(registrations.participation = 1, 'Virtual', 'In Person') AS participation, "
         . "FORMAT(registrations.fee, 2) AS fee, "
         . "registrations.payment_type "
@@ -88,7 +114,10 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'festival_id', 'teacher_name', 'display_name', 
                 'class_id', 'class_code', 'class_name', 
-                'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 
+                'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
+                'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
+                'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
                 'fee', 'payment_type', 'participation'),
             ),
         ));
@@ -102,36 +131,32 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
         $total = 0;
         $html = "<table cellpadding=5 cellspacing=0>";
         $html .= "<tr><th>Class</th><th>Competitor</th><th>Title</th><th>Time</th><th>Virtual</th></tr>";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
         foreach($festival['registrations'] as $iid => $registration) {
+            $titles = '';
+            $perf_times = '';
+            $text_titles = '';
+            for($i = 1; $i <= 8; $i++ ) {
+                $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
+                if( isset($rc['title']) && $rc['title'] != '' ) {
+                    $titles .= ($titles != '' ? '<br/>' : '') . $rc['title'];
+                    if( $registration["perf_time{$i}"] != '' && is_numeric($registration["perf_time{$i}"]) ) {
+                        $perf_time = intval($registration["perf_time{$i}"]/60) 
+                            . ':' 
+                            . str_pad(($registration["perf_time{$i}"]%60), 2, '0', STR_PAD_LEFT);
+                        $perf_times .= ($perf_times != '' ? '<br/>' : '') . $perf_time;
+                        $text_titles .= ' - ' . $rc['title'] . ' [' . $perf_time . "]\n";
+                    }
+                }
+            }
             $html .= '<tr><td>' . $registration['class_code'] . '</td><td>' . $registration['display_name'] . '</td>'
-                . '<td>' . $registration['title1'] 
-                    . ($registration['title2'] != '' ? "<br/>{$registration['title2']}" : '')
-                    . ($registration['title3'] != '' ? "<br/>{$registration['title3']}" : '')
-                    . '</td>'
-                . '<td>' . $registration['perf_time1'] 
-                    . ($registration['perf_time2'] != '' ? "<br/>{$registration['perf_time2']}" : '')
-                    . ($registration['perf_time3'] != '' ? "<br/>{$registration['perf_time3']}" : '')
-                    . '</td>'
+                . '<td>' . $titles . '</td>'
+                . '<td>' . $perf_times . '</td>'
                 . '<td>' . $registration['participation'] . "</td></tr>\n";
             $text .= $registration['class_code'] 
-                . ' - ' . $registration['display_name'] 
-                . ($registration['title1'] != '' ? ' - ' . $registration['title1'] : '')
-                . ($registration['perf_time1'] != '' ? ' - ' . $registration['perf_time1'] : '')
+                . ' - ' . $registration['display_name']  . "\n"
+                . $text_titles
                 . "\n";
-            if( $registration['title2'] != '' ) {
-                $text .= preg_replace("/./", '', $registration['class_code'])
-                    . ' - ' . preg_replace("/./", '', $registration['display_name'])
-                    . ($registration['title2'] != '' ? ' - ' . $registration['title2'] : '')
-                    . ($registration['perf_time2'] != '' ? ' - ' . $registration['perf_time2'] : '')
-                    . "\n";
-            }
-            if( $registration['title3'] != '' ) {
-                $text .= preg_replace("/./", '', $registration['class_code'])
-                    . ' - ' . preg_replace("/./", '', $registration['display_name'])
-                    . ($registration['title3'] != '' ? ' - ' . $registration['title3'] : '')
-                    . ($registration['perf_time3'] != '' ? ' - ' . $registration['perf_time3'] : '')
-                    . "\n";
-            }
         }
         $html .= "</table>";
     } else {
