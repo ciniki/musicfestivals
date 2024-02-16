@@ -86,6 +86,7 @@ function ciniki_musicfestivals_syllabusSearch($ciniki) {
         . "AND ("
             . "classes.name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR classes.name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR classes.code LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
         . ") "
         . "GROUP BY classes.id "
         . "ORDER BY sections.sequence, sections.name, "
