@@ -650,7 +650,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     }
                     if( isset($args['titles']) && $args['titles'] == 'yes' ) {
                         $pdf->MultiCell($row['name_width'], $row['name_height'], $row['name'], 0, 'L', 0, 0);
-                        if( $row['title1'] != '' ) {
+                        if( isset($row['title1']) && $row['title1'] != '' ) {
                             $pdf->MultiCell($row['dash_width'], '', '-', 0, 'C', 0, 0);
                             $pdf->MultiCell($row['title_width'], '', $row['title1'], 0, 'L', 0, 1);
                         } else {
