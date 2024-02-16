@@ -3611,7 +3611,7 @@ function ciniki_musicfestivals_main() {
                     }
                     p.refreshSection('teacher_details');
                     p.show();
-                    p.updateForm();
+                    p.updateForm(null,null,'no');
                 });
             } else {
                 this.data.teacher_details = [];
@@ -3619,7 +3619,7 @@ function ciniki_musicfestivals_main() {
                 this.sections.teacher_details.changeTxt = 'Add';
                 this.refreshSection('teacher_details');
                 this.show();
-                this.updateForm();
+                this.updateForm(null,null,'no');
             }
         } else {
             this.show();
@@ -3645,7 +3645,7 @@ function ciniki_musicfestivals_main() {
                     }
                     p.refreshSection('accompanist_details');
                     p.show();
-                    p.updateForm();
+                    p.updateForm(null,null,'no');
                 });
             } else {
                 this.data.accompanist_details = [];
@@ -3653,7 +3653,7 @@ function ciniki_musicfestivals_main() {
                 this.sections.accompanist_details.changeTxt = 'Add';
                 this.refreshSection('accompanist_details');
                 this.show();
-                this.updateForm();
+                this.updateForm(null,null,'no');
             }
         } else {
             this.show();
