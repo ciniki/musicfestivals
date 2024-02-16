@@ -144,6 +144,14 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         . "registrations.movements6, "
         . "registrations.movements7, "
         . "registrations.movements8, "
+        . "registrations.video_url1, "
+        . "registrations.video_url2, "
+        . "registrations.video_url3, "
+        . "registrations.video_url4, "
+        . "registrations.video_url5, "
+        . "registrations.video_url6, "
+        . "registrations.video_url7, "
+        . "registrations.video_url8, "
         . "registrations.participation, "
         . "classes.code AS class_code, "
         . "classes.name AS class_name, "
@@ -213,6 +221,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                 'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
                 )),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -580,6 +589,11 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                                         $timeslot['registrations'][$rid]["title{$i}"] = $rc['title'];
                                     }
                                     $row["title{$i}"] = $timeslot['registrations'][$rid]["title{$i}"];
+                                    if( isset($args['video_urls']) && $args['video_urls'] == 'yes' 
+                                        && isset($reg["video_url{$i}"]) && $reg["video_url{$i}"] != '' 
+                                        ) {
+                                        $row["title{$i}"] .= ' ' . $reg["video_url{$i}"];
+                                    }
                                     $row['titles_height'] += $pdf->getStringHeight($row['title_width'], $row["title{$i}"]);
                                 }
                             }
