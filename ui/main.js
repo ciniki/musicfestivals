@@ -935,7 +935,7 @@ function ciniki_musicfestivals_main() {
             'schedulesection_id':(s==null ? this.schedulesection_id : s),
             'ipv':this.formValue('ipv'),
             };
-        M.api.openPDF('ciniki.musicfestivals.runsheetsPDF',args);
+        M.api.openPDF('ciniki.musicfestivals.commentsPDF',args);
     }
     this.festival.downloadRunSheetsPDF = function(s) {
         var args = {'tnid':M.curTenantID,
