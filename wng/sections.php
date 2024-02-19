@@ -194,22 +194,58 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'no' => 'No',
                     'yes' => 'Yes',
                     )),
-            'full-names' => array('label'=>'Full Names', 'type'=>'toggle', 'default'=>'no',
+            'ipv' => array('label'=>'Live/Virtual', 'type'=>'toggle', 'default'=>'all', 'separator'=>'yes',
                 'toggles'=>array(
-                    'no' => 'No',
-                    'yes' => 'Yes',
+                    'all' => 'All',
+                    'inperson' => 'Live',
+                    'virtual' => 'Virtual',
                     )),
             'titles' => array('label'=>'Titles', 'type'=>'toggle', 'default'=>'no',
                 'toggles'=>array(
                     'no' => 'No',
                     'yes' => 'Yes',
                     )),
-            'ipv' => array('label'=>'Live/Virtual', 'type'=>'toggle', 'default'=>'all',
+            'names' => array('label'=>'Full Names', 'type'=>'toggle', 'default'=>'no',
                 'toggles'=>array(
-                    'all' => 'All',
-                    'inperson' => 'Live',
-                    'virtual' => 'Virtual',
+                    'public' => 'No',
+                    'private' => 'Yes',
                     )),
+            'video_urls' => array('label'=>'Virtual Video URLs', 'type'=>'toggle', 'default'=>'no',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
+            'section-pdf' => array('label'=>'Section PDF Download', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
+                'no' => 'Off',
+                'top' => 'Top',
+                'bottom' => 'Bottom',
+                'both' => 'Both',
+                )),
+            'complete-pdf' => array('label'=>'Complete PDF Download', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
+                'no' => 'Off',
+                'top' => 'Top',
+                'bottom' => 'Bottom',
+                'both' => 'Both',
+                )),
+            'division_header_format' => array('label'=>'PDF Division Header Format', 'type'=>'select', 'default'=>'default', 
+                'options'=>array(
+                    'default' => 'Date-Division, Address', 
+                    'name-adjudicator-address' => 'Division, Adjudicator, Address',
+                    'date-name-adjudicator-address' => 'Date, Division, Adjudicator, Address',
+                    'name-date-adjudicator-address' => 'Division, Date, Adjudicator, Address',
+                    )),
+            'division_header_labels' => array('label'=>'PDF Division Header Labels', 'type'=>'toggle', 'default'=>'no', 
+                'toggles'=>array(
+                    'no'=>'No', 
+                    'yes'=>'Yes',
+                    )),
+                // With section name in header you must have break between each section, 
+                // this option is only good for print when embedding in another document, not good for website downloads
+//            'section_page_break' => array('label'=>'PDF Section Page Break', 'type'=>'toggle', 'default'=>'no',
+//                'toggles'=>array(
+//                    'no' => 'No',
+//                    'yes' => 'Yes',
+//                    )),
             ),
         );
 

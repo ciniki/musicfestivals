@@ -40,6 +40,47 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     }
 
     //
+    // Check if syllabus is displaying just live or just virtual
+    //
+    if( isset($s['ipv']) && $s['ipv'] == 'inperson' ) {
+        $lv_word = 'Live ';
+    } elseif( isset($s['ipv']) && $s['ipv'] == 'virtual' ) {
+        $lv_word = 'Virtual ';
+    }
+
+    //
+    // Get the music festival details
+    //
+    $dt = new DateTime('now', new DateTimezone('UTC'));
+    $strsql = "SELECT id, name, flags, "
+        . "earlybird_date, "
+        . "live_date, "
+        . "virtual_date "
+//        . "IFNULL(DATEDIFF(earlybird_date, '" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d')) . "'), -1) AS earlybird, "
+//        . "IFNULL(DATEDIFF(virtual_date, '" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d')) . "'), -1) AS virtual "
+        . "FROM ciniki_musicfestivals "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( isset($rc['festival']) ) {
+        $festival = $rc['festival'];
+        $earlybird_dt = new DateTime($rc['festival']['earlybird_date'], new DateTimezone('UTC'));
+        $live_dt = new DateTime($rc['festival']['live_date'], new DateTimezone('UTC'));
+        $virtual_dt = new DateTime($rc['festival']['virtual_date'], new DateTimezone('UTC'));
+        $festival['earlybird'] = ($earlybird_dt > $dt ? 'yes' : 'no');
+        $festival['live'] = ($live_dt > $dt ? 'yes' : 'no');
+        $festival['virtual'] = ($virtual_dt > $dt ? 'yes' : 'no');
+        if( ($festival['flags']&0x10) == 0x10 ) {   // Adjudication Plus
+            $festival['earlybird_plus_live'] = $festival['earlybird'];
+            $festival['plus_live'] = $festival['live'];
+        }
+    }
+
+    //
     // Load the schedules
     //
     $strsql = "SELECT sections.id, "
@@ -63,7 +104,53 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             ));
     }
     $schedulesection = $rc['section'];
+    $schedulesection['permalink'] = ciniki_core_makePermalink($ciniki, $schedulesection['name']);
 
+    //
+    // Check if schedule download requests for this section
+    //
+    if( isset($request['uri_split'][($request['cur_uri_pos']+1)])
+        && $request['uri_split'][($request['cur_uri_pos']+1)] == 'schedule.pdf' 
+        ) {
+        //
+        // Download the syllabus section pdf
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'schedulePDF');
+        $rc = ciniki_musicfestivals_templates_schedulePDF($ciniki, $tnid, array(
+            'published' => 'yes',
+            'festival_id' => $s['festival-id'],
+            'schedulesection_id' => $schedulesection['id'],
+            'ipv' => isset($s['ipv']) ? $s['ipv'] : '',
+            'division_header_format' => isset($s['division_header_format']) ? $s['division_header_format'] : '',
+            'division_header_labels' => isset($s['division_header_labels']) ? $s['division_header_labels'] : '',
+            'names' => isset($s['names']) ? $s['names'] : '',
+            'titles' => isset($s['titles']) ? $s['titles'] : '',
+            'video_urls' => isset($s['video_urls']) ? $s['video_urls'] : '',
+            'section_page_break' => isset($s['section_page_break']) ? $s['section_page_break'] : '',
+            ));
+        if( isset($rc['pdf']) ) {
+            $filename = $festival['name'] . ' - ' . $schedulesection['name'] . ' Schedule';
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+            $filename = ciniki_core_makePermalink($ciniki, $filename) . '.pdf';
+            header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+            header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+            header('Cache-Control: no-cache, must-revalidate');
+            header('Pragma: no-cache');
+            header('Content-Type: application/pdf');
+            header('Cache-Control: max-age=0');
+
+            $rc['pdf']->Output($filename, 'I');
+
+            return array('stat'=>'exit');
+        } else {
+            $blocks[] = array(
+                'type' => 'msg',
+                'level' => 'error',
+                'content' => 'Unable to download pdf',
+                );
+        }
+    }
+    
     //
     // Load the dividions, timeslots and registrations
     //
@@ -102,6 +189,14 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "registrations.movements6, "
         . "registrations.movements7, "
         . "registrations.movements8, "
+        . "registrations.video_url1, "
+        . "registrations.video_url2, "
+        . "registrations.video_url3, "
+        . "registrations.video_url4, "
+        . "registrations.video_url5, "
+        . "registrations.video_url6, "
+        . "registrations.video_url7, "
+        . "registrations.video_url8, "
         . "registrations.participation, "
         . "classes.name AS class_name "
         . "FROM ciniki_musicfestival_schedule_divisions AS divisions "
@@ -144,6 +239,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                 'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
                 'participation', 'class_name'),
             ),
         ));
@@ -164,6 +260,23 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         );
 
     //
+    // Check if download button
+    //
+    if( isset($s['section-pdf']) && ($s['section-pdf'] == 'top' || $s['section-pdf'] == 'both') ) {
+        $blocks[] = array(
+            'type' => 'buttons',
+            'class' => 'buttons-top-' . $schedulesection['permalink'],
+            'list' => array(
+                array(
+                    'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $schedulesection['permalink'] . '/schedule.pdf',
+                    'target' => '_blank',
+                    'text' => 'Download ' . (isset($lv_word) && $lv_word != '' ? "{$lv_word} " : '') . 'Schedule PDF for ' . $schedulesection['name'],
+                    ),
+                ),
+            );
+    }
+
+    //
     // Show the divisions
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
@@ -172,6 +285,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             //
             // Process the timeslots
             //
+            $videos = 'no';
             foreach($division['timeslots'] as $tid => $timeslot) {
                 if( $timeslot['title'] == '' && $timeslot['class_name'] != '' ) {
                     $division['timeslots'][$tid]['title'] = $timeslot['class_name'];
@@ -186,7 +300,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                         // Setup name
                         //
                         $name = $registration['public_name'];
-                        if( isset($s['full-names']) && $s['full-names'] == 'yes' ) {
+                        if( isset($s['names']) && $s['names'] == 'private' ) {
                             $name = $registration['display_name'];
                         }
 
@@ -203,7 +317,16 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                                     if( $rc['stat'] != 'ok' ) {
                                         return $rc;
                                     }
-                                    $division['timeslots'][$tid]['items'][] = array('name'=>$name, 'title'=>$rc['title']);
+                                    if( isset($s['video_urls']) && $s['video_urls'] == 'yes' 
+                                        && isset($registration["video_url{$i}"]) && $registration["video_url{$i}"] != '' 
+                                        ) {
+                                        $division['timeslots'][$tid]['items'][] = array('name'=>$name, 'title'=>$rc['title'], 
+                                            'video'=>"<a target='_blank' class='link' href='" . $registration["video_url{$i}"] . "'>Watch Video</a>",
+                                            );
+                                        $videos = 'yes';
+                                    } else {
+                                        $division['timeslots'][$tid]['items'][] = array('name'=>$name, 'title'=>$rc['title'], 'video'=>'');
+                                    }
                                 }
                             }
                         } 
@@ -214,6 +337,13 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 }
             }
 
+            $columns = array(
+                array('label'=>'Name', 'field'=>'name', 'class'=>''),
+                array('label'=>'Title', 'field'=>'title', 'class'=>''),
+                );
+            if( $videos == 'yes' ) {
+                $columns[] = array('label'=>'Video', 'field'=>'video', 'class'=>'alignright');
+            }
             $blocks[] = array(
                 'type' => 'schedule',
                 'title' => $division['name'] . (isset($s['division-dates']) && $s['division-dates'] == 'yes' ? ' - ' . $division['date'] : ''),
@@ -221,13 +351,28 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 'class' => 'musicfestival-timeslots limit-width limit-width-80',
                 'items' => $division['timeslots'],
                 'details-headers' => 'no',
-                'details-columns' => array(
-                    array('label'=>'Name', 'field'=>'name', 'class'=>''),
-                    array('label'=>'Title', 'field'=>'title', 'class'=>''),
-                    ),
+                'details-columns' => $columns,
                 );
         }
     }
+
+    //
+    // Check if download button
+    //
+    if( isset($s['section-pdf']) && ($s['section-pdf'] == 'bottom' || $s['section-pdf'] == 'both') ) {
+        $blocks[] = array(
+            'type' => 'buttons',
+            'class' => 'buttons-top-' . $schedulesection['permalink'],
+            'list' => array(
+                array(
+                    'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $schedulesection['permalink'] . '/schedule.pdf',
+                    'target' => '_blank',
+                    'text' => 'Download ' . (isset($lv_word) && $lv_word != '' ? "{$lv_word} " : '') . 'Schedule PDF for ' . $schedulesection['name'],
+                    ),
+                ),
+            );
+    }
+
     
     return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
 }

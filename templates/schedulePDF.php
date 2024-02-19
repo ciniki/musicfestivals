@@ -77,7 +77,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     //
     $strsql = "SELECT detail_key, detail_value "
         . "FROM ciniki_musicfestival_settings "
-        . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
@@ -195,6 +195,9 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         . "";
     if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
         $strsql .= "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
+    }
+    if( isset($args['published']) && $args['published'] == 'yes' ) {
+        $strsql .= "AND (ssections.flags&0x01) = 0x01 ";
     }
     if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
         $strsql .= "AND (registrations.participation < 1 || ISNULL(registrations.participation) ) ";
@@ -316,7 +319,9 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         //
         public function DivisionHeader($args, $section, $division, $continued) {
             $fields = array();
-            if( isset($args['division_header_format']) && $args['division_header_format'] != 'default' ) {
+            if( isset($args['division_header_format']) 
+                && $args['division_header_format'] != 'default' && $args['division_header_format'] != '' 
+                ) {
                 $fields = explode('-', $args['division_header_format']);
                 if( $continued == 'yes' ) {
                     $division[$fields[0]] .= ' (continued...)';
@@ -561,7 +566,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     $pdf->SetCellPadding(0);
                     foreach($timeslot['registrations'] as $rid => $reg) {
                         $row = array();
-                        if( isset($args['names']) && $args['names'] == 'private' ) {
+                        if( !isset($args['names']) ||  $args['names'] == 'private' ) {
                             $row['name'] = $reg['name'];
                         } else {
                             $row['name'] = $reg['public_name'];
