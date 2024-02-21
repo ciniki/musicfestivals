@@ -613,6 +613,22 @@ function ciniki_musicfestivals_main() {
         'timeslot_photos':{'label':'Time Slots', 'type':'simplegrid', 'num_cols':3,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'schedule' && M.ciniki_musicfestivals_main.festival.sections.schedule_tabs.selected == 'photos' && M.ciniki_musicfestivals_main.festival.schedulesection_id>0 && M.ciniki_musicfestivals_main.festival.scheduledivision_id>0 ? 'yes' : 'no'; },
             'cellClasses':['multiline', 'thumbnails', 'alignright fabuttons'],
+            'addDropImage':function(iid, i) {
+                var row = M.ciniki_musicfestivals_main.festival.data.timeslot_photos[i];
+                M.api.getJSONCb('ciniki.musicfestivals.timeslotImageAdd', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 
+                    'timeslot_id':row.id, 'image_id':iid},
+                    function(rsp) {
+                        if( rsp.stat != 'ok' ) {
+                            M.api.err(rsp);
+                            return false;
+                        }
+                        var p = M.ciniki_musicfestivals_main.festival;
+                        var t = M.gE(p.panelUID + '_timeslot_photos_grid');
+                        var cell = t.children[0].children[i].children[1];
+                        cell.innerHTML += '<img class="clickable" onclick="M.ciniki_musicfestivals_main.timeslotimage.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + rsp.id + '\');" width="50px" height="50px" src=\'' + rsp.image + '\' />';
+                    });
+                return true;
+                },
             },
         'timeslot_comments':{'label':'Time Slots', 'type':'simplegrid', 'num_cols':5, 
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'schedule' && M.ciniki_musicfestivals_main.festival.sections.schedule_tabs.selected == 'comments' && M.ciniki_musicfestivals_main.festival.schedulesection_id>0 && M.ciniki_musicfestivals_main.festival.scheduledivision_id>0 ? 'yes' : 'no'; },
