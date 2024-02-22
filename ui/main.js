@@ -1096,14 +1096,14 @@ function ciniki_musicfestivals_main() {
         if( s == 'unscheduled_registrations' ) {
             switch (j) {
                 case 0: return d.class_code;
-                case 1: return '<span class="maintext">' + d.display_name + '</span><span class="subtext">' + d.title1 + '</span>';
+                case 1: return '<span class="maintext">' + d.display_name + '</span><span class="subtext">' + d.titles + '</span>';
                 case 2: return d.status_text;
             }
         }
         if( s == 'registrations' || s == 'registration_search' ) {
             switch (j) {
                 case 0: return d.class_code;
-                case 1: return '<span class="maintext">' + d.display_name + '</span><span class="subtext">' + d.title1 + '</span>';
+                case 1: return '<span class="maintext">' + d.display_name + '</span><span class="subtext">' + d.titles + '</span>';
                 case 2: return d.teacher_name;
                 case 3: return '$' + d.fee;
                 case 4: return d.status_text;
