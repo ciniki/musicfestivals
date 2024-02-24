@@ -200,6 +200,14 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'inperson' => 'Live',
                     'virtual' => 'Virtual',
                     )),
+            'separate-classes' => array('label'=>'Separate Classes', 'type'=>'toggle', 'default'=>'no', 
+                'toggles'=>array('no'=>'No', 'yes'=>'Yes'),
+                ), 
+            'class-format'=>array('label'=>'Class Format', 'type'=>'select', 'default'=>'default', 'options'=>array(
+                'default'=>'Code - Class', 
+                'code-section-category-class'=>'Code - Section - Category - Class',
+                'code-category-class'=>'Code - Category - Class',
+                )),
             'titles' => array('label'=>'Titles', 'type'=>'toggle', 'default'=>'no',
                 'toggles'=>array(
                     'no' => 'No',

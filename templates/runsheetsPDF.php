@@ -518,9 +518,12 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             //
             // Skip empty divisions
             //
-            if( !isset($division['timeslots']) ) {
+            if( !isset($division['timeslots']) || count($division['timeslots']) <= 0 
+                || (count($division['timeslots']) == 1 && $division['timeslots'][0]['id'] == '')
+                ) {
                 continue;
             }
+
 
             //
             // Start a new section
@@ -670,7 +673,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     $h += 5;
                 }
                
-                if( $pdf->GetY() > $pdf->getPageHeight() - $h - 32) {
+                if( $pdf->GetY() > 70 && $pdf->GetY() > $pdf->getPageHeight() - $h - 32) {
                     $pdf->AddPage();
                     $pdf->DivisionHeader($args, $section, $division, 'yes');
                     $pdf->SetFont('', '', '12');

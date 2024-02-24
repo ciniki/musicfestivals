@@ -84,7 +84,13 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     // Load the schedules
     //
     $strsql = "SELECT sections.id, "
-        . "sections.name "
+        . "sections.name, "
+        . "sections.top_sponsors_title, "
+        . "sections.top_sponsor1_id, "
+        . "sections.top_sponsor2_id, "
+        . "sections.bottom_sponsors_title, "
+        . "sections.bottom_sponsor1_id, "
+        . "sections.bottom_sponsor2_id "
         . "FROM ciniki_musicfestival_schedule_sections AS sections "
         . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
         . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -105,6 +111,28 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     }
     $schedulesection = $rc['section'];
     $schedulesection['permalink'] = ciniki_core_makePermalink($ciniki, $schedulesection['name']);
+
+    //
+    // Load the sponsors
+    //
+    foreach(['top_sponsor1', 'top_sponsor2', 'bottom_sponsor1', 'bottom_sponsor2'] as $field) {
+        if( $schedulesection["{$field}_id"] > 0 ) {
+            $strsql = "SELECT name, url, image_id "
+                . "FROM ciniki_musicfestival_sponsors "
+                . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $schedulesection["{$field}_id"]) . "' "
+                . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'sponsor');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.688', 'msg'=>'Unable to load sponsor', 'err'=>$rc['err']));
+            }
+            if( isset($rc['sponsor']) ) {
+                $schedulesection["{$field}_name"] = $rc['sponsor']['name'];
+                $schedulesection["{$field}_url"] = $rc['sponsor']['url'];
+                $schedulesection["{$field}_image_id"] = $rc['sponsor']['image_id'];
+            }
+        }
+    }
 
     //
     // Check if schedule download requests for this section
@@ -157,9 +185,13 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     $strsql = "SELECT divisions.id AS division_id, "
         . "divisions.name AS division_name, "
         . "divisions.address, "
-        . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, "
-        . "timeslots.id AS timeslot_id, "
-        . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
+        . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, ";
+    if( isset($s['separate-classes']) && $s['separate-classes'] == 'yes' ) {
+        $strsql .= "CONCAT_WS('-', timeslots.id, classes.id) AS timeslot_id, ";
+    } else {
+        $strsql .= "timeslots.id AS timeslot_id, ";
+    }
+    $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
         . "timeslots.name AS timeslot_name, "
         . "timeslots.description, "
         . "registrations.id AS reg_id, "
@@ -198,7 +230,10 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "registrations.video_url7, "
         . "registrations.video_url8, "
         . "registrations.participation, "
-        . "classes.name AS class_name "
+        . "classes.code AS class_code, "
+        . "classes.name AS class_name, "
+        . "categories.name AS category_name, "
+        . "sections.name AS section_name "
         . "FROM ciniki_musicfestival_schedule_divisions AS divisions "
         . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
             . "divisions.id = timeslots.sdivision_id " 
@@ -211,6 +246,14 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
             . "registrations.class_id = classes.id "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
+            . "classes.category_id = categories.id " 
+            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+            . "categories.section_id = sections.id " 
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE divisions.ssection_id = '" . ciniki_core_dbQuote($ciniki, $s['section-id']) . "' "
         . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -231,7 +274,8 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'address'),
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
-            'fields'=>array('id'=>'timeslot_id', 'title'=>'timeslot_name', 'time'=>'slot_time_text', 'synopsis'=>'description', 'class_name',
+            'fields'=>array('id'=>'timeslot_id', 'title'=>'timeslot_name', 'time'=>'slot_time_text', 'synopsis'=>'description', 
+                'class_code', 'class_name', 'category_name', 'section_name',
                 ),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
@@ -258,6 +302,14 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         'level' => $section['sequence'] == 1 ? 1 : 2,
         'title' => isset($s['title']) ? $s['title'] : '',
         );
+
+    if( isset($schedulesection['top_sponsor1_image_id']) && $schedulesection['top_sponsor1_image_id'] > 0 ) {
+        $blocks[] = array(
+            'type' => 'asideimage', 
+            'title' => $schedulesection['top_sponsor1_name'],
+            'image-id' => $schedulesection['top_sponsor1_image_id'],
+            );
+    }
 
     //
     // Check if download button
@@ -287,9 +339,20 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             //
             $videos = 'no';
             foreach($division['timeslots'] as $tid => $timeslot) {
-                if( $timeslot['title'] == '' && $timeslot['class_name'] != '' ) {
-                    $division['timeslots'][$tid]['title'] = $timeslot['class_name'];
+                $name = $timeslot['title'];
+                if( $name == '' && $timeslot['class_name'] != '' ) {
+                    $name = $timeslot['class_name'];
                 }
+                if( isset($s['separate-classes']) && $s['separate-classes'] == 'yes' && $timeslot['class_code'] != '' ) {
+                    if( isset($s['class-format']) && $s['class-format'] == 'code-section-category-class' ) {
+                        $name = $timeslot['class_code'] . ' - ' . $timeslot['section_name'] . ' - ' . $timeslot['category_name'] . ' - ' . $timeslot['class_name']; 
+                    } elseif( isset($s['class-format']) && $s['class-format'] == 'code-category-class' ) {
+                        $name = $timeslot['class_code'] . ' - ' . $timeslot['category_name'] . ' - ' . $timeslot['class_name']; 
+                    } else {
+                        $name = $timeslot['class_code'] . ' - ' . $timeslot['class_name']; 
+                    }
+                }
+                $division['timeslots'][$tid]['title'] = $name;
                 $division['timeslots'][$tid]['items'] = array();
                 //
                 // Create the items table for the schedule

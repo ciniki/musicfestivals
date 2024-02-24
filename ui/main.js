@@ -4140,13 +4140,13 @@ function ciniki_musicfestivals_main() {
     //
     // The panel to edit Schedule Section
     //
-    this.schedulesection = new M.panel('Schedule Section', 'ciniki_musicfestivals_main', 'schedulesection', 'mc', 'medium', 'sectioned', 'ciniki.musicfestivals.main.schedulesection');
+    this.schedulesection = new M.panel('Schedule Section', 'ciniki_musicfestivals_main', 'schedulesection', 'mc', 'medium mediumaside', 'sectioned', 'ciniki.musicfestivals.main.schedulesection');
     this.schedulesection.data = null;
     this.schedulesection.festival_id = 0;
     this.schedulesection.schedulesection_id = 0;
     this.schedulesection.nplist = [];
     this.schedulesection.sections = {
-        'general':{'label':'', 'fields':{
+        'general':{'label':'', 'aside':'yes', 'fields':{
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
             'sequence':{'label':'Order', 'type':'text', 'size':'small'},
             'flags':{'label':'Options', 'type':'flags', 'flags':{
@@ -4157,10 +4157,37 @@ function ciniki_musicfestivals_main() {
                 }},
             'adjudicator1_id':{'label':'Adjudicator', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
             }},
+        'top_sponsors':{'label':'Top Sponsor', 'aside':'yes', 'fields':{
+            'top_sponsors_title':{'label':'Title', 'type':'text',},
+            'top_sponsor_ids':{'label':'Sponsors', 'type':'idlist', 'list':{}},
+//            'top_sponsor2_id':{'label':'Sponsor 2', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
+            }},
+        'bottom_sponsors':{'label':'Bottom Sponsor', 'aside':'yes', 'fields':{
+            'bottom_sponsors_title':{'label':'Title', 'type':'text',},
+            'bottom_sponsor_content':{'label':'Content', 'type':'textarea'},
+            'bottom_sponsor_ids':{'label':'Sponsors', 'type':'idlist', 'list':{}},
+//            'bottom_sponsor1_id':{'label':'Sponsor 1', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
+//            'bottom_sponsor2_id':{'label':'Sponsor 2', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
+            }},
 //        'adjudicators':{'label':'Adjudicator', 'fields':{
 //            'adjudicator2_id':{'label':'Second', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
 //            'adjudicator3_id':{'label':'Third', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
 //            }},
+        'provincials':{'label':'Provincials Information', 'fields':{
+            'provincials_image_id':{'label':'Image/Logo', 'type':'image_id', 'controls':'all', 'history':'no',
+                'addDropImage':function(iid) {
+                    M.ciniki_musicfestivals_main.schedulesection.setFieldValue('provincials_image_id', iid);
+                    return true;
+                    },
+                'addDropImageRefresh':'',
+                'deleteImage':function(fid) {
+                    M.ciniki_musicfestivals_main.schedulesection.setFieldValue(fid,0);
+                    return true;
+                 },
+             },
+            'provincials_title':{'label':'Title', 'type':'text'},
+            'provincials_content':{'label':'Content', 'type':'textarea'},
+            }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.schedulesection.save();'},
             'delete':{'label':'Delete', 
@@ -4189,6 +4216,11 @@ function ciniki_musicfestivals_main() {
                 p.data = rsp.schedulesection;
                 rsp.adjudicators.unshift({'id':'0', 'name':'None'});
                 p.sections.general.fields.adjudicator1_id.options = rsp.adjudicators;
+                p.sections.top_sponsors.fields.top_sponsor_ids.list = rsp.sponsors;
+                p.sections.bottom_sponsors.fields.bottom_sponsor_ids.list = rsp.sponsors;
+//                p.sections.top_sponsors.fields.top_sponsor2_id.options = rsp.sponsors;
+//                p.sections.bottom_sponsors.fields.bottom_sponsor1_id.options = rsp.sponsors;
+//                p.sections.bottom_sponsors.fields.bottom_sponsor2_id.options = rsp.sponsors;
 //                p.sections.adjudicators.fields.adjudicator1_id.options = rsp.adjudicators;
 //                p.sections.adjudicators.fields.adjudicator2_id.options = rsp.adjudicators;
 //                p.sections.adjudicators.fields.adjudicator3_id.options = rsp.adjudicators;

@@ -331,13 +331,13 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                         if( $fid == 0 ) {
                             continue;   // No label on first field
                         }
-                        if( $field == 'date' ) {
+                        if( $field == 'date' && $division[$field] != '' ) {
                             $division[$field] = 'Date: ' . $division[$field];
-                        } elseif( $field == 'name' ) {
+                        } elseif( $field == 'name' && $division[$field] != '' ) {
                             $division[$field] = 'Section: ' . $division[$field];
-                        } elseif( $field == 'adjudicator' ) {
+                        } elseif( $field == 'adjudicator' && $division[$field] != '' ) {
                             $division[$field] = 'Adjudicator: ' . $division[$field];
-                        } elseif( $field == 'address' ) {
+                        } elseif( $field == 'address' && $division[$field] != '' ) {
                             $division[$field] = 'Location: ' . $division[$field];
                         }
                     }
@@ -369,8 +369,10 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             $this->SetFont('', 'B', '16');
             $this->SetCellPaddings(0, 0.5, 0, 0.5);
             foreach($fields as $field) {
-                $this->MultiCell(180, 0, $division[$field], 0, 'L', 0, 1);
-                $this->SetFont('', '', '13');
+                if( isset($division[$field]) && $division[$field] != '' ) {
+                    $this->MultiCell(180, 0, $division[$field], 0, 'L', 0, 1);
+                    $this->SetFont('', '', '13');
+                }
             }
             
         }
@@ -616,7 +618,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     $pdf->SetCellPadding(1);
                     $pdf->SetCellPaddings(1,2,1,1);
                 }
-                if( ($reg_list_height > 0 && $pdf->getY() > ($pdf->getPageHeight() - 37 - $reg_list_height)) 
+                if( ($reg_list_height > 0 && $pdf->getY() > 70 && $pdf->getY() > ($pdf->getPageHeight() - 37 - $reg_list_height)) 
                     || ($reg_list_height == 0 && $pdf->getY() > ($pdf->getPageHeight() - 40)) 
                     ) {
                     /*
