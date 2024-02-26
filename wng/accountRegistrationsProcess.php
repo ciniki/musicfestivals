@@ -2031,13 +2031,14 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     . "<input class='button' type='submit' name='submit' value='View'>"
                     . "</form>";
                 $paid_registrations[$rid]['scheduled'] = '';
+                //
+                // If the registration has been schedule and schedule released
+                //
                 if( ($registration['timeslot_flags']&0x01) == 0x01 
                     && $registration['timeslot_time'] != ''
                     && $registration['timeslot_date'] != ''
                     ) {
-                    if( $registration['participation'] == 2 ) {
-                        $paid_registrations[$rid]['scheduled'] = 'Adjudication Plus';
-                    } elseif( $registration['participation'] == 1 ) {
+                    if( $registration['participation'] == 1 ) {
                         $paid_registrations[$rid]['scheduled'] = 'Virtual';
                     } else {
                         $paid_registrations[$rid]['scheduled'] = $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] . '<br/>' . $registration['timeslot_address'];
@@ -2078,6 +2079,27 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             }
         }
         if( count($parent_registrations) > 0 ) {
+            foreach($parent_registrations as $rid => $registration) {
+                $parent_registrations[$rid]['viewbutton'] = "<form action='{$base_url}' method='POST'>"
+                    . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
+                    . "<input type='hidden' name='action' value='view' />"
+                    . "<input class='button' type='submit' name='submit' value='View'>"
+                    . "</form>";
+                $parent_registrations[$rid]['scheduled'] = '';
+                //
+                // If the registration has been schedule and schedule released
+                //
+                if( ($registration['timeslot_flags']&0x01) == 0x01 
+                    && $registration['timeslot_time'] != ''
+                    && $registration['timeslot_date'] != ''
+                    ) {
+                    if( $registration['participation'] == 1 ) {
+                        $parent_registrations[$rid]['scheduled'] = 'Virtual';
+                    } else {
+                        $parent_registrations[$rid]['scheduled'] = $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] . '<br/>' . $registration['timeslot_address'];
+                    }
+                }
+            }
             $blocks[] = array(
                 'type' => 'table',
                 'title' => $festival['name'] . ' Parent Registered',
@@ -2087,6 +2109,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
                     array('label' => 'Class', 'fold-label'=>'Class', 'field' => 'codename', 'class' => 'alignleft'),
                     array('label' => 'Title(s)', 'fold-label'=>'Title', 'field' => 'titles', 'class' => 'alignleft'),
+                    array('label' => 'Scheduled', 'fold-label'=>'Scheduled', 'field' => 'scheduled', 'class' => 'alignleft'),
 //                    array('label' => 'Fee', 'fold-label'=>'Fee', 'field' => 'fee', 'class' => 'alignright fold-alignleft'),
 //                    array('label' => '', 'field' => 'viewbutton', 'class' => 'buttons alignright'),
                     ),
