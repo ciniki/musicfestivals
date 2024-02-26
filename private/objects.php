@@ -345,9 +345,11 @@ function ciniki_musicfestivals_objects($ciniki) {
             'sponsor_settings'=>array('name'=>'Sponsor Settings', 'sfields'=>array(
                 'top_sponsors_title'=>array('name'=>'Top Sponsors Title'),
                 'top_sponsor_ids'=>array('name'=>'Top Sponsors Title'),
+                'top_sponsors_image_ratio'=>array('name'=>'Bottom Sponsors Image Ratio'),
                 'bottom_sponsors_title'=>array('name'=>'Bottom Sponsors Title'),
                 'bottom_sponsors_content'=>array('name'=>'Bottom Sponsors Content'),
                 'bottom_sponsor_ids'=>array('name'=>'Bottom Sponsors Title'),
+                'bottom_sponsors_image_ratio'=>array('name'=>'Bottom Sponsors Image Ratio'),
                 )),
             'provincial_settings'=>array('name'=>'Provincial Settings', 'sfields'=>array(
                 'provincials_title' => array('name'=>'Title'),

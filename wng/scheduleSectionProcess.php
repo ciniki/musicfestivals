@@ -181,7 +181,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-            array('container'=>'sponsors', 'fname'=>'id', 'fields'=>array('name', 'url', 'image_id')),
+            array('container'=>'sponsors', 'fname'=>'id', 'fields'=>array('url', 'image-id'=>'image_id')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.689', 'msg'=>'Unable to load sponsors', 'err'=>$rc['err']));
@@ -199,7 +199,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-            array('container'=>'sponsors', 'fname'=>'id', 'fields'=>array('url', 'url', 'image-id' => 'image_id')),
+            array('container'=>'sponsors', 'fname'=>'id', 'fields'=>array('url', 'image-id'=>'image_id')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.689', 'msg'=>'Unable to load sponsors', 'err'=>$rc['err']));
@@ -331,6 +331,42 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         'title' => isset($s['title']) ? $s['title'] : '',
         );
 
+    //
+    // Check for top sponsors
+    //
+    if( isset($top_sponsors) && count($top_sponsors) > 0 ) {
+        if( isset($schedulesection['top_sponsors_title']) && $schedulesection['top_sponsors_title'] != '' 
+            && isset($schedulesection['top_sponsors_content']) && $schedulesection['top_sponsors_content'] != '' 
+            ) {
+            $blocks[] = array(
+                'type' => 'text',
+                'level' => 2,
+                'class' => 'schedule-top-sponsors-title',
+                'title' => $schedulesection['top_sponsors_title'],
+                'content' => isset($schedulesection['top_sponsors_content']) ? $schedulesection['top_sponsors_content'] : '',
+                );
+        } elseif( isset($schedulesection['top_sponsors_title']) && $schedulesection['top_sponsors_title'] != '' ) {
+            $blocks[] = array(
+                'type' => 'title',
+                'level' => 2,
+                'class' => 'schedule-top-sponsors-title',
+                'title' => $schedulesection['top_sponsors_title'],
+                );
+        }
+        $items = array();
+        foreach($schedulesection['top_sponsor_ids'] as $sid) {
+            if( isset($top_sponsors[$sid]) ) {
+                $items[] = $top_sponsors[$sid];
+            }
+        }
+        $blocks[] = array(
+            'type' => 'imagebuttons',
+            'class' => 'aligncenter schedule-top-sponsors',
+            'image-format' => 'padded',
+            'image-ratio' => isset($schedulesection['top_sponsors_image_ratio']) ? $schedulesection['top_sponsors_image_ratio'] : '4-3',
+            'items' => $items,
+            );
+    }
 /*    if( isset($schedulesection['top_sponsor1_image_id']) && $schedulesection['top_sponsor1_image_id'] > 0 ) {
         $blocks[] = array(
             'type' => 'asideimage', 
