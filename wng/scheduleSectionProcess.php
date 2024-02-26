@@ -12,6 +12,8 @@
 //
 function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$request, $section) {
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
+
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.675', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
@@ -85,12 +87,8 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     //
     $strsql = "SELECT sections.id, "
         . "sections.name, "
-        . "sections.top_sponsors_title, "
-        . "sections.top_sponsor1_id, "
-        . "sections.top_sponsor2_id, "
-        . "sections.bottom_sponsors_title, "
-        . "sections.bottom_sponsor1_id, "
-        . "sections.bottom_sponsor2_id "
+        . "sections.sponsor_settings, "
+        . "sections.provincial_settings "
         . "FROM ciniki_musicfestival_schedule_sections AS sections "
         . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
         . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -111,26 +109,16 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     }
     $schedulesection = $rc['section'];
     $schedulesection['permalink'] = ciniki_core_makePermalink($ciniki, $schedulesection['name']);
-
-    //
-    // Load the sponsors
-    //
-    foreach(['top_sponsor1', 'top_sponsor2', 'bottom_sponsor1', 'bottom_sponsor2'] as $field) {
-        if( $schedulesection["{$field}_id"] > 0 ) {
-            $strsql = "SELECT name, url, image_id "
-                . "FROM ciniki_musicfestival_sponsors "
-                . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $schedulesection["{$field}_id"]) . "' "
-                . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . "";
-            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'sponsor');
-            if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.688', 'msg'=>'Unable to load sponsor', 'err'=>$rc['err']));
-            }
-            if( isset($rc['sponsor']) ) {
-                $schedulesection["{$field}_name"] = $rc['sponsor']['name'];
-                $schedulesection["{$field}_url"] = $rc['sponsor']['url'];
-                $schedulesection["{$field}_image_id"] = $rc['sponsor']['image_id'];
-            }
+    if( $schedulesection['sponsor_settings'] != '' ) {
+        $values = unserialize($schedulesection['sponsor_settings']);
+        foreach($values as $k => $v) {
+            $schedulesection[$k] = $v;
+        }
+    }
+    if( $schedulesection['provincial_settings'] != '' ) {
+        $values = unserialize($schedulesection['provincial_settings']);
+        foreach($values as $k => $v) {
+            $schedulesection[$k] = $v;
         }
     }
 
@@ -179,6 +167,46 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         }
     }
     
+    //
+    // Load the sponsors
+    //
+    if( isset($schedulesection['top_sponsor_ids']) 
+        && is_array($schedulesection['top_sponsor_ids']) 
+        && count($schedulesection['top_sponsor_ids']) > 0 
+        ) {
+        $strsql = "SELECT id, name, url, image_id "
+            . "FROM ciniki_musicfestival_sponsors "
+            . "WHERE id IN (" . ciniki_core_dbQuoteIDs($ciniki, $schedulesection["top_sponsor_ids"]) . ") "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'sponsors', 'fname'=>'id', 'fields'=>array('name', 'url', 'image_id')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.689', 'msg'=>'Unable to load sponsors', 'err'=>$rc['err']));
+        }
+        $top_sponsors = isset($rc['sponsors']) ? $rc['sponsors'] : array();
+    }
+    if( isset($schedulesection['bottom_sponsor_ids']) 
+        && is_array($schedulesection['bottom_sponsor_ids']) 
+        && count($schedulesection['bottom_sponsor_ids']) > 0 
+        ) {
+        $strsql = "SELECT id, name, url, image_id "
+            . "FROM ciniki_musicfestival_sponsors "
+            . "WHERE id IN (" . ciniki_core_dbQuoteIDs($ciniki, $schedulesection["bottom_sponsor_ids"]) . ") "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'sponsors', 'fname'=>'id', 'fields'=>array('url', 'url', 'image-id' => 'image_id')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.689', 'msg'=>'Unable to load sponsors', 'err'=>$rc['err']));
+        }
+        $bottom_sponsors = isset($rc['sponsors']) ? $rc['sponsors'] : array();
+    }
+
     //
     // Load the dividions, timeslots and registrations
     //
@@ -303,14 +331,14 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         'title' => isset($s['title']) ? $s['title'] : '',
         );
 
-    if( isset($schedulesection['top_sponsor1_image_id']) && $schedulesection['top_sponsor1_image_id'] > 0 ) {
+/*    if( isset($schedulesection['top_sponsor1_image_id']) && $schedulesection['top_sponsor1_image_id'] > 0 ) {
         $blocks[] = array(
             'type' => 'asideimage', 
             'title' => $schedulesection['top_sponsor1_name'],
             'image-id' => $schedulesection['top_sponsor1_image_id'],
             );
     }
-
+*/
     //
     // Check if download button
     //
@@ -417,6 +445,57 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 'details-columns' => $columns,
                 );
         }
+    }
+
+    //
+    // Check for provincial information
+    //
+    if( isset($schedulesection['provincials_title']) && $schedulesection['provincials_title'] != '' 
+        && isset($schedulesection['provincials_content']) && $schedulesection['provincials_content'] != '' 
+        ) {
+        $blocks[] = array(
+            'type' => 'contentphoto', 
+            'title' => $schedulesection['provincials_title'],
+            'class' => 'schedule-provincials-info',
+            'content' => $schedulesection['provincials_content'],
+            'image-size' => 'medium',
+            'image-id' => isset($schedulesection['provincials_image_id']) ? $schedulesection['provincials_image_id'] : 0,
+            );
+    }
+
+    //
+    // Check for bottom sponsors
+    //
+    if( isset($bottom_sponsors) && count($bottom_sponsors) > 0 ) {
+        if( isset($schedulesection['bottom_sponsors_title']) && $schedulesection['bottom_sponsors_title'] != '' 
+            && isset($schedulesection['bottom_sponsors_content']) && $schedulesection['bottom_sponsors_content'] != '' 
+            ) {
+            $blocks[] = array(
+                'type' => 'text',
+                'class' => 'schedule-bottom-sponsors-title',
+                'title' => $schedulesection['bottom_sponsors_title'],
+                'content' => isset($schedulesection['bottom_sponsors_content']) ? $schedulesection['bottom_sponsors_content'] : '',
+                );
+        } elseif( isset($schedulesection['bottom_sponsors_title']) && $schedulesection['bottom_sponsors_title'] != '' ) {
+            $blocks[] = array(
+                'type' => 'title',
+                'class' => 'schedule-bottom-sponsors-title',
+                'title' => $schedulesection['bottom_sponsors_title'],
+                );
+        }
+        $items = array();
+        foreach($schedulesection['bottom_sponsor_ids'] as $sid) {
+            if( isset($bottom_sponsors[$sid]) ) {
+                $items[] = $bottom_sponsors[$sid];
+            }
+        }
+        $blocks[] = array(
+            'type' => 'imagebuttons',
+            'class' => 'aligncenter schedule-bottom-sponsors',
+            'image-format' => 'padded',
+            'image-ratio' => isset($schedulesection['bottom_sponsors_image_ratio']) ? $schedulesection['bottom_sponsors_image_ratio'] : '4-3',
+            'items' => $items,
+            );
     }
 
     //

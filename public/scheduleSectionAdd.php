@@ -30,7 +30,7 @@ function ciniki_musicfestivals_scheduleSectionAdd(&$ciniki) {
         'top_sponsors_title'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Top Sponsors Title'),
         'top_sponsor_ids'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Top Sponsors'),
         'bottom_sponsors_title'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Bottom Sponsors Title'),
-        'bottom_sponsor_content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Bottom Content'),
+        'bottom_sponsors_content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Bottom Content'),
         'bottom_sponsor_ids'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Bottom Sponsors'),
         'provincials_title'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Provincials Title'),
         'provincials_content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Provincials Content'),

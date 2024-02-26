@@ -4164,7 +4164,7 @@ function ciniki_musicfestivals_main() {
             }},
         'bottom_sponsors':{'label':'Bottom Sponsor', 'aside':'yes', 'fields':{
             'bottom_sponsors_title':{'label':'Title', 'type':'text',},
-            'bottom_sponsor_content':{'label':'Content', 'type':'textarea'},
+            'bottom_sponsors_content':{'label':'Content', 'type':'textarea'},
             'bottom_sponsor_ids':{'label':'Sponsors', 'type':'idlist', 'list':{}},
 //            'bottom_sponsor1_id':{'label':'Sponsor 1', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
 //            'bottom_sponsor2_id':{'label':'Sponsor 2', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
