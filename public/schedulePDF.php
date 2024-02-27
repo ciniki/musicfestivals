@@ -40,6 +40,13 @@ function ciniki_musicfestivals_schedulePDF($ciniki) {
     $args = $rc['args'];
 
     //
+    // Note: These can be made into options in the future
+    //
+    $args['top_sponsors'] = 'yes';
+    $args['provincials_info'] = 'yes';
+    $args['bottom_sponsors'] = 'yes';
+
+    //
     // Make sure this module is activated, and
     // check permission to run this function for this tenant
     //

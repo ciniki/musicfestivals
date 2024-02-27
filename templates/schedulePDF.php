@@ -13,7 +13,9 @@
 //
 function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
 
     //
     // Load the tenant details
@@ -94,6 +96,8 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     //
     $strsql = "SELECT ssections.id AS section_id, "
         . "ssections.name AS section_name, "
+        . "ssections.sponsor_settings, "
+        . "ssections.provincial_settings, "
         . "customers.display_name AS adjudicator, "
         . "divisions.id AS division_id, "
         . "divisions.name AS division_name, "
@@ -209,7 +213,8 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'section_id', 
-            'fields'=>array('id'=>'section_id', 'name'=>'section_name'),
+            'fields'=>array('id'=>'section_id', 'name'=>'section_name', 'sponsor_settings', 'provincial_settings'),
+            'unserialize'=>array('sponsor_settings', 'provincial_settings'),
             ),
         array('container'=>'divisions', 'fname'=>'division_id', 
             'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'address', 'adjudicator'),
@@ -363,7 +368,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             if( $this->getY() > $this->getPageHeight() - $h - 80) {
                 $this->AddPage();
             } elseif( $this->getY() > 80 ) {
-                $this->Ln(10); 
+                $this->Ln(5); 
             }
             // Output the division header
             $this->SetFont('', 'B', '16');
@@ -471,6 +476,107 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         }
 
         //
+        // Output the top sponsors
+        //
+        if( isset($args['top_sponsors']) && $args['top_sponsors'] == 'yes' 
+            && isset($section['top_sponsor_ids']) 
+            && is_array($section['top_sponsor_ids'])
+            && count($section['top_sponsor_ids']) > 0 
+            ) {
+            $strsql = "SELECT id, name, url, image_id "
+                . "FROM ciniki_musicfestival_sponsors "
+                . "WHERE id IN (" . ciniki_core_dbQuoteIDs($ciniki, $section["top_sponsor_ids"]) . ") "
+                . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+            $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'sponsors', 'fname'=>'id', 'fields'=>array('url', 'image_id')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.689', 'msg'=>'Unable to load sponsors', 'err'=>$rc['err']));
+            }
+            $top_sponsors = isset($rc['sponsors']) ? $rc['sponsors'] : array();
+            $num_sponsors = count($top_sponsors);
+            // 
+            // Single sponsor, float right
+            //
+            if( $num_sponsors == 1 ) {
+                $pdf->SetFont('', 'B', '13');
+                $y = $pdf->GetY();
+                $h1 = $pdf->getStringHeight(180, $section['top_sponsors_title']);
+                $img_height = 30 - $h1;
+                $pdf->SetX($pdf->left_margin + 130);
+                $pdf->MultiCell(50, 0, $section['top_sponsors_title'], 0, 'C', 0, 1);
+                $sponsor = array_pop($top_sponsors);
+                $rc = ciniki_images_loadImage($ciniki, $tnid, $sponsor['image_id'], 'original');
+                if( $rc['stat'] == 'ok' ) {
+                    $img_width = 50;
+                    $img = $rc['image'];
+                    $height = $img->getImageHeight();
+                    $width = $img->getImageWidth();
+                    $image_ratio = $width/$height;
+                    $available_ratio = $img_width/$img_height;
+                    // Check if the ratio of the image will make it too large for the height,
+                    // and scaled based on either height or width.
+                    if( $available_ratio < $image_ratio ) {
+                        $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin + 130, $y+$h1, $img_width, 0, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                    } else {
+                        $reduced_width = ($img_height/$height)*$width;
+                        $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin + 130 + ((50-$reduced_width)/2), $y+$h1, 0, $img_height, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                    }
+                }
+                $pdf->SetY($y);
+            } 
+            elseif( $num_sponsors > 1 ) {
+                $pdf->SetFont('', 'B', '13');
+                $h1 = $pdf->getStringHeight(180, $section['top_sponsors_title']);
+                $pdf->SetFont('', '', '12');
+                $h = $h1 + 30;
+                $pdf->SetFont('', 'B', '13');
+                $pdf->MultiCell(180, 0, $section['top_sponsors_title'], 0, 'C', 0, 1);
+                $pdf->Ln(2);
+                $pdf->SetFont('', '', '12');
+
+                $offsets = array(0, 45, 90, 115);
+                if( $num_sponsors == 1 ) {
+                    $offsets = array(67.5);
+                }
+                if( $num_sponsors == 2 ) {
+                    $offsets = array(40, 100);
+                }
+                if( $num_sponsors == 3 ) {
+                    $offsets = array(15, 67.5, 120);
+                }
+                $col = 0;
+                $y = $pdf->getY();
+                foreach($section['top_sponsor_ids'] as $sid) {
+                    if( isset($top_sponsors[$sid]['image_id']) ) {
+                        $rc = ciniki_images_loadImage($ciniki, $tnid, $top_sponsors[$sid]['image_id'], 'original');
+                        if( $rc['stat'] == 'ok' ) {
+                            $h = 40;
+                            $img_width = 45;
+                            $img = $rc['image'];
+                            $height = $img->getImageHeight();
+                            $width = $img->getImageWidth();
+                            $image_ratio = $width/$height;
+                            $available_ratio = $img_width/$h;
+                            // Check if the ratio of the image will make it too large for the height,
+                            // and scaled based on either height or width.
+                            if( $available_ratio < $image_ratio ) {
+                                $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin + $offsets[$col], $y, $img_width, $h, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                            } else {
+                                $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin + $offsets[$col], $y, $img_width, $h, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                            }
+                            $col++;
+                            $pdf->SetX($pdf->GetX() + 45);
+                        }
+                    }
+                }
+                $pdf->Ln(20);
+            }
+        }
+
+        //
         // Output the divisions
         //
 //        $newpage = 'yes';
@@ -482,50 +588,22 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 continue;
             }
 
-            $pdf->DivisionHeader($args, $section, $division, 'no');
-            $pdf->Ln(1);
-
-/*            //
-            // Check if enough room
             //
-            $lh = 9;
-            $address = '';
-            if( $division['address'] != '' ) {
-                $s_height = $pdf->getStringHeight(180, $division['address']);
-                $address = $division['address'];
+            // Remove adjudicator when information division, no actual timeslots
+            ///
+            if( count($division['timeslots']) == 1 
+                && isset($division['timeslots'][0]['id']) && $division['timeslots'][0]['id'] == '' 
+                ) {
+                $division_header_format = $args['division_header_format'];
+                $args['division_header_format'] = preg_replace('/adjudicator-/', '', $args['division_header_format']);
+                $pdf->DivisionHeader($args, $section, $division, 'no');
+                $args['division_header_format'] = $division_header_format;
             } else {
-                $s_height = 0;
+                $pdf->DivisionHeader($args, $section, $division, 'no');
             }
-            if( $pdf->getY() > $pdf->getPageHeight() - $lh - 80 - $s_height) {
-                $pdf->AddPage();
-//                $newpage = 'yes';
-            } else { //if( $newpage == 'no' ) {
-                $pdf->Ln(15);
-            }
-//            $newpage = 'no';
+            $pdf->Ln(1);
+            $pdf->SetFont('', '', '12');
 
-            $pdf->SetFont('', 'B', '16');
-            if( $pdf->getStringWidth($division['date'] . ' - ' . $division['name'], '', 'B', 16) > 180 ) {
-                if( isset($args['swap_date_title']) && $args['swap_date_title'] == 'yes' ) {
-                    $pdf->MultiCell(180, 10, $division['name'] . "\n" . $division['date'], 0, 'L', 0);
-                } else {
-                    $pdf->MultiCell(180, 10, $division['date'] . "\n" . $division['name'], 0, 'L', 0);
-                }
-            } else {
-                if( isset($args['swap_date_title']) && $args['swap_date_title'] == 'yes' ) {
-                    $pdf->Cell(180, 10, $division['name'] . ' - ' . $division['date'], 0, 0, 'L', 0);
-                } else {
-                    $pdf->Cell(180, 10, $division['date'] . ' - ' . $division['name'], 0, 0, 'L', 0);
-                }
-                $pdf->Ln(10);
-            }
-            $pdf->SetFont('', '', '12');
-            if( $address != '' ) {
-                $pdf->MultiCell(180, '', $address, 0, 'L', 0, 2);
-            }
-            $fill = 1;
-*/            
-            $pdf->SetFont('', '', '12');
             //
             // Output the timeslots
             //
@@ -701,7 +779,155 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             }
             $pdf->SetCellPaddings(0,0,0,0);
             $pdf->Ln(2);
-            $pdf->Cell($w[0]+$w[1]+$w[2], 0, '', 'T', 1, 'R', 0);
+            $pdf->Cell(180, 0, '', 'T', 1, 'R', 0);
+        }
+
+        //
+        // Check for provincial info
+        //
+        if( isset($args['provincials_info']) && $args['provincials_info'] == 'yes' 
+            && isset($section['provincials_title'])
+            && $section['provincials_title'] != ''
+            && isset($section['provincials_content'])
+            && $section['provincials_content'] != ''
+            ) {
+            $image_id = 0;
+            if( isset($section['provincials_image_id'])
+                && $section['provincials_image_id'] > 0 
+                ) {
+                $w = array(120, 60);
+                $image_id = $section['provincials_image_id'];
+            }
+            else {
+                $w = array(180);
+            }
+            $pdf->SetFont('', 'B', '12');
+            $h1 = $pdf->getStringHeight($w[0], $section['provincials_title']);
+            $pdf->SetFont('', '');
+            $h2 = $pdf->getStringHeight($w[0], $section['provincials_content']);
+            $h = $h1 + $h2;
+            if( $image_id > 0 && $h < 40 ) {
+                $h = 40;
+            }
+            if( $pdf->getY() > $pdf->getPageHeight() - $h - 30) {
+                $pdf->AddPage();
+            }
+            $y = $pdf->GetY();
+           
+            //
+            // Display the iamge
+            if( $image_id > 0 ) {
+                $rc = ciniki_images_loadImage($ciniki, $tnid, $image_id, 'original');
+                if( $rc['stat'] == 'ok' ) {
+                    
+                    $img = $rc['image'];
+
+                    $height = $img->getImageHeight();
+                    $width = $img->getImageWidth();
+                    $image_ratio = $width/$height;
+                    $img_width = $w[1];
+                    $available_ratio = $img_width/$h;
+                    // Check if the ratio of the image will make it too large for the height,
+                    // and scaled based on either height or width.
+                    if( $available_ratio < $image_ratio ) {
+                        $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin+$w[0], $y, $img_width, 0, 'JPEG', '', 'L', 2, '150');
+                    } else {
+                        $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin+$w[0], $y, 0, $h-8, 'JPEG', '', 'L', 2, '150');
+                    }
+                }
+            }
+            $pdf->SetY($y);
+            $pdf->SetFont('', 'B', '12');
+            $pdf->MultiCell($w[0], 0, $section['provincials_title'], 0, 'L', 0, 1);
+            $content = preg_replace("/\n/", "<br/>", $section['provincials_content']);
+            $pdf->SetFont('', '', '12');
+            $pdf->MultiCell($w[0], $h2, $content, 0, 'L', 0, 1);
+            if( $pdf->GetY() < $y + $h ) {
+                $pdf->SetY($y+$h);
+            }
+        }
+
+
+        //
+        // Check for bottom sponsors
+        //
+        if( isset($args['bottom_sponsors']) && $args['bottom_sponsors'] == 'yes' 
+            && isset($section['bottom_sponsor_ids']) 
+            && is_array($section['bottom_sponsor_ids'])
+            && count($section['bottom_sponsor_ids']) > 0 
+            ) {
+            $strsql = "SELECT id, name, url, image_id "
+                . "FROM ciniki_musicfestival_sponsors "
+                . "WHERE id IN (" . ciniki_core_dbQuoteIDs($ciniki, $section["bottom_sponsor_ids"]) . ") "
+                . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "AND image_id > 0 "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+            $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'sponsors', 'fname'=>'id', 'fields'=>array('url', 'image_id')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.689', 'msg'=>'Unable to load sponsors', 'err'=>$rc['err']));
+            }
+            $bottom_sponsors = isset($rc['sponsors']) ? $rc['sponsors'] : array();
+            $num_sponsors = count($bottom_sponsors);
+            $pdf->SetFont('', 'B', '13');
+            $h1 = $pdf->getStringHeight(180, $section['bottom_sponsors_title']);
+            $h2 += 2;
+            $pdf->SetFont('', '', '12');
+            $h2 = 0;
+            if( isset($section['bottom_sponsors_content']) && $section['bottom_sponsors_content'] != '' ) {
+                $h2 = $pdf->getStringHeight(180, $section['bottom_sponsors_content']);
+                $h2 += 3;
+            }
+            $h = $h1 + $h2 + 40;
+            if( $pdf->getY() > $pdf->getPageHeight() - $h - 18 ) {
+                $pdf->AddPage();
+            }
+            $pdf->SetFont('', 'B', '13');
+            $pdf->MultiCell(180, 0, $section['bottom_sponsors_title'], 0, 'C', 0, 1);
+            $pdf->Ln(2);
+            $pdf->SetFont('', '', '12');
+            if( isset($section['bottom_sponsors_content']) && $section['bottom_sponsors_content'] != '' ) {
+                $pdf->MultiCell(180, 0, $section['bottom_sponsors_content'], 0, 'C', 0, 1);
+                $pdf->Ln(3);
+            }
+
+            $offsets = array(0, 45, 90, 115);
+            if( $num_sponsors == 1 ) {
+                $offsets = array(67.5);
+            }
+            if( $num_sponsors == 2 ) {
+                $offsets = array(45, 90);
+            }
+            if( $num_sponsors == 3 ) {
+                $offsets = array(15, 67.5, 120);
+            }
+            $col = 0;
+            $y = $pdf->getY();
+            foreach($section['bottom_sponsor_ids'] as $sid) {
+                if( isset($bottom_sponsors[$sid]['image_id']) ) {
+                    $rc = ciniki_images_loadImage($ciniki, $tnid, $bottom_sponsors[$sid]['image_id'], 'original');
+                    if( $rc['stat'] == 'ok' ) {
+                        $h = 40;
+                        $img = $rc['image'];
+                        $height = $img->getImageHeight();
+                        $width = $img->getImageWidth();
+                        $image_ratio = $width/$height;
+                        $img_width = 45;
+                        $available_ratio = $img_width/$h;
+                        // Check if the ratio of the image will make it too large for the height,
+                        // and scaled based on either height or width.
+                        if( $available_ratio < $image_ratio ) {
+                            $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin + $offsets[$col], $y, $img_width, $h, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                        } else {
+                            $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin + $offsets[$col], $y, $img_width, $h, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                        }
+                        $col++;
+                        $pdf->SetX($pdf->GetX() + 45);
+                    }
+                }
+            }
         }
     }
 

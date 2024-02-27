@@ -143,6 +143,10 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             'titles' => isset($s['titles']) ? $s['titles'] : '',
             'video_urls' => isset($s['video_urls']) ? $s['video_urls'] : '',
             'section_page_break' => isset($s['section_page_break']) ? $s['section_page_break'] : '',
+            'provincials_info' => 'yes',
+            'top_sponsors' => 'yes',
+            'bottom_sponsors' => 'yes',
+            'section_page_break' => isset($s['section_page_break']) ? $s['section_page_break'] : '',
             ));
         if( isset($rc['pdf']) ) {
             $filename = $festival['name'] . ' - ' . $schedulesection['name'] . ' Schedule';
@@ -335,24 +339,6 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     // Check for top sponsors
     //
     if( isset($top_sponsors) && count($top_sponsors) > 0 ) {
-        if( isset($schedulesection['top_sponsors_title']) && $schedulesection['top_sponsors_title'] != '' 
-            && isset($schedulesection['top_sponsors_content']) && $schedulesection['top_sponsors_content'] != '' 
-            ) {
-            $blocks[] = array(
-                'type' => 'text',
-                'level' => 2,
-                'class' => 'schedule-top-sponsors-title',
-                'title' => $schedulesection['top_sponsors_title'],
-                'content' => isset($schedulesection['top_sponsors_content']) ? $schedulesection['top_sponsors_content'] : '',
-                );
-        } elseif( isset($schedulesection['top_sponsors_title']) && $schedulesection['top_sponsors_title'] != '' ) {
-            $blocks[] = array(
-                'type' => 'title',
-                'level' => 2,
-                'class' => 'schedule-top-sponsors-title',
-                'title' => $schedulesection['top_sponsors_title'],
-                );
-        }
         $items = array();
         foreach($schedulesection['top_sponsor_ids'] as $sid) {
             if( isset($top_sponsors[$sid]) ) {
@@ -361,6 +347,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         }
         $blocks[] = array(
             'type' => 'imagebuttons',
+            'title' => isset($schedulesection['top_sponsors_title']) ? $schedulesection['top_sponsors_title'] : '',
             'class' => 'aligncenter schedule-top-sponsors',
             'image-format' => 'padded',
             'image-ratio' => isset($schedulesection['top_sponsors_image_ratio']) ? $schedulesection['top_sponsors_image_ratio'] : '4-3',
@@ -381,7 +368,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     if( isset($s['section-pdf']) && ($s['section-pdf'] == 'top' || $s['section-pdf'] == 'both') ) {
         $blocks[] = array(
             'type' => 'buttons',
-            'class' => 'buttons-top-' . $schedulesection['permalink'],
+            'class' => 'schedule-top-buttons buttons-top-' . $schedulesection['permalink'],
             'list' => array(
                 array(
                     'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $schedulesection['permalink'] . '/schedule.pdf',
