@@ -7249,6 +7249,8 @@ function ciniki_musicfestivals_main() {
             }},
         'entries':{'label':'Entries', 'type':'simplegrid', 'num_cols':5,
             'headerValues':['Class', 'Name', 'Position', 'Mark'],
+            'addTxt':'Add Entry',
+            'addFn':'M.ciniki_musicfestivals_main.recommendationentry.open(\'M.ciniki_musicfestivals_main.recommendation.open();\',0,M.ciniki_musicfestivals_main.recommendation.section_id);',
             },
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.recommendation.save();'},
@@ -7378,7 +7380,14 @@ function ciniki_musicfestivals_main() {
 // Note: This was added by mistake, can be added back if really needs to change from one submission to another
 //            'recommendation_id':{'label':'Submission', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
             'class_id':{'label':'Class', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
-            'position':{'label':'Position', 'required':'yes', 'type':'text'},
+            'position':{'label':'Position', 'required':'yes', 'type':'toggle', 'toggles':{
+                '1':'1st',
+                '2':'2nd',
+                '3':'3rd',
+                '101':'1st Alt',
+                '102':'2nd Alt',
+                '103':'3rd Alt',
+                }},
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
             'mark':{'label':'Mark', 'required':'yes', 'type':'text'},
             }},
@@ -7427,7 +7436,7 @@ function ciniki_musicfestivals_main() {
             }
         } else {
             var c = this.serializeForm('yes');
-            M.api.postJSONCb('ciniki.musicfestivals.recommendationEntryAdd', {'tnid':M.curTenantID}, c, function(rsp) {
+            M.api.postJSONCb('ciniki.musicfestivals.recommendationEntryAdd', {'tnid':M.curTenantID, 'recommendation_id':M.ciniki_musicfestivals_main.recommendation.recommendation_id}, c, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
