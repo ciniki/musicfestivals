@@ -2089,6 +2089,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "entries.name, "
                     . "entries.mark, "
                     . "recommendations.id AS recommendation_id, "
+                    . "recommendations.member_id, "
+                    . "recommendations.section_id, "
                     . "recommendations.date_submitted, "
                     . "members.name AS member_name "
                     . "FROM ciniki_musicfestival_recommendation_entries AS entries "
@@ -2108,7 +2110,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'entries', 'fname'=>'id', 
                         'fields'=>array('id', 'recommendation_id', 'position', 'name', 'mark',
-                            'date_submitted', 'member_name'),
+                            'date_submitted', 'member_id', 'section_id', 'member_name'),
                         'utctotz'=>array(
                             'date_submitted'=> array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i:s A'),
                             ),
