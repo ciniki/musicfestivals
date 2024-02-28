@@ -2057,6 +2057,11 @@ function ciniki_musicfestivals_main() {
                 'flags7':{'label':'Timeslot Date/Time', 'type':'flagtoggle', 'default':'off', 'bit':0x40, 'field':'flags'},
                 'comments_grade_label':{'label':'Grade Label', 'default':'Mark', 'type':'text'},
                 'comments_footer_msg':{'label':'Footer Message', 'type':'text'},
+                'comments-class-format':{'label':'Class Format', 'type':'select', 'default':'default', 'options':{
+                    'default':'Class', 
+                    'code-section-category-class':'Code - Section - Category - Class',
+                    'code-category-class':'Code - Category - Class',
+                    }},
             }},
         '_schedule_pdf':{'label':'Schedule PDF Default Options', 
             // These options can be changed on the download screen
