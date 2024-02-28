@@ -44,7 +44,6 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
     // Check for any settings and add/update
     //
     $valid_settings = array(
-        'comments-class-format',
         'schedule-division-header-format',
         'schedule-division-header-labels',
         'schedule-separate-classes',
@@ -56,11 +55,16 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'schedule-footer',
         'schedule-footerdate',
         'schedule-section-page-break',
+        'runsheets-include-pronouns',
         'runsheets-separate-classes',
         'runsheets-class-format',
         'runsheets-internal-notes',
         'runsheets-registration-notes',
         'runsheets-competitor-notes',
+        'comments-include-pronouns',
+        'comments-class-format',
+        'certificates-include-pronouns',
+        'certificates-class-format',
         'age-restriction-msg',
         'waiver-title',
         'waiver-msg',

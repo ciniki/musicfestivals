@@ -118,10 +118,15 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         . "timeslots.name AS timeslot_name, "
         . "timeslots.description, "
         . "timeslots.runsheet_notes, "
-        . "registrations.id AS reg_id, "
-        . "registrations.display_name, "
-        . "registrations.public_name, "
-        . "registrations.competitor1_id, "
+        . "registrations.id AS reg_id, ";
+    if( isset($festival['runsheets-include-pronouns']) && $festival['runsheets-include-pronouns'] == 'yes' ) {
+        $strsql .= "registrations.pn_display_name AS display_name, "
+            . "registrations.pn_public_name AS public_name, ";
+    } else {
+        $strsql .= "registrations.display_name, "
+            . "registrations.public_name, ";
+    }
+    $strsql .= "registrations.competitor1_id, "
         . "registrations.competitor2_id, "
         . "registrations.competitor3_id, "
         . "registrations.competitor4_id, "

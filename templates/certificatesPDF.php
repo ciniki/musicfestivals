@@ -79,7 +79,7 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $tnid, $args)
     }
     $festival = $rc['festivals'][0];
 
-    //
+/*    //
     // Load the festival settings
     //
     $strsql = "SELECT detail_key, detail_value "
@@ -95,7 +95,7 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $tnid, $args)
     foreach($rc['settings'] as $k => $v) {
         $festival[$k] = $v;
     }
-
+*/
     //
     // Setup the PDF
     //

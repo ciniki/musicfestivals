@@ -2057,8 +2057,14 @@ function ciniki_musicfestivals_main() {
                 'flags7':{'label':'Timeslot Date/Time', 'type':'flagtoggle', 'default':'off', 'bit':0x40, 'field':'flags'},
                 'comments_grade_label':{'label':'Grade Label', 'default':'Mark', 'type':'text'},
                 'comments_footer_msg':{'label':'Footer Message', 'type':'text'},
+                'comments-include-pronouns':{'label':'Include Pronouns', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
                 'comments-class-format':{'label':'Class Format', 'type':'select', 'default':'default', 'options':{
                     'default':'Class', 
+                    'section-category-class':'Section - Category - Class',
+                    'category-class':'Category - Class',
                     'code-section-category-class':'Code - Section - Category - Class',
                     'code-category-class':'Code - Category - Class',
                     }},
@@ -2096,6 +2102,10 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
             'fields':{
                 // Separate classes in timeslots
+                'runsheets-include-pronouns':{'label':'Include Pronouns', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
                 'runsheets-separate-classes':{'label':'Separate Classes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}}, 
                 'runsheets-class-format':{'label':'Class Format', 'type':'select', 'default':'default', 'options':{
                     'default':'Code - Class', 
@@ -2109,7 +2119,17 @@ function ciniki_musicfestivals_main() {
         '_certificates_pdf':{'label':'Certificates PDF Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
             'fields':{
-                'flags8':{'label':'Include Pronouns', 'type':'flagtoggle', 'default':'off', 'bit':0x80, 'field':'flags'},
+                'certificates-include-pronouns':{'label':'Include Pronouns', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+                'certificates-class-format':{'label':'Class Format', 'type':'select', 'default':'default', 'options':{
+                    'default':'Class', 
+                    'section-category-class':'Section - Category - Class',
+                    'category-class':'Category - Class',
+                    'code-section-category-class':'Code - Section - Category - Class',
+                    'code-category-class':'Code - Category - Class',
+                    }},
             }},
         '_syllabus':{'label':'Syllabus Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },

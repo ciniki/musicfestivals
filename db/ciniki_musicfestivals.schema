@@ -30,7 +30,7 @@
 #                           0x10 - Adjudication Plus
 #                           0x20 - Comments PDF include Adjudicator name in header
 #                           0x40 - Comments PDF include Date/Time
-#                           0x80 - Certificates PDF include Pronoun
+#                           0x80 - Certificates PDF include Pronoun **deprecated**
 #                           0x0100 - Include Section/Category as part of Invoice item description
 #                           0x0200 - Always ask for Music PDF in Registration Form
 #                           0x0400 - Use group names for extra organization layer

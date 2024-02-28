@@ -139,10 +139,15 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "'' AS class4_name, "
             . "'' AS class5_name, " */
             . "'' AS description, "
-            . "registrations.id AS reg_id, "
-            . "registrations.display_name, "
-            . "registrations.public_name, "
-            . "registrations.title1, "
+            . "registrations.id AS reg_id, ";
+        if( isset($festival['comments-include-pronouns']) && $festival['comments-include-pronouns'] == 'yes' ) {
+            $strsql .= "registrations.pn_display_name AS display_name, "
+                . "registrations.pn_public_name AS public_name, ";
+        } else {
+            $strsql .= "registrations.display_name, "
+                . "registrations.public_name, ";
+        }
+        $strsql .= "registrations.title1, "
             . "registrations.title2, "
             . "registrations.title3, "
             . "registrations.title4, "
@@ -232,10 +237,15 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "timeslots.name AS timeslot_name, "
             . "timeslots.description, "
             . "registrations.id AS reg_id, "
-            . "registrations.teacher_customer_id, "
-            . "registrations.display_name, "
-            . "registrations.public_name, "
-            . "registrations.title1, "
+            . "registrations.teacher_customer_id, ";
+        if( isset($festival['comments-include-pronouns']) && $festival['comments-include-pronouns'] == 'yes' ) {
+            $strsql .= "registrations.pn_display_name AS display_name, "
+                . "registrations.pn_public_name AS public_name, ";
+        } else {
+            $strsql .= "registrations.display_name, "
+                . "registrations.public_name, ";
+        }
+        $strsql .= "registrations.title1, "
             . "registrations.title2, "
             . "registrations.title3, "
             . "registrations.title4, "
@@ -592,11 +602,19 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                             ) {
                             $class_name = $reg['class_code'] . ' - ' . $reg['syllabus_section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name']; 
                         } elseif( isset($festival['comments-class-format']) 
+                            && $festival['comments-class-format'] == 'section-category-class' 
+                            ) {
+                            $class_name = $reg['syllabus_section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name']; 
+                        } elseif( isset($festival['comments-class-format']) 
                             && $festival['comments-class-format'] == 'code-category-class' 
                             ) {
                             $class_name = $reg['class_code'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name']; 
+                        } elseif( isset($festival['comments-class-format']) 
+                            && $festival['comments-class-format'] == 'category-class' 
+                            ) {
+                            $class_name = $reg['category_name'] . ' - ' . $reg['class_name']; 
                         } else {
-                            $class_name = $reg['class_code'] . ' - ' . $reg['class_name']; 
+                            $class_name = $reg['class_name']; 
                         }
                         $pdf->SetFont('helvetica', '', 12);
                         $lh = $pdf->getStringHeight($w[1], $class_name);
