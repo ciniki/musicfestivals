@@ -2085,6 +2085,10 @@ function ciniki_musicfestivals_main() {
 //                    'name-date-adjudicator-address':'Name<br/>Date: date<br/>Adjudicator: adjudicator<br/>Address: address', 
 //                    }},
                 'schedule-names':{'label':'Competitor Full Names', 'type':'toggle', 'default':'public', 'toggles':{'public':'No', 'private':'Yes'}},
+                'schedule-include-pronouns':{'label':'Include Pronouns', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
                 'schedule-separate-classes':{'label':'Separate Classes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}}, 
                 'schedule-class-format':{'label':'Class Format', 'type':'select', 'default':'default', 'options':{
                     'default':'Code - Class', 

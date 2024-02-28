@@ -121,10 +121,15 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         . "IFNULL(class5.name, '') AS class5_name, " */
         . "timeslots.name AS timeslot_name, "
         . "timeslots.description, "
-        . "registrations.id AS reg_id, "
-        . "registrations.display_name, "
-        . "registrations.public_name, "
-        . "registrations.title1, "
+        . "registrations.id AS reg_id, ";
+    if( isset($festival['schedule-include-pronouns']) && $festival['schedule-include-pronouns'] == 'yes' ) {
+        $strsql .= "registrations.pn_display_name AS display_name, "
+            . "registrations.pn_public_name AS public_name, ";
+    } else {
+        $strsql .= "registrations.display_name, "
+            . "registrations.public_name, ";
+    }
+    $strsql .= "registrations.title1, "
         . "registrations.title2, "
         . "registrations.title3, "
         . "registrations.title4, "
