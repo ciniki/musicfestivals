@@ -169,8 +169,8 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x40) ) {
         $strsql .= "trophies.id AS trophy_id, "
             . "trophies.name AS trophy_name, ";
-//    } else {
-//        $strsql .= "'' AS trophy_name ";
+    } else {
+        $strsql .= "0 AS trophy_id, '' AS trophy_name, ";
     }
     $strsql .= "classes.code AS class_code, "
         . "classes.name AS class_name, "
