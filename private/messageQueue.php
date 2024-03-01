@@ -20,7 +20,7 @@ function ciniki_musicfestivals_messageQueue(&$ciniki, $tnid, $args) {
     // Load the attachments
     //
     $attachments = array();
-    if( isset($args['message']['files']) ) {
+    if( isset($args['message']['files']) && is_array($args['message']['files']) ) {
         //
         // Get the tenant storage directory
         //
