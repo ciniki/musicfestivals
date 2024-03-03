@@ -433,6 +433,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "backtrack7, "
             . "backtrack8, "
             . "instrument, "
+            . "mark, "
+            . "placement, "
+            . "comments, "
             . "notes "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $registration_id) . "' "
@@ -563,6 +566,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "backtrack7, "
             . "backtrack8, "
             . "instrument, "
+            . "mark, "
+            . "placement, "
+            . "comments, "
             . "notes "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE uuid = '" . ciniki_core_dbQuote($ciniki, $registration_uuid) . "' "
@@ -595,7 +601,6 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             }
         }
     }
-
 
     //
     // Setup the fields for the form
@@ -1624,14 +1629,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             );
         if( $registration['timeslot_id'] > 0 ) {
             //
-            // Get the timeslot and schedule information
+            // Get the timeslot->division->section flags to know if comments have been released
             //
             $num_adjudicators = 1;
             $strsql = "SELECT sections.id, "
                 . "sections.flags, "
-                . "sections.adjudicator1_id, "
-                . "sections.adjudicator2_id, "
-                . "sections.adjudicator3_id "
+                . "sections.adjudicator1_id "
                 . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
                 . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
                     . "timeslots.sdivision_id = divisions.id "
@@ -1651,50 +1654,19 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             //
             // Check if released comments
             //
-            if( isset($rc['schedule']['flags']) && ($rc['schedule']['flags']&0x02) == 0x02 ) {
-                if( $rc['schedule']['adjudicator1_id'] > 0 ) {
-                    $num_adjudicators = 1;
-                }
-                if( $rc['schedule']['adjudicator2_id'] > 0 ) {
-                    $num_adjudicators++;
-                }
-                if( $rc['schedule']['adjudicator3_id'] > 0 ) {
-                    $num_adjudicators++;
-                }
-
-                $strsql = "SELECT comments.id, "
-                    . "comments.adjudicator_id, "
-                    . "comments.comments, "
-                    . "comments.score "
-                    . "FROM ciniki_musicfestival_comments AS comments "
-                    . "WHERE comments.registration_id = '" . ciniki_core_dbQuote($ciniki, $registration['registration_id']) . "' "
-                    . "AND comments.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                    . "AND comments.comments <> '' "
-                    . "AND comments.score <> '' "
-                    . "";
-                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-                    array('container'=>'comments', 'fname'=>'id', 
-                        'fields'=>array('id', 'adjudicator_id', 'comments', 'score'),
-                        ),
-                    ));
-                if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.462', 'msg'=>'Unable to load comments', 'err'=>$rc['err']));
-                }
-                if( isset($rc['comments']) && count($rc['comments']) >= $num_adjudicators ) {
-                    $blocks[] = array(
-                        'type' => 'html',
-                        'class' => 'aligncenter',
-                        'html' => "<div class='block-text aligncenter'><div class='wrap'><div class='content'>"
-                            . "<form action='' target='_blank' method='POST'>"
-                            . "<input type='hidden' name='f-registration_id' value='{$registration['registration_id']}' />"
-                            . "<input type='hidden' name='action' value='comments' />"
-                            . "<input class='button' type='submit' name='submit' value='Download Adjudicators Comments'>"
-                            . "</form>"
-                            . "<br/>"
-                            . "</div></div></div>",
-                        );
-                }
+            if( isset($rc['schedule']['flags']) && ($rc['schedule']['flags']&0x02) == 0x02 && $registration['comments'] != '' ) {
+                $blocks[] = array(
+                    'type' => 'html',
+                    'class' => 'aligncenter',
+                    'html' => "<div class='block-text aligncenter'><div class='wrap'><div class='content'>"
+                        . "<form action='' target='_blank' method='POST'>"
+                        . "<input type='hidden' name='f-registration_id' value='{$registration['registration_id']}' />"
+                        . "<input type='hidden' name='action' value='comments' />"
+                        . "<input class='button' type='submit' name='submit' value='Download Adjudicators Comments'>"
+                        . "</form>"
+                        . "<br/>"
+                        . "</div></div></div>",
+                    );
             }
         }
     }

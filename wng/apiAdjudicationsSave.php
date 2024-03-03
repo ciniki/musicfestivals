@@ -90,8 +90,6 @@ function ciniki_musicfestivals_wng_apiAdjudicationsSave(&$ciniki, $tnid, $reques
     $strsql = "SELECT sections.id AS section_id, "
         . "sections.name AS section_name, "
         . "sections.adjudicator1_id, "
-        . "sections.adjudicator2_id, "
-        . "sections.adjudicator3_id, "
         . "divisions.id AS division_id, "
         . "divisions.uuid AS division_uuid, "
         . "divisions.name AS division_name, "
@@ -99,34 +97,16 @@ function ciniki_musicfestivals_wng_apiAdjudicationsSave(&$ciniki, $tnid, $reques
         . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, "
         . "timeslots.id AS timeslot_id, "
         . "timeslots.uuid AS timeslot_uuid, "
-        . "IF(timeslots.name='', IFNULL(class1.name, ''), timeslots.name) AS timeslot_name, "
+        . "IF(timeslots.name='', IFNULL(classes.name, ''), timeslots.name) AS timeslot_name, "
         . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
-        . "timeslots.class1_id, "
-        . "timeslots.class2_id, "
-        . "timeslots.class3_id, "
-        . "IFNULL(class1.name, '') AS class1_name, "
-        . "IFNULL(class2.name, '') AS class2_name, "
-        . "IFNULL(class3.name, '') AS class3_name, "
 //        . "timeslots.name AS timeslot_name, "
         . "timeslots.description, "
         . "registrations.id AS reg_id, "
         . "registrations.uuid AS reg_uuid, "
-        . "registrations.display_name, "
-        . "registrations.public_name, "
-        . "registrations.title1, "
-        . "registrations.title2, "
-        . "registrations.title3, "
-        . "registrations.video_url1, "
-        . "registrations.video_url2, "
-        . "registrations.video_url3, "
-        . "registrations.music_orgfilename1, "
-        . "registrations.music_orgfilename2, "
-        . "registrations.music_orgfilename3, "
-        . "IFNULL(comments.id, 0) AS comment_id, "
-        . "IFNULL(comments.comments, '') AS comments, "
-        . "IFNULL(comments.grade, '') AS grade, "
-        . "IFNULL(comments.score, '') AS score, "
-        . "regclass.name AS reg_class_name "
+        . "registrations.mark, "
+        . "registrations.placement, "
+        . "registrations.comments, "
+        . "classes.name AS class_name "
         . "FROM ciniki_musicfestival_schedule_sections AS sections "
         . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
             . "sections.id = divisions.ssection_id " 
@@ -135,62 +115,26 @@ function ciniki_musicfestivals_wng_apiAdjudicationsSave(&$ciniki, $tnid, $reques
         . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
             . "divisions.id = timeslots.sdivision_id " 
             . "AND timeslots.id = '" . ciniki_core_dbQuote($ciniki, $_POST['f-timeslot_id']) . "' "
-            . "AND timeslots.class1_id > 0 "
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
-            . "timeslots.class1_id = class1.id " 
-            . "AND class1.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class2 ON ("
-            . "timeslots.class3_id = class2.id " 
-            . "AND class2.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class3 ON ("
-            . "timeslots.class3_id = class3.id " 
-            . "AND class3.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
-            . "(timeslots.class1_id = registrations.class_id "  
-                . "OR timeslots.class2_id = registrations.class_id "
-                . "OR timeslots.class3_id = registrations.class_id "
-                . ") "
-            . "AND ((timeslots.flags&0x01) = 0 OR timeslots.id = registrations.timeslot_id) "
+        . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+            . "timeslots.id = registrations.timeslot_id "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "LEFT JOIN ciniki_musicfestival_comments AS comments ON ("
-            . "registrations.id = comments.registration_id "
-            . "AND comments.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
-            . "AND comments.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS regclass ON ("
-            . "registrations.class_id = regclass.id "
-            . "AND regclass.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+            . "registrations.class_id = classes.id "
+            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
-        . "AND ("
-            . "sections.adjudicator1_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
-            . "OR sections.adjudicator2_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
-            . "OR sections.adjudicator3_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
-            . ") "
+        . "AND sections.adjudicator1_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
         . "ORDER BY section_name, divisions.division_date, division_id, slot_time, registrations.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-/*        array('container'=>'divisions', 'fname'=>'division_uuid', 
-            'fields'=>array('id'=>'division_id', 'uuid'=>'division_uuid', 
-                'name'=>'division_name', 'date'=>'division_date_text', 'address',
-                )),
-        array('container'=>'timeslots', 'fname'=>'timeslot_uuid', 
-            'fields'=>array('id'=>'timeslot_id', 'permalink'=>'timeslot_uuid', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 
-                'class1_id', 'class2_id', 'class3_id', 'description', 'class1_name', 'class2_name', 'class3_name',
-                )), */
         array('container'=>'registrations', 'fname'=>'reg_uuid', 
-            'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name', 'title1', 'title2', 'title3',
-                'video_url1', 'video_url2', 'video_url3', 
-                'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3', 
-                'class_name'=>'reg_class_name', 'comment_id', 'comments', 'grade', 'score')),
+            'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'class_name', 'mark', 'placement', 'comments',
+                )),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

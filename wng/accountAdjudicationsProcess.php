@@ -56,6 +56,18 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     }
 
     //
+    // Setup placement autofills
+    //
+    $festival['comments-placement-autofills'] = array();
+    if( isset($festival['comments-placement-autofill']) && $festival['comments-placement-autofill'] != '' ) {
+        $placements = explode(',', $festival['comments-placement-autofill']);
+        foreach($placements as $p) {
+            list($mark, $text) = explode(':', $p);
+            $festival['comments-placement-autofills'][trim($mark)] = trim($text);
+        }
+    }
+
+    //
     // Load the adjudicator
     //
     $strsql = "SELECT id "  
@@ -76,11 +88,11 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     //
     // Load the schedule sections, divisions, timeslots, classes, registrations
     //
-    $strsql = "SELECT sections.id AS section_id, "
-        . "sections.name AS section_name, "
-        . "sections.adjudicator1_id, "
-        . "sections.adjudicator2_id, "
-        . "sections.adjudicator3_id, "
+    $strsql = "SELECT ssections.id AS section_id, "
+        . "ssections.name AS section_name, "
+        . "ssections.adjudicator1_id, "
+        . "ssections.adjudicator2_id, "
+        . "ssections.adjudicator3_id, "
         . "divisions.id AS division_id, "
         . "divisions.uuid AS division_uuid, "
         . "divisions.name AS division_name, "
@@ -88,14 +100,9 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, "
         . "timeslots.id AS timeslot_id, "
         . "timeslots.uuid AS timeslot_uuid, "
-        . "IF(timeslots.name='', IFNULL(class1.name, ''), timeslots.name) AS timeslot_name, "
+        . "timeslots.name AS timeslot_name, "
+//        . "IF(timeslots.name='', IFNULL(class1.name, ''), timeslots.name) AS timeslot_name, "
         . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
-        . "timeslots.class1_id, "
-        . "timeslots.class2_id, "
-        . "timeslots.class3_id, "
-        . "IFNULL(class1.name, '') AS class1_name, "
-        . "IFNULL(class2.name, '') AS class2_name, "
-        . "IFNULL(class3.name, '') AS class3_name, "
 //        . "timeslots.name AS timeslot_name, "
         . "timeslots.description, "
         . "registrations.id AS reg_id, "
@@ -142,18 +149,23 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         . "registrations.music_orgfilename6, "
         . "registrations.music_orgfilename7, "
         . "registrations.music_orgfilename8, "
-//        . "registrations.placement, "
-        . "IFNULL(comments.id, 0) AS comment_id, "
-        . "IFNULL(comments.comments, '') AS comments, "
-        . "IFNULL(comments.grade, '') AS grade, "
-        . "IFNULL(comments.score, '') AS score, "
-        . "regclass.flags AS reg_class_flags, "
-        . "regclass.min_titles, "
-        . "regclass.max_titles, "
-        . "regclass.name AS reg_class_name "
-        . "FROM ciniki_musicfestival_schedule_sections AS sections "
+        . "registrations.mark, "
+        . "registrations.placement, "
+        . "registrations.comments, "
+//        . "IFNULL(comments.id, 0) AS comment_id, "
+//        . "IFNULL(comments.comments, '') AS comments, "
+//        . "IFNULL(comments.grade, '') AS grade, "
+//        . "IFNULL(comments.score, '') AS score, "
+        . "classes.flags AS class_flags, "
+        . "classes.min_titles, "
+        . "classes.max_titles, "
+        . "classes.code AS class_code, "
+        . "classes.name AS class_name, "
+        . "categories.name AS category_name, "
+        . "sections.name AS syllabus_section_name "
+        . "FROM ciniki_musicfestival_schedule_sections AS ssections "
         . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
-            . "sections.id = divisions.ssection_id " 
+            . "ssections.id = divisions.ssection_id " 
             . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
@@ -161,7 +173,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             . "AND timeslots.class1_id > 0 "
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
+/*        . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
             . "timeslots.class1_id = class1.id " 
             . "AND class1.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
@@ -172,8 +184,8 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         . "LEFT JOIN ciniki_musicfestival_classes AS class3 ON ("
             . "timeslots.class3_id = class3.id " 
             . "AND class3.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
+            . ") " */
+        . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
 //            . "(timeslots.class1_id = registrations.class_id "  
 //                . "OR timeslots.class2_id = registrations.class_id "
 //                . "OR timeslots.class3_id = registrations.class_id "
@@ -182,24 +194,27 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             . "timeslots.id = registrations.timeslot_id "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "LEFT JOIN ciniki_musicfestival_comments AS comments ON ("
-            . "registrations.id = comments.registration_id "
-            . "AND comments.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
-            . "AND comments.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+//        . "LEFT JOIN ciniki_musicfestival_comments AS comments ON ("
+//            . "registrations.id = comments.registration_id "
+//            . "AND comments.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
+//            . "AND comments.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+//            . ") "
+        . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+            . "registrations.class_id = classes.id "
+            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS regclass ON ("
-            . "registrations.class_id = regclass.id "
-            . "AND regclass.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
+            . "classes.category_id = categories.id "
+            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
-        . "AND ("
-            . "sections.adjudicator1_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
-            . "OR sections.adjudicator2_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
-            . "OR sections.adjudicator3_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
+        . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+            . "categories.section_id = sections.id "
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "";
-    $strsql .= "ORDER BY section_name, divisions.division_date, division_id, slot_time, registrations.display_name "
+        . "WHERE ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND ssections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+        . "AND ssections.adjudicator1_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
+        . "ORDER BY section_name, divisions.division_date, division_id, slot_time, registrations.timeslot_sequence, registrations.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -209,7 +224,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 )),
         array('container'=>'timeslots', 'fname'=>'timeslot_uuid', 
             'fields'=>array('id'=>'timeslot_id', 'permalink'=>'timeslot_uuid', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 
-                'class1_id', 'class2_id', 'class3_id', 'description', 'class1_name', 'class2_name', 'class3_name',
+                'description', 
                 )),
         array('container'=>'registrations', 'fname'=>'reg_uuid', 
             'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name', 
@@ -219,8 +234,10 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
                 'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3', 'music_orgfilename4', 
                 'music_orgfilename5', 'music_orgfilename6', 'music_orgfilename7', 'music_orgfilename8',
-                'reg_class_flags', 'min_titles', 'max_titles', 'class_name'=>'reg_class_name', 
-                'comment_id', 'comments', 'grade', 'score', 
+                'class_flags', 'min_titles', 'max_titles', 'class_name',
+                'class_code', 'class_name', 'category_name', 'syllabus_section_name',
+                'mark', 'placement', 'comments',
+//                'comment_id', 'comments', 'grade', 'score', 
 //                'placement',
                 )),
         ));
@@ -348,9 +365,31 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     if( $display == 'timeslot' ) {
         $sections = array();
         foreach($timeslot['registrations'] as $registration) {
+            $class_name = $registration['class_name'];
+            if( isset($festival['comments-class-format']) 
+                && $festival['comments-class-format'] == 'code-section-category-class' 
+                ) {
+                $class_name = $registration['class_code'] . ' - ' . $registration['syllabus_section_name'] . ' - ' . $registration['category_name'] . ' - ' . $registration['class_name']; 
+            } elseif( isset($festival['comments-class-format']) 
+                && $festival['comments-class-format'] == 'section-category-class' 
+                ) {
+                $class_name = $registration['syllabus_section_name'] . ' - ' . $registration['category_name'] . ' - ' . $registration['class_name']; 
+            } elseif( isset($festival['comments-class-format']) 
+                && $festival['comments-class-format'] == 'code-category-class' 
+                ) {
+                $class_name = $registration['class_code'] . ' - ' . $registration['category_name'] . ' - ' . $registration['class_name']; 
+            } elseif( isset($festival['comments-class-format']) 
+                && $festival['comments-class-format'] == 'category-class' 
+                ) {
+                $class_name = $registration['category_name'] . ' - ' . $registration['class_name']; 
+            } else {
+                $class_name = $registration['class_name']; 
+            }
+            
+
             $section = array(    
                 'id' => 'section-' . $registration['id'],
-                'label' => $registration['name'] . ' - ' . $registration['class_name'],
+                'label' => $registration['name'] . ' - ' . $class_name,
                 'fields' => array(),
                 );
             for($i = 1; $i <= $registration['max_titles']; $i++) {
@@ -406,19 +445,42 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             $section['fields']["{$registration['id']}-comments"] = array(
                 'id' => "{$registration['id']}-comments",
                 'ftype' => 'textarea',
+                'class' => 'field-comments',
                 'label' => 'Comments',
                 'onkeyup' => 'fieldUpdated()',
                 'size' => 'large',
                 'value' => $registration['comments'],
                 );
-            $section['fields']["{$registration['id']}-score"] = array(
-                'id' => "{$registration['id']}-score",
-                'ftype' => 'text',
-                'onkeyup' => 'fieldUpdated()',
-                'size' => 'small',
-                'label' => 'Mark',
-                'value' => $registration['score'],
-                );
+            if( isset($festival['comments-mark-adjudicator']) && $festival['comments-mark-adjudicator'] == 'yes' ) {
+                $label = 'Mark';
+                if( isset($festival['comments-mark-label']) && $festival['comments-mark-label'] != '' ) {
+                    $label = $festival['comments-mark-label'];
+                }
+                $section['fields']["{$registration['id']}-mark"] = array(
+                    'id' => "{$registration['id']}-mark",
+                    'class' => 'field-comments-mark',
+                    'ftype' => 'text',
+                    'onkeyup' => "fieldMarkUpdated({$registration['id']})",
+                    'size' => 'small',
+                    'label' => $label,
+                    'value' => $registration['mark'],
+                    );
+            }
+            if( isset($festival['comments-placement-adjudicator']) && $festival['comments-placement-adjudicator'] == 'yes' ) {
+                $label = 'Placement';
+                if( isset($festival['comments-placement-label']) && $festival['comments-placement-label'] != '' ) {
+                    $label = $festival['comments-placement-label'];
+                }
+                $section['fields']["{$registration['id']}-placement"] = array(
+                    'id' => "{$registration['id']}-placement",
+                    'ftype' => 'text',
+                    'class' => 'field-comments-placement',
+                    'onkeyup' => 'fieldUpdated()',
+                    'size' => 'small',
+                    'label' => $label,
+                    'value' => $registration['placement'],
+                    );
+            }
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x04) ) {
 /*                $section['fields']["{$registration['id']}-placement"] = array(
                     'id' => "{$registration['id']}-placement",
@@ -460,21 +522,49 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             );
         $js = ""
             . "var fSaveTimer=null;"
-            . "function fieldUpdated(){"
-                . "if(fSaveTimer==null){"
-                    . "fSaveTimer=setTimeout(fSave, 10000);"
-                . "}"
-            . "}"
             . "function fSave(){"
                 . "clearTimeout(fSaveTimer);"
                 . "fSaveTimer=null;"
                 . "C.form.qSave();"
             . "}"
             . "";
+/*        m = parseInt(m);
+        var p = '';
+        if( this.festival.data['comments-placement-autofills'] != null ) {
+            for(var i in this.festival.data['comments-placement-autofills']) {
+                if( m >= parseInt(i) ) {
+                    p = this.festival.data['comments-placement-autofills'][i];
+                }
+            }
+        }
+        return p; */
+        if( isset($festival['comments-placement-autofills']) && count($festival['comments-placement-autofills']) > 0 
+            && isset($festival['comments-placement-adjudicator']) && $festival['comments-placement-adjudicator'] == 'yes' 
+            ) {
+            $js .= "var paf=" . json_encode($festival['comments-placement-autofills']) . ";";
+            $js .= "function fieldMarkUpdated(rid){"
+                    . "var m=C.gE('f-'+rid+'-mark').value;"
+                    . "var p=C.gE('f-'+rid+'-placement');"
+                    . "for(var i in paf){"
+                        . "if(parseInt(m)>=parseInt(i)){"
+                            . "p.value=paf[i];"
+                        . "}"
+                    . "}"
+                    . "if(fSaveTimer==null){"
+                        . "fSaveTimer=setTimeout(fSave, 10000);"
+                    . "}"
+                . "}";
+        } else {
+            $js .= "function fieldMarkUpdated(e){"
+                    . "if(fSaveTimer==null){"
+                        . "fSaveTimer=setTimeout(fSave, 10000);"
+                    . "}"
+                . "}";
+        }
         $blocks[] = array(
             'type' => 'form',
             'id' => 'adjudication-form',
-            'title' => $timeslot['name'],
+            'title' => $timeslot['name'] != '' ? $timeslot['name'] : '',
             'class' => 'limit-width limit-width-60 musicfestival-adjudications',
             'form-sections' => $sections,
             'js' => $js,
@@ -498,7 +588,12 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                     $num_completed = 0;
                     if( isset($timeslot['registrations']) ) {
                         foreach($timeslot['registrations'] as $rid => $registration) {
-                            if( $registration['comments'] != '' && $registration['score'] != '' ) {
+                            if( (!isset($division['timeslots']['name']) || $division['timeslots']['name'] == '') 
+                                && isset($registration['class_name']) 
+                                ) {
+                                $division['timeslots'][$tid]['name'] = $division['date'] . ' - ' . $timeslot['time'];
+                            }
+                            if( $registration['comments'] != '' && $registration['mark'] != '' ) {
                                 $num_completed++;
                             }
                         }

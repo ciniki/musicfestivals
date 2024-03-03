@@ -1,0 +1,4 @@
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN mark varchar(50) not null AFTER instrument;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN comments text not null AFTER placement;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.18';
+UPDATE ciniki_musicfestival_registrations AS r INNER JOIN ciniki_musicfestival_comments AS c ON (r.id = c.registration_id) SET r.mark = c.score, r.placement = c.grade, r.comments = c.comments;

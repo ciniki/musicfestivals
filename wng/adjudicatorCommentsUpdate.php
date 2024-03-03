@@ -28,30 +28,30 @@ function ciniki_musicfestivals_wng_adjudicatorCommentsUpdate(&$ciniki, $tnid, &$
     }
 
     //
-    // Go through the registrations and check for updates to comments or score
+    // Go through the registrations and check for updates to comments or mark
     //
     foreach($args['registrations'] as $reg) {
         $update_args = array();
-        $reg_update_args = array();
+//        $reg_update_args = array();
         if( isset($_POST["f-{$reg['id']}-comments"])
             && $_POST["f-{$reg['id']}-comments"] != $reg['comments']
             ) {
             $update_args['comments'] = $_POST["f-{$reg['id']}-comments"];
         }
-        if( isset($_POST["f-{$reg['id']}-score"])
-            && $_POST["f-{$reg['id']}-score"] != $reg['score']
+        if( isset($_POST["f-{$reg['id']}-mark"])
+            && $_POST["f-{$reg['id']}-mark"] != $reg['mark']
             ) {
-            $update_args['score'] = $_POST["f-{$reg['id']}-score"];
+            $update_args['mark'] = $_POST["f-{$reg['id']}-mark"];
         }
-/*        if( isset($_POST["f-{$reg['id']}-placement"])
+        if( isset($_POST["f-{$reg['id']}-placement"])
             && $_POST["f-{$reg['id']}-placement"] != $reg['placement']
             ) {
-            $reg_update_args['placement'] = $_POST["f-{$reg['id']}-placement"];
-        } */
+            $update_args['placement'] = $_POST["f-{$reg['id']}-placement"];
+        } 
         if( count($update_args) > 0 ) {
-            if( $reg['comment_id'] > 0 ) {
+            if( $reg['id'] > 0 ) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.comment', $reg['comment_id'], $update_args, $tmsupdate);
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $reg['id'], $update_args, $tmsupdate);
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.441', 'msg'=>'Unable to update the comment', 'err'=>$rc['err']));
                 }
@@ -67,23 +67,23 @@ function ciniki_musicfestivals_wng_adjudicatorCommentsUpdate(&$ciniki, $tnid, &$
                     } */
                 }
                 
-            } else {
+/*            } else {
                 $update_args['registration_id'] = $reg['id'];
                 $update_args['adjudicator_id'] = $args['adjudicator_id'];
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
                 $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.comment', $update_args, 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.440', 'msg'=>'Unable to add the comment', 'err'=>$rc['err']));
-                }
+                } */
             }
         }
-        if( count($reg_update_args) > 0 ) {
+/*        if( count($reg_update_args) > 0 ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
             $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $reg['id'], $reg_update_args, $tmsupdate);
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.453', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
             }
-        }
+        } */
     }
 
     return array('stat'=>'ok');

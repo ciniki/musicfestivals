@@ -28,8 +28,8 @@
 #                           0x04 - Virtual Pricing
 #                           0x08 - Section End Dates
 #                           0x10 - Adjudication Plus
-#                           0x20 - Comments PDF include Adjudicator name in header
-#                           0x40 - Comments PDF include Date/Time
+#                           0x20 - Comments PDF include Adjudicator name in header **deprecated**
+#                           0x40 - Comments PDF include Date/Time **deprecated**
 #                           0x80 - Certificates PDF include Pronoun **deprecated**
 #                           0x0100 - Include Section/Category as part of Invoice item description
 #                           0x0200 - Always ask for Music PDF in Registration Form
@@ -49,8 +49,8 @@
 # document_logo_id:     The ID of the image to be used on top of documents.
 # document_header_msg:  The message to include in the header of the documents.
 # document_footer_msg:  The message to include in the footer of the documents.
-# comments_grade_label: The label to put for grade. Defaults to "Mark"
-# comments_footer_msg:  The levels message to include in the footer of the comments document.
+# comments_grade_label: The label to put for grade. Defaults to "Mark" **deprecated**
+# comments_footer_msg:  The levels message to include in the footer of the comments document. **deprecated**
 #
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.
