@@ -60,6 +60,13 @@ function ciniki_musicfestivals_maps($ciniki) {
             0x20 => 'Results Published',
         ),
     );
+    $maps['scheduledivision'] = array(
+        'flags'=>array(
+            0x02 => 'Comments Released',
+            0x04 => 'Certificates Released',
+            0x20 => 'Results Published',
+        ),
+    );
 
     return array('stat'=>'ok', 'maps'=>$maps);
 }

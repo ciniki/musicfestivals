@@ -40,6 +40,26 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     }
     $festivals = isset($rc['festivals']) ? $rc['festivals'] : array();
 
+    if( isset($festivals[0]) ) {
+        $festival = $festivals[0];
+        //
+        // Get the additional settings
+        //
+        $strsql = "SELECT detail_key, detail_value "
+            . "FROM ciniki_musicfestival_settings "
+            . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
+        $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.195', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+        }
+        foreach($rc['settings'] as $k => $v) {
+            $festival[$k] = $v;
+        }
+    }
+
     //
     // Section to display the syllabus
     //
@@ -206,6 +226,8 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 ), 
             'class-format'=>array('label'=>'Class Format', 'type'=>'select', 'default'=>'default', 'options'=>array(
                 'default'=>'Code - Class', 
+                'section-category-class'=>'Section - Category - Class',
+                'category-class'=>'Category - Class',
                 'code-section-category-class'=>'Code - Section - Category - Class',
                 'code-category-class'=>'Code - Category - Class',
                 )),
@@ -214,7 +236,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'no' => 'No',
                     'yes' => 'Yes',
                     )),
-            'names' => array('label'=>'Full Names', 'type'=>'toggle', 'default'=>'no',
+            'names' => array('label'=>'Full Names', 'type'=>'toggle', 'default'=>'public',
                 'toggles'=>array(
                     'public' => 'No',
                     'private' => 'Yes',
@@ -257,6 +279,82 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
 //                    )),
             ),
         );
+
+    //
+    // Section to display the results for a festival
+    //
+    $sections['ciniki.musicfestivals.results'] = array(
+        'name' => 'Results',
+        'module' => 'Music Festivals',
+        'settings' => array(
+            'title' => array('label'=>'Title', 'type'=>'text'),
+            'content' => array('label'=>'Intro', 'type'=>'textarea'),
+            'notreleased' => array('label'=>'Not Released Intro', 'type'=>'textarea'),
+            'festival-id' => array('label'=>'Festival', 'type'=>'select', 
+                'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                'options'=>$festivals,
+                ),
+            'layout' => array('label'=>'Layout', 'type'=>'select', 'default'=>'',
+                'options'=>array(
+                    'section-buttons' => 'Section Buttons',
+                    'division-buttons' => 'Section - Division Buttons',
+                    'date-buttons' => 'Date - Division Buttons',
+                    )),
+            'division-dates' => array('label'=>'Division Dates', 'type'=>'toggle', 'default'=>'no',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
+            'ipv' => array('label'=>'Live/Virtual', 'type'=>'toggle', 'default'=>'all', 'separator'=>'yes',
+                'toggles'=>array(
+                    'all' => 'All',
+                    'inperson' => 'Live',
+                    'virtual' => 'Virtual',
+                    )),
+            'separate-classes' => array('label'=>'Separate Classes', 'type'=>'toggle', 'default'=>'no', 
+                'toggles'=>array('no'=>'No', 'yes'=>'Yes'),
+                ), 
+            'class-format'=>array('label'=>'Class Format', 'type'=>'select', 'default'=>'default', 'options'=>array(
+                'default'=>'Code - Class', 
+                'section-category-class'=>'Section - Category - Class',
+                'category-class'=>'Category - Class',
+                'code-section-category-class'=>'Code - Section - Category - Class',
+                'code-category-class'=>'Code - Category - Class',
+                )),
+            'titles' => array('label'=>'Titles', 'type'=>'toggle', 'default'=>'no',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
+            'names' => array('label'=>'Full Names', 'type'=>'toggle', 'default'=>'public',
+                'toggles'=>array(
+                    'public' => 'No',
+                    'private' => 'Yes',
+                    )),
+            'video_urls' => array('label'=>'Virtual Video URLs', 'type'=>'toggle', 'default'=>'no',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
+            'mark' => array('label'=>'Show Marks', 'type'=>'toggle', 'default'=>'no',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
+            'min-mark' => array('label'=>'Mininum Mark', 'type'=>'text', 'size'=>'small'),
+            'placement' => array('label'=>'Show Placement', 'type'=>'toggle', 'default'=>'no',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
+            ),
+        );
+    if( isset($festival['comments-mark-label']) && $festival['comments-mark-label'] != '' ) {
+        $sections['ciniki.musicfestivals.results']['settings']['mark']['label'] = 'Show ' . $festival['comments-mark-label'];
+    }
+    if( isset($festival['comments-placement-label']) && $festival['comments-placement-label'] != '' ) {
+        $sections['ciniki.musicfestivals.results']['settings']['placement']['label'] = 'Show ' . $festival['comments-placement-label'];
+    }
 
     //
     // Section to display the photos for a festival

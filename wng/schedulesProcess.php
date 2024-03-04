@@ -142,9 +142,13 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                 . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
-            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND (sections.flags&0x10) = 0x10 " // Schedule published on website
-            . "ORDER BY sections.sequence, sections.name, divisions.division_date "
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
+        if( isset($s['results-only']) && $s['results-only'] == 'yes' ) {
+            $strsql .= "AND ((sections.flags&0x20) = 0x20 OR (divisions.flags&0x20) = 0x20) "; // results published on website
+        } else {
+            $strsql .= "AND (sections.flags&0x10) = 0x10 "; // Schedule published on website
+        }
+        $strsql .= "ORDER BY sections.sequence, sections.name, divisions.division_date "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -190,9 +194,13 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                 . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
-            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND (sections.flags&0x10) = 0x10 "
-            . "ORDER BY divisions.division_date, sections.sequence, sections.name "
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
+        if( isset($s['results-only']) && $s['results-only'] == 'yes' ) {
+            $strsql .= "AND ((sections.flags&0x20) = 0x20 OR (divisions.flags&0x20) = 0x20) "; // results published on website
+        } else {
+            $strsql .= "AND (sections.flags&0x10) = 0x10 "; // Schedule published on website
+        }
+        $strsql .= "ORDER BY divisions.division_date, sections.sequence, sections.name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -230,10 +238,18 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
         $strsql = "SELECT sections.id, "
             . "sections.name "
             . "FROM ciniki_musicfestival_schedule_sections AS sections "
+            . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+                . "sections.id = divisions.ssection_id "
+                . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
             . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
-            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND (sections.flags&0x10) = 0x10 "
-            . "ORDER BY name "
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
+        if( isset($s['results-only']) && $s['results-only'] == 'yes' ) {
+            $strsql .= "AND ((sections.flags&0x20) = 0x20 OR (divisions.flags&0x20) = 0x20) "; // results published on website
+        } else {
+            $strsql .= "AND (sections.flags&0x10) = 0x10 "; // Schedule published on website
+        }
+        $strsql .= "ORDER BY name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(

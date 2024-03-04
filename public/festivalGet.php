@@ -920,6 +920,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $strsql = "SELECT divisions.id, "
                     . "divisions.festival_id, "
                     . "divisions.ssection_id, "
+                    . "divisions.flags, "
+                    . "divisions.flags AS options, "
                     . "divisions.name, "
                     . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, "
                     . "divisions.address, "
@@ -938,7 +940,11 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'scheduledivisions', 'fname'=>'id', 
-                        'fields'=>array('id', 'festival_id', 'ssection_id', 'name', 'division_date_text', 'address')),
+                        'fields'=>array('id', 'festival_id', 'ssection_id', 'name', 'flags', 'options', 
+                            'division_date_text', 'address',
+                            ),
+                        'flags' => array('options'=>$maps['schedulesection']['flags']),
+                        ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;

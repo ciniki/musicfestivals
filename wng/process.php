@@ -45,6 +45,10 @@ function ciniki_musicfestivals_wng_process(&$ciniki, $tnid, &$request, $section)
     } elseif( $section['ref'] == 'ciniki.musicfestivals.schedules' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'schedulesProcess');
         return ciniki_musicfestivals_wng_schedulesProcess($ciniki, $tnid, $request, $section);
+    } elseif( $section['ref'] == 'ciniki.musicfestivals.results' ) {
+        $section['settings']['results-only'] = 'yes';
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'schedulesProcess');
+        return ciniki_musicfestivals_wng_schedulesProcess($ciniki, $tnid, $request, $section);
     } elseif( $section['ref'] == 'ciniki.musicfestivals.timeslotphotos' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'timeslotPhotosProcess');
         return ciniki_musicfestivals_wng_timeslotPhotosProcess($ciniki, $tnid, $request, $section);

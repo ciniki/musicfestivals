@@ -1147,10 +1147,11 @@ function ciniki_musicfestivals_main() {
             }
         }
         if( s == 'schedule_divisions' && M.ciniki_musicfestivals_main.festival.menutabs.selected == 'comments' ) {
-            return '<span class="maintext">' + d.name + ' <span class="subtext">' + d.division_date_text + '</span>';
+//            return '<span class="maintext">' + d.name + ' <span class="subtext">' + d.division_date_text + '</span>';
+            return '<span class="maintext">' + d.name + ' <span class="subdue">' + d.division_date_text + '</span><span class="subtext">' + d.options + '</span>';
         }
         if( s == 'schedule_divisions' ) {
-            return '<span class="maintext">' + d.name + ' <span class="subdue">' + d.division_date_text + '</span><span class="subtext">' + d.address + '</span>';
+            return '<span class="maintext">' + d.name + ' <span class="subdue">' + d.division_date_text + '</span><span class="subtext">' + d.options + '</span>';
         }
         if( s == 'schedule_timeslots' ) {
             switch(j) {
