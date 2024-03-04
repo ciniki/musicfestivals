@@ -4321,15 +4321,24 @@ function ciniki_musicfestivals_main() {
         'general':{'label':'', 'aside':'yes', 'fields':{
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
             'sequence':{'label':'Order', 'type':'text', 'size':'small'},
-            'flags':{'label':'Options', 'type':'flags', 'flags':{
-                '1':{'name':'Release Schedule'},
-                '2':{'name':'Release Comments'},
-                '3':{'name':'Release Certificates'},
-                '4':{'name':'Release Results'},
-                }},
+//            'flags':{'label':'Options', 'type':'flags', 'flags':{
+//                '1':{'name':'Release Schedule'},
+//                '2':{'name':'Release Comments'},
+//                '3':{'name':'Release Certificates'},
+//                '5':{'name':'Publish Schedule'},
+//                }},
             'adjudicator1_id':{'label':'Adjudicator', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
             }},
-        'top_sponsors':{'label':'Top Sponsor', 'aside':'yes', 'fields':{
+        '_schedule':{'label':'Schedule', 'aside':'yes', 'fields':{
+            'flags1':{'label':'Release Schedule to Competitors', 'type':'flagtoggle', 'bit':0x01, 'field':'flags'},
+            'flags5':{'label':'Publish Schedule on Website', 'type':'flagtoggle', 'bit':0x10, 'field':'flags'},
+            }},
+        '_results':{'label':'Results', 'aside':'yes', 'fields':{
+            'flags2':{'label':'Release Comments to Competitors', 'type':'flagtoggle', 'bit':0x02, 'field':'flags'},
+            'flags3':{'label':'Release Certificates to Competitors', 'type':'flagtoggle', 'bit':0x04, 'field':'flags'},
+            'flags6':{'label':'Publish Results on Website', 'type':'flagtoggle', 'bit':0x20, 'field':'flags'},
+            }},
+        'top_sponsors':{'label':'Top Sponsor', 'aside':'no', 'fields':{
             'top_sponsors_title':{'label':'Title', 'type':'text',},
             'top_sponsor_ids':{'label':'Sponsors', 'type':'idlist', 'list':{}},
 //            'top_sponsor2_id':{'label':'Sponsor 2', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
@@ -4343,7 +4352,7 @@ function ciniki_musicfestivals_main() {
                 '4-6':'Taller',
                 }},
             }},
-        'bottom_sponsors':{'label':'Bottom Sponsor', 'aside':'yes', 'fields':{
+        'bottom_sponsors':{'label':'Bottom Sponsor', 'aside':'no', 'fields':{
             'bottom_sponsors_title':{'label':'Title', 'type':'text',},
             'bottom_sponsors_content':{'label':'Content', 'type':'textarea'},
             'bottom_sponsor_ids':{'label':'Sponsors', 'type':'idlist', 'list':{}},
@@ -4363,20 +4372,22 @@ function ciniki_musicfestivals_main() {
 //            'adjudicator2_id':{'label':'Second', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
 //            'adjudicator3_id':{'label':'Third', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
 //            }},
-        'provincials':{'label':'Provincials Information', 'fields':{
-            'provincials_image_id':{'label':'Image/Logo', 'type':'image_id', 'controls':'all', 'history':'no',
-                'addDropImage':function(iid) {
-                    M.ciniki_musicfestivals_main.schedulesection.setFieldValue('provincials_image_id', iid);
-                    return true;
-                    },
-                'addDropImageRefresh':'',
-                'deleteImage':function(fid) {
-                    M.ciniki_musicfestivals_main.schedulesection.setFieldValue(fid,0);
-                    return true;
+        'provincials':{'label':'Provincials Information', 
+            'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x010000) ? 'no' : 'yes'; },
+            'fields':{
+                'provincials_image_id':{'label':'Image/Logo', 'type':'image_id', 'controls':'all', 'history':'no',
+                    'addDropImage':function(iid) {
+                        M.ciniki_musicfestivals_main.schedulesection.setFieldValue('provincials_image_id', iid);
+                        return true;
+                        },
+                    'addDropImageRefresh':'',
+                    'deleteImage':function(fid) {
+                        M.ciniki_musicfestivals_main.schedulesection.setFieldValue(fid,0);
+                        return true;
+                     },
                  },
-             },
-            'provincials_title':{'label':'Title', 'type':'text'},
-            'provincials_content':{'label':'Content', 'type':'textarea'},
+                'provincials_title':{'label':'Title', 'type':'text'},
+                'provincials_content':{'label':'Content', 'type':'textarea'},
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.schedulesection.save();'},
@@ -4490,6 +4501,11 @@ function ciniki_musicfestivals_main() {
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
             'division_date':{'label':'Date', 'required':'yes', 'type':'date'},
             'address':{'label':'Address', 'type':'text'},
+            }},
+        '_results':{'label':'Results', 'aside':'yes', 'fields':{
+            'flags2':{'label':'Release Comments to Competitors', 'type':'flagtoggle', 'bit':0x02, 'field':'flags'},
+            'flags3':{'label':'Release Certificates to Competitors', 'type':'flagtoggle', 'bit':0x04, 'field':'flags'},
+            'flags6':{'label':'Publish Results on Website', 'type':'flagtoggle', 'bit':0x20, 'field':'flags'},
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.scheduledivision.save();'},

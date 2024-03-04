@@ -371,6 +371,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'festival_id'=>array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
             'ssection_id'=>array('name'=>'Section', 'ref'=>'ciniki.musicfestivals.schedulesection'),
             'name'=>array('name'=>'Name'),
+            'flags'=>array('name'=>'Options', 'default'=>'0'),
             'division_date'=>array('name'=>'Date'),
             'address'=>array('name'=>'Address', 'default'=>''),
             ),

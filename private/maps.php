@@ -56,7 +56,8 @@ function ciniki_musicfestivals_maps($ciniki) {
             0x01 => 'Schedule Released',
             0x02 => 'Comments Released',
             0x04 => 'Certificates Released',
-            0x08 => 'Results Released',
+            0x10 => 'Schedule Published',
+            0x20 => 'Results Published',
         ),
     );
 

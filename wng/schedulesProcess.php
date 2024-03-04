@@ -143,7 +143,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                 . ") "
             . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND (sections.flags&0x01) = 0x01 "
+            . "AND (sections.flags&0x10) = 0x10 " // Schedule published on website
             . "ORDER BY sections.sequence, sections.name, divisions.division_date "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -191,7 +191,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                 . ") "
             . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND (sections.flags&0x01) = 0x01 "
+            . "AND (sections.flags&0x10) = 0x10 "
             . "ORDER BY divisions.division_date, sections.sequence, sections.name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -232,7 +232,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
             . "FROM ciniki_musicfestival_schedule_sections AS sections "
             . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND (sections.flags&0x01) = 0x01 "
+            . "AND (sections.flags&0x10) = 0x10 "
             . "ORDER BY name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -267,6 +267,19 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                     ),
                 ),
             );
+    }
+
+    //
+    // Check if any sections have been published yet
+    //
+    if( count($sections) == 0 ) {
+        $blocks[] = array(
+            'type' => 'text',
+            'level' => $section['sequence'] == 1 ? 1 : 2,
+            'title' => isset($s['title']) ? $s['title'] : '',
+            'content' => (isset($s['notreleased']) && $s['notreleased'] != '' ? $s['notreleased'] : 'The schedule has not yet been released.'),
+            );
+        return array('stat'=>'ok', 'blocks'=>$blocks);
     }
 
     //
@@ -385,8 +398,6 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                 ),
             );
     }
-
-    
 
     return array('stat'=>'ok', 'blocks'=>$blocks);
 }

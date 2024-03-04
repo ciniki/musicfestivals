@@ -92,7 +92,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "FROM ciniki_musicfestival_schedule_sections AS sections "
         . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
         . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND (sections.flags&0x01) = 0x01 "
+        . "AND (sections.flags&0x10) = 0x10 "   // Schedule published on website
         . "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $s['section-id']) . "' "
         . "ORDER BY name "
         . "";

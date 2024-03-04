@@ -1634,6 +1634,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             $num_adjudicators = 1;
             $strsql = "SELECT sections.id, "
                 . "sections.flags, "
+                . "divisions.flags AS division_flags, "
                 . "sections.adjudicator1_id "
                 . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
                 . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
@@ -1654,7 +1655,10 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             //
             // Check if released comments
             //
-            if( isset($rc['schedule']['flags']) && ($rc['schedule']['flags']&0x02) == 0x02 && $registration['comments'] != '' ) {
+            if( $registration['comments'] != '' 
+                && ((isset($rc['schedule']['flags']) && ($rc['schedule']['flags']&0x02) == 0x02)
+                || (isset($rc['schedule']['division_flags']) && ($rc['schedule']['division_flags']&0x02) == 0x02))
+                ) {
                 $blocks[] = array(
                     'type' => 'html',
                     'class' => 'aligncenter',

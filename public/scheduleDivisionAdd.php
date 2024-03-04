@@ -23,6 +23,7 @@ function ciniki_musicfestivals_scheduleDivisionAdd(&$ciniki) {
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'ssection_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Section'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'),
+        'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'division_date'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'date', 'name'=>'Date'),
         'address'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address'),
         ));

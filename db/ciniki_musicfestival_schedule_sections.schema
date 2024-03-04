@@ -19,12 +19,12 @@
 #
 # flags:                The options for the timeslot section.
 #
-#                           0x01 - Release schedule.
+#                           0x01 - Release schedule to competitors.
 #                           0x02 - Release comments for download.
 #                           0x04 - Release certificates for download.
-#                           0x08 - Release results on website
-#                           0x10 - 
-#                           0x20 - 
+#                           0x08 - 
+#                           0x10 - Publish schedule on website.
+#                           0x20 - Publish Results on website
 #                           0x40 - 
 #                           0x80 - 
 #
