@@ -459,6 +459,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             if( isset($_POST['action']) && $_POST['action'] == 'view' ) {
                 $display = 'view';
             } 
+            elseif( isset($_POST['f-action']) && $_POST['f-action'] == 'viewupdate' ) {
+                $display = 'view';
+            }
             elseif( isset($_POST['action']) && $_POST['action'] == 'comments' ) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'commentsPDF');
                 $rc = ciniki_musicfestivals_templates_commentsPDF($ciniki, $tnid, array(
@@ -646,7 +649,10 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         $registration_id = $_POST['f-registration_id'];
         $display = 'form';
     }
-    elseif( isset($_POST['f-registration_id']) && isset($_POST['f-action']) && $_POST['f-action'] == 'update' && count($errors) == 0 ) {
+    elseif( isset($_POST['f-registration_id']) && isset($_POST['f-action']) 
+        && ($_POST['f-action'] == 'update' || $_POST['f-action'] == 'viewupdate') 
+        && count($errors) == 0 
+        ) {
         $registration_id = $_POST['f-registration_id'];
         $display = 'form';
         //
@@ -663,6 +669,11 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     'msg' => "Registrations are closed for " . $selected_member['oname'] . ".",
                     );
             }
+        }
+        if( !isset($selected_class) ) {
+            $errors[] = array(
+                'msg' => "Internal error, please contact us for help.",
+                );
         }
        
         if( count($errors) == 0 ) {
@@ -1613,7 +1624,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $fields[$fid]['editable'] = 'no';
             }
         }
-        if( $editable == 'yes' ) {
+        if( $editable == 'yes' && $display == 'view' ) {
+            $fields['action']['value'] = 'viewupdate';
+        } elseif( $editable == 'yes' ) {
             $fields['action']['value'] = 'update';
         }
         $blocks[] = array(
