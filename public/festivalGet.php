@@ -1411,6 +1411,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.445', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
             }
             $festival['schedule_competitors'] = isset($rc['competitors']) ? $rc['competitors'] : array();
+            $festival['schedule_competitors_max_timeslots'] = 1;
+            foreach($festival['schedule_competitors'] AS $c) {
+                if( isset($c['timeslots']) && count($c['timeslots']) > $festival['schedule_competitors_max_timeslots'] ) {
+                    $festival['schedule_competitors_max_timeslots'] = count($c['timeslots']);
+                }
+            }
         }
 
         //

@@ -623,7 +623,7 @@ function ciniki_musicfestivals_main() {
             },
         'schedule_competitors':{'label':'Competitor Schedules', 'type':'simplegrid', 'num_cols':13, 'aside':'yes',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'schedule' && M.ciniki_musicfestivals_main.festival.sections.schedule_tabs.selected == 'competitors' ? 'yes' : 'no'; },
-            'cellClasses':['', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline'],
+            'cellClasses':['', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline','multiline', 'multiline', 'multiline', 'multiline', 'multiline','multiline'],
             },
         'schedule_results':{'label':'Results', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'schedule' && M.ciniki_musicfestivals_main.festival.sections.schedule_tabs.selected == 'results' && M.ciniki_musicfestivals_main.festival.schedulesection_id>0 && M.ciniki_musicfestivals_main.festival.scheduledivision_id>0 ? 'yes' : 'no'; },
@@ -1916,6 +1916,12 @@ function ciniki_musicfestivals_main() {
                 p.sections.schedule_results.num_cols++;
             }
             p.sections.timeslot_comments.headerValues[2] = '';
+            p.sections.schedule_competitors.num_cols = 2;
+            if( rsp.festival['schedule_competitors_max_timeslots'] != null 
+                && parseInt(rsp.festival['schedule_competitors_max_timeslots']) > 1
+                ) {
+                p.sections.schedule_competitors.num_cols = parseInt(rsp.festival['schedule_competitors_max_timeslots']) + 1;
+            }
             if( rsp.festival.sections != null ) {
                 p.data.registration_sections = [];
                 p.data.emails_sections = [];
