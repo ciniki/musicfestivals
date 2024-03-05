@@ -137,6 +137,9 @@ function ciniki_musicfestivals_main() {
     this.festival.registration_tag = '';
     this.festival.menutabs = {'label':'', 'type':'menutabs', 'selected':'sections', 'tabs':{
             'sections':{'label':'Syllabus', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'sections\');'},
+            'members':{'label':'Members', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'members\');',
+                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); },
+                },
             'recommendations':{'label':'Recommendations', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'recommendations\');',
                 'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); },
                 },
@@ -207,9 +210,9 @@ function ciniki_musicfestivals_main() {
         '_moretabs':{'label':'', 'type':'menutabs', 'selected':'adjudicators', 
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'more' ? 'yes' : 'no'; },
             'tabs':{
-                'members':{'label':'Members', 'fn':'M.ciniki_musicfestivals_main.festival.switchMTab(\'members\');',
-                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); },
-                    },
+//                'members':{'label':'Members', 'fn':'M.ciniki_musicfestivals_main.festival.switchMTab(\'members\');',
+//                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); },
+//                    },
                 'invoices':{'label':'Invoices', 'fn':'M.ciniki_musicfestivals_main.festival.switchMTab(\'invoices\');'},
                 'adjudicators':{'label':'Adjudicators', 'fn':'M.ciniki_musicfestivals_main.festival.switchMTab(\'adjudicators\');'},
                 'certificates':{'label':'Certificates', 'fn':'M.ciniki_musicfestivals_main.festival.switchMTab(\'certificates\');'},
@@ -795,7 +798,8 @@ function ciniki_musicfestivals_main() {
             'noData':'No Messages',
             },
         'members':{'label':'Member Festivals', 'type':'simplegrid', 'num_cols':6,
-            'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'members'); },
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'members' ? 'yes' : 'no'; },
+//            'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'members'); },
             'headerValues':['Name', 'Category', 'Provincial Open', 'Provincial Close', 'Late', 'Registrations'],
             'headerClasses':['', '', '', '', 'alignright', 'alignright'],
             'cellClasses':['', '', '', '', 'alignright', 'alignright'],
@@ -1833,7 +1837,8 @@ function ciniki_musicfestivals_main() {
             } else if( this.messages_status == 50 ) {
                 this.sections.messages.headerValues[1] = 'Sent';
             }
-        } else if( this.isSelected('more', 'members') == 'yes' ) {
+//        } else if( this.isSelected('more', 'members') == 'yes' ) {
+        } else if( this.menutabs.selected == 'members' ) {
             this.size = 'full';
             args['members'] = 'yes';
         } else if( this.isSelected('recommendations', '') == 'yes' ) {
