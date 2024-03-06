@@ -2794,6 +2794,10 @@ function ciniki_musicfestivals_main() {
                 p.sections.classes.headerValues.push('Trophies');
                 p.sections.classes.sortTypes.push('text');
                 p.sections.classes.dataMaps.push('trophies');
+                p.sections.classes.headerValues.push('Registrations');
+                p.sections.classes.sortTypes.push('number');
+                p.sections.classes.dataMaps.push('num_registrations');
+                p.sections.classes.num_cols = p.sections.classes.headerValues.length;
             } else {
                 if( M.modFlagOn('ciniki.musicfestivals', 0x1000) ) {
                     p.sections.classes.headerValues.push('Levels');

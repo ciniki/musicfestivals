@@ -226,7 +226,36 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.500', 'msg'=>'Unable to find requested festival'));
     }
     $festival = $rc['festival'];
-    
+   
+    //
+    // Check if trophies requested and get registration count
+    //
+    if( isset($args['list']) && $args['list'] == 'trophies' ) {
+        //
+        // Get the list of number of registrations for each class
+        //
+        $strsql = "SELECT class_id, count(*) as num_registrations "
+            . "FROM ciniki_musicfestival_registrations AS registrations "
+            . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $section['festival_id']) . "' "
+            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "GROUP BY registrations.class_id "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'registrations', 'fname'=>'class_id', 'fields'=>array('num_registrations')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.462', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+        }
+        if( isset($rc['registrations']) ) {
+            foreach($classes as $cid => $class) {
+                $classes[$cid]['num_registrations'] = '';
+                if( isset($rc['registrations'][$class['id']]['num_registrations']) ) {
+                    $classes[$cid]['num_registrations'] = $rc['registrations'][$class['id']]['num_registrations'];
+                }
+            }
+        }
+    }
 
     return array('stat'=>'ok', 'section'=>$section, 'classes'=>$classes, 'nplists'=>array('classes'=>$classes_ids), 'festival'=>$festival);
 }
