@@ -460,7 +460,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
                             $row['name_width'] = ($w2[2]*0.4);
                         }
                         $row['title_width'] = $w2[2] - $row['name_width'] - $row['dash_width'] - 1;
-                        $row['name_height'] = $pdf->getStringHeight(($row['name_width']), $row['name']);
+                        $row['name_height'] = $pdf->getStringHeight($row['name_width'], $row['name']);
                         $row['height'] = $row['name_height'];
 //                        $row['title1'] = $reg['title1'];
 //                        $row['titles_height'] = $pdf->getStringHeight($row['title_width'], $row['title1']);
@@ -560,10 +560,13 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
                         }
                         for($i = 2; $i <= 8; $i++) {
                             if( isset($row["title{$i}"]) && $row["title{$i}"] != '' ) {
-                                $pdf->MultiCell($w[0] + $w[1] + $row['name_width'] + 1, $row['height'], '', 0, 'L', 0, 0);
+                                $pdf->MultiCell($w2[0] + $w2[1] + $row['name_width'] + 1, $row['height'], '', 0, 'L', 0, 0);
                                 $pdf->MultiCell($row['dash_width'], '', '-', 0, 'C', 0, 0);
                                 $pdf->MultiCell($row['title_width'], '', $row["title{$i}"], 0, 'L', 0, 1);
                             }
+                        }
+                        if( $row['titles_height'] < $row['name_height'] ) {
+                            $pdf->Ln($row['name_height'] - $row['titles_height']);
                         }
                         if( $row['name_height'] > $row['titles_height'] ) {    
                             
