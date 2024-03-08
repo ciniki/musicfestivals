@@ -67,13 +67,13 @@ function ciniki_musicfestivals_competitorDelete(&$ciniki) {
                 . "OR ciniki_musicfestival_registrations.competitor5_id = '" . ciniki_core_dbQuote($ciniki, $args['competitor_id']) . "' "
             . ") "
         . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
-    $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+    $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
     }
-    if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
-        $count = $rc['num']['items'];
+    if( isset($rc['num']) && $rc['num']) {
+        $count = $rc['num'];
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.75', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' registration' . ($count==1?'':'s') . ' for that competitor.'));
     }
 
