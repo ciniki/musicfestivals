@@ -475,8 +475,8 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                     . "timeslots.id = registrations.timeslot_id "
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                     . ") "
-                . "WHERE divisions.id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
-                . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "WHERE sections.id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . "";
         }
         elseif( $object == 'ciniki.musicfestivals.scheduledivision' ) {
