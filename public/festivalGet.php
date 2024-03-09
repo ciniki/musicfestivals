@@ -1861,11 +1861,14 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $strsql = "SELECT messages.id, "
                 . "messages.subject, ";
             if( $args['messages_status'] == 50 ) {
-                $strsql .= "DATE_FORMAT(messages.dt_sent, '%b %e, %Y %l:%i %p') AS date_text ";
+                $strsql .= "messages.dt_sent AS date_text ";
+//                $strsql .= "DATE_FORMAT(messages.dt_sent, '%b %e, %Y %l:%i %p') AS date_text ";
             } elseif( $args['messages_status'] == 30 ) {
-                $strsql .= "DATE_FORMAT(messages.dt_scheduled, '%b %e, %Y %l:%i %p') AS date_text ";
+                $strsql .= "messages.dt_scheduled AS date_text ";
+//                $strsql .= "DATE_FORMAT(messages.dt_scheduled, '%b %e, %Y %l:%i %p') AS date_text ";
             } else {
-                $strsql .= "DATE_FORMAT(messages.date_added, '%b %e, %Y %l:%i %p') AS date_text ";
+                $strsql .= "messages.date_added AS date_text ";
+//                $strsql .= "DATE_FORMAT(messages.date_added, '%b %e, %Y %l:%i %p') AS date_text ";
             }
             $strsql .= "FROM ciniki_musicfestival_messages AS messages "
                 . "WHERE messages.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
@@ -1882,7 +1885,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'messages', 'fname'=>'id', 
-                    'fields'=>array('id', 'subject', 'date_text')),
+                    'fields'=>array('id', 'subject', 'date_text'),
+                    'utctotz'=>array('date_text'=>array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i A')),
+                    ),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.477', 'msg'=>'Unable to load messages', 'err'=>$rc['err']));
