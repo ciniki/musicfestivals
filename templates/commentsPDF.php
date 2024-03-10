@@ -599,14 +599,16 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         $pdf->SetY(-45);
                     }
                     $pdf->SetFont('helvetica', 'I', 12);
+                    $pdf->SetCellPaddings(2,2,4,2);
                     $wa = array(35, 85, 30, 20, 30, 20);
                     if( isset($festival['comments-mark-pdf']) && $festival['comments-mark-pdf'] == 'yes' 
+                        && $reg['mark'] != 'NA'
                         && isset($festival['comments-placement-pdf']) && $festival['comments-placement-pdf'] == 'yes' 
+                        && $reg['placement'] != 'NA'
                         ) {
-                        $wa = array(30, 76, 20, 17, 20, 17);
+                        $wa = array(25, 76, 28, 17, 19, 15);
                     }
-                    $pdf->SetCellPaddings(2,2,4,2);
-                    if( $reg['mark'] != '' && isset($adjudicators[$reg['adjudicator_id']]['name']) ) {
+                    if( $reg['comments'] != '' && isset($adjudicators[$reg['adjudicator_id']]['name']) ) {
                         $pdf->Cell($wa[0], 12, "Adjudicator", 0, false, 'R', 0, '', 0, false);
                         $pdf->Cell($wa[1], 12, $adjudicators[$reg['adjudicator_id']]['name'], 'B', false, 'L', 0, '', 0, false);
                     } else {
@@ -614,7 +616,10 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         $pdf->Cell($wa[1], 12, "", 'B', false, 'L', 0, '', 0, false);
                     }
                     $pdf->SetCellPaddings(2,2,2,2);
-                    if( isset($festival['comments-placement-pdf']) && $festival['comments-placement-pdf'] == 'yes' ) {
+                    if( isset($festival['comments-placement-pdf']) 
+                        && $festival['comments-placement-pdf'] == 'yes' 
+                        && $reg['placement'] != 'NA'
+                        ) {
                         if( isset($festival['comments-placement-label']) && $festival['comments-placement-label'] != '' ) {
                             $pdf->Cell($wa[2], 12, $festival['comments-placement-label'] . ' ', 0, false, 'R', 0, '', 0, false);
                         } else {
@@ -622,7 +627,10 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         }
                         $pdf->Cell($wa[3], 12, $reg['placement'], 'B', false, 'L', 0, '', 0, false);
                     }
-                    if( isset($festival['comments-mark-pdf']) && $festival['comments-mark-pdf'] == 'yes' ) {
+                    if( isset($festival['comments-mark-pdf']) 
+                        && $festival['comments-mark-pdf'] == 'yes' 
+                        && $reg['mark'] != 'NA'
+                        ) {
                         if( isset($festival['comments-mark-label']) && $festival['comments-mark-label'] != '' ) {
                             $pdf->Cell($wa[4], 12, $festival['comments-mark-label'] . ' ', 0, false, 'R', 0, '', 0, false);
                         } else {

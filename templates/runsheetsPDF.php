@@ -550,7 +550,11 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             //
             $fill = 0;
             $border = 'T';
-            $w = array(10, 100, 15, 15, 40);
+            if( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
+                $w = array(10, 100, 15, 15, 40);
+            } else {
+                $w = array(10, 140, 15, 15);
+            }
             $cw = array(30, 150);   // Class lines
             $tw = array(10, 170);   // Title lines
             $tnw = array(10, 15, 155);   // reg notes lines
@@ -712,8 +716,12 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     $pdf->MultiCell($w[0], 0, '#', 1, 'C', 1, 0);
                     $pdf->MultiCell($w[1], 0, 'Name', 1, 'L', 1, 0);
                     $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
-                    $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 0);
-                    $pdf->MultiCell($w[4], 0, 'Advanced to', 1, 'C', 1, 1);
+                    if( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
+                        $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 0);
+                        $pdf->MultiCell($w[4], 0, 'Advanced to', 1, 'C', 1, 1);
+                    } else {
+                        $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 1);
+                    }
                     $pdf->SetFont('', '');
 
                     $pdf->SetFont('', '', '12');
@@ -763,8 +771,12 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                             $pdf->MultiCell($w[0], 0, '#', 1, 'C', 1, 0);
                             $pdf->MultiCell($w[1], 0, 'Name', 1, 'L', 1, 0);
                             $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
-                            $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 0);
-                            $pdf->MultiCell($w[4], 0, 'Advanced to', 1, 'C', 1, 1);
+                            if( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
+                                $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 0);
+                                $pdf->MultiCell($w[4], 0, 'Advanced to', 1, 'C', 1, 1);
+                            } else {
+                                $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 1);
+                            }
                             $pdf->SetFont('', '', '12');
                         }
 /*                        if( $num > 1 ) {
@@ -784,8 +796,12 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                         $pdf->MultiCell($w[0], $h, $num, 'LTR', 'C', 0, 0);
                         $pdf->MultiCell($w[1], $h, $reg['name'], 'BLTR', 'L', 0, 0);
                         $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 0);
-                        $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 0);
-                        $pdf->MultiCell($w[4], $h, '', 1, 'L', 0, 1);
+                        if( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
+                            $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 0);
+                            $pdf->MultiCell($w[4], $h, '', 1, 'L', 0, 1);
+                        } else {
+                            $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 1);
+                        }
                         $pdf->SetFont('', '');
                         $border = 'LR';
                         $pdf->SetCellPaddings(2,2,2,0);
