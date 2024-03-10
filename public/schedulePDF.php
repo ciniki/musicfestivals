@@ -25,6 +25,7 @@ function ciniki_musicfestivals_schedulePDF($ciniki) {
         'schedulesection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Section'),
         'division_header_format'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Division Header Format'),
         'division_header_labels'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Division Header Labels'),
+        'section_adjudicator_bios'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Section Adjudicator Bios'),
         'names'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name Format'),
         'titles'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Include Titles'),
         'video_urls'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Include Video URLs'),

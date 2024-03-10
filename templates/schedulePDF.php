@@ -92,12 +92,41 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     }
 
     //
+    // Load the adjudicators
+    //
+    if( isset($args['section_adjudicator_bios'])
+        && $args['section_adjudicator_bios'] == 'yes' 
+        ) {
+        $strsql = "SELECT adjudicators.id, "
+            . "customers.display_name AS name, "
+            . "adjudicators.image_id, "
+            . "adjudicators.description "
+            . "FROM ciniki_musicfestival_adjudicators AS adjudicators "
+            . "LEFT JOIN ciniki_customers AS customers ON ("
+                . "adjudicators.customer_id = customers.id "
+                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'adjudicators', 'fname'=>'id', 'fields'=>array('id', 'name', 'image_id', 'description')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.691', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
+        }
+        $adjudicators = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
+    }
+
+    //
     // Load the schedule sections, divisions, timeslots, classes, registrations
     //
     $strsql = "SELECT ssections.id AS section_id, "
         . "ssections.name AS section_name, "
         . "ssections.sponsor_settings, "
         . "ssections.provincial_settings, "
+        . "ssections.adjudicator1_id AS adjudicator_id, "
         . "customers.display_name AS adjudicator, "
         . "divisions.id AS division_id, "
         . "divisions.name AS division_name, "
@@ -219,7 +248,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'section_id', 
-            'fields'=>array('id'=>'section_id', 'name'=>'section_name', 'sponsor_settings', 'provincial_settings'),
+            'fields'=>array('id'=>'section_id', 'name'=>'section_name', 'sponsor_settings', 'provincial_settings', 'adjudicator_id'),
             'unserialize'=>array('sponsor_settings', 'provincial_settings'),
             ),
         array('container'=>'divisions', 'fname'=>'division_id', 
@@ -466,6 +495,8 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     // Go through the sections, divisions and classes
     //
     $w = array(25, 5, 150);
+    $fw = 180;
+    $prev_adjudicator_id = 0;
     foreach($sections as $section) {
         if( !isset($section['divisions']) ) {
             continue;
@@ -479,6 +510,51 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         }
         if( $pdf->PageNo() == 0 || !isset($args['section_page_break']) || $args['section_page_break'] == 'yes' ) {
             $pdf->AddPage();
+        }
+
+        //
+        // Add adjudicator bio for section
+        //
+        if( isset($args['section_adjudicator_bios'])
+            && $args['section_adjudicator_bios'] == 'yes' 
+            && isset($adjudicators[$section['adjudicator_id']]['description']) 
+            && $adjudicators[$section['adjudicator_id']]['description'] != '' 
+            && $prev_adjudicator_id != $section['adjudicator_id']
+            ) {
+            $adjudicator = $adjudicators[$section['adjudicator_id']];
+            
+            //
+            // Add Title
+            //
+            $pdf->SetFont('', 'B', '16');
+            $pdf->Cell($fw, 10, 'Adjudicator ' . $adjudicator['name'], 0, 'B', 'C', 0);
+            $pdf->Ln(6);
+
+            //
+            // Add image
+            //
+            if( isset($adjudicator['image_id']) && $adjudicator['image_id'] > 0 ) {
+                $rc = ciniki_images_loadImage($ciniki, $tnid, $adjudicator['image_id'], 'original');
+                if( $rc['stat'] == 'ok' ) {
+                    $image = $rc['image'];
+                    $height = $image->getImageHeight();
+                    $width = $image->getImageWidth();
+                    $image_ratio = $width/$height;
+                    $img_width = 60; 
+                    $h = ($height/$width) * $img_width;
+                    $y = $pdf->getY();
+                    $pdf->Image('@'.$image->getImageBlob(), ($fw-$img_width) + $pdf->left_margin, $y, $img_width, 0, 'JPEG', '', 'TL', 2, '150');
+                    $pdf->setPageRegions(array(array('page'=>'', 'xt'=>($fw-$img_width) + $pdf->left_margin - 5, 'yt'=>$y, 'xb'=>($fw-$img_width) + $pdf->left_margin - 5, 'yb'=>$y+$h+2, 'side'=>'R')));
+                    $pdf->setY($y-2.5);
+                }
+            }
+
+            //
+            // Add full bio
+            //
+            $pdf->SetFont('', '', 12);
+            $pdf->MultiCell($fw, 10, $adjudicator['description'] . "\n", 0, 'J', false, 1, '', '', true, 0, false, true, 0, 'T', false);
+            $prev_adjudicator_id = $section['adjudicator_id'];
         }
 
         //

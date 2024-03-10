@@ -602,6 +602,10 @@ function ciniki_musicfestivals_main() {
 //                    'default':'name - date<br/>address', 
 //                    'name-date-adjudicator-address':'Name<br/>Date: date<br/>Adjudicator: adjudicator<br/>Address: address', 
 //                    }},
+                'schedule-section-adjudicator-bios':{'label':'Section Adjudicator Bios', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
                 'schedule-names':{'label':'Competitor Full Names', 'type':'toggle', 'default':'public', 'toggles':{'public':'No', 'private':'Yes'}},
                 'schedule-titles':{'label':'Titles', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'schedule-video-urls':{'label':'Include YouTube Links', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
@@ -954,6 +958,7 @@ function ciniki_musicfestivals_main() {
             'schedulesection_id':(s==null ? this.schedulesection_id : s),
             'division_header_format':this.formValue('schedule-division-header-format'),
             'division_header_labels':this.formValue('schedule-division-header-labels'),
+            'section_adjudicator_bios':this.formValue('schedule-section-adjudicator-bios'),
             'names':this.formValue('schedule-names'),
             'ipv':this.formValue('s_ipv'),
             'titles':this.formValue('schedule-titles'),
@@ -2244,7 +2249,14 @@ function ciniki_musicfestivals_main() {
 //                    'default':'name - date<br/>address', 
 //                    'name-date-adjudicator-address':'Name<br/>Date: date<br/>Adjudicator: adjudicator<br/>Address: address', 
 //                    }},
-                'schedule-names':{'label':'Competitor Full Names', 'type':'toggle', 'default':'public', 'toggles':{'public':'No', 'private':'Yes'}},
+                'schedule-section-adjudicator-bios':{'label':'Section Adjudicator Bios', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+                'schedule-names':{'label':'Competitor Full Names', 'type':'toggle', 'default':'public', 'toggles':{
+                    'public':'No', 
+                    'private':'Yes',
+                    }},
                 'schedule-include-pronouns':{'label':'Include Pronouns', 'type':'toggle', 'default':'no', 'toggles':{
                     'no':'No',
                     'yes':'Yes',
