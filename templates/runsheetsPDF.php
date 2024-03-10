@@ -503,6 +503,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
 
     $filename = 'Run Sheets';
 
+    $newpage = 'yes';
     //
     // Go through the sections, divisions and classes
     //
@@ -519,7 +520,6 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         //
         // Output the divisions
         //
-        $newpage = 'yes';
         foreach($section['divisions'] as $division) {
             //
             // Skip empty divisions
