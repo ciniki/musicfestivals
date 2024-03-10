@@ -94,6 +94,10 @@
 # participation:        Set to 1 when the registration is doing the class virtually, otherwise
 #                       assumed to be in person.
 #
+#                           0 - Live/In Person
+#                           1 - Virtual
+#                           2 - Live/In Person Adjudication Plus
+#
 # virtual:              **deprecated**
 #
 # videolink:            The URL to view the video for the submission. Used for virtual music festivals.

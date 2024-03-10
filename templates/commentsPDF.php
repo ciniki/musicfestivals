@@ -203,7 +203,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "AND registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
             . "";
         if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
-            $strsql .= "AND registrations.participation = 0 ";
+            $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";
         } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
             $strsql .= "AND registrations.participation = 1 ";
         }
@@ -295,7 +295,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             $strsql .= "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
         }
         if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
-            $strsql .= "AND registrations.participation = 0 ";
+            $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";
         } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
             $strsql .= "AND registrations.participation = 1 ";
         }
