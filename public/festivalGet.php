@@ -265,6 +265,14 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $festival['comments-placement-autofills'][trim($mark)] = trim($text);
             }
         }
+        $festival['comments-level-autofills'] = array();
+        if( isset($festival['comments-level-autofill']) && $festival['comments-level-autofill'] != '' ) {
+            $levels = explode(',', $festival['comments-level-autofill']);
+            foreach($levels as $p) {
+                list($mark, $text) = explode(':', $p);
+                $festival['comments-level-autofills'][trim($mark)] = trim($text);
+            }
+        }
 
         //
         // Get the number of registrations
@@ -994,6 +1002,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "IFNULL(ssections.adjudicator1_id, 0) AS adjudicator_id, "
                     . "registrations.mark, "
                     . "registrations.placement, "
+                    . "registrations.level, "
                     . "registrations.comments "
 //                    . "IFNULL(comments.id, 0) AS comment_id, "
 //                    . "IFNULL(comments.comments, '') AS comments, "
@@ -1032,7 +1041,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             'title'=>'title1', 
                             'participation', 'video_url1', 'video_url2', 'video_url3', 
                             'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3',
-                            'adjudicator_id', 'mark', 'placement', 'comments',
+                            'adjudicator_id', 'mark', 'placement', 'level', 'comments',
                             )),
                     ));
                 if( $rc['stat'] != 'ok' ) {
@@ -1046,7 +1055,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         foreach($timeslot['registrations'] as $rid => $registration) {
                             $num_registrations++;
                             if( $registration['comments'] != '' 
-                                && ($registration['mark'] != '' || $registration['placement'] != '') 
+                                && ($registration['mark'] != '' || $registration['placement'] != '' || $registration['level'] != '' ) 
                                 ) {
                                 $num_completed++;
                             }
@@ -1174,6 +1183,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "registrations.movements8, "
                     . "registrations.mark, "
                     . "registrations.placement, "
+                    . "registrations.level, "
                     . "classes.code AS class_code, "
                     . "classes.name AS class_name, "
                     . "categories.name AS category_name, "
@@ -1207,7 +1217,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
                             'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
                             'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
-                            'mark', 'placement',
+                            'mark', 'placement', 'level',
                             'class_code', 'class_name', 'category_name', 'section_name',
                             ),
                         ),

@@ -125,6 +125,7 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsUpdate($ciniki) {
         . "IFNULL(comments.score, '') AS score, " */
         . "registrations.mark, "
         . "registrations.placement, "
+        . "registrations.level, "
         . "registrations.comments, "
         . "classes.name AS class_name "
         . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
@@ -150,7 +151,7 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsUpdate($ciniki) {
             'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'public_name', 'title1', 
                 'video_url1', 'video_url2', 'video_url3', 
                 'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3',
-                'mark', 'placement', 'comments', 'class_name', 
+                'mark', 'placement', 'level', 'comments', 'class_name', 
                 )),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -175,6 +176,11 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsUpdate($ciniki) {
                 && $ciniki['request']['args']['placement_' . $registration['id']] != $registration['placement'] 
                 ) {
                 $update_args['placement'] = $ciniki['request']['args']['placement_' . $registration['id']];
+            }
+            if( isset($ciniki['request']['args']['level_' . $registration['id']])
+                && $ciniki['request']['args']['level_' . $registration['id']] != $registration['level'] 
+                ) {
+                $update_args['level'] = $ciniki['request']['args']['level_' . $registration['id']];
             }
             if( count($update_args) > 0 ) {
                 //

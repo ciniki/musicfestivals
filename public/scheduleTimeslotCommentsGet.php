@@ -150,6 +150,7 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
 //        . "IFNULL(ssections.adjudicator_id, 0) AS adjudicator_id, "
         . "registrations.mark, "
         . "registrations.placement, "
+        . "registrations.level, "
         . "registrations.comments, "
 /*        . "IFNULL(comments.id, 0) AS comment_id, "
         . "IFNULL(comments.comments, '') AS comments, "
@@ -186,7 +187,7 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
                 'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8', 
                 'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3', 'music_orgfilename4', 
                 'music_orgfilename5', 'music_orgfilename6', 'music_orgfilename7', 'music_orgfilename8',
-                'mark', 'placement', 'comments', 'class_name',
+                'mark', 'placement', 'level', 'comments', 'class_name',
                 )),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -198,6 +199,7 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
         foreach($timeslot['registrations'] as $rid => $registration) {
             $timeslot['mark_' . $registration['id']] = $registration['mark'];
             $timeslot['placement_' . $registration['id']] = $registration['placement'];
+            $timeslot['level_' . $registration['id']] = $registration['level'];
             $timeslot['comments_' . $registration['id']] = $registration['comments'];
         }
     }

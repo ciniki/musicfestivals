@@ -347,6 +347,11 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'no' => 'No',
                     'yes' => 'Yes',
                     )),
+            'level' => array('label'=>'Show Level', 'type'=>'toggle', 'default'=>'no',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
             ),
         );
     if( isset($festival['comments-mark-label']) && $festival['comments-mark-label'] != '' ) {
@@ -354,6 +359,9 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     }
     if( isset($festival['comments-placement-label']) && $festival['comments-placement-label'] != '' ) {
         $sections['ciniki.musicfestivals.results']['settings']['placement']['label'] = 'Show ' . $festival['comments-placement-label'];
+    }
+    if( isset($festival['comments-level-label']) && $festival['comments-level-label'] != '' ) {
+        $sections['ciniki.musicfestivals.results']['settings']['level']['label'] = 'Show ' . $festival['comments-level-label'];
     }
 
     //

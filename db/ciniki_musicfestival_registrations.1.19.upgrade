@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN level varchar(50) not null AFTER placement;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.19';

@@ -294,6 +294,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'instrument'=>array('name'=>'Instrument', 'default'=>''),
             'mark'=>array('name'=>'Mark', 'default'=>''),
             'placement'=>array('name'=>'Placement', 'default'=>''),
+            'level'=>array('name'=>'Level', 'default'=>''),
             'comments'=>array('name'=>'Comments', 'default'=>''),
             'notes'=>array('name'=>'Notes', 'default'=>''),
             'internal_notes'=>array('name'=>'Interal Notes', 'default'=>''),

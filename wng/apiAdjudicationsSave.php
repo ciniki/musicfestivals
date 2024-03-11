@@ -105,6 +105,7 @@ function ciniki_musicfestivals_wng_apiAdjudicationsSave(&$ciniki, $tnid, $reques
         . "registrations.uuid AS reg_uuid, "
         . "registrations.mark, "
         . "registrations.placement, "
+        . "registrations.level, "
         . "registrations.comments, "
         . "classes.name AS class_name "
         . "FROM ciniki_musicfestival_schedule_sections AS sections "
@@ -133,7 +134,7 @@ function ciniki_musicfestivals_wng_apiAdjudicationsSave(&$ciniki, $tnid, $reques
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'reg_uuid', 
-            'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'class_name', 'mark', 'placement', 'comments',
+            'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'class_name', 'mark', 'placement', 'level', 'comments',
                 )),
         ));
     if( $rc['stat'] != 'ok' ) {

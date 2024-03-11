@@ -81,6 +81,7 @@ function ciniki_musicfestivals_registrationAdd(&$ciniki) {
         'video_url8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Link'),
         'instrument'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Instrument'),
         'placement'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Placement'),
+        'level'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Level'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         'internal_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Interal Notes'),
         ));

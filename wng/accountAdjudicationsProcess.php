@@ -68,6 +68,18 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     }
 
     //
+    // Setup level autofills
+    //
+    $festival['comments-level-autofills'] = array();
+    if( isset($festival['comments-level-autofill']) && $festival['comments-level-autofill'] != '' ) {
+        $levels = explode(',', $festival['comments-level-autofill']);
+        foreach($levels as $p) {
+            list($mark, $text) = explode(':', $p);
+            $festival['comments-level-autofills'][trim($mark)] = trim($text);
+        }
+    }
+
+    //
     // Load the adjudicator
     //
     $strsql = "SELECT id "  
@@ -151,6 +163,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         . "registrations.music_orgfilename8, "
         . "registrations.mark, "
         . "registrations.placement, "
+        . "registrations.level, "
         . "registrations.comments, "
 //        . "IFNULL(comments.id, 0) AS comment_id, "
 //        . "IFNULL(comments.comments, '') AS comments, "
@@ -236,9 +249,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 'music_orgfilename5', 'music_orgfilename6', 'music_orgfilename7', 'music_orgfilename8',
                 'class_flags', 'min_titles', 'max_titles', 'class_name',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name',
-                'mark', 'placement', 'comments',
-//                'comment_id', 'comments', 'grade', 'score', 
-//                'placement',
+                'mark', 'placement', 'level', 'comments',
                 )),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -481,15 +492,20 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                     'value' => $registration['placement'],
                     );
             }
-            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x04) ) {
-/*                $section['fields']["{$registration['id']}-placement"] = array(
-                    'id' => "{$registration['id']}-placement",
+            if( isset($festival['comments-level-adjudicator']) && $festival['comments-level-adjudicator'] == 'yes' ) {
+                $label = 'Level';
+                if( isset($festival['comments-level-label']) && $festival['comments-level-label'] != '' ) {
+                    $label = $festival['comments-level-label'];
+                }
+                $section['fields']["{$registration['id']}-level"] = array(
+                    'id' => "{$registration['id']}-level",
                     'ftype' => 'text',
+                    'class' => 'field-comments-level',
                     'onkeyup' => 'fieldUpdated()',
                     'size' => 'small',
-                    'label' => 'Placement',
-                    'value' => $registration['placement'],
-                    ); */
+                    'label' => $label,
+                    'value' => $registration['level'],
+                    );
             }
             $sections[$registration['id']] = $section;
         }
@@ -522,45 +538,55 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             );
         $js = ""
             . "var fSaveTimer=null;"
+            . "function fieldUpdated(){"
+                . "if(fSaveTimer==null){"
+                    . "fSaveTimer=setTimeout(fSave, 30000);"
+                . "}"
+            . "}"
             . "function fSave(){"
                 . "clearTimeout(fSaveTimer);"
                 . "fSaveTimer=null;"
                 . "C.form.qSave();"
             . "}"
             . "";
-/*        m = parseInt(m);
-        var p = '';
-        if( this.festival.data['comments-placement-autofills'] != null ) {
-            for(var i in this.festival.data['comments-placement-autofills']) {
-                if( m >= parseInt(i) ) {
-                    p = this.festival.data['comments-placement-autofills'][i];
-                }
-            }
-        }
-        return p; */
         if( isset($festival['comments-placement-autofills']) && count($festival['comments-placement-autofills']) > 0 
             && isset($festival['comments-placement-adjudicator']) && $festival['comments-placement-adjudicator'] == 'yes' 
             ) {
             $js .= "var paf=" . json_encode($festival['comments-placement-autofills']) . ";";
-            $js .= "function fieldMarkUpdated(rid){"
-                    . "var m=C.gE('f-'+rid+'-mark').value;"
-                    . "var p=C.gE('f-'+rid+'-placement');"
-                    . "for(var i in paf){"
-                        . "if(parseInt(m)>=parseInt(i)){"
-                            . "p.value=paf[i];"
-                        . "}"
-                    . "}"
-                    . "if(fSaveTimer==null){"
-                        . "fSaveTimer=setTimeout(fSave, 10000);"
-                    . "}"
-                . "}";
-        } else {
-            $js .= "function fieldMarkUpdated(e){"
-                    . "if(fSaveTimer==null){"
-                        . "fSaveTimer=setTimeout(fSave, 10000);"
+        }
+        if( isset($festival['comments-level-autofills']) && count($festival['comments-level-autofills']) > 0 
+            && isset($festival['comments-level-adjudicator']) && $festival['comments-level-adjudicator'] == 'yes' 
+            ) {
+            $js .= "var laf=" . json_encode($festival['comments-level-autofills']) . ";";
+        }
+        $js .= "function fieldMarkUpdated(rid){"
+            . "var m=C.gE('f-'+rid+'-mark').value;"
+            . "";
+        if( isset($festival['comments-placement-autofills']) && count($festival['comments-placement-autofills']) > 0 
+            && isset($festival['comments-placement-adjudicator']) && $festival['comments-placement-adjudicator'] == 'yes' 
+            ) {
+            $js .= "var p=C.gE('f-'+rid+'-placement');"
+                . "for(var i in paf){"
+                    . "if(parseInt(m)>=parseInt(i)){"
+                        . "p.value=paf[i];"
                     . "}"
                 . "}";
         }
+        if( isset($festival['comments-level-autofills']) && count($festival['comments-level-autofills']) > 0 
+            && isset($festival['comments-level-adjudicator']) && $festival['comments-level-adjudicator'] == 'yes' 
+            ) {
+            $js .= "var l=C.gE('f-'+rid+'-level');"
+                . "for(var i in laf){"
+                    . "if(parseInt(m)>=parseInt(i)){"
+                        . "l.value=laf[i];"
+                    . "}"
+                . "}";
+        }
+        $js .= "if(fSaveTimer==null){"
+                . "fSaveTimer=setTimeout(fSave, 10000);"
+            . "}"
+            . "}";
+
         $blocks[] = array(
             'type' => 'form',
             'id' => 'adjudication-form',

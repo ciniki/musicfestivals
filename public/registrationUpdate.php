@@ -90,6 +90,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         'instrument'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Instrument'),
         'mark'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Mark'),
         'placement'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Placement'),
+        'level'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Level'),
         'comments'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Comments'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         'internal_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Interal Notes'),
