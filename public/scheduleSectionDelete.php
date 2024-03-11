@@ -22,6 +22,7 @@ function ciniki_musicfestivals_scheduleSectionDelete(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'schedulesection_id'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Schedule Section'),
+        'festival_id'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Festival'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

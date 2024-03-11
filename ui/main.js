@@ -4534,7 +4534,7 @@ function ciniki_musicfestivals_main() {
     }
     this.schedulesection.remove = function() {
         M.confirm('Are you sure you want to remove this section?',null,function() {
-            M.api.getJSONCb('ciniki.musicfestivals.scheduleSectionDelete', {'tnid':M.curTenantID, 'schedulesection_id':M.ciniki_musicfestivals_main.schedulesection.schedulesection_id}, function(rsp) {
+            M.api.getJSONCb('ciniki.musicfestivals.scheduleSectionDelete', {'tnid':M.curTenantID, 'schedulesection_id':M.ciniki_musicfestivals_main.schedulesection.schedulesection_id, 'festival_id':M.ciniki_musicfestivals_main.schedulesection.festival_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
