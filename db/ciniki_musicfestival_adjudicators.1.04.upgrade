@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_adjudicators ADD COLUMN sig_image_id int not null AFTER description;
+ALTER TABLE ciniki_musicfestival_adjudicators COMMENT='v1.04';

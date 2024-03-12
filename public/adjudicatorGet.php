@@ -75,7 +75,8 @@ function ciniki_musicfestivals_adjudicatorGet($ciniki) {
             . "ciniki_musicfestival_adjudicators.flags, "
             . "ciniki_musicfestival_adjudicators.image_id, "
             . "ciniki_musicfestival_adjudicators.discipline, "
-            . "ciniki_musicfestival_adjudicators.description "
+            . "ciniki_musicfestival_adjudicators.description, "
+            . "ciniki_musicfestival_adjudicators.sig_image_id "
             . "FROM ciniki_musicfestival_adjudicators "
             . "WHERE ciniki_musicfestival_adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_musicfestival_adjudicators.id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' "
@@ -83,7 +84,7 @@ function ciniki_musicfestivals_adjudicatorGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'adjudicators', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'customer_id', 'flags', 'image_id', 'discipline', 'description'),
+                'fields'=>array('festival_id', 'customer_id', 'flags', 'image_id', 'discipline', 'description', 'sig_image_id'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

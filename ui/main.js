@@ -5295,6 +5295,19 @@ function ciniki_musicfestivals_main() {
                 'flags':{'0':{'name':'Both'}, '1':{'name':'Live'}, '2':{'name':'Virtual'}},
                 },
             }},
+        '_sig_image_id':{'label':'Adjudicator Signature', 'type':'imageform', 'fields':{
+            'sig_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'size':'small', 'controls':'all', 'history':'no',
+                'addDropImage':function(iid) {
+                    M.ciniki_musicfestivals_main.adjudicator.setFieldValue('sig_image_id', iid);
+                    return true;
+                    },
+                'addDropImageRefresh':'',
+                'deleteImage':function(fid) {
+                    M.ciniki_musicfestivals_main.adjudicator.setFieldValue(fid,0);
+                    return true;
+                 },
+             },
+        }}, 
         '_description':{'label':'Full Bio', 'fields':{
             'description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'xlarge'},
             }},
@@ -6265,6 +6278,7 @@ function ciniki_musicfestivals_main() {
                 'participant':'Participant',
                 'title':'Title',
                 'adjudicator':'Adjudicator',
+                'adjudicatorsig':'Adjudicator Signature',
                 'placement':'Placement',
                 'text':'Text',
                 }},

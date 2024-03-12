@@ -24,6 +24,7 @@ function ciniki_musicfestivals_adjudicatorUpdate(&$ciniki) {
         'image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
         'discipline'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Discipline'),
         'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Bio'),
+        'sig_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Signature Image'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

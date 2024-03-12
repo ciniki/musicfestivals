@@ -15,6 +15,8 @@
 //
 function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $tnid, $args) {
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
+
     //
     // Load the tenant details
     //
@@ -161,9 +163,29 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $tnid, $args)
        
         if( isset($certificate['fields']) ) {
             foreach($certificate['fields'] as $field) {
-                $pdf->setFont($field['font'], $field['style'], $field['size']);
-                $pdf->setXY($field['xpos'], $field['ypos']);
-                $pdf->MultiCell($field['width'], $field['height'], $field['text'], $border, $field['align'], 0, 0, '', '', true, 1, false, true, 0, $field['valign'], true);
+                if( $field['field'] == 'adjudicatorsig' ) {
+                    if( isset($field['image_id']) && $field['image_id'] > 0 ) {
+                        $rc = ciniki_images_loadImage($ciniki, $tnid, $field['image_id'], 'original');
+                        if( $rc['stat'] == 'ok' ) {
+                            $height = $rc['image']->getImageHeight();
+                            $width = $rc['image']->getImageWidth();
+                            $image_ratio = $width/$height;
+                            $available_ratio = $field['width']/$field['height'];
+                            if( $available_ratio < $image_ratio ) {
+                                $pdf->Image('@'.$rc['image']->getImageBlob(), $field['xpos'], $field['ypos'], $field['width'], 0, 'PNG', '', 'C', 2, '150', '', false, false, 0, 'CM');
+                            } else {
+                                $pdf->Image('@'.$rc['image']->getImageBlob(), $field['xpos'], $field['ypos'], $field['width'], $field['height'], 'PNG', '', 'C', 2, '150', '', false, false, 0, 'CM');
+                            }
+                        }
+                    } elseif( $border == 1 ) {
+                        $pdf->setXY($field['xpos'], $field['ypos']);
+                        $pdf->MultiCell($field['width'], $field['height'], $field['text'], $border, $field['align'], 0, 0, '', '', true, 1, false, true, 0, $field['valign'], true);
+                    }
+                } else {
+                    $pdf->setFont($field['font'], $field['style'], $field['size']);
+                    $pdf->setXY($field['xpos'], $field['ypos']);
+                    $pdf->MultiCell($field['width'], $field['height'], $field['text'], $border, $field['align'], 0, 0, '', '', true, 1, false, true, 0, $field['valign'], true);
+                }
             }
         }
     }
