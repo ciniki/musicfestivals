@@ -466,7 +466,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
     $pdf->SetLineWidth(0.1);
     $pdf->SetAutoPageBreak(true, PDF_MARGIN_FOOTER);
 
-    $filename = 'comments';
+    $filename = 'Comments';
 
     //
     // Go through the sections, divisions and classes
@@ -477,8 +477,8 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
         // Start a new section
         //
         $pdf->header_sub_title = "Adjudicator's Comments";
-        if( isset($args['schedulesection_id']) ) {
-            $filename = preg_replace('/[^a-zA-Z0-9_]/', '_', $section['name']) . '_comments';
+        if( count($sections) == 1 ) {
+            $filename = preg_replace('/[^a-zA-Z0-9_]/', '_', $section['name']) . '_Comments';
         }
 
         if( !isset($section['divisions']) ) {
