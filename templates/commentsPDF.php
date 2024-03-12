@@ -599,7 +599,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                     if( !isset($festival['comments-footer-msg']) || $festival['comments-footer-msg'] == '' ) {
                         $pdf->SetY(-25);
                     } else {
-                        $pdf->SetY(-45);
+                        $pdf->SetY(-35);
                     }
                     $pdf->SetFont('helvetica', 'I', 12);
                     $pdf->SetCellPaddings(2,2,2,2);
@@ -694,13 +694,15 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         }
                         $pdf->Cell($wa[7], 10, $reg['level'], 'B', false, 'L', 0, '', 0, false);
                     }
-                    $pdf->Ln(14);
+                    $pdf->Ln(10);
                     
                     if( isset($festival['comments-footer-msg']) && $festival['comments-footer-msg'] != '' ) {
                         $pdf->Ln(5);
                         $pdf->SetTextColor(128);
                         $pdf->SetFont('helvetica', '', 10);
-                        $pdf->Cell(180, 10, $festival['comments-footer-msg'], 0, false, 'C', 0, '', 0, false);
+                        $pdf->SetCellPaddings(0,2,0,2);
+//                        $pdf->Cell(180, 10, $festival['comments-footer-msg'], 1, 0, 'C', 0, '', 1, false);
+                        $pdf->MultiCell(180, 10, $festival['comments-footer-msg'], 0, 'C', 0, 0, '', '', true, 0, false, true, 0, 'M', 1);
                     }
 
                     $pdf->SetTextColor(0);
