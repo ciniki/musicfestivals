@@ -2270,6 +2270,11 @@ function ciniki_musicfestivals_main() {
                     'no':'No',
                     'yes':'Yes',
                     }},
+                'comments-adjudicator-signature':{'label':'Adjudicator Signature', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'filledout':'Filled Out',
+                    'always':'Always',
+                    }},
                 'comments-footer-msg':{'label':'PDF Footer Message', 'type':'text'},
                 'comments_footer_msg':{'label':'OLD Footer Message', 'type':'text', 'editable':'no'},
             }},

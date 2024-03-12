@@ -98,7 +98,8 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
     $strsql = "SELECT ciniki_musicfestival_adjudicators.id, "
         . "ciniki_musicfestival_adjudicators.festival_id, "
         . "ciniki_musicfestival_adjudicators.customer_id, "
-        . "ciniki_customers.display_name "
+        . "ciniki_customers.display_name, "
+        . "ciniki_musicfestival_adjudicators.sig_image_id "
         . "FROM ciniki_musicfestival_adjudicators "
         . "LEFT JOIN ciniki_customers ON ("
             . "ciniki_musicfestival_adjudicators.customer_id = ciniki_customers.id "
@@ -110,7 +111,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'adjudicators', 'fname'=>'id', 
-            'fields'=>array('id', 'festival_id', 'customer_id', 'name'=>'display_name')),
+            'fields'=>array('id', 'festival_id', 'customer_id', 'name'=>'display_name', 'sig_image_id')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.171', 'msg'=>'Unable to get adjudicator list', 'err'=>$rc['err']));
@@ -626,10 +627,36 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         ) {
                         $wa = array(25, 76, 19, 15, 28, 17);
                     }
-                    if( $reg['comments'] != '' && isset($adjudicators[$reg['adjudicator_id']]['name']) ) {
+                    if( isset($festival['comments-adjudicator-signature'])
+                        && ($festival['comments-adjudicator-signature'] == 'filledout'
+                            || $festival['comments-adjudicator-signature'] == 'always')
+                        && isset($adjudicators[$reg['adjudicator_id']]['sig_image_id']) 
+                        ) {
+                        $pdf->Cell($wa[0], 10, "Adjudicator", 0, false, 'R', 0, '', 0, false);
+                        $y = $pdf->GetY();
+                        $x = $pdf->GetX();
+                        ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
+                        $rc = ciniki_images_loadImage($ciniki, $tnid, $adjudicators[$reg['adjudicator_id']]['sig_image_id'], 'original');
+                        if( $rc['stat'] == 'ok' ) {
+                            $height = $rc['image']->getImageHeight();
+                            $width = $rc['image']->getImageWidth();
+                            $image_ratio = $width/$height;
+                            $available_ratio = $wa[1]/20;
+                            if( $available_ratio < $image_ratio ) {
+                                $pdf->Image('@'.$rc['image']->getImageBlob(), $x, ($y-10), $wa[1], 0, 'PNG', '', 'C', 2, '150', '', false, false, 0, 'CM');
+                            } else {
+                                $pdf->Image('@'.$rc['image']->getImageBlob(), $x, ($y-10.5), $wa[1], 20, 'PNG', '', 'C', 2, '150', '', false, false, 0, 'CM');
+                            }
+                        }
+                        $pdf->SetY($y);
+                        $pdf->SetX($x);
+                        $pdf->Cell($wa[1], 10, "", 'B', false, 'L', 0, '', 0, false);
+                    }
+                    elseif( $reg['comments'] != '' && isset($adjudicators[$reg['adjudicator_id']]['name']) ) {
                         $pdf->Cell($wa[0], 10, "Adjudicator", 0, false, 'R', 0, '', 0, false);
                         $pdf->Cell($wa[1], 10, $adjudicators[$reg['adjudicator_id']]['name'], 'B', false, 'L', 0, '', 0, false);
-                    } else {
+                    } 
+                    else {
                         $pdf->Cell($wa[0], 10, "Adjudicator", 0, false, 'R', 0, '', 0, false);
                         $pdf->Cell($wa[1], 10, "", 'B', false, 'L', 0, '', 0, false);
                     }
