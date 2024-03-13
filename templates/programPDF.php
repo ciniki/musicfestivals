@@ -90,15 +90,6 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
         . "timeslots.id AS timeslot_id, "
 //        . "timeslots.name AS timeslot_name, "
         . "timeslots.class1_id, "
-/*        . "timeslots.class2_id, "
-        . "timeslots.class3_id, "
-        . "timeslots.class4_id, "
-        . "timeslots.class5_id, "
-        . "IFNULL(class1.name, '') AS class1_name, "
-        . "IFNULL(class2.name, '') AS class2_name, "
-        . "IFNULL(class3.name, '') AS class3_name, "
-        . "IFNULL(class4.name, '') AS class4_name, "
-        . "IFNULL(class5.name, '') AS class5_name, " */
         . "classes.name AS class_name, "
         . "timeslots.name AS timeslot_name, "
         . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
@@ -140,34 +131,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
             . "divisions.id = timeslots.sdivision_id " 
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-/*        . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
-            . "timeslots.class1_id = class1.id " 
-            . "AND class1.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class2 ON ("
-            . "timeslots.class2_id = class2.id " 
-            . "AND class2.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class3 ON ("
-            . "timeslots.class3_id = class3.id " 
-            . "AND class3.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class4 ON ("
-            . "timeslots.class4_id = class4.id " 
-            . "AND class4.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class5 ON ("
-            . "timeslots.class5_id = class5.id " 
-            . "AND class5.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") " */
         . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
-/*            . "(timeslots.class1_id = registrations.class_id "  
-                . "OR timeslots.class2_id = registrations.class_id "
-                . "OR timeslots.class3_id = registrations.class_id "
-                . "OR timeslots.class4_id = registrations.class_id "
-                . "OR timeslots.class5_id = registrations.class_id "
-                . ") "
-            . "AND ((timeslots.flags&0x01) = 0 OR timeslots.id = registrations.timeslot_id) " */
             . "timeslots.id = registrations.timeslot_id "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
@@ -199,9 +163,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
             )),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
             'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 
-//                'class1_id', 'class2_id', 'class3_id', 'class4_id', 'class5_id', 
                 'class1_id', 'class_name', 'description', 
-//                'class1_name', 'class2_name', 'class3_name', 'class4_name', 'class5_name',
                 )),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name',
@@ -442,7 +404,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
                 $description = $timeslot['description'];
                 $reg_list = array();
                 $reg_list_height = 0;
-                if( $timeslot['class1_id'] > 0 ) {  
+                if( isset($timeslot['class1_id']) && $timeslot['class1_id'] > 0 ) {  
                     if( $name == '' && $timeslot['class_name'] != '' ) {
                         $name = $timeslot['class_name'];
                     }

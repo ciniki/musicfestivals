@@ -105,16 +105,6 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         $strsql .= "timeslots.id AS timeslot_id, ";
     }
     $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
-/*        . "timeslots.class1_id, "
-        . "timeslots.class2_id, "
-        . "timeslots.class3_id, "
-        . "timeslots.class4_id, "
-        . "timeslots.class5_id, "
-        . "IFNULL(class1.name, '') AS class1_name, "
-        . "IFNULL(class2.name, '') AS class2_name, "
-        . "IFNULL(class3.name, '') AS class3_name, "
-        . "IFNULL(class4.name, '') AS class4_name, "
-        . "IFNULL(class5.name, '') AS class5_name, " */
         . "timeslots.name AS timeslot_name, "
         . "timeslots.description, "
         . "timeslots.runsheet_notes, "

@@ -139,7 +139,6 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
             }
         }
     }
-        error_log(print_r($args,true));
     
     //
     // Get the current list of registrations
