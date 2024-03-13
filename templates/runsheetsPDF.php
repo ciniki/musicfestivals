@@ -742,6 +742,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                             $pdf->SetCellPaddings(0, 1, 0, 0);
                             $pdf->MultiCell($cw[0], 0, $time, 0, 'L', 0, 0);
                             $pdf->MultiCell($cw[1], 0, $name . ' (continued...)', 0, 'L', 0, 1);
+                            $pdf->SetFont('', '', '11');
                             if( isset($timeslot['trophies']) && count($timeslot['trophies']) > 0 ) {
                                 foreach($timeslot['trophies'] as $tid => $trophy) {
                                     $pdf->MultiCell($cw[0], 0, '', 0, 'L', 0, 0);
@@ -767,21 +768,9 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                             } else {
                                 $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 1);
                             }
-                            $pdf->SetFont('', '', '12');
                         }
-/*                        if( $num > 1 ) {
-//                            $pdf->SetCellPaddings(0,0,0,0);
-//                            $pdf->Cell(180, 0, '', 'T', 1);
-//                            $pdf->Ln(1);
-                            //
-                            // Check if different classes need to be separate entries
-                            //
-//                            if( isset($festival['runsheets-separate-classes']) && $festival['runsheets-separate-classes'] == 'yes' ) {
-//                                $name = $registration['class_code'] . ' - ' . $registration['class_name']; 
-//                            }
-                        } */
                         $pdf->SetCellPaddings(2,2,2,2);
-                        $pdf->SetFont('', 'B');
+                        $pdf->SetFont('', 'B', 12);
                         $h = $pdf->getStringHeight($w[1], $reg['name']);
                         $pdf->MultiCell($w[0], $h, $num, 'LTR', 'C', 0, 0);
                         $pdf->MultiCell($w[1], $h, $reg['name'], 'BLTR', 'L', 0, 0);
