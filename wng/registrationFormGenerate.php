@@ -702,6 +702,10 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     $participation = isset($registration['participation']) ? $registration['participation'] : -1;
     if( isset($_POST['f-participation']) && $_POST['f-participation'] == 0 ) {
         $participation = 0;
+    } elseif( isset($_POST['f-participation']) && $_POST['f-participation'] == 1 ) {
+        $participation = 1;
+    } elseif( isset($_POST['f-participation']) && $_POST['f-participation'] == 2 ) {
+        $participation = 2;
     }
     // Virtual
     if( ($festival['flags']&0x02) == 0x02 ) {
@@ -738,7 +742,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             } else {
                 unset($fields['participation']['options'][-1]);
                 unset($fields['participation']['options'][0]);
-                $participation = 1;
+//                $participation = 0;
             }
             if( isset($festival['virtual']) && $festival['virtual'] != 'no' 
                 && isset($selected_class['virtual_fee']) && $selected_class['virtual_fee'] > 0 
