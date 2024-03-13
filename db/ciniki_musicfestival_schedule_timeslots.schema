@@ -18,7 +18,7 @@
 #
 # flags:                The options for this timeslot.
 #
-#                           0x01 - Partial Registration List, registrations are linked by timeslot_id in registrations table.
+#                           0x01 - Split - Partial Registration List, registrations are linked by timeslot_id in registrations table.
 #
 # name:                 The name for the category.
 # description:          The longer text description of the category.

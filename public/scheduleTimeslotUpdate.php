@@ -81,6 +81,9 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
     if( isset($args['flags']) ) {   
         $flags = $args['flags'];
     }
+    //
+    // Full classes
+    //
     if( ($flags&0x01) == 0 ) {
         for($i = 1; $i <= 5; $i++) {
             if( (isset($args["class{$i}_id"]) && $args["class{$i}_id"] > 0) 
@@ -99,7 +102,11 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
                 $args["registrations{$i}"] = isset($rc['registrations']) ? $rc['registrations'] : array();
             }
         }
-    } else {
+    } 
+    //
+    // Split Classes
+    //
+    else {
         for($i = 1; $i <= 5; $i++) {
             if( !isset($args["registrations{$i}"]) 
                 && ((isset($args["class{$i}_id"]) && $args["class{$i}_id"] > 0) 
@@ -118,8 +125,21 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
                 }
                 $args["registrations{$i}"] = isset($rc['registrations']) ? $rc['registrations'] : array();
             }
+            //
+            // Only accept registrations when there is a class specified
+            //
+            elseif( isset($args["registrations{$i}"]) 
+                && count($args["registrations{$i}"]) > 0 
+                && ((isset($args["class{$i}_id"]) && $args["class{$i}_id"] == 0)
+                    || (!isset($args["class{$i}_id"]) && $scheduletimeslot["class{$i}_id"] == 0) 
+                    )
+                ) {
+                // This fixes bug when split class removed from timeslot and registrations left hanging on
+                $args["registrations{$i}"] = array();
+            }
         }
     }
+        error_log(print_r($args,true));
     
     //
     // Get the current list of registrations
