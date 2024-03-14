@@ -4819,7 +4819,7 @@ function ciniki_musicfestivals_main() {
                 case 0: return d.timeslot_sequence;
                 case 1: return M.multiline(d.display_name, d.section_name);
                 case 2: return M.multiline(d.class_code + ' - ' + d.class_name, d.category_name);
-                case 3: if( this.sections[s].num_cols > 5 ) {
+                case 3: if( this.sections[s].num_cols > 4 ) {
                         return d.participation;
                         }
                 case 4: return M.btn('Remove', 'M.ciniki_musicfestivals_main.scheduletimeslot.removeRegistration(' + d.id + ');');
