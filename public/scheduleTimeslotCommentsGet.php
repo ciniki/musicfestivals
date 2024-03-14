@@ -171,7 +171,7 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "WHERE timeslots.id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' "
-            . "AND timeslots.class1_id > 0 "
+//            . "AND timeslots.class1_id > 0 "
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "ORDER BY slot_time, registrations.timeslot_sequence, registrations.display_name "
         . "";

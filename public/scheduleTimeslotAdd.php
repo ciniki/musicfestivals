@@ -23,20 +23,10 @@ function ciniki_musicfestivals_scheduleTimeslotAdd(&$ciniki) {
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'sdivision_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Division'),
         'slot_time'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'time', 'name'=>'Time'),
-        'class1_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Class 1'),
-        'class2_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Class 2'),
-        'class3_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Class 3'),
-        'class4_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Class 4'),
-        'class5_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Class 5'),
         'name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name'),
         'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),
         'runsheet_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Runsheet Notes'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
-        'registrations1'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Registrations 1'),
-        'registrations2'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Registrations 2'),
-        'registrations3'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Registrations 3'),
-        'registrations4'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Registrations 4'),
-        'registrations5'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Registrations 5'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -52,27 +42,6 @@ function ciniki_musicfestivals_scheduleTimeslotAdd(&$ciniki) {
         return $rc;
     }
 
-    //
-    // Get the of registrations for each class if not split
-    //
-    if( isset($args['flags']) && ($args['flags'] == 'undefined' || ($args['flags']&0x01) == 0) ) {
-        for($i = 1; $i <= 5; $i++) {
-            if( isset($args["class{$i}_id"]) && $args["class{$i}_id"] > 0 ) {
-                $strsql = "SELECT registrations.id "
-                    . "FROM ciniki_musicfestival_registrations AS registrations "
-                    . "WHERE class_id = '" . ciniki_core_dbQuote($ciniki, $args["class{$i}_id"]) . "' "
-                    . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . "";
-                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
-                $rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.musicfestivals', 'registrations', 'id');
-                if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.456', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
-                }
-                $args["registrations{$i}"] = isset($rc['registrations']) ? $rc['registrations'] : array();
-            }
-        }
-    }
-    
     //
     // Start transaction
     //
@@ -96,33 +65,6 @@ function ciniki_musicfestivals_scheduleTimeslotAdd(&$ciniki) {
         return $rc;
     }
     $scheduletimeslot_id = $rc['id'];
-
-    //
-    // Add any registrations
-    //
-    for($i = 1; $i <= 5; $i++) {
-        if( isset($args["registrations{$i}"]) ) {
-            foreach($args["registrations{$i}"] as $reg_id) {
-                $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.registration', $reg_id, 
-                    array('timeslot_id'=>$scheduletimeslot_id), 0x04);
-                if( $rc['stat'] != 'ok' ) {
-                    return $rc;
-                }
-            }
-        }
-    }
-
-    //
-    // Check for any sequence updates
-    //
-    foreach($ciniki['request']['args'] as $k => $v) {   
-        if( preg_match("/^seq_(.*)$/", $k, $m) ) {
-            $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.registration', $m[1], array('timeslot_sequence'=>$v), 0x04);
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
-            }
-        }
-    }
 
     //
     // Commit the transaction

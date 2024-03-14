@@ -97,6 +97,7 @@
 #                           0 - Live/In Person
 #                           1 - Virtual
 #                           2 - Live/In Person Adjudication Plus
+#                           3 - VirtualAdjudication Plus **future**
 #
 # virtual:              **deprecated**
 #

@@ -146,16 +146,6 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
         . "timeslots.id AS timeslot_id, "
         . "timeslots.name AS timeslot_name, "
         . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
-/*        . "timeslots.class1_id, "
-        . "timeslots.class2_id, "
-        . "timeslots.class3_id, "
-        . "timeslots.class4_id, "
-        . "timeslots.class5_id, "
-        . "IFNULL(class1.name, '') AS class1_name, "
-        . "IFNULL(class2.name, '') AS class2_name, "
-        . "IFNULL(class3.name, '') AS class3_name, "
-        . "IFNULL(class4.name, '') AS class4_name, "
-        . "IFNULL(class5.name, '') AS class5_name, " */
         . "timeslots.name AS timeslot_name, "
         . "timeslots.description, "
         . "registrations.id AS reg_id, ";
@@ -189,34 +179,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
             . "divisions.id = timeslots.sdivision_id " 
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-/*        . "LEFT JOIN ciniki_musicfestival_classes AS class1 ON ("
-            . "timeslots.class1_id = class1.id " 
-            . "AND class1.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class2 ON ("
-            . "timeslots.class2_id = class2.id " 
-            . "AND class2.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class3 ON ("
-            . "timeslots.class3_id = class3.id " 
-            . "AND class3.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class4 ON ("
-            . "timeslots.class4_id = class4.id " 
-            . "AND class4.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS class5 ON ("
-            . "timeslots.class5_id = class5.id " 
-            . "AND class5.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . ") " */
         . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
-/*            . "(timeslots.class1_id = registrations.class_id "  
-                . "OR timeslots.class2_id = registrations.class_id "
-                . "OR timeslots.class3_id = registrations.class_id "
-                . "OR timeslots.class4_id = registrations.class_id "
-                . "OR timeslots.class5_id = registrations.class_id "
-                . ") "
-            . "AND ((timeslots.flags&0x01) = 0 OR timeslots.id = registrations.timeslot_id) " */
             . "timeslots.id = registrations.timeslot_id "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
@@ -381,6 +344,9 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                         $num_copies++;
                     }
                     for($i=0;$i<$num_copies;$i++) {
+                        if( !isset($certificate['fields']) ) {
+                            continue;
+                        }
                         foreach($certificate['fields'] as $fid => $field) {
                             if( $field['field'] == 'participant' ) {
                                 $certificate['fields'][$fid]['text'] = $reg['name'];

@@ -89,7 +89,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
         . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, "
         . "timeslots.id AS timeslot_id, "
 //        . "timeslots.name AS timeslot_name, "
-        . "timeslots.class1_id, "
+        . "IFNULL(classes.id, 0) AS class_id, "
         . "classes.name AS class_name, "
         . "timeslots.name AS timeslot_name, "
         . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
@@ -163,7 +163,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
             )),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
             'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 
-                'class1_id', 'class_name', 'description', 
+                'class_id', 'class_name', 'description', 
                 )),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name',
@@ -404,7 +404,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
                 $description = $timeslot['description'];
                 $reg_list = array();
                 $reg_list_height = 0;
-                if( isset($timeslot['class1_id']) && $timeslot['class1_id'] > 0 ) {  
+                if( isset($timeslot['class_id']) && $timeslot['class_id'] > 0 ) {  
                     if( $name == '' && $timeslot['class_name'] != '' ) {
                         $name = $timeslot['class_name'];
                     }
