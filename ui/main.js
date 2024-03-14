@@ -4782,7 +4782,7 @@ function ciniki_musicfestivals_main() {
                 }},
         'unscheduled_registrations':{'label':'Unscheduled Registrations', 'type':'simplegrid', 'num_cols':4,
             'visible':function() {return M.ciniki_musicfestivals_main.scheduletimeslot.section_id > 0 ? 'yes' : 'hidden';},
-            'headerValues':['', 'Name', 'Class', 'Type'],
+            'headerValues':['', 'Name/Section', 'Class/Category', 'Type'],
             'cellClasses':['fabuttons alignleft', 'multiline', 'multiline', '', ''],
             'sortable':'yes',
             'sortTypes':['', 'text', 'text', 'text', 'text'],
