@@ -123,7 +123,8 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "registrations.timeslot_sequence, "
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
-            . "categories.name AS category_name "
+            . "categories.name AS category_name, "
+            . "sections.name AS section_name "
             . "FROM ciniki_musicfestival_registrations AS registrations "
             . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "registrations.class_id = classes.id "
@@ -133,6 +134,10 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                 . "classes.category_id = categories.id "
                 . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+                . "categories.section_id = sections.id "
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "WHERE registrations.timeslot_id = '" . ciniki_core_dbQuote($ciniki, $scheduletimeslot['id']) . "' "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY registrations.timeslot_sequence, registrations.display_name "
@@ -140,7 +145,9 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'timeslot_sequence', 'class_code', 'class_name', 'category_name', 'participation'),
+                'fields'=>array('id', 'display_name', 'timeslot_sequence', 
+                    'class_code', 'class_name', 'category_name', 'section_name', 'participation',
+                    ),
                 'maps'=>array('participation'=>$maps['registration']['participation']),
                 ),
             ));
@@ -247,12 +254,22 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "registrations.title1, "
             . "registrations.participation, "
             . "classes.code AS class_code, "
-            . "classes.name AS class_name "
+            . "classes.name AS class_name, "
+            . "categories.name AS category_name, "
+            . "sections.name AS section_name "
             . "FROM ciniki_musicfestival_classes AS classes "
+            . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
+                . "classes.category_id = categories.id "
+                . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
                 . "classes.id = registrations.class_id "
                 . "AND registrations.timeslot_id = 0 "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+                . "categories.section_id = sections.id "
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE classes.category_id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
             . "AND classes.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
@@ -261,7 +278,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'class_code', 'class_name', 'participation'),
+                'fields'=>array('id', 'display_name', 'class_code', 'class_name', 'category_name', 'section_name', 'participation'),
                 'maps'=>array('participation'=>$maps['registration']['participation']),
                 ),
             ));
@@ -275,7 +292,9 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "registrations.title1, "
             . "registrations.participation, "
             . "classes.code AS class_code, "
-            . "classes.name AS class_name "
+            . "classes.name AS class_name, "
+            . "categories.name AS category_name, "
+            . "sections.name AS section_name "
             . "FROM ciniki_musicfestival_categories AS categories "
             . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "categories.id = classes.category_id "
@@ -286,6 +305,10 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                 . "AND registrations.timeslot_id = 0 "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+                . "categories.section_id = sections.id "
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
             . "AND categories.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -294,7 +317,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'class_code', 'class_name', 'participation'),
+                'fields'=>array('id', 'display_name', 'class_code', 'class_name', 'category_name', 'section_name', 'participation'),
                 'maps'=>array('participation'=>$maps['registration']['participation']),
                 ),
             ));

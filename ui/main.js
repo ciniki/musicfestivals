@@ -4782,8 +4782,8 @@ function ciniki_musicfestivals_main() {
                 }},
         'unscheduled_registrations':{'label':'Unscheduled Registrations', 'type':'simplegrid', 'num_cols':4,
             'visible':function() {return M.ciniki_musicfestivals_main.scheduletimeslot.section_id > 0 ? 'yes' : 'hidden';},
-            'headerValues':['', 'Name', 'Code', 'Class', 'Type'],
-            'cellClasses':['fabuttons alignleft', '', '', '', ''],
+            'headerValues':['', 'Name', 'Class', 'Type'],
+            'cellClasses':['fabuttons alignleft', 'multiline', 'multiline', '', ''],
             'sortable':'yes',
             'sortTypes':['', 'text', 'text', 'text', 'text'],
             'noData':'No Unscheduled Registrations',
@@ -4817,13 +4817,12 @@ function ciniki_musicfestivals_main() {
         if( s == 'registrations' ) {
             switch(j) {
                 case 0: return d.timeslot_sequence;
-                case 1: return d.display_name;
-                case 2: return d.class_code;
-                case 3: return d.class_name;
-                case 4: if( this.sections[s].num_cols > 5 ) {
+                case 1: return M.multiline(d.display_name, d.section_name);
+                case 2: return M.multiline(d.class_code + ' - ' + d.class_name, d.category_name);
+                case 3: if( this.sections[s].num_cols > 5 ) {
                         return d.participation;
                         }
-                case 5: return M.btn('Remove', 'M.ciniki_musicfestivals_main.scheduletimeslot.removeRegistration(' + d.id + ');');
+                case 4: return M.btn('Remove', 'M.ciniki_musicfestivals_main.scheduletimeslot.removeRegistration(' + d.id + ');');
 //                case 3: return M.faBtn('&#xf00d;', 'Remove', 'M.ciniki_musicfestivals_main.scheduletimeslot.removeRegistration(' + d.id + ');');
             }
         }
@@ -4831,10 +4830,9 @@ function ciniki_musicfestivals_main() {
             switch(j) {
 //                case 0: return M.faBtn('&#xf067;', 'Add', 'M.ciniki_musicfestivals_main.scheduletimeslot.addRegistration(' + d.id + ');');
                 case 0: return M.btn('Add', 'M.ciniki_musicfestivals_main.scheduletimeslot.addRegistration(' + d.id + ');');
-                case 1: return d.display_name;
-                case 2: return d.class_code;
-                case 3: return d.class_name;
-                case 4: return d.participation;
+                case 1: return M.multiline(d.display_name, d.section_name);
+                case 2: return M.multiline(d.class_code + ' - ' + d.class_name, d.category_name);
+                case 3: return d.participation;
             }
         }
     }
@@ -4908,15 +4906,15 @@ function ciniki_musicfestivals_main() {
                 p.sections._section.fields.section_id.options = rsp.sections;
                 p.sections._category.fields.category_id.options = rsp.categories;
                 if( (M.ciniki_musicfestivals_main.festival.data.flags&0x16) > 0 ) {
-                    p.sections.registrations.num_cols = 6;
-                    p.sections.registrations.headerValues = ['#', 'Name', 'Code', 'Class', 'Type', ''];
-                    p.sections.registrations.cellClasses = ['', '', '', '', '', 'alignright fabuttons'];
-                    p.sections.unscheduled_registrations.num_cols = 5;
-                } else {
                     p.sections.registrations.num_cols = 5;
-                    p.sections.registrations.headerValues = ['#', 'Name', 'Code', 'Class', ''];
-                    p.sections.registrations.cellClasses = ['', '', '', '', 'alignright fabuttons'];
+                    p.sections.registrations.headerValues = ['#', 'Name/Section', 'Class/Category', 'Type', ''];
+                    p.sections.registrations.cellClasses = ['', 'multiline', 'multiline', '', '', 'alignright fabuttons'];
                     p.sections.unscheduled_registrations.num_cols = 4;
+                } else {
+                    p.sections.registrations.num_cols = 4;
+                    p.sections.registrations.headerValues = ['#', 'Name/Section', 'Class/Category', ''];
+                    p.sections.registrations.cellClasses = ['', 'multiline', 'multiline', '', 'alignright fabuttons'];
+                    p.sections.unscheduled_registrations.num_cols = 3;
                 }
                 p.refresh();
                 p.show(cb);
