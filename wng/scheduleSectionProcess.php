@@ -125,7 +125,54 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     //
     // Check if schedule download requests for this section
     //
-    if( isset($request['uri_split'][($request['cur_uri_pos']+1)])
+    if( isset($s['layout']) && $s['layout'] == 'date-buttons'
+        && isset($request['uri_split'][($request['cur_uri_pos']+2)])
+        && $request['uri_split'][($request['cur_uri_pos']+2)] == 'schedule.pdf' 
+        ) {
+        //
+        // Download the syllabus section pdf
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'schedulePDF');
+        $rc = ciniki_musicfestivals_templates_schedulePDF($ciniki, $tnid, array(
+            'published' => 'yes',
+            'festival_id' => $s['festival-id'],
+            'schedulesection_id' => $s['section-id'],
+            'division_id' => $s['division-id'],
+            'ipv' => isset($s['ipv']) ? $s['ipv'] : '',
+            'division_header_format' => isset($s['division_header_format']) ? $s['division_header_format'] : '',
+            'division_header_labels' => isset($s['division_header_labels']) ? $s['division_header_labels'] : '',
+            'names' => isset($s['names']) ? $s['names'] : '',
+            'titles' => isset($s['titles']) ? $s['titles'] : '',
+            'video_urls' => isset($s['video_urls']) ? $s['video_urls'] : '',
+            'section_page_break' => isset($s['section_page_break']) ? $s['section_page_break'] : '',
+            'provincials_info' => 'yes',
+            'top_sponsors' => 'yes',
+            'bottom_sponsors' => 'yes',
+            'section_page_break' => isset($s['section_page_break']) ? $s['section_page_break'] : '',
+            ));
+        if( isset($rc['pdf']) ) {
+            $filename = $festival['name'] . ' - ' . $schedulesection['name'] . ' Schedule';
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+            $filename = ciniki_core_makePermalink($ciniki, $filename) . '.pdf';
+            header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+            header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+            header('Cache-Control: no-cache, must-revalidate');
+            header('Pragma: no-cache');
+            header('Content-Type: application/pdf');
+            header('Cache-Control: max-age=0');
+
+            $rc['pdf']->Output($filename, 'I');
+
+            return array('stat'=>'exit');
+        } else {
+            $blocks[] = array(
+                'type' => 'msg',
+                'level' => 'error',
+                'content' => 'Unable to download pdf',
+                );
+        }
+    }
+    elseif( isset($request['uri_split'][($request['cur_uri_pos']+1)])
         && $request['uri_split'][($request['cur_uri_pos']+1)] == 'schedule.pdf' 
         ) {
         //
@@ -370,14 +417,27 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     // Check if download button
     //
     if( isset($s['section-pdf']) && ($s['section-pdf'] == 'top' || $s['section-pdf'] == 'both') ) {
+        $url = $request['ssl_domain_base_url'] . $request['page']['path'];
+        $division_name = '';
+        if( isset($s['layout']) && $s['layout'] == 'date-buttons' ) {
+            $url .= '/' . $request['uri_split'][$request['cur_uri_pos']];
+            $url .= '/' . $request['uri_split'][($request['cur_uri_pos']+1)];
+            if( isset($divisions[0]['name']) ) {
+                $division_name = $divisions[0]['name'];
+            }
+        } else {
+            $url .= '/' . $schedulesection['permalink'];
+        }
+        $url .= '/schedule.pdf';
+
         $blocks[] = array(
             'type' => 'buttons',
             'class' => 'schedule-top-buttons buttons-top-' . $schedulesection['permalink'],
             'list' => array(
                 array(
-                    'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $schedulesection['permalink'] . '/schedule.pdf',
+                    'url' => $url,
                     'target' => '_blank',
-                    'text' => 'Download ' . (isset($lv_word) && $lv_word != '' ? "{$lv_word} " : '') . 'Schedule PDF for ' . $schedulesection['name'],
+                    'text' => 'Download ' . (isset($lv_word) && $lv_word != '' ? "{$lv_word} " : '') . 'Schedule PDF for ' . $schedulesection['name'] . ($division_name != '' ? ' - ' . $division_name : ''),
                     ),
                 ),
             );
@@ -594,14 +654,27 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     // Check if download button
     //
     if( isset($s['section-pdf']) && ($s['section-pdf'] == 'bottom' || $s['section-pdf'] == 'both') ) {
+        $url = $request['ssl_domain_base_url'] . $request['page']['path'];
+        $division_name = '';
+        if( isset($s['layout']) && $s['layout'] == 'date-buttons' ) {
+            $url .= '/' . $request['uri_split'][$request['cur_uri_pos']];
+            $url .= '/' . $request['uri_split'][($request['cur_uri_pos']+1)];
+            if( isset($divisions[0]['name']) ) {
+                $division_name = $divisions[0]['name'];
+            }
+        } else {
+            $url .= '/' . $schedulesection['permalink'];
+        }
+        $url .= '/schedule.pdf';
+
         $blocks[] = array(
             'type' => 'buttons',
-            'class' => 'buttons-top-' . $schedulesection['permalink'],
+            'class' => 'schedule-bottom-buttons buttons-bottom-' . $schedulesection['permalink'],
             'list' => array(
                 array(
-                    'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $schedulesection['permalink'] . '/schedule.pdf',
+                    'url' => $url,
                     'target' => '_blank',
-                    'text' => 'Download ' . (isset($lv_word) && $lv_word != '' ? "{$lv_word} " : '') . 'Schedule PDF for ' . $schedulesection['name'],
+                    'text' => 'Download ' . (isset($lv_word) && $lv_word != '' ? "{$lv_word} " : '') . 'Schedule PDF for ' . $schedulesection['name'] . ($division_name != '' ? ' - ' . $division_name : ''),
                     ),
                 ),
             );

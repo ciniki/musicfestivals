@@ -224,6 +224,9 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
         $strsql .= "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
     }
+    if( isset($args['division_id']) && $args['division_id'] > 0 ) {
+        $strsql .= "AND divisions.id = '" . ciniki_core_dbQuote($ciniki, $args['division_id']) . "' ";
+    }
     if( isset($args['published']) && $args['published'] == 'yes' ) {
         $strsql .= "AND (ssections.flags&0x10) = 0x10 ";
     }

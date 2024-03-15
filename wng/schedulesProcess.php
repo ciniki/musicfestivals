@@ -185,8 +185,10 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
     } elseif( isset($s['layout']) && $s['layout'] == 'date-buttons' ) {
         $strsql = "SELECT sections.id, "
             . "sections.name, "
+            . "divisions.ssection_id AS ssection_id, "
             . "divisions.id AS division_id, "
             . "divisions.name AS division_name, "
+            . "CONCAT_WS(' - ', sections.name, divisions.name) AS text, "
             . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text "
             . "FROM ciniki_musicfestival_schedule_sections AS sections "
             . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
@@ -208,7 +210,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                 'fields'=>array('division_date_text',
                 )),
             array('container'=>'divisions', 'fname'=>'division_id', 
-                'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'text'=>'division_name', 'division_date_text',
+                'fields'=>array('id'=>'division_id', 'ssection_id', 'name'=>'division_name', 'text'=>'text', 'division_date_text',
                 )),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -326,7 +328,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
         return ciniki_musicfestivals_wng_scheduleSectionProcess($ciniki, $tnid, $request, $section);
     }
     elseif( isset($selected_date) && isset($selected_division) ) {
-        $section['settings']['date'] = $selected_date['id'];
+        $section['settings']['section-id'] = $selected_division['ssection_id'];
         $section['settings']['division-id'] = $selected_division['id'];
         $request['cur_uri_pos']++;
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'scheduleSectionProcess');
