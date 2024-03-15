@@ -70,6 +70,16 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
     $maps = $rc['maps'];
 
     //
+    // Load sapos maps
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'private', 'maps');
+    $rc = ciniki_sapos_maps($ciniki);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $sapos_maps = $rc['maps'];
+
+    //
     // Return default for new Schedule Time Slot
     //
     if( $args['scheduletimeslot_id'] == 0 ) {
@@ -122,11 +132,16 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "registrations.participation, "
             . "registrations.title1, "
             . "registrations.timeslot_sequence, "
+            . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS status_text, "
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
             . "categories.name AS category_name, "
             . "sections.name AS section_name "
             . "FROM ciniki_musicfestival_registrations AS registrations "
+            . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
+                . "registrations.invoice_id = invoices.id "
+                . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "registrations.class_id = classes.id "
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -147,9 +162,13 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
                 'fields'=>array('id', 'display_name', 'timeslot_sequence', 'title1',
-                    'class_code', 'class_name', 'category_name', 'section_name', 'participation',
+                    'class_code', 'class_name', 'category_name', 'section_name', 
+                    'participation', 'status_text', 
                     ),
-                'maps'=>array('participation'=>$maps['registration']['participation']),
+                'maps'=>array(
+                    'participation'=>$maps['registration']['participation'],
+                    'status_text'=>$sapos_maps['invoice']['typestatus'],
+                    ),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -219,6 +238,10 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                 . "AND registrations.timeslot_id = 0 "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
+                . "registrations.invoice_id = invoices.id "
+                . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
             . "AND categories.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -254,6 +277,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "registrations.display_name, "
             . "registrations.title1, "
             . "registrations.participation, "
+            . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS status_text, "
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
             . "categories.name AS category_name, "
@@ -268,6 +292,10 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                 . "AND registrations.timeslot_id = 0 "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
+                . "registrations.invoice_id = invoices.id "
+                . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
                 . "categories.section_id = sections.id "
                 . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -275,12 +303,16 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "WHERE classes.category_id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
             . "AND classes.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY categories.sequence, categories.name, class_code "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'title1', 'class_code', 'class_name', 'category_name', 'section_name', 'participation'),
-                'maps'=>array('participation'=>$maps['registration']['participation']),
+                'fields'=>array('id', 'display_name', 'title1', 'class_code', 'class_name', 'category_name', 'section_name', 'participation', 'status_text'),
+                'maps'=>array(
+                    'participation'=>$maps['registration']['participation'],
+                    'status_text'=>$sapos_maps['invoice']['typestatus'],
+                    ),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -292,6 +324,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "registrations.display_name, "
             . "registrations.title1, "
             . "registrations.participation, "
+            . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS status_text, "
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
             . "categories.name AS category_name, "
@@ -306,6 +339,10 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                 . "AND registrations.timeslot_id = 0 "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
+                . "registrations.invoice_id = invoices.id "
+                . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
                 . "categories.section_id = sections.id "
                 . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -318,8 +355,11 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'title1', 'class_code', 'class_name', 'category_name', 'section_name', 'participation'),
-                'maps'=>array('participation'=>$maps['registration']['participation']),
+                'fields'=>array('id', 'display_name', 'title1', 'class_code', 'class_name', 'category_name', 'section_name', 'participation', 'status_text'),
+                'maps'=>array(
+                    'participation'=>$maps['registration']['participation'],
+                    'status_text'=>$sapos_maps['invoice']['typestatus'],
+                    ),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
