@@ -288,7 +288,9 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
     //
     // Check if any sections have been published yet
     //
-    if( count($sections) == 0 ) {
+    if( (isset($sections) && count($sections) == 0) 
+        || (isset($dates) && count($dates) == 0)
+        ) {
         $blocks[] = array(
             'type' => 'text',
             'level' => $section['sequence'] == 1 ? 1 : 2,
