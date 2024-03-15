@@ -120,6 +120,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         $strsql = "SELECT registrations.id, "
             . "registrations.display_name, "
             . "registrations.participation, "
+            . "registrations.title1, "
             . "registrations.timeslot_sequence, "
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
@@ -145,7 +146,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'timeslot_sequence', 
+                'fields'=>array('id', 'display_name', 'timeslot_sequence', 'title1',
                     'class_code', 'class_name', 'category_name', 'section_name', 'participation',
                     ),
                 'maps'=>array('participation'=>$maps['registration']['participation']),
@@ -278,7 +279,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'class_code', 'class_name', 'category_name', 'section_name', 'participation'),
+                'fields'=>array('id', 'display_name', 'title1', 'class_code', 'class_name', 'category_name', 'section_name', 'participation'),
                 'maps'=>array('participation'=>$maps['registration']['participation']),
                 ),
             ));
@@ -317,7 +318,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'class_code', 'class_name', 'category_name', 'section_name', 'participation'),
+                'fields'=>array('id', 'display_name', 'title1', 'class_code', 'class_name', 'category_name', 'section_name', 'participation'),
                 'maps'=>array('participation'=>$maps['registration']['participation']),
                 ),
             ));

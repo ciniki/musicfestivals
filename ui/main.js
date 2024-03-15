@@ -4782,7 +4782,7 @@ function ciniki_musicfestivals_main() {
                 }},
         'unscheduled_registrations':{'label':'Unscheduled Registrations', 'type':'simplegrid', 'num_cols':4,
             'visible':function() {return M.ciniki_musicfestivals_main.scheduletimeslot.section_id > 0 ? 'yes' : 'hidden';},
-            'headerValues':['', 'Name/Section', 'Class/Category', 'Type'],
+            'headerValues':['', 'Name/Titles', 'Class/Category', 'Type'],
             'cellClasses':['fabuttons alignleft', 'multiline', 'multiline', '', ''],
             'sortable':'yes',
             'sortTypes':['', 'text', 'text', 'text', 'text'],
@@ -4817,7 +4817,7 @@ function ciniki_musicfestivals_main() {
         if( s == 'registrations' ) {
             switch(j) {
                 case 0: return d.timeslot_sequence;
-                case 1: return M.multiline(d.display_name, d.section_name);
+                case 1: return M.multiline(d.display_name, d.title1);
                 case 2: return M.multiline(d.class_code + ' - ' + d.class_name, d.category_name);
                 case 3: if( this.sections[s].num_cols > 4 ) {
                         return d.participation;
@@ -4830,7 +4830,7 @@ function ciniki_musicfestivals_main() {
             switch(j) {
 //                case 0: return M.faBtn('&#xf067;', 'Add', 'M.ciniki_musicfestivals_main.scheduletimeslot.addRegistration(' + d.id + ');');
                 case 0: return M.btn('Add', 'M.ciniki_musicfestivals_main.scheduletimeslot.addRegistration(' + d.id + ');');
-                case 1: return M.multiline(d.display_name, d.section_name);
+                case 1: return M.multiline(d.display_name, d.title1);
                 case 2: return M.multiline(d.class_code + ' - ' + d.class_name, d.category_name);
                 case 3: return d.participation;
             }
@@ -4907,12 +4907,12 @@ function ciniki_musicfestivals_main() {
                 p.sections._category.fields.category_id.options = rsp.categories;
                 if( (M.ciniki_musicfestivals_main.festival.data.flags&0x16) > 0 ) {
                     p.sections.registrations.num_cols = 5;
-                    p.sections.registrations.headerValues = ['#', 'Name/Section', 'Class/Category', 'Type', ''];
+                    p.sections.registrations.headerValues = ['#', 'Name/Titles', 'Class/Category', 'Type', ''];
                     p.sections.registrations.cellClasses = ['', 'multiline', 'multiline', '', '', 'alignright fabuttons'];
                     p.sections.unscheduled_registrations.num_cols = 4;
                 } else {
                     p.sections.registrations.num_cols = 4;
-                    p.sections.registrations.headerValues = ['#', 'Name/Section', 'Class/Category', ''];
+                    p.sections.registrations.headerValues = ['#', 'Name/Titles', 'Class/Category', ''];
                     p.sections.registrations.cellClasses = ['', 'multiline', 'multiline', '', 'alignright fabuttons'];
                     p.sections.unscheduled_registrations.num_cols = 3;
                 }
