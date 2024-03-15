@@ -708,9 +708,6 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                         );
                 }
                 else */
-                if( preg_match("/video_url1/", $field['id']) ) {
-                    error_log('check field: ' . $field['id'] . " ({$field['required']})");
-                }
                 if( isset($field['required']) && $field['required'] == 'yes' && $field['value'] < 0 && $field['id'] == 'participation' ) {
                     $errors[] = array(
                         'msg' => 'You must specify how you want to participate.',
