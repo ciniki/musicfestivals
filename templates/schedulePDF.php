@@ -948,7 +948,6 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             $num_sponsors = count($bottom_sponsors);
             $pdf->SetFont('', 'B', '13');
             $h1 = $pdf->getStringHeight(180, $section['bottom_sponsors_title']);
-            $h2 += 2;
             $pdf->SetFont('', '', '12');
             $h2 = 0;
             if( isset($section['bottom_sponsors_content']) && $section['bottom_sponsors_content'] != '' ) {
