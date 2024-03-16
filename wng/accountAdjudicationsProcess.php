@@ -115,7 +115,6 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         . "timeslots.name AS timeslot_name, "
 //        . "IF(timeslots.name='', IFNULL(class1.name, ''), timeslots.name) AS timeslot_name, "
         . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
-//        . "timeslots.name AS timeslot_name, "
         . "timeslots.description, "
         . "registrations.id AS reg_id, "
         . "registrations.uuid AS reg_uuid, "
@@ -587,9 +586,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                     $num_completed = 0;
                     if( isset($timeslot['registrations']) ) {
                         foreach($timeslot['registrations'] as $rid => $registration) {
-                            if( (!isset($division['timeslots']['name']) || $division['timeslots']['name'] == '') 
-                                && isset($registration['class_name']) 
-                                ) {
+                            if( (!isset($division['timeslots'][$tid]['name']) || $division['timeslots'][$tid]['name'] == '') ) {
                                 $division['timeslots'][$tid]['name'] = $division['date'] . ' - ' . $timeslot['time'];
                             }
                             if( $registration['comments'] != '' && $registration['mark'] != '' ) {
