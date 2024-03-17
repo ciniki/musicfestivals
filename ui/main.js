@@ -857,9 +857,9 @@ function ciniki_musicfestivals_main() {
             'buttons':{
                 'memberexcel':{'label':'Download Member Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadRecommendationsMemberExcel();'},
             }},
-        'recommendation_entries':{'label':'Recommendations', 'type':'simplegrid', 'num_cols':4,
+        'recommendation_entries':{'label':'Recommendations', 'type':'simplegrid', 'num_cols':5,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'classes' ? 'yes' : 'no'; },
-            'headerValues':['Name', 'Position', 'Festival', 'Date Submitted'],
+            'headerValues':['Name', 'Position', 'Mark', 'Festival', 'Date Submitted'],
             },
         'emails_tabs':{'label':'', 'aside':'yes', 'type':'paneltabs', 'selected':'all',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'emails'); },
@@ -1360,8 +1360,9 @@ function ciniki_musicfestivals_main() {
             switch(j) { 
                 case 0: return d.name;
                 case 1: return d.position;
-                case 2: return d.member_name;
-                case 3: return d.date_submitted;
+                case 2: return d.mark;
+                case 3: return d.member_name;
+                case 4: return d.date_submitted;
             }
         }
         if( s == 'sponsors-old' && j == 0 ) {
