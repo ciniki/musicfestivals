@@ -125,6 +125,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
             . "registrations.composer8, "
             . "registrations.movements8, "
             . "registrations.perf_time8, "
+            . "registrations.participation, "
             . "registrations.fee, "
             . "registrations.payment_type, "
             . "registrations.notes, "
@@ -185,7 +186,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
                     'title6', 'composer6', 'movements6', 'perf_time6', 
                     'title7', 'composer7', 'movements7', 'perf_time7', 
                     'title8', 'composer8', 'movements8', 'perf_time8', 
-                    'fee', 'payment_type', 'notes',
+                    'participation', 'fee', 'payment_type', 'notes',
                     'section_name', 'category_name',
                     'class_code', 'class_name', 'class_flags'),
                 'maps'=>array('status_text'=>$maps['registration']['status']),
@@ -518,7 +519,10 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
     // Go through the sections, divisions and classes
     //
     $c = array(35, 55, 35, 55);
-    $r = array(50, 100, 30);
+    $r = array(50, 115, 15);
+    if( ($festival['flags']&0x10) == 0x10 ) {
+        $r = array(50, 100, 15, 15);
+    }
     $nw = array(20, 160);
     $lh = 6;
     $border = '';
@@ -582,6 +586,9 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
         $pdf->Cell($r[0], $lh-3, 'Competitor', $border, 0, 'L', 1);
         $pdf->Cell($r[1], $lh-3, 'Class', $border, 0, 'L', 1);
         $pdf->Cell($r[2], $lh-3, 'Fee', $border, 0, 'R', 1);
+        if( ($festival['flags']&0x10) == 0x10 ) {
+            $pdf->Cell($r[3], $lh-3, 'Plus', $border, 0, 'R', 1);
+        }
         $pdf->Ln();
         $pdf->SetFont('times', '', 12);
         $pdf->SetFillColor(242);
@@ -634,15 +641,21 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
                 $pdf->Cell($r[0], $lh-3, 'Competitor', $border, 0, 'L', 1);
                 $pdf->Cell($r[1], $lh-3, 'Class', $border, 0, 'L', 1);
                 $pdf->Cell($r[2], $lh-3, 'Competitor', $border, 0, 'R', 1);
+                if( ($festival['flags']&0x10) == 0x10 ) {
+                    $pdf->Cell($r[3], $lh-3, 'Plus', $border, 0, 'R', 1);
+                }
                 $pdf->Ln();
                 $pdf->SetFont('times', '', 12);
                 $pdf->SetFillColor(242);
             }
             $pdf->MultiCell($r[0], $lh, $registration['display_name'], $border, 'L', $fill, 0);
             $pdf->MultiCell($r[1], $lh, $description, $border, 'L', $fill, 0);
-            $pdf->MultiCell($r[2], $lh, $registration['fee_display'], $border, 'R', $fill, 1);
+            $pdf->MultiCell($r[2], $lh, $registration['fee_display'], $border, 'R', $fill, (($festival['flags']&0x10) == 0 ? 1 : 0));
             if( preg_match("/[0-9]/", $registration['fee_display']) && $registration['billing_customer_id'] == $args['teacher_customer_id'] ) {
                 $total += $registration['fee'];
+            }
+            if( ($festival['flags']&0x10) == 0x10 ) {
+                $pdf->MultiCell($r[3], $lh, ($registration['participation'] == 2 ? 'Plus' : 'Reg'), $border, 'R', $fill, 1);
             }
 
             $fill = !$fill;
