@@ -1495,6 +1495,17 @@ function ciniki_musicfestivals_main() {
                 case '65': return 'statusgrey';
             }
         }
+        if( s == 'registrations' ) {
+            if( (d.flags&0x8000) == 0x8000 ) {
+                return 'statusgreen';
+            } else if( (d.flags&0x4000) == 0x4000 ) {
+                return 'statusyellow';
+            } else if( (d.flags&0x2000) == 0x2000 ) {
+                return 'statusorange';
+            } else if( (d.flags&0x1000) == 0x1000 ) {
+                return 'statusred';
+            }
+        }
         if( s == 'recommendation_members' && this.member_id == d.id ) {
             return 'highlight';
         }
@@ -3534,6 +3545,13 @@ function ciniki_musicfestivals_main() {
         '_class':{'label':'Registration', 'fields':{
 //            'status':{'label':'Status', 'required':'yes', 'type':'toggle', 'toggles':{'5':'Draft', '10':'Applied', '50':'Paid', '60':'Cancelled'}},
 //            'payment_type':{'label':'Payment', 'type':'toggle', 'toggles':{'20':'Square', '50':'Visa', '55':'Mastercard', '100':'Cash', '105':'Cheque', '110':'Email', '120':'Other', '121':'Online'}},
+            'flags13':{'label':'Colour', 'type':'flagspiece', 'mask':0xF000, 'field':'flags', 'toggle':'yes', 'join':'yes', 
+                'flags':{'13':{'name':'Red'}, '14':{'name':'Orange'}, '15':{'name':'Yellow'}, '16':{'name':'Green'}},
+                },
+            'flags1':{'label':'Festivals', 'type':'flagspiece', 'mask':0x03, 'field':'flags', 'join':'yes', 'toggle':'yes',
+                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x4000); },
+                'flags':{'0':{'name':'Both'}, '1':{'name':'Live'}, '2':{'name':'Virtual'}},
+                },
             'member_id':{'label':'From', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}, 
                 'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); },
                 'onchangeFn':'M.ciniki_musicfestivals_main.registration.updateForm',

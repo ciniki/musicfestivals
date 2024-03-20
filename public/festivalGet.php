@@ -490,6 +490,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "registrations.billing_customer_id, "
                 . "registrations.rtype, "
                 . "registrations.rtype AS rtype_text, "
+                . "registrations.flags, "
                 . "registrations.status, "
                 . "registrations.status AS status_text, ";
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
@@ -598,7 +599,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 
                         'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
                         'class_id', 'class_code', 'class_name', 'class_flags', 'min_titles', 'max_titles',
-                        'fee', 'payment_type', 'participation', 
+                        'fee', 'payment_type', 'participation', 'flags',
                         'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
                         'title2', 'composer2', 'movements2', 'perf_time2', 'video_url2', 'music_orgfilename2',
                         'title3', 'composer3', 'movements3', 'perf_time3', 'video_url3', 'music_orgfilename3',
