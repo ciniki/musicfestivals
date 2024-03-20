@@ -257,17 +257,17 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $festival[$k] = $v;
         }
 
-        $festival['comments-placement-autofills'] = array();
         if( isset($festival['comments-placement-autofill']) && $festival['comments-placement-autofill'] != '' ) {
             $placements = explode(',', $festival['comments-placement-autofill']);
+            $festival['comments-placement-autofills'] = array();
             foreach($placements as $p) {
                 list($mark, $text) = explode(':', $p);
                 $festival['comments-placement-autofills'][trim($mark)] = trim($text);
             }
         }
-        $festival['comments-level-autofills'] = array();
         if( isset($festival['comments-level-autofill']) && $festival['comments-level-autofill'] != '' ) {
             $levels = explode(',', $festival['comments-level-autofill']);
+            $festival['comments-level-autofills'] = array();
             foreach($levels as $p) {
                 list($mark, $text) = explode(':', $p);
                 $festival['comments-level-autofills'][trim($mark)] = trim($text);
