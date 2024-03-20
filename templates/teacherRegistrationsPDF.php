@@ -133,8 +133,24 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
             . "categories.name AS category_name, "
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
-            . "classes.flags AS class_flags "
+            . "classes.flags AS class_flags, "
+            . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
+            . "DATE_FORMAT(divisions.division_date, '%b %e') AS division_date_text, "
+            . "divisions.address, "
+            . "ssections.flags AS section_flags "
             . "FROM ciniki_musicfestival_registrations AS registrations "
+            . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+                . "registrations.timeslot_id = timeslots.id "
+                . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+                . "timeslots.sdivision_id = divisions.id "
+                . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
+                . "divisions.ssection_id = ssections.id "
+                . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
             . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "registrations.class_id = classes.id "
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -188,7 +204,9 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
                     'title8', 'composer8', 'movements8', 'perf_time8', 
                     'participation', 'fee', 'payment_type', 'notes',
                     'section_name', 'category_name',
-                    'class_code', 'class_name', 'class_flags'),
+                    'class_code', 'class_name', 'class_flags',
+                    'slot_time_text', 'section_flags', 'division_date_text', 'address',
+                    ),
                 'maps'=>array('status_text'=>$maps['registration']['status']),
                 ),
             ));
@@ -519,9 +537,9 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
     // Go through the sections, divisions and classes
     //
     $c = array(35, 55, 35, 55);
-    $r = array(50, 115, 15);
+    $r = array(40, 85, 40, 15, 0);
     if( ($festival['flags']&0x10) == 0x10 ) {
-        $r = array(50, 100, 15, 15);
+        $r = array(40, 70, 40, 15, 15);
     }
     $nw = array(20, 160);
     $lh = 6;
@@ -585,9 +603,10 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
         $border = 1;
         $pdf->Cell($r[0], $lh-3, 'Competitor', $border, 0, 'L', 1);
         $pdf->Cell($r[1], $lh-3, 'Class', $border, 0, 'L', 1);
-        $pdf->Cell($r[2], $lh-3, 'Fee', $border, 0, 'R', 1);
+        $pdf->Cell($r[2], $lh-3, 'Schedule', $border, 0, 'L', 1);
+        $pdf->Cell($r[3], $lh-3, 'Fee', $border, 0, 'R', 1);
         if( ($festival['flags']&0x10) == 0x10 ) {
-            $pdf->Cell($r[3], $lh-3, 'Plus', $border, 0, 'R', 1);
+            $pdf->Cell($r[4], $lh-3, 'Plus', $border, 0, 'R', 1);
         }
         $pdf->Ln();
         $pdf->SetFont('times', '', 12);
@@ -601,6 +620,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
             } else {
                 $description = $registration['class_code'] . ' - ' . $registration['class_name'];
             }
+
             for($i = 1; $i <= 8; $i++) {
                 if( $registration["title{$i}"] != '' ) {
                     $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $registration, $i);
@@ -630,6 +650,19 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
             }
             $lh = $pdf->getStringHeight($r[1], $description);
 
+            $registration['schedule'] = '';
+            if( ($registration['section_flags']&0x01) == 0x01 ) {
+                if( $registration['slot_time_text'] != '' ) {
+                    $registration['schedule'] = $registration['division_date_text'] . ' @ ' . $registration['slot_time_text'];
+                }
+                if( $registration['address'] != '' ) {
+                    $registration['schedule'] .= "\n" . $registration['address'];
+                }
+                if( $pdf->getStringHeight($r[2], $registration['schedule']) > $lh ) {
+                    $lh = $pdf->getStringHeight($r[2], $registration['schedule']);
+                }
+            }
+
             if( $pdf->getY() > $pdf->getPageHeight() - 30 - $lh ) {
                 $pdf->AddPage();
                 $pdf->SetFont('times', 'B', 14);
@@ -640,9 +673,10 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
                 $border = 1;
                 $pdf->Cell($r[0], $lh-3, 'Competitor', $border, 0, 'L', 1);
                 $pdf->Cell($r[1], $lh-3, 'Class', $border, 0, 'L', 1);
-                $pdf->Cell($r[2], $lh-3, 'Competitor', $border, 0, 'R', 1);
+                $pdf->Cell($r[2], $lh-3, 'Schedule', $border, 0, 'L', 1);
+                $pdf->Cell($r[3], $lh-3, 'Competitor', $border, 0, 'R', 1);
                 if( ($festival['flags']&0x10) == 0x10 ) {
-                    $pdf->Cell($r[3], $lh-3, 'Plus', $border, 0, 'R', 1);
+                    $pdf->Cell($r[4], $lh-3, 'Plus', $border, 0, 'R', 1);
                 }
                 $pdf->Ln();
                 $pdf->SetFont('times', '', 12);
@@ -650,13 +684,15 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
             }
             $pdf->MultiCell($r[0], $lh, $registration['display_name'], $border, 'L', $fill, 0);
             $pdf->MultiCell($r[1], $lh, $description, $border, 'L', $fill, 0);
-            $pdf->MultiCell($r[2], $lh, $registration['fee_display'], $border, 'R', $fill, (($festival['flags']&0x10) == 0 ? 1 : 0));
+            $pdf->MultiCell($r[2], $lh, $registration['schedule'], $border, 'L', $fill, 0);
+            $pdf->MultiCell($r[3], $lh, $registration['fee_display'], $border, 'R', $fill, ($festival['flags']&0x10) == 0x10 ? 0 : 1);
             if( preg_match("/[0-9]/", $registration['fee_display']) && $registration['billing_customer_id'] == $args['teacher_customer_id'] ) {
                 $total += $registration['fee'];
             }
             if( ($festival['flags']&0x10) == 0x10 ) {
-                $pdf->MultiCell($r[3], $lh, ($registration['participation'] == 2 ? 'Plus' : 'Reg'), $border, 'R', $fill, 1);
+                $pdf->MultiCell($r[4], $lh, ($registration['participation'] == 2 ? 'Plus' : 'Reg'), $border, 'R', $fill, 1);
             }
+
 
             $fill = !$fill;
         }
