@@ -146,10 +146,13 @@ function ciniki_musicfestivals_registrationCertificatesPDF($ciniki) {
         . "registrations.mark, "
         . "registrations.placement, "
         . "registrations.level, "
-        . "classes.name AS class_name, "
-        . "sections.adjudicator1_id, "
-        . "sections.adjudicator2_id, "
-        . "sections.adjudicator3_id, "
+        . "IFNULL(classes.code, '') AS class_code, "
+        . "IFNULL(classes.name, '') AS class_name, "
+        . "IFNULL(categories.name, '') AS category_name, "
+        . "IFNULL(sections.name, '') AS syllabus_section_name, "
+        . "ssections.adjudicator1_id, "
+        . "ssections.adjudicator2_id, "
+        . "ssections.adjudicator3_id, "
         . "IFNULL(registrations.competitor2_id, 0) AS competitor2_id, "
         . "IFNULL(registrations.competitor3_id, 0) AS competitor3_id, "
         . "IFNULL(registrations.competitor4_id, 0) AS competitor4_id, "
@@ -167,8 +170,16 @@ function ciniki_musicfestivals_registrationCertificatesPDF($ciniki) {
             . "timeslots.sdivision_id = divisions.id "
             . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-        . "LEFT JOIN ciniki_musicfestival_schedule_sections AS sections ON ("
-            . "divisions.ssection_id = sections.id "
+        . "LEFT JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
+            . "divisions.ssection_id = ssections.id "
+            . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
+            . "classes.category_id = categories.id " 
+            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+            . "categories.section_id = sections.id " 
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "WHERE registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -187,6 +198,7 @@ function ciniki_musicfestivals_registrationCertificatesPDF($ciniki) {
                 )),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title'=>'title1', 'class_name', 
+                'class_code', 'class_name', 'category_name', 'syllabus_section_name',
                 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 
                 'mark', 'placement', 'level', 'division_date_text',
                 )),
@@ -314,7 +326,27 @@ function ciniki_musicfestivals_registrationCertificatesPDF($ciniki) {
                                 $certificate['fields'][$fid]['text'] = $reg['name'];
                             }
                             elseif( $field['field'] == 'class' ) {
-                                $certificate['fields'][$fid]['text'] = $reg['class_name'];
+                                $class_name = $reg['class_name'];
+                                if( isset($festival['certificates-class-format']) 
+                                    && $festival['certificates-class-format'] == 'code-section-category-class' 
+                                    ) {
+                                    $class_name = $reg['class_code'] . ' - ' . $reg['syllabus_section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name']; 
+                                } elseif( isset($festival['certificates-class-format']) 
+                                    && $festival['certificates-class-format'] == 'section-category-class' 
+                                    ) {
+                                    $class_name = $reg['syllabus_section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name']; 
+                                } elseif( isset($festival['certificates-class-format']) 
+                                    && $festival['certificates-class-format'] == 'code-category-class' 
+                                    ) {
+                                    $class_name = $reg['class_code'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name']; 
+                                } elseif( isset($festival['certificates-class-format']) 
+                                    && $festival['certificates-class-format'] == 'category-class' 
+                                    ) {
+                                    $class_name = $reg['category_name'] . ' - ' . $reg['class_name']; 
+                                } else {
+                                    $class_name = $reg['class_name']; 
+                                }
+                                $certificate['fields'][$fid]['text'] = $class_name;
                             }
                             elseif( $field['field'] == 'title' ) {
                                 $certificate['fields'][$fid]['text'] = $reg['title'];
