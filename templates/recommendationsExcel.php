@@ -77,6 +77,7 @@ function ciniki_musicfestivals_templates_recommendationsExcel(&$ciniki, $tnid, $
     // Get the recommendation entries
     //
     $strsql = "SELECT entries.id, "
+        . "entries.status, "
         . "entries.position, "
         . "entries.name, "
         . "entries.mark, "
@@ -129,7 +130,7 @@ function ciniki_musicfestivals_templates_recommendationsExcel(&$ciniki, $tnid, $
         array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'name'=>'section_name')),
         array('container'=>'classes', 'fname'=>'class_id', 'fields'=>array('id'=>'class_id', 'code'=>'class_code', 'name'=>'class_name')),
         array('container'=>'entries', 'fname'=>'id', 
-            'fields'=>array('id', 'recommendation_id', 'position', 'name', 'mark',
+            'fields'=>array('id', 'status', 'recommendation_id', 'position', 'name', 'mark',
                 'date_submitted', 'member_name'),
             'utctotz'=>array(
                 'date_submitted'=> array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i:s A'),
@@ -173,21 +174,41 @@ function ciniki_musicfestivals_templates_recommendationsExcel(&$ciniki, $tnid, $
 
             foreach($class['entries'] as $entry) {
                 switch($entry['position']) {
-                    case 1: $entry['position'] = '1st Recommendation'; break;
-                    case 2: $entry['position'] = '2nd Recommendation'; break;
-                    case 3: $entry['position'] = '3rd Recommendation'; break;
-                    case 101: $entry['position'] = '1st Alternate'; break;
-                    case 102: $entry['position'] = '2nd Alternate'; break;
-                    case 103: $entry['position'] = '3rd Alternate'; break;
+                    case 1: $entry['position_text'] = '1st Recommendation'; break;
+                    case 2: $entry['position_text'] = '2nd Recommendation'; break;
+                    case 3: $entry['position_text'] = '3rd Recommendation'; break;
+                    case 101: $entry['position_text'] = '1st Alternate'; break;
+                    case 102: $entry['position_text'] = '2nd Alternate'; break;
+                    case 103: $entry['position_text'] = '3rd Alternate'; break;
                 }
                 $col = 0;
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $section['name'], false);
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $class['code'] . ' - ' . $class['name'], false);
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $entry['name'], false);
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $entry['mark'], false);
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $entry['position'], false);
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $entry['position_text'], false);
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $entry['member_name'], false);
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $entry['date_submitted'], false);
+
+                $color = '';
+                if( $entry['position'] > 100 ) {
+                    $color = 'FFFDC5';
+                } elseif( $entry['status'] == 30 ) {
+                    $color = 'FFEFDD';
+                } elseif( $entry['status'] == 50 ) {
+                    $color = 'DDFFDD';
+                } elseif( $entry['status'] == 70 ) {
+                    $color = 'FFDDDD';
+                } elseif( $entry['status'] == 90 ) {
+                    $color = 'EEEEEE';
+                }
+                if( $color != '' ) {
+                    $objPHPExcelWorksheet->getStyle("A{$row}:G{$row}")->applyFromArray(
+                        array('fill'=>array(
+                            'type' => PHPExcel_Style_Fill::FILL_SOLID, 
+                            'color' => array('rgb' => $color),
+                            )));
+                }
 
                 $row++;
             }

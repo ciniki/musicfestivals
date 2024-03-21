@@ -1533,7 +1533,11 @@ function ciniki_musicfestivals_main() {
         }
         if( s == 'recommendation_entries' ) {
             switch(d.status) {
-                case '10': return '';
+                case '10': 
+                    if( d.position == '1st Alternate' || d.position == '2nd Alternate' || d.position == '3rd Alternate' ) {
+                        return 'statusyellow';
+                    }
+                    return '';
                 case '30': return 'statusorange';
                 case '50': return 'statusgreen';
                 case '70': return 'statusred';
@@ -7672,7 +7676,11 @@ function ciniki_musicfestivals_main() {
     this.recommendation.rowClass = function(s, i, d) {
         if( s == 'entries' ) {
             switch(d.status) {
-                case '10': return '';
+                case '10': 
+                    if( d.position == '1st Alternate' || d.position == '2nd Alternate' || d.position == '3rd Alternate' ) {
+                        return 'statusyellow';
+                    }
+                    return '';
                 case '30': return 'statusorange';
                 case '50': return 'statusgreen';
                 case '70': return 'statusred';
