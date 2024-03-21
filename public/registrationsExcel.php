@@ -89,6 +89,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         . "registrations.id AS reg_id, "
         . "registrations.display_name, "
         . "registrations.fee AS reg_fee, "
+        . "registrations.flags, "
         . "registrations.title1, "
         . "registrations.composer1, "
         . "registrations.movements1, "
@@ -207,7 +208,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'payment_type', 'participation', 'notes'=>'reg_notes',
+                    'payment_type', 'participation', 'notes'=>'reg_notes', 'flags',
                     'mark', 'placement', 'level', 
                     ),
                 ),
@@ -270,7 +271,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'payment_type', 'participation', 'notes'=>'reg_notes',
+                    'payment_type', 'participation', 'notes'=>'reg_notes', 'flags',
                     'mark', 'placement', 'level',
                     ),
                 ),
@@ -349,7 +350,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'payment_type', 'participation', 'notes'=>'reg_notes',
+                    'payment_type', 'participation', 'notes'=>'reg_notes', 'flags',
                     'mark', 'placement', 'level',
                     ),
                 ),
@@ -431,7 +432,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'payment_type', 'participation', 'notes'=>'reg_notes',
+                    'payment_type', 'participation', 'notes'=>'reg_notes', 'flags',
                     'mark', 'placement', 'level',
                     ),
                 ),
@@ -513,7 +514,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'payment_type', 'participation', 'notes'=>'reg_notes',
+                    'payment_type', 'participation', 'notes'=>'reg_notes', 'flags',
                     'mark', 'placement', 'level',
                     ),
                 ),
@@ -845,7 +846,25 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['email'], false);
                 }
             }
- 
+
+            $color = '';
+            if( ($registration['flags']&0x1000) == 0x1000 ) {
+                $color = 'FFDDDD';  // Red
+            } elseif( ($registration['flags']&0x2000) == 0x2000 ) {
+                $color = 'FFEFDD';  // Orange
+            } elseif( ($registration['flags']&0x4000) == 0x4000 ) {
+                $color = 'FFFDC5';  // Yellow
+            } elseif( ($registration['flags']&0x8000) == 0x8000 ) {
+                $color = 'DDFFDD';  // Green
+            }
+            if( $color != '' ) {
+                $objPHPExcelWorksheet->getStyle("A{$row}:AG{$row}")->applyFromArray(
+                    array('fill'=>array(
+                        'type' => PHPExcel_Style_Fill::FILL_SOLID, 
+                        'color' => array('rgb' => $color),
+                        )));
+            }
+
             $row++;
         }
 
