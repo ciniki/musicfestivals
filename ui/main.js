@@ -4875,9 +4875,10 @@ function ciniki_musicfestivals_main() {
                 case 1: return M.multiline(d.class_code + ' - ' + d.class_name, d.category_name);
                 case 2: return M.multiline(d.display_name, d.title1);
                 case 3: return d.status_text;
-                case 4: if( this.sections[s].num_cols > 4 ) {
+                case 4: if( this.sections[s].num_cols > 5 ) {
                         return d.participation;
                         }
+//                    return M.btn('Remove', 'M.ciniki_musicfestivals_main.scheduletimeslot.removeRegistration(' + d.id + ');');
                 case 5: return M.btn('Remove', 'M.ciniki_musicfestivals_main.scheduletimeslot.removeRegistration(' + d.id + ');');
 //                case 3: return M.faBtn('&#xf00d;', 'Remove', 'M.ciniki_musicfestivals_main.scheduletimeslot.removeRegistration(' + d.id + ');');
             }
