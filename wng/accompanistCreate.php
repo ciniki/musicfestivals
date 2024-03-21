@@ -78,7 +78,7 @@ function ciniki_musicfestivals_wng_accompanistCreate(&$ciniki, $tnid, $request, 
     // Check that both name and email were specified
     //
     if( $_POST['f-accompanist_name'] == '' && isset($_POST['f-accompanist_email']) && $_POST['f-accompanist_email'] != '' ) {
-        return array('stat'=>'error', 'err'=>array('code'=>'ciniki.musicfestivals.638', 'msg'=>"You must specifiy the Teacher's Name"));
+        return array('stat'=>'error', 'err'=>array('code'=>'ciniki.musicfestivals.638', 'msg'=>"You must specify the Accompanist's Name"));
     }
 
     //
