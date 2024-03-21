@@ -843,8 +843,11 @@ function ciniki_musicfestivals_main() {
                     'onchange':'M.ciniki_musicfestivals_main.festival.switchRecommendationSection',
                     },
             }},
-        'recommendation_classes':{'label':'Classes', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
+        'recommendation_classes':{'label':'Classes', 'aside':'yes', 'type':'simplegrid', 'num_cols':4,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'classes' ? 'yes' : 'no'; },
+            'headerValues':['Class', 'N', 'A', 'T'],
+            'headerClasses':['', 'alignright', 'alignright', 'alignright'],
+            'cellClasses':['', 'alignright', 'alignright', 'alignright'],
             },
         'recommendation_buttons1':{'label':'', 'aside':'yes',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'classes' ? 'yes' : 'no'; },
@@ -863,9 +866,11 @@ function ciniki_musicfestivals_main() {
             'buttons':{
                 'memberexcel':{'label':'Download Member Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadRecommendationsMemberExcel();'},
             }},
-        'recommendation_entries':{'label':'Recommendations', 'type':'simplegrid', 'num_cols':5,
+        'recommendation_entries':{'label':'Recommendations', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'classes' ? 'yes' : 'no'; },
-            'headerValues':['Name', 'Position', 'Mark', 'Festival', 'Date Submitted'],
+            'headerValues':['Name', 'Position', 'Mark', 'Festival', 'Date Submitted', 'Deadline'],
+            'sortable':'yes', 
+            'sortTypes':['text', 'text', 'number', 'text', 'date', ''],
             },
         'emails_tabs':{'label':'', 'aside':'yes', 'type':'paneltabs', 'selected':'all',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'emails'); },
@@ -1365,7 +1370,9 @@ function ciniki_musicfestivals_main() {
         if( s == 'recommendation_classes' ) {
             switch(j) { 
                 case 0: return d.code + ' - ' + d.name;
-                case 1: return (d.num_entries > 0 ? d.num_entries : '');
+                case 1: return (d.num_new > 0 ? d.num_new : '');
+                case 2: return (d.num_acceptedreg > 0 ? d.num_acceptedreg : ''); // accepted or registered status
+                case 3: return (d.num_entries > 0 ? d.num_entries : '');
             }
         }
         if( s == 'recommendation_entries' ) {
@@ -1375,6 +1382,7 @@ function ciniki_musicfestivals_main() {
                 case 2: return d.mark;
                 case 3: return d.member_name;
                 case 4: return d.date_submitted;
+                case 5: return d.end_date + ' [+' + d.latedays + ']';
             }
         }
         if( s == 'sponsors-old' && j == 0 ) {
@@ -1522,6 +1530,15 @@ function ciniki_musicfestivals_main() {
         }
         if( s == 'recommendation_classes' && this.class_id == d.id ) {
             return 'highlight';
+        }
+        if( s == 'recommendation_entries' ) {
+            switch(d.status) {
+                case '10': return '';
+                case '30': return 'statusorange';
+                case '50': return 'statusgreen';
+                case '70': return 'statusred';
+                case '90': return 'statusgrey';
+            }
         }
     }
     this.festival.switchTab = function(tab, stab) {
@@ -7749,6 +7766,13 @@ function ciniki_musicfestivals_main() {
         'general':{'label':'', 'fields':{
 // Note: This was added by mistake, can be added back if really needs to change from one submission to another
 //            'recommendation_id':{'label':'Submission', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
+            'status':{'label':'Status', 'type':'toggle', 'toggles':{
+                '10':'Recommended',
+                '30':'Accepted',
+                '50':'Registered',
+                '70':'Turned Down',
+                '90':'Expired',
+                }},
             'class_id':{'label':'Class', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
             'position':{'label':'Position', 'required':'yes', 'type':'toggle', 'toggles':{
                 '1':'1st',

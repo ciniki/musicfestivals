@@ -20,6 +20,7 @@ function ciniki_musicfestivals_recommendationEntryAdd(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
+        'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),
         'recommendation_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Recommendation'),
         'class_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Class'),
         'position'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Position'),

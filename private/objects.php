@@ -648,6 +648,7 @@ function ciniki_musicfestivals_objects($ciniki) {
         'o_container' => 'entries',
         'table' => 'ciniki_musicfestival_recommendation_entries',
         'fields' => array(
+            'status' => array('name'=>'Status', 'default'=>'10'),
             'recommendation_id' => array('name'=>'Recommendation', 'ref'=>'ciniki.musicfestivals.recommendation'),
             'class_id' => array('name'=>'Class', 'ref'=>'ciniki.musicfestivals.class'),
             'position' => array('name'=>'Position', 'ref'=>'ciniki.musicfestivals.class'),

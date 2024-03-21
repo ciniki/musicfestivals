@@ -61,6 +61,7 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
     //
     if( $args['entry_id'] == 0 ) {
         $entry = array('id'=>0,
+            'status' => 10,
             'recommendation_id'=>'',
             'class_id'=>'',
             'position'=>'',
@@ -74,6 +75,7 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
     //
     else {
         $strsql = "SELECT ciniki_musicfestival_recommendation_entries.id, "
+            . "ciniki_musicfestival_recommendation_entries.status, "
             . "ciniki_musicfestival_recommendation_entries.recommendation_id, "
             . "ciniki_musicfestival_recommendation_entries.class_id, "
             . "ciniki_musicfestival_recommendation_entries.position, "
@@ -86,7 +88,7 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'entries', 'fname'=>'id', 
-                'fields'=>array('recommendation_id', 'class_id', 'position', 'name', 'mark'),
+                'fields'=>array('id', 'status', 'recommendation_id', 'class_id', 'position', 'name', 'mark'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

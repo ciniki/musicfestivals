@@ -9,6 +9,14 @@
 # uuid:                     The Universal Unique ID.
 # tnid:                     The Tenant ID the record belongs to.
 #
+# status:                   The current status of the recommendation entry.
+#
+#                               10 - Recommended
+#                               30 - Accepted 
+#                               50 - Registered 
+#                               70 - Turned Down 
+#                               90 - Expired
+#
 # recommendation_id:        The ID of the recommendation submission the entries are for.
 # class_id:                 The ID of the class in the syllabus the recommendations are for.
 #
@@ -31,6 +39,7 @@ create table ciniki_musicfestival_recommendation_entries (
     uuid char(36) not null,
     tnid int not null,
 
+    status tinyint unsigned not null,
     recommendation_id int not null,
     class_id int not null,
     position smallint unsigned not null,
@@ -43,4 +52,4 @@ create table ciniki_musicfestival_recommendation_entries (
     unique index (uuid),
     index (recommendation_id, class_id),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

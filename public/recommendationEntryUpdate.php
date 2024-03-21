@@ -17,6 +17,7 @@ function ciniki_musicfestivals_recommendationEntryUpdate(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'entry_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Adjudicator Recommendation Entry'),
+        'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),
         'recommendation_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Recommendation'),
         'class_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Class'),
         'position'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Position'),
