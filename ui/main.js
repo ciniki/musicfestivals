@@ -7619,7 +7619,7 @@ function ciniki_musicfestivals_main() {
     //
     // The panel to edit Adjudicator Recommendation
     //
-    this.recommendation = new M.panel('Adjudicator Submission', 'ciniki_musicfestivals_main', 'recommendation', 'mc', 'medium mediumaside', 'sectioned', 'ciniki.musicfestivals.main.recommendation');
+    this.recommendation = new M.panel('Adjudicator Submission', 'ciniki_musicfestivals_main', 'recommendation', 'mc', 'large mediumaside', 'sectioned', 'ciniki.musicfestivals.main.recommendation');
     this.recommendation.data = null;
     this.recommendation.recommendation_id = 0;
     this.recommendation.member_id = 0;
@@ -7666,6 +7666,17 @@ function ciniki_musicfestivals_main() {
                 case 1: return d.name;
                 case 2: return d.position;
                 case 3: return d.mark;
+            }
+        }
+    }
+    this.recommendation.rowClass = function(s, i, d) {
+        if( s == 'entries' ) {
+            switch(d.status) {
+                case '10': return '';
+                case '30': return 'statusorange';
+                case '50': return 'statusgreen';
+                case '70': return 'statusred';
+                case '90': return 'statusgrey';
             }
         }
     }

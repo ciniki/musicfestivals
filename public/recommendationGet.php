@@ -125,6 +125,7 @@ function ciniki_musicfestivals_recommendationGet($ciniki) {
         // Get the entries
         //
         $strsql = "SELECT entries.id, "
+            . "entries.status, "
             . "entries.position, "
             . "entries.name, "
             . "entries.mark, "
@@ -142,7 +143,7 @@ function ciniki_musicfestivals_recommendationGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'entries', 'fname'=>'id', 
-                'fields'=>array('id', 'class_code', 'class_name', 'position', 'name', 'mark'),
+                'fields'=>array('id', 'status', 'class_code', 'class_name', 'position', 'name', 'mark'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
