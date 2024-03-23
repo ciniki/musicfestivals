@@ -10,15 +10,15 @@
 # tnid:                 The tenant the time slot is attached to.
 #
 # festival_id:          The festival the time slot is for.
-# division_id:          The schedule_division the time slot is for.
+# sdivision_id:         The schedule_division the time slot is for.
 #
 # slot_time:            The time for the slot on the division date.
 #
-# class1_id:             The class 1 that is in this time slot. **deprecated**
-# class2_id:             The class 2 that is in this time slot. **deprecated**
-# class3_id:             The class 3 that is in this time slot. **deprecated**
-# class4_id:             The class 4 that is in this time slot. **deprecated**
-# class5_id:             The class 5 that is in this time slot. **deprecated**
+# class1_id:            The class 1 that is in this time slot. **deprecated**
+# class2_id:            The class 2 that is in this time slot. **deprecated**
+# class3_id:            The class 3 that is in this time slot. **deprecated**
+# class4_id:            The class 4 that is in this time slot. **deprecated**
+# class5_id:            The class 5 that is in this time slot. **deprecated**
 #
 # flags:                The options for this timeslot.
 #

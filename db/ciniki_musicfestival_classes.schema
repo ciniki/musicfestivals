@@ -60,6 +60,8 @@
 # min_titles:           The minimum number of titles that must be performed.
 # max_titles:           The maximum number of titles that can be performed.
 #
+# provincials_code:     The provincial class code any students in this class can be recommended for.
+#
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.
 #
@@ -81,6 +83,7 @@ create table ciniki_musicfestival_classes (
     plus_fee decimal(19,6) not null,
     min_titles tinyint unsigned not null,
     max_titles tinyint unsigned not null,
+    provincials_code varchar(20) not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
@@ -89,4 +92,4 @@ create table ciniki_musicfestival_classes (
     unique index (festival_id, code),
     index (festival_id, category_id, tnid),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.07';
+) ENGINE='InnoDB', COMMENT='v1.08';

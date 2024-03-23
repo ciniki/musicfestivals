@@ -466,9 +466,9 @@ function ciniki_musicfestivals_main() {
 //                    'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x02) == 0x02 ? 'yes' : 'no'},
                     },
                 'results':{'label':'Results', 'fn':'M.ciniki_musicfestivals_main.festival.switchSTab(\'results\');', },
-//                'provincials':{'label':'Provincials', 'fn':'M.ciniki_musicfestivals_main.festival.switchSTab(\'provincials\');',
-//                    'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x010000) ? 'no' : 'yes'}, // Provincials not set
-//                    },
+                'provincials':{'label':'Provincials', 'fn':'M.ciniki_musicfestivals_main.festival.switchSTab(\'provincials\');',
+                    'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x010000) ? 'no' : 'yes'}, // Provincials not set
+                    },
                 'photos':{'label':'Photos', 
                     'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x04); },
                     'fn':'M.ciniki_musicfestivals_main.festival.switchSTab(\'photos\');',
@@ -652,11 +652,11 @@ function ciniki_musicfestivals_main() {
         'schedule_provincials':{'label':'Provincial Recommendations', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'schedule' && M.ciniki_musicfestivals_main.festival.sections.schedule_tabs.selected == 'provincials' && M.ciniki_musicfestivals_main.festival.schedulesection_id>0  ? 'yes' : 'no'; },
             'dataMaps':['', '', '', '', 'mark', 'placement', 'level'],
-            'headerValues':['PCode', 'Position', 'Name', 'Class/Titles', 'Mark', 'Place'],
+            'headerValues':['Provincial Code', 'Position', 'Name', 'Class/Titles', 'Mark', 'Place'],
             'cellClasses':['', '', '', 'multiline', '', ''],
             'noData':'No provincials class codes setup',
-            'addTopTxt':'Update Provincial Codes',
-            'addTopFn':'M.ciniki_musicfestivals_main.provincialcodes.open(\'M.ciniki_musicfestivals_main.festival.open();\', M.ciniki_musicfestivals_main.festival.festival_id, M.ciniki_musicfestivals_main.festival.schedulesection_id);',
+            'addTopTxt':'Update Provincial Class Codes',
+            'addTopFn':'M.ciniki_musicfestivals_main.pcodes.open(\'M.ciniki_musicfestivals_main.festival.open();\', M.ciniki_musicfestivals_main.festival.festival_id, M.ciniki_musicfestivals_main.festival.schedulesection_id);',
             'sortable':'yes',
             'sortTypes':['text', 'text', 'text', 'text', 'number', 'text', 'text'],
             },
@@ -3746,6 +3746,14 @@ function ciniki_musicfestivals_main() {
                 },
             'placement':{'label':'Placement', 'type':'text', 'separator':'no', 'visible':'yes', 'size':'small'},
             'level':{'label':'Level', 'type':'text', 'separator':'no', 'visible':'yes', 'size':'small'},
+            'provincials_position':{'label':'Provincials', 'type':'toggle', 'none':'yes', 'toggles':{
+                '1':'1st',
+                '2':'2nd',
+                '3':'3rd',
+                '101':'1st Alt',
+                '102':'2nd Alt',
+                '103':'3rd Alt',
+                }},
 //                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x08); },
 //                },
             }},
@@ -5350,6 +5358,72 @@ function ciniki_musicfestivals_main() {
     }
     this.results.addButton('save', 'Save', 'M.ciniki_musicfestivals_main.results.save();');
     this.results.addClose('Cancel');
+
+    //
+    // The provincial class codes fast entry panel
+    //
+    this.pcodes = new M.panel('Results', 'ciniki_musicfestivals_main', 'pcodes', 'mc', 'xlarge', 'sectioned', 'ciniki.musicfestivals.main.pcodes');
+    this.pcodes.data = null;
+    this.pcodes.festival_id = 0;
+    this.pcodes.section_id = 0;
+    this.pcodes.division_id = 0;
+    this.pcodes.sections = {
+        'classes':{'label':'Provincial Class Codes', 'type':'simplegrid', 'num_cols':5,
+            'headerValues':['Section', 'Category', 'Code', 'Class', 'Provincial Class Code'],
+            'cellClasses':['', '', '', '', '', '', ''],
+            'sortable':'yes',
+            'sortTypes':['text', 'text', 'text', 'text', 'text'],
+            },
+        };
+    this.pcodes.cellValue = function(s, i, j, d) {
+        if( s == 'classes' ) {
+            switch(j) {
+                case 0: return d.syllabus_section_name;
+                case 1: return d.category_name;
+                case 2: return d.class_code;
+                case 3: return d.class_name;
+                case 4: return '<input id="' + this.panelUID + '_' + d.id + '_pcode" class="text" '
+                    + 'value="' + d.provincials_code + '">';
+            }
+        }
+    }
+    this.pcodes.open = function(cb, fid, sid) {
+        if( fid != null ) { this.festival_id = fid; }
+        if( sid != null ) { this.section_id = sid; }
+        M.api.getJSONCb('ciniki.musicfestivals.scheduleProvincialCodesGet', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'ssection_id':this.section_id}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_musicfestivals_main.pcodes;
+            p.data = rsp;
+            p.refresh();
+            p.show(cb);
+            });    
+    }
+    this.pcodes.save = function(cb) {
+        if( cb == null ) { cb = 'M.ciniki_musicfestivals_main.pcodes.close();'; }
+        var c = '';
+        for(var i in this.data.classes) {
+            var fid = this.panelUID + '_' + this.data.classes[i].id + '_pcode';
+            var v = '';
+            v = M.gE(fid).value;
+            if( v != this.data.classes[i].provincials_code ) {
+                c += '&provincials_code_' + this.data.classes[i].id + '=' + M.eU(v);
+            }
+        }
+        if( c != '' ) {
+            M.api.postJSONCb('ciniki.musicfestivals.scheduleProvincialCodesUpdate', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'ssection_id':this.section_id}, c, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                eval(cb);
+            });
+        }
+    }
+    this.pcodes.addButton('save', 'Save', 'M.ciniki_musicfestivals_main.pcodes.save();');
+    this.pcodes.addClose('Cancel');
 
     //
     // Adjudicators

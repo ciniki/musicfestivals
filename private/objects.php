@@ -135,6 +135,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'plus_fee'=>array('name'=>'Plus Fee', 'type'=>'currency', 'default'=>'0'),
             'min_titles'=>array('name'=>'Minimum Titles', 'default'=>'1'),
             'max_titles'=>array('name'=>'Maximum Titles', 'default'=>'1'),
+            'provincials_code'=>array('name'=>'Provincial Class Code', 'default'=>''),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );
@@ -296,6 +297,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'mark'=>array('name'=>'Mark', 'default'=>''),
             'placement'=>array('name'=>'Placement', 'default'=>''),
             'level'=>array('name'=>'Level', 'default'=>''),
+            'provincials_position'=>array('name'=>'Provincials Recommendation Position', 'default'=>'0'),
             'comments'=>array('name'=>'Comments', 'default'=>''),
             'notes'=>array('name'=>'Notes', 'default'=>''),
             'internal_notes'=>array('name'=>'Interal Notes', 'default'=>''),

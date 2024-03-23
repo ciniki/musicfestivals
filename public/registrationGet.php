@@ -139,6 +139,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'mark' => '',
             'placement' => '',
             'level' => '',
+            'provincials_position' => '',
             'comments' => '',
             'notes'=>'',
             'internal_notes'=>'',
@@ -229,6 +230,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "ciniki_musicfestival_registrations.mark, "
             . "ciniki_musicfestival_registrations.placement, "
             . "ciniki_musicfestival_registrations.level, "
+            . "ciniki_musicfestival_registrations.provincials_position, "
             . "ciniki_musicfestival_registrations.comments, "
             . "ciniki_musicfestival_registrations.notes, "
             . "ciniki_musicfestival_registrations.internal_notes "
@@ -260,7 +262,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     'music_orgfilename5', 'music_orgfilename6',  'music_orgfilename7', 'music_orgfilename8',  
                     'backtrack1', 'backtrack2', 'backtrack3',  'backtrack4', 
                     'backtrack5', 'backtrack6',  'backtrack7', 'backtrack8',  
-                    'instrument', 'mark', 'placement', 'level', 'comments', 'notes', 'internal_notes'),
+                    'instrument', 'mark', 'placement', 'level', 'comments', 'provincials_position',
+                    'notes', 'internal_notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

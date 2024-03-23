@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN provincials_code varchar(20) not null AFTER max_titles;
+ALTER TABLE ciniki_musicfestival_classes COMMENT='v1.08';
