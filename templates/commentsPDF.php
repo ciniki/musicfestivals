@@ -597,9 +597,9 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                     // Position at 15 mm from bottom
                     $pdf->SetDrawColor(50);
                     if( !isset($festival['comments-footer-msg']) || $festival['comments-footer-msg'] == '' ) {
-                        $pdf->SetY(-27);
+                        $pdf->SetY(-31);
                     } else {
-                        $pdf->SetY(-37);
+                        $pdf->SetY(-41);
                     }
                     $pdf->SetFont('helvetica', 'I', 12);
                     $pdf->SetCellPaddings(1,2,1,2);
@@ -640,7 +640,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                             || $festival['comments-adjudicator-signature'] == 'always')
                         && isset($adjudicators[$reg['adjudicator_id']]['sig_image_id']) 
                         ) {
-                        $pdf->Cell($wa[$wapos++], 12, "Adjudicator", 0, false, 'R', 0, '', 0, false, '', 'B');
+                        $pdf->Cell($wa[$wapos++], 16, "Adjudicator", 0, false, 'R', 0, '', 0, false, '', 'B');
                         $y = $pdf->GetY();
                         $x = $pdf->GetX();
                         ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
@@ -651,32 +651,32 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                             $image_ratio = $width/$height;
                             $available_ratio = $wa[1]/20;
                             if( $available_ratio < $image_ratio ) {
-                                $pdf->Image('@'.$rc['image']->getImageBlob(), $x, ($y-8), $wa[1], 0, 'PNG', '', 'C', 2, '150', '', false, false, 0, 'CM');
+                                $pdf->Image('@'.$rc['image']->getImageBlob(), $x, ($y-4), $wa[1], 0, 'PNG', '', 'C', 2, '150', '', false, false, 0, 'CM');
                             } else {
-                                $pdf->Image('@'.$rc['image']->getImageBlob(), $x, ($y-8.5), $wa[1], 20, 'PNG', '', 'C', 2, '150', '', false, false, 0, 'CM');
+                                $pdf->Image('@'.$rc['image']->getImageBlob(), $x, ($y-4.5), $wa[1], 20, 'PNG', '', 'C', 2, '150', '', false, false, 0, 'CM');
                             }
                         }
                         $pdf->SetY($y);
                         $pdf->SetX($x);
-                        $pdf->Cell($wa[$wapos++], 12, "", 'B', false, 'L', 0, '', 0, false);
+                        $pdf->Cell($wa[$wapos++], 16, "", 'B', false, 'L', 0, '', 0, false);
                     }
                     elseif( isset($festival['comments-adjudicator-fontsig'])
                         && (($festival['comments-adjudicator-fontsig'] == 'filledout' && $reg['comments'] != '') 
                             || $festival['comments-adjudicator-fontsig'] == 'always')
                         && isset($adjudicators[$reg['adjudicator_id']]['name']) 
                         ) {
-                        $pdf->Cell($wa[$wapos++], 12, "Adjudicator", 0, false, 'R', 0, '', 0, false, '', 'B');
-                        $pdf->SetFont('Scriptina', '', 18);
-                        $pdf->Cell($wa[$wapos++], 12, $adjudicators[$reg['adjudicator_id']]['name'], 'B', false, 'C', 0, '', 1, false, '', '');
+                        $pdf->Cell($wa[$wapos++], 16, "Adjudicator", 0, false, 'R', 0, '', 0, false, '', 'B');
+                        $pdf->SetFont('Scriptina', '', 22);
+                        $pdf->Cell($wa[$wapos++], 16, $adjudicators[$reg['adjudicator_id']]['name'], 'B', false, 'C', 0, '', 1, false, '', '');
                         $pdf->SetFont('helvetica', '', 12);
                     }
                     elseif( $reg['comments'] != '' && isset($adjudicators[$reg['adjudicator_id']]['name']) ) {
-                        $pdf->Cell($wa[$wapos++], 12, "Adjudicator", 0, false, 'R', 0, '', 0, false, '', 'B');
-                        $pdf->Cell($wa[$wapos++], 12, $adjudicators[$reg['adjudicator_id']]['name'], 'B', false, 'L', 0, '', 0, false, 'T', 'B');
+                        $pdf->Cell($wa[$wapos++], 16, "Adjudicator", 0, false, 'R', 0, '', 0, false, '', 'B');
+                        $pdf->Cell($wa[$wapos++], 16, $adjudicators[$reg['adjudicator_id']]['name'], 'B', false, 'L', 0, '', 0, false, 'T', 'B');
                     } 
                     else {
-                        $pdf->Cell($wa[$wapos++], 12, "Adjudicator", 0, false, 'R', 0, '', 0, false, '', 'B');
-                        $pdf->Cell($wa[$wapos++], 12, "", 'B', false, 'L', 0, '', 0, false, 'T', 'B');
+                        $pdf->Cell($wa[$wapos++], 16, "Adjudicator", 0, false, 'R', 0, '', 0, false, '', 'B');
+                        $pdf->Cell($wa[$wapos++], 16, "", 'B', false, 'L', 0, '', 0, false, 'T', 'B');
                     }
                     $pdf->SetCellPaddings(2,2,2,2);
                     if( isset($festival['comments-mark-pdf']) 
@@ -684,12 +684,12 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         && $reg['mark'] != 'NA'
                         ) {
                         if( isset($festival['comments-mark-label']) && $festival['comments-mark-label'] != '' ) {
-                            $pdf->Cell($wa[$wapos++], 12, $festival['comments-mark-label'] . ' ', 0, false, 'R', 0, '', 0, false, '', 'B');
+                            $pdf->Cell($wa[$wapos++], 16, $festival['comments-mark-label'] . ' ', 0, false, 'R', 0, '', 0, false, '', 'B');
                         } else {
-                            $pdf->Cell($wa[$wapos++], 12, "Mark ", 0, false, 'R', 0, '', 0, false, '', 'B');
+                            $pdf->Cell($wa[$wapos++], 16, "Mark ", 0, false, 'R', 0, '', 0, false, '', 'B');
                         }
                         $pdf->SetCellPaddings(0,2,0,2);
-                        $pdf->Cell($wa[$wapos++], 12, $reg['mark'], 'B', false, 'C', 0, '', 0, false, '', 'B');
+                        $pdf->Cell($wa[$wapos++], 16, $reg['mark'], 'B', false, 'C', 0, '', 0, false, '', 'B');
                         $pdf->SetCellPaddings(2,2,2,2);
                     }
                     if( isset($festival['comments-placement-pdf']) 
@@ -697,12 +697,12 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         && $reg['placement'] != 'NA'
                         ) {
                         if( isset($festival['comments-placement-label']) && $festival['comments-placement-label'] != '' ) {
-                            $pdf->Cell($wa[$wapos++], 12, $festival['comments-placement-label'] . ' ', 0, false, 'R', 0, '', 0, false, '', 'B');
+                            $pdf->Cell($wa[$wapos++], 16, $festival['comments-placement-label'] . ' ', 0, false, 'R', 0, '', 0, false, '', 'B');
                         } else {
-                            $pdf->Cell($wa[$wapos++], 12, "Placement ", 0, false, 'R', 0, '', 0, false, '', 'B');
+                            $pdf->Cell($wa[$wapos++], 16, "Placement ", 0, false, 'R', 0, '', 0, false, '', 'B');
                         }
                         $pdf->SetCellPaddings(0,2,0,2);
-                        $pdf->Cell($wa[$wapos++], 12, $reg['placement'], 'B', false, 'C', 0, '', 0, false, '', 'B');
+                        $pdf->Cell($wa[$wapos++], 16, $reg['placement'], 'B', false, 'C', 0, '', 0, false, '', 'B');
                         $pdf->SetCellPaddings(2,2,2,2);
                     }
                     if( isset($festival['comments-level-pdf']) 
@@ -710,15 +710,15 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         && $reg['level'] != 'NA'
                         ) {
                         if( isset($festival['comments-level-label']) && $festival['comments-level-label'] != '' ) {
-                            $pdf->Cell($wa[$wapos++], 12, $festival['comments-level-label'] . ' ', 0, false, 'R', 0, '', 0, false, '', 'B');
+                            $pdf->Cell($wa[$wapos++], 16, $festival['comments-level-label'] . ' ', 0, false, 'R', 0, '', 0, false, '', 'B');
                         } else {
-                            $pdf->Cell($wa[$wapos++], 12, "Level ", 0, false, 'R', 0, '', 0, false, '', 'B');
+                            $pdf->Cell($wa[$wapos++], 16, "Level ", 0, false, 'R', 0, '', 0, false, '', 'B');
                         }
                         $pdf->SetCellPaddings(0,2,0,2);
-                        $pdf->Cell($wa[$wapos++], 12, $reg['level'], 'B', false, 'C', 0, '', 0, false, '', 'B');
+                        $pdf->Cell($wa[$wapos++], 16, $reg['level'], 'B', false, 'C', 0, '', 0, false, '', 'B');
                         $pdf->SetCellPaddings(2,2,2,2);
                     }
-                    $pdf->Ln(12);
+                    $pdf->Ln(16);
                     
                     if( isset($festival['comments-footer-msg']) && $festival['comments-footer-msg'] != '' ) {
                         $pdf->Ln(5);
