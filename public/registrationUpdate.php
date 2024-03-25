@@ -192,8 +192,13 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     if( isset($_FILES) ) {
         foreach($_FILES as $field_name => $file) {
             $file_num = 0;
+            $file_prefix = '';
             if( preg_match("/music_orgfilename([1-8])/", $field_name, $m) ) {
                 $file_num = $m[1];
+                $file_prefix = 'music_orgfilename';
+            } elseif( preg_match("/backtrack([1-8])/", $field_name, $m) ) {
+                $file_num = $m[1];
+                $file_prefix = 'backtrack';
             } else {
                 error_log('UNKNOWN FILE: ' . $field_name);
                 continue;
@@ -204,21 +209,27 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
             if( !isset($file['tmp_name']) || $file['tmp_name'] == '' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.53', 'msg'=>'No file specified.'));
             }
-            $args["music_orgfilename{$file_num}"] = $file['name'];
-            $args['extension'] = preg_replace('/^.*\.([a-zA-Z]+)$/', '$1', $args["music_orgfilename{$file_num}"]);
+
+            $args["{$file_prefix}{$file_num}"] = $file['name'];
+            $args['extension'] = preg_replace('/^.*\.([a-zA-Z]+)$/', '$1', $args["{$file_prefix}{$file_num}"]);
 
             //
             // Check the extension is a PDF, currently only accept PDF files
             //
-            if( $args['extension'] != 'pdf' && $args['extension'] != 'PDF' ) {
+            if( $file_prefix == 'music_orgfilename' && $args['extension'] != 'pdf' && $args['extension'] != 'PDF' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.54', 'msg'=>'The file must be a PDF file.'));
             }
 
             //
             // Move the file to ciniki-storage
             //
-            $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/files/' 
-                . $registration['uuid'][0] . '/' . $registration['uuid'] . '_music' . $file_num;
+            if( $file_prefix == 'backtrack' ) {
+                $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/files/' 
+                    . $registration['uuid'][0] . '/' . $registration['uuid'] . '_backtrack' . $file_num;
+            } else {
+                $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/files/' 
+                    . $registration['uuid'][0] . '/' . $registration['uuid'] . '_music' . $file_num;
+            }
             if( !is_dir(dirname($storage_filename)) ) {
                 if( !mkdir(dirname($storage_filename), 0700, true) ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.183', 'msg'=>'Unable to add file'));
