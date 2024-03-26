@@ -163,7 +163,9 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $tnid, $args)
        
         if( isset($certificate['fields']) ) {
             foreach($certificate['fields'] as $field) {
-                if( $field['field'] == 'adjudicatorsig' ) {
+                if( $field['field'] == 'adjudicatorsig' 
+                    || ($field['field'] == 'adjudicatorsigorname' && isset($field['image_id']) && $field['image_id'] > 0) 
+                    ) {
                     if( isset($field['image_id']) && $field['image_id'] > 0 ) {
                         $rc = ciniki_images_loadImage($ciniki, $tnid, $field['image_id'], 'original');
                         if( $rc['stat'] == 'ok' ) {

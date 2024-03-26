@@ -6453,6 +6453,7 @@ function ciniki_musicfestivals_main() {
                 'title':'Title',
                 'adjudicator':'Adjudicator',
                 'adjudicatorsig':'Adjudicator Signature',
+                'adjudicatorsigorname':'Adjudicator Signature or Name',
                 'placement':'Placement',
                 'text':'Text',
                 }},

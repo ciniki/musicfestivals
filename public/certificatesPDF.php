@@ -389,6 +389,21 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                             elseif( $field['field'] == 'adjudicatorsig' && isset($adjudicators[$section['adjudicator1_id']]['sig_image_id']) && $adjudicators[$section['adjudicator1_id']]['sig_image_id'] > 0 ) {
                                 $certificate['fields'][$fid]['image_id'] = $adjudicators[$section['adjudicator1_id']]['sig_image_id'];
                             }
+                            elseif( $field['field'] == 'adjudicatorsigorname' ) {
+                                if( isset($adjudicators[$section['adjudicator1_id']]['sig_image_id']) && $adjudicators[$section['adjudicator1_id']]['sig_image_id'] > 0 ) {
+                                    $certificate['fields'][$fid]['image_id'] = $adjudicators[$section['adjudicator1_id']]['sig_image_id'];
+                                } else {
+                                    $certificate['fields'][$fid]['text'] = $adjudicators[$section['adjudicator1_id']]['name'];
+                                }
+                            }
+                            elseif( $field['field'] == 'text' ) {
+                                $certificate['fields'][$fid]['text'] = str_replace('{_placement_}', $reg['placement'], $certificate['fields'][$fid]['text']);
+                                $certificate['fields'][$fid]['text'] = str_replace('{_participant_}', $reg['name'], $certificate['fields'][$fid]['text']);
+                                $certificate['fields'][$fid]['text'] = str_replace('{_title_}', $reg['title'], $certificate['fields'][$fid]['text']);
+                                $certificate['fields'][$fid]['text'] = str_replace('{_mark_}', $reg['mark'], $certificate['fields'][$fid]['text']);
+                                $certificate['fields'][$fid]['text'] = str_replace('{_placement_}', $reg['placement'], $certificate['fields'][$fid]['text']);
+                                $certificate['fields'][$fid]['text'] = str_replace('{_level_}', $reg['level'], $certificate['fields'][$fid]['text']);
+                            }
                         }
                         $certificates[] = $certificate;
                     }
