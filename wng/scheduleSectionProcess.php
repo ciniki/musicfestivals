@@ -316,7 +316,11 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "categories.name AS category_name, "
         . "sections.name AS section_name "
         . "FROM ciniki_musicfestival_schedule_divisions AS divisions "
-        . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+        . "INNER JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
+            . "divisions.ssection_id = ssections.id " 
+            . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
             . "divisions.id = timeslots.sdivision_id " 
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
@@ -342,8 +346,11 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     if( isset($s['division-id']) && $s['division-id'] > 0 ) {
         $strsql .= "AND divisions.id = '" . ciniki_core_dbQuote($ciniki, $s['division-id']) . "' ";
     }
-    if( isset($s['results-only']) && $s['results-only'] == 'yes' && isset($s['min-mark']) && $s['min-mark'] != '' ) {
-        $strsql .= "AND registrations.mark >= '" . ciniki_core_dbQuote($ciniki, $s['min-mark']) . "' ";
+    if( isset($s['results-only']) && $s['results-only'] == 'yes' ) {
+        $strsql .= "AND ((divisions.flags&0x20) = 0x20 OR (ssections.flags&0x20)) ";
+        if( isset($s['min-mark']) && $s['min-mark'] != '' ) {
+            $strsql .= "AND registrations.mark >= '" . ciniki_core_dbQuote($ciniki, $s['min-mark']) . "' ";
+        }
     }
     if( isset($s['ipv']) && $s['ipv'] == 'inperson' ) {
         $strsql .= "AND (registrations.participation < 1 || ISNULL(registrations.participation) ) ";
