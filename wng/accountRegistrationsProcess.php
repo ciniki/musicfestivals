@@ -2133,9 +2133,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 );
         }
 
-        if( ($festival['flags']&0x01) == 0x01 && ($festival['live'] != 'no' || $festival['virtual'] != 'no') 
-            && isset($customer_switch_type_block)
-            ) {
+        if( ($festival['flags']&0x01) == 0x01 && isset($customer_switch_type_block)) {
             $blocks[] = $customer_switch_type_block;
         }
     }
