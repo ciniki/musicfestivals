@@ -546,6 +546,14 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                             }
                             return $a['mark'] > $b['mark'] ? -1 : 1;
                             });
+                        $prev_name = '';
+                        foreach($division['timeslots'][$tid]['items'] as $iid => $item) {
+                            if( $prev_name == $item['name'] ) {
+                                $division['timeslots'][$tid]['items'][$iid]['name'] = '';
+                                $division['timeslots'][$tid]['items'][$iid]['placement'] = '';
+                            }
+                            $prev_name = $item['name'];
+                        }
                     }
                 }
             }
