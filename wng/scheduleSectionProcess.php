@@ -347,7 +347,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     }
     if( isset($s['ipv']) && $s['ipv'] == 'inperson' ) {
         $strsql .= "AND (registrations.participation < 1 || ISNULL(registrations.participation) ) ";
-    } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
+    } elseif( isset($s['ipv']) && $s['ipv'] == 'virtual' ) {
         $strsql .= "AND registrations.participation = 1 ";
     }
     $strsql .= "ORDER BY divisions.division_date, division_id, slot_time, registrations.timeslot_sequence, registrations.display_name ";
