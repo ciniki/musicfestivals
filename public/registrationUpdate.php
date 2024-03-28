@@ -93,6 +93,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         'mark'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Mark'),
         'placement'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Placement'),
         'level'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Level'),
+        'provincials_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Provincials Recommendation Status'),
         'provincials_position'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Provincials Recommendation Position'),
         'comments'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Comments'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),

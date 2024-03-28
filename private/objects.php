@@ -297,6 +297,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'mark'=>array('name'=>'Mark', 'default'=>''),
             'placement'=>array('name'=>'Placement', 'default'=>''),
             'level'=>array('name'=>'Level', 'default'=>''),
+            'provincials_status'=>array('name'=>'Provincials Recommendation Status', 'default'=>'0'),
             'provincials_position'=>array('name'=>'Provincials Recommendation Position', 'default'=>'0'),
             'comments'=>array('name'=>'Comments', 'default'=>''),
             'notes'=>array('name'=>'Notes', 'default'=>''),

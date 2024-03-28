@@ -1263,6 +1263,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "registrations.mark, "
                     . "registrations.placement, "
                     . "registrations.level, "
+                    . "registrations.provincials_status AS provincials_status_text, "
                     . "registrations.provincials_position, "
                     . "IF(registrations.provincials_position='', '999', registrations.provincials_position) AS position_sort, "
                     . "classes.code AS class_code, "
@@ -1306,9 +1307,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
                             'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
                             'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
-                            'mark', 'placement', 'level', 'provincials_code', 'provincials_position',
+                            'mark', 'placement', 'level', 'provincials_code', 'provincials_status_text', 'provincials_position',
                             'class_code', 'class_name', 'category_name', 'section_name',
                             ),
+                        'maps'=>array('provincials_status_text'=>$maps['registration']['provincials_status']),
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {

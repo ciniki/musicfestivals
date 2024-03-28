@@ -121,11 +121,24 @@
 # mark:                 The mark assigned to the registration.
 # placement:            The placement of the registration (if used).
 # level
-    mark varchar(50) not null,
-    placement varchar(50) not null,
-    comments text not null,
-    provincials_code varchar(20) not null,
-    provincials_position smallint unsigned not null,
+#
+# provincials_status:   The current status of the provincials recommendation.
+#
+#                           30 - Recommended
+#                           50 - Accepted
+#                           70 - Ineligible (declined by Provincials)
+#                           90 - Declined (Competitor declined)
+#
+# provincials_position: The recommended position for provincials (1st,2nd,3rd,1st alt,2nd alt,3rd alt)
+#
+#                           1 - 1st Recommendation
+#                           2 - 2nd Recommendation
+#                           3 - 3rd Recommendation
+#                           101 - 1st Alternate
+#                           102 - 2nd Alternate
+#                           103 - 3rd Alternate
+#                       
+#
 # notes:                Any notes for the registration.
 # internal_notes:       Any internal admin notes for the registration viewable only by admins.
 #
@@ -220,6 +233,7 @@ create table ciniki_musicfestival_registrations (
     mark varchar(50) not null,
     placement varchar(50) not null,
     level varchar(50) not null,
+    provincials_status tinying unsigned not null,
     provincials_position smallint unsigned not null,
     comments text not null,
     notes text not null,
@@ -231,4 +245,4 @@ create table ciniki_musicfestival_registrations (
     index (festival_id, teacher_customer_id, billing_customer_id, accompanist_customer_id, member_id),
     index (festival_id, class_id, tnid),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.20';
+) ENGINE='InnoDB', COMMENT='v1.21';

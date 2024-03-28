@@ -20,7 +20,8 @@
 # recommendation_id:        The ID of the recommendation submission the entries are for.
 # class_id:                 The ID of the class in the syllabus the recommendations are for.
 #
-# position:                 
+# position:                 The position of the recommendation.
+#
 #                               1 - 1st Recommendation
 #                               2 - 2nd Recommendation
 #                               3 - 3rd Recommendation
