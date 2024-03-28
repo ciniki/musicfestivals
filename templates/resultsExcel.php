@@ -45,6 +45,16 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
     $intl_currency = $rc['settings']['intl-default-currency'];
 
     //
+    // Load maps
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'maps');
+    $rc = ciniki_musicfestivals_maps($ciniki);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $maps = $rc['maps'];
+
+    //
     // Load the festival
     //
     $strsql = "SELECT ciniki_musicfestivals.id, "
@@ -140,6 +150,7 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
         . "registrations.mark, "
         . "registrations.placement, "
         . "registrations.level, "
+        . "registrations.provincials_status AS provincials_status_text, "
         . "registrations.provincials_position, "
         . "classes.code AS class_code, "
         . "classes.name AS class_name, "
@@ -187,11 +198,12 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
             'fields'=>array('id'=>'registration_id', 'display_name', 'participation',
                 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
-                'mark', 'placement', 'level', 'provincials_code', 'provincials_position',
+                'mark', 'placement', 'level', 'provincials_code', 'provincials_status_text', 'provincials_position',
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                 'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
                 ),
+            'maps'=>array('provincials_status_text'=>$maps['registration']['provincials_status']),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -248,11 +260,12 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
         if( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Provincial Class', false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Position', false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Status', false);
         }
 
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Titles', false);
 
-        $objPHPExcelWorksheet->getStyle('A1:G1')->getFont()->setBold(true);
+        $objPHPExcelWorksheet->getStyle('A1:J1')->getFont()->setBold(true);
         $row++;
         
         //
@@ -291,6 +304,7 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
                     $registration['provincials_position'] = '3rd Alternate';
                 }
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['provincials_position'], false);
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['provincials_status_text'], false);
             }
             $rc = ciniki_musicfestivals_titlesMerge($ciniki, $tnid, $registration);
             if( isset($rc['titles']) ) {
