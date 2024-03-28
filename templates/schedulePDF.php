@@ -578,10 +578,16 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             if( $num_sponsors == 1 ) {
                 $pdf->SetFont('', 'B', '13');
                 $y = $pdf->GetY();
-                $h1 = $pdf->getStringHeight(180, $section['top_sponsors_title']);
+                if( isset($section['top_sponsors_title']) && $section['top_sponsors_title'] != '' ) {
+                    $h1 = $pdf->getStringHeight(180, $section['top_sponsors_title']);
+                } else {
+                    $h1 = 0;
+                }
                 $img_height = 30 - $h1;
                 $pdf->SetX($pdf->left_margin + 130);
-                $pdf->MultiCell(50, 0, $section['top_sponsors_title'], 0, 'C', 0, 1);
+                if( isset($section['top_sponsors_title']) && $section['top_sponsors_title'] != '' ) {
+                    $pdf->MultiCell(50, 0, $section['top_sponsors_title'], 0, 'C', 0, 1);
+                }
                 $sponsor = array_pop($top_sponsors);
                 $rc = ciniki_images_loadImage($ciniki, $tnid, $sponsor['image_id'], 'original');
                 if( $rc['stat'] == 'ok' ) {
