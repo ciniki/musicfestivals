@@ -953,7 +953,11 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             $bottom_sponsors = isset($rc['sponsors']) ? $rc['sponsors'] : array();
             $num_sponsors = count($bottom_sponsors);
             $pdf->SetFont('', 'B', '13');
-            $h1 = $pdf->getStringHeight(180, $section['bottom_sponsors_title']);
+            if( isset($section['bottom_sponsors_title']) && $section['bottom_sponsors_title'] != '' ) {
+                $h1 = $pdf->getStringHeight(180, $section['bottom_sponsors_title']);
+            } else {
+                $h1 = 0;
+            }
             $pdf->SetFont('', '', '12');
             $h2 = 0;
             if( isset($section['bottom_sponsors_content']) && $section['bottom_sponsors_content'] != '' ) {
@@ -965,8 +969,10 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 $pdf->AddPage();
             }
             $pdf->SetFont('', 'B', '13');
-            $pdf->MultiCell(180, 0, $section['bottom_sponsors_title'], 0, 'C', 0, 1);
-            $pdf->Ln(2);
+            if( isset($section['bottom_sponsors_title']) && $section['bottom_sponsors_title'] != '' ) {
+                $pdf->MultiCell(180, 0, $section['bottom_sponsors_title'], 0, 'C', 0, 1);
+                $pdf->Ln(2);
+            }
             $pdf->SetFont('', '', '12');
             if( isset($section['bottom_sponsors_content']) && $section['bottom_sponsors_content'] != '' ) {
                 $pdf->MultiCell(180, 0, $section['bottom_sponsors_content'], 0, 'C', 0, 1);
