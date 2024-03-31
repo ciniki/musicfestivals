@@ -576,6 +576,7 @@ function ciniki_musicfestivals_main() {
                 'dailyschedule':{'label':'Compact Schedule', 'fn':'M.ciniki_musicfestivals_main.festival.downloadCompactSchedulePDF(0);'},
                 'competitors':{'label':'All Daily Venue Competitors', 'fn':'M.ciniki_musicfestivals_main.festival.downloadDailyVenueCompetitorsPDF(0);'},
                 'resultsexcel':{'label':'Results Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadResultsExcel(0);'},
+                'recommendations':{'label':'Provincial Recommendations', 'fn':'M.ciniki_musicfestivals_main.festival.downloadProvincialRecommendations(0);'},
             }},
         'sbuttons2':{'label':'Current Section Downloads', 'aside':'no',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'schedule' && M.ciniki_musicfestivals_main.festival.schedulesection_id > 0 && M.ciniki_musicfestivals_main.festival.sections.schedule_tabs.selected == 'downloads' ? 'yes' : 'no'; },
@@ -1075,6 +1076,13 @@ function ciniki_musicfestivals_main() {
             'ipv':this.formValue('ipv'),
             };
         M.api.openPDF('ciniki.musicfestivals.scheduleResultsExcel',args);
+    }
+    this.festival.downloadProvincialRecommendations = function(s) {
+        var args = {'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'schedulesection_id':(s==null ? this.schedulesection_id : s),
+            };
+        M.api.openPDF('ciniki.musicfestivals.provincialRecommendationsPDF',args);
     }
     this.festival.listLabel = function(s, i, d) { 
         if( s == 'details' ) {
