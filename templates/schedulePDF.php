@@ -338,7 +338,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             // Position at 15 mm from bottom
             if( $this->footer_visible == 'yes' ) {
                 $this->SetY(-15);
-                $this->SetFont('helvetica', 'B', 10);
+                $this->SetFont('helvetica', '', 10);
                 $this->Cell(90, 10, $this->footer_msg, 0, false, 'L', 0, '', 0, false, 'T', 'M');
                 $this->SetFont('helvetica', '', 10);
                 $this->Cell(90, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');

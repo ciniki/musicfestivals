@@ -990,7 +990,7 @@ function ciniki_musicfestivals_main() {
             'header':this.formValue('schedule-header'),
             'footer':this.formValue('schedule-footer'),
             'section_page_break':this.formValue('schedule-section-page-break'),
-            'footerdate':this.formValue('s_footerdate'),
+            'footerdate':this.formValue('schedule-footerdate'),
             };
         M.api.openPDF('ciniki.musicfestivals.schedulePDF',args);
     }
