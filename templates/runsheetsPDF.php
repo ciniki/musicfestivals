@@ -662,7 +662,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
 
                         if( isset($reg['trophies']) && count($reg['trophies']) > 0 ) {
                             foreach($reg['trophies'] as $trophy) {
-                                if( !in_array($trophy['name'], $timeslot['trophies']) ) {
+                                if( $trophy['name'] != '' && !in_array($trophy['name'], $timeslot['trophies']) ) {
                                     $timeslot['trophies'][] = $trophy['name'];
                                     $h += $pdf->getStringHeight($trw[1], $trophy['name']);
                                 }
