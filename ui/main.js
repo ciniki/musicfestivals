@@ -2419,11 +2419,15 @@ function ciniki_musicfestivals_main() {
         '_runsheets_pdf':{'label':'Run Sheets PDF Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
             'fields':{
-                // Separate classes in timeslots
+                'runsheets-page-orientation':{'label':'Page Orientation', 'type':'toggle', 'default':'P', 'toggles':{
+                    'portrait':'Portrait',
+                    'landscape':'Landscape',
+                    }},
                 'runsheets-include-pronouns':{'label':'Include Pronouns', 'type':'toggle', 'default':'no', 'toggles':{
                     'no':'No',
                     'yes':'Yes',
                     }},
+                // Separate classes in timeslots
                 'runsheets-separate-classes':{'label':'Separate Classes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}}, 
                 'runsheets-class-format':{'label':'Class Format', 'type':'select', 'default':'default', 'options':{
                     'default':'Code - Class', 
