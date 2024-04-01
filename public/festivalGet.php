@@ -588,7 +588,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             if( isset($args['section_id']) && $args['section_id'] > 0 ) {
                 $strsql .= "HAVING section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' ";
             } elseif( isset($args['member_id']) && $args['member_id'] > 0 ) {
-                $strsql .= "AND registrations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' ";
+                $strsql .= "AND registrations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' "
+                    . "ORDER BY registrations.date_added DESC "
+                    . "";
             } elseif( isset($args['teacher_customer_id']) && $args['teacher_customer_id'] > 0 ) {
                 $strsql .= "AND registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' ";
             } elseif( isset($args['accompanist_customer_id']) && $args['accompanist_customer_id'] > 0 ) {
