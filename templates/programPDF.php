@@ -308,10 +308,11 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
                 //
                 $pdf->SetFont('', 'B', '16');
                 $pdf->Cell($fw, 10, $section['name'], 0, 0, 'C', 0);
-                $pdf->Ln(7);
+                $pdf->Ln(9);
                 $pdf->SetFont('', '', '14');
-                $pdf->Cell($fw, 10, 'Adjudicator ' . $rc['customer']['name'], 0, 'B', 'C', 0);
-                $pdf->Ln(12);
+                //$pdf->Cell($fw, 10, 'Adjudicator ' . $rc['customer']['name'], 0, 'B', 'C', 0);
+                $pdf->MultiCell($fw, 10, 'Adjudicator ' . $rc['customer']['name'], 0, 'C', 0, 1);
+                $pdf->Ln(4);
 
                 //
                 // Add image
@@ -359,7 +360,11 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
             if( !isset($division['timeslots']) ) {
                 continue;
             }
-            $pdf->AddPage();
+            if( $pdf->GetY() > 100 ) {
+                $pdf->AddPage();
+            } else {
+                $pdf->Ln(10);
+            }
             //
             // Check if enough room
             //
