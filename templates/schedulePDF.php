@@ -356,6 +356,13 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 && $args['division_header_format'] != 'default' && $args['division_header_format'] != '' 
                 ) {
                 $fields = explode('-', $args['division_header_format']);
+                foreach($fields as $field) {
+                    if( $field == 'namedate' ) {
+                        $division[$field] = $division['name'] . ' - ' . $division['date'];
+                    } elseif( $field == 'adjudicatoraddress' ) {
+                        $division[$field] = $division['adjudicator'] . ' - ' . $division['address'];
+                    }
+                }
                 if( $continued == 'yes' ) {
                     $division[$fields[0]] .= ' (continued...)';
                 }

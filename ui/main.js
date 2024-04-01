@@ -597,6 +597,7 @@ function ciniki_musicfestivals_main() {
                     },
                 'schedule-division-header-format':{'label':'Division Header Format', 'type':'select', 'default':'default', 'options':{
                     'default':'Date-Division, Address', 
+                    'namedate-adjudicatoraddress':'Division-Date, Adjudicator-Address', 
                     'name-adjudicator-address':'Division, Adjudicator, Address',
                     'date-name-adjudicator-address':'Date, Division, Adjudicator, Address',
                     'name-date-adjudicator-address':'Division, Date, Adjudicator, Address',
@@ -2382,6 +2383,7 @@ function ciniki_musicfestivals_main() {
             'fields':{
                 'schedule-division-header-format':{'label':'Division Header Format', 'type':'select', 'default':'default', 'options':{
                     'default':'Date-Division, Address', 
+                    'namedate-adjudicatoraddress':'Division-Date, Adjudicator-Address', 
                     'name-adjudicator-address':'Division, Adjudicator, Address',
                     'date-name-adjudicator-address':'Date, Division, Adjudicator, Address',
                     'name-date-adjudicator-address':'Division, Date, Adjudicator, Address',
