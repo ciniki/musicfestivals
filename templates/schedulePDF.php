@@ -520,7 +520,8 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             // Add Title
             //
             $pdf->SetFont('', 'B', '16');
-            $pdf->Cell($fw, 10, 'Adjudicator ' . $adjudicator['name'], 0, 'B', 'C', 0);
+//            $pdf->Cell($fw, 10, 'Adjudicator ' . $adjudicator['name'], 0, 'B', 'C', 0);
+            $pdf->MultiCell($fw, 0, 'Adjudicator ' . $adjudicator['name'], 0, 'C', 0, 1);
             $pdf->Ln(6);
 
             //
