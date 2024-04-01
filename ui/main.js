@@ -2419,7 +2419,7 @@ function ciniki_musicfestivals_main() {
         '_runsheets_pdf':{'label':'Run Sheets PDF Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
             'fields':{
-                'runsheets-page-orientation':{'label':'Page Orientation', 'type':'toggle', 'default':'P', 'toggles':{
+                'runsheets-page-orientation':{'label':'Page Orientation', 'type':'toggle', 'default':'portrait', 'toggles':{
                     'portrait':'Portrait',
                     'landscape':'Landscape',
                     }},
