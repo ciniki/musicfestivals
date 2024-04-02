@@ -50,11 +50,19 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
     //
     // Get the latest current festival
     //
-    $strsql = "SELECT id, name, start_date, end_date "
-        . "FROM ciniki_musicfestivals "
-        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND status = 30 "
-        . "ORDER BY start_date DESC "
+    $strsql = "SELECT festivals.id, "
+        . "festivals.name, "
+        . "festivals.start_date, "
+        . "festivals.end_date, "
+        . "COUNT(sections.id) AS num_schedule_sections "
+        . "FROM ciniki_musicfestivals AS festivals "
+        . "LEFT JOIN ciniki_musicfestival_schedule_sections AS sections ON ("
+            . "festivals.id = sections.festival_id "
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "WHERE festivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND festivals.status = 30 "
+        . "ORDER BY festivals.start_date DESC "
         . "LIMIT 1 "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
@@ -63,13 +71,13 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
     }
     $festival = isset($rc['festival']) ? $rc['festival'] : array();
 
-    $start_dt = new DateTime($festival['start_date'], new DateTimezone($intl_timezone));
+/*    $start_dt = new DateTime($festival['start_date'], new DateTimezone($intl_timezone));
     $end_dt = new DateTime($festival['end_date'], new DateTimezone($intl_timezone));
     $now = new DateTime('now', new DateTimezone($intl_timezone));
 
     if( $start_dt < $now && $end_dt > $now ) {
         $current_festival = 'yes';
-    }
+    } */
 
     //
     // Check if current/active festivals to show in main menu
@@ -107,7 +115,7 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
     //
     // Photos link when current festival or in middle of festival
     //
-    if( (ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0100) || isset($current_festival)) // Main menu festivals
+    if( isset($festival['num_schedule_sections']) && $festival['num_schedule_sections'] > 0 
         && ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x04) // photos
         && isset($festival['id'])
         && isset($ciniki['tenant']['modules']['ciniki.musicfestivals'])
