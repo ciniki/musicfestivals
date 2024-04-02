@@ -20,6 +20,16 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
     $rsp = array('stat'=>'ok', 'menu_items'=>array(), 'settings_menu_items'=>array());
 
     //
+    // Load the tenant settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $intl_timezone = $rc['settings']['intl-default-timezone'];
+    
+    //
     // Check permissions for what menu items should be available
     //
     if( isset($ciniki['tenant']['modules']['ciniki.musicfestivals'])
@@ -38,9 +48,34 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
     }
 
     //
+    // Get the latest current festival
+    //
+    $strsql = "SELECT id, name, start_date, end_date "
+        . "FROM ciniki_musicfestivals "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND status = 30 "
+        . "ORDER BY start_date DESC "
+        . "LIMIT 1 "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.261', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
+    }
+    $festival = isset($rc['festival']) ? $rc['festival'] : array();
+
+    $start_dt = new DateTime($festival['start_date'], new DateTimezone($intl_timezone));
+    $end_dt = new DateTime($festival['end_date'], new DateTimezone($intl_timezone));
+    $now = new DateTime('now', new DateTimezone($intl_timezone));
+
+    if( $start_dt < $now && $end_dt > $now ) {
+        $current_festival = 'yes';
+    }
+
+    //
     // Check if current/active festivals to show in main menu
     //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0100)
+        && isset($festival['id'])
         && isset($ciniki['tenant']['modules']['ciniki.musicfestivals'])
         && (isset($args['permissions']['owners'])
             || isset($args['permissions']['employees'])
@@ -48,10 +83,10 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
             || ($ciniki['session']['user']['perms']&0x01) == 0x01
             )
         ) {
-        $strsql = "SELECT id, name "
+/*        $strsql = "SELECT id, name "
             . "FROM ciniki_musicfestivals "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND status < 60 "
+            . "AND status = 30 "
             . "ORDER BY start_date DESC "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
@@ -59,14 +94,34 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.261', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
         }
         $rows = isset($rc['rows']) ? $rc['rows'] : array();
-        foreach($rows as $festival) {
+        foreach($rows as $festival) { */
             $menu_item = array(
-                'priority'=>2801,
+                'priority'=>2805,
                 'label'=>$festival['name'],
                 'edit'=>array('app'=>'ciniki.musicfestivals.main', 'args'=>array('festival_id'=>$festival['id'])),
                 );
             $rsp['menu_items'][] = $menu_item;
-        }
+//        }
+    }
+
+    //
+    // Photos link when current festival or in middle of festival
+    //
+    if( (ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0100) || isset($current_festival))
+        && isset($festival['id'])
+        && isset($ciniki['tenant']['modules']['ciniki.musicfestivals'])
+        && (isset($args['permissions']['owners'])
+            || isset($args['permissions']['employees'])
+            || isset($args['permissions']['resellers'])
+            || ($ciniki['session']['user']['perms']&0x01) == 0x01
+            )
+        ) {
+        $menu_item = array(
+            'priority'=>2803,
+            'label'=>$festival['name'] . ' - Photos',
+            'edit'=>array('app'=>'ciniki.musicfestivals.photos', 'args'=>array('festival_id'=>$festival['id'])),
+            );
+        $rsp['menu_items'][] = $menu_item;
     }
 
     //
