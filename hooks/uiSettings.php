@@ -107,7 +107,8 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
     //
     // Photos link when current festival or in middle of festival
     //
-    if( (ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0100) || isset($current_festival))
+    if( (ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0100) || isset($current_festival)) // Main menu festivals
+        && ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x04) // photos
         && isset($festival['id'])
         && isset($ciniki['tenant']['modules']['ciniki.musicfestivals'])
         && (isset($args['permissions']['owners'])
