@@ -3797,7 +3797,7 @@ function ciniki_musicfestivals_main() {
         'provincials':{'label':'Provincials Recommendation',
             'visible':function() { return !M.modFlagOn('ciniki.musicfestivals', 0x010000) ? 'yes' : 'no';},
             'fields':{
-                'provincials_position':{'label':'Provincials', 'type':'toggle', 'none':'yes', 
+                'provincials_position':{'label':'Place', 'type':'toggle', 'none':'yes', 
                     'visible':function() { return !M.modFlagOn('ciniki.musicfestivals', 0x010000) ? 'yes' : 'no';},
                     'toggles':{
                         '1':'1st',
@@ -3807,7 +3807,7 @@ function ciniki_musicfestivals_main() {
                         '102':'2nd Alt',
                         '103':'3rd Alt',
                     }},
-                'provincials_status':{'label':'Provincials', 'type':'toggle', 'none':'yes', 'separator':'yes',
+                'provincials_status':{'label':'Status', 'type':'toggle', 'none':'yes',
                     'toggles':{
                         '30':'Recommended',
                         '50':'Accepted',
