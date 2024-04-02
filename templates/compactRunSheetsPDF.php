@@ -529,29 +529,14 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
     $filename = 'Run Sheets';
 
     if( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
-        if( $orientation == 'landscape' ) {
-            $w = array(10, 45, 124, 15, 15, 40);
-        } else {
-            $w = array(10, 106, 15, 15, 40);
-        }
+        $w = array(10, 45, 124, 14, 17, 39);
     } else {
-        if( $orientation == 'landscape' ) {
-            $w = array(10, 60, 86, 15, 15);
-        } else {
-            $w = array(10, 146, 15, 15);
-        }
+        $w = array(10, 60, 86, 14, 16);
     }
-    if( $orientation == 'landscape' ) {
-        $cw = array(30, 219);   // Class lines
-        $tw = array(10, 239);   // Title lines
-        $tnw = array(10, 15, 224);   // reg notes lines
-        $trw = array(22, 198);   // Trophy lines
-    } else {
-        $cw = array(30, 156);   // Class lines
-        $tw = array(10, 176);   // Title lines
-        $tnw = array(10, 15, 161);   // reg notes lines
-        $trw = array(22, 134);   // Trophy lines
-    }
+    $cw = array(30, 219);   // Class lines
+    $tw = array(10, 239);   // Title lines
+    $tnw = array(10, 15, 224);   // reg notes lines
+    $trw = array(22, 198);   // Trophy lines
 
 
     $newpage = 'yes';
@@ -610,10 +595,10 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                 }
                 $pdf->MultiCell($w[$i++], 0, 'Mark', 1, 'C', 1, 0);
                 if( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
-                    $pdf->MultiCell($w[$i++], 0, 'Place', 1, 'C', 1, 0);
+                    $pdf->MultiCell($w[$i++], 0, 'Rating', 1, 'C', 1, 0);
                     $pdf->MultiCell($w[$i++], 0, 'Advanced to', 1, 'C', 1, 1);
                 } else {
-                    $pdf->MultiCell($w[$i++], 0, 'Place', 1, 'C', 1, 1);
+                    $pdf->MultiCell($w[$i++], 0, 'Rating', 1, 'C', 1, 1);
                 }
             } 
 
@@ -772,10 +757,10 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                         }
                         $pdf->MultiCell($w[$i++], 0, 'Mark', 1, 'C', 1, 0);
                         if( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
-                            $pdf->MultiCell($w[$i++], 0, 'Place', 1, 'C', 1, 0);
+                            $pdf->MultiCell($w[$i++], 0, 'Rating', 1, 'C', 1, 0);
                             $pdf->MultiCell($w[$i++], 0, 'Advanced to', 1, 'C', 1, 1);
                         } else {
-                            $pdf->MultiCell($w[$i++], 0, 'Place', 1, 'C', 1, 1);
+                            $pdf->MultiCell($w[$i++], 0, 'Rating', 1, 'C', 1, 1);
                         }
                     } 
                 }
@@ -826,10 +811,10 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                         }
                         $pdf->MultiCell($w[$i++], 0, 'Mark', 1, 'C', 1, 0);
                         if( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
-                            $pdf->MultiCell($w[$i++], 0, 'Place', 1, 'C', 1, 0);
+                            $pdf->MultiCell($w[$i++], 0, 'Rating', 1, 'C', 1, 0);
                             $pdf->MultiCell($w[$i++], 0, 'Advanced to', 1, 'C', 1, 1);
                         } else {
-                            $pdf->MultiCell($w[$i++], 0, 'Place', 1, 'C', 1, 1);
+                            $pdf->MultiCell($w[$i++], 0, 'Rating', 1, 'C', 1, 1);
                         }
                         $pdf->SetFont('', '');
                     }
@@ -863,7 +848,7 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                             $pdf->SetFont('', '', '11');
                             $h += $pdf->getStringHeight($tnw[2], $reg['combined_notes']);
                         }
-                        if( $pdf->GetY() > $pdf->getPageHeight() - $h - 17) {
+                        if( $pdf->GetY() > $pdf->getPageHeight() - $h - 20) {
                             // The following has been added by untested
                             $pdf->AddPage();
 //                            $pdf->DivisionHeader($args, $section, $division, 'yes');
@@ -878,10 +863,10 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                                 }
                                 $pdf->MultiCell($w[$i++], 0, 'Mark', 1, 'C', 1, 0);
                                 if( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
-                                    $pdf->MultiCell($w[$i++], 0, 'Place', 1, 'C', 1, 0);
+                                    $pdf->MultiCell($w[$i++], 0, 'Rating', 1, 'C', 1, 0);
                                     $pdf->MultiCell($w[$i++], 0, 'Advanced to', 1, 'C', 1, 1);
                                 } else {
-                                    $pdf->MultiCell($w[$i++], 0, 'Place', 1, 'C', 1, 1);
+                                    $pdf->MultiCell($w[$i++], 0, 'Rating', 1, 'C', 1, 1);
                                 }
                             } 
                             $pdf->SetFont('', 'B', $class_font_size);
@@ -923,10 +908,10 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                                 }
                                 $pdf->MultiCell($w[$i++], 0, 'Mark', 1, 'C', 1, 0);
                                 if( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
-                                    $pdf->MultiCell($w[$i++], 0, 'Place', 1, 'C', 1, 0);
+                                    $pdf->MultiCell($w[$i++], 0, 'Rating', 1, 'C', 1, 0);
                                     $pdf->MultiCell($w[$i++], 0, 'Advanced to', 1, 'C', 1, 1);
                                 } else {
-                                    $pdf->MultiCell($w[$i++], 0, 'Place', 1, 'C', 1, 1);
+                                    $pdf->MultiCell($w[$i++], 0, 'Rating', 1, 'C', 1, 1);
                                 }
                             }
                         }
