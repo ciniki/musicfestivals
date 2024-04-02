@@ -3954,9 +3954,9 @@ function ciniki_musicfestivals_main() {
                 }
 
                 this.sections._display_name.visible = (c.flags&0x70) > 0 ? 'yes' : 'hidden';
-                this.sections.competitor2_details.visible = (c.flags&0x10) == 0x10 ? 'yes' : 'hidden';
-                this.sections.competitor3_details.visible = (c.flags&0x20) == 0x20 ? 'yes' : 'hidden';
-                this.sections.competitor4_details.visible = (c.flags&0x40) == 0x40 ? 'yes' : 'hidden';
+                this.sections.competitor2_details.visible = ((c.flags&0x10) == 0x10 || this.data.competitor2_id > 0 ? 'yes' : 'hidden');
+                this.sections.competitor3_details.visible = ((c.flags&0x20) == 0x20 || this.data.competitor3_id > 0 ? 'yes' : 'hidden');
+                this.sections.competitor4_details.visible = ((c.flags&0x40) == 0x40 || this.data.competitor4_id > 0 ? 'yes' : 'hidden');
                 this.showHideSection('competitor2_details');
                 this.showHideSection('competitor3_details');
                 this.showHideSection('competitor4_details');
@@ -3981,7 +3981,7 @@ function ciniki_musicfestivals_main() {
     }
     this.registration.updateCompetitor = function(c) {
         var p = M.ciniki_musicfestivals_main.competitor;
-        if( this['competitor' + c + '_id'] != p.competitor_id ) {
+        if( p.competitor_id > 0 && this['competitor' + c + '_id'] != p.competitor_id ) {
             this['competitor' + c + '_id'] = p.competitor_id;
             this.save("M.ciniki_musicfestivals_main.registration.open();");
         } else {    
