@@ -2424,9 +2424,10 @@ function ciniki_musicfestivals_main() {
             'fields':{
                 'program-separate-classes':{'label':'Separate Classes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}}, 
                 'program-class-format':{'label':'Class Format', 'type':'select', 'default':'default', 'options':{
-                    'default':'Code - Class', 
+                    'default':'Class', 
                     'code-section-category-class':'Code - Section - Category - Class',
                     'code-category-class':'Code - Category - Class',
+                    'code-class':'Code - Class',
                     }},
             }},
         '_runsheets_pdf':{'label':'Run Sheets PDF Options', 

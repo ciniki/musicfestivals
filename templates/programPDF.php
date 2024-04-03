@@ -460,8 +460,12 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
                             && $festival['program-class-format'] == 'code-category-class' 
                             ) {
                             $name = $timeslot['class_code'] . ' - ' . $timeslot['category_name'] . ' - ' . $timeslot['class_name']; 
-                        } else {
+                        } elseif( isset($festival['program-class-format']) 
+                            && $festival['program-class-format'] == 'code-class' 
+                            ) {
                             $name = $timeslot['class_code'] . ' - ' . $timeslot['class_name']; 
+                        } else {
+                            $name = $timeslot['class_name']; 
                         }
                     }
 
