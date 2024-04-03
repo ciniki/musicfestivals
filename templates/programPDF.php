@@ -151,7 +151,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
         $strsql .= "AND registrations.participation = 1 ";
     }
 //    $strsql .= "AND sections.id = 57 ";
-    $strsql .= "ORDER BY divisions.division_date, division_id, slot_time, registrations.timeslot_sequence, registrations.public_name "
+    $strsql .= "ORDER BY sections.sequence, divisions.division_date, division_id, slot_time, registrations.timeslot_sequence, registrations.public_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -279,11 +279,14 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
 //    $w2 = array(7, 109);
     $w2 = array(7, 2, 105);
     $fw = 116;
+    $prev_adjudicator_id = 0;
     foreach($sections as $section) {
         //
         // Add the adjudicator(s)
         //
-        if( isset($section['adjudicator1_id']) && $section['adjudicator1_id'] > 0 ) {
+        if( isset($section['adjudicator1_id']) && $section['adjudicator1_id'] > 0 
+            && $prev_adjudicator_id != $section['adjudicator1_id'] 
+            ) {
             $strsql = "SELECT c.display_name AS name, "
                 . "a.image_id, "
                 . "a.description "
@@ -339,6 +342,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
                 $pdf->SetFont('', '', 11);
                 $pdf->MultiCell($fw, 10, $bio . "\n", 0, 'J', false, 1, '', '', true, 0, false, true, 0, 'T', false);
             }
+            $prev_adjudicator_id = $section['adjudicator1_id'];
         }
 
         //
