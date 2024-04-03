@@ -2418,6 +2418,17 @@ function ciniki_musicfestivals_main() {
                 'schedule-footerdate':{'label':'Footer Date', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'schedule-section-page-break':{'label':'Section Page Break', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
             }},
+        '_program_pdf':{'label':'Program PDF Default Options', 
+            // These options can be changed on the download screen
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
+            'fields':{
+                'program-separate-classes':{'label':'Separate Classes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}}, 
+                'program-class-format':{'label':'Class Format', 'type':'select', 'default':'default', 'options':{
+                    'default':'Code - Class', 
+                    'code-section-category-class':'Code - Section - Category - Class',
+                    'code-category-class':'Code - Category - Class',
+                    }},
+            }},
         '_runsheets_pdf':{'label':'Run Sheets PDF Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
             'fields':{
@@ -2574,6 +2585,7 @@ function ciniki_musicfestivals_main() {
         this.showHideSection('_document_footer_msg');
         this.showHideSection('_comments_pdf');
         this.showHideSection('_schedule_pdf');
+        this.showHideSection('_program_pdf');
         this.showHideSection('_runsheets_pdf');
         this.showHideSection('_certificates_pdf');
         this.showHideSection('_syllabus');

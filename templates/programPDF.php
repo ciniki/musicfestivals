@@ -50,6 +50,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
     $strsql = "SELECT ciniki_musicfestivals.id, "
         . "ciniki_musicfestivals.name, "
         . "ciniki_musicfestivals.permalink, "
+        . "ciniki_musicfestivals.flags, "
         . "ciniki_musicfestivals.start_date, "
         . "ciniki_musicfestivals.end_date, "
         . "ciniki_musicfestivals.primary_image_id, "
@@ -64,7 +65,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'festivals', 'fname'=>'id', 
-            'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'primary_image_id', 'description', 
+            'fields'=>array('name', 'permalink', 'flags', 'start_date', 'end_date', 'primary_image_id', 'description', 
                 'document_logo_id', 'document_header_msg', 'document_footer_msg')),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -76,21 +77,44 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
     $festival = $rc['festivals'][0];
 
     //
+    // Load the settings for the festival
+    //
+    $strsql = "SELECT detail_key, detail_value "
+        . "FROM ciniki_musicfestival_settings "
+        . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
+    $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.195', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+    }
+    foreach($rc['settings'] as $k => $v) {
+        $festival[$k] = $v;
+    }
+
+    //
     // Load the schedule sections, divisions, timeslots, classes, registrations
     //
-    $strsql = "SELECT sections.id AS section_id, "
-        . "sections.name AS section_name, "
-        . "sections.adjudicator1_id, "
-        . "sections.adjudicator2_id, "
-        . "sections.adjudicator3_id, "
+    $strsql = "SELECT ssections.id AS section_id, "
+        . "ssections.name AS section_name, "
+        . "ssections.adjudicator1_id, "
+        . "ssections.adjudicator2_id, "
+        . "ssections.adjudicator3_id, "
         . "divisions.id AS division_id, "
         . "divisions.name AS division_name, "
         . "divisions.address, "
-        . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, "
-        . "timeslots.id AS timeslot_id, "
-//        . "timeslots.name AS timeslot_name, "
-        . "IFNULL(classes.id, 0) AS class_id, "
+        . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, ";
+    if( isset($festival['program-separate-classes']) && $festival['program-separate-classes'] == 'yes' ) {
+        $strsql .= "CONCAT_WS('-', timeslots.id, classes.id) AS timeslot_id, ";
+    } else {
+        $strsql .= "timeslots.id AS timeslot_id, ";
+    }
+    $strsql .= "IFNULL(classes.id, 0) AS class_id, "
+        . "classes.code AS class_code, "
         . "classes.name AS class_name, "
+        . "categories.name AS category_name, "
+        . "sections.name AS syllabus_section_name, "
         . "timeslots.name AS timeslot_name, "
         . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
         . "timeslots.description, "
@@ -122,9 +146,9 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
         . "registrations.movements6, "
         . "registrations.movements7, "
         . "registrations.movements8 "
-        . "FROM ciniki_musicfestival_schedule_sections AS sections "
+        . "FROM ciniki_musicfestival_schedule_sections AS ssections "
         . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
-            . "sections.id = divisions.ssection_id " 
+            . "ssections.id = divisions.ssection_id " 
             . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
@@ -139,11 +163,19 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
             . "registrations.class_id = classes.id "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "LEFT JOIN ciniki_musicfestival_categories AS categories on ("
+            . "classes.category_id = categories.id "
+            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_sections AS sections on ("
+            . "categories.section_id = sections.id "
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "WHERE ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND ssections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "";
     if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
-        $strsql .= "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
+        $strsql .= "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
     }
     if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
         $strsql .= "AND (registrations.participation < 1 || ISNULL(registrations.participation) ) ";
@@ -151,7 +183,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
         $strsql .= "AND registrations.participation = 1 ";
     }
 //    $strsql .= "AND sections.id = 57 ";
-    $strsql .= "ORDER BY sections.sequence, divisions.division_date, division_id, slot_time, registrations.timeslot_sequence, registrations.public_name "
+    $strsql .= "ORDER BY ssections.sequence, divisions.division_date, division_id, slot_time, registrations.timeslot_sequence, registrations.public_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -163,7 +195,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
             )),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
             'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 
-                'class_id', 'class_name', 'description', 
+                'class_id', 'class_code', 'class_name', 'description', 'category_name', 'syllabus_section_name', 
                 )),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name',
@@ -270,7 +302,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
     $pdf->SetDrawColor(232);
     $pdf->SetLineWidth(0.1);
 
-    $filename = 'schedule';
+    $filename = 'program';
 
     //
     // Go through the sections, divisions and classes
@@ -350,7 +382,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
         //
         $pdf->header_sub_title = $section['name'] . ' Schedule';
         if( isset($args['schedulesection_id']) ) {
-            $filename = preg_replace('/[^a-zA-Z0-9_]/', '_', $section['name']) . '_schedule';
+            $filename = preg_replace('/[^a-zA-Z0-9_]/', '_', $section['name']) . '_program';
         }
 
         //
@@ -416,6 +448,21 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
                 if( isset($timeslot['class_id']) && $timeslot['class_id'] > 0 ) {  
                     if( $name == '' && $timeslot['class_name'] != '' ) {
                         $name = $timeslot['class_name'];
+                    }
+                    if( isset($festival['program-separate-classes']) && $festival['program-separate-classes'] == 'yes' 
+                        && $timeslot['class_code'] != '' 
+                        ) {
+                        if( isset($festival['program-class-format']) 
+                            && $festival['program-class-format'] == 'code-section-category-class' 
+                            ) {
+                            $name = $timeslot['class_code'] . ' - ' . $timeslot['syllabus_section_name'] . ' - ' . $timeslot['category_name'] . ' - ' . $timeslot['class_name']; 
+                        } elseif( isset($festival['program-class-format']) 
+                            && $festival['program-class-format'] == 'code-category-class' 
+                            ) {
+                            $name = $timeslot['class_code'] . ' - ' . $timeslot['category_name'] . ' - ' . $timeslot['class_name']; 
+                        } else {
+                            $name = $timeslot['class_code'] . ' - ' . $timeslot['class_name']; 
+                        }
                     }
 
                     $pdf->SetCellPadding(0);
