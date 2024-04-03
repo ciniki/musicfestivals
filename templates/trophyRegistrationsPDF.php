@@ -201,7 +201,7 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
     $pdf->SetCellPadding(1);
 
     // add a page
-    $pdf->SetFillColor(246);
+    $pdf->SetFillColor(236);
     $pdf->SetTextColor(0);
     $pdf->SetDrawColor(232);
     $pdf->SetLineWidth(0.1);
@@ -210,13 +210,26 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
 
     $pdf->AddPage();
 
+    $prev_category = '';
     foreach($trophies as $trophy) {
-        
+       
+        if( $prev_category != $trophy['category'] && $trophy['category'] != '' ) {
+            $pdf->SetCellPadding(4);
+            $pdf->SetFont('helvetica', 'B', 16);
+            $lh = $pdf->getStringHeight(180, $trophy['category']);
+            $prev_category = $trophy['category'];
+            if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 35 ) ) {
+                $pdf->AddPage();
+            }
+            $pdf->MultiCell(180, 0, $trophy['category'], 0, 'C', 1, 1);
+            $pdf->SetCellPadding(1);
+        }
+
         $pdf->SetFont('helvetica', 'B', 12);
         $lh = $pdf->getStringHeight(180, $trophy['name']);
         $pdf->SetFont('helvetica', '', 12);
         $lh += $pdf->getStringHeight(180, $trophy['criteria']);
-        if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 15 ) ) {
+        if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 20 ) ) {
             $pdf->AddPage();
         }
 

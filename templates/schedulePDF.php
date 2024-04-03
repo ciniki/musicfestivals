@@ -580,6 +580,14 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             }
             $top_sponsors = isset($rc['sponsors']) ? $rc['sponsors'] : array();
             $num_sponsors = count($top_sponsors);
+
+            //
+            // Check if division will be on next page
+            //
+            if( $pdf->getY() > $pdf->getPageHeight() - 32 - 80) {
+                $pdf->AddPage();
+            }
+
             // 
             // Single sponsor, float right
             //
