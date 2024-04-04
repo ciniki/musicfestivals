@@ -1318,7 +1318,6 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.168', 'msg'=>'Unable to load results', 'err'=>$rc['err']));
                 }
-                    error_log(print_r($rc,true));
                 $festival['schedule_provincials'] = isset($rc['provincials']) ? $rc['provincials'] : array();
                 foreach($festival['schedule_provincials'] as $sid => $result) {
                     $titles = '';
