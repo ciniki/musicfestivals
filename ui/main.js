@@ -5953,7 +5953,7 @@ function ciniki_musicfestivals_main() {
         }},
         'general':{'label':'', 'fields':{
             'title':{'label':'Title', 'type':'text'},
-            'flags':{'label':'Options', 'type':'text'},
+            'flags1':{'label':'Visible', 'type':'flagtoggle', 'field':'flags', 'default':'on', 'bit':0x01},
             'sequence':{'label':'Order', 'type':'text'},
             }},
         '_description':{'label':'Description', 'fields':{
