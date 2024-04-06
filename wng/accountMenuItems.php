@@ -54,7 +54,7 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
     if( isset($rc['adjudicator']) ) {
         $items[] = array(
             'title' => 'Adjudications', 
-            'priority' => 750, 
+            'priority' => 3750, 
             'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivaladjudications' ? 'yes' : 'no',
             'ref' => 'ciniki.musicfestivals.adjudications',
             'url' => $base_url . '/musicfestivaladjudications',
@@ -101,14 +101,14 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
     if( isset($rc['customer']) ) { */
         $items[] = array(
             'title' => 'Registrations', 
-            'priority' => 749, 
+            'priority' => 3749, 
             'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivalregistrations' ? 'yes' : 'no',
             'ref' => 'ciniki.musicfestivals.registrations',
             'url' => $base_url . '/musicfestivalregistrations',
             );
         $items[] = array(
             'title' => 'Competitors', 
-            'priority' => 748, 
+            'priority' => 3748, 
             'selected' => 'no',
             'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivalcompetitors' ? 'yes' : 'no',
             'ref' => 'ciniki.musicfestivals.competitors',

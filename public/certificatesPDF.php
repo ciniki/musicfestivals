@@ -399,7 +399,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                             elseif( $field['field'] == 'text' ) {
                                 $certificate['fields'][$fid]['text'] = str_replace('{_placement_}', $reg['placement'], $certificate['fields'][$fid]['text']);
                                 $certificate['fields'][$fid]['text'] = str_replace('{_participant_}', $reg['name'], $certificate['fields'][$fid]['text']);
-                                $certificate['fields'][$fid]['text'] = str_replace('{_title_}', $reg['title'], $certificate['fields'][$fid]['text']);
+                                $certificate['fields'][$fid]['text'] = str_replace('{_title_}', $reg['title1'], $certificate['fields'][$fid]['text']);
                                 $certificate['fields'][$fid]['text'] = str_replace('{_mark_}', $reg['mark'], $certificate['fields'][$fid]['text']);
                                 $certificate['fields'][$fid]['text'] = str_replace('{_placement_}', $reg['placement'], $certificate['fields'][$fid]['text']);
                                 $certificate['fields'][$fid]['text'] = str_replace('{_level_}', $reg['level'], $certificate['fields'][$fid]['text']);
