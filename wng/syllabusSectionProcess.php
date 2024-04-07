@@ -226,6 +226,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         $blocks[] = array(
             'type' => 'text',
             'level' => 1,
+            'class' => 'musicfestival-syllabus-section',
             'title' => (isset($s['title']) ? $s['title'] . ($s['title'] != '' ? ' - ' : '') : 'Syllabus - ') . $section['name'],
             'content' => $section['description'],
             );
@@ -233,6 +234,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         $blocks[] = array(
             'type' => 'title', 
             'level' => 1,
+            'class' => 'musicfestival-syllabus-section',
             'title' => (isset($s['title']) ? $s['title'] : 'Syllabus') . ' - ' . $section['name'],
             );
     }
@@ -243,7 +245,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     if( isset($s['section-pdf']) && ($s['section-pdf'] == 'top' || $s['section-pdf'] == 'both') ) {
         $blocks[] = array(
             'type' => 'buttons',
-            'class' => 'buttons-top-' . $section['permalink'],
+            'class' => "buttons-top-{$section['permalink']} musicfestival-syllabus-section",
             'list' => array(
                 array(
                     'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $section['permalink'] . '/download.pdf',
@@ -253,7 +255,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 ),
             );
     }
-
+    
     //
     // Get the levels for this section
     //
@@ -374,6 +376,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             $blocks[] = array(
                 'id' => 'filter',
                 'type' => 'dropdown',
+                'class' => 'musicfestival-syllabus-section',
                 'list' => $levels,
                 );
         }
@@ -382,6 +385,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             $blocks[] = array(
                 'type' => 'text', 
                 'title' => $category['name'], 
+                'class' => 'musicfestival-syllabus-section',
                 'content' => ($category['description'] != '' ? $category['description'] : ($category['synopsis'] != '' ? $category['synopsis'] : ' ')),
                 );
             if( isset($category['classes']) && count($category['classes']) > 0 ) {
@@ -455,7 +459,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                         'type' => 'table', 
                         'section' => 'classes', 
                         'headers' => 'no',
-                        'class' => 'fold-at-40 musicfestival-classes',
+                        'class' => 'fold-at-40 musicfestival-classes musicfestival-syllabus-section',
                         'columns' => array(
                             array('label'=>'Class', 'fold-label'=>'Class', 'field'=>'fullname', 'class'=>''),
                             array('label'=>$live_label, 'fold-label'=>$live_label, 'field'=>'live_fee', 'class'=>'aligncenter fold-alignleft'),
@@ -480,7 +484,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     if( isset($s['section-pdf']) && ($s['section-pdf'] == 'bottom' || $s['section-pdf'] == 'both') ) {
         $blocks[] = array(
             'type' => 'buttons',
-            'class' => 'buttons-bottom-' . $section['permalink'],
+            'class' => "buttons-bottom-{$section['permalink']} musicfestival-syllabus-section",
             'list' => array(
                 array(
                     'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $section['permalink'] . '/download.pdf',
