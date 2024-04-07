@@ -47,7 +47,7 @@ function ciniki_musicfestivals_wng_listProcess(&$ciniki, $tnid, &$request, $sect
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.283', 'msg'=>'Unable to load list', 'err'=>$rc['err']));
     }
     if( !isset($rc['list']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.284', 'msg'=>'Unable to find requested list'));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.284', 'msg'=>'Unable to find requested list'));
     }
     $list = $rc['list'];
    
