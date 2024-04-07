@@ -122,9 +122,10 @@ function ciniki_musicfestivals_photos($ciniki) {
                             'last_updated' => $image['last_updated'],
                             ));
                         if( $rc['stat'] != 'ok' ) {
-                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.698', 'msg'=>'No thumbnail', 'err'=>$rc['err']));
+//                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.698', 'msg'=>'No thumbnail', 'err'=>$rc['err']));
+                        } else {
+                            $rsp['timeslots'][$tid]['images'][$iid]['image'] = 'data:image/jpg;base64,' . base64_encode($rc['image']);
                         }
-                        $rsp['timeslots'][$tid]['images'][$iid]['image'] = 'data:image/jpg;base64,' . base64_encode($rc['image']);
                     }
                 }
             }
