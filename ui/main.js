@@ -1786,7 +1786,7 @@ function ciniki_musicfestivals_main() {
         this.section_id = 0;
         this.teacher_customer_id = 0;
         this.accompanist_customer_id = 0;
-        this.member_id = i;
+        this.member_id = 0;
         this.colour = n;
         if( n != '' ) {
             this.sections.registrations.label = 'Registrations - ' + M.dU(n);
@@ -1903,11 +1903,19 @@ function ciniki_musicfestivals_main() {
             }
         } else if( this.menutabs.selected == 'registrations' || this.menutabs.selected == 'videos' ) {
             this.size = 'xlarge mediumaside';
-            args['sections'] = 'yes';
             args['registrations'] = 'yes';
             args['ipv'] = this.sections.ipv_tabs.selected;
-            if( this.sections.registration_tabs.selected == 'members' ) {
+                args['sections'] = 'yes';
+            if( this.sections.registration_tabs.selected == 'sections' ) {
+                args['sections'] = 'yes';
+            } else if( this.sections.registration_tabs.selected == 'teachers' && this.teacher_customer_id > 0 ) {
+                args['teacher_customer_id'] = this.teacher_customer_id;
+            } else if( this.sections.registration_tabs.selected == 'accompanists' && this.accompanist_customer_id > 0 ) {
+                args['accompanist_customer_id'] = this.accompanist_customer_id;
+            } else if( this.sections.registration_tabs.selected == 'members' ) {
                 args['member_id'] = this.member_id;
+            } else if( this.sections.registration_tabs.selected == 'tags' && this.registration_tag != '' ) {
+                args['registration_tag'] = this.registration_tag;
             } else if( this.sections.registration_tabs.selected == 'colours' ) {
                 args['colour'] = this.colour;
             }
@@ -2020,15 +2028,6 @@ function ciniki_musicfestivals_main() {
         }
         if( this.section_id > 0 ) {
             args['section_id'] = this.section_id;
-        }
-        if( this.teacher_customer_id > 0 ) {
-            args['teacher_customer_id'] = this.teacher_customer_id;
-        }
-        if( this.accompanist_customer_id > 0 ) {
-            args['accompanist_customer_id'] = this.accompanist_customer_id;
-        }
-        if( this.registration_tag != '' ) {
-            args['registration_tag'] = this.registration_tag;
         }
         M.api.getJSONCb('ciniki.musicfestivals.festivalGet', args, function(rsp) {
             if( rsp.stat != 'ok' ) {
