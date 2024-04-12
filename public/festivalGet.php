@@ -591,7 +591,11 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $strsql .= "HAVING section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' ";
             } elseif( isset($args['colour']) && $args['colour'] != '' ) {
                 if( $args['colour'] == 'White' ) {
-                    $strsql .= "AND (registrations.flags&0xF000) = 0 ";
+                    $strsql .= "AND (registrations.flags&0xFC00) = 0 ";
+                } elseif( $args['colour'] == 'Blue' ) {
+                    $strsql .= "AND (registrations.flags&0x0400) = 0x0400 ";
+                } elseif( $args['colour'] == 'Purple' ) {
+                    $strsql .= "AND (registrations.flags&0x0800) = 0x0800 ";
                 } elseif( $args['colour'] == 'Red' ) {
                     $strsql .= "AND (registrations.flags&0x1000) = 0x1000 ";
                 } elseif( $args['colour'] == 'Orange' ) {
@@ -822,7 +826,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x2000) 
                 && isset($args['registrations_list']) && $args['registrations_list'] == 'colours'
                 ) {
-                $strsql = "SELECT (registrations.flags&0xF000) AS colour, "
+                $strsql = "SELECT (registrations.flags&0xFC00) AS colour, "
                     . "COUNT(registrations.id) AS num_registrations "
                     . "FROM ciniki_musicfestival_registrations AS registrations "
                     . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
@@ -855,6 +859,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         'num_registrations' => isset($rc['colours'][0x2000]['num_registrations']) ? $rc['colours'][0x2000]['num_registrations'] : 0),
                     array('name' => 'Red', 
                         'num_registrations' => isset($rc['colours'][0x1000]['num_registrations']) ? $rc['colours'][0x1000]['num_registrations'] : 0),
+                    array('name' => 'Purple', 
+                        'num_registrations' => isset($rc['colours'][0x0800]['num_registrations']) ? $rc['colours'][0x0800]['num_registrations'] : 0),
+                    array('name' => 'Blue', 
+                        'num_registrations' => isset($rc['colours'][0x0400]['num_registrations']) ? $rc['colours'][0x0400]['num_registrations'] : 0),
                     );
             }
         }
