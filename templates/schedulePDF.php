@@ -350,7 +350,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         //
         // Print the division header
         //
-        public function DivisionHeader($args, $section, $division, $continued) {
+        public function DivisionHeader($args, $section, $division, $continued, $sponsors_title=null, $sponsors=null) {
             $fields = array();
             if( isset($args['division_header_format']) 
                 && $args['division_header_format'] != 'default' && $args['division_header_format'] != '' 
@@ -390,12 +390,21 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     $division['date-name'] .= ' (continued...)';
                 }
             }
+            // Check if sponsors need space
+            $w = array(180, 0);
+            if( $sponsors != null && count($sponsors) == 1 ) {
+                $w = array(140, 40);
+            } elseif( $sponsors != null && count($sponsors) == 2 ) {
+                $w = array(120, 60);
+            }
+
             // Figure out how much room the division header needs
             $h = 0;
             $this->SetFont('', 'B', '16');
+            $this->SetCellPaddings(0, 0.5, 0, 0.5);
             foreach($fields as $field) {
                 if( isset($division[$field]) && $division[$field] != '' ) {
-                    $h += $this->getStringHeight(180, $division[$field]);
+                    $h += $this->getStringHeight($w[0], $division[$field]);
                 }
                 $this->SetFont('', '', '13');
             }
@@ -405,16 +414,68 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             } elseif( $this->getY() > 80 ) {
                 $this->Ln(5); 
             }
+            $y = $this->getY();
             // Output the division header
             $this->SetFont('', 'B', '16');
             $this->SetCellPaddings(0, 0.5, 0, 0.5);
             foreach($fields as $field) {
                 if( isset($division[$field]) && $division[$field] != '' ) {
-                    $this->MultiCell(180, 0, $division[$field], 0, 'L', 0, 1);
+                    $this->MultiCell($w[0], 0, $division[$field], 0, 'L', 0, 1);
                     $this->SetFont('', '', '13');
                 }
             }
-            
+
+            if( $sponsors != null && count($sponsors) < 3 ) {
+                $this->setY($y-1);
+                $this->SetFont('', 'B', '13');
+                if( $sponsors_title != null && $sponsors_title != '' ) {
+                    $h1 = $this->getStringHeight($w[1], $sponsors_title);
+                } else {
+                    $h1 = 0;
+                }
+                $img_height = $h - $h1 - 1;
+                $this->SetX($this->left_margin + $w[0]);
+                if( $sponsors_title != null && $sponsors_title != '' ) {
+                    $this->MultiCell($w[1], 0, $sponsors_title, 0, 'C', 0, 1);
+                }
+                if( count($sponsors) == 1 ) {
+                    $sponsor = array_pop($sponsors);
+                    $height = $sponsor['img']->getImageHeight();
+                    $width = $sponsor['img']->getImageWidth();
+                    $image_ratio = $width/$height;
+                    $available_ratio = $w[1]/$img_height;
+                    // Check if the ratio of the image will make it too large for the height,
+                    // and scaled based on either height or width.
+                    if( $available_ratio < $image_ratio ) {
+                        $this->Image('@'.$sponsor['img']->getImageBlob(), $this->left_margin + $w[0], $y+$h1, $w[1], 0, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                    } else {
+                        $reduced_width = ($img_height/$height)*$width;
+                        $this->Image('@'.$sponsor['img']->getImageBlob(), $this->left_margin + $w[0] + (($w[1]-$reduced_width)/2), $y+$h1, 0, $img_height, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                    }
+                } elseif( count($sponsors) == 2 ) {
+                    $offset = 0;
+                    foreach($sponsors as $sponsor) {
+                        $height = $sponsor['img']->getImageHeight();
+                        $width = $sponsor['img']->getImageWidth();
+                        $image_ratio = $width/$height;
+                        $available_ratio = ($w[1]/2)/$img_height;
+                        // Check if the ratio of the image will make it too large for the height,
+                        // and scaled based on either height or width.
+                        if( $available_ratio < $image_ratio ) {
+                            $this->Image('@'.$sponsor['img']->getImageBlob(), $this->left_margin + $w[0] + $offset, $y+$h1, ($w[1]/2), 0, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                        } else {
+                            $reduced_width = ($img_height/$height)*$width;
+                            $this->Image('@'.$sponsor['img']->getImageBlob(), $this->left_margin + $w[0] + $offset + ((($w[1]/2)-$reduced_width)/2), $y+$h1, 0, $img_height, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                        }
+                        $offset+=($w[1]/2);
+                    }
+                }
+
+
+                $this->setY($y+$h);
+                $this->setX($this->left_margin);
+            }
+
         }
     }
 
@@ -501,6 +562,10 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         if( !isset($section['divisions']) ) {
             continue;
         }
+        if( !isset($section['top_sponsors_title']) ) {
+            $section['top_sponsors_title'] = '';
+        }
+
         //
         // Start a new section
         //
@@ -561,6 +626,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         //
         // Output the top sponsors
         //
+        $top_sponsors = array();
         if( isset($args['top_sponsors']) && $args['top_sponsors'] == 'yes' 
             && isset($section['top_sponsor_ids']) 
             && is_array($section['top_sponsor_ids'])
@@ -581,6 +647,15 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             $top_sponsors = isset($rc['sponsors']) ? $rc['sponsors'] : array();
             $num_sponsors = count($top_sponsors);
 
+            foreach($top_sponsors as $sid => $sponsor) {
+                $rc = ciniki_images_loadImage($ciniki, $tnid, $sponsor['image_id'], 'original');
+                if( $rc['stat'] == 'ok' ) {
+                    $top_sponsors[$sid]['img'] = $rc['image'];
+                } else {
+                    unset($top_sponsors[$sid]);
+                }
+            }
+/*
             //
             // Check if division will be on next page
             //
@@ -671,6 +746,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 }
                 $pdf->Ln(20);
             }
+*/
         }
 
         //
@@ -693,10 +769,10 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 ) {
                 $division_header_format = $args['division_header_format'];
                 $args['division_header_format'] = preg_replace('/adjudicator-/', '', $args['division_header_format']);
-                $pdf->DivisionHeader($args, $section, $division, 'no');
+                $pdf->DivisionHeader($args, $section, $division, 'no', $section['top_sponsors_title'], $top_sponsors);
                 $args['division_header_format'] = $division_header_format;
             } else {
-                $pdf->DivisionHeader($args, $section, $division, 'no');
+                $pdf->DivisionHeader($args, $section, $division, 'no', $section['top_sponsors_title'], $top_sponsors);
             }
             $pdf->Ln(1);
             $pdf->SetFont('', '', '12');
@@ -815,7 +891,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                         $pdf->Ln(5);
                     } 
                     */
-                    $pdf->DivisionHeader($args, $section, $division, 'yes');
+                    $pdf->DivisionHeader($args, $section, $division, 'yes', $section['top_sponsors_title'], $top_sponsors);
                     $pdf->SetFont('', '', '12');
                     $pdf->Ln(1);
                     $border = 'T';
