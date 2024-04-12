@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_certificates ADD COLUMN participation tinyint unsigned not null AFTER min_score;
+ALTER TABLE ciniki_musicfestival_certificates COMMENT='v1.03';

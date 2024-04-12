@@ -15,6 +15,8 @@
 // -------
 //
 function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
+
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
     //
     // Find all the required and optional arguments
     //
@@ -131,6 +133,37 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "registrations.display_name, "
             . "registrations.participation, "
             . "registrations.title1, "
+            . "registrations.title2, "
+            . "registrations.title3, "
+            . "registrations.title4, "
+            . "registrations.title5, "
+            . "registrations.title6, "
+            . "registrations.title7, "
+            . "registrations.title8, "
+            . "registrations.composer1, "
+            . "registrations.composer2, "
+            . "registrations.composer3, "
+            . "registrations.composer4, "
+            . "registrations.composer5, "
+            . "registrations.composer6, "
+            . "registrations.composer7, "
+            . "registrations.composer8, "
+            . "registrations.movements1, "
+            . "registrations.movements2, "
+            . "registrations.movements3, "
+            . "registrations.movements4, "
+            . "registrations.movements5, "
+            . "registrations.movements6, "
+            . "registrations.movements7, "
+            . "registrations.movements8, "
+            . "registrations.perf_time1, "
+            . "registrations.perf_time2, "
+            . "registrations.perf_time3, "
+            . "registrations.perf_time4, "
+            . "registrations.perf_time5, "
+            . "registrations.perf_time6, "
+            . "registrations.perf_time7, "
+            . "registrations.perf_time8, "
             . "registrations.timeslot_sequence, "
             . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS status_text, "
             . "classes.code AS class_code, "
@@ -161,7 +194,11 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'timeslot_sequence', 'title1',
+                'fields'=>array('id', 'display_name', 'timeslot_sequence', 
+                    'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
+                    'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
+                    'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                    'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
                     'class_code', 'class_name', 'category_name', 'section_name', 
                     'participation', 'status_text', 
                     ),
@@ -175,6 +212,10 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.695', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
         }
         $scheduletimeslot['registrations'] = isset($rc['registrations']) ? $rc['registrations'] : array();
+        foreach($scheduletimeslot['registrations'] as $rid => $reg) {
+            $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, array('times'=>'startsum', 'numbers'=>'yes'));
+            $scheduletimeslot['registrations'][$rid]['titles'] = $rc['titles'];
+        }
     }
 
     $rsp = array('stat'=>'ok', 'scheduletimeslot'=>$scheduletimeslot);
@@ -276,6 +317,37 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         $strsql = "SELECT registrations.id, "
             . "registrations.display_name, "
             . "registrations.title1, "
+            . "registrations.title2, "
+            . "registrations.title3, "
+            . "registrations.title4, "
+            . "registrations.title5, "
+            . "registrations.title6, "
+            . "registrations.title7, "
+            . "registrations.title8, "
+            . "registrations.composer1, "
+            . "registrations.composer2, "
+            . "registrations.composer3, "
+            . "registrations.composer4, "
+            . "registrations.composer5, "
+            . "registrations.composer6, "
+            . "registrations.composer7, "
+            . "registrations.composer8, "
+            . "registrations.movements1, "
+            . "registrations.movements2, "
+            . "registrations.movements3, "
+            . "registrations.movements4, "
+            . "registrations.movements5, "
+            . "registrations.movements6, "
+            . "registrations.movements7, "
+            . "registrations.movements8, "
+            . "registrations.perf_time1, "
+            . "registrations.perf_time2, "
+            . "registrations.perf_time3, "
+            . "registrations.perf_time4, "
+            . "registrations.perf_time5, "
+            . "registrations.perf_time6, "
+            . "registrations.perf_time7, "
+            . "registrations.perf_time8, "
             . "registrations.participation, "
             . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS status_text, "
             . "classes.code AS class_code, "
@@ -308,7 +380,13 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'title1', 'class_code', 'class_name', 'category_name', 'section_name', 'participation', 'status_text'),
+                'fields'=>array('id', 'display_name', 
+                    'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
+                    'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
+                    'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                    'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
+                    'class_code', 'class_name', 'category_name', 'section_name', 'participation', 'status_text',
+                    ),
                 'maps'=>array(
                     'participation'=>$maps['registration']['participation'],
                     'status_text'=>$sapos_maps['invoice']['typestatus'],
@@ -319,10 +397,45 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.694', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
         }
         $rsp['unscheduled_registrations'] = isset($rc['registrations']) ? $rc['registrations'] : array();
+        foreach($rsp['unscheduled_registrations'] as $rid => $reg) {
+            $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, array('times'=>'startsum', 'numbers'=>'yes'));
+            $rsp['unscheduled_registrations'][$rid]['titles'] = $rc['titles'];
+        }
     } elseif( isset($args['section_id']) && $args['section_id'] > 0 ) {
         $strsql = "SELECT registrations.id, "
             . "registrations.display_name, "
             . "registrations.title1, "
+            . "registrations.title2, "
+            . "registrations.title3, "
+            . "registrations.title4, "
+            . "registrations.title5, "
+            . "registrations.title6, "
+            . "registrations.title7, "
+            . "registrations.title8, "
+            . "registrations.composer1, "
+            . "registrations.composer2, "
+            . "registrations.composer3, "
+            . "registrations.composer4, "
+            . "registrations.composer5, "
+            . "registrations.composer6, "
+            . "registrations.composer7, "
+            . "registrations.composer8, "
+            . "registrations.movements1, "
+            . "registrations.movements2, "
+            . "registrations.movements3, "
+            . "registrations.movements4, "
+            . "registrations.movements5, "
+            . "registrations.movements6, "
+            . "registrations.movements7, "
+            . "registrations.movements8, "
+            . "registrations.perf_time1, "
+            . "registrations.perf_time2, "
+            . "registrations.perf_time3, "
+            . "registrations.perf_time4, "
+            . "registrations.perf_time5, "
+            . "registrations.perf_time6, "
+            . "registrations.perf_time7, "
+            . "registrations.perf_time8, "
             . "registrations.participation, "
             . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS status_text, "
             . "classes.code AS class_code, "
@@ -355,7 +468,13 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'title1', 'class_code', 'class_name', 'category_name', 'section_name', 'participation', 'status_text'),
+                'fields'=>array('id', 'display_name', 
+                    'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
+                    'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
+                    'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                    'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
+                    'class_code', 'class_name', 'category_name', 'section_name', 'participation', 'status_text',
+                    ),
                 'maps'=>array(
                     'participation'=>$maps['registration']['participation'],
                     'status_text'=>$sapos_maps['invoice']['typestatus'],
@@ -366,6 +485,10 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.694', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
         }
         $rsp['unscheduled_registrations'] = isset($rc['registrations']) ? $rc['registrations'] : array();
+        foreach($rsp['unscheduled_registrations'] as $rid => $reg) {
+            $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, array('times'=>'startsum', 'numbers'=>'yes'));
+            $rsp['unscheduled_registrations'][$rid]['titles'] = $rc['titles'];
+        }
     }
 /*
     //

@@ -159,6 +159,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
             . "registrations.public_name, ";
     }
     $strsql .= "registrations.title1, "
+        . "registrations.participation, "
         . "registrations.mark, "
         . "registrations.placement, "
         . "registrations.level, "
@@ -206,7 +207,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
     } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
         $strsql .= "AND registrations.participation = 1 ";
     }
-    $strsql .= "ORDER BY divisions.division_date, division_id, slot_time "
+    $strsql .= "ORDER BY divisions.division_date, division_id, slot_time, registrations.timeslot_sequence "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -224,7 +225,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
             'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title1', 
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name',
                 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 
-                'mark', 'placement', 'level', 'timeslot_date_text',
+                'participation', 'mark', 'placement', 'level', 'timeslot_date_text',
                 )),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -246,6 +247,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
         . "certificates.orientation, "
         . "certificates.section_id, "
         . "certificates.min_score, "
+        . "certificates.participation, "
         . "fields.id AS field_id, "
         . "fields.name AS field_name, "
         . "fields.field, "
@@ -273,7 +275,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'certificates', 'fname'=>'id', 
-            'fields'=>array('id', 'festival_id', 'name', 'image_id', 'orientation', 'section_id', 'min_score')),
+            'fields'=>array('id', 'festival_id', 'name', 'image_id', 'orientation', 'section_id', 'min_score', 'participation')),
         array('container'=>'fields', 'fname'=>'field_id', 'fields'=>array(
                 'id'=>'field_id', 'name'=>'field_name', 'field',
                 'xpos', 'ypos', 'width', 'height', 'font', 'size', 'style', 'align', 'valign', 'color', 
@@ -288,6 +290,15 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
     $default_cert = null;
     foreach($avail_certs as $cert) {
         $default_cert = $cert;
+        if( $cert['participation'] == 40 ) {
+            $virtual_plus_cert = $cert;
+        } elseif( $cert['participation'] == 30 ) {
+            $live_plus_cert = $cert;
+        } elseif( $cert['participation'] == 20 ) {
+            $virtual_cert = $cert;
+        } elseif( $cert['participation'] == 10 ) {
+            $live_cert = $cert;
+        }
     }
 
     $filename = 'certificates';
@@ -329,6 +340,13 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                     // FIXME: Check appropriate certificate, currently only using the default
                     //
                     $certificate = $default_cert;
+                    if( $reg['participation'] == 2 && isset($live_plus_cert) ) {
+                        $certificate = $live_plus_cert;
+                    } elseif( $reg['participation'] == 1 && isset($virtual_cert) ) {
+                        $certificate = $virtual_cert;
+                    } elseif( $reg['participation'] == 0 && isset($live_cert) ) {
+                        $certificate = $live_cert;
+                    }
 
                     $num_copies = 1;
                     if( $reg['competitor2_id'] > 0 ) {
