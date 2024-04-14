@@ -1039,10 +1039,13 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
     //
     // Load competitors and teachers names and emails
     //
-    if( isset($args['emails']) && $args['emails'] == 'yes' ) {
+    if( (isset($args['emails']) && $args['emails'] == 'yes')
+        || (isset($args['emaillist']) && $args['emaillist'] == 'yes') 
+        ) {
         //
         // Load 100 competitors at a time so we don't overload SQL limits
         //
+        $rsp['message']['emails'] = array();
         $rsp['message']['competitors'] = array();
         if( count($competitor_ids) > 0 ) {
             for($i = 0; $i < count($competitor_ids); $i+=100) {
@@ -1063,6 +1066,14 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 if( isset($rc['rows']) ) {
                     foreach($rc['rows'] as $row) {
                         $rsp['message']['competitors'][$row['id']] = $row;
+                        if( isset($args['emaillist']) && $args['emaillist'] == 'yes' ) {
+                            if( !isset($rsp['message']['emails'][$row['email']]) ) {
+                                $rsp['message']['emails'][$row['email']] = array(
+                                    'name' => $row['name'],
+                                    'email' => $row['email'],
+                                    );
+                            }
+                        }
                     }
                 }
             }
@@ -1094,6 +1105,14 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             if( isset($rc['rows']) ) {
                 foreach($rc['rows'] as $row) {
                     $rsp['message']['teachers'][] = $row;
+                    if( isset($args['emaillist']) && $args['emaillist'] == 'yes' ) {
+                        if( !isset($rsp['message']['emails'][$row['email']]) ) {
+                            $rsp['message']['emails'][$row['email']] = array(
+                                'name' => $row['name'],
+                                'email' => $row['email'],
+                                );
+                        }
+                    }
                 }
             }
         }

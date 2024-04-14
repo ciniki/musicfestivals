@@ -31,6 +31,7 @@ function ciniki_musicfestivals_messageGet($ciniki) {
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Flags'),
         'object'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Object'),
         'object_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Object ID'),
+        'emaillist'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Email List'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
