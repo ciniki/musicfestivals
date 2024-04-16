@@ -533,6 +533,17 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
     } else {
         $w = array(10, 60, 86, 14, 16);
     }
+    if( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
+        && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes') 
+        ) {
+        $w = array(10, 45, 124, 14, 17, 39);
+    } elseif( !isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes' ) {
+        $w = array(10, 64, 144, 14, 17);
+    } elseif( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
+        $w = array(10, 55, 128, 17, 39);
+    } else {
+        $w = array(10, 70, 152, 17);
+    }
     $cw = array(30, 219);   // Class lines
     $tw = array(10, 239);   // Title lines
     $tnw = array(10, 15, 224);   // reg notes lines
