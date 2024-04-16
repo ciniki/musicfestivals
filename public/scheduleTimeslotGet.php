@@ -131,6 +131,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         //
         $strsql = "SELECT registrations.id, "
             . "registrations.display_name, "
+            . "registrations.flags, "
             . "registrations.participation, "
             . "registrations.title1, "
             . "registrations.title2, "
@@ -194,7 +195,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'timeslot_sequence', 
+                'fields'=>array('id', 'display_name', 'timeslot_sequence', 'flags',
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
@@ -316,6 +317,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
     if( isset($args['category_id']) && $args['category_id'] > 0 ) {
         $strsql = "SELECT registrations.id, "
             . "registrations.display_name, "
+            . "registrations.flags, "
             . "registrations.title1, "
             . "registrations.title2, "
             . "registrations.title3, "
@@ -380,7 +382,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 
+                'fields'=>array('id', 'display_name', 'flags', 
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
@@ -404,6 +406,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
     } elseif( isset($args['section_id']) && $args['section_id'] > 0 ) {
         $strsql = "SELECT registrations.id, "
             . "registrations.display_name, "
+            . "registrations.flags, "
             . "registrations.title1, "
             . "registrations.title2, "
             . "registrations.title3, "
@@ -468,7 +471,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 
+                'fields'=>array('id', 'display_name', 'flags',
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',

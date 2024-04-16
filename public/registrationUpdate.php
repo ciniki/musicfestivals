@@ -265,9 +265,16 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     //
     // Check if sequences should be updated
     //
-    if( isset($args['timeslot_sequence']) && $args['timeslot_sequence'] != '' ) {
-        $new_seq = $args['timeslot_sequence'];
-        $old_seq = $registration['timeslot_sequence'];
+    if( (isset($args['timeslot_sequence']) && $args['timeslot_sequence'] != '')
+        || (isset($args['timeslot_id']) && $args['timeslot_id'] == 0)
+        ) {
+        if( isset($args['timeslot_id']) && $args['timeslot_id'] == 0 ) {
+            $new_seq = 0;
+            $old_seq = -1;
+        } else {
+            $new_seq = $args['timeslot_sequence'];
+            $old_seq = $new_seq == 0 ? -1 : $registration['timeslot_sequence'];
+        }
         $strsql = "SELECT id, timeslot_sequence AS number "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE timeslot_id = '" . ciniki_core_dbQuote($ciniki, $registration['timeslot_id']) . "' "

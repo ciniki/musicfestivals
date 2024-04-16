@@ -5008,21 +5008,37 @@ function ciniki_musicfestivals_main() {
                 case 4: if( this.sections[s].num_cols > 5 ) {
                         return d.participation;
                         }
-//                    return M.btn('Remove', 'M.ciniki_musicfestivals_main.scheduletimeslot.removeRegistration(' + d.id + ');');
-                case 5: return M.btn('Remove', 'M.ciniki_musicfestivals_main.scheduletimeslot.removeRegistration(' + d.id + ');');
-//                case 3: return M.faBtn('&#xf00d;', 'Remove', 'M.ciniki_musicfestivals_main.scheduletimeslot.removeRegistration(' + d.id + ');');
+                case 5: return M.faBtn('&#xf00d;', 'Remove', 'M.ciniki_musicfestivals_main.scheduletimeslot.removeRegistration(' + d.id + ');');
             }
         }
         if( s == 'unscheduled_registrations' ) {
             switch(j) {
-//                case 0: return M.faBtn('&#xf067;', 'Add', 'M.ciniki_musicfestivals_main.scheduletimeslot.addRegistration(' + d.id + ');');
-                case 0: return M.btn('Add', 'M.ciniki_musicfestivals_main.scheduletimeslot.addRegistration(' + d.id + ');');
+                case 0: return M.faBtn('&#xf067;', 'Add', 'M.ciniki_musicfestivals_main.scheduletimeslot.addRegistration(' + d.id + ');');
+//                case 0: return M.btn('Add', 'M.ciniki_musicfestivals_main.scheduletimeslot.addRegistration(' + d.id + ');');
                 case 1: return M.multiline(d.class_code + ' - ' + d.class_name, d.category_name);
                 case 2: return M.multiline(d.display_name, d.titles.replace(/\n/, '<br/>'));
                 case 3: return d.status_text;
                 case 4: return d.participation;
             }
         }
+    }
+    this.scheduletimeslot.rowClass = function(s, i, d) {
+        if( s == 'registrations' || s == 'unscheduled_registrations' ) {
+            if( (d.flags&0x0400) == 0x0400 ) {
+                return 'statusblue';
+            } else if( (d.flags&0x0800) == 0x0800 ) {
+                return 'statuspurple';
+            } else if( (d.flags&0x8000) == 0x8000 ) {
+                return 'statusgreen';
+            } else if( (d.flags&0x4000) == 0x4000 ) {
+                return 'statusyellow';
+            } else if( (d.flags&0x2000) == 0x2000 ) {
+                return 'statusorange';
+            } else if( (d.flags&0x1000) == 0x1000 ) {
+                return 'statusred';
+            }
+        }
+        return '';
     }
     this.scheduletimeslot.rowFn = function(s, i, d) {
         if( s == 'registrations' || s == 'unscheduled_registrations' ) {    
