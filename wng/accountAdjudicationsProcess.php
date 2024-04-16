@@ -205,7 +205,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'divisions', 'fname'=>'division_uuid', 
             'fields'=>array('id'=>'division_id', 'uuid'=>'division_uuid', 
-                'name'=>'division_name', 'date'=>'division_date_text', 'address',
+                'category_name', 'section_name', 'name'=>'division_name', 'date'=>'division_date_text', 'address',
                 )),
         array('container'=>'timeslots', 'fname'=>'timeslot_uuid', 
             'fields'=>array('id'=>'timeslot_id', 'permalink'=>'timeslot_uuid', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 
@@ -372,7 +372,8 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
 
             $section = array(    
                 'id' => 'section-' . $registration['id'],
-                'label' => $registration['name'] . ' - ' . $class_name,
+                'label' => $registration['name'],
+                'sublabel' => $class_name,
                 'fields' => array(),
                 );
             for($i = 1; $i <= $registration['max_titles']; $i++) {
@@ -454,15 +455,32 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 if( isset($festival['comments-placement-label']) && $festival['comments-placement-label'] != '' ) {
                     $label = $festival['comments-placement-label'];
                 }
-                $section['fields']["{$registration['id']}-placement"] = array(
-                    'id' => "{$registration['id']}-placement",
-                    'ftype' => 'text',
-                    'class' => 'field-comments-placement',
-                    'onkeyup' => 'fieldUpdated()',
-                    'size' => 'small',
-                    'label' => $label,
-                    'value' => $registration['placement'],
-                    );
+                if( isset($festival['comments-placement-options']) && $festival['comments-placement-options'] != '' ) {
+                    $options = array();
+                    foreach(explode(',', $festival['comments-placement-options']) as $option) {
+                        $options[trim($option)] = trim($option);
+                    }
+                    $section['fields']["{$registration['id']}-placement"] = array(
+                        'id' => "{$registration['id']}-placement",
+                        'ftype' => 'select',
+                        'class' => 'field-comments-placement',
+                        'onchange' => 'fieldUpdated()',
+                        'size' => 'small',
+                        'label' => $label,
+                        'options' => $options,
+                        'value' => $registration['placement'],
+                        );
+                } else {
+                    $section['fields']["{$registration['id']}-placement"] = array(
+                        'id' => "{$registration['id']}-placement",
+                        'ftype' => 'text',
+                        'class' => 'field-comments-placement',
+                        'onkeyup' => 'fieldUpdated()',
+                        'size' => 'small',
+                        'label' => $label,
+                        'value' => $registration['placement'],
+                        );
+                }
             }
             if( isset($festival['comments-level-adjudicator']) && $festival['comments-level-adjudicator'] == 'yes' ) {
                 $label = 'Level';
@@ -599,7 +617,12 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                     $division['timeslots'][$tid]['status'] = $num_completed . ' of ' . count($timeslot['registrations']);
                     $division['timeslots'][$tid]['actions'] = "<a class='button' href='{$base_url}/{$division['uuid']}/{$timeslot['permalink']}'>Open</a>";
                 }
-
+                if( $division['section_name'] != '' 
+                    && strncmp($division['section_name'], $division['name'], strlen($division['section_name']) != 0 )
+                    ) {
+                    $division['name'] = $division['category_name'] . ' - ' . $division['name'];
+                }
+                
                 $blocks[] = array(
                     'type' => 'table', 
                     'title' => $division['name'], 
@@ -607,7 +630,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                     'columns' => array(
                         array('label'=>'Name', 'field'=>'name', 'class'=>''),
                         array('label'=>'Completed', 'field'=>'status', 'class'=>'aligncenter'),
-                        array('label'=>'', 'field'=>'actions', 'class'=>'aligncenter'),
+                        array('label'=>'', 'field'=>'actions', 'class'=>'alignright'),
                         ),
                     'rows'=>$division['timeslots'],
                     );

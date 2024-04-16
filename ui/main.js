@@ -2370,6 +2370,7 @@ function ciniki_musicfestivals_main() {
                     }},
                 'comments-placement-label':{'label':'Placement Label', 'default':'Mark', 'type':'text'},
                 'comments-placement-autofill':{'label':'Placement Autofill', 'default':'', 'type':'text'},
+                'comments-placement-options':{'label':'Dropdown Options', 'default':'', 'type':'text'},
                 'comments-placement-adjudicator':{'label':'Adjudicator Form', 'type':'toggle', 'default':'no', 'toggles':{
                     'no':'No',
                     'yes':'Yes',
@@ -4260,6 +4261,17 @@ function ciniki_musicfestivals_main() {
                 p.sections._class.fields.placement.visible = 'yes';
                 if( p.data.festival['comments-placement-label'] != null && p.data.festival['comments-placement-label'] != '' ) {
                     p.sections._class.fields.placement.label = p.data.festival['comments-placement-label'];
+                }
+                if( p.data.festival['comments-placement-options'] != null && p.data.festival['comments-placement-options'] != '' ) {
+                    p.sections._class.fields.placement.type = 'select';
+                    p.sections._class.fields.placement.options = {'':''};
+                    var options = p.data.festival['comments-placement-options'].split(",");
+                    for(var i in options) {
+                        var option = options[i].trim();
+                        p.sections._class.fields.placement.options[option] = option;
+                    }
+                } else {
+                    p.sections._class.fields.placement.type = 'text';
                 }
             } else {
                 p.sections._class.fields.placement.visible = 'no';
