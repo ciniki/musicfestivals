@@ -5003,12 +5003,17 @@ function ciniki_musicfestivals_main() {
             switch(j) {
                 case 0: return d.timeslot_sequence;
                 case 1: return M.multiline(d.class_code + ' - ' + d.class_name, d.category_name);
-                case 2: return M.multiline(d.display_name, d.titles.replace(/\n/, '<br/>'));
-                case 3: return d.status_text;
-                case 4: if( this.sections[s].num_cols > 5 ) {
-                        return d.participation;
-                        }
-                case 5: return M.faBtn('&#xf00d;', 'Remove', 'M.ciniki_musicfestivals_main.scheduletimeslot.removeRegistration(' + d.id + ');');
+                case 2: return M.multiline(d.display_name + (d.accompanist_name != '' ? ' <b>[' + d.accompanist_name + ']</b>':''), d.titles.replace(/\n/g, '<br/>'));
+//                case 3: return d.accompanist_name;
+                case 3: 
+                    if( (M.ciniki_musicfestivals_main.festival.data.flags&0x16) > 0 && d.member_name != null && d.member_name != '' ) {
+                        return M.multiline(d.participation + ' - ' + d.status_text, d.member_name);
+                    } else if( (M.ciniki_musicfestivals_main.festival.data.flags&0x16) > 0 ) {
+                        return M.multiline(d.participation, d.status_text);
+                    } else if( d.member_name != null && d.member_name != '' ) {
+                        return M.multiline(d.status_text, d.member_name);
+                    } 
+                case 4: return M.faBtn('&#xf00d;', 'Remove', 'M.ciniki_musicfestivals_main.scheduletimeslot.removeRegistration(' + d.id + ');');
             }
         }
         if( s == 'unscheduled_registrations' ) {
@@ -5016,9 +5021,18 @@ function ciniki_musicfestivals_main() {
                 case 0: return M.faBtn('&#xf067;', 'Add', 'M.ciniki_musicfestivals_main.scheduletimeslot.addRegistration(' + d.id + ');');
 //                case 0: return M.btn('Add', 'M.ciniki_musicfestivals_main.scheduletimeslot.addRegistration(' + d.id + ');');
                 case 1: return M.multiline(d.class_code + ' - ' + d.class_name, d.category_name);
-                case 2: return M.multiline(d.display_name, d.titles.replace(/\n/, '<br/>'));
-                case 3: return d.status_text;
-                case 4: return d.participation;
+                case 2: return M.multiline(d.display_name + (d.accompanist_name != '' ? ' <b>[' + d.accompanist_name + ']</b>':''), d.titles.replace(/\n/g, '<br/>'));
+//                case 3: return d.accompanist_name;
+                case 3: 
+                    // Add the type of festival if virtual or plus is enabled
+                    if( (M.ciniki_musicfestivals_main.festival.data.flags&0x16) > 0 && d.member_name != null && d.member_name != '' ) {
+                        return M.multiline(d.participation + ' - ' + d.status_text, d.member_name);
+                    } else if( (M.ciniki_musicfestivals_main.festival.data.flags&0x16) > 0 ) {
+                        return M.multiline(d.participation, d.status_text);
+                    } else if( d.member_name != null && d.member_name != '' ) {
+                        return M.multiline(d.status_text, d.member_name);
+                    } 
+                    return d.status_text;
             }
         }
     }
@@ -5109,19 +5123,40 @@ function ciniki_musicfestivals_main() {
                 p.sections.general.fields.sdivision_id.options = rsp.scheduledivisions;
                 p.sections._section.fields.section_id.options = rsp.sections;
                 p.sections._category.fields.category_id.options = rsp.categories;
+                p.unscheduled_registrations = rsp.unscheduled_registrations;
                 if( (M.ciniki_musicfestivals_main.festival.data.flags&0x16) > 0 ) {
-                    p.sections.registrations.num_cols = 6;
-                    p.sections.registrations.headerValues = ['#', 'Name/Titles', 'Class/Category', 'Status', 'Type', ''];
-                    p.sections.registrations.cellClasses = ['', 'multiline', 'multiline', '', '', 'alignright fabuttons'];
-                    p.sections.unscheduled_registrations.num_cols = 5;
+                    p.sections.registrations.num_cols = 5;
+                    p.sections.registrations.headerValues = ['#', 'Class/Category', 'Name[Accompanist]/Titles', 'Type', ''];
+                    p.sections.registrations.cellClasses = ['', 'multiline', 'multiline', 'multiline', 'alignright fabuttons'];
+                    p.sections.unscheduled_registrations.headerValues = ['', 'Class/Category', 'Name[Accompanist]/Titles', 'Type'];
+                    p.sections.unscheduled_registrations.cellClasses = ['fabuttons', 'multiline', 'multiline', 'multiline'];
+                    p.sections.unscheduled_registrations.num_cols = 4;
                 } else {
                     p.sections.registrations.num_cols = 5;
-                    p.sections.registrations.headerValues = ['#', 'Name/Titles', 'Class/Category', ''];
-                    p.sections.registrations.cellClasses = ['', 'multiline', 'multiline', '', 'alignright fabuttons'];
+                    p.sections.registrations.headerValues = ['#', 'Class/Category', 'Name[Accompanist]/Titles', 'Status', ''];
+                    p.sections.registrations.cellClasses = ['', 'multiline', 'multiline', 'alignright fabuttons'];
+                    p.sections.unscheduled_registrations.headerValues = ['', 'Class/Category', 'Name[Accompanist]/Titles', 'Status'];
+                    p.sections.unscheduled_registrations.cellClasses = ['fabuttons', 'multiline', 'multiline', ''];
                     p.sections.unscheduled_registrations.num_cols = 4;
                 }
+/*                if( (M.ciniki_musicfestivals_main.festival.data.flags&0x16) > 0 ) {
+                    p.sections.registrations.num_cols = 6;
+                    p.sections.registrations.headerValues = ['#', 'Class/Category', 'Name/Titles', 'Accompanist', 'Type', ''];
+                    p.sections.registrations.cellClasses = ['', 'multiline', 'multiline', '', 'multiline', 'alignright fabuttons'];
+                    p.sections.unscheduled_registrations.headerValues = ['', 'Class/Category', 'Name/Titles', 'Accompanist', 'Type'];
+                    p.sections.unscheduled_registrations.cellClasses = ['fabuttons', 'multiline', 'multiline', '', 'multiline'];
+                    p.sections.unscheduled_registrations.num_cols = 5;
+                } else {
+                    p.sections.registrations.num_cols = 6;
+                    p.sections.registrations.headerValues = ['#', 'Class/Category', 'Name/Titles', 'Accompanist', 'Status', ''];
+                    p.sections.registrations.cellClasses = ['', 'multiline', 'multiline', '', 'alignright fabuttons'];
+                    p.sections.unscheduled_registrations.headerValues = ['', 'Class/Category', 'Name/Titles', 'Accompanist', 'Status'];
+                    p.sections.unscheduled_registrations.cellClasses = ['fabuttons', 'multiline', 'multiline', '', ''];
+                    p.sections.unscheduled_registrations.num_cols = 4;
+                } */
                 p.refresh();
                 p.show(cb);
+                p.refreshSections(['unscheduled_registrations']);
             });
     }
     this.scheduletimeslot.save = function(cb) {

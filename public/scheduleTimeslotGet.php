@@ -167,6 +167,8 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "registrations.perf_time8, "
             . "registrations.timeslot_sequence, "
             . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS status_text, "
+            . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
+            . "IFNULL(members.name, '') AS member_name, "
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
             . "categories.name AS category_name, "
@@ -188,6 +190,14 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                 . "categories.section_id = sections.id "
                 . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_customers AS accompanists ON ("
+                . "registrations.accompanist_customer_id = accompanists.id "
+                . "AND accompanists.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestivals_members AS members ON ("
+                . "registrations.member_id = members.id "
+                . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "WHERE registrations.timeslot_id = '" . ciniki_core_dbQuote($ciniki, $scheduletimeslot['id']) . "' "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY registrations.timeslot_sequence, registrations.display_name "
@@ -195,7 +205,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'timeslot_sequence', 'flags',
+                'fields'=>array('id', 'display_name', 'timeslot_sequence', 'flags', 'accompanist_name', 'member_name', 
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
@@ -352,6 +362,8 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "registrations.perf_time8, "
             . "registrations.participation, "
             . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS status_text, "
+            . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
+            . "IFNULL(members.name, '') AS member_name, "
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
             . "categories.name AS category_name, "
@@ -374,6 +386,14 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                 . "categories.section_id = sections.id "
                 . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_customers AS accompanists ON ("
+                . "registrations.accompanist_customer_id = accompanists.id "
+                . "AND accompanists.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestivals_members AS members ON ("
+                . "registrations.member_id = members.id "
+                . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "WHERE classes.category_id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
             . "AND classes.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -382,7 +402,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'flags', 
+                'fields'=>array('id', 'display_name', 'flags', 'accompanist_name', 'member_name', 
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
@@ -441,6 +461,8 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "registrations.perf_time8, "
             . "registrations.participation, "
             . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS status_text, "
+            . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
+            . "IFNULL(members.name, '') AS member_name, "
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
             . "categories.name AS category_name, "
@@ -463,6 +485,14 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                 . "categories.section_id = sections.id "
                 . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_customers AS accompanists ON ("
+                . "registrations.accompanist_customer_id = accompanists.id "
+                . "AND accompanists.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestivals_members AS members ON ("
+                . "registrations.member_id = members.id "
+                . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
             . "AND categories.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -471,7 +501,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'flags',
+                'fields'=>array('id', 'display_name', 'flags', 'accompanist_name', 'member_name', 
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
