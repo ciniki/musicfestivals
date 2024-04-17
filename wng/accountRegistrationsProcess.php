@@ -291,6 +291,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
 
     //
     // Load the members
+    //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
         $strsql = "SELECT members.id, "
             . "members.name, "
@@ -1848,6 +1849,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
         $cart_registrations = array();
         $etransfer_registrations = array();
+        $paymentrequired_registrations = array();
         $paid_registrations = array();
         $cancelled_registrations = array();
         $parent_registrations = array();
@@ -1880,10 +1882,13 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $parent_registrations[] = $reg;
             } elseif( $reg['invoice_status'] == 10 ) {
                 $cart_registrations[] = $reg;
+            } elseif( $reg['status'] == 50 ) {  
+                // Based on status from registration NOT invoice status
+                $paid_registrations[] = $reg;
             } elseif( $reg['invoice_status'] == 42 ) {
                 $etransfer_registrations[] = $reg;
-            } elseif( $reg['invoice_status'] == 50 ) {
-                $paid_registrations[] = $reg;
+            } elseif( $reg['invoice_status'] == 40 ) {
+                $paymentrequired_registrations[] = $reg;
             } elseif( $reg['status'] == 60 ) {
                 $cancelled_registrations[] = $reg;
             }
@@ -2011,6 +2016,39 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             //
             // FIXME: Add button to download PDF list of registrations
             //
+        }
+        if( count($paymentrequired_registrations) > 0 ) {
+            //
+            // Format fee
+            //
+            $total = 0;
+            foreach($paymentrequired_registrations as $rid => $registration) {
+                $etransfer_registrations[$rid]['viewbutton'] = "<form action='{$base_url}' method='POST'>"
+                    . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
+                    . "<input type='hidden' name='action' value='view' />"
+                    . "<input class='button' type='submit' name='submit' value='View'>"
+                    . "</form>";
+                $paymentrequired_registrations[$rid]['fee'] = '$' . number_format($registration['fee'], 2);
+                $total += $registration['fee'];
+            }
+            $blocks[] = array(
+                'type' => 'table',
+                'title' => $festival['name'] . ' Payments Required',
+                'class' => 'musicfestival-registrations limit-width limit-width-80 fold-at-50',
+                'headers' => 'yes',
+                'columns' => array(
+                    array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
+                    array('label' => 'Class', 'fold-label'=>'Class', 'field' => 'codename', 'class' => 'alignleft'),
+                    array('label' => 'Title(s)', 'fold-label'=>'Title', 'field' => 'titles', 'class' => 'alignleft'),
+                    array('label' => 'Fee', 'fold-label'=>'Fee', 'field' => 'fee', 'class' => 'alignright fold-alignleft'),
+                    array('label' => '', 'field' => 'viewbutton', 'class' => 'buttons alignright'),
+                    ),
+                'rows' => $paymentrequired_registrations,
+                'footer' => array(
+                    array('value' => '<b>Total</b>', 'colspan' => 3, 'class' => 'alignright'),
+                    array('value' => '$' . number_format($total, 2), 'colspan'=>2, 'class' => 'alignright'),
+                    ),
+                );
         }
         if( count($paid_registrations) > 0 ) {
             foreach($paid_registrations as $rid => $registration) {
