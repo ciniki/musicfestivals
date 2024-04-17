@@ -628,11 +628,16 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         $wa = array(25, 70, 20, 17, 24, 23);
                     }
                     elseif( isset($festival['comments-placement-pdf']) && $festival['comments-placement-pdf'] == 'yes' 
-                        && $reg['mark'] != 'NA'
+                        && $reg['placement'] != 'NA'
                         && isset($festival['comments-level-pdf']) && $festival['comments-level-pdf'] == 'yes' 
                         && $reg['level'] != 'NA'
                         ) {
                         $wa = array(25, 70, 25, 17, 21, 21);
+                    }
+                    elseif( isset($festival['comments-placement-pdf']) && $festival['comments-placement-pdf'] == 'yes' 
+                        && $reg['placement'] != 'NA'
+                        ) {
+                        $wa = array(27, 70, 30, 50);
                     }
                     $wapos = 0;
                     if( isset($festival['comments-adjudicator-signature'])
