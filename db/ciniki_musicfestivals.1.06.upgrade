@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestivals ADD COLUMN accompanist_end_dt datetime not null AFTER edit_end_dt;
+ALTER TABLE ciniki_musicfestivals COMMENT='v1.06';

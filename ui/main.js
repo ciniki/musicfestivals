@@ -2266,6 +2266,7 @@ function ciniki_musicfestivals_main() {
             'live_date':{'label':'Live Deadline', 'type':'datetime'},
             'virtual_date':{'label':'Virtual Deadline', 'type':'datetime', 'visible':'no'},
             'edit_end_dt':{'label':'Edit Titles Deadline', 'type':'datetime'},
+            'accompanist_end_dt':{'label':'Accompanist Deadline', 'type':'datetime'},
             'upload_end_dt':{'label':'Upload Deadline', 'type':'datetime', 'visible':'no'},
             }},
         '_settings':{'label':'', 'aside':'yes', 'fields':{

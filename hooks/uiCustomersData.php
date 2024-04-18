@@ -207,7 +207,7 @@ function ciniki_musicfestivals_hooks_uiCustomersData($ciniki, $tnid, $args) {
         . "registrations.music_orgfilename1, "
         . "registrations.music_orgfilename2, "
         . "registrations.music_orgfilename3, "
-        . "IFNULL(DATE_FORMAT(timeslots.slot_time, '%H:%i %p'), '') AS timeslot_time, "
+        . "IFNULL(DATE_FORMAT(timeslots.slot_time, '%l:%i %p'), '') AS timeslot_time, "
         . "IFNULL(DATE_FORMAT(sdivisions.division_date, '%M %d, %Y'), '') AS division_date "
         . "FROM ciniki_musicfestival_registrations AS registrations "
         . "INNER JOIN ciniki_musicfestivals AS festivals ON ("

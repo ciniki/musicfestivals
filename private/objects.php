@@ -29,6 +29,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'live_date'=>array('name'=>'Live Deadline', 'default'=>''),
             'virtual_date'=>array('name'=>'Virtual Deadline', 'default'=>''),
             'edit_end_dt'=>array('name'=>'Edit Titles Deadline', 'default'=>''),
+            'accompanist_end_dt'=>array('name'=>'Edit Accompanist Deadline', 'default'=>''),
             'upload_end_dt'=>array('name'=>'Upload Deadline', 'default'=>''),
             'primary_image_id'=>array('name'=>'Primary Image', 'ref'=>'ciniki.images.image', 'default'=>'0'),
             'description'=>array('name'=>'Description', 'default'=>''),
