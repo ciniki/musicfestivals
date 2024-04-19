@@ -848,7 +848,15 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             }
 
             $color = '';
-            if( ($registration['flags']&0x1000) == 0x1000 ) {
+            if( ($registration['flags']&0x0100) == 0x0100 ) {
+                $color = 'EEEEEE';  // grey
+            } else if( ($registration['flags']&0x0200) == 0x0200 ) {
+                $color = 'CEFFF8';  // teal
+            } else if( ($registration['flags']&0x0400) == 0x0400 ) {
+                $color = 'DDF1FF';  // blue
+            } else if( ($registration['flags']&0x0800) == 0x0800 ) {
+                $color = 'F0DDFF';  // Purple
+            } else if( ($registration['flags']&0x1000) == 0x1000 ) {
                 $color = 'FFDDDD';  // Red
             } elseif( ($registration['flags']&0x2000) == 0x2000 ) {
                 $color = 'FFEFDD';  // Orange

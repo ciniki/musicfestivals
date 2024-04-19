@@ -1568,7 +1568,11 @@ function ciniki_musicfestivals_main() {
             }
         }
         if( s == 'registrations' ) {
-            if( (d.flags&0x0400) == 0x0400 ) {
+            if( (d.flags&0x0100) == 0x0100 ) {
+                return 'statusgrey';
+            } else if( (d.flags&0x0200) == 0x0200 ) {
+                return 'statusteal';
+            } else if( (d.flags&0x0400) == 0x0400 ) {
                 return 'statusblue';
             } else if( (d.flags&0x0800) == 0x0800 ) {
                 return 'statuspurple';
@@ -3708,8 +3712,8 @@ function ciniki_musicfestivals_main() {
         '_class':{'label':'Registration', 'fields':{
 //            'status':{'label':'Status', 'required':'yes', 'type':'toggle', 'toggles':{'5':'Draft', '10':'Applied', '50':'Paid', '60':'Cancelled'}},
 //            'payment_type':{'label':'Payment', 'type':'toggle', 'toggles':{'20':'Square', '50':'Visa', '55':'Mastercard', '100':'Cash', '105':'Cheque', '110':'Email', '120':'Other', '121':'Online'}},
-            'flags13':{'label':'Colour', 'type':'flagspiece', 'mask':0xFC00, 'field':'flags', 'toggle':'yes', 'none':'yes', 'join':'yes', 
-                'flags':{'11':{'name':'Blue'}, '12':{'name':'Purple'},'13':{'name':'Red'}, '14':{'name':'Orange'}, '15':{'name':'Yellow'}, '16':{'name':'Green'}},
+            'flags13':{'label':'Colour', 'type':'flagspiece', 'mask':0xFF00, 'field':'flags', 'toggle':'yes', 'none':'yes', 'join':'yes', 
+                'flags':{'9':{'name':'Grey'}, '10':{'name':'Teal'}, '11':{'name':'Blue'}, '12':{'name':'Purple'},'13':{'name':'Red'}, '14':{'name':'Orange'}, '15':{'name':'Yellow'}, '16':{'name':'Green'}},
                 },
 //            'flags1':{'label':'Festivals', 'type':'flagspiece', 'mask':0x03, 'field':'flags', 'join':'yes', 'toggle':'yes',
 //                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x4000); },
@@ -5051,7 +5055,11 @@ function ciniki_musicfestivals_main() {
     }
     this.scheduletimeslot.rowClass = function(s, i, d) {
         if( s == 'registrations' || s == 'unscheduled_registrations' ) {
-            if( (d.flags&0x0400) == 0x0400 ) {
+            if( (d.flags&0x0100) == 0x0100 ) {
+                return 'statusgrey';
+            } else if( (d.flags&0x0200) == 0x0200 ) {
+                return 'statusteal';
+            } else if( (d.flags&0x0400) == 0x0400 ) {
                 return 'statusblue';
             } else if( (d.flags&0x0800) == 0x0800 ) {
                 return 'statuspurple';
