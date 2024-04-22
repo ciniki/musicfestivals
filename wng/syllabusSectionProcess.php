@@ -382,12 +382,15 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         }
 
         foreach($categories as $category) {
-            $blocks[] = array(
-                'type' => 'text', 
-                'title' => $category['name'], 
-                'class' => 'musicfestival-syllabus-section',
-                'content' => ($category['description'] != '' ? $category['description'] : ($category['synopsis'] != '' ? $category['synopsis'] : ' ')),
-                );
+            $intro = ($category['description'] != '' ? $category['description'] : ($category['synopsis'] != '' ? $category['synopsis'] : ''));
+            if( $intro != '' ) {
+                $blocks[] = array(
+                    'type' => 'text', 
+                    'title' => $category['name'], 
+                    'class' => 'musicfestival-syllabus-section',
+                    'content' => ($category['description'] != '' ? $category['description'] : ($category['synopsis'] != '' ? $category['synopsis'] : ' ')),
+                    );
+            }
             if( isset($category['classes']) && count($category['classes']) > 0 ) {
                 //
                 // Process the classes to determine which fee to show
@@ -473,6 +476,9 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                     
                 }
                 $block['columns'][] = array('label'=>'', 'field'=>'register', 'class'=>'alignright buttons');
+                if( $intro == '' ) {
+                    $block['title'] = $category['name']; 
+                }
                 $blocks[] = $block;
             }
         }
