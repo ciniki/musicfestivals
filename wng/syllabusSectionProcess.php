@@ -446,10 +446,10 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                         'headers' => ($festival['flags']&0x04) == 0x04 ? 'yes' : 'no',
                         'class' => 'fold-at-40 musicfestival-classes',
                         'columns' => array(
-                            array('label'=>'Class', 'fold-label'=>'Class', 'field'=>'fullname', 'class'=>''),
+                            array('label'=>'Class', 'fold-label'=>'Class:', 'field'=>'fullname', 'class'=>''),
     //                            array('label'=>'Course', 'field'=>'name', 'class'=>''),
-                            array('label'=>$live_label, 'fold-label'=>$live_label, 'field'=>'live_fee', 'class'=>'aligncenter fold-alignleft'),
-                            array('label'=>'Virtual', 'fold-label'=>'Virtual', 'field'=>'virtual_fee', 'class'=>'aligncenter fold-alignleft'),
+                            array('label'=>$live_label, 'fold-label'=>$live_label . ':', 'field'=>'live_fee', 'class'=>'aligncenter fold-alignleft'),
+                            array('label'=>'Virtual', 'fold-label'=>'Virtual:', 'field'=>'virtual_fee', 'class'=>'aligncenter fold-alignleft'),
 //                            array('label'=>'', 'field'=>'register', 'class'=>'alignright buttons'),
                             ),
                         'rows' => $category['classes'],
@@ -461,15 +461,15 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                         'headers' => 'no',
                         'class' => 'fold-at-40 musicfestival-classes musicfestival-syllabus-section',
                         'columns' => array(
-                            array('label'=>'Class', 'fold-label'=>'Class', 'field'=>'fullname', 'class'=>''),
-                            array('label'=>$live_label, 'fold-label'=>$live_label, 'field'=>'live_fee', 'class'=>'aligncenter fold-alignleft'),
+                            array('label'=>'Class', 'fold-label'=>'Class:', 'field'=>'fullname', 'class'=>''),
+                            array('label'=>$live_label, 'fold-label'=>$live_label . ':', 'field'=>'live_fee', 'class'=>'aligncenter fold-alignleft'),
                             ),
                         'rows' => $category['classes'],
                         );
                 }
                 if( isset($festival['plus_live']) ) {
                     $block['headers'] = 'yes';
-                    $block['columns'][] = array('label'=>'Adjudication Plus Fee', 'fold-label'=>'Adjudication Plus Fee', 'field'=>'plus_live_fee', 'class'=>'aligncenter fold-alignleft');
+                    $block['columns'][] = array('label'=>'Adjudication Plus Fee', 'fold-label'=>'Adjudication Plus Fee:', 'field'=>'plus_live_fee', 'class'=>'aligncenter fold-alignleft');
                     
                 }
                 $block['columns'][] = array('label'=>'', 'field'=>'register', 'class'=>'alignright buttons');
