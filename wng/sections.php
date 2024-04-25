@@ -377,6 +377,10 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'complex_options'=>array('value'=>'id', 'name'=>'name'),
                     'options'=>$festivals,
                     ),
+                'name-format' => array('label'=>'Name Format', 'type'=>'toggle', 'default'=>'section-division', 'toggles'=>array(
+                    'section-division'=>'Section - Division',
+                    'division'=>'Division',
+                    )),
                 ),
             );
     }

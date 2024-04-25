@@ -34,14 +34,22 @@ function ciniki_musicfestivals_wng_timeslotPhotosProcess(&$ciniki, $tnid, &$requ
 
     $festival_permalink = '';
     $division_permalink = '';
+    $image_permalink = '';
+//    if( isset($s['name-format']) && $s['name-format'] == 'division' && 
     if( isset($request['uri_split'][($request['cur_uri_pos']+2)]) ) { 
         $festival_permalink = $request['uri_split'][($request['cur_uri_pos']+1)];
         $division_permalink = $request['uri_split'][($request['cur_uri_pos']+2)];
+        if( isset($request['uri_split'][($request['cur_uri_pos']+3)]) ) { 
+            $image_permalink = $request['uri_split'][($request['cur_uri_pos']+3)];
+        }
     }
-    $image_permalink = '';
-    if( isset($request['uri_split'][($request['cur_uri_pos']+3)]) ) { 
-        $image_permalink = $request['uri_split'][($request['cur_uri_pos']+3)];
-    }
+/*    elseif( isset($request['uri_split'][($request['cur_uri_pos']+3)]) ) { 
+        $festival_permalink = $request['uri_split'][($request['cur_uri_pos']+1)];
+        $division_permalink = $request['uri_split'][($request['cur_uri_pos']+3)] . '/' . $request['uri_split'][($request['cur_uri_pos']+3)];
+        if( isset($request['uri_split'][($request['cur_uri_pos']+4)]) ) { 
+            $image_permalink = $request['uri_split'][($request['cur_uri_pos']+4)];
+        }
+    } */
 
     //
     // Load the photos organized by division
@@ -75,12 +83,12 @@ function ciniki_musicfestivals_wng_timeslotPhotosProcess(&$ciniki, $tnid, &$requ
             . ") "
         . "WHERE divisions.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
         . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "ORDER BY sections.name, divisions.division_date, divisions.name, images.sequence, images.title "
+        . "ORDER BY sections.name, divisions.division_date, divisions.name, timeslots.slot_time, images.sequence, images.title "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'divisions', 'fname'=>'division_id', 
-            'fields'=>array('id'=>'division_id', 'text'=>'division_name', 'image-id'=>'image_id',
+            'fields'=>array('id'=>'division_id', 'section_name', 'division_name', 'image-id'=>'image_id',
                 'festival_permalink'
                 )),
         array('container'=>'images', 'fname'=>'permalink', 
@@ -92,16 +100,21 @@ function ciniki_musicfestivals_wng_timeslotPhotosProcess(&$ciniki, $tnid, &$requ
     }
     $divisions = isset($rc['divisions']) ? $rc['divisions'] : array();
     foreach($divisions as $did => $division) {
-        $divisions[$did]['permalink'] = ciniki_core_makePermalink($ciniki, trim($division['text']));
+        if( isset($s['name-format']) && $s['name-format'] == 'division' ) {
+            $divisions[$did]['text'] = $division['division_name'];
+            $divisions[$did]['permalink'] = ciniki_core_makePermalink($ciniki, trim($division['division_name']));
+        } else {
+            $divisions[$did]['text'] = $division['section_name'] . ' - ' . $division['division_name'];
+            $divisions[$did]['permalink'] = ciniki_core_makePermalink($ciniki, trim($division['section_name']) . '-' . trim($division['division_name']));
+        }
         $divisions[$did]['url'] = $request['page']['path'] 
             . '/' . $divisions[$did]['festival_permalink']
             . '/' . $divisions[$did]['permalink'];
         if( $divisions[$did]['festival_permalink'] == $festival_permalink
             && $divisions[$did]['permalink'] == $division_permalink 
             ) {
-            $division['permalink'] = ciniki_core_makePermalink($ciniki, trim($division['festival_permalink'])) 
-                . '/' . ciniki_core_makePermalink($ciniki, trim($division['text']));
-//            $division['permalink'] = ciniki_core_makePermalink($ciniki, trim($division['text']));
+            $division['permalink'] = ciniki_core_makePermalink($ciniki, trim($division['festival_permalink']))
+                . '/' . $divisions[$did]['permalink'];
             $division['url'] = $request['page']['path'] 
                 . '/' . $divisions[$did]['festival_permalink']
                 . '/' . $divisions[$did]['permalink'];
