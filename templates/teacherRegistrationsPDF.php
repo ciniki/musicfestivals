@@ -486,7 +486,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
     $pdf->header_title = $festival['name'];
     $pdf->header_sub_title = '';
     $pdf->header_msg = $festival['document_header_msg'];
-    $pdf->footer_msg = $festival['document_footer_msg'];
+//    $pdf->footer_msg = $festival['document_footer_msg'];
 
     //
     // Set the minimum header height
@@ -674,7 +674,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
                 $pdf->Cell($r[0], $lh-3, 'Competitor', $border, 0, 'L', 1);
                 $pdf->Cell($r[1], $lh-3, 'Class', $border, 0, 'L', 1);
                 $pdf->Cell($r[2], $lh-3, 'Schedule', $border, 0, 'L', 1);
-                $pdf->Cell($r[3], $lh-3, 'Competitor', $border, 0, 'R', 1);
+                $pdf->Cell($r[3], $lh-3, 'Fee', $border, 0, 'R', 1);
                 if( ($festival['flags']&0x10) == 0x10 ) {
                     $pdf->Cell($r[4], $lh-3, 'Plus', $border, 0, 'R', 1);
                 }
