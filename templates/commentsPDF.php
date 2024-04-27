@@ -639,6 +639,11 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         ) {
                         $wa = array(27, 70, 30, 50);
                     }
+                    elseif( isset($festival['comments-mark-pdf']) && $festival['comments-mark-pdf'] == 'yes' 
+                        && $reg['mark'] != 'NA'
+                        ) {
+                        $wa = array(27, 80, 35, 35);
+                    }
                     $wapos = 0;
                     if( isset($festival['comments-adjudicator-signature'])
                         && (($festival['comments-adjudicator-signature'] == 'filledout' && $reg['comments'] != '') 
