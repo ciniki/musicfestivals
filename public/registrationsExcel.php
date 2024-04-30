@@ -22,6 +22,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'section_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus Section'),
+        'class_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus Class'),
         'teacher_customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Teacher'),
         'accompanist_customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Accompanist'),
         'registration_tag'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registration Tag'),
@@ -497,6 +498,9 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
         if( isset($args['section_id']) && $args['section_id'] > 0 ) {
             $strsql .= "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' ";
+        }
+        if( isset($args['class_id']) && $args['class_id'] > 0 ) {
+            $strsql .= "AND classes.id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' ";
         }
         $strsql .= "ORDER BY sections.id, registrations.id "
             . "";
