@@ -28,6 +28,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         'sdivision_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Division'),
         'section_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus Section'),
         'category_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus Category'),
+        'class_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus Class'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -278,7 +279,51 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
     //
     // Get the list of divisions if section is specified
     //
-    if( isset($args['section_id']) && $args['section_id'] > 0 ) {
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
+        && isset($args['section_id']) && $args['section_id'] > 0 
+        ) {
+        $strsql = "SELECT classes.id, "
+            . "CONCAT_WS('', classes.code, ' - ', classes.name, ' (', COUNT(registrations.id), ')') AS name, "
+            . "COUNT(registrations.id) AS num_registrations "
+            . "FROM ciniki_musicfestival_categories AS categories "
+            . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
+                . "categories.id = classes.category_id "
+                . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                . "classes.id = registrations.class_id "
+                . "AND registrations.timeslot_id = 0 "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
+                . "registrations.invoice_id = invoices.id "
+                . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
+            . "AND categories.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "GROUP BY classes.id "
+            . "ORDER BY classes.code, classes.name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'classes', 'fname'=>'id', 'fields'=>array('id', 'name', 'num_registrations')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.693', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
+        }
+        $rsp['classes'] = isset($rc['classes']) ? $rc['classes'] : array();
+        if( count($rsp['classes']) == 0 ) {
+            $rsp['classes'] = array(
+                array('id' => 0, 'name' => 'No Unscheduled Registrations'),
+                );
+        } else {
+            array_unshift($rsp['classes'], array('id'=>0, 'name'=>'Select Class'));
+        }
+
+    } elseif( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
+        && isset($args['section_id']) && $args['section_id'] > 0 
+        ) {
         $strsql = "SELECT categories.id, "
             . "CONCAT_WS('', categories.name, ' (', COUNT(registrations.id), ')') AS name, "
             . "COUNT(registrations.id) AS num_registrations "
@@ -321,12 +366,17 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         $rsp['categories'] = array(
             array('id' => 0, 'name' => 'Select Section'),
             );
+        $rsp['classes'] = array(
+            array('id' => 0, 'name' => 'Select Section'),
+            );
     }
 
     //
     // Get the list of unscheduled registrations for a category
     //
-    if( isset($args['category_id']) && $args['category_id'] > 0 ) {
+    if( (isset($args['category_id']) && $args['category_id'] > 0)
+        || (isset($args['class_id']) && $args['class_id'] > 0)
+        ) {
         $strsql = "SELECT registrations.id, "
             . "registrations.display_name, "
             . "registrations.flags, "
@@ -395,9 +445,13 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "LEFT JOIN ciniki_musicfestivals_members AS members ON ("
                 . "registrations.member_id = members.id "
                 . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . ") "
-            . "WHERE classes.category_id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
-            . "AND classes.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . ") ";
+        if( isset($args['class_id']) && $args['class_id'] > 0 ) {
+            $strsql .= "WHERE classes.id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' ";
+        } elseif( isset($args['category_id']) && $args['category_id'] > 0 ) {
+            $strsql .= "WHERE classes.category_id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' ";
+        }
+        $strsql .= "AND classes.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY categories.sequence, categories.name, class_code "
             . "";
