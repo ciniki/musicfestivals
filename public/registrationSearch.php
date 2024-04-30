@@ -55,7 +55,7 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
     //
     $strsql = "SELECT registrations.id, "
         . "registrations.festival_id, "
-        . "sections.id AS section_id, "
+//        . "sections.id AS section_id, "
         . "registrations.teacher_customer_id, "
         . "teachers.display_name AS teacher_name, "
         . "registrations.billing_customer_id, "
@@ -130,14 +130,14 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
             . "registrations.class_id = classes.id "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-        . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
+/*        . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
             . "classes.category_id = categories.id "
             . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
             . "categories.section_id = sections.id "
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . ") "
+            . ") " */
         . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ("
@@ -147,8 +147,10 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
             . "OR competitors.parent LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR competitors.email LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR competitors.email LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR teachers.display_name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . "OR teachers.display_name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+//            . "OR teachers.first LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+//            . "OR teachers.first LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+//            . "OR teachers.last LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+//            . "OR teachers.last LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
         . ") "
         . "";
     if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
@@ -179,7 +181,6 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
                 ),
             ),
         ));
-
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
