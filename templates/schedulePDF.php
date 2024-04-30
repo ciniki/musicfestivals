@@ -181,6 +181,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         . "registrations.video_url7, "
         . "registrations.video_url8, "
         . "registrations.participation, "
+        . "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS timeslot_time, "
         . "classes.code AS class_code, "
         . "classes.name AS class_name, "
         . "categories.name AS category_name, "
@@ -253,7 +254,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 ),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
-            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'participation',
+            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'participation', 'timeslot_time',
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                 'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
@@ -824,6 +825,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                         } else {
                             $row['name'] = $reg['public_name'];
                         }
+                        $row['timeslot_time'] = $reg['timeslot_time'];
                         $row['participation'] = $reg['participation'];
                         if( isset($args['titles']) && $args['titles'] == 'yes' ) {
                             $row['dash_width'] = $pdf->getStringWidth('-', '', '') + 3;
@@ -907,14 +909,24 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
 
                 $pdf->SetFont('', 'B');
                 $lh = $pdf->getStringHeight($w[2], $name);
-                $pdf->Multicell($w[0], $lh, $time, $border, 'R', 0, 0);
-                $pdf->Multicell($w[1], $lh, '', $border, 'R', 0, 0);
-                $pdf->Multicell($w[2], $lh, $name, $border, 'L', 0, 1);
+                if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+                    $pdf->Multicell($w[0] + $w[1] + $w[2], $lh, $name, $border, 'L', 0, 1);
+                } else {
+                    $pdf->Multicell($w[0], $lh, $time, $border, 'R', 0, 0);
+                    $pdf->Multicell($w[1], $lh, '', $border, 'R', 0, 0);
+                    $pdf->Multicell($w[2], $lh, $name, $border, 'L', 0, 1);
+                }
                 $pdf->SetFont('', '');
    
                 $pdf->SetCellPadding(0);
                 foreach($reg_list as $row) {
-                    $pdf->MultiCell($w[0], $row['height'], '', 0, 'L', 0, 0);
+                    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) 
+                        && $row['timeslot_time'] != '12:00 AM'
+                        ) {
+                        $pdf->MultiCell($w[0], $row['height'], $row['timeslot_time'], 0, 'R', 0, 0);
+                    } else {
+                        $pdf->MultiCell($w[0], $row['height'], '', 0, 'L', 0, 0);
+                    }
                     if( $row['participation'] == 2 ) {
                         $pdf->MultiCell($w[1]+1, $row['height'], '+', 0, 'C', 0, 0);
                     } else {

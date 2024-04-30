@@ -89,6 +89,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         'music_orgfilename8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
         'instrument'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Instrument'),
         'timeslot_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Timeslot'),
+        'timeslot_time'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'time', 'name'=>'Scheduled Time'),
         'timeslot_sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Timeslot Sequence'),
         'mark'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Mark'),
         'placement'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Placement'),
@@ -172,6 +173,60 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         $args['timeslot_sequence'] = 1;
         if( isset($rc['seq']['max_seq']) ) {
             $args['timeslot_sequence'] = $rc['seq']['max_seq'] + 1;
+        }
+        
+        //
+        // Get the last registration 
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+            if( $args['timeslot_sequence'] == 1 ) {
+                $strsql = "SELECT slot_time "
+                    . "FROM ciniki_musicfestival_schedule_timeslots "
+                    . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' "
+                    . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
+                    . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "";
+                $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'timeslot');
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.121', 'msg'=>'Unable to load timeslot', 'err'=>$rc['err']));
+                }
+                if( !isset($rc['timeslot']) ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.122', 'msg'=>'Unable to find requested timeslot'));
+                }
+                $args['timeslot_time'] = $rc['timeslot']['slot_time'];
+            } 
+            else {
+                $strsql = "SELECT timeslot_time, "
+                    . "perf_time1, perf_time2, perf_time3, perf_time4, perf_time5, perf_time6, perf_time7, perf_time8 "
+                    . "FROM ciniki_musicfestival_registrations "
+                    . "WHERE timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' "
+                    . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
+                    . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "ORDER BY timeslot_sequence DESC "
+                    . "LIMIT 1 "
+                    . "";
+                $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'lastreg');
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.123', 'msg'=>'Unable to load lastreg', 'err'=>$rc['err']));
+                }
+                if( !isset($rc['lastreg']) ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.124', 'msg'=>'Unable to find requested lastreg'));
+                }
+                $lastreg = $rc['lastreg'];
+                $total_time = 0;
+                for($i = 1; $i <= 10; $i++) {
+                    if( isset($lastreg["perf_time{$i}"]) && $lastreg["perf_time{$i}"] > 0 ) {
+                        $total_time += $lastreg["perf_time{$i}"];
+                    }
+                }
+                $total_time += 60 - ($total_time%60);
+                // FIXME: Add setting for buffer time
+                $dt = new DateTime('now', new DateTimezone('UTC'));
+                $dt = new DateTime($dt->format('Y-m-d') . ' ' . $lastreg['timeslot_time'], new DateTimezone('UTC'));
+                $dt->add(new DateInterval('PT' . $total_time . 'S')); 
+                $args['timeslot_time'] = $dt->format('H:i');
+            }
+            
         }
     }
 

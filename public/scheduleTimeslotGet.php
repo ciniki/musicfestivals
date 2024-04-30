@@ -102,7 +102,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         $strsql = "SELECT timeslots.id, "
             . "timeslots.festival_id, "
             . "timeslots.sdivision_id, "
-            . "TIME_FORMAT(timeslots.slot_time, '%h:%i %p') AS slot_time, "
+            . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time, "
             . "timeslots.flags, "
             . "timeslots.name, "
             . "timeslots.description, "
@@ -165,6 +165,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "registrations.perf_time6, "
             . "registrations.perf_time7, "
             . "registrations.perf_time8, "
+            . "TIME_FORMAT(registrations.timeslot_time, '%l:%i') AS timeslot_time, "
             . "registrations.timeslot_sequence, "
             . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS status_text, "
             . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
@@ -205,7 +206,8 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'timeslot_sequence', 'flags', 'accompanist_name', 'member_name', 
+                'fields'=>array('id', 'display_name', 'timeslot_time', 'timeslot_sequence', 
+                    'flags', 'accompanist_name', 'member_name', 
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',

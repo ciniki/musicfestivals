@@ -556,7 +556,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "registrations.music_orgfilename8, "
                 . "FORMAT(registrations.fee, 2) AS fee, "
                 . "registrations.payment_type, "
-                . "registrations.participation "
+                . "registrations.participation, "
+                . "DATE_FORMAT(invoices.invoice_date, '%b %e') AS invoice_date "
                 . "FROM ciniki_musicfestival_registrations AS registrations ";
             if( isset($args['registration_tag']) && $args['registration_tag'] != '' ) {
                 $strsql .= "INNER JOIN ciniki_musicfestival_registration_tags AS tags ON ("
@@ -584,6 +585,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
                     . "categories.section_id = sections.id "
                     . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
+                    . "registrations.invoice_id = invoices.id "
+                    . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . $ipv_sql
@@ -624,7 +629,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'registrations', 'fname'=>'id', 
                     'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 
-                        'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
+                        'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 'invoice_date', 
                         'class_id', 'class_code', 'class_name', 'class_flags', 'min_titles', 'max_titles',
                         'fee', 'payment_type', 'participation', 'flags',
                         'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
@@ -1021,7 +1026,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "AND divisions.ssection_id = '" . ciniki_core_dbQuote($ciniki, $args['ssection_id']) . "' "
                     . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "GROUP BY divisions.id "
-                    . "ORDER BY divisions.division_date, first_timeslot "
+                    . "ORDER BY divisions.division_date, divisions.name, first_timeslot "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -1545,7 +1550,11 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             }
                         }
                         if( $perf_time != '' && $perf_time > 0 ) {
-                            $festival['schedule_timeslots'][$iid]['perf_time_text'] = '[' . intval($perf_time/60) . ':' . str_pad(($perf_time%60), 2, '0', STR_PAD_LEFT) . ']';
+                            if( $perf_time > 3600 ) {
+                                $festival['schedule_timeslots'][$iid]['perf_time_text'] = '[' . intval($perf_time/3660) . 'h ' . intval(($perf_time%3600)/60) . 'm]';
+                            } else {
+                                $festival['schedule_timeslots'][$iid]['perf_time_text'] = '[' . intval($perf_time/60) . ':' . str_pad(($perf_time%60), 2, '0', STR_PAD_LEFT) . ']';
+                            }
                         } elseif( $perf_time != '' && $perf_time == 0 ) {
                             $festival['schedule_timeslots'][$iid]['perf_time_text'] = '[?]';
                         }

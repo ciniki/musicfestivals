@@ -39,7 +39,7 @@ function ciniki_musicfestivals_flags(&$ciniki) {
         array('flag'=>array('bit'=>'17', 'name'=>'Provincials')), // Name may change
         array('flag'=>array('bit'=>'18', 'name'=>'Split Virtual/Live Syllabus')),
         array('flag'=>array('bit'=>'19', 'name'=>'Separate Composer/Movements')),
-//        array('flag'=>array('bit'=>'20', 'name'=>'')),
+        array('flag'=>array('bit'=>'20', 'name'=>'Schedule Individual Times')),   // each registration has a scheduled time
         // 0x100000
         array('flag'=>array('bit'=>'21', 'name'=>'Social Content')), 
         array('flag'=>array('bit'=>'22', 'name'=>'Files')), // This will be deprecated, only there for older tenants
