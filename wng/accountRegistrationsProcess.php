@@ -2070,7 +2070,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 ) {
                 // Registration was created by parent/student and shared with teacher
                 $parent_registrations[] = $reg;
-            } elseif( $reg['accompanist_customer_id'] == $request['session']['customer']['id'] ) {
+            } elseif( $reg['accompanist_customer_id'] == $request['session']['customer']['id'] 
+                && $reg['billing_customer_id'] != $request['session']['customer']['id']
+                ) {
                 $accompanist_registrations[] = $reg;
             } elseif( $reg['invoice_status'] == 10 ) {
                 $cart_registrations[] = $reg;
@@ -2083,6 +2085,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $paymentrequired_registrations[] = $reg;
             } elseif( $reg['status'] == 60 ) {
                 $cancelled_registrations[] = $reg;
+            } elseif( $reg['accompanist_customer_id'] == $request['session']['customer']['id'] ) {
+                $accompanist_registrations[] = $reg;
             }
             /*
             if( $reg['status'] == 6 ) {
