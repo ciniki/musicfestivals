@@ -2372,7 +2372,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             }
             $blocks[] = array(
                 'type' => 'table',
-                'title' => $festival['name'] . ' Accompanying Registrations',
+                'title' => $festival['name'] . ' Accompanist Registrations',
                 'class' => 'musicfestival-registrations limit-width limit-width-80',
                 'headers' => 'yes',
                 'columns' => array(
