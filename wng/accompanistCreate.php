@@ -42,7 +42,7 @@ function ciniki_musicfestivals_wng_accompanistCreate(&$ciniki, $tnid, $request, 
                 . "AND c.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . "AND c.status < 60 "
                 . ") "
-            . "WHERE e.email = '" . ciniki_core_dbQuote($ciniki, $_POST['f-accompanist_email']) . "' "
+            . "WHERE e.email = '" . ciniki_core_dbQuote($ciniki, trim($_POST['f-accompanist_email'])) . "' "
             . "AND e.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');

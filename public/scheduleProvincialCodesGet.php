@@ -84,10 +84,10 @@ function ciniki_musicfestivals_scheduleProvincialCodesGet(&$ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.8', 'msg'=>'Festival not found', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.133', 'msg'=>'Festival not found', 'err'=>$rc['err']));
     }
     if( !isset($rc['festivals'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.9', 'msg'=>'Unable to find Festival'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.163', 'msg'=>'Unable to find Festival'));
     }
     $festival = $rc['festivals'][0];
 
@@ -138,7 +138,7 @@ function ciniki_musicfestivals_scheduleProvincialCodesGet(&$ciniki) {
                 )),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.63', 'msg'=>'Unable to load classes', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.177', 'msg'=>'Unable to load classes', 'err'=>$rc['err']));
     }
     $classes = isset($rc['classes']) ? $rc['classes'] : array();
 

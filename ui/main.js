@@ -1289,7 +1289,7 @@ function ciniki_musicfestivals_main() {
                 case 0: return d.slot_time_text;
                 case 1: return d.timeslot_sequence;
                 case 2: return d.display_name;
-                case 3: return M.multiline(d.class_name, d.titles);
+                case 3: return M.multiline(d.class_code + ' - ' + d.class_name, d.titles);
             }
             return d[this.sections[s].dataMaps[j]];
         }
@@ -1298,7 +1298,7 @@ function ciniki_musicfestivals_main() {
                 case 0: return d.provincials_code;
                 case 1: return M.multiline(d.provincials_position_text, d.provincials_status_text);
                 case 2: return d.display_name;
-                case 3: return M.multiline(d.class_name, d.titles);
+                case 3: return M.multiline(d.class_code + ' - ' + d.class_name, d.titles);
             }
             return d[this.sections[s].dataMaps[j]];
         }

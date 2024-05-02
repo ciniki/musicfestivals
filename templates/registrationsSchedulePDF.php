@@ -2,7 +2,8 @@
 //
 // Description
 // ===========
-// This method will produce a PDF of the teachers registrations by parent.
+// This method will produce a PDF of the registrations schedule the person is attached to.
+// This could be billing, teacher or accompanist
 //
 // Arguments
 // ---------
@@ -11,7 +12,7 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid, $args) {
+function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tnid, $args) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
 
@@ -19,16 +20,14 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
     // Make sure festival_id was passed in
     //
     if( !isset($args['festival_id']) || $args['festival_id'] <= 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.147', 'msg'=>'No festival specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.702', 'msg'=>'No festival specified'));
     }
 
     //
     // Make sure teacher_customer_id was passed in
     //
-    if( (!isset($args['teacher_customer_id']) || $args['teacher_customer_id'] <= 0) 
-        && (!isset($args['billing_customer_id']) || $args['billing_customer_id'] <= 0) 
-        ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.148', 'msg'=>'No teacher specified'));
+    if( (!isset($args['customer_id']) || $args['customer_id'] <= 0) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.703', 'msg'=>'No teacher specified'));
     }
 
     //
@@ -84,9 +83,9 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
             . "registrations.display_name, "
             . "registrations.public_name, "
             . "registrations.competitor1_id, "
-            . "competitors.name, "
-            . "competitors.parent, "
-            . "customers.display_name AS parent_name, "
+//            . "competitors.name, "
+//            . "competitors.parent, "
+//            . "customers.display_name AS parent_name, "
             . "registrations.competitor2_id, "
             . "registrations.competitor3_id, "
             . "registrations.competitor4_id, "
@@ -163,35 +162,38 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
                 . "categories.section_id = sections.id "
                 . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
-            . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ("
-                . "registrations.competitor1_id = competitors.id "
-                . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "LEFT JOIN ciniki_customers AS customers ON ("
-                . "registrations.billing_customer_id = customers.id "
-                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
-        if( isset($args['teacher_customer_id']) ) {
-            $strsql .= "AND (registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' "
+//            . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ("
+//                . "registrations.competitor1_id = competitors.id "
+//                . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+//                . ") "
+//            . "LEFT JOIN ciniki_customers AS customers ON ("
+//                . "registrations.billing_customer_id = customers.id "
+//                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+//                . ") "
+            . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "AND ("
+                . "registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
                 . "OR ("
-                    . "registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' ";
-            if( isset($args['shared']) && $args['shared'] == 'yes' ) {
-                $strsql .= "AND (registrations.flags&0x01) = 0x01 ";
-            }
+                    . "registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' ";
+                if( isset($args['shared']) && $args['shared'] == 'yes' ) {
+                    $strsql .= "AND (registrations.flags&0x01) = 0x01 ";
+                }
+            $strsql .= ") "
+                . "OR ("
+                    . "registrations.accompanist_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' ";
+                if( isset($args['shared']) && $args['shared'] == 'yes' ) {
+                    $strsql .= "AND (registrations.flags&0x02) = 0x02 ";
+                }
             $strsql .= ") "
                 . ") ";
-        } else {
-            $strsql .= "AND registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['billing_customer_id']) . "' ";
-        }
         $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "ORDER BY registrations.status, registrations.display_name "
+            . "ORDER BY registrations.display_name, registrations.status, registrations.display_name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
                 'fields'=>array('id', 'uuid', 'teacher_customer_id', 'billing_customer_id', 'rtype', 'status', 'status_text',
-                    'display_name', 'public_name', 'competitor1_id', 'parent', 'parent_name',
+                    'display_name', 'public_name', 'competitor1_id',
                     'competitor2_id', 'competitor3_id', 
                     'competitor4_id', 'competitor5_id', 'class_id', 'timeslot_id', 
                     'title1', 'composer1', 'movements1', 'perf_time1', 
@@ -216,125 +218,6 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
         $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
     } else {
         $registrations = $args['registrations'];
-    }
-
-    //
-    // Get the parents
-    //
-    $parents = array();
-    foreach($registrations as $rid => $reg) {
-        if( $reg['billing_customer_id'] != $reg['teacher_customer_id'] ) {
-            $registrations[$rid]['fee_display'] = $reg['status_text'];
-            $reg['fee_display'] = $reg['status_text'];
-            if( $reg['parent'] == '' ) { 
-                $reg['parent'] = $reg['parent_name'];
-            }
-        } else {
-            $registrations[$rid]['fee_display'] = '$' . number_format($reg['fee'], 2);
-            $reg['fee_display'] = '$' . number_format($reg['fee'], 2);
-        }
-        if( $reg['parent'] != '' ) {
-            if( !isset($parents[$reg['parent']]) ) {
-                $parents[$reg['parent']] = array(
-                    'name' => $reg['parent'],
-                    'num_registrations' => 0,
-                    'total_fees' => 0,
-                    'competitors' => array(),
-                    'registrations' => array(),
-                    );
-            }
-            $parents[$reg['parent']]['registrations'][] = $reg;
-            $parents[$reg['parent']]['num_registrations'] += 1;
-
-            if( $reg['billing_customer_id'] == $args['teacher_customer_id'] ) {
-                $parents[$reg['parent']]['total_fees'] += $reg['fee'];
-            }
-            if( $reg['competitor1_id'] > 0 ) {
-                $parents[$reg['parent']]['competitors'][] = $reg['competitor1_id'];
-            }
-            if( $reg['competitor2_id'] > 0 ) {
-                $parents[$reg['parent']]['competitors'][] = $reg['competitor2_id'];
-            }
-            if( $reg['competitor3_id'] > 0 ) {
-                $parents[$reg['parent']]['competitors'][] = $reg['competitor3_id'];
-            }
-        }
-    }
-
-    //
-    // Check if the competitor information passed in
-    //
-    if( !isset($args['competitors']) ) {
-        if( isset($args['teacher_customer_id']) ) {
-            $strsql = "SELECT competitors.id, "
-                . "competitors.uuid, "
-                . "competitors.name, "
-                . "competitors.parent, "
-                . "competitors.address, "
-                . "competitors.city, "
-                . "competitors.province, "
-                . "competitors.postal, "
-                . "competitors.phone_home, "
-                . "competitors.phone_cell, "
-                . "competitors.email, "
-                . "competitors.age, "
-                . "competitors.study_level, "
-                . "competitors.instrument, "
-                . "competitors.notes "
-                . "FROM ciniki_musicfestival_competitors AS competitors "
-                . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
-                    . "( competitors.id = registrations.competitor1_id "
-                        . "OR competitors.id = registrations.competitor2_id "
-                        . "OR competitors.id = registrations.competitor3_id "
-                        . "OR competitors.id = registrations.competitor4_id "
-                        . "OR competitors.id = registrations.competitor5_id "
-                        . ") "
-                    . "AND (registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' "
-                        . "OR ("
-                            . "registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' ";
-                if( isset($args['shared']) && $args['shared'] == 'yes' ) {
-                    $strsql .= "AND (registrations.flags&0x01) = 0x01 ";
-                }
-                $strsql .= ") "
-                    . ") "
-//                    . "AND registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' "
-                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                    . ") "
-                . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
-        } else {
-            $strsql = "SELECT competitors.id, "
-                . "competitors.uuid, "
-                . "competitors.name, "
-                . "competitors.parent, "
-                . "competitors.address, "
-                . "competitors.city, "
-                . "competitors.province, "
-                . "competitors.postal, "
-                . "competitors.phone_home, "
-                . "competitors.phone_cell, "
-                . "competitors.email, "
-                . "competitors.age, "
-                . "competitors.study_level, "
-                . "competitors.instrument, "
-                . "competitors.notes "
-                . "FROM ciniki_musicfestival_competitors AS competitors "
-                . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-                . "AND competitors.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['billing_customer_id']) . "' ";
-        }
-        $strsql .= "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "";
-        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-            array('container'=>'competitors', 'fname'=>'id', 
-                'fields'=>array('id', 'uuid', 'name', 'parent', 'address', 'city', 'province', 'postal', 
-                    'phone_home', 'phone_cell', 'email', 'age', 'study_level', 'instrument', 'notes'),
-                ),
-            ));
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.125', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
-        }
-        $competitors = isset($rc['competitors']) ? $rc['competitors'] : array();
-    } else {
-        $competitors = $args['competitors'];
     }
 
     //
@@ -536,154 +419,76 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
     //
     // Go through the sections, divisions and classes
     //
-    $c = array(35, 55, 35, 55);
-    $r = array(40, 85, 40, 15, 0);
-    if( ($festival['flags']&0x10) == 0x10 ) {
-        $r = array(40, 70, 40, 15, 15);
-    }
-    $nw = array(20, 160);
-    $lh = 6;
+    $w = array(40, 100, 40);
     $border = '';
-    foreach($parents as $parent) {
-        $lh = 12;
-        $pdf->header_sub_title = $parent['name'];
-        $pdf->startPageGroup();
-        $pdf->AddPage();
 
-        $competitor_ids = array_unique($parent['competitors']);
-        
-        //
-        // List the parents competitors
-        //
-        $pdf->Ln(1);
-        $pdf->SetFillColor(232);
-        $pdf->SetFont('times', 'B', 14);
-        $pdf->Cell(180, 8, 'Competitors', 'B', 0, 'L', 0);
-        $pdf->Ln();
-        $pdf->SetFont('times', '', 12);
-        foreach($competitors as $competitor) {
-            if( !in_array($competitor['id'], $competitor_ids) ) {
-                continue;
-            }
-            if( $pdf->getY() > $pdf->getPageHeight() - 70 ) {
-                $pdf->AddPage();
-                $pdf->SetFont('times', 'B', 14);
-                $pdf->Cell(180, 8, 'Competitors (continued...)', 'B', 0, 'L', 0);
-                $pdf->Ln();
-                $pdf->SetFont('times', '', 12);
-            }
-            $address = $competitor['address'];
-            $address .= $competitor['city'] != '' ? ($address != '' ? ', ' : '') . $competitor['city'] : '';
-            $address .= $competitor['province'] != '' ? ($address != '' ? ', ' : '') . $competitor['province'] : '';
-            $address .= $competitor['postal'] != '' ? ($address != '' ? ', ' : '') . $competitor['postal'] : '';
-   
-            $pdf->fill = 0;
-            $pdf->labelValue2($c[0], 'Competitor:', $c[1], $competitor['name'], $c[2], 'Parent:', $c[3], $competitor['parent']); 
-            $pdf->labelValue2($c[0], 'Home Phone:', $c[1], $competitor['phone_home'], $c[2], 'Cell Phone:', $c[3], $competitor['phone_cell']); 
-            $pdf->labelValue($c[0], 'Address:', $c[1] + $c[2] + $c[3], $address); 
-            $pdf->labelValue($c[0], 'Email:', $c[1]+$c[2]+$c[3], $competitor['email']); 
-            $pdf->labelValue2($c[0], 'Age:', $c[1], $competitor['age'], $c[2], 'Instrument:', $c[3], $competitor['instrument']); 
-            $pdf->labelValue($c[0], 'Study/Level:', $c[1]+$c[2]+$c[3], $competitor['study_level']); 
-            $pdf->labelValue($c[0], 'Notes:', $c[1]+$c[2]+$c[3], $competitor['notes']); 
-            $pdf->Ln(5);
+    //
+    // List the registrations
+    //
+    $pdf->AddPage();
+    $pdf->SetFont('times', 'B', 16);
+    $pdf->Cell(180, 8, 'Registrations', 'B', 0, 'L', 0);
+    $pdf->Ln();
+    $pdf->SetFont('times', 'B', 12);
+    $pdf->SetFillColor(224);
+    $border = 1;
+    $pdf->Cell($w[0], 0, 'Competitor', $border, 0, 'L', 1);
+    $pdf->Cell($w[1], 0, 'Class', $border, 0, 'L', 1);
+    $pdf->Cell($w[2], 0, 'Scheduled', $border, 1, 'L', 1);
+    $pdf->SetFont('times', '', 12);
+    $pdf->SetFillColor(242);
+    $fill = 1;
+    $border = 1;
+    $total = 0;
+    foreach($registrations as $registration) {
+        if( ($festival['flags']&0x0100) == 0x0100 ) {
+            $description = $registration['class_code'] . ' - ' . $registration['section_name'] . ' - ' . $registration['category_name'] . ' - ' . $registration['class_name'];
+        } else {
+            $description = $registration['class_code'] . ' - ' . $registration['class_name'];
         }
-        $pdf->Ln();
+        $rc = ciniki_musicfestivals_titlesMerge($ciniki, $tnid, $registration, ['basicnumbers'=>'yes']);
+        if( isset($rc['titles']) && $rc['titles'] != '' ) {
+            $description .= "\n" . $rc['titles'];
+        }
 
-        //
-        // List the registrations
-        //
-        if( $pdf->getY() > $pdf->getPageHeight() - 50 ) {
-            $pdf->AddPage();
-        }
-        $pdf->SetFont('times', 'B', 14);
-        $pdf->Cell(180, 8, 'Registrations', 'B', 0, 'L', 0);
-        $pdf->Ln();
-        $pdf->SetFont('times', 'B', 12);
-        $pdf->SetFillColor(224);
-        $border = 1;
-        $pdf->Cell($r[0], $lh-3, 'Competitor', $border, 0, 'L', 1);
-        $pdf->Cell($r[1], $lh-3, 'Class', $border, 0, 'L', 1);
-        $pdf->Cell($r[2], $lh-3, 'Scheduled', $border, 0, 'L', 1);
-        $pdf->Cell($r[3], $lh-3, 'Fee', $border, 0, 'R', 1);
-        if( ($festival['flags']&0x10) == 0x10 ) {
-            $pdf->Cell($r[4], $lh-3, 'Plus', $border, 0, 'R', 1);
-        }
-        $pdf->Ln();
-        $pdf->SetFont('times', '', 12);
-        $pdf->SetFillColor(242);
-        $fill = 1;
-        $border = 1;
-        $total = 0;
-        foreach($parent['registrations'] as $registration) {
-            if( ($festival['flags']&0x0100) == 0x0100 ) {
-                $description = $registration['class_code'] . ' - ' . $registration['section_name'] . ' - ' . $registration['category_name'] . ' - ' . $registration['class_name'];
+        $lh = $pdf->getStringHeight($w[1], $description);
+
+        $registration['schedule'] = '';
+        if( ($registration['section_flags']&0x01) == 0x01 ) {
+            if( $registration['participation'] == 1 ) {
+                $registration['schedule'] = 'Virtual';
             } else {
-                $description = $registration['class_code'] . ' - ' . $registration['class_name'];
-            }
-
-            $rc = ciniki_musicfestivals_titlesMerge($ciniki, $tnid, $registration, ['basicnumbers'=>'yes']);
-            if( isset($rc['titles']) && $rc['titles'] != '' ) {
-                $description .= "\n" . $rc['titles'];
-            }
-            $lh = $pdf->getStringHeight($r[1], $description);
-
-            $registration['schedule'] = '';
-            if( ($registration['section_flags']&0x01) == 0x01 ) {
-                if( $registration['participation'] == 1 ) {
-                    $registration['schedule'] = 'Virtual';
-                } else {
-                    if( $registration['slot_time_text'] != '' ) {
-                        $registration['schedule'] = $registration['division_date_text'] . ' @ ' . $registration['slot_time_text'];
-                    }
-                    if( $registration['address'] != '' ) {
-                        $registration['schedule'] .= "\n" . $registration['address'];
-                    }
+                if( $registration['slot_time_text'] != '' ) {
+                    $registration['schedule'] = $registration['division_date_text'] . ' @ ' . $registration['slot_time_text'];
                 }
-                if( $pdf->getStringHeight($r[2], $registration['schedule']) > $lh ) {
-                    $lh = $pdf->getStringHeight($r[2], $registration['schedule']);
+                if( $registration['address'] != '' ) {
+                    $registration['schedule'] .= "\n" . $registration['address'];
                 }
             }
-
-            if( $pdf->getY() > $pdf->getPageHeight() - 30 - $lh ) {
-                $pdf->AddPage();
-                $pdf->SetFont('times', 'B', 14);
-                $pdf->Cell(180, 8, 'Registrations (continued...)', 'B', 0, 'L', 0);
-                $pdf->Ln();
-                $pdf->SetFont('times', 'B', 12);
-                $pdf->SetFillColor(224);
-                $border = 1;
-                $pdf->Cell($r[0], $lh-3, 'Competitor', $border, 0, 'L', 1);
-                $pdf->Cell($r[1], $lh-3, 'Class', $border, 0, 'L', 1);
-                $pdf->Cell($r[2], $lh-3, 'Scheduled', $border, 0, 'L', 1);
-                $pdf->Cell($r[3], $lh-3, 'Fee', $border, 0, 'R', 1);
-                if( ($festival['flags']&0x10) == 0x10 ) {
-                    $pdf->Cell($r[4], $lh-3, 'Plus', $border, 0, 'R', 1);
-                }
-                $pdf->Ln();
-                $pdf->SetFont('times', '', 12);
-                $pdf->SetFillColor(242);
+            if( $pdf->getStringHeight($w[2], $registration['schedule']) > $lh ) {
+                $lh = $pdf->getStringHeight($w[2], $registration['schedule']);
             }
-            $pdf->MultiCell($r[0], $lh, $registration['display_name'], $border, 'L', $fill, 0);
-            $pdf->MultiCell($r[1], $lh, $description, $border, 'L', $fill, 0);
-            $pdf->MultiCell($r[2], $lh, $registration['schedule'], $border, 'L', $fill, 0);
-            $pdf->MultiCell($r[3], $lh, $registration['fee_display'], $border, 'R', $fill, ($festival['flags']&0x10) == 0x10 ? 0 : 1);
-            if( preg_match("/[0-9]/", $registration['fee_display']) && $registration['billing_customer_id'] == $args['teacher_customer_id'] ) {
-                $total += $registration['fee'];
-            }
-            if( ($festival['flags']&0x10) == 0x10 ) {
-                $pdf->MultiCell($r[4], $lh, ($registration['participation'] == 2 ? 'Plus' : 'Reg'), $border, 'R', $fill, 1);
-            }
-
-
-            $fill = !$fill;
         }
-        if( $total > 0 ) {
-            $pdf->SetFillColor(224);
-            $lh = $pdf->getStringHeight($r[1], 'Total');
+
+        if( $pdf->getY() > $pdf->getPageHeight() - 30 - $lh ) {
+            $pdf->AddPage();
+            $pdf->SetFont('times', 'B', 14);
+            $pdf->Cell(180, 8, 'Registrations (continued...)', 'B', 0, 'L', 0);
+            $pdf->Ln();
             $pdf->SetFont('times', 'B', 12);
-            $pdf->MultiCell($r[0]+$r[1], $lh, 'Total', $border, 'R', 1, 0);
-            $pdf->MultiCell($r[2], $lh, '$' . number_format($total, 2), $border, 'R', 1, 1);
+            $pdf->SetFillColor(224);
+            $border = 1;
+            $pdf->Cell($w[0], 0, 'Competitor', $border, 0, 'L', 1);
+            $pdf->Cell($w[1], 0, 'Class', $border, 0, 'L', 1);
+            $pdf->Cell($w[2], 0, 'Scheduled', $border, 1, 'L', 1);
+            $pdf->SetFont('times', '', 12);
+            $pdf->SetFillColor(242);
         }
+        $pdf->MultiCell($w[0], $lh, $registration['display_name'], $border, 'L', $fill, 0);
+        $pdf->MultiCell($w[1], $lh, $description, $border, 'L', $fill, 0);
+        $pdf->MultiCell($w[2], $lh, $registration['schedule'], $border, 'L', $fill, 1);
+
+        $fill = !$fill;
     }
 
     return array('stat'=>'ok', 'pdf'=>$pdf, 'filename'=>$filename . '.pdf');

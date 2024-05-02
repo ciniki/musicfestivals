@@ -41,6 +41,9 @@ function ciniki_musicfestivals_titlesMerge(&$ciniki, $tnid, $registration, $args
             if( isset($args['numbers']) && $args['numbers'] == 'yes' ) {
                 $title = '#' . $num . '. ' . $title;
             }
+            if( isset($args['basicnumbers']) && $args['basicnumbers'] == 'yes' ) {
+                $title = $num . '. ' . $title;
+            }
             $titles .= ($titles != '' ? $newline : '') . $title;
             $num++;
         }

@@ -139,6 +139,21 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             return array('stat'=>'exit');
         }
     }
+    if( isset($_GET['schedulepdf']) && $_GET['schedulepdf'] == 'yes' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'registrationsSchedulePDF');
+        $rc = ciniki_musicfestivals_templates_registrationsSchedulePDF($ciniki, $tnid, array(
+            'festival_id' => $festival['id'],
+            'customer_id' => $request['session']['customer']['id'],
+            'shared' => 'yes',
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.700', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+        }
+        if( isset($rc['pdf']) ) {
+            $rc['pdf']->Output($rc['filename'], 'I');
+            return array('stat'=>'exit');
+        }
+    }
 
     //
     // Get the list of competitors
@@ -1103,6 +1118,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             //
             $notes = $registration['display_name'];
             $titles = '';
+            // FIXME: Switch to titlesmerge for 2025
+/*            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
+            $rc = ciniki_musicfestivals_titlesMerge($ciniki, $tnid, $registration, ['basicnumbers'=>'yes', 'newline'=>'<br/>']);
+            if( isset($rc['titles']) ) {
+                $titles = $rc['titles'];
+            } */
             for($i = 1; $i <= 8; $i++) {
                 if( $registration["title{$i}"] != '' ) {
                     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x040000) ) {
@@ -1120,7 +1141,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     }
                     $titles .= $registration["title{$i}"];
                 }
-            }
+            } 
             if( $titles != '' ) {
                 $notes .= "\n" . $titles;
             }
@@ -1372,6 +1393,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $update_item_args = array();
                 $notes = $registration['display_name'];
                 $titles = '';
+                // FIXME: Switch to titlesmerge for 2025
+/*                ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
+                $rc = ciniki_musicfestivals_titlesMerge($ciniki, $tnid, $registration, ['basicnumbers'=>'yes']);
+                if( isset($rc['titles']) ) {
+                    $titles = $rc['titles'];
+                } */
                 for($i = 1; $i <= 8; $i++) {
                     if( $registration["title{$i}"] != '' ) {
                         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x040000) ) {
@@ -2042,21 +2069,17 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         $cancelled_registrations = array();
         $parent_registrations = array();
         $accompanist_registrations = array();
+        $schedule_pdf = 'no';
         foreach($registrations as $rid => $reg) {
+            $schedule_pdf = 'yes';
             if( ($festival['flags']&0x0100) == 0x0100 ) {
                 $reg['codename'] = $reg['class_code'] . ' - ' . $reg['section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name'];
             }
             $reg['titles'] = '';
-            for($i = 1; $i <= 8; $i++) {
-                if( isset($reg["title{$i}"]) && $reg["title{$i}"] != '' ) {
-                    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x040000) ) {
-                        $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
-                        if( isset($rc['title']) ) {
-                            $reg["title{$i}"] = $rc['title'];
-                        }
-                    }
-                    $reg['titles'] .= ($reg['titles'] != '' ? '<br/>' : '') . "{$i}. {$reg["title{$i}"]}";
-                }
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
+            $rc = ciniki_musicfestivals_titlesMerge($ciniki, $tnid, $reg, ['basicnumbers'=>'yes', 'newline'=>'<br/>']);
+            if( isset($rc['titles']) ) {
+                $reg['titles'] = $rc['titles'];
             }
             if( $reg['participation'] == 1 ) {
                 $reg['codename'] .= ' (Virtual)';
@@ -2401,6 +2424,18 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     array('label' => 'Title(s)', 'fold-label'=>'Title:', 'field' => 'titles', 'class' => 'alignleft'),
                     ),
                 'rows' => $cancelled_registrations,
+                );
+        }
+
+        if( $schedule_pdf == 'yes' ) {
+            $blocks[] = array(
+                'type' => 'buttons',
+                'class' => 'limit-width limit-width-80 aligncenter',
+                'list' => array(array(
+                    'text' => 'Download Schedule PDF',
+                    'target' => '_blank',
+                    'url' => "/account/musicfestivalregistrations?schedulepdf=yes",
+                    )),
                 );
         }
 
