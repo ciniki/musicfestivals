@@ -499,43 +499,6 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
     } */
 
     //
-    // Get the list of classes
-    //
-    $strsql = "SELECT classes.id, "
-        . "CONCAT_WS(' - ', classes.code, classes.name) AS name, "
-        . "classes.flags, "
-        . "classes.min_titles, "
-        . "classes.max_titles, "
-        . "FORMAT(classes.earlybird_fee, 2) AS earlybird_fee, "
-        . "FORMAT(classes.fee, 2) AS fee, "
-        . "FORMAT(classes.virtual_fee, 2) AS virtual_fee, "
-        . "FORMAT(classes.earlybird_plus_fee, 2) AS earlybird_plus_fee, "
-        . "FORMAT(classes.plus_fee, 2) AS plus_fee "
-        . "FROM ciniki_musicfestival_sections AS sections "
-        . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
-            . "sections.id = categories.section_id "
-            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . ") "
-        . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
-            . "categories.id = classes.category_id "
-            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . ") "
-        . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
-        . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "ORDER BY sections.sequence, sections.name, categories.sequence, categories.name, classes.sequence, classes.name "
-        . "";
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'classes', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'flags', 'min_titles', 'max_titles', 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee')),
-        ));
-    if( $rc['stat'] != 'ok' ) { 
-        return $rc;
-    }
-    if( isset($rc['classes']) ) {
-        $rsp['classes'] = $rc['classes'];
-    }
-
-    //
     // Get the festival details
     //
     $strsql = "SELECT ciniki_musicfestivals.id, "
@@ -604,6 +567,47 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
     }
     foreach($rc['settings'] as $k => $v) {
         $rsp['registration']['festival'][$k] = $v;
+    }
+
+    //
+    // Get the list of classes
+    //
+    $strsql = "SELECT classes.id, ";
+    if( isset($rsp['registration']['festival']['flags']) && ($rsp['registration']['festival']['flags']&0x0100) == 0x0100 ) {
+        $strsql .= "CONCAT_WS(' - ', classes.code, sections.name, categories.name, classes.name) AS name, ";
+    } else {
+        $strsql .= "CONCAT_WS(' - ', classes.code, classes.name) AS name, ";
+    }
+    $strsql .= "classes.flags, "
+        . "classes.min_titles, "
+        . "classes.max_titles, "
+        . "FORMAT(classes.earlybird_fee, 2) AS earlybird_fee, "
+        . "FORMAT(classes.fee, 2) AS fee, "
+        . "FORMAT(classes.virtual_fee, 2) AS virtual_fee, "
+        . "FORMAT(classes.earlybird_plus_fee, 2) AS earlybird_plus_fee, "
+        . "FORMAT(classes.plus_fee, 2) AS plus_fee "
+        . "FROM ciniki_musicfestival_sections AS sections "
+        . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
+            . "sections.id = categories.section_id "
+            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
+            . "categories.id = classes.category_id "
+            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
+        . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "ORDER BY sections.sequence, sections.name, categories.sequence, categories.name, classes.sequence, classes.name "
+        . "";
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'classes', 'fname'=>'id', 
+            'fields'=>array('id', 'name', 'flags', 'min_titles', 'max_titles', 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee')),
+        ));
+    if( $rc['stat'] != 'ok' ) { 
+        return $rc;
+    }
+    if( isset($rc['classes']) ) {
+        $rsp['classes'] = $rc['classes'];
     }
 
     //
