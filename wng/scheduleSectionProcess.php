@@ -264,6 +264,15 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     $strsql = "SELECT divisions.id AS division_id, "
         . "divisions.name AS division_name, "
         . "divisions.address, "
+        . "IFNULL(locations.name, '') AS location_name, "
+        . "IFNULL(locations.address1, '') AS location_address1, "
+        . "IFNULL(locations.city, '') AS location_city, "
+        . "IFNULL(locations.province, '') AS location_province, "
+        . "IFNULL(locations.postal, '') AS location_postal, "
+        . "IFNULL(locations.latitude, '') AS latitude, "
+        . "IFNULL(locations.longitude, '') AS longitude, "
+        . "IFNULL(customers.display_name, '') AS adjudicator_name, "
+        . "IFNULL(customers.permalink, '') AS adjudicator_permalink, "
         . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, ";
     if( isset($s['separate-classes']) && $s['separate-classes'] == 'yes' ) {
         $strsql .= "CONCAT_WS('-', timeslots.id, classes.id) AS timeslot_id, ";
@@ -346,6 +355,18 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             . "registrations.member_id = members.id "
             . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
+        . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
+            . "divisions.location_id = locations.id "
+            . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
+            . "divisions.adjudicator_id = adjudicators.id "
+            . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_customers AS customers ON ("
+            . "adjudicators.customer_id = customers.id "
+            . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
         . "WHERE divisions.ssection_id = '" . ciniki_core_dbQuote($ciniki, $s['section-id']) . "' "
         . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
@@ -367,7 +388,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'divisions', 'fname'=>'division_id', 
-            'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'address'),
+            'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'address', 'location_name', 'location_address1', 'location_city', 'location_province', 'location_postal', 'latitude', 'longitude', 'adjudicator_name', 'adjudicator_permalink'),
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
             'fields'=>array('id'=>'timeslot_id', 'title'=>'timeslot_name', 'time'=>'slot_time_text', 'synopsis'=>'description', 
@@ -461,7 +482,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     // Show the divisions
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
-    foreach($divisions as $division) {
+    foreach($divisions as $did => $division) {
         if( isset($division['timeslots']) ) {
             //
             // Process the timeslots
@@ -626,18 +647,74 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 }
                 if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
                     // Provincials add member column
+                    // Do not show on website
                     $columns[] = array('label'=>'Home Festival', 'fold-label'=>'Home Festival:', 'field'=>'member_name', 'class'=>'aligntop');
                 }
                 if( $videos == 'yes' ) {
                     $columns[] = array('label'=>'Video', 'fold-label'=>'Videos:', 'field'=>'videos', 'class'=>'alignright');
                 }
-                $blocks[] = array(
-                    'type' => 'text',
-                    'title' => $division['name'],
-                    'content' => 
-                        '<b>Location</b>: ' . $division['address'] . '<br/>'
-                        . '<b>Adjudicator</b>: Name Here', // . $division['adjudicator_name'],
-                    );
+                $adjudicator_name = $division['adjudicator_name'];
+                if( $division['adjudicator_permalink'] != '' && $division['adjudicator_name'] != '' && isset($s['adjudicators-page']) ) {
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'urlProcess');
+                    $rc = ciniki_wng_urlProcess($ciniki, $tnid, $request, $s['adjudicators-page'], '');
+                    if( isset($rc['url']) ) {
+                        $adjudicator_name = "<a class='link' href='" . $rc['url'] . '/' . $division['adjudicator_permalink'] . "'>{$division['adjudicator_name']}</a>";
+                    }
+                }
+                if( $division['latitude'] != '' && $division['longitude'] != '' ) {
+                    if( $adjudicator_name != '' ) {
+                        $blocks[] = array(
+                            'type' => 'text',
+                            'level' => 2,
+                            'title' => $division['name'],
+                            'content' => '<h3>Adjudicator</h3>' . $adjudicator_name,
+                            );
+                    } else {
+                        $blocks[] = array(
+                            'type' => 'title',
+                            'level' => 2,
+                            'title' => $division['name'],
+                            );
+                    }
+                    $address = $division['location_name'];
+                    if( $division['location_address1'] != '' ) {
+                        $address .= ($address != '' ? '<br/>' : '') . $division['location_address1'];
+                    }
+                    $city = $division['location_city'];
+                    if( $division['location_province'] != '' ) {
+                        $city .= ($city != '' ? ', ' : '') . $division['location_province'];
+                    }
+                    if( $division['location_postal'] != '' ) {
+                        $city .= ($city != '' ? '  ' : '') . $division['location_postal'];
+                    }
+                    if( $city != '' ) {
+                        $address .= ($address != '' ? '<br/>' : '') . $city;
+                    }
+                    $blocks[] = array(
+                        'type' => 'googlemap',
+                        'id' => "map-" . ($did+1),
+                        'sid' => $did,
+                        'class' => 'content-view',
+                        'map-position' => 'bottom-right',
+                        'latitude' => $division['latitude'],
+                        'longitude' => $division['longitude'],
+                        'title' => 'Location',
+                        'content' => $address,
+                        );
+                } else {
+                    $content = '';
+                    if( $division['address'] != '' ) {
+                        $content .= '<b>Location</b>: ' . $division['address'];
+                    }
+                    if( $adjudicator_name != '' ) {
+                        $content .= ($content != '' ? '<br/>' : '') . '<b>Adjudicator</b>: ' . $adjudicator_name;
+                    }
+                    $blocks[] = array(
+                        'type' => 'text',
+                        'title' => $division['name'],
+                        'content' => $content,
+                        );
+                }
                 foreach($division['timeslots'] as $timeslot) {
                     if( isset($timeslot['items']) && count($timeslot['items']) > 0 ) {
                         $blocks[] = array(

@@ -246,6 +246,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'no' => 'No',
                     'yes' => 'Yes',
                     )),
+            'adjudicators-page' => array('label'=>'Adjudicators Page', 'type'=>'select', 'pages'=>'yes'),
             'section-pdf' => array('label'=>'Section PDF Download', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
                 'no' => 'Off',
                 'top' => 'Top',
