@@ -2463,6 +2463,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "FROM ciniki_musicfestival_recommendation_entries AS new "
                     . "WHERE classes.id = new.class_id "
                     . "AND new.status < 30 "    // New
+                    . "AND new.position < 100 " // Ignore alternates
                     . "AND new.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") AS num_new, "
                 . "(SELECT COUNT(ar.id) "
