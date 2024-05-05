@@ -1,0 +1,44 @@
+#
+# Description
+# -----------
+# This table stores the locations/venues for the musicfestivals.
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# festival_id:              The ID of the festival the location is attached to.
+#
+# name:                     The name of the place/venue/location.
+# address1:                 The street address of the location.
+# city:                     The city the location is in.
+# province:                 The province the location is in.
+# postal:                   The postal code for the location.
+# latitude:                 The latitude coordinate of the address.
+# longitude:                The longitude coordinate of the address.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_musicfestival_locations (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    festival_id int not null,
+    name varchar(250) not null,
+    address1 varchar(100) not null,
+    city varchar(100) not null,
+    province varchar(100) not null,
+    postal varchar(10) not null,
+    latitude decimal(18,12) not null,
+    longitude decimal(18,12) not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

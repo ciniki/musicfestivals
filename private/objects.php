@@ -71,6 +71,24 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );
+    $objects['location'] = array(
+        'name' => 'Location',
+        'sync' => 'yes',
+        'o_name' => 'location',
+        'o_container' => 'locations',
+        'table' => 'ciniki_musicfestival_locations',
+        'fields' => array(
+            'festival_id' => array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'name' => array('name'=>'Name'),
+            'address1' => array('name'=>'Address', 'default'=>''),
+            'city' => array('name'=>'City', 'default'=>''),
+            'province' => array('name'=>'Province', 'default'=>''),
+            'postal' => array('name'=>'Postal Code', 'default'=>''),
+            'latitude' => array('name'=>'Latitude', 'default'=>''),
+            'longitude' => array('name'=>'Longitude', 'default'=>''),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
     $objects['section'] = array(
         'name'=>'Section',
         'o_name'=>'section',
@@ -377,6 +395,8 @@ function ciniki_musicfestivals_objects($ciniki) {
         'fields'=>array(
             'festival_id'=>array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
             'ssection_id'=>array('name'=>'Section', 'ref'=>'ciniki.musicfestivals.schedulesection'),
+            'location_id'=>array('name'=>'Location', 'ref'=>'ciniki.musicfestivals.location', 'default'=>'0'),
+            'adjudicator_id'=>array('name'=>'Adjudicator', 'ref'=>'ciniki.musicfestivals.adjudicator', 'default'=>'0'),
             'name'=>array('name'=>'Name'),
             'flags'=>array('name'=>'Options', 'default'=>'0'),
             'division_date'=>array('name'=>'Date'),

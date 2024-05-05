@@ -302,7 +302,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             array('container'=>'teachers', 'fname'=>'id', 'fields'=>array('id', 'name'=>'display_name')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.653', 'msg'=>'Unable to load teachers', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.716', 'msg'=>'Unable to load teachers', 'err'=>$rc['err']));
         }
         $teachers = isset($rc['teachers']) ? $rc['teachers'] : array();
     }
@@ -1054,7 +1054,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                             ));
                         if( $rc['stat'] != 'ok' ) {
                             error_log('unable to store file');
-                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.429', 'msg'=>'Unable to store uploaded file', 'err'=>$rc['err']));
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.715', 'msg'=>'Unable to store uploaded file', 'err'=>$rc['err']));
                         }
 //                        $registration[$field['id']] = $field['value'];
                         $registration[$field['id']] = $_FILES["file-{$field['id']}"]['name'];
@@ -1509,7 +1509,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
                     $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration['registration_id'], $registration['uuid'], 0x04);
                     if( $rc['stat'] != 'ok' ) {
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.331', 'msg'=>'Unable to remove registration', 'err'=>$rc['err']));
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.714', 'msg'=>'Unable to remove registration', 'err'=>$rc['err']));
                     }
                 }
 

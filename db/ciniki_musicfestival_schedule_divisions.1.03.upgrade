@@ -1,0 +1,3 @@
+ALTER TABLE ciniki_musicfestival_schedule_divisions ADD COLUMN location_id int not null AFTER ssection_id;
+ALTER TABLE ciniki_musicfestival_schedule_divisions ADD COLUMN adjudicator_id int not null AFTER location_id;
+ALTER TABLE ciniki_musicfestival_schedule_divisions COMMENT='v1.03';

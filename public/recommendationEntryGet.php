@@ -148,7 +148,7 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
         array('container'=>'classes', 'fname'=>'id', 'fields'=>array('id', 'name')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.689', 'msg'=>'Unable to load classes', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.722', 'msg'=>'Unable to load classes', 'err'=>$rc['err']));
     }
     $rsp['classes'] = isset($rc['classes']) ? $rc['classes'] : array();
 

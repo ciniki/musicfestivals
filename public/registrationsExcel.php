@@ -72,7 +72,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
     $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.195', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.733', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
     }
     foreach($rc['settings'] as $k => $v) {
         $festival[$k] = $v;
@@ -301,10 +301,10 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'teacher');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.551', 'msg'=>'Unable to load teacher', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.731', 'msg'=>'Unable to load teacher', 'err'=>$rc['err']));
         }
         if( !isset($rc['teacher']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.552', 'msg'=>'Unable to find requested teacher'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.732', 'msg'=>'Unable to find requested teacher'));
         }
         $sections[0]['name'] = $rc['teacher']['display_name'];
         $filename .= ' - Teacher - ' . $rc['teacher']['display_name'];

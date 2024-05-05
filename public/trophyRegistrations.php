@@ -91,7 +91,7 @@ function ciniki_musicfestivals_trophyRegistrations($ciniki) {
             'festival_id' => $args['festival_id'],
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.303', 'msg'=>'Unable to generate PDF', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.744', 'msg'=>'Unable to generate PDF', 'err'=>$rc['err']));
         }
         if( isset($rc['pdf']) ) {
             $rc['pdf']->Output($rc['filename'], 'I');

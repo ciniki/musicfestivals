@@ -2,18 +2,18 @@
 //
 // Description
 // -----------
-// This method will add a new schedule division for the tenant.
+// This method will add a new location for the tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// tnid:        The ID of the tenant to add the Schedule Division to.
+// tnid:        The ID of the tenant to add the Location to.
 //
 // Returns
 // -------
 //
-function ciniki_musicfestivals_scheduleDivisionAdd(&$ciniki) {
+function ciniki_musicfestivals_locationAdd(&$ciniki) {
     //
     // Find all the required and optional arguments
     //
@@ -21,13 +21,13 @@ function ciniki_musicfestivals_scheduleDivisionAdd(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
-        'ssection_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Section'),
-        'location_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Location'),
-        'adjudicator_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicator'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'),
-        'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
-        'division_date'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'date', 'name'=>'Date'),
-        'address'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address'),
+        'address1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address'),
+        'city'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'City'),
+        'province'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Province'),
+        'postal'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Postal Code'),
+        'latitude'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Latitude'),
+        'longitude'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Longitude'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -38,7 +38,7 @@ function ciniki_musicfestivals_scheduleDivisionAdd(&$ciniki) {
     // Check access to tnid as owner
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.scheduleDivisionAdd');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.locationAdd');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -56,15 +56,15 @@ function ciniki_musicfestivals_scheduleDivisionAdd(&$ciniki) {
     }
 
     //
-    // Add the schedule division to the database
+    // Add the location to the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.scheduledivision', $args, 0x04);
+    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.location', $args, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;
     }
-    $scheduledivision_id = $rc['id'];
+    $location_id = $rc['id'];
 
     //
     // Commit the transaction
@@ -85,8 +85,8 @@ function ciniki_musicfestivals_scheduleDivisionAdd(&$ciniki) {
     // Update the web index if enabled
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
-    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.musicfestivals.scheduleDivision', 'object_id'=>$scheduledivision_id));
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.musicfestivals.location', 'object_id'=>$location_id));
 
-    return array('stat'=>'ok', 'id'=>$scheduledivision_id);
+    return array('stat'=>'ok', 'id'=>$location_id);
 }
 ?>

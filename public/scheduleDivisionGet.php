@@ -64,6 +64,8 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
         $scheduledivision = array('id'=>0,
             'festival_id'=>'',
             'ssection_id'=>(isset($args['ssection_id']) ? $args['ssection_id'] : 0),
+            'location_id'=>0,
+            'adjudicator_id'=>0,
             'name'=>'',
             'flags' => 0,
             'division_date'=>'',
@@ -78,6 +80,8 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
         $strsql = "SELECT ciniki_musicfestival_schedule_divisions.id, "
             . "ciniki_musicfestival_schedule_divisions.festival_id, "
             . "ciniki_musicfestival_schedule_divisions.ssection_id, "
+            . "ciniki_musicfestival_schedule_divisions.location_id, "
+            . "ciniki_musicfestival_schedule_divisions.adjudicator_id, "
             . "ciniki_musicfestival_schedule_divisions.name, "
             . "ciniki_musicfestival_schedule_divisions.flags, "
             . "ciniki_musicfestival_schedule_divisions.division_date, "
@@ -88,7 +92,9 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'scheduledivisions', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'ssection_id', 'name', 'flags', 'division_date', 'address'),
+                'fields'=>array('festival_id', 'ssection_id', 'name', 'flags', 'division_date', 
+                    'address', 'adjudicator_id', 'location_id',
+                    ),
                 'utctotz'=>array('division_date'=>array('timezone'=>'UTC', 'format'=>$date_format)),                ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -120,6 +126,49 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
     if( isset($rc['sections']) ) {
         $rsp['schedulesections'] = $rc['sections'];
     }
+
+    //
+    // Get the list of locations
+    //
+    $strsql = "SELECT locations.id, "
+        . "locations.name "
+        . "FROM ciniki_musicfestival_locations AS locations "
+        . "WHERE locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND locations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "ORDER BY locations.name "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'locations', 'fname'=>'id', 'fields'=>array('id', 'name')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $rsp['locations'] = isset($rc['locations']) ? $rc['locations'] : array();
+
+    //
+    // Get the list of adjudicators
+    //
+    $strsql = "SELECT adjudicators.id, "
+        . "adjudicators.customer_id, "
+        . "customers.display_name "
+        . "FROM ciniki_musicfestival_adjudicators AS adjudicators "
+        . "LEFT JOIN ciniki_customers AS customers ON ("
+            . "adjudicators.customer_id = customers.id "
+            . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "WHERE adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "ORDER BY customers.display_name "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'adjudicators', 'fname'=>'id', 'fields'=>array('id', 'customer_id', 'name'=>'display_name')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $rsp['adjudicators'] = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
 
     return $rsp;
 }

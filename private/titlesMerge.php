@@ -49,10 +49,11 @@ function ciniki_musicfestivals_titlesMerge(&$ciniki, $tnid, $registration, $args
         }
     }
 
+    $perf_time_str = intval($perf_time/60) . ':' . str_pad(($perf_time%60), 2, '0', STR_PAD_LEFT);
     if( isset($args['times']) && $args['times'] == 'startsum' ) {
-        $titles = '[' . intval($perf_time/60) . ':' . str_pad(($perf_time%60), 2, '0', STR_PAD_LEFT) . '] ' . $titles;
+        $titles = '[' . $perf_time_str . '] ' . $titles;
     }
 
-    return array('stat'=>'ok', 'titles'=>$titles);
+    return array('stat'=>'ok', 'titles'=>$titles, 'perf_time'=>$perf_time_str);
 }
 ?>

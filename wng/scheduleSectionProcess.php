@@ -235,7 +235,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             array('container'=>'sponsors', 'fname'=>'id', 'fields'=>array('url', 'image-id'=>'image_id')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.689', 'msg'=>'Unable to load sponsors', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.740', 'msg'=>'Unable to load sponsors', 'err'=>$rc['err']));
         }
         $top_sponsors = isset($rc['sponsors']) ? $rc['sponsors'] : array();
     }

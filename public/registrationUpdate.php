@@ -174,12 +174,16 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         if( isset($rc['seq']['max_seq']) ) {
             $args['timeslot_sequence'] = $rc['seq']['max_seq'] + 1;
         }
+    }
         
+    if( isset($args['timeslot_id']) && $args['timeslot_id'] > 0 
+        && !isset($args['timeslot_time'])
+        ) {
         //
         // Get the last registration 
         //
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
-            if( $args['timeslot_sequence'] == 1 ) {
+            if( isset($args['timeslot_sequence']) && $args['timeslot_sequence'] == 1 ) {
                 $strsql = "SELECT slot_time "
                     . "FROM ciniki_musicfestival_schedule_timeslots "
                     . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' "
@@ -200,8 +204,11 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                     . "perf_time1, perf_time2, perf_time3, perf_time4, perf_time5, perf_time6, perf_time7, perf_time8 "
                     . "FROM ciniki_musicfestival_registrations "
                     . "WHERE timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' "
-                    . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
-                    . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' ";
+                if( isset($args['timeslot_sequence']) ) {
+                    $strsql .= "AND timeslot_sequence < '" . ciniki_core_dbQuote($ciniki, $args['timeslot_sequence']) . "' ";
+                }
+                $strsql .= "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "ORDER BY timeslot_sequence DESC "
                     . "LIMIT 1 "
                     . "";
@@ -226,7 +233,6 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                 $dt->add(new DateInterval('PT' . $total_time . 'S')); 
                 $args['timeslot_time'] = $dt->format('H:i');
             }
-            
         }
     }
 
@@ -318,30 +324,16 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     }
 
     //
-    // Check if sequences should be updated
+    // Check if registration moved timeslots and old timeslot needs to be renumbered
     //
-    if( (isset($args['timeslot_sequence']) && $args['timeslot_sequence'] != '')
-        || (isset($args['timeslot_id']) && $args['timeslot_id'] == 0)
-        ) {
-        if( isset($args['timeslot_id']) && $args['timeslot_id'] == 0 ) {
-            $new_seq = 0;
-            $old_seq = -1;
-        } else {
-            $new_seq = $args['timeslot_sequence'];
-            $old_seq = $new_seq == 0 ? -1 : $registration['timeslot_sequence'];
-        }
+    if( $registration['timeslot_id'] > 0 && isset($args['timeslot_id']) && $args['timeslot_id'] != $registration['timeslot_id'] ) {
         $strsql = "SELECT id, timeslot_sequence AS number "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE timeslot_id = '" . ciniki_core_dbQuote($ciniki, $registration['timeslot_id']) . "' "
             . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
             . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY timeslot_sequence "
             . "";
-        // Use the last_updated to determine which is in the proper position for duplicate numbers
-        if( $new_seq < $old_seq || $old_seq == -1) {
-            $strsql .= "ORDER BY timeslot_sequence, last_updated DESC";
-        } else {
-            $strsql .= "ORDER BY timeslot_sequence, last_updated ";
-        }
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'sequence');
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, $m);
@@ -362,6 +354,48 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                     }
                 }
                 $cur_number++;
+            }
+        }
+    }
+
+    //
+    // Check if moved into a timeslot
+    //
+    if( isset($args['timeslot_id']) && $args['timeslot_id'] > 0 ) {
+        $new_seq = $args['timeslot_sequence'];
+        $old_seq = $registration['timeslot_sequence'];
+        $strsql = "SELECT id, timeslot_sequence AS number "
+            . "FROM ciniki_musicfestival_registrations "
+            . "WHERE timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' "
+            . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        // Use the last_updated to determine which is in the proper position for duplicate numbers
+        if( $new_seq < $old_seq || $old_seq == -1 || $registration['timeslot_id'] == 0 ) {
+            $strsql .= "ORDER BY timeslot_sequence, last_updated DESC";
+        } else {
+            $strsql .= "ORDER BY timeslot_sequence, last_updated ";
+        } 
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'sequence');
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, $m);
+            return $rc;
+        }
+        $cur_number = 1;
+        if( isset($rc['rows']) ) {
+            $sequences = $rc['rows'];
+            foreach($sequences as $sid => $seq) {
+                //
+                // If the number is not where it's suppose to be, change
+                //
+                if( $cur_number != $seq['number'] ) {
+                    $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.registration', $seq['id'], array('timeslot_sequence'=>$cur_number), 0x04);
+                    if( $rc['stat'] != 'ok' ) {
+                        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+                        return $rc;
+                    }
+                }
+                $cur_number++; 
             }
         }
     }

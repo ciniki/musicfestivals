@@ -99,7 +99,7 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.261', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.736', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
         }
         $rows = isset($rc['rows']) ? $rc['rows'] : array();
         foreach($rows as $festival) { */

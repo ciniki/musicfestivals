@@ -352,7 +352,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             array('container'=>'categories', 'fname'=>'id', 'fields'=>array('id', 'name', 'num_registrations')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.693', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.193', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
         }
         $rsp['categories'] = isset($rc['categories']) ? $rc['categories'] : array();
         if( count($rsp['categories']) == 0 ) {
@@ -472,7 +472,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.694', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.196', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
         }
         $rsp['unscheduled_registrations'] = isset($rc['registrations']) ? $rc['registrations'] : array();
         foreach($rsp['unscheduled_registrations'] as $rid => $reg) {
