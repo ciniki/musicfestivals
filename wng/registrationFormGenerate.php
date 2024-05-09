@@ -825,6 +825,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             $music_class = (($festival['flags']&0x0200) == 0x0200 ? $css_class : 'hidden');
             $backtrack_class = 'hidden';
         }
+        if( isset($selected_class['flags']) && ($selected_class['flags']&0x020000) > 0 ) {
+            $video_class = 'hidden';
+        }
         if( isset($selected_class['flags']) && ($selected_class['flags']&0x03000000) > 0 ) {
             $backtrack_class = $css_class;
         }
