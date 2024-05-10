@@ -2597,7 +2597,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "recommendations.section_id, "
                     . "recommendations.date_submitted, "
                     . "members.name AS member_name, "
-                    . "DATE_FORMAT(member.reg_end_dt, '%b %d') AS end_date, "
+                    . "member.reg_end_dt AS end_date, "
+//                    . "DATE_FORMAT(member.reg_end_dt, '%b %d') AS end_date, "
                     . "member.latedays "
                     . "FROM ciniki_musicfestival_recommendation_entries AS entries "
                     . "LEFT JOIN ciniki_musicfestival_recommendations AS recommendations ON ("
@@ -2624,6 +2625,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             'date_submitted', 'member_id', 'section_id', 'member_name', 'end_date', 'latedays'),
                         'utctotz'=>array(
                             'date_submitted'=> array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i:s A'),
+                            'end_date'=> array('timezone'=>$intl_timezone, 'format'=>'M j'),
                             ),
                         ),
                     ));
