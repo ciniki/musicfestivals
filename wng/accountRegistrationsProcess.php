@@ -1811,6 +1811,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             }
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
                 && preg_match("/(title|composer|movements|perf_time|video_url|music_orgfilename|backtrack)/", $fid)
+                && !preg_match("/line-title/", $fid)
                 && isset($selected_member['open']) 
                 && $selected_member['open'] == 'yes'
                 && $registration['billing_customer_id'] == $request['session']['customer']['id']
@@ -1820,6 +1821,15 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 if( preg_match("/perf_time/", $fid) ) {
                     $fields[$fid]['ftype'] = 'minsec';
                 }
+                // Note: This is a hack to stop editing at end of registrations
+                $fields[$fid]['editable'] = 'no';
+                $editable = 'no';
+                $fields[$fid]['required'] = 'no';
+                $fields[$fid]['ftype'] = 'viewtext'; 
+                if( preg_match("/perf_time/", $fid) ) {
+                    $fields[$fid]['ftype'] = 'viewtext';
+                    $fields[$fid]['value'] = sprintf("%d:%02d", intval($field['value']/60),$field['value']%60);
+                } 
             }
             elseif( preg_match("/^accompanist_/", $fid) 
                 && isset($festival['edit-accompanist']) && $festival['edit-accompanist'] == 'yes' 
