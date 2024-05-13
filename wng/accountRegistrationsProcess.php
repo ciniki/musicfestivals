@@ -1703,7 +1703,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 && isset($field['id']) && $field['id'] == 'member_id'
                 ) {
                 $fields[$fid]['ftype'] = 'viewtext';
-                $fields[$fid]['value'] = $selected_member['name'];
+                $fields[$fid]['value'] = preg_replace('/ - Late fee.*/', '', $selected_member['name']);
             } elseif( $field['ftype'] == 'minsec' 
                 ) {
                 $fields[$fid]['ftype'] = 'text';
