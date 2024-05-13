@@ -501,7 +501,17 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $strsql = "SELECT classes.id, "
                     . "classes.code, "
                     . "classes.name, "
-                    . "COUNT(registrations.id) AS num_registrations "
+                    . "COUNT(registrations.id) AS num_registrations, "
+                    . "("
+                        . "SUM(registrations.perf_time1)"
+                        . "+SUM(registrations.perf_time2)"
+                        . "+SUM(registrations.perf_time3)"
+                        . "+SUM(registrations.perf_time4)"
+                        . "+SUM(registrations.perf_time5)"
+                        . "+SUM(registrations.perf_time6)"
+                        . "+SUM(registrations.perf_time7)"
+                        . "+SUM(registrations.perf_time8)"
+                        . ") AS total_perf_time "
                     . "FROM ciniki_musicfestival_categories AS categories "
                     . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
                         . "categories.id = classes.category_id "
@@ -518,25 +528,24 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-                    array('container'=>'classes', 'fname'=>'id', 'fields'=>array('id', 'code', 'name', 'num_registrations')),
+                    array('container'=>'classes', 'fname'=>'id', 'fields'=>array('id', 'code', 'name', 'num_registrations', 'total_perf_time')),
                     ));
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.597', 'msg'=>'Unable to load classes', 'err'=>$rc['err']));
                 }
                 $festival['registration_classes'] = isset($rc['classes']) ? $rc['classes'] : array();
-
-/*                if( !isset($args['class_id']) || $args['class_id'] == '' || $args['class_id'] == 0 ) {
-                    $args['class_id'] = $festival['recommendation_classes'][0]['id'];
-                    $festival['class_id'] = $args['class_id'];
-                }
-                foreach($festival['recommendation_classes'] as $cid => $class) {
-                    $festival['recommendation_classes'][$cid]['name'] = str_replace($section['name'] . ' - ', '', $festival['recommendation_classes'][$cid]['name']);
-                    if( preg_match("/^([^-]+) - /", $section['name'], $m) ) {
-                        if( $m[1] != '' ) {
-                            $festival['recommendation_classes'][$cid]['name'] = str_replace($m[1] . ' - ', '', $festival['recommendation_classes'][$cid]['name']);
+                foreach($festival['registration_classes'] as $cid => $class) {
+                    $festival['registration_classes'][$cid]['total_perf_time_display'] = '';
+                    if( $class['total_perf_time'] > 0 ) {
+                        $hours = intval($class['total_perf_time']/3600);
+                        $minutes = round(($class['total_perf_time']%3600)/60, 0);
+                        if( $hours > 0 ) {
+                            $festival['registration_classes'][$cid]['total_perf_time_display'] = "{$hours} hours {$minutes} minutes";
+                        } else {
+                            $festival['registration_classes'][$cid]['total_perf_time_display'] = "{$minutes} minutes";
                         }
                     }
-                } */
+                }
             }
             //
             // Get the list of teachers and number of registrations

@@ -402,7 +402,7 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return ['registrations','videos'].indexOf(M.ciniki_musicfestivals_main.festival.menutabs.selected) >= 0 && M.ciniki_musicfestivals_main.festival.sections.registration_tabs.selected == 'classes' ? 'yes' : 'no'; },
 //            'headerValues':['Class'],
 //            'headerClasses':[''],
-            'cellClasses':[''],
+            'cellClasses':['multiline'],
             },
         'registration_teachers':{'label':'', 'aside':'yes', 'type':'simplegrid', 'num_cols':1,
             'visible':function() { return ['registrations','videos'].indexOf(M.ciniki_musicfestivals_main.festival.menutabs.selected) >= 0 && M.ciniki_musicfestivals_main.festival.sections.registration_tabs.selected == 'teachers' ? 'yes' : 'no'; },
@@ -1269,7 +1269,8 @@ function ciniki_musicfestivals_main() {
             return M.textCount(d.name, d.num_registrations > 0 ? d.num_registrations: null);
         }
         if( s == 'registration_classes' ) {
-            return M.textCount(d.code + ' - ' + d.name, d.num_registrations);
+            console.log(d.total_perf_time_display);
+            return M.multiline(M.textCount(d.code + ' - ' + d.name, d.num_registrations), d.total_perf_time_display);
         }
         if( s == 'registration_teachers' ) {
             return M.textCount(d.display_name, d.num_registrations > 0 ? d.num_registrations: null);
