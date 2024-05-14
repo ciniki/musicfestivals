@@ -829,7 +829,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "registrations.payment_type, "
                 . "registrations.participation, "
                 . "DATE_FORMAT(invoices.invoice_date, '%b %e') AS invoice_date "
-                . "FROM ciniki_musicfestival_registrations AS registrations ";
+                . "FROM ciniki_musicfestival_registrations AS registrations USE INDEX(festival_id_2) ";
             if( isset($args['registration_tag']) && $args['registration_tag'] != '' ) {
                 $strsql .= "INNER JOIN ciniki_musicfestival_registration_tags AS tags ON ("
                     . "registrations.id = tags.registration_id "
@@ -866,10 +866,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "";
             if( isset($args['section_id']) && $args['section_id'] > 0 ) {
-                $strsql .= "HAVING section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' ";
                 if( isset($args['class_id']) && $args['class_id'] > 0 ) {
                     $strsql .= "AND class_id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' ";
                 }
+                $strsql .= "AND categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' ";
             } elseif( isset($args['colour']) && $args['colour'] != '' ) {
                 if( $args['colour'] == 'White' ) {
                     $strsql .= "AND (registrations.flags&0xFF00) = 0 ";
