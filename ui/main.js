@@ -1269,7 +1269,6 @@ function ciniki_musicfestivals_main() {
             return M.textCount(d.name, d.num_registrations > 0 ? d.num_registrations: null);
         }
         if( s == 'registration_classes' ) {
-            console.log(d.total_perf_time_display);
             return M.multiline(M.textCount(d.code + ' - ' + d.name, d.num_registrations), d.total_perf_time_display);
         }
         if( s == 'registration_teachers' ) {
@@ -3015,7 +3014,6 @@ function ciniki_musicfestivals_main() {
         if( !this.checkForm() ) { return false; }
         if( this.section_id > 0 ) {
             var c = this.serializeForm('no');
-            console.log(c);
             if( c != '' ) {
                 M.api.postJSONCb('ciniki.musicfestivals.sectionUpdate', {'tnid':M.curTenantID, 'section_id':this.section_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
