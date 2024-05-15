@@ -73,8 +73,8 @@ function ciniki_musicfestivals_sapos_cartItemCheck($ciniki, $tnid, $customer, $a
                 $latefee = 25;
             } elseif( $diff->days < 2 ) {
                 $latefee = 50;
-            } elseif( $diff->days < 3 ) {
-                $latefee = 75;
+//            } elseif( $diff->days < 3 ) {
+//                $latefee = 75;
             } else {
                 return array('stat'=>'blocked', 'err'=>array('code'=>'ciniki.musicfestivals.664', 'msg'=>'Registrations are closed'));
             }
