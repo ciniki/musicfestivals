@@ -197,9 +197,13 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND ssections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
-        . "AND ssections.adjudicator1_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
-        . "ORDER BY section_name, divisions.division_date, division_id, slot_time, registrations.timeslot_sequence, registrations.display_name "
+        . "AND ssections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' ";
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+        $strsql .= "AND divisions.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' ";
+    } else {
+        $strsql .= "AND ssections.adjudicator1_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' ";
+    }
+    $strsql .= "ORDER BY section_name, divisions.division_date, division_id, slot_time, registrations.timeslot_sequence, registrations.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
