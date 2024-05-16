@@ -4896,6 +4896,7 @@ function ciniki_musicfestivals_main() {
                     M.api.err(rsp);
                     return false;
                 }
+                M.ciniki_musicfestivals_main.festival.schedulesection_id = rsp.id;
                 M.ciniki_musicfestivals_main.schedulesection.schedulesection_id = rsp.id;
                 eval(cb);
             });
@@ -5012,6 +5013,7 @@ function ciniki_musicfestivals_main() {
                     M.api.err(rsp);
                     return false;
                 }
+                M.ciniki_musicfestivals_main.festival.scheduledivision_id = rsp.id;
                 M.ciniki_musicfestivals_main.scheduledivision.scheduledivision_id = rsp.id;
                 eval(cb);
             });
