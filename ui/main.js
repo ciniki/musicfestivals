@@ -5612,16 +5612,16 @@ function ciniki_musicfestivals_main() {
         if( s.match(/^registrations/) ) {
             switch(j) {
                 case 0: return M.multiline(d.timeslot_sequence, d.timeslot_time);
-                case 1: return M.multiline((this.showtitles == 'no' ? '<span class="subdue">[' + d.perf_time + ']</span> ': '') + d.display_name + (d.accompanist_name != '' ? ' <b>[' + d.accompanist_name + ']</b>':''), '<b>' + d.member_name + '</b>' + (this.showtitles == 'yes' ? '<br/>' + d.titles.replace(/\n/g, '<br/>') : ''));
+                case 1: return M.multiline((this.showtitles == 'no' ? '<span class="subdue">[' + d.perf_time + ']</span> ': '') + d.display_name + (d.accompanist_name != '' ? ' <b>[' + d.accompanist_name + ']</b>':''), '<b>' + d.member_name + '</b>' + (this.showtitles == 'yes' ? '<br/>' + d.titles.replace(/\n/g, '<br/>') : '')) + (d.notes != '' ? '<b>' + d.notes + '</b>' : '');
             }
         }
         if( s == 'unscheduled_registrations' ) {
-            return M.multiline((this.showtitles == 'no' ? '<span class="subdue">[' + d.perf_time + ']</span> ': '') + d.display_name + (d.accompanist_name != '' ? ' <b>[' + d.accompanist_name + ']</b>':''), '<b>' + d.member_name + '</b>' + (this.showtitles == 'yes' ? '<br/>' + d.titles.replace(/\n/g, '<br/>') : ''));
+            return M.multiline((this.showtitles == 'no' ? '<span class="subdue">[' + d.perf_time + ']</span> ': '') + d.display_name + (d.accompanist_name != '' ? ' <b>[' + d.accompanist_name + ']</b>':''), '<b>' + d.member_name + '</b>' + (this.showtitles == 'yes' ? '<br/>' + d.titles.replace(/\n/g, '<br/>') : '')) + (d.notes != '' ? '<b>' + d.notes + '</b>' : '');
         }
     }
     this.schedulemultislot.cellFn = function(s, i, j, d) {
-        if( M.modFlagOn('ciniki.musicfestivals', 0x080000) && s.match(/registrations[0-4]/) && j == 0 ) {
-            return 'event.stopPropagation();M.ciniki_musicfestivals_main.schedulemultislot.updateRegistrationTime(\'' + d.id + '\');';
+        if( M.modFlagOn('ciniki.musicfestivals', 0x080000) && s.match(/registrations[0-4]/) && j <= 1 ) {
+            return 'event.stopPropagation();M.ciniki_musicfestivals_main.schedulemultislot.savePos();M.ciniki_musicfestivals_main.schedulemultislot.updateRegistrationTime(\'' + d.id + '\');';
         }
         return '';
     }

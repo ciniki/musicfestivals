@@ -162,6 +162,8 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
                 . "registrations.timeslot_id, "
                 . "TIME_FORMAT(registrations.timeslot_time, '%l:%i') AS timeslot_time, "
                 . "registrations.timeslot_sequence, "
+                . "registrations.notes, "
+                . "GROUP_CONCAT(' ', competitors.notes) AS competitor_notes, "
                 . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
                 . "IFNULL(members.name, '') AS member_name, "
                 . "classes.code AS class_code, "
@@ -169,6 +171,15 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
                 . "categories.name AS category_name, "
                 . "sections.name AS section_name "
                 . "FROM ciniki_musicfestival_registrations AS registrations "
+                . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ("
+                    . "(" 
+                        . "registrations.competitor1_id = competitors.id "
+                        . "OR registrations.competitor2_id = competitors.id "
+                        . "OR registrations.competitor3_id = competitors.id "
+                        . "OR registrations.competitor4_id = competitors.id "
+                        . ") "
+                    . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
                 . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
                     . "registrations.class_id = classes.id "
                     . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -191,6 +202,7 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
                     . ") "
                 . "WHERE registrations.timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args["timeslot{$i}_id"]) . "' "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "GROUP BY registrations.id "
                 . "ORDER BY registrations.timeslot_sequence, registrations.display_name "
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -203,7 +215,7 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
                         'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
                         'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
                         'class_code', 'class_name', 'category_name', 'section_name', 
-                        'participation',
+                        'participation', 'notes', 'competitor_notes',
                         ),
                     'maps'=>array(
                         'participation'=>$maps['registration']['participation'],
@@ -218,6 +230,9 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
                 $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, array('times'=>'startsum', 'numbers'=>'yes'));
                 $rsp["registrations{$i}"][$rid]['titles'] = $rc['titles'];
                 $rsp["registrations{$i}"][$rid]['perf_time'] = $rc['perf_time'];
+                if( $reg['competitor_notes'] != '' ) {
+                    $rsp["registrations{$i}"][$rid]['notes'] .= ($reg['notes'] != '' ? ' ' : '') . $reg['competitor_notes'];
+                }
             }
         }
     }
@@ -330,6 +345,8 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
             . "registrations.perf_time7, "
             . "registrations.perf_time8, "
             . "registrations.participation, "
+            . "registrations.notes, "
+            . "GROUP_CONCAT(' ', competitors.notes) AS competitor_notes, "
 //            . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS status_text, "
             . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
             . "IFNULL(members.name, '') AS member_name, "
@@ -346,6 +363,15 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
                 . "classes.id = registrations.class_id "
                 . "AND registrations.timeslot_id = 0 "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ("
+                . "(" 
+                    . "registrations.competitor1_id = competitors.id "
+                    . "OR registrations.competitor2_id = competitors.id "
+                    . "OR registrations.competitor3_id = competitors.id "
+                    . "OR registrations.competitor4_id = competitors.id "
+                    . ") "
+                . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
 /*            . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
                 . "registrations.invoice_id = invoices.id "
@@ -370,6 +396,7 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
         }
         $strsql .= "AND classes.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "GROUP BY registrations.id "
             . "ORDER BY categories.sequence, categories.name, member_name, class_code "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -380,7 +407,7 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
                     'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
-                    'class_code', 'class_name', 'category_name', 'section_name', 'participation', 
+                    'class_code', 'class_name', 'category_name', 'section_name', 'participation', 'notes', 'competitor_notes',
                     ),
                 'maps'=>array(
                     'participation'=>$maps['registration']['participation'],
@@ -395,6 +422,9 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
             $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, array('times'=>'startsum', 'numbers'=>'yes'));
             $rsp['unscheduled_registrations'][$rid]['titles'] = $rc['titles'];
             $rsp['unscheduled_registrations'][$rid]['perf_time'] = $rc['perf_time'];
+            if( $reg['competitor_notes'] != '' ) {
+                $rsp['unscheduled_registrations'][$rid]['notes'] .= ($reg['notes'] != '' ? ' ' : '') . $reg['competitor_notes'];
+            }
         }
     } else {
         $rsp['unschedule_registrations'] = array();
