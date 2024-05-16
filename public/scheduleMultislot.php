@@ -370,7 +370,7 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
         }
         $strsql .= "AND classes.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "ORDER BY categories.sequence, categories.name, class_code "
+            . "ORDER BY categories.sequence, categories.name, member_name, class_code "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
