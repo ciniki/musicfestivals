@@ -418,7 +418,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             . "WHERE registrations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' "
             . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "ORDER BY registrations.id "
+            . "ORDER BY registrations.date_added DESC "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(

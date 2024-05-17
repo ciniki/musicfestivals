@@ -581,7 +581,7 @@ function ciniki_musicfestivals_main() {
 //                return ['comments', 'photos'].indexOf(M.ciniki_musicfestivals_main.festival.menutabs.selected) >= 0 && M.ciniki_musicfestivals_main.festival.schedulesection_id>0? 'yes' : 'no';
                 },
             'headerValues':['Division', 'Date', 'Adjudicator'],
-            'cellClasses':['multiline', '', ''],
+            'cellClasses':['multiline', 'multiline', ''],
             'addTxt':'Add Division',
             'addFn':'M.ciniki_musicfestivals_main.scheduledivision.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.schedulesection_id,M.ciniki_musicfestivals_main.festival.festival_id,null);',
             'mailFn':function(s, i, d) {
@@ -1301,7 +1301,7 @@ function ciniki_musicfestivals_main() {
 //            return '<span class="maintext">' + d.name + ' <span class="subdue">' + d.division_date_text + '</span><span class="subtext">' + d.options + '</span>';
             switch(j) {
                 case 0: return M.multiline(d.name, d.options);
-                case 1: return d.division_date_text;
+                case 1: return M.multiline(d.division_date_text, d.location_name);
                 case 2: return d.adjudicator_name;
             }
         }

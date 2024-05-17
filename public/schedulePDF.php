@@ -75,10 +75,18 @@ function ciniki_musicfestivals_schedulePDF($ciniki) {
     //
     // Run the template
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'schedulePDF');
-    $rc = ciniki_musicfestivals_templates_schedulePDF($ciniki, $args['tnid'], $args);
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'scheduleProvincialsPDF');
+        $rc = ciniki_musicfestivals_templates_scheduleProvincialsPDF($ciniki, $args['tnid'], $args);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+    } else {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'schedulePDF');
+        $rc = ciniki_musicfestivals_templates_schedulePDF($ciniki, $args['tnid'], $args);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
     }
 
     //
