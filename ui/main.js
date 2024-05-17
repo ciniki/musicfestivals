@@ -647,11 +647,11 @@ function ciniki_musicfestivals_main() {
                     'toggles':{'all':'All', 'inperson':'In Person', 'virtual':'Virtual'},
                     },
                 'schedule-division-header-format':{'label':'Division Header Format', 'type':'select', 'default':'default', 'options':{
-                    'default':'Date-Division, Address', 
-                    'namedate-adjudicatoraddress':'Division-Date, Adjudicator-Address', 
-                    'name-adjudicator-address':'Division, Adjudicator, Address',
-                    'date-name-adjudicator-address':'Date, Division, Adjudicator, Address',
-                    'name-date-adjudicator-address':'Division, Date, Adjudicator, Address',
+                    'default':'Date-Division, Location', 
+                    'namedate-adjudicatorlocation':'Division-Date, Adjudicator-Location', 
+                    'name-adjudicator-location':'Division, Adjudicator, Location',
+                    'date-name-adjudicator-location':'Date, Division, Adjudicator, Location',
+                    'name-date-adjudicator-location':'Division, Date, Adjudicator, Location',
                     }},
                 'schedule-division-header-labels':{'label':'Division Header Labels', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
 //                's_division_header_adjudicator':{'label':'Include Adjudi', 'type':'toggle', 'default':'default', 'toggles':{
@@ -2547,11 +2547,11 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
             'fields':{
                 'schedule-division-header-format':{'label':'Division Header Format', 'type':'select', 'default':'default', 'options':{
-                    'default':'Date-Division, Address', 
-                    'namedate-adjudicatoraddress':'Division-Date, Adjudicator-Address', 
-                    'name-adjudicator-address':'Division, Adjudicator, Address',
-                    'date-name-adjudicator-address':'Date, Division, Adjudicator, Address',
-                    'name-date-adjudicator-address':'Division, Date, Adjudicator, Address',
+                    'default':'Date-Division, Location', 
+                    'namedate-adjudicatorlocation':'Division-Date, Adjudicator-Location', 
+                    'name-adjudicator-location':'Division, Adjudicator, Location',
+                    'date-name-adjudicator-location':'Date, Division, Adjudicator, Location',
+                    'name-date-adjudicator-location':'Division, Date, Adjudicator, Location',
                     }},
                 'schedule-division-header-labels':{'label':'Division Header Labels', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
 //                's_division_header_adjudicator':{'label':'Include Adjudi', 'type':'toggle', 'default':'default', 'toggles':{
