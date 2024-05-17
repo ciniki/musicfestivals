@@ -5564,7 +5564,10 @@ function ciniki_musicfestivals_main() {
     }
     this.schedulemultislot.drag = function(e,s,i,d) {
         if( e.clientY < 100 ) {
-            window.scrollTo(0, window.scrollY-20);
+            window.scrollTo(0, window.scrollY-10);
+        }
+        if( e.clientY > (window.innerHeight - 100) ) {
+            window.scrollTo(0, window.scrollY+10);
         }
     }
     this.schedulemultislot.dragstop = function(rid) {
