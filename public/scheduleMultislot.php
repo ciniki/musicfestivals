@@ -30,6 +30,7 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
         'timeslot3_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Third Timeslot'),
         'timeslot4_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Fourth Timeslot'),
         'timeslot5_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Fifth Timeslot'),
+        'timeslot6_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sixth Timeslot'),
         'section_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus Section'),
         'class_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus Class'),
         ));
@@ -117,7 +118,7 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
     //
     // Get the registrations for each timeslot
     //
-    for($i = 1; $i <= 5; $i++) {
+    for($i = 1; $i <= 6; $i++) {
         $rsp["registrations{$i}"] = array();
         if( isset($args["timeslot{$i}_id"]) && $args["timeslot{$i}_id"] > 0 ) {
             //

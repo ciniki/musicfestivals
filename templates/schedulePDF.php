@@ -128,8 +128,10 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         . "ssections.provincial_settings, ";
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
         $strsql .= "divisions.adjudicator_id AS adjudicator_id, ";
+        $strsql .= "members.name AS member_name, "
     } else {
         $strsql .= "ssections.adjudicator1_id AS adjudicator_id, ";
+        $strsql .= "'' AS member_name, "
     }
     $strsql .= "customers.display_name AS adjudicator, "
         . "divisions.id AS division_id, "
