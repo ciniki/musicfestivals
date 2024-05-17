@@ -5533,6 +5533,9 @@ function ciniki_musicfestivals_main() {
     this.schedulemultislot.cellDragStart = function(s, i, j, d) {
         return 'M.ciniki_musicfestivals_main.schedulemultislot.dragstart(\'' + s + '\',' + i + ',' + d.id + ');';
     }
+    this.schedulemultislot.cellDrag = function(s, i, j, d) {
+        return 'M.ciniki_musicfestivals_main.schedulemultislot.drag(event,\'' + s + '\',' + i + ',' + d.id + ');';
+    }
     this.schedulemultislot.cellDragStop = function(s, i, j, d) {
 //        return 'M.ciniki_musicfestivals_main.schedulemultislot.dragstop(' + d.id + ');';
     }
@@ -5558,6 +5561,11 @@ function ciniki_musicfestivals_main() {
             this.dragseq = this.data[s][i].timeslot_sequence;
         }
         this.dragrid = rid;
+    }
+    this.schedulemultislot.drag = function(e,s,i,d) {
+        if( e.clientY < 100 ) {
+            window.scrollTo(0, window.scrollY-20);
+        }
     }
     this.schedulemultislot.dragstop = function(rid) {
 //        console.log('drag stop: ' + rid);
