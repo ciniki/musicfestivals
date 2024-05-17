@@ -128,10 +128,10 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         . "ssections.provincial_settings, ";
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
         $strsql .= "divisions.adjudicator_id AS adjudicator_id, ";
-        $strsql .= "members.name AS member_name, "
+        $strsql .= "members.name AS member_name, ";
     } else {
         $strsql .= "ssections.adjudicator1_id AS adjudicator_id, ";
-        $strsql .= "'' AS member_name, "
+        $strsql .= "'' AS member_name, ";
     }
     $strsql .= "customers.display_name AS adjudicator, "
         . "divisions.id AS division_id, "
@@ -268,7 +268,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 ),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
-            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'participation', 'timeslot_time',
+            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'participation', 'timeslot_time', 'member_name',
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                 'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
