@@ -36,6 +36,7 @@ function ciniki_musicfestivals_wng_apiAdjudicationsSave(&$ciniki, $tnid, $reques
         $customer_id = $request['session']['customer']['id'];
     }
 
+    error_log(print_r($_POST,true));
     //
     // Make sure same customer submitted as session
     //
@@ -128,7 +129,10 @@ function ciniki_musicfestivals_wng_apiAdjudicationsSave(&$ciniki, $tnid, $reques
             . ") "
         . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
-        . "AND sections.adjudicator1_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
+        . "AND ("
+            . "sections.adjudicator1_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
+            . "OR divisions.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
+            . ") "
         . "ORDER BY section_name, divisions.division_date, division_id, slot_time, registrations.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
