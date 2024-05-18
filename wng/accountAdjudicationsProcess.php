@@ -611,7 +611,16 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                             if( (!isset($division['timeslots'][$tid]['name']) || $division['timeslots'][$tid]['name'] == '') ) {
                                 $division['timeslots'][$tid]['name'] = $division['date'] . ' - ' . $timeslot['time'];
                             }
-                            if( $registration['comments'] != '' && $registration['mark'] != '' ) {
+                            if( isset($festival['comments-mark-adjudicator']) 
+                                && $festival['comments-mark-adjudicator'] == 'yes' 
+                                && $registration['comments'] != '' && $registration['mark'] != ''
+                                ) {
+                                $num_completed++;
+                            }
+                            elseif( isset($festival['comments-placement-adjudicator']) 
+                                && $festival['comments-placement-adjudicator'] == 'yes' 
+                                && $registration['comments'] != '' && $registration['placement'] != ''
+                                ) {
                                 $num_completed++;
                             }
                         }
