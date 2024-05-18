@@ -36,7 +36,6 @@ function ciniki_musicfestivals_wng_apiAdjudicationsSave(&$ciniki, $tnid, $reques
         $customer_id = $request['session']['customer']['id'];
     }
 
-    error_log(print_r($_POST,true));
     //
     // Make sure same customer submitted as session
     //
