@@ -5829,10 +5829,11 @@ function ciniki_musicfestivals_main() {
                     for(var j = 1;j <= 8; j++) {
                         if( j <= registration.max_titles ) {
                             p.data['details_' + i].push({'label':'Title #' + j, 'value':registration['title' + j]});
-                            if( M.modFlagOn('ciniki.musicfestivals', 0x040000) ) {
-                                p.data['details_' + i].push({'label':'Movements/Musical', 'value':registration['movements' + j]});
-                                p.data['details_' + i].push({'label':'Composer', 'value':registration['composer' + j]});
-                            }
+                            // Now combined into title[j]
+//                            if( M.modFlagOn('ciniki.musicfestivals', 0x040000) ) {
+//                                p.data['details_' + i].push({'label':'Movements/Musical', 'value':registration['movements' + j]});
+//                                p.data['details_' + i].push({'label':'Composer', 'value':registration['composer' + j]});
+//                            }
                             if( registration.participation == 1 ) {
                                 p.data['details_' + i].push({'label':'Video', 'value':M.hyperlink(registration['video_url' + j])});
                                 p.data['details_' + i].push({'label':'Music', 'value':registration['music_orgfilename' + j]});
@@ -5850,7 +5851,7 @@ function ciniki_musicfestivals_main() {
                     p.sections['comments_' + i].fields['comments_' + rsp.timeslot.registrations[i].id] = {
                         'label':'Comments', 
                         'type':'textarea', 
-                        'size':'large',
+                        'size':'xlarge',
                         };
                     var label = 'Mark';
                     if( M.ciniki_musicfestivals_main.festival.data['comments-mark-label'] != null
