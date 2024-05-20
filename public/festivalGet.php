@@ -519,12 +519,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         . ") "
                     . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
                         . "classes.id = registrations.class_id "
+                        . $ipv_sql
                         . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                         . ") "
                     . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
                     . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "GROUP BY classes.id "
-                    . "ORDER BY categories.sequence, classes.sequence, classes.code, classes.name "
+                    . "ORDER BY categories.sequence, categories.name, classes.sequence, classes.code, classes.name "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
