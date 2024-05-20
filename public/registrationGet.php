@@ -111,6 +111,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'fee'=>'0',
             'payment_type'=>'0',
             'participation'=>0,
+            'scheduled'=>'',
             'video_url1'=>'',
             'video_url2'=>'',
             'video_url3'=>'',
@@ -151,100 +152,126 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
     // Get the details for an existing Registration
     //
     else {
-        $strsql = "SELECT ciniki_musicfestival_registrations.id, "
-            . "ciniki_musicfestival_registrations.festival_id, "
-            . "ciniki_musicfestival_registrations.teacher_customer_id, "
-            . "ciniki_musicfestival_registrations.billing_customer_id, "
-            . "ciniki_musicfestival_registrations.accompanist_customer_id, "
-            . "ciniki_musicfestival_registrations.member_id, "
-            . "ciniki_musicfestival_registrations.rtype, "
-            . "ciniki_musicfestival_registrations.status, "
-            . "ciniki_musicfestival_registrations.flags, "
-            . "ciniki_musicfestival_registrations.invoice_id, "
-            . "ciniki_musicfestival_registrations.display_name, "
-            . "ciniki_musicfestival_registrations.competitor1_id, "
-            . "ciniki_musicfestival_registrations.competitor2_id, "
-            . "ciniki_musicfestival_registrations.competitor3_id, "
-            . "ciniki_musicfestival_registrations.competitor4_id, "
-            . "ciniki_musicfestival_registrations.competitor5_id, "
-            . "ciniki_musicfestival_registrations.class_id, "
-            . "ciniki_musicfestival_registrations.title1, "
-            . "ciniki_musicfestival_registrations.composer1, "
-            . "ciniki_musicfestival_registrations.movements1, "
-            . "ciniki_musicfestival_registrations.perf_time1, "
-            . "ciniki_musicfestival_registrations.title2, "
-            . "ciniki_musicfestival_registrations.composer2, "
-            . "ciniki_musicfestival_registrations.movements2, "
-            . "ciniki_musicfestival_registrations.perf_time2, "
-            . "ciniki_musicfestival_registrations.title3, "
-            . "ciniki_musicfestival_registrations.composer3, "
-            . "ciniki_musicfestival_registrations.movements3, "
-            . "ciniki_musicfestival_registrations.perf_time3, "
-            . "ciniki_musicfestival_registrations.title4, "
-            . "ciniki_musicfestival_registrations.composer4, "
-            . "ciniki_musicfestival_registrations.movements4, "
-            . "ciniki_musicfestival_registrations.perf_time4, "
-            . "ciniki_musicfestival_registrations.title5, "
-            . "ciniki_musicfestival_registrations.composer5, "
-            . "ciniki_musicfestival_registrations.movements5, "
-            . "ciniki_musicfestival_registrations.perf_time5, "
-            . "ciniki_musicfestival_registrations.title6, "
-            . "ciniki_musicfestival_registrations.composer6, "
-            . "ciniki_musicfestival_registrations.movements6, "
-            . "ciniki_musicfestival_registrations.perf_time6, "
-            . "ciniki_musicfestival_registrations.title7, "
-            . "ciniki_musicfestival_registrations.composer7, "
-            . "ciniki_musicfestival_registrations.movements7, "
-            . "ciniki_musicfestival_registrations.perf_time7, "
-            . "ciniki_musicfestival_registrations.title8, "
-            . "ciniki_musicfestival_registrations.composer8, "
-            . "ciniki_musicfestival_registrations.movements8, "
-            . "ciniki_musicfestival_registrations.perf_time8, "
-            . "FORMAT(ciniki_musicfestival_registrations.fee, 2) AS fee, "
-            . "ciniki_musicfestival_registrations.payment_type, "
-            . "ciniki_musicfestival_registrations.participation, "
-            . "ciniki_musicfestival_registrations.video_url1, "
-            . "ciniki_musicfestival_registrations.video_url2, "
-            . "ciniki_musicfestival_registrations.video_url3, "
-            . "ciniki_musicfestival_registrations.video_url4, "
-            . "ciniki_musicfestival_registrations.video_url5, "
-            . "ciniki_musicfestival_registrations.video_url6, "
-            . "ciniki_musicfestival_registrations.video_url7, "
-            . "ciniki_musicfestival_registrations.video_url8, "
-            . "ciniki_musicfestival_registrations.music_orgfilename1, "
-            . "ciniki_musicfestival_registrations.music_orgfilename2, "
-            . "ciniki_musicfestival_registrations.music_orgfilename3, "
-            . "ciniki_musicfestival_registrations.music_orgfilename4, "
-            . "ciniki_musicfestival_registrations.music_orgfilename5, "
-            . "ciniki_musicfestival_registrations.music_orgfilename6, "
-            . "ciniki_musicfestival_registrations.music_orgfilename7, "
-            . "ciniki_musicfestival_registrations.music_orgfilename8, "
-            . "ciniki_musicfestival_registrations.backtrack1, "
-            . "ciniki_musicfestival_registrations.backtrack2, "
-            . "ciniki_musicfestival_registrations.backtrack3, "
-            . "ciniki_musicfestival_registrations.backtrack4, "
-            . "ciniki_musicfestival_registrations.backtrack5, "
-            . "ciniki_musicfestival_registrations.backtrack6, "
-            . "ciniki_musicfestival_registrations.backtrack7, "
-            . "ciniki_musicfestival_registrations.backtrack8, "
-            . "ciniki_musicfestival_registrations.instrument, "
-            . "ciniki_musicfestival_registrations.mark, "
-            . "ciniki_musicfestival_registrations.placement, "
-            . "ciniki_musicfestival_registrations.level, "
-            . "ciniki_musicfestival_registrations.provincials_status, "
-            . "ciniki_musicfestival_registrations.provincials_position, "
-            . "ciniki_musicfestival_registrations.comments, "
-            . "ciniki_musicfestival_registrations.notes, "
-            . "ciniki_musicfestival_registrations.internal_notes "
-            . "FROM ciniki_musicfestival_registrations "
-            . "WHERE ciniki_musicfestival_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND ciniki_musicfestival_registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
+        $strsql = "SELECT registrations.id, "
+            . "registrations.festival_id, "
+            . "registrations.teacher_customer_id, "
+            . "registrations.billing_customer_id, "
+            . "registrations.accompanist_customer_id, "
+            . "registrations.member_id, "
+            . "registrations.rtype, "
+            . "registrations.status, "
+            . "registrations.flags, "
+            . "registrations.invoice_id, "
+            . "registrations.display_name, "
+            . "registrations.competitor1_id, "
+            . "registrations.competitor2_id, "
+            . "registrations.competitor3_id, "
+            . "registrations.competitor4_id, "
+            . "registrations.competitor5_id, "
+            . "registrations.class_id, "
+            . "registrations.title1, "
+            . "registrations.composer1, "
+            . "registrations.movements1, "
+            . "registrations.perf_time1, "
+            . "registrations.title2, "
+            . "registrations.composer2, "
+            . "registrations.movements2, "
+            . "registrations.perf_time2, "
+            . "registrations.title3, "
+            . "registrations.composer3, "
+            . "registrations.movements3, "
+            . "registrations.perf_time3, "
+            . "registrations.title4, "
+            . "registrations.composer4, "
+            . "registrations.movements4, "
+            . "registrations.perf_time4, "
+            . "registrations.title5, "
+            . "registrations.composer5, "
+            . "registrations.movements5, "
+            . "registrations.perf_time5, "
+            . "registrations.title6, "
+            . "registrations.composer6, "
+            . "registrations.movements6, "
+            . "registrations.perf_time6, "
+            . "registrations.title7, "
+            . "registrations.composer7, "
+            . "registrations.movements7, "
+            . "registrations.perf_time7, "
+            . "registrations.title8, "
+            . "registrations.composer8, "
+            . "registrations.movements8, "
+            . "registrations.perf_time8, "
+            . "FORMAT(registrations.fee, 2) AS fee, ";
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+            $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS slot_time, ";
+        } else {
+            $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time, ";
+        }
+        $strsql .= "IFNULL(divisions.name, '') AS division_name, "
+            . "IFNULL(DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y'), '') AS division_date, "
+            . "IFNULL(locations.name, '') AS location_name, "
+            . "IFNULL(ssections.name, '') AS section_name, "
+            . "registrations.payment_type, "
+            . "registrations.participation, "
+            . "registrations.video_url1, "
+            . "registrations.video_url2, "
+            . "registrations.video_url3, "
+            . "registrations.video_url4, "
+            . "registrations.video_url5, "
+            . "registrations.video_url6, "
+            . "registrations.video_url7, "
+            . "registrations.video_url8, "
+            . "registrations.music_orgfilename1, "
+            . "registrations.music_orgfilename2, "
+            . "registrations.music_orgfilename3, "
+            . "registrations.music_orgfilename4, "
+            . "registrations.music_orgfilename5, "
+            . "registrations.music_orgfilename6, "
+            . "registrations.music_orgfilename7, "
+            . "registrations.music_orgfilename8, "
+            . "registrations.backtrack1, "
+            . "registrations.backtrack2, "
+            . "registrations.backtrack3, "
+            . "registrations.backtrack4, "
+            . "registrations.backtrack5, "
+            . "registrations.backtrack6, "
+            . "registrations.backtrack7, "
+            . "registrations.backtrack8, "
+            . "registrations.instrument, "
+            . "registrations.mark, "
+            . "registrations.placement, "
+            . "registrations.level, "
+            . "registrations.provincials_status, "
+            . "registrations.provincials_position, "
+            . "registrations.comments, "
+            . "registrations.notes, "
+            . "registrations.internal_notes "
+            . "FROM ciniki_musicfestival_registrations AS registrations "
+            . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+                . "registrations.timeslot_id = timeslots.id "
+                . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+                . "timeslots.sdivision_id = divisions.id "
+                . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
+                . "divisions.location_id = locations.id "
+                . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
+                . "divisions.ssection_id = ssections.id "
+                . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
                 'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'billing_customer_id', 
                     'accompanist_customer_id', 'member_id',
+                    'slot_time', 'division_date', 'division_name', 'location_name', 'section_name',
                     'rtype', 'status', 'flags', 'invoice_id', 'display_name', 
                     'competitor1_id', 'competitor2_id', 'competitor3_id', 
                     'competitor4_id', 'competitor5_id', 
@@ -275,6 +302,24 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.74', 'msg'=>'Unable to find Registration'));
         }
         $registration = $rc['registrations'][0];
+
+        $registration['scheduled'] = '';
+        $registration['scheduled_sd'] = '';
+        if( $registration['division_date'] != '' ) {
+            $registration['scheduled'] .= $registration['division_date'];
+        }
+        if( $registration['slot_time'] != '' && $registration['slot_time'] != '12:00 AM' ) {
+            $registration['scheduled'] .= ($registration['scheduled'] != '' ? ' - ' : '') . $registration['slot_time'];
+        }
+        if( $registration['location_name'] != '' ) {
+            $registration['scheduled'] .= ($registration['scheduled'] != '' ? ' - ' : '') . $registration['location_name'];
+        }
+        if( $registration['section_name'] != '' ) {
+            $registration['scheduled_sd'] .= ($registration['scheduled_sd'] != '' ? "" : '') . $registration['section_name'];
+        }
+        if( $registration['division_name'] != '' ) {
+            $registration['scheduled_sd'] .= ($registration['scheduled_sd'] != '' ? ' - ' : '') . $registration['division_name'];
+        }
 
         //
         // Get the teacher details

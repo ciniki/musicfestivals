@@ -21,6 +21,7 @@ function ciniki_musicfestivals_scheduleDivisionDelete(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
+        'festival_id'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Festival'),
         'scheduledivision_id'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Schedule Division'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -59,7 +60,7 @@ function ciniki_musicfestivals_scheduleDivisionDelete(&$ciniki) {
     //
 
     //
-    // Check for any existing sections
+    // Check for any existing timeslots
     //
     $strsql = "SELECT 'items', COUNT(*) "
         . "FROM ciniki_musicfestival_schedule_timeslots "
@@ -74,7 +75,7 @@ function ciniki_musicfestivals_scheduleDivisionDelete(&$ciniki) {
     }
     if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
         $count = $rc['num']['items'];
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.119', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' timeslot' . ($count==1?'':'s') . ' in the schdule division.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.119', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' timeslot' . ($count==1?'':'s') . ' in the schedule division.'));
     }
 
     //

@@ -3717,7 +3717,7 @@ function ciniki_musicfestivals_main() {
     //
     // Registration
     //
-    this.registration = new M.panel('Registration', 'ciniki_musicfestivals_main', 'registration', 'mc', 'medium mediumaside', 'sectioned', 'ciniki.musicfestivals.main.registration');
+    this.registration = new M.panel('Registration', 'ciniki_musicfestivals_main', 'registration', 'mc', 'large mediumaside', 'sectioned', 'ciniki.musicfestivals.main.registration');
     this.registration.data = null;
     this.registration.festival_id = 0;
     this.registration.teacher_customer_id = 0;
@@ -3847,6 +3847,8 @@ function ciniki_musicfestivals_main() {
                     '0':'in person on a date to be scheduled',
                     '1':'virtually and submit a video online',
                 }},
+            'scheduled':{'label':'Scheduled', 'type':'text', 'editable':'no', },
+            'scheduled_sd':{'label':'Section/Division', 'type':'text', 'editable':'no', },
             'fee':{'label':'Fee', 'type':'text', 'size':'small'},
             'flags':{'label':'Options', 'type':'flags', 'visible':'no', 'flags':{
                 '1':{'name':'Share with Teacher'}, 
@@ -5021,7 +5023,7 @@ function ciniki_musicfestivals_main() {
     }
     this.scheduledivision.remove = function() {
         M.confirm('Are you sure you want to remove this division?',null,function() {
-            M.api.getJSONCb('ciniki.musicfestivals.scheduleDivisionDelete', {'tnid':M.curTenantID, 'scheduledivision_id':M.ciniki_musicfestivals_main.scheduledivision.scheduledivision_id}, function(rsp) {
+            M.api.getJSONCb('ciniki.musicfestivals.scheduleDivisionDelete', {'tnid':M.curTenantID, 'festival_id':M.ciniki_musicfestivals_main.scheduledivision.festival_id, 'scheduledivision_id':M.ciniki_musicfestivals_main.scheduledivision.scheduledivision_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
