@@ -1743,7 +1743,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             //
             if( isset($args['accompanist_customer_id']) && $args['accompanist_customer_id'] > 0 ) {
                 $strsql = "SELECT registrations.id, "
-                    . "registrations.display_name, ";
+                    . "registrations.display_name, "
+                    . "classes.code AS class_code, "
+                    . "classes.name AS class_name, ";
                 if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
                     $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS slot_time_text, "
                         . "registrations.timeslot_time AS slot_sort_time, ";
@@ -1766,6 +1768,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         . "divisions.location_id = locations.id "
                         . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                         . ") "
+                    . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+                        . "registrations.class_id = classes.id "
+                        . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
                     . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                     . "AND registrations.accompanist_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['accompanist_customer_id']) . "' "
                     . "AND registrations.timeslot_id > 0 "  // Scheduled registrations only
@@ -1775,7 +1781,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'registrations', 'fname'=>'id', 
-                        'fields'=>array('id', 'display_name', 'slot_time_text', 'division_date_text', 'location_name')),
+                        'fields'=>array('id', 'display_name', 'slot_time_text', 'division_date_text', 'location_name',
+                            'class_code', 'class_name'
+                            ),
+                        ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.746', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
