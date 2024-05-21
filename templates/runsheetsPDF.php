@@ -172,17 +172,20 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         . "categories.name AS category_name, "
         . "sections.name AS syllabus_section_name "
         . "FROM ciniki_musicfestival_schedule_sections AS ssections "
+        . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+            . "ssections.id = divisions.ssection_id " 
+            . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
         . "LEFT JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
-            . "ssections.adjudicator1_id = adjudicators.id "
+            . "( "
+                . "ssections.adjudicator1_id = adjudicators.id "
+                . "OR divisions.adjudicator_id = adjudicators.id "
+                . ") "
             . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_customers AS customers ON ("
             . "adjudicators.customer_id = customers.id "
             . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
-            . "ssections.id = divisions.ssection_id " 
-            . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
             . "divisions.id = timeslots.sdivision_id " 
@@ -219,6 +222,12 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         . "";
     if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
         $strsql .= "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
+    }
+    if( isset($args['adjudicator_id']) && $args['adjudicator_id'] > 0 ) {
+        $strsql .= "AND ("
+            . "ssections.adjudicator1_id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' "
+            . "OR divisions.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' "
+            . ") ";
     }
     if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
 //        $strsql .= "AND (registrations.participation < 1 || ISNULL(registrations.participation) ) ";

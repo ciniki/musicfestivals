@@ -23,6 +23,7 @@ function ciniki_musicfestivals_runsheetsPDF($ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'schedulesection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Section'),
+        'adjudicator_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicator'),
         'ipv'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'In Person/Virtual'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -58,7 +59,7 @@ function ciniki_musicfestivals_runsheetsPDF($ciniki) {
     //
     // Set for in person only
     //
-    $args['ipv'] = 'inperson';
+//    $args['ipv'] = 'inperson';
 
     //
     // Run the template

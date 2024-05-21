@@ -580,6 +580,11 @@ function ciniki_musicfestivals_main() {
             'sortable':'yes',
             'sortTypes':['text', 'date', 'time', 'text', 'text'],
             },
+        'adjudicator_buttons':{'label':'', 
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.adjudicator_id > 0 && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'adjudicators') == 'yes' ? 'yes' : 'no'; },
+            'buttons':{
+                'runsheet':{'label':'Download Runsheet', 'fn':'M.ciniki_musicfestivals_main.festival.downloadAdjudicatorRunSheetsPDF(M.ciniki_musicfestivals_main.festival.adjudicator_id);'},
+                }},
         'multislot_button':{'label':'', 'aside':'yes',
             // Only open for provincials right now
             'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x010000) && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'timeslots'); },
@@ -1093,6 +1098,14 @@ function ciniki_musicfestivals_main() {
             'festival_id':this.festival_id,
             'schedulesection_id':(s==null ? this.schedulesection_id : s),
             'ipv':this.formValue('ipv'),
+            };
+        M.api.openPDF('ciniki.musicfestivals.runsheetsPDF',args);
+    }
+    this.festival.downloadAdjudicatorRunSheetsPDF = function(s) {
+        var args = {'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'adjudicator_id':this.adjudicator_id,
+//            'ipv':this.formValue('ipv'),
             };
         M.api.openPDF('ciniki.musicfestivals.runsheetsPDF',args);
     }
