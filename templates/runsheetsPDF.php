@@ -571,10 +571,11 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             $trw = array(22, 128);   // Trophy lines
             $prev_time = '';
             foreach($division['timeslots'] as $timeslot) {
-
                 if( $timeslot['name'] == '' ) {
                     // FIXME: Add check for joined section/category/class
                     $name = $timeslot['class_code'] . ' - ' . $timeslot['class_name'];
+                } elseif( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+                    $name = $timeslot['class_code'] . ' - ' . $timeslot['class_name'] . ' - ' . $timeslot['name'];
                 } else {
                     $name = $timeslot['name'];
                 }
