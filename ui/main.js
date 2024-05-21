@@ -565,20 +565,20 @@ function ciniki_musicfestivals_main() {
         'schedule_adjudicators':{'label':'Adjudicators', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'adjudicators'); },
             'noData':'No Scheduled Adjuciators',
-            'headerValues':['Adjudicator', '#'],
+            'headerValues':['Adjudicator', 'Completed'],
             'headerClasses':['', 'alignright'],
             'cellClasses':['', 'alignright'],
             'sortable':'yes',
             'sortTypes':['text', 'number'],
             },
-        'adjudicator_schedule':{'label':'Adjudicator Schedule', 'type':'simplegrid', 'num_cols':6, 
+        'adjudicator_schedule':{'label':'Adjudicator Schedule', 'type':'simplegrid', 'num_cols':5, 
             'visible':function() { return M.ciniki_musicfestivals_main.festival.adjudicator_id > 0 && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'adjudicators') == 'yes' ? 'yes' : 'no'; },
             'noData':'No assigned registrations',
-            'headerValues':['Section', 'Division', 'Date', 'Time', 'Registration', 'Placement'],
+            'headerValues':['Section/Division', 'Date', 'Time', 'Registration', 'Placement'],
             'headerClasses':['', '', '', '', ''],
             'cellClasses':['', '', '', '', ''],
             'sortable':'yes',
-            'sortTypes':['text', 'text', 'date', 'time', 'text'],
+            'sortTypes':['text', 'date', 'time', 'text', 'text'],
             },
         'multislot_button':{'label':'', 'aside':'yes',
             // Only open for provincials right now
@@ -1357,13 +1357,12 @@ function ciniki_musicfestivals_main() {
         }
         if( s == 'adjudicator_schedule' ) {
             switch(j) {
-                case 0: return d.section_name;
-                case 1: return d.division_name;
-                case 2: return d.participation == 1 ? 'Virtual' : d.date_text;
-                case 3: return d.participation == 1 ? '' : d.time_text;
-                case 4: return d.display_name;
+                case 0: return d.section_name + ' - ' + d.division_name + (d.timeslot_name != '' ? ' - ' + d.timeslot_name : '');
+                case 1: return d.participation == 1 ? 'Virtual' : d.date_text;
+                case 2: return d.participation == 1 ? '' : d.time_text;
+                case 3: return d.display_name;
                 // FIXME: switch to check of which fields are used
-                case 5: return d.placement;
+                case 4: return d.placement;
             }
         }
         if( s == 'schedule_results' ) {

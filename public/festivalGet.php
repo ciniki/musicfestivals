@@ -1805,6 +1805,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "registrations.display_name, "
                 . "ssections.name AS section_name, "
                 . "divisions.name AS division_name, "
+                . "timeslots.name AS timeslot_name, "
                 . "DATE_FORMAT(divisions.division_date, '%b %D') AS date_text, ";
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
                 $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS time_text, ";
@@ -1868,7 +1869,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     ),
                 array('container'=>'registrations', 'fname'=>'reg_id', 
                     'fields'=>array('id'=>'reg_id', 'display_name', 'participation',
-                        'section_name', 'division_name', 'date_text', 'time_text', 
+                        'section_name', 'division_name', 'timeslot_name', 'date_text', 'time_text', 
                         'mark', 'placement', 'level'),
                     ),
                 ));
