@@ -752,7 +752,9 @@ function ciniki_musicfestivals_templates_scheduleProvincialsPDF(&$ciniki, $tnid,
                             $pdf->SetCellPaddings(0, 0, 0, 1);
                             $pdf->SetFont('', 'I', '12');
                             $pdf->MultiCell($w[0] + $w[1], 0, '', 0, '', 0, 0);
+                            $pdf->SetFont('arialunicodems');
                             $pdf->MultiCell($w[2], 0, $titles, 0, '', 0, 1);
+                            $pdf->SetFont('helvetica');
                         }
 
                     }

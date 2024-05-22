@@ -558,7 +558,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                     $lh = $pdf->getStringHeight($w[1], $class_name);
                     $pdf->SetFont('helvetica', 'B', 12);
                     $pdf->MultiCell($w[0], $lh, 'Class: ', $border, 'R', 0, 0, '', '');
-                    $pdf->SetFont('helvetica', '', 12);
+                    $pdf->SetFont('arialunicodems', '', 12);
                     $pdf->MultiCell($w[1], $lh, $class_name, $border, 'L', 0, 1, '', '');
                     $pdf->SetFont('helvetica', 'B', 12);
 
@@ -570,7 +570,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                     } else {
                         $pdf->MultiCell($w[0], $lh, 'Participant: ', $border, 'R', 0, 0, '', '');
                     }
-                    $pdf->SetFont('helvetica', '', 12);
+                    $pdf->SetFont('arialunicodems', '', 12);
                     $pdf->MultiCell($w[1], $lh, $reg['name'], $border, 'L', 0, 1, '', '');
 
                 
@@ -583,7 +583,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                             $lh = $pdf->getStringHeight($w[1], $reg["title{$i}"]);
                             $pdf->SetFont('helvetica', 'B', 12);
                             $pdf->MultiCell($w[0], $lh, 'Title: ', $border, 'R', 0, 0, '', '');
-                            $pdf->SetFont('helvetica', '', 12);
+                            $pdf->SetFont('arialunicodems', '', 12);
                             $pdf->MultiCell($w[1], $lh, $reg["title{$i}"], $border, 'L', 0, 1, '', '');
                         }
                     }

@@ -850,7 +850,9 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                                 }
                                 $h = $pdf->getStringHeight($tw[1], $reg["title{$i}"]);
                                 $pdf->MultiCell($tw[0], $h, '', $border, 'C', 0, 0);
+                                $pdf->SetFont('arialunicodems', '', '11');
                                 $pdf->MultiCell($tw[1], $h, $reg["title{$i}"], $border, 'L', 0, 1);
+                                $pdf->SetFont('helvetica', '', '11');
                             }
                         }
                         if( $reg['combined_notes'] != '' ) {
