@@ -592,7 +592,7 @@ function ciniki_musicfestivals_main() {
                 'multislot':{'label':'Open Class Scheduler', 'fn':'M.ciniki_musicfestivals_main.schedulemultislot.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.festival_id);'},
             }},
         'schedule_divisions':{'label':'Divisions', 'type':'simplegrid', 'num_cols':2, 'aside':'no',
-            'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['timeslots','comments','results','photos']); },
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.schedulesection_id != 'unscheduled' && M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['timeslots','comments','results','photos']) == 'yes' ? 'yes' : 'no'; },
             'headerValues':['Division', 'Date', 'Adjudicator'],
             'cellClasses':['multiline', 'multiline', ''],
             'addTxt':'Add Division',
@@ -1697,7 +1697,7 @@ function ciniki_musicfestivals_main() {
                 case '65': return 'statusgrey';
             }
         }
-        if( s == 'registrations' ) {
+        if( s == 'registrations' || s == 'unscheduled_registrations' ) {
             if( (d.flags&0x0100) == 0x0100 ) {
                 return 'statusgrey';
             } else if( (d.flags&0x0200) == 0x0200 ) {

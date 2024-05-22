@@ -1009,7 +1009,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             // Get the list of schedule section divisions
             //
             if( isset($args['ssection_id']) && $args['ssection_id'] == 'unscheduled' ) {
-                $strsql = "SELECT registrations.id, ";
+                $strsql = "SELECT registrations.id, "
+                    . "registrations.flags, ";
                 if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
                     $strsql .= "registrations.pn_display_name AS display_name, ";
                 } else {
@@ -1056,7 +1057,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'registrations', 'fname'=>'id', 
-                        'fields'=>array('id', 'display_name', 'class_code', 'status', 'status_text',
+                        'fields'=>array('id', 'flags', 'display_name', 'class_code', 'status', 'status_text',
                             'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
                             'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
                             'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 

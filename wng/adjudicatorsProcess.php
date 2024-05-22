@@ -128,6 +128,7 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
             foreach($adjudicators as $aid => $adjudicator) {
                 $adjudicators[$aid]['title'] = $adjudicator['display_name'];
                 $adjudicators[$aid]['subtitle'] = $adjudicator['discipline'];
+//                $adjudicators[$aid]['image-position'] = 'top center';
                 $adjudicators[$aid]['button-class'] = isset($s['button-class']) && $s['button-class'] != '' ? $s['button-class'] : 'button';
                 $adjudicators[$aid]['button-1-text'] = 'Read Bio';
                 $adjudicators[$aid]['button-1-url'] = $request['page']['path'] . '/' . $adjudicator['permalink'];
