@@ -82,7 +82,7 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
             . ") "
         . "WHERE registrations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member']['id']) . "' "
         . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "ORDER BY registrations.display_name "
+        . "ORDER BY class, registrations.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -114,8 +114,8 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
         'headers' => 'yes',
         'class' => 'fold-at-50',
         'columns' => array(
-            array('label'=>'Competitor', 'field'=>'display_name'),
             array('label'=>'Class', 'fold-label'=>'Class: ', 'field'=>'class'),
+            array('label'=>'Competitor', 'field'=>'display_name'),
             array('label'=>'Scheduled', 'fold-label'=>'Scheduled: ', 'field'=>'scheduled'),
             ),
         'rows' => $registrations,
