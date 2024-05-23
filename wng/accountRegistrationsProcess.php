@@ -2049,10 +2049,14 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "sections.name AS section_name, "
             . "categories.name AS category_name, "
             . "classes.name AS class_name, "
-            . "CONCAT_WS(' - ', classes.code, classes.name) AS codename, "
-            . "IFNULL(TIME_FORMAT(timeslots.slot_time, '%l:%i %p'), '') AS timeslot_time, "
-            . "IFNULL(DATE_FORMAT(divisions.division_date, '%b %D, %Y'), '') AS timeslot_date, "
-            . "IFNULL(divisions.address, '') AS timeslot_address, "
+            . "CONCAT_WS(' - ', classes.code, classes.name) AS codename, ";
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+            $strsql .= "IFNULL(TIME_FORMAT(registrations.timeslot_time, '%l:%i %p'), '') AS timeslot_time, ";
+        } else {
+            $strsql .= "IFNULL(TIME_FORMAT(timeslots.slot_time, '%l:%i %p'), '') AS timeslot_time, ";
+        }
+        $strsql .= "IFNULL(DATE_FORMAT(divisions.division_date, '%b %D, %Y'), '') AS timeslot_date, "
+            . "IFNULL(locations.name, '') AS timeslot_address, "
             . "IFNULL(ssections.flags, 0) AS timeslot_flags, "
             . "IFNULL(invoices.status, 0) AS invoice_status "
             . "FROM ciniki_musicfestival_registrations AS registrations "
@@ -2075,6 +2079,10 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
                 . "timeslots.sdivision_id = divisions.id "
                 . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
+                . "divisions.location_id = locations.id "
+                . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "LEFT JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
                 . "divisions.ssection_id = ssections.id "

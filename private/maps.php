@@ -88,6 +88,16 @@ function ciniki_musicfestivals_maps($ciniki) {
             0x20 => 'Results Published',
         ),
     );
+    $maps['recommendationentry'] = array(
+        'position'=>array(
+            1 => '1st',
+            2 => '2nd',
+            3 => '3rd',
+            101 => '1st Alternate',
+            102 => '2nd Alternate',
+            103 => '3rd Alternate',
+        ),
+    );
 
     return array('stat'=>'ok', 'maps'=>$maps);
 }

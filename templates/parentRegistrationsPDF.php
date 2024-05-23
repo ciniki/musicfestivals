@@ -300,7 +300,7 @@ function ciniki_musicfestivals_templates_parentRegistrationsPDF(&$ciniki, $tnid,
             }
 
             $this->Ln(8);
-            $this->SetFont('times', 'B', 20);
+            $this->SetFont('helvetica', 'B', 20);
             if( $img_width > 0 ) {
                 $this->Cell($img_width, 10, '', 0);
             }
@@ -308,12 +308,12 @@ function ciniki_musicfestivals_templates_parentRegistrationsPDF(&$ciniki, $tnid,
             $this->Cell(180-$img_width, 12, $this->header_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
             $this->Ln(7);
 
-            $this->SetFont('times', 'B', 14);
+            $this->SetFont('helvetica', 'B', 14);
             $this->setX($this->left_margin + $img_width);
             $this->Cell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
             $this->Ln(6);
 
-            $this->SetFont('times', 'B', 12);
+            $this->SetFont('helvetica', 'B', 12);
             $this->setX($this->left_margin + $img_width);
             $this->Cell(180-$img_width, 10, $this->header_msg, 0, false, 'R', 0, '', 0, false, 'M', 'M');
             $this->Ln(6);
@@ -332,10 +332,10 @@ function ciniki_musicfestivals_templates_parentRegistrationsPDF(&$ciniki, $tnid,
             $lh = 12;
             $border = 'TLRB';
             $lh = $this->getStringHeight($w2, $value);
-            $this->SetFont('times', 'B', 12);
+            $this->SetFont('helvetica', 'B', 12);
             //$this->MultiCell($w1, $lh, $label, $border, 'R', $this->fill, 0);
             $this->MultiCell($w1, $lh, $label, $border, 'R', 1, 0);
-            $this->SetFont('times', '', 12);
+            $this->SetFont('helvetica', '', 12);
 //            $this->MultiCell($w2, $lh, $value, $border, 'L', $this->fill, 1);
             $this->MultiCell($w2, $lh, $value, $border, 'L', 0, 1);
             $this->fill = !$this->fill;
@@ -348,13 +348,13 @@ function ciniki_musicfestivals_templates_parentRegistrationsPDF(&$ciniki, $tnid,
             if( $lh2 > $lh ) {
                 $lh = $lh2;
             }
-            $this->SetFont('times', 'B', 12);
+            $this->SetFont('helvetica', 'B', 12);
             $this->MultiCell($w1, $lh, $l1, $border, 'R', 1, 0);
-            $this->SetFont('times', '', 12);
+            $this->SetFont('helvetica', '', 12);
             $this->MultiCell($w2, $lh, $v1, $border, 'L', 0, 0);
-            $this->SetFont('times', 'B', 12);
+            $this->SetFont('helvetica', 'B', 12);
             $this->MultiCell($w3, $lh, $l2, $border, 'R', 1, 0);
-            $this->SetFont('times', '', 12);
+            $this->SetFont('helvetica', '', 12);
             $this->MultiCell($w4, $lh, $v2, $border, 'L', 0, 1);
             $this->fill = !$this->fill;
         }
@@ -407,7 +407,7 @@ function ciniki_musicfestivals_templates_parentRegistrationsPDF(&$ciniki, $tnid,
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
     // set font
-    $pdf->SetFont('times', 'B', 12);
+    $pdf->SetFont('helvetica', 'B', 12);
     $pdf->SetCellPadding(1.5);
 
     // add a page
@@ -438,20 +438,20 @@ function ciniki_musicfestivals_templates_parentRegistrationsPDF(&$ciniki, $tnid,
     //
     $pdf->Ln(1);
     $pdf->SetFillColor(232);
-    $pdf->SetFont('times', 'B', 14);
+    $pdf->SetFont('helvetica', 'B', 14);
     $pdf->Cell(180, 8, 'Competitors', 'B', 0, 'L', 0);
     $pdf->Ln();
-    $pdf->SetFont('times', '', 12);
+    $pdf->SetFont('helvetica', '', 12);
     foreach($competitors as $competitor) {
 //        if( !in_array($competitor['id'], $competitor_ids) ) {
 //            continue;
 //        }
         if( $pdf->getY() > $pdf->getPageHeight() - 70 ) {
             $pdf->AddPage();
-            $pdf->SetFont('times', 'B', 14);
+            $pdf->SetFont('helvetica', 'B', 14);
             $pdf->Cell(180, 8, 'Competitors (continued...)', 'B', 0, 'L', 0);
             $pdf->Ln();
-            $pdf->SetFont('times', '', 12);
+            $pdf->SetFont('helvetica', '', 12);
         }
         $address = $competitor['address'];
         $address .= $competitor['city'] != '' ? ($address != '' ? ', ' : '') . $competitor['city'] : '';
@@ -476,17 +476,17 @@ function ciniki_musicfestivals_templates_parentRegistrationsPDF(&$ciniki, $tnid,
     if( $pdf->getY() > $pdf->getPageHeight() - 50 ) {
         $pdf->AddPage();
     }
-    $pdf->SetFont('times', 'B', 14);
+    $pdf->SetFont('helvetica', 'B', 14);
     $pdf->Cell(180, 8, 'Registrations', 'B', 0, 'L', 0);
     $pdf->Ln();
-    $pdf->SetFont('times', 'B', 12);
+    $pdf->SetFont('helvetica', 'B', 12);
     $pdf->SetFillColor(224);
     $border = 1;
     $pdf->Cell($r[0], $lh-3, 'Competitor', $border, 0, 'L', 1);
     $pdf->Cell($r[1], $lh-3, 'Class', $border, 0, 'L', 1);
     $pdf->Cell($r[2], $lh-3, 'Status', $border, 0, 'R', 1);
     $pdf->Ln();
-    $pdf->SetFont('times', '', 12);
+    $pdf->SetFont('helvetica', '', 12);
     $pdf->SetFillColor(242);
     $fill = 1;
     $border = 1;
@@ -526,32 +526,34 @@ function ciniki_musicfestivals_templates_parentRegistrationsPDF(&$ciniki, $tnid,
                 $description .= "\n" . $line;
             }
         }
+        $pdf->SetFont('arialunicodems');
         $lh = $pdf->getStringHeight($r[1], $description);
 
         if( $pdf->getY() > $pdf->getPageHeight() - 30 - $lh ) {
             $pdf->AddPage();
-            $pdf->SetFont('times', 'B', 14);
+            $pdf->SetFont('helvetica', 'B', 14);
             $pdf->Cell(180, 8, 'Registrations (continued...)', 'B', 0, 'L', 0);
             $pdf->Ln();
-            $pdf->SetFont('times', 'B', 12);
+            $pdf->SetFont('helvetica', 'B', 12);
             $pdf->SetFillColor(224);
             $border = 1;
             $pdf->Cell($r[0], $lh-3, 'Competitor', $border, 0, 'L', 1);
             $pdf->Cell($r[1], $lh-3, 'Class', $border, 0, 'L', 1);
             $pdf->Cell($r[2], $lh-3, 'Status', $border, 0, 'R', 1);
             $pdf->Ln();
-            $pdf->SetFont('times', '', 12);
+            $pdf->SetFont('helvetica', '', 12);
             $pdf->SetFillColor(242);
         }
         $pdf->MultiCell($r[0], $lh, $registration['display_name'], $border, 'L', $fill, 0);
         $pdf->MultiCell($r[1], $lh, $description, $border, 'L', $fill, 0);
         $pdf->MultiCell($r[2], $lh, $registration['status_text'], $border, 'R', $fill, 1);
         $total += $registration['fee'];
+        $pdf->SetFont('helvetica');
 
         $fill = !$fill;
     }
 //    $lh = $pdf->getStringHeight($r[1], 'Total');
-//    $pdf->SetFont('times', 'B', 12);
+//    $pdf->SetFont('helvetica', 'B', 12);
 //    $pdf->MultiCell($r[0]+$r[1], $lh, 'Total', $border, 'R', $fill, 0);
 //    $pdf->MultiCell($r[2], $lh, '$' . number_format($total, 2), $border, 'R', $fill, 1);
 

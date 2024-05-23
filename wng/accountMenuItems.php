@@ -23,7 +23,7 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
     $strsql = "SELECT id, name "
         . "FROM ciniki_musicfestivals "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND status = 30 "        // Published
+        . "AND status = 30 "        // Current
         . "ORDER BY start_date DESC "
         . "LIMIT 1 "
         . "";
@@ -109,13 +109,41 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
         $items[] = array(
             'title' => 'Competitors', 
             'priority' => 3748, 
-            'selected' => 'no',
             'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivalcompetitors' ? 'yes' : 'no',
             'ref' => 'ciniki.musicfestivals.competitors',
             'url' => $base_url . '/musicfestivalcompetitors',
             );
 //    }
 
+    //
+    // Check if customer is an admin for a member festival
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+        $strsql = "SELECT members.id, "
+            . "members.name "
+            . "FROM ciniki_musicfestivals_members AS members "
+            . "INNER JOIN ciniki_musicfestival_members AS fm ON ("
+                . "members.id = fm.member_id "
+                . "AND fm.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+                . "AND fm.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE members.customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+            . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'member');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.749', 'msg'=>'Unable to load member', 'err'=>$rc['err']));
+        }
+        if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
+            $items[] = array(
+                'title' => 'Local Festival' . (count($rc['rows']) > 1 ? 's' : ''), 
+                'priority' => 3746, 
+                'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivalmember' ? 'yes' : 'no',
+                'ref' => 'ciniki.musicfestivals.members',
+                'url' => $base_url . '/musicfestivalmember',
+                );
+        }
+    }
 
     return array('stat'=>'ok', 'items'=>$items);
 }

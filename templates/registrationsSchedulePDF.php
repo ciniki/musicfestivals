@@ -132,10 +132,14 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
             . "categories.name AS category_name, "
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
-            . "classes.flags AS class_flags, "
-            . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
-            . "DATE_FORMAT(divisions.division_date, '%b %e') AS division_date_text, "
-            . "divisions.address, "
+            . "classes.flags AS class_flags, ";
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+            $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS slot_time_text, ";
+        } else {
+            $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, ";
+        }
+        $strsql .= "DATE_FORMAT(divisions.division_date, '%b %e') AS division_date_text, "
+            . "locations.name AS address, "
             . "ssections.flags AS section_flags "
             . "FROM ciniki_musicfestival_registrations AS registrations "
             . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
@@ -145,6 +149,10 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
             . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
                 . "timeslots.sdivision_id = divisions.id "
                 . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
+                . "divisions.location_id = locations.id "
+                . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "LEFT JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
                 . "divisions.ssection_id = ssections.id "
@@ -297,7 +305,7 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
             }
 
             $this->Ln(8);
-            $this->SetFont('times', 'B', 20);
+            $this->SetFont('helvetica', 'B', 20);
             if( $img_width > 0 ) {
                 $this->Cell($img_width, 10, '', 0);
             }
@@ -305,12 +313,12 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
             $this->Cell(180-$img_width, 12, $this->header_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
             $this->Ln(7);
 
-            $this->SetFont('times', 'B', 14);
+            $this->SetFont('helvetica', 'B', 14);
             $this->setX($this->left_margin + $img_width);
             $this->Cell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
             $this->Ln(6);
 
-            $this->SetFont('times', 'B', 12);
+            $this->SetFont('helvetica', 'B', 12);
             $this->setX($this->left_margin + $img_width);
             $this->Cell(180-$img_width, 10, $this->header_msg, 0, false, 'R', 0, '', 0, false, 'M', 'M');
             $this->Ln(6);
@@ -329,10 +337,10 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
             $lh = 12;
             $border = 'TLRB';
             $lh = $this->getStringHeight($w2, $value);
-            $this->SetFont('times', 'B', 12);
+            $this->SetFont('helvetica', 'B', 12);
             //$this->MultiCell($w1, $lh, $label, $border, 'R', $this->fill, 0);
             $this->MultiCell($w1, $lh, $label, $border, 'R', 1, 0);
-            $this->SetFont('times', '', 12);
+            $this->SetFont('helvetica', '', 12);
 //            $this->MultiCell($w2, $lh, $value, $border, 'L', $this->fill, 1);
             $this->MultiCell($w2, $lh, $value, $border, 'L', 0, 1);
             $this->fill = !$this->fill;
@@ -345,13 +353,13 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
             if( $lh2 > $lh ) {
                 $lh = $lh2;
             }
-            $this->SetFont('times', 'B', 12);
+            $this->SetFont('helvetica', 'B', 12);
             $this->MultiCell($w1, $lh, $l1, $border, 'R', 1, 0);
-            $this->SetFont('times', '', 12);
+            $this->SetFont('helvetica', '', 12);
             $this->MultiCell($w2, $lh, $v1, $border, 'L', 0, 0);
-            $this->SetFont('times', 'B', 12);
+            $this->SetFont('helvetica', 'B', 12);
             $this->MultiCell($w3, $lh, $l2, $border, 'R', 1, 0);
-            $this->SetFont('times', '', 12);
+            $this->SetFont('helvetica', '', 12);
             $this->MultiCell($w4, $lh, $v2, $border, 'L', 0, 1);
             $this->fill = !$this->fill;
         }
@@ -404,7 +412,7 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
     // set font
-    $pdf->SetFont('times', 'B', 12);
+    $pdf->SetFont('helvetica', 'B', 12);
     $pdf->SetCellPadding(1.5);
 
     // add a page
@@ -426,21 +434,22 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
     // List the registrations
     //
     $pdf->AddPage();
-    $pdf->SetFont('times', 'B', 16);
+    $pdf->SetFont('helvetica', 'B', 16);
     $pdf->Cell(180, 8, 'Registrations', 'B', 0, 'L', 0);
     $pdf->Ln();
-    $pdf->SetFont('times', 'B', 12);
+    $pdf->SetFont('helvetica', 'B', 12);
     $pdf->SetFillColor(224);
     $border = 1;
     $pdf->Cell($w[0], 0, 'Competitor', $border, 0, 'L', 1);
     $pdf->Cell($w[1], 0, 'Class', $border, 0, 'L', 1);
     $pdf->Cell($w[2], 0, 'Scheduled', $border, 1, 'L', 1);
-    $pdf->SetFont('times', '', 12);
+    $pdf->SetFont('helvetica', '', 12);
     $pdf->SetFillColor(242);
     $fill = 1;
     $border = 1;
     $total = 0;
     foreach($registrations as $registration) {
+        $pdf->SetFont('arialunicodems', '', 12);
         if( ($festival['flags']&0x0100) == 0x0100 ) {
             $description = $registration['class_code'] . ' - ' . $registration['section_name'] . ' - ' . $registration['category_name'] . ' - ' . $registration['class_name'];
         } else {
@@ -472,18 +481,19 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
 
         if( $pdf->getY() > $pdf->getPageHeight() - 30 - $lh ) {
             $pdf->AddPage();
-            $pdf->SetFont('times', 'B', 14);
+            $pdf->SetFont('helvetica', 'B', 14);
             $pdf->Cell(180, 8, 'Registrations (continued...)', 'B', 0, 'L', 0);
             $pdf->Ln();
-            $pdf->SetFont('times', 'B', 12);
+            $pdf->SetFont('helvetica', 'B', 12);
             $pdf->SetFillColor(224);
             $border = 1;
             $pdf->Cell($w[0], 0, 'Competitor', $border, 0, 'L', 1);
             $pdf->Cell($w[1], 0, 'Class', $border, 0, 'L', 1);
             $pdf->Cell($w[2], 0, 'Scheduled', $border, 1, 'L', 1);
-            $pdf->SetFont('times', '', 12);
+            $pdf->SetFont('helvetica', '', 12);
             $pdf->SetFillColor(242);
         }
+        $pdf->SetFont('arialunicodems', '', 12);
         $pdf->MultiCell($w[0], $lh, $registration['display_name'], $border, 'L', $fill, 0);
         $pdf->MultiCell($w[1], $lh, $description, $border, 'L', $fill, 0);
         $pdf->MultiCell($w[2], $lh, $registration['schedule'], $border, 'L', $fill, 1);
