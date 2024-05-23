@@ -49,6 +49,7 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
     $strsql = "SELECT registrations.id, "
         . "registrations.display_name, "
         . "registrations.participation, "
+        . "registrations.placement, "
         . "classes.name AS class_name, "
         . "CONCAT_WS(' - ', classes.code, classes.name) AS class, ";
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
@@ -89,7 +90,7 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array( 'id', 'display_name', 'participation', 'class', 'class_name',
-                'timeslot_time', 'timeslot_date', 'location_name', 'division_flags', 'section_flags',
+                'timeslot_time', 'timeslot_date', 'location_name', 'division_flags', 'section_flags', 'placement',
                 ),
             ),
         ));
@@ -112,6 +113,11 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
                 $registrations[$rid]['scheduled'] .= '<br/>' . $reg['location_name'];
             }
         }
+        if( (($reg['section_flags']&0x02) == 0x02 || ($reg['division_flags']&0x02) == 0x02) 
+            && $reg['placement'] != '' 
+            ) {
+            $registrations[$rid]['scheduled'] = $reg['placement'];
+        }
     }
 
     $blocks[] = array(
@@ -121,7 +127,7 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
         'columns' => array(
             array('label'=>'Class', 'fold-label'=>'Class: ', 'field'=>'class'),
             array('label'=>'Competitor', 'field'=>'display_name'),
-            array('label'=>'Scheduled', 'fold-label'=>'Scheduled: ', 'field'=>'scheduled'),
+            array('label'=>'Scheduled/Results', 'fold-label'=>'Scheduled/Results: ', 'field'=>'scheduled'),
             ),
         'rows' => $registrations,
         );
