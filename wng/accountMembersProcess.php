@@ -163,10 +163,10 @@ function ciniki_musicfestivals_wng_accountMembersProcess(&$ciniki, $tnid, &$requ
             'level' => 2,
             'class' => 'aligncenter',
             'items' => array(
-                array(
-                    'text' => (isset($recommendations[$mid]) ? $recommendations[$mid] : '0') . ' Recommendations',
-                    'url' => $base_url . '/' . $member['permalink'] . '/recommendations',
-                ),
+//                array(
+//                    'text' => (isset($recommendations[$mid]) ? $recommendations[$mid] : '0') . ' Recommendations',
+//                    'url' => $base_url . '/' . $member['permalink'] . '/recommendations',
+//                ),
                 array(
                     'text' => (isset($registrations[$mid]) ? $registrations[$mid] : '0') . ' Registrations',
                     'url' => $base_url . '/' . $member['permalink'] . '/registrations',

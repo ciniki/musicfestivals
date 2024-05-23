@@ -49,6 +49,7 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
     $strsql = "SELECT registrations.id, "
         . "registrations.display_name, "
         . "registrations.participation, "
+        . "classes.name AS class_name, "
         . "CONCAT_WS(' - ', classes.code, classes.name) AS class, ";
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
         $strsql .= "IFNULL(TIME_FORMAT(registrations.timeslot_time, '%l:%i %p'), '') AS timeslot_time, ";
@@ -82,12 +83,12 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
             . ") "
         . "WHERE registrations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member']['id']) . "' "
         . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "ORDER BY class, registrations.display_name "
+        . "ORDER BY classes.name, registrations.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
-            'fields'=>array( 'id', 'display_name', 'participation', 'class', 
+            'fields'=>array( 'id', 'display_name', 'participation', 'class', 'class_name',
                 'timeslot_time', 'timeslot_date', 'location_name', 'division_flags', 'section_flags',
                 ),
             ),
@@ -96,6 +97,10 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.756', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
     }
     $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
+
+    uasort($registrations, function($a, $b) {
+        return strnatcmp($a['class_name'], $b['class_name']);
+        });
 
     foreach($registrations as $rid => $reg) {
         $registrations[$rid]['scheduled'] = '';
