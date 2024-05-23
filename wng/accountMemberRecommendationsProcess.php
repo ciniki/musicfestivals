@@ -64,7 +64,7 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
             . ") "
         . "WHERE recommendations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member']['id']) . "' "
         . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "ORDER BY class, entries.name "
+        . "ORDER BY classes.name, entries.position, entries.name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -84,8 +84,8 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
         'class' => 'fold-at-50',
         'columns' => array(
             array('label'=>'Class', 'fold-label'=>'Class: ', 'field'=>'class'),
-            array('label'=>'Competitor', 'field'=>'name'),
             array('label'=>'Position', 'fold-label'=>'Position: ', 'field'=>'position'),
+            array('label'=>'Competitor', 'field'=>'name'),
             array('label'=>'Mark', 'fold-label'=>'Mark: ', 'field'=>'mark'),
             array('label'=>'Adjudicator', 'fold-label'=>'Adjudicator: ', 'field'=>'adjudicator_name'),
             ),
