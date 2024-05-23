@@ -2396,6 +2396,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "members.category, "
                 . "members.status, "
                 . "members.status AS status_text, "
+                . "members.customer_id, "
+                . "IFNULL(customers.display_name, '') AS customer_name, "
                 . "IFNULL(fmembers.reg_start_dt, '') AS reg_start_dt_display, "
                 . "IFNULL(fmembers.reg_end_dt, '') AS reg_end_dt_display, "
                 . "IFNULL(fmembers.latedays, '') AS latedays, "
@@ -2405,6 +2407,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "members.id = fmembers.member_id "
                     . "AND fmembers.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                     . "AND fmembers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "LEFT JOIN ciniki_customers AS customers ON ("
+                    . "members.customer_id = customers.id "
+                    . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
                     . "members.id = registrations.member_id "
@@ -2418,8 +2424,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'members', 'fname'=>'id', 
-                    'fields'=>array('id', 'name', 'category', 'status', 'reg_start_dt_display', 'reg_end_dt_display', 'latedays',
-                        'num_registrations',
+                    'fields'=>array('id', 'customer_id', 'customer_name', 'name', 'category', 'status', 
+                        'reg_start_dt_display', 'reg_end_dt_display', 'latedays', 'num_registrations',
                         ),
                     'utctotz'=>array(
                         'reg_start_dt_display' => array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
