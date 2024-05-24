@@ -17,6 +17,7 @@
 function ciniki_musicfestivals_festivalGet($ciniki) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
 
     //
     // Find all the required and optional arguments
@@ -933,19 +934,28 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $festival['nplists']['registrations'] = array();
                 $total = 0;
 //                $festival['registrations_copy'] = "<table cellpadding=2 cellspacing=0>";
-                foreach($festival['registrations'] as $iid => $registration) {
+                foreach($festival['registrations'] as $rid => $registration) {
                     $festival['nplists']['registrations'][] = $registration['id'];
-                    $festival['registrations'][$iid]['titles'] = '';
+                    $festival['registrations'][$rid]['titles'] = '';
+                    $festival['registrations'][$rid]['titles'] = '';
                     for($i = 1; $i <= 8; $i++) {
                         if( $registration["title{$i}"] != '' ) {
                             $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
                             if( $rc['stat'] == 'ok' ) {
-                                $festival['registrations'][$iid]["title{$i}"] = $rc['title'];
+                                $festival['registrations'][$rid]["title{$i}"] = $rc['title'];
                                 $registration["title{$i}"] = $rc['title'];
-                                $festival['registrations'][$iid]['titles'] .= ($festival['registrations'][$iid]['titles'] != '' ? '<br/>' : '') . $rc['title'];
+                                $festival['registrations'][$rid]['titles'] .= ($festival['registrations'][$rid]['titles'] != '' ? '<br/>' : '') . $rc['title'];
                             }
                         }
-                    }
+                        unset($festival['registrations'][$rid]["movements{$i}"]);
+                        unset($festival['registrations'][$rid]["composer{$i}"]);
+                        if( $i > $registration['max_titles'] ) {
+                            unset($festival['registrations'][$rid]["title{$i}"]);
+                            unset($festival['registrations'][$rid]["perf_time{$i}"]);
+                            unset($festival['registrations'][$rid]["music_orgfilename{$i}"]);
+                            unset($festival['registrations'][$rid]["video_url{$i}"]);
+                        }
+                    } 
 //                    $festival['registrations_copy'] .= '<tr><td>' . $registration['class_code'] . '</td><td>' . $registration['title1'] . '</td><td>' . $registration['perf_time1'] . "</td></tr>\n";
                 }
 //                $festival['registrations_copy'] .= "</table>";

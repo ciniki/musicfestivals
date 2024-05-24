@@ -1015,6 +1015,7 @@ function ciniki_musicfestivals_main() {
                     if( j <= this.data.registrations[i].min_titles ||
                         (j <= this.data.registrations[i].max_titles && this.data.registrations[i]['title'+j] != '')
                         ) {
+                        /*
                         var title = '#' + j + ' ' + this.data.registrations[i]['title'+j];
                         if( M.modFlagOn('ciniki.musicfestivals', 0x040000) ) {
                             if( this.data.registrations[i]['movements'+j] != '' 
@@ -1035,15 +1036,16 @@ function ciniki_musicfestivals_main() {
                                     title += ' by ' + this.data.registrations[i]['composer'+j];
                                 }
                             }
-                        }
+                        } */
                         this.data.videos.push({
                             'id': this.data.registrations[i].id,
                             'class_code': this.data.registrations[i].class_code,
                             'class_name': this.data.registrations[i].class_name,
                             'display_name': this.data.registrations[i].display_name,
-                            'title': title,
-                            'movements': this.data.registrations[i]['movements'+j],
-                            'composer': this.data.registrations[i]['composer'+j],
+//                            'title': title,
+                            'title': this.data.registrations[i]['title'+j],
+//                            'movements': this.data.registrations[i]['movements'+j],
+//                            'composer': this.data.registrations[i]['composer'+j],
                             'video_url': this.data.registrations[i]['video_url'+j],
                             'music_orgfilename': this.data.registrations[i]['music_orgfilename'+j],
                             'status_text': this.data.registrations[i].status_text,
