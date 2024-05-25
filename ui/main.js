@@ -1283,10 +1283,10 @@ function ciniki_musicfestivals_main() {
             return M.multiline(M.textCount(d.code + ' - ' + d.name, (d.num_registrations > 0 ? d.num_registrations : null)), d.total_perf_time_display);
         }
         if( s == 'registration_teachers' ) {
-            return M.textCount(d.display_name, d.num_registrations > 0 ? d.num_registrations: null);
+            return M.textCount(d.display_name, (d.num_registrations > 0 ? d.num_registrations: null));
         }
         if( s == 'registration_accompanists' ) {
-            return M.textCount(d.display_name, d.num_registrations > 0 ? d.num_registrations: null);
+            return M.textCount(d.display_name, (d.num_registrations > 0 ? d.num_registrations: null));
         }
         if( s == 'registration_tags' ) {
             return M.textCount(d.name, d.num_registrations > 0 ? d.num_registrations: null);
@@ -3921,7 +3921,7 @@ function ciniki_musicfestivals_main() {
             'movements1':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
             'composer1':{'label':'Composer', 'type':'text', 'visible':'no'},
             'perf_time1':{'label':'Time', 'type':'minsec', 'size':'small'},
-            'video_url1':{'label':'Video', 'type':'text', 'visible':'no'},
+            'video_url1':{'label':'Video', 'type':'url', 'visible':'no'},
             'music_orgfilename1':{'label':'Music', 'type':'file', 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(1);',
                 },
@@ -3932,7 +3932,7 @@ function ciniki_musicfestivals_main() {
             'movements2':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
             'composer2':{'label':'Composer', 'type':'text', 'visible':'no'},
             'perf_time2':{'label':'Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small', 'visible':'no'},
-            'video_url2':{'label':'Video', 'type':'text', 'visible':'no'},
+            'video_url2':{'label':'Video', 'type':'url', 'visible':'no'},
             'music_orgfilename2':{'label':'Music', 'type':'file', 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(2);',
                 },
@@ -3943,7 +3943,7 @@ function ciniki_musicfestivals_main() {
             'movements3':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
             'composer3':{'label':'Composer', 'type':'text', 'visible':'no'},
             'perf_time3':{'label':'3rd Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small', 'visible':'no'},
-            'video_url3':{'label':'Video', 'type':'text', 'visible':'no'},
+            'video_url3':{'label':'Video', 'type':'url', 'visible':'no'},
             'music_orgfilename3':{'label':'Music', 'type':'file', 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(3);',
                 },
@@ -3954,7 +3954,7 @@ function ciniki_musicfestivals_main() {
             'movements4':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
             'composer4':{'label':'Composer', 'type':'text', 'visible':'no'},
             'perf_time4':{'label':'Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small', 'visible':'no'},
-            'video_url4':{'label':'Video', 'type':'text', 'visible':'no'},
+            'video_url4':{'label':'Video', 'type':'url', 'visible':'no'},
             'music_orgfilename4':{'label':'Music', 'type':'file', 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(4);',
                 },
@@ -3965,7 +3965,7 @@ function ciniki_musicfestivals_main() {
             'movements5':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
             'composer5':{'label':'Composer', 'type':'text', 'visible':'no'},
             'perf_time5':{'label':'Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small', 'visible':'no'},
-            'video_url5':{'label':'Video', 'type':'text', 'visible':'no'},
+            'video_url5':{'label':'Video', 'type':'url', 'visible':'no'},
             'music_orgfilename5':{'label':'Music', 'type':'file', 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(5);',
                 },
@@ -3976,7 +3976,7 @@ function ciniki_musicfestivals_main() {
             'movements6':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
             'composer6':{'label':'Composer', 'type':'text', 'visible':'no'},
             'perf_time6':{'label':'Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small', 'visible':'no'},
-            'video_url6':{'label':'Video', 'type':'text', 'visible':'no'},
+            'video_url6':{'label':'Video', 'type':'url', 'visible':'no'},
             'music_orgfilename6':{'label':'Music', 'type':'file', 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(6);',
                 },
@@ -3987,7 +3987,7 @@ function ciniki_musicfestivals_main() {
             'movements7':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
             'composer7':{'label':'Composer', 'type':'text', 'visible':'no'},
             'perf_time7':{'label':'Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small', 'visible':'no'},
-            'video_url7':{'label':'Video', 'type':'text', 'visible':'no'},
+            'video_url7':{'label':'Video', 'type':'url', 'visible':'no'},
             'music_orgfilename7':{'label':'Music', 'type':'file', 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(7);',
                 },
@@ -3998,7 +3998,7 @@ function ciniki_musicfestivals_main() {
             'movements8':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
             'composer8':{'label':'Composer', 'type':'text', 'visible':'no'},
             'perf_time8':{'label':'Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small', 'visible':'no'},
-            'video_url8':{'label':'Video', 'type':'text', 'visible':'no'},
+            'video_url8':{'label':'Video', 'type':'url', 'visible':'no'},
             'music_orgfilename8':{'label':'Music', 'type':'file', 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(8);',
                 },

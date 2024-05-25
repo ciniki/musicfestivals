@@ -555,7 +555,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             //
             elseif( isset($args['registrations_list']) && $args['registrations_list'] == 'teachers' ) {
                 $strsql = "SELECT registrations.teacher_customer_id, "
-                    . "c.display_name, ";
+                    . "customers.display_name, ";
                 if( ($festival['flags']&0x02) == 0x02 && isset($args['ipv']) ) {
                     if( $args['ipv'] == 'inperson' ) {
                         $strsql .= "SUM(IF(registrations.participation=0,1,0)) AS num_registrations ";
@@ -568,18 +568,20 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     $strsql .= "COUNT(registrations.id) AS num_registrations ";
                 }
                 $strsql .= "FROM ciniki_musicfestival_registrations AS registrations "
-                    . "LEFT JOIN ciniki_customers AS c ON ("
-                        . "registrations.teacher_customer_id = c.id "
-                        . "AND c.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "LEFT JOIN ciniki_customers AS customers ON ("
+                        . "registrations.teacher_customer_id = customers.id "
+                        . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                         . ") "
                     . "WHERE registrations.teacher_customer_id != 0 "
                     . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "GROUP BY registrations.teacher_customer_id "
-                    . "ORDER BY c.display_name "
+                    . "ORDER BY customers.display_name "
                     . "";
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-                    array('container'=>'teachers', 'fname'=>'teacher_customer_id', 'fields'=>array('id'=>'teacher_customer_id', 'display_name', 'num_registrations')),
+                    array('container'=>'teachers', 'fname'=>'teacher_customer_id', 
+                        'fields'=>array('id'=>'teacher_customer_id', 'display_name', 'num_registrations'),
+                        ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
@@ -594,7 +596,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             //
             elseif( isset($args['registrations_list']) && $args['registrations_list'] == 'accompanists' ) {
                 $strsql = "SELECT registrations.accompanist_customer_id, "
-                    . "c.display_name, ";
+                    . "customers.display_name, ";
                 if( ($festival['flags']&0x02) == 0x02 && isset($args['ipv']) ) {
                     if( $args['ipv'] == 'inperson' ) {
                         $strsql .= "SUM(IF(registrations.participation=0,1,0)) AS num_registrations ";
@@ -607,15 +609,15 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     $strsql .= "COUNT(registrations.id) AS num_registrations ";
                 }
                 $strsql .= "FROM ciniki_musicfestival_registrations AS registrations "
-                    . "LEFT JOIN ciniki_customers AS c ON ("
-                        . "registrations.accompanist_customer_id = c.id "
-                        . "AND c.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "LEFT JOIN ciniki_customers AS customers ON ("
+                        . "registrations.accompanist_customer_id = customers.id "
+                        . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                         . ") "
                     . "WHERE registrations.accompanist_customer_id != 0 "
                     . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "GROUP BY registrations.accompanist_customer_id "
-                    . "ORDER BY c.display_name "
+                    . "ORDER BY customers.display_name "
                     . "";
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'accompanists', 'fname'=>'accompanist_customer_id', 'fields'=>array('id'=>'accompanist_customer_id', 'display_name', 'num_registrations')),
@@ -1330,9 +1332,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 && isset($args['results']) && $args['results'] == 'yes'
                 && isset($requested_section)
                 ) {
-                $strsql = "SELECT timeslots.id AS timeslot_id, "
-                    . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
-                    . "registrations.id, "
+                $strsql = "SELECT timeslots.id AS timeslot_id, ";
+                if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+                    $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS slot_time_text, ";
+                } else {
+                    $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, ";
+                }
+                $strsql .= "registrations.id, "
                     . "registrations.display_name, "
                     . "registrations.timeslot_sequence, "
                     . "registrations.title1, "
