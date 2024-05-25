@@ -587,7 +587,7 @@ function ciniki_musicfestivals_main() {
                 }},
         'multislot_button':{'label':'', 'aside':'yes',
             // Only open for provincials right now
-            'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x010000) && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'timeslots'); },
+            'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x010000) && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'timeslots') == 'yes' ? 'yes' : 'no'; },
             'buttons':{
                 'multislot':{'label':'Open Class Scheduler', 'fn':'M.ciniki_musicfestivals_main.schedulemultislot.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.festival_id);'},
             }},
@@ -1015,37 +1015,12 @@ function ciniki_musicfestivals_main() {
                     if( j <= this.data.registrations[i].min_titles ||
                         (j <= this.data.registrations[i].max_titles && this.data.registrations[i]['title'+j] != '')
                         ) {
-                        /*
-                        var title = '#' + j + ' ' + this.data.registrations[i]['title'+j];
-                        if( M.modFlagOn('ciniki.musicfestivals', 0x040000) ) {
-                            if( this.data.registrations[i]['movements'+j] != '' 
-                                && this.data.registrations[i]['movements'+j].toLowerCase() != 'n/a' 
-                                && this.data.registrations[i]['movements'+j].toLowerCase() != 'na' 
-                                && this.data.registrations[i]['movements'+j].toLowerCase() != 'not applicable' 
-                                ) {
-                                title += ', ' + this.data.registrations[i]['movements'+j];
-                            }
-                            if( this.data.registrations[i]['composer'+j] != ''
-                                && this.data.registrations[i]['composer'+j].toLowerCase() != 'n/a' 
-                                && this.data.registrations[i]['composer'+j].toLowerCase() != 'na' 
-                                && this.data.registrations[i]['composer'+j].toLowerCase() != 'not applicable' 
-                                ) {
-                                if( this.data.registrations[i]['composer'+j].match(/^\s*[Bb][Yy]\s+/) ) {
-                                    title += ' ' + this.data.registrations[i]['composer'+j];
-                                } else {
-                                    title += ' by ' + this.data.registrations[i]['composer'+j];
-                                }
-                            }
-                        } */
                         this.data.videos.push({
                             'id': this.data.registrations[i].id,
                             'class_code': this.data.registrations[i].class_code,
                             'class_name': this.data.registrations[i].class_name,
                             'display_name': this.data.registrations[i].display_name,
-//                            'title': title,
                             'title': this.data.registrations[i]['title'+j],
-//                            'movements': this.data.registrations[i]['movements'+j],
-//                            'composer': this.data.registrations[i]['composer'+j],
                             'video_url': this.data.registrations[i]['video_url'+j],
                             'music_orgfilename': this.data.registrations[i]['music_orgfilename'+j],
                             'status_text': this.data.registrations[i].status_text,
