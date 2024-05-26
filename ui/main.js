@@ -5424,8 +5424,18 @@ function ciniki_musicfestivals_main() {
             });
     }
     this.scheduletimeslot.save = function(cb) {
-        if( cb == null ) { cb = 'M.ciniki_musicfestivals_main.scheduletimeslot.close();'; }
         if( !this.checkForm() ) { return false; }
+        var did = this.formValue('sdivision_id');
+        if( this.data.sdivision_id > 0 && did != this.data.sdivision_id ) {
+            M.confirm("Are you sure you want to move this timeslot to another division?", "Yes, move timeslot", function() {
+                M.ciniki_musicfestivals_main.scheduletimeslot.saveconfirmed(cb);
+                });
+        } else {
+            this.saveconfirmed(cb);
+        }
+    }
+    this.scheduletimeslot.saveconfirmed = function(cb) {
+        if( cb == null ) { cb = 'M.ciniki_musicfestivals_main.scheduletimeslot.close();'; }
         if( this.scheduletimeslot_id > 0 ) {
             var c = this.serializeForm('no');
             if( c != '' ) {
