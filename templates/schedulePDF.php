@@ -398,14 +398,14 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                             $division[$field] = 'Section: ' . $division[$field];
                         } elseif( $field == 'adjudicator' && $division[$field] != '' ) {
                             $division[$field] = 'Adjudicator: ' . $division[$field];
-                        } elseif( $field == 'address' && $division[$field] != '' ) {
+                        } elseif( $field == 'location' && $division[$field] != '' ) {
                             $division[$field] = 'Location: ' . $division[$field];
                         }
                     }
                 }
             } else {
                 // Default layout
-                $fields = array('date-name', 'address');
+                $fields = array('date-name', 'location');
                 $division['date-name'] = $division['date'] . ' - ' . $division['name'];
                 if( $continued == 'yes' ) {
                     $division['date-name'] .= ' (continued...)';
