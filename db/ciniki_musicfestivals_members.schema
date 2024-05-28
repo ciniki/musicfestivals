@@ -10,6 +10,11 @@
 # tnid:                     The Tenant ID the record belongs to.
 #
 # name:                     The name of the festival.
+# permalink:                The permalink of the festival.
+# shortname:                The short name of the festival, used in results.
+#
+# category:                 The category for the member.
+#
 # synopsis:                 The synopsis of the festival to display on the website.
 #
 # status:                   The current status of the festival.
@@ -29,6 +34,7 @@ create table ciniki_musicfestivals_members (
     tnid int not null,
 
     name varchar(250) not null,
+    shortname varchar(250) not null,
     permalink varchar(250) not null,
     category varchar(250) not null,
     synopsis varchar(2000) not null,

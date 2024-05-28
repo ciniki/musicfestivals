@@ -19,6 +19,7 @@ function ciniki_musicfestivals_memberUpdate(&$ciniki) {
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'member_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Member Festival'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
+        'shortname'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Short Name'),
         'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'),
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
         'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),
@@ -47,6 +48,7 @@ function ciniki_musicfestivals_memberUpdate(&$ciniki) {
     //
     $strsql = "SELECT members.id, "
         . "members.name, "
+        . "members.shortname, "
         . "members.category, "
         . "members.synopsis, "
         . "members.status, "
@@ -67,7 +69,7 @@ function ciniki_musicfestivals_memberUpdate(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'members', 'fname'=>'id', 
-            'fields'=>array('name', 'category', 'synopsis', 'status', 'customer_id', 'fmember_id', 'reg_start_dt', 'reg_end_dt', 'latedays'),
+            'fields'=>array('name', 'shortname', 'category', 'synopsis', 'status', 'customer_id', 'fmember_id', 'reg_start_dt', 'reg_end_dt', 'latedays'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {

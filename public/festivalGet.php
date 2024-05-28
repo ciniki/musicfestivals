@@ -2409,11 +2409,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             ) {
             $strsql = "SELECT members.id, "
                 . "members.name, "
+                . "members.shortname, "
                 . "members.category, "
                 . "members.status, "
                 . "members.status AS status_text, "
                 . "members.customer_id, "
-                . "IFNULL(customers.display_name, '') AS customer_name, "
+                . "IFNULL(customers.first, '') AS customer_name, "
+                . "IFNULL(emails.email, '') AS emails, "
                 . "IFNULL(fmembers.reg_start_dt, '') AS reg_start_dt_display, "
                 . "IFNULL(fmembers.reg_end_dt, '') AS reg_end_dt_display, "
                 . "IFNULL(fmembers.latedays, '') AS latedays, "
@@ -2428,6 +2430,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "members.customer_id = customers.id "
                     . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
+                . "LEFT JOIN ciniki_customer_emails AS emails ON ("
+                    . "customers.id = emails.customer_id "
+                    . "AND emails.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
                 . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
                     . "members.id = registrations.member_id "
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -2435,13 +2441,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "WHERE members.status < 90 " // Active, Closed
                 . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "GROUP BY members.id "
-                . "ORDER BY members.name "
+                . "ORDER BY members.shortname, members.name "
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'members', 'fname'=>'id', 
-                    'fields'=>array('id', 'customer_id', 'customer_name', 'name', 'category', 'status', 
-                        'reg_start_dt_display', 'reg_end_dt_display', 'latedays', 'num_registrations',
+                    'fields'=>array('id', 'customer_id', 'customer_name', 'name', 'shortname', 'category', 'status', 
+                        'reg_start_dt_display', 'reg_end_dt_display', 'latedays', 'num_registrations', 'emails',
                         ),
                     'utctotz'=>array(
                         'reg_start_dt_display' => array('timezone'=>$intl_timezone, 'format'=>$datetime_format),

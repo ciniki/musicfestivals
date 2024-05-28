@@ -22,6 +22,7 @@ function ciniki_musicfestivals_memberAdd(&$ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'),
+        'shortname'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Short Name'),
         'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'),
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
         'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),

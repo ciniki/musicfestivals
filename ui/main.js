@@ -904,9 +904,9 @@ function ciniki_musicfestivals_main() {
         'members':{'label':'Member Festivals', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'members' ? 'yes' : 'no'; },
 //            'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'members'); },
-            'headerValues':['Name', 'Category', 'Provincial Open', 'Provincial Close', 'Late', 'Registrations'],
+            'headerValues':['Name', 'Category/Admin', 'Reg Open', 'Reg Close', 'Late', '# Reg'],
             'headerClasses':['', '', '', '', 'alignright', 'alignright'],
-            'cellClasses':['', '', '', '', 'alignright', 'alignright'],
+            'cellClasses':['multiline', 'multiline', '', '', 'alignright', 'alignright'],
             'noData':'No Member Festivals',
             'sortable':'yes',
             'sortTypes':['text', 'text', 'date', 'date', 'number', 'number'],
@@ -1468,8 +1468,8 @@ function ciniki_musicfestivals_main() {
         }
         if( s == 'members' ) {
             switch(j) {
-                case 0: return d.name;
-                case 1: return d.category;
+                case 0: return M.multiline(d.shortname, d.name);
+                case 1: return M.multiline(d.category, (d.customer_name != '' ? d.customer_name + ' [' + d.emails + ']' : ''));
                 case 2: return d.reg_start_dt_display;
                 case 3: return d.reg_end_dt_display;
                 case 4: return d.latedays;
@@ -8570,6 +8570,7 @@ function ciniki_musicfestivals_main() {
     this.member.sections = {
         'general':{'label':'Member Festival', 'aside':'left', 'fields':{
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
+            'shortname':{'label':'Short Name', 'type':'text'},
             'category':{'label':'Category', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
             'status':{'label':'Status', 'type':'toggle', 'toggles':{
                 '10':'Active',

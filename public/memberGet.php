@@ -62,6 +62,7 @@ function ciniki_musicfestivals_memberGet($ciniki) {
     if( $args['member_id'] == 0 ) {
         $member = array('id'=>0,
             'name' => '',
+            'shortname' => '',
             'synopsis' => '',
             'status' => '10',
             'reg_start_dt' => '',
@@ -79,6 +80,7 @@ function ciniki_musicfestivals_memberGet($ciniki) {
     else {
         $strsql = "SELECT members.id, "
             . "members.name, "
+            . "members.shortname, "
             . "members.category, "
             . "members.synopsis, "
             . "members.status, "
@@ -98,7 +100,7 @@ function ciniki_musicfestivals_memberGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'members', 'fname'=>'id', 
-                'fields'=>array('name', 'category', 'synopsis', 'status', 'customer_id', 'reg_start_dt', 'reg_end_dt', 'latedays'),
+                'fields'=>array('name', 'shortname', 'category', 'synopsis', 'status', 'customer_id', 'reg_start_dt', 'reg_end_dt', 'latedays'),
                 'utctotz'=>array(
                     'reg_start_dt' => array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
                     'reg_end_dt' => array('timezone'=>$intl_timezone, 'format'=>$datetime_format),

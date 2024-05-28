@@ -626,6 +626,7 @@ function ciniki_musicfestivals_objects($ciniki) {
         'table' => 'ciniki_musicfestivals_members',
         'fields' => array(
             'name' => array('name'=>'Name'),
+            'shortname' => array('name'=>'Short Name', 'default'=>''),
             'permalink' => array('name'=>'Permalink'),
             'category' => array('name'=>'Category', 'default'=>''),
             'synopsis' => array('name'=>'Synopsis', 'default'=>''),
