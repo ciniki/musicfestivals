@@ -4029,7 +4029,7 @@ function ciniki_musicfestivals_main() {
             'mark':{'label':'Mark', 'type':'text', 'separator':'yes', 'visible':'yes', 'size':'small', 
                 'onkeyup':'M.ciniki_musicfestivals_main.registration.updatePlacement',
                 },
-            'placement':{'label':'Placement', 'type':'text', 'separator':'no', 'visible':'yes', 'size':'small'},
+            'placement':{'label':'Placement', 'type':'text', 'separator':'no', 'visible':'yes'},
             'level':{'label':'Level', 'type':'text', 'separator':'no', 'visible':'yes', 'size':'small'},
             }},
 /*        'music_buttons':{'label':'', 
