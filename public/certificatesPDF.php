@@ -174,7 +174,8 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
         . "IFNULL(registrations.competitor2_id, 0) AS competitor2_id, "
         . "IFNULL(registrations.competitor3_id, 0) AS competitor3_id, "
         . "IFNULL(registrations.competitor4_id, 0) AS competitor4_id, "
-        . "IFNULL(registrations.competitor5_id, 0) AS competitor5_id "
+        . "IFNULL(registrations.competitor5_id, 0) AS competitor5_id, "
+        . "IFNULL(competitors.num_people, 1) AS num_people "
         . "FROM ciniki_musicfestival_schedule_sections AS ssections "
         . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
             . "ssections.id = divisions.ssection_id " 
@@ -187,6 +188,10 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
         . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "timeslots.id = registrations.timeslot_id "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ("
+            . "registrations.competitor1_id = competitors.id "
+            . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
             . "registrations.class_id = classes.id "
@@ -211,7 +216,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
     } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
         $strsql .= "AND registrations.participation = 1 ";
     }
-    $strsql .= "ORDER BY divisions.division_date, division_id, slot_time, registrations.timeslot_sequence "
+    $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, registrations.timeslot_sequence "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -226,7 +231,8 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 'description', 
                 )),
         array('container'=>'registrations', 'fname'=>'reg_id', 
-            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title1', 
+            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'num_people',
+                'title1', 
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name',
                 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 
                 'participation', 'mark', 'placement', 'level', 'timeslot_date_text',
@@ -353,6 +359,9 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                     }
 
                     $num_copies = 1;
+                    if( $reg['num_people'] > 0 ) {
+                        $num_copies = $reg['num_people'];
+                    }
                     if( $reg['competitor2_id'] > 0 ) {
                         $num_copies++;
                     }
@@ -414,8 +423,10 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                             elseif( $field['field'] == 'adjudicatorsigorname' ) {
                                 if( isset($adjudicators[$division['adjudicator_id']]['sig_image_id']) && $adjudicators[$division['adjudicator_id']]['sig_image_id'] > 0 ) {
                                     $certificate['fields'][$fid]['image_id'] = $adjudicators[$division['adjudicator_id']]['sig_image_id'];
-                                } else {
+                                } elseif( isset($adjudicators[$division['adjudicator_id']]['name']) ) {
                                     $certificate['fields'][$fid]['text'] = $adjudicators[$division['adjudicator_id']]['name'];
+                                } else {
+                                    $certificate['fields'][$fid]['text'] = '';
                                 }
                             }
                             elseif( $field['field'] == 'text' ) {

@@ -128,7 +128,6 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "'' AS division_name, "
             . "1 AS timeslot_id, "
             . "'' AS timeslot_name, "
-            . "ssections.adjudicator1_id AS section_adjudicator_id, "
             . "'' AS description, "
             . "registrations.id AS reg_id, ";
         if( isset($festival['comments-include-pronouns']) && $festival['comments-include-pronouns'] == 'yes' ) {
@@ -170,9 +169,13 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "IFNULL(categories.name, '') AS category_name, "
             . "IFNULL(sections.name, '') AS syllabus_section_name, "
             . "IFNULL(classes.flags, 0) AS class_flags, "
-            . "IFNULL(registrations.competitor2_id, 0) AS competitor2_id, "
-            . "IFNULL(ssections.adjudicator1_id, 0) AS adjudicator_id, "
-            . "registrations.mark, "
+            . "IFNULL(registrations.competitor2_id, 0) AS competitor2_id, ";
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+            $strsql .= "IFNULL(divisions.adjudicator_id, 0) AS adjudicator_id, ";
+        } else {
+            $strsql .= "IFNULL(ssections.adjudicator1_id, 0) AS adjudicator_id, ";
+        }
+        $strsql .= "registrations.mark, "
             . "registrations.placement, "
             . "registrations.level, "
             . "registrations.comments "
@@ -260,9 +263,13 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "IFNULL(categories.name, '') AS category_name, "
             . "IFNULL(sections.name, '') AS syllabus_section_name, "
             . "IFNULL(classes.flags, 0) AS class_flags, "
-            . "IFNULL(registrations.competitor2_id, 0) AS competitor2_id, "
-            . "IFNULL(ssections.adjudicator1_id, 0) AS adjudicator_id, "
-            . "registrations.mark, "
+            . "IFNULL(registrations.competitor2_id, 0) AS competitor2_id, ";
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+            $strsql .= "IFNULL(divisions.adjudicator_id, 0) AS adjudicator_id, ";
+        } else {
+            $strsql .= "IFNULL(ssections.adjudicator1_id, 0) AS adjudicator_id, ";
+        }
+        $strsql .= "registrations.mark, "
             . "registrations.placement, "
             . "registrations.level, "
             . "registrations.comments "
@@ -306,7 +313,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             $strsql .= "AND registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' ";
             $strsql .= "ORDER BY divisions.division_date, division_id, slot_time, display_name ";
         } else {
-            $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, slot_time, registrations.timeslot_sequence ";
+            $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, registrations.timeslot_sequence ";
         }
     }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
