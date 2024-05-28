@@ -2137,6 +2137,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . ") "
                 . "WHERE ciniki_musicfestival_adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND ciniki_musicfestival_adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "ORDER BY display_name "
                 . "";
             if( isset($args['comments']) && $args['comments'] == 'yes' ) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
