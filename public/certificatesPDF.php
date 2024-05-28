@@ -382,7 +382,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                             if( $field['field'] == 'participant' ) {
                                 $certificate['fields'][$fid]['text'] = $reg['name'];
                             }
-                            elseif( $field['field'] == 'class' ) {
+                            elseif( $field['field'] == 'class' || $field['field'] == 'class-group' ) {
                                 $class_name = $reg['class_name'];
                                 if( isset($festival['certificates-class-format']) 
                                     && $festival['certificates-class-format'] == 'code-section-category-class' 
@@ -402,6 +402,9 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                                     $class_name = $reg['category_name'] . ' - ' . $reg['class_name']; 
                                 } else {
                                     $class_name = $reg['class_name']; 
+                                }
+                                if( $field['field'] == 'class-group' && preg_match("/(Group\s+[0-9A-Z])/", $timeslot['name'], $m) ) {
+                                    $class_name .= ' - ' . $m[1];
                                 }
                                 $certificate['fields'][$fid]['text'] = $class_name;
                             }

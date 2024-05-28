@@ -99,7 +99,7 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
         . "'' division_name, "
         . "DATE_FORMAT(divisions.division_date, '%M %D, %Y') AS division_date_text, "
         . "1 AS timeslot_id, "
-        . "'' AS timeslot_name, "
+        . "timeslots.name AS timeslot_name, "
         . "'' AS slot_time_text, "
         . "registrations.id AS reg_id, "
         . "registrations.display_name, "
@@ -310,7 +310,7 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
                             if( $field['field'] == 'participant' ) {
                                 $certificate['fields'][$fid]['text'] = $reg['name'];
                             }
-                            elseif( $field['field'] == 'class' ) {
+                            elseif( $field['field'] == 'class' || $field['field'] == 'class-group' ) {
                                 $class_name = $reg['class_name'];
                                 if( isset($festival['certificates-class-format']) 
                                     && $festival['certificates-class-format'] == 'code-section-category-class' 
@@ -330,6 +330,9 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
                                     $class_name = $reg['category_name'] . ' - ' . $reg['class_name']; 
                                 } else {
                                     $class_name = $reg['class_name']; 
+                                }
+                                if( $field['field'] == 'class-group' && preg_match("/(Group\s+[0-9A-Z])/", $timeslot['name'], $m) ) {
+                                    $class_name .= ' - ' . $m[1];
                                 }
                                 $certificate['fields'][$fid]['text'] = $class_name;
                             }
