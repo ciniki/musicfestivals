@@ -373,8 +373,36 @@ function ciniki_musicfestivals_main() {
                     'fn':'M.ciniki_musicfestivals_main.festival.switchRegTab("colours");',
                     },
             }}, 
+        'schedule_tabs':{'label':'', 'type':'menutabs', 'selected':'timeslots', 
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'schedule' ? 'yes' : 'no'; },
+            'tabs':{
+                'timeslots':{'label':'Timeslots', 'fn':'M.ciniki_musicfestivals_main.festival.switchSTab("timeslots");'},
+                'competitors':{'label':'Competitors', 'fn':'M.ciniki_musicfestivals_main.festival.switchSTab(\'competitors\');'},
+                'accompanists':{'label':'Accompanists', 'fn':'M.ciniki_musicfestivals_main.festival.switchSTab(\'accompanists\');'},
+                'adjudicators':{'label':'Adjudicators', 'fn':'M.ciniki_musicfestivals_main.festival.switchSTab(\'adjudicators\');'},
+                'comments':{'label':'Comments', 'fn':'M.ciniki_musicfestivals_main.festival.switchSTab(\'comments\');',
+//                    'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x02) == 0x02 ? 'yes' : 'no'},
+                    },
+                'results':{'label':'Results', 'fn':'M.ciniki_musicfestivals_main.festival.switchSTab(\'results\');', },
+                'provincials':{'label':'Provincials', 'fn':'M.ciniki_musicfestivals_main.festival.switchSTab(\'provincials\');',
+                    'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x010000) ? 'no' : 'yes'}, // Provincials not set
+                    },
+                'photos':{'label':'Photos', 
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x04); },
+                    'fn':'M.ciniki_musicfestivals_main.festival.switchSTab(\'photos\');',
+                    },
+                'downloads':{'label':'Downloads', 'fn':'M.ciniki_musicfestivals_main.festival.switchSTab("downloads");'},
+                }},
         'ipv_tabs':{'label':'', 'aside':'yes', 'type':'paneltabs', 'selected':'all',
-            'visible':function() { return (['registrations','videos'].indexOf(M.ciniki_musicfestivals_main.festival.menutabs.selected) >= 0 && (M.ciniki_musicfestivals_main.festival.data.flags&0x02) == 0x02) ? 'yes' : 'no'; },
+            'visible':function() { 
+                if( ['registrations','videos'].indexOf(M.ciniki_musicfestivals_main.festival.menutabs.selected) >= 0 && (M.ciniki_musicfestivals_main.festival.data.flags&0x02) == 0x02 ) {
+                    return 'yes';
+                }
+                if( M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'adjudicators') == 'yes' && (M.ciniki_musicfestivals_main.festival.data.flags&0x02) == 0x02 ) {
+                    return 'yes';
+                }
+                return 'no';
+            },
             'tabs':{
                 'all':{'label':'All', 'fn':'M.ciniki_musicfestivals_main.festival.switchLVTab("all");'},
                 'inperson':{'label':'Live', 'fn':'M.ciniki_musicfestivals_main.festival.switchLVTab("inperson");'},
@@ -491,26 +519,6 @@ function ciniki_musicfestivals_main() {
                 'comments':{'label':'Download Comments PDF', 'fn':'M.ciniki_musicfestivals_main.festival.downloadTeacherComments();'},
                 'registrations':{'label':'Download Registrations PDF', 'fn':'M.ciniki_musicfestivals_main.festival.downloadTeacherRegistrations();'},
             }},
-        'schedule_tabs':{'label':'', 'type':'menutabs', 'selected':'timeslots', 
-            'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'schedule' ? 'yes' : 'no'; },
-            'tabs':{
-                'timeslots':{'label':'Timeslots', 'fn':'M.ciniki_musicfestivals_main.festival.switchSTab("timeslots");'},
-                'competitors':{'label':'Competitors', 'fn':'M.ciniki_musicfestivals_main.festival.switchSTab(\'competitors\');'},
-                'accompanists':{'label':'Accompanists', 'fn':'M.ciniki_musicfestivals_main.festival.switchSTab(\'accompanists\');'},
-                'adjudicators':{'label':'Adjudicators', 'fn':'M.ciniki_musicfestivals_main.festival.switchSTab(\'adjudicators\');'},
-                'comments':{'label':'Comments', 'fn':'M.ciniki_musicfestivals_main.festival.switchSTab(\'comments\');',
-//                    'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x02) == 0x02 ? 'yes' : 'no'},
-                    },
-                'results':{'label':'Results', 'fn':'M.ciniki_musicfestivals_main.festival.switchSTab(\'results\');', },
-                'provincials':{'label':'Provincials', 'fn':'M.ciniki_musicfestivals_main.festival.switchSTab(\'provincials\');',
-                    'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x010000) ? 'no' : 'yes'}, // Provincials not set
-                    },
-                'photos':{'label':'Photos', 
-                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x04); },
-                    'fn':'M.ciniki_musicfestivals_main.festival.switchSTab(\'photos\');',
-                    },
-                'downloads':{'label':'Downloads', 'fn':'M.ciniki_musicfestivals_main.festival.switchSTab("downloads");'},
-                }},
         'schedule_sections':{'label':'Schedules', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['timeslots','comments','provincials','results','photos','downloads']); },
             'noData':'No schedule',
@@ -2108,6 +2116,7 @@ function ciniki_musicfestivals_main() {
                 args['schedule'] = 'competitors';
             } else if( this.sections.schedule_tabs.selected == 'adjudicators' ) {
                 args['schedule'] = 'adjudicators';
+                args['ipv'] = this.sections.ipv_tabs.selected;
                 args['adjudicator_id'] = this.adjudicator_id;
             } else if( this.sections.schedule_tabs.selected == 'accompanists' ) {
                 this.size = 'xlarge mediumaside';

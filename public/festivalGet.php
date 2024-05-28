@@ -1854,6 +1854,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . ") "
                 . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
                     . "timeslots.id = registrations.timeslot_id "
+                    . $ipv_sql
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "WHERE ssections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
@@ -1891,6 +1892,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         $festival['schedule_adjudicators'][$aid]['num_registrations']++;
                     }
                     unset($festival['schedule_adjudicators'][$aid]['registrations']);
+                }
+                if( ($festival['flags']&0x02) == 0x02 && isset($args['ipv']) 
+                    && ($args['ipv'] == 'inperson' || $args['ipv'] == 'virtual') 
+                    && $festival['schedule_adjudicators'][$aid]['num_registrations'] == 0
+                    ) {
+                    unset($festival['schedule_adjudicators'][$aid]);
                 }
             }
         }
