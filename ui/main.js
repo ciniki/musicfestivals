@@ -874,6 +874,9 @@ function ciniki_musicfestivals_main() {
             },
         'locations':{'label':'', 'type':'simplegrid', 'num_cols':4,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'locations'); },
+            'headerValues':['Category', 'Name', 'Address', 'City'],
+            'sortable':'yes',
+            'sortTypes':['text', 'text', 'text', 'text'],
             'addTxt':'Add Location',
             'addFn':'M.ciniki_musicfestivals_main.location.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.festival_id,null);',
             },
@@ -2179,7 +2182,7 @@ function ciniki_musicfestivals_main() {
             this.size = 'medium';
             args['adjudicators'] = 'yes';
         } else if( this.isSelected('more', 'locations') == 'yes' ) {
-            this.size = 'medium';
+            this.size = 'xlarge';
             args['locations'] = 'yes';
         } else if( this.isSelected('more', 'files') == 'yes' ) {
             this.size = 'medium';

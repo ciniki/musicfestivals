@@ -1743,6 +1743,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND registrations.accompanist_customer_id > 0 "  
                 . "AND registrations.timeslot_id > 0 "  // Scheduled registrations only
+                . "AND registrations.participation <> 1 "   // Live only
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "GROUP BY customers.id "
                 . "ORDER BY name "
@@ -1793,6 +1794,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                     . "AND registrations.accompanist_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['accompanist_customer_id']) . "' "
                     . "AND registrations.timeslot_id > 0 "  // Scheduled registrations only
+                    . "AND registrations.participation <> 1 "   // Live only
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "ORDER BY divisions.division_date, slot_sort_time, locations.name, registrations.display_name "
                     . "";
