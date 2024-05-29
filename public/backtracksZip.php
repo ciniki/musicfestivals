@@ -127,6 +127,7 @@ function ciniki_musicfestivals_backtracksZip(&$ciniki) {
             $reg_num = 1;
             $prev_division_id = $reg['division_id'];
         }
+        $files_found = 'no';
         for($i = 1; $i <= 8; $i++) {
             if( isset($reg["title{$i}"]) && isset($reg["backtrack{$i}"]) && $reg["backtrack{$i}"] != '' ) {
                 $extension = preg_replace('/^.*\.([a-zA-Z0-9]+)$/', '$1', $reg["backtrack{$i}"]);
@@ -136,12 +137,15 @@ function ciniki_musicfestivals_backtracksZip(&$ciniki) {
                     $zip->add_file_from_path($reg['section_name'] . '/' . $reg['division_name'] . '/' 
                         . $reg_num . ' - ' . $reg['slot_time_text'] . ' - ' . $reg['display_name'] . ' - ' . $reg["title{$i}"] . ' - ' . $reg["backtrack{$i}"], 
                         $storage_filename);
+                    $files_found = 'yes';
                 } catch(Exception $e) {
                     error_log('Zip Add File: ' . $e->getMessage());
                 }
             }
         }
-        $reg_num++;
+        if( $files_found == 'yes' ) {
+            $reg_num++;
+        }
     }
 
     $zip->close();
