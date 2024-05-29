@@ -438,7 +438,7 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
     //
     $pdf->AddPage();
     $pdf->SetFont('helvetica', 'B', 16);
-    $pdf->Cell(180, 8, 'Registrations', 'B', 0, 'L', 0);
+    $pdf->Cell(180, 8, 'Schedule of Registrations', 'B', 0, 'L', 0);
     $pdf->Ln();
     $pdf->SetFont('helvetica', 'B', 12);
     $pdf->SetFillColor(224);
@@ -484,7 +484,7 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
         if( $pdf->getY() > $pdf->getPageHeight() - 30 - $lh ) {
             $pdf->AddPage();
             $pdf->SetFont('helvetica', 'B', 14);
-            $pdf->Cell(180, 8, 'Registrations (continued...)', 'B', 0, 'L', 0);
+            $pdf->Cell(180, 8, 'Schedule of Registrations (continued...)', 'B', 0, 'L', 0);
             $pdf->Ln();
             $pdf->SetFont('helvetica', 'B', 12);
             $pdf->SetFillColor(224);
