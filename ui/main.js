@@ -5036,14 +5036,14 @@ function ciniki_musicfestivals_main() {
     //
     // The panel to edit Schedule Division
     //
-    this.scheduledivision = new M.panel('Schedule Division', 'ciniki_musicfestivals_main', 'scheduledivision', 'mc', 'medium', 'sectioned', 'ciniki.musicfestivals.main.scheduledivision');
+    this.scheduledivision = new M.panel('Schedule Division', 'ciniki_musicfestivals_main', 'scheduledivision', 'mc', 'medium mediumaside', 'sectioned', 'ciniki.musicfestivals.main.scheduledivision');
     this.scheduledivision.data = null;
     this.scheduledivision.festival_id = 0;
     this.scheduledivision.ssection_id = 0;
     this.scheduledivision.scheduledivision_id = 0;
     this.scheduledivision.nplist = [];
     this.scheduledivision.sections = {
-        'general':{'label':'', 'fields':{
+        'general':{'label':'', 'aside':'yes', 'fields':{
             'ssection_id':{'label':'Section', 'required':'yes', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}},
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
             'division_date':{'label':'Date', 'required':'yes', 'type':'date'},
@@ -5058,6 +5058,9 @@ function ciniki_musicfestivals_main() {
             'flags2':{'label':'Release Comments to Competitors', 'type':'flagtoggle', 'bit':0x02, 'field':'flags'},
             'flags3':{'label':'Release Certificates to Competitors', 'type':'flagtoggle', 'bit':0x04, 'field':'flags'},
             'flags6':{'label':'Publish Results on Website', 'type':'flagtoggle', 'bit':0x20, 'field':'flags'},
+            }},
+        '_results_notes':{'label':'Results/Adjudicator Notes', 'fields':{
+            'results_notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.scheduledivision.save();'},

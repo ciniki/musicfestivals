@@ -70,6 +70,7 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
             'flags' => 0,
             'division_date'=>'',
             'address'=>'',
+            'results_notes'=>'',
         );
     }
 
@@ -85,7 +86,8 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
             . "ciniki_musicfestival_schedule_divisions.name, "
             . "ciniki_musicfestival_schedule_divisions.flags, "
             . "ciniki_musicfestival_schedule_divisions.division_date, "
-            . "ciniki_musicfestival_schedule_divisions.address "
+            . "ciniki_musicfestival_schedule_divisions.address, "
+            . "ciniki_musicfestival_schedule_divisions.results_notes "
             . "FROM ciniki_musicfestival_schedule_divisions "
             . "WHERE ciniki_musicfestival_schedule_divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_musicfestival_schedule_divisions.id = '" . ciniki_core_dbQuote($ciniki, $args['scheduledivision_id']) . "' "
@@ -93,7 +95,7 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'scheduledivisions', 'fname'=>'id', 
                 'fields'=>array('festival_id', 'ssection_id', 'name', 'flags', 'division_date', 
-                    'address', 'adjudicator_id', 'location_id',
+                    'address', 'adjudicator_id', 'location_id', 'results_notes',
                     ),
                 'utctotz'=>array('division_date'=>array('timezone'=>'UTC', 'format'=>$date_format)),                ),
             ));

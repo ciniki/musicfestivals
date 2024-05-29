@@ -12,6 +12,8 @@
 # festival_id:          The festival the category is for.
 # ssection_id:          The schedule_section the category is for.
 #
+# location_id:          The ID of the location in ciniki_musicfestival_locations table.
+#
 # adjudicator_id:       The Adjudicator for the division, will override an adjudicator at schedule section level.
 #                       **note** This cannot be used for adjudicator login and comments
 #
@@ -33,6 +35,8 @@
 #
 # address:              The address for the division.
 #
+# results_notes:        If there is notes or video links can be added here to be displayed on results pages.
+#
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.
 #
@@ -48,10 +52,11 @@ create table ciniki_musicfestival_schedule_divisions (
     flags int unsigned not null,
     division_date date not null,
     address varchar(250) not null,
+    results_notes text not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
     index (festival_id, ssection_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.03';
+) ENGINE='InnoDB', COMMENT='v1.04';
