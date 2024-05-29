@@ -116,6 +116,27 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
 //    }
 
     //
+    // Check if schedule posted yet
+    //
+    $strsql = "SELECT COUNT(sections.id) "
+        . "FROM ciniki_musicfestival_schedule_sections AS sections "
+        . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+        . "AND (sections.flags&0x01) = 0x01 "
+        . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+    $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
+    if( $rc['stat'] == 'ok' && isset($rc['num']) && $rc['num'] > 0 ) {
+        $items[] = array(
+            'title' => 'Schedule', 
+            'priority' => 3747, 
+            'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivalschedule' ? 'yes' : 'no',
+            'ref' => 'ciniki.musicfestivals.schedule',
+            'url' => $base_url . '/musicfestivalschedule',
+            );
+    }
+
+    //
     // Check if customer is an admin for a member festival
     //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {

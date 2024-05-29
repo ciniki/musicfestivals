@@ -194,9 +194,12 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
                 }
             $strsql .= ") "
                 . ") ";
-        $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "ORDER BY registrations.display_name, registrations.status, registrations.display_name "
-            . "";
+        $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+            $strsql .= "ORDER BY divisions.division_date, registrations.timeslot_time, registrations.display_name, registrations.status, registrations.display_name ";
+        } else {
+            $strsql .= "ORDER BY divisions.division_date, timeslots.slot_time, registrations.display_name, registrations.status, registrations.display_name ";
+        }
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
@@ -427,7 +430,7 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
     //
     // Go through the sections, divisions and classes
     //
-    $w = array(40, 100, 40);
+    $w = array(42, 40, 98);
     $border = '';
 
     //
@@ -440,9 +443,9 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
     $pdf->SetFont('helvetica', 'B', 12);
     $pdf->SetFillColor(224);
     $border = 1;
-    $pdf->Cell($w[0], 0, 'Competitor', $border, 0, 'L', 1);
-    $pdf->Cell($w[1], 0, 'Class', $border, 0, 'L', 1);
-    $pdf->Cell($w[2], 0, 'Scheduled', $border, 1, 'L', 1);
+    $pdf->Cell($w[0], 0, 'Date/Time', $border, 0, 'L', 1);
+    $pdf->Cell($w[1], 0, 'Competitor', $border, 0, 'L', 1);
+    $pdf->Cell($w[2], 0, 'Class', $border, 1, 'L', 1);
     $pdf->SetFont('helvetica', '', 12);
     $pdf->SetFillColor(242);
     $fill = 1;
@@ -460,22 +463,21 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
             $description .= "\n" . $rc['titles'];
         }
 
-        $lh = $pdf->getStringHeight($w[1], $description);
+        $lh = $pdf->getStringHeight($w[2], $description);
 
         $registration['schedule'] = '';
-        if( ($registration['section_flags']&0x01) == 0x01 ) {
-            if( $registration['participation'] == 1 ) {
-                $registration['schedule'] = 'Virtual';
-            } else {
-                if( $registration['slot_time_text'] != '' ) {
-                    $registration['schedule'] = $registration['division_date_text'] . ' @ ' . $registration['slot_time_text'];
-                }
-                if( $registration['address'] != '' ) {
-                    $registration['schedule'] .= "\n" . $registration['address'];
-                }
+        if( $registration['participation'] == 1 ) {
+            $registration['schedule'] = 'Virtual';
+        } 
+        elseif( ($registration['section_flags']&0x01) == 0x01 ) {
+            if( $registration['slot_time_text'] != '' ) {
+                $registration['schedule'] = $registration['division_date_text'] . ' @ ' . $registration['slot_time_text'];
             }
-            if( $pdf->getStringHeight($w[2], $registration['schedule']) > $lh ) {
-                $lh = $pdf->getStringHeight($w[2], $registration['schedule']);
+            if( $registration['address'] != '' ) {
+                $registration['schedule'] .= "\n" . $registration['address'];
+            }
+            if( $pdf->getStringHeight($w[0], $registration['schedule']) > $lh ) {
+                $lh = $pdf->getStringHeight($w[0], $registration['schedule']);
             }
         }
 
@@ -487,16 +489,16 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
             $pdf->SetFont('helvetica', 'B', 12);
             $pdf->SetFillColor(224);
             $border = 1;
-            $pdf->Cell($w[0], 0, 'Competitor', $border, 0, 'L', 1);
-            $pdf->Cell($w[1], 0, 'Class', $border, 0, 'L', 1);
-            $pdf->Cell($w[2], 0, 'Scheduled', $border, 1, 'L', 1);
+            $pdf->Cell($w[0], 0, 'Date/Time', $border, 0, 'L', 1);
+            $pdf->Cell($w[1], 0, 'Competitor', $border, 0, 'L', 1);
+            $pdf->Cell($w[2], 0, 'Class', $border, 1, 'L', 1);
             $pdf->SetFont('helvetica', '', 12);
             $pdf->SetFillColor(242);
         }
         $pdf->SetFont('arialunicodems', '', 12);
-        $pdf->MultiCell($w[0], $lh, $registration['display_name'], $border, 'L', $fill, 0);
-        $pdf->MultiCell($w[1], $lh, $description, $border, 'L', $fill, 0);
-        $pdf->MultiCell($w[2], $lh, $registration['schedule'], $border, 'L', $fill, 1);
+        $pdf->MultiCell($w[0], $lh, $registration['schedule'], $border, 'L', $fill, 0);
+        $pdf->MultiCell($w[1], $lh, $registration['display_name'], $border, 'L', $fill, 0);
+        $pdf->MultiCell($w[2], $lh, $description, $border, 'L', $fill, 1);
 
         $fill = !$fill;
     }

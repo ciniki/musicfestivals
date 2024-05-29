@@ -5985,7 +5985,7 @@ function ciniki_musicfestivals_main() {
                         p.sections['comments_' + i].fields['placement_' + rsp.timeslot.registrations[i].id] = {
                             'label':label, 
                             'type':'text', 
-                            'size':'small',
+                            //'size':'small',
                             };
                     }
                     label = 'Level';
