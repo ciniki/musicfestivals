@@ -315,6 +315,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "registrations.display_name, "
         . "registrations.public_name, "
         . "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS timeslot_time, "
+        . "registrations.flags, "
         . "registrations.title1, "
         . "registrations.title2, "
         . "registrations.title3, "
@@ -425,7 +426,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 ),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
-            'fields'=>array('id'=>'reg_id', 'display_name', 'public_name', 'timeslot_time',
+            'fields'=>array('id'=>'reg_id', 'display_name', 'public_name', 'timeslot_time', 'flags',
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                 'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
@@ -587,7 +588,8 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                                 'timeslot_time' => $registration['timeslot_time'],
                                 'member_name' => $registration['member_name'],
                                 'mark' => $registration['mark'],
-                                'placement' => $registration['placement'],
+                                'placement' => $registration['placement'] 
+                                    . (($registration['flags']&0x10) == 0x10 ? '<br/><span class="best-in-class">Best In Class</span>' : ''),
                                 'psort' => isset($psorts[$registration['placement']]) ? $psorts[$registration['placement']] : $registration['placement'],
                                 );
                         } 
@@ -597,7 +599,8 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                                 'timeslot_time' => $registration['timeslot_time'],
                                 'member_name' => $registration['member_name'],
                                 'mark' => $registration['mark'],
-                                'placement' => $registration['placement'],
+                                'placement' => $registration['placement']
+                                    . (($registration['flags']&0x10) == 0x10 ? '<br/><span class="best-in-class">Best In Class</span>' : ''),
                                 'psort' => isset($psorts[$registration['placement']]) ? $psorts[$registration['placement']] : $registration['placement'],
                                 );
                         }

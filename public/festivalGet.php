@@ -1341,6 +1341,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $strsql .= "registrations.id, "
                     . "registrations.display_name, "
                     . "registrations.timeslot_sequence, "
+                    . "registrations.flags, "
                     . "registrations.title1, "
                     . "registrations.title2, "
                     . "registrations.title3, "
@@ -1397,7 +1398,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'results', 'fname'=>'id', 
-                        'fields'=>array('id', 'timeslot_id', 'display_name', 'slot_time_text', 'timeslot_sequence', 
+                        'fields'=>array('id', 'timeslot_id', 'display_name', 'slot_time_text', 'timeslot_sequence', 'flags',
                             'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
                             'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
                             'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
