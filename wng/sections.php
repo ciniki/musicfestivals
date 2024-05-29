@@ -469,6 +469,21 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     }
 
     //
+    // Add the location to the website
+    //
+    $sections['ciniki.musicfestivals.locations'] = array(
+        'name' => 'Locations',
+        'module' => 'Music Festivals',
+        'settings' => array(
+            'title' => array('label'=>'Title', 'type'=>'text'),
+            'festival-id' => array('label'=>'Festival', 'type'=>'select', 
+                'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                'options'=>$festivals,
+                ),
+            ),
+        );
+
+    //
     // Options for Provincials
     //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {

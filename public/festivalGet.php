@@ -2178,16 +2178,19 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         if( isset($args['locations']) && $args['locations'] == 'yes' ) {
             $strsql = "SELECT locations.id, "
                 . "locations.festival_id, "
-                . "locations.name "
+                . "locations.category, "
+                . "locations.name, "
+                . "locations.address1, "
+                . "locations.city "
                 . "FROM ciniki_musicfestival_locations AS locations "
                 . "WHERE locations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "ORDER BY locations.name "
+                . "ORDER BY locations.category, locations.name "
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'locations', 'fname'=>'id', 
-                    'fields'=>array('id', 'festival_id', 'name')),
+                    'fields'=>array('id', 'festival_id', 'category', 'name', 'address1', 'city')),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;

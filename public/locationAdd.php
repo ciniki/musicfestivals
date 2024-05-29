@@ -22,6 +22,7 @@ function ciniki_musicfestivals_locationAdd(&$ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'),
+        'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'),
         'address1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address'),
         'city'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'City'),
         'province'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Province'),

@@ -19,6 +19,7 @@ function ciniki_musicfestivals_locationUpdate(&$ciniki) {
         'location_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Location'),
         'festival_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Festival'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
+        'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'),
         'address1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address'),
         'city'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'City'),
         'province'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Province'),

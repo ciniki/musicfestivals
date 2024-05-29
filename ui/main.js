@@ -872,7 +872,7 @@ function ciniki_musicfestivals_main() {
             'addTxt':'Add Adjudicator',
             'addFn':'M.ciniki_musicfestivals_main.adjudicator.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,0,M.ciniki_musicfestivals_main.festival.festival_id,null);',
             },
-        'locations':{'label':'', 'type':'simplegrid', 'num_cols':1,
+        'locations':{'label':'', 'type':'simplegrid', 'num_cols':4,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'locations'); },
             'addTxt':'Add Location',
             'addFn':'M.ciniki_musicfestivals_main.location.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.festival_id,null);',
@@ -1450,7 +1450,12 @@ function ciniki_musicfestivals_main() {
             return d.name;
         }
         if( s == 'locations' ) {
-            return d.name;
+            switch(j) {
+                case 0: return d.category;
+                case 1: return d.name;
+                case 2: return d.address1;
+                case 3: return d.city;
+            }
         }
         if( s == 'certificates' ) {
             switch(j) {
@@ -6438,6 +6443,7 @@ function ciniki_musicfestivals_main() {
     this.location.sections = {
         'general':{'label':'', 'fields':{
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
+            'category':{'label':'Category', 'type':'text'},
             'address1':{'label':'Address', 'type':'text'},
             'city':{'label':'City', 'type':'text'},
             'province':{'label':'Province', 'type':'text'},
