@@ -71,12 +71,13 @@ function ciniki_musicfestivals_backtracksZip(&$ciniki) {
         . "registrations.backtrack7, "
         . "registrations.backtrack8, "
         . "sections.name AS section_name, "
+        . "divisions.id AS division_id, "
         . "divisions.name AS division_name, "
         . "timeslots.name AS timeslot_name, ";
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
-        $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%h:%i %p') AS slot_time_text ";
+        $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS slot_time_text ";
     } else {
-        $strsql .= "TIME_FORMAT(timeslots.slot_time, '%h:%i %p') AS slot_time_text ";
+        $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text ";
     }
     $strsql .= "FROM ciniki_musicfestival_registrations AS registrations "
         . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
@@ -104,7 +105,7 @@ function ciniki_musicfestivals_backtracksZip(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
-            'fields'=>array('id', 'uuid', 'section_name', 'division_name', 'slot_time_text', 'display_name', 
+            'fields'=>array('id', 'uuid', 'section_name', 'division_id', 'division_name', 'slot_time_text', 'display_name', 
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
                 'backtrack1', 'backtrack2', 'backtrack3', 'backtrack4', 'backtrack5', 'backtrack6', 'backtrack7', 'backtrack8',
                 ),
@@ -119,22 +120,28 @@ function ciniki_musicfestivals_backtracksZip(&$ciniki) {
     require_once($ciniki['config']['ciniki.core']['lib_dir'] . '/zipstream-php/src/ZipStream.php');
 
     $zip = new Pablotron\ZipStream\ZipStream('backtracks.zip');
+    $prev_division_id = 0;
     foreach($registrations as $reg) {
-        
+       
+        if( $prev_division_id != $reg['division_id'] ) {
+            $reg_num = 1;
+            $prev_division_id = $reg['division_id'];
+        }
         for($i = 1; $i <= 8; $i++) {
             if( isset($reg["title{$i}"]) && isset($reg["backtrack{$i}"]) && $reg["backtrack{$i}"] != '' ) {
-                $extension = preg_replace('/^.*\.([a-zA-Z]+)$/', '$1', $reg["backtrack{$i}"]);
+                $extension = preg_replace('/^.*\.([a-zA-Z0-9]+)$/', '$1', $reg["backtrack{$i}"]);
                 $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/files/'
                     . $reg['uuid'][0] . '/' . $reg['uuid'] . '_backtrack' . $i;
                 try {
-                    $zip->add_file_from_path($reg['section_name'] . '/' . $reg['division_name'] 
-                        . '/' . $reg['slot_time_text'] . '-' . $reg['display_name'] . '.' . $reg['title1'] . '.' . $extension, 
+                    $zip->add_file_from_path($reg['section_name'] . '/' . $reg['division_name'] . '/' 
+                        . $reg_num . ' - ' . $reg['slot_time_text'] . ' - ' . $reg['display_name'] . ' - ' . $reg["title{$i}"] . ' - ' . $reg["backtrack{$i}"], 
                         $storage_filename);
                 } catch(Exception $e) {
                     error_log('Zip Add File: ' . $e->getMessage());
                 }
             }
         }
+        $reg_num++;
     }
 
     $zip->close();
