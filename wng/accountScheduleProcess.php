@@ -126,6 +126,10 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
         . "IFNULL(locations.name, '') AS location_name, "
         . "IFNULL(locations.address1, '') AS location_address, "
         . "IFNULL(locations.city, '') AS location_city, "
+        . "IFNULL(locations.province, '') AS location_province, "
+        . "IFNULL(locations.postal, '') AS location_postal, "
+        . "IFNULL(locations.latitude, '') AS location_latitude, "
+        . "IFNULL(locations.longitude, '') AS location_longitude, "
         . "IFNULL(ssections.flags, 0) AS timeslot_flags, "
         . "IFNULL(invoices.status, 0) AS invoice_status "
         . "FROM ciniki_musicfestival_registrations AS registrations "
@@ -188,7 +192,9 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
-                    'timeslot_time', 'timeslot_date', 'location_name', 'location_address', 'location_city', 'timeslot_flags',
+                    'timeslot_time', 'timeslot_date', 'timeslot_flags',
+                    'location_name', 'location_address', 'location_city', 'location_province', 'location_postal',
+                    'location_latitude', 'location_longitude',
                     ),
                 ),
             ));
@@ -197,6 +203,17 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
     }
     $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
 
+
+    $blocks[] = array(
+        'type' => 'title',
+        'level' => 2,
+        'title' => 'Scheduled Registrations',
+        );
+
+    $map_id = 1;
+    $virtual_registrations = array();
+    $unscheduled_registrations = array();
+    $scheduled_registrations = 'no';
     foreach($registrations as $rid => $reg) {
         if( ($festival['flags']&0x0100) == 0x0100 ) {
             $reg['codename'] = $reg['class_code'] . ' - ' . $reg['section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name'];
@@ -210,7 +227,7 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
         if( $reg['participation'] == 1 ) {
             $registrations[$rid]['codename'] .= ' (Virtual)';
         } elseif( $reg['participation'] == 0 && ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x020000) ) {
-            $registrations[$rid]['codename'] .= ' (Live)';
+            $registrations[$rid]['codename'] .= '';
         } elseif( $reg['participation'] == 2 ) {
             $registrations[$rid]['codename'] .= ' (Adjudication Plus)';
         }
@@ -218,33 +235,84 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
         //
         // If the registration has been schedule and schedule released
         //
+        $registrations[$rid]['scheduled'] = '';
         if( $reg['participation'] == 1 ) {
             $registrations[$rid]['scheduled'] = 'Virtual';
+            $virtual_registrations[] = $registrations[$rid];
         } 
         elseif( ($reg['timeslot_flags']&0x01) == 0x01 
             && $reg['timeslot_time'] != ''
             && $reg['timeslot_date'] != ''
             ) {
-            $registrations[$rid]['scheduled'] = $reg['timeslot_date'] . ' - ' . $reg['timeslot_time'] 
-                . '<br/>' . $reg['location_name']
-                . '<br/>' . $reg['location_address'] . ', ' . $reg['location_city'];
+            $scheduled_registrations = 'yes';
+            $content = $registrations[$rid]['codename'] 
+                . '<br/><br/><b>' . $reg['timeslot_date'] . ' - ' . $reg['timeslot_time'] . '</b>'
+                . '<br/>' . $reg['location_name'] . ''
+                . '<br/>' . $reg['location_address']
+                . '<br/>' . $reg['location_city'] . ', ' . $reg['location_province'] . '   ' . $reg['location_postal'];
+            if( $registrations[$rid]['titles'] != '' ) {
+                $content .= '<br/><br/>' . $registrations[$rid]['titles'];
+            }
+
+            if( $reg['location_latitude'] != '' || $reg['location_longitude'] != '' ) {
+                $blocks[] = array(
+                    'type' => 'googlemap',
+                    'id' => "map-" . ($map_id+1),
+                    'sid' => $map_id,
+                    'class' => 'content-view',
+                    'map-position' => 'bottom-right',
+                    'title' => $registrations[$rid]['display_name'],
+                    'content' => $content,
+                    'latitude' => $reg['location_latitude'],
+                    'longitude' => $reg['location_longitude'],
+                    );
+                $map_id++;
+            }
+        } else {
+            $unscheduled_registrations[] = $registrations[$rid];
         }
     }
+    if( $scheduled_registrations == 'no' ) {
+        $blocks[] = array(
+            'type' => 'msg',
+            'level' => 'error',
+            'content' => 'No scheduled registrations',
+            );
+    }
 
-    $blocks[] = array(
-        'type' => 'table',
-        'title' => $festival['name'] . ' - Schedule of Registrations',
-        'class' => 'musicfestival-registrations limit-width limit-width-80 fold-at-50',
-        'headers' => 'yes',
-        'columns' => array(
-            array('label' => 'Date/Time', 'fold-label'=>'Scheduled:', 'field' => 'scheduled', 'class' => 'alignleft'),
-            array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
-            array('label' => 'Class', 'fold-label'=>'Class:', 'field' => 'codename', 'class' => 'alignleft'),
-            array('label' => 'Title(s)', 'fold-label'=>'Title:', 'field' => 'titles', 'class' => 'alignleft'),
-            array('label' => '', 'field' => 'viewbutton', 'class' => 'buttons alignright'),
-            ),
-        'rows' => $registrations,
-        );
+    if( count($virtual_registrations) > 0 ) {
+        $blocks[] = array(
+            'type' => 'table',
+            'title' => $festival['name'] . ' - Virtual Registrations',
+            'class' => 'musicfestival-registrations limit-width limit-width-80 fold-at-50',
+            'headers' => 'yes',
+            'columns' => array(
+                array('label' => 'Date/Time', 'fold-label'=>'Scheduled:', 'field' => 'scheduled', 'class' => 'alignleft'),
+                array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
+                array('label' => 'Class', 'fold-label'=>'Class:', 'field' => 'codename', 'class' => 'alignleft'),
+                array('label' => 'Title(s)', 'fold-label'=>'Title:', 'field' => 'titles', 'class' => 'alignleft'),
+                array('label' => '', 'field' => 'viewbutton', 'class' => 'buttons alignright'),
+                ),
+            'rows' => $virtual_registrations,
+            );
+    }
+
+    if( count($unscheduled_registrations) > 0 ) {
+        $blocks[] = array(
+            'type' => 'table',
+            'title' => $festival['name'] . ' - Unscheduled Registrations',
+            'class' => 'musicfestival-registrations limit-width limit-width-80 fold-at-50',
+            'headers' => 'yes',
+            'columns' => array(
+                array('label' => 'Date/Time', 'fold-label'=>'Scheduled:', 'field' => 'scheduled', 'class' => 'alignleft'),
+                array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
+                array('label' => 'Class', 'fold-label'=>'Class:', 'field' => 'codename', 'class' => 'alignleft'),
+                array('label' => 'Title(s)', 'fold-label'=>'Title:', 'field' => 'titles', 'class' => 'alignleft'),
+                array('label' => '', 'field' => 'viewbutton', 'class' => 'buttons alignright'),
+                ),
+            'rows' => $unscheduled_registrations,
+            );
+    }
        
     $blocks[] = array(
         'type' => 'buttons',
