@@ -123,7 +123,9 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
         $strsql .= "IFNULL(TIME_FORMAT(timeslots.slot_time, '%l:%i %p'), '') AS timeslot_time, ";
     }
     $strsql .= "IFNULL(DATE_FORMAT(divisions.division_date, '%b %D, %Y'), '') AS timeslot_date, "
-        . "IFNULL(locations.name, '') AS timeslot_address, "
+        . "IFNULL(locations.name, '') AS location_name, "
+        . "IFNULL(locations.address1, '') AS location_address, "
+        . "IFNULL(locations.city, '') AS location_city, "
         . "IFNULL(ssections.flags, 0) AS timeslot_flags, "
         . "IFNULL(invoices.status, 0) AS invoice_status "
         . "FROM ciniki_musicfestival_registrations AS registrations "
@@ -186,7 +188,7 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
-                    'timeslot_time', 'timeslot_date', 'timeslot_address', 'timeslot_flags',
+                    'timeslot_time', 'timeslot_date', 'location_name', 'location_address', 'location_city', 'timeslot_flags',
                     ),
                 ),
             ));
@@ -223,7 +225,9 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
             && $reg['timeslot_time'] != ''
             && $reg['timeslot_date'] != ''
             ) {
-            $registrations[$rid]['scheduled'] = $reg['timeslot_date'] . ' - ' . $reg['timeslot_time'] . '<br/>' . $reg['timeslot_address'];
+            $registrations[$rid]['scheduled'] = $reg['timeslot_date'] . ' - ' . $reg['timeslot_time'] 
+                . '<br/>' . $reg['location_name']
+                . '<br/>' . $reg['location_address'] . ', ' . $reg['location_city'];
         }
     }
 

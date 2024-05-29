@@ -139,7 +139,9 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
             $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, ";
         }
         $strsql .= "DATE_FORMAT(divisions.division_date, '%b %e') AS division_date_text, "
-            . "locations.name AS address, "
+            . "locations.name AS location_name, "
+            . "locations.address1 AS location_address, "
+            . "locations.city AS location_city, "
             . "ssections.flags AS section_flags "
             . "FROM ciniki_musicfestival_registrations AS registrations "
             . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
@@ -218,7 +220,7 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
                     'participation', 'fee', 'payment_type', 'notes',
                     'section_name', 'category_name',
                     'class_code', 'class_name', 'class_flags',
-                    'slot_time_text', 'section_flags', 'division_date_text', 'address',
+                    'slot_time_text', 'section_flags', 'division_date_text', 'location_name', 'location_address', 'location_city',
                     ),
                 'maps'=>array('status_text'=>$maps['registration']['status']),
                 ),
@@ -473,8 +475,17 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
             if( $registration['slot_time_text'] != '' ) {
                 $registration['schedule'] = $registration['division_date_text'] . ' @ ' . $registration['slot_time_text'];
             }
-            if( $registration['address'] != '' ) {
-                $registration['schedule'] .= "\n" . $registration['address'];
+            if( $registration['location_name'] != '' ) {
+                $registration['schedule'] .= "\n" . $registration['location_name'];
+            }
+            if( $registration['location_address'] != '' && $registration['location_city'] != '' ) {
+                $registration['schedule'] .= "\n" . $registration['location_address'] . ', ' . $registration['location_city'];
+            }
+            elseif( $registration['location_address'] != '' ) {
+                $registration['schedule'] .= "\n" . $registration['location_address'];
+            }
+            elseif( $registration['location_city'] != '' ) {
+                $registration['schedule'] .= "\n" . $registration['location_city'];
             }
             if( $pdf->getStringHeight($w[0], $registration['schedule']) > $lh ) {
                 $lh = $pdf->getStringHeight($w[0], $registration['schedule']);

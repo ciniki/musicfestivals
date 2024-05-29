@@ -2056,7 +2056,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             $strsql .= "IFNULL(TIME_FORMAT(timeslots.slot_time, '%l:%i %p'), '') AS timeslot_time, ";
         }
         $strsql .= "IFNULL(DATE_FORMAT(divisions.division_date, '%b %D, %Y'), '') AS timeslot_date, "
-            . "IFNULL(locations.name, '') AS timeslot_address, "
+            . "IFNULL(locations.name, '') AS location_name, "
+            . "IFNULL(locations.address1, '') AS location_address, "
+            . "IFNULL(locations.city, '') AS location_city, "
             . "IFNULL(ssections.flags, 0) AS timeslot_flags, "
             . "IFNULL(invoices.status, 0) AS invoice_status "
             . "FROM ciniki_musicfestival_registrations AS registrations "
@@ -2129,7 +2131,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
-                    'timeslot_time', 'timeslot_date', 'timeslot_address', 'timeslot_flags',
+                    'timeslot_time', 'timeslot_date', 'location_name', 'location_address', 'location_city', 'timeslot_flags',
                     ),
                 ),
             ));
@@ -2355,15 +2357,13 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 //
                 // If the registration has been schedule and schedule released
                 //
-                if( ($registration['timeslot_flags']&0x01) == 0x01 
+                if( $registration['participation'] == 1 ) {
+                    $paid_registrations[$rid]['scheduled'] = 'Virtual';
+                } elseif( ($registration['timeslot_flags']&0x01) == 0x01 
                     && $registration['timeslot_time'] != ''
                     && $registration['timeslot_date'] != ''
                     ) {
-                    if( $registration['participation'] == 1 ) {
-                        $paid_registrations[$rid]['scheduled'] = 'Virtual';
-                    } else {
-                        $paid_registrations[$rid]['scheduled'] = $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] . '<br/>' . $registration['timeslot_address'];
-                    }
+                    $paid_registrations[$rid]['scheduled'] = $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] . '<br/>' . $registration['location_name'] . '<br/>' . $registration['location_address'] . ', ' . $registration['location_city'];
                 }
             }
             $blocks[] = array(
@@ -2410,15 +2410,13 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 //
                 // If the registration has been schedule and schedule released
                 //
-                if( ($registration['timeslot_flags']&0x01) == 0x01 
+                if( $registration['participation'] == 1 ) {
+                    $parent_registrations[$rid]['scheduled'] = 'Virtual';
+                } elseif( ($registration['timeslot_flags']&0x01) == 0x01 
                     && $registration['timeslot_time'] != ''
                     && $registration['timeslot_date'] != ''
                     ) {
-                    if( $registration['participation'] == 1 ) {
-                        $parent_registrations[$rid]['scheduled'] = 'Virtual';
-                    } else {
-                        $parent_registrations[$rid]['scheduled'] = $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] . '<br/>' . $registration['timeslot_address'];
-                    }
+                    $parent_registrations[$rid]['scheduled'] = $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] . '<br/>' . $registration['location_name'] . '<br/>' . $registration['location_address'] . ', ' . $registration['location_city'];
                 }
             }
             $blocks[] = array(
@@ -2461,15 +2459,13 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 //
                 // If the registration has been schedule and schedule released
                 //
-                if( ($registration['timeslot_flags']&0x01) == 0x01 
+                if( $registration['participation'] == 1 ) {
+                    $accompanist_registrations[$rid]['scheduled'] = 'Virtual';
+                } elseif( ($registration['timeslot_flags']&0x01) == 0x01 
                     && $registration['timeslot_time'] != ''
                     && $registration['timeslot_date'] != ''
                     ) {
-                    if( $registration['participation'] == 1 ) {
-                        $accompanist_registrations[$rid]['scheduled'] = 'Virtual';
-                    } else {
-                        $accompanist_registrations[$rid]['scheduled'] = $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] . '<br/>' . $registration['timeslot_address'];
-                    }
+                    $accompanist_registrations[$rid]['scheduled'] = $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] . '<br/>' . $registration['location_name'] . '<br/>' . $registration['location_address'] . ', ' . $registration['location_city'];
                 }
             }
             $blocks[] = array(
