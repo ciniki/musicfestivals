@@ -2465,9 +2465,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     && $registration['timeslot_date'] != ''
                     ) {
                     if( $registration['participation'] == 1 ) {
-                        $parent_registrations[$rid]['scheduled'] = 'Virtual';
+                        $accompanist_registrations[$rid]['scheduled'] = 'Virtual';
                     } else {
-                        $parent_registrations[$rid]['scheduled'] = $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] . '<br/>' . $registration['timeslot_address'];
+                        $accompanist_registrations[$rid]['scheduled'] = $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] . '<br/>' . $registration['timeslot_address'];
                     }
                 }
             }
