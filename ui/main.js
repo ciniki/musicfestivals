@@ -648,6 +648,7 @@ function ciniki_musicfestivals_main() {
                 'competitors':{'label':'All Daily Venue Competitors', 'fn':'M.ciniki_musicfestivals_main.festival.downloadDailyVenueCompetitorsPDF(0);'},
                 'resultsexcel':{'label':'Results Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadResultsExcel(0);'},
                 'recommendations':{'label':'Provincial Recommendations', 'fn':'M.ciniki_musicfestivals_main.festival.downloadProvincialRecommendations(0);'},
+                'backtracks':{'label':'All Backtracks', 'fn':'M.ciniki_musicfestivals_main.festival.downloadBacktracks(0);'},
             }},
         'sbuttons2':{'label':'Current Section Downloads', 'aside':'no',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.schedulesection_id > 0 && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'downloads') == 'yes' ? 'yes' : 'no'; },
@@ -658,6 +659,7 @@ function ciniki_musicfestivals_main() {
                 'comments':{'label':'Adjudicators Comments', 'fn':'M.ciniki_musicfestivals_main.festival.downloadCommentsPDF();'},
                 'runsheets':{'label':'Run Sheets', 'fn':'M.ciniki_musicfestivals_main.festival.downloadRunSheetsPDF();'},
                 'resultsexcel':{'label':'Results Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadResultsExcel();'},
+                'backtracks':{'label':'Backtracks', 'fn':'M.ciniki_musicfestivals_main.festival.downloadBacktracks();'},
             }},
         'scheduleoptions':{'label':'Schedule Options', 'aside':'no',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'downloads'); },
@@ -1167,6 +1169,13 @@ function ciniki_musicfestivals_main() {
             'schedulesection_id':(s==null ? this.schedulesection_id : s),
             };
         M.api.openPDF('ciniki.musicfestivals.provincialRecommendationsPDF',args);
+    }
+    this.festival.downloadBacktracks = function(s) {
+        var args = {'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'schedulesection_id':(s==null ? this.schedulesection_id : s),
+            };
+        M.api.openFile('ciniki.musicfestivals.backtracksZip',args);
     }
     this.festival.listLabel = function(s, i, d) { 
         if( s == 'details' ) {
