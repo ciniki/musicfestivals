@@ -821,8 +821,9 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 . ") "
             . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "ORDER BY sections.name, "
+            . "ORDER BY sections.sequence, sections.name, "
                 . "divisions.division_date, "
+                . "divisions.name, "
                 . "timeslots.slot_time, "
                 . "registrations.id "
             . "";
