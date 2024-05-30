@@ -5083,6 +5083,9 @@ function ciniki_musicfestivals_main() {
         '_results_notes':{'label':'Results/Adjudicator Notes', 'fields':{
             'results_notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
             }},
+        '_results_video_url':{'label':'Results/Adjudicator Video URL', 'fields':{
+            'results_video_url':{'label':'', 'hidelabel':'yes', 'type':'text'},
+            }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.scheduledivision.save();'},
             'delete':{'label':'Delete', 

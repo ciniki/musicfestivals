@@ -403,6 +403,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'division_date'=>array('name'=>'Date'),
             'address'=>array('name'=>'Address', 'default'=>''),
             'results_notes'=>array('name'=>'Results Notes', 'default'=>''),
+            'results_video_url'=>array('name'=>'Results Video URL', 'default'=>''),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );

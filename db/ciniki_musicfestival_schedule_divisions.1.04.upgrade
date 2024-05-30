@@ -1,2 +1,3 @@
 ALTER TABLE ciniki_musicfestival_schedule_divisions ADD COLUMN results_notes text not null AFTER address;
+ALTER TABLE ciniki_musicfestival_schedule_divisions ADD COLUMN results_video_url varchar(250) not null AFTER results_notes;
 ALTER TABLE ciniki_musicfestival_schedule_divisions COMMENT='v1.04';

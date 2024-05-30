@@ -293,6 +293,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "divisions.name AS division_name, "
         . "divisions.address, "
         . "divisions.results_notes, "
+        . "divisions.results_video_url, "
         . "IFNULL(locations.name, '') AS location_name, "
         . "IFNULL(locations.address1, '') AS location_address1, "
         . "IFNULL(locations.city, '') AS location_city, "
@@ -418,7 +419,10 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'divisions', 'fname'=>'division_id', 
-            'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'address', 'location_name', 'location_address1', 'location_city', 'location_province', 'location_postal', 'latitude', 'longitude', 'adjudicator_name', 'adjudicator_permalink', 'results_notes'),
+            'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 
+                'address', 'location_name', 'location_address1', 'location_city', 'location_province', 'location_postal', 
+                'latitude', 'longitude', 'adjudicator_name', 'adjudicator_permalink', 'results_notes', 'results_video_url',
+                ),
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
             'fields'=>array('id'=>'timeslot_id', 'title'=>'timeslot_name', 'time'=>'slot_time_text', 'synopsis'=>'description', 
@@ -660,8 +664,10 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     'title' => $division['name'] . (isset($s['division-dates']) && $s['division-dates'] == 'yes' ? ' - ' . $division['date'] : ''),
                     'subtitle' => $division['address'],
                     'content' => $division['results_notes'],
+                    'sequence' => $section['sequence'],
+                    'video-url' => $division['results_video_url'],
                     'times' => 'no',
-                    'class' => 'musicfestival-timeslots limit-width limit-width-80 fold-at-50',
+                    'class' => 'musicfestival-timeslots limit-width limit-width-90 fold-at-50',
                     'items' => $division['timeslots'],
                     'details-headers' => 'no',
                     'details-columns' => $columns,

@@ -37,6 +37,8 @@
 #
 # results_notes:        If there is notes or video links can be added here to be displayed on results pages.
 #
+# results_video_url:    The URL to the youtube video with adjudicator comments.
+#
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.
 #
@@ -53,6 +55,7 @@ create table ciniki_musicfestival_schedule_divisions (
     division_date date not null,
     address varchar(250) not null,
     results_notes text not null,
+    results_video_url varchar(250) not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),

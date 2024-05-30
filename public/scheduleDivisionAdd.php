@@ -29,6 +29,7 @@ function ciniki_musicfestivals_scheduleDivisionAdd(&$ciniki) {
         'division_date'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'date', 'name'=>'Date'),
         'address'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address'),
         'results_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Results Notes'),
+        'results_video_url'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Results Video URL'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
