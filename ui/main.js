@@ -5220,6 +5220,12 @@ function ciniki_musicfestivals_main() {
         '_runsheet_notes':{'label':'Run Sheet Notes', 'aside':'yes', 'fields':{
             'runsheet_notes':{'label':'', 'hidelabel':'yes', 'type':'textarea'},
             }},
+        '_results_notes':{'label':'Results/Adjudicator Notes', 'aside':'yes', 'fields':{
+            'results_notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
+            }},
+        '_results_video_url':{'label':'Results/Adjudicator Video URL', 'aside':'yes', 'fields':{
+            'results_video_url':{'label':'', 'hidelabel':'yes', 'type':'text'},
+            }},
         '_buttons':{'label':'', 'aside':'yes', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.scheduletimeslot.save();'},
             'delete':{'label':'Delete', 

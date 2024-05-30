@@ -312,6 +312,8 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
         . "timeslots.name AS timeslot_name, "
         . "timeslots.description, "
+        . "timeslots.results_notes AS timeslot_results_notes, "
+        . "timeslots.results_video_url AS timeslot_results_video_url, "
         . "registrations.id AS reg_id, "
         . "registrations.display_name, "
         . "registrations.public_name, "
@@ -427,6 +429,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
             'fields'=>array('id'=>'timeslot_id', 'title'=>'timeslot_name', 'time'=>'slot_time_text', 'synopsis'=>'description', 
                 'class_code', 'class_name', 'category_name', 'section_name',
+                'results_notes'=>'timeslot_results_notes', 'results_video_url'=>'timeslot_results_video_url',
                 ),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
@@ -543,6 +546,19 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 }
                 $division['timeslots'][$tid]['title'] = $name;
                 $division['timeslots'][$tid]['items'] = array();
+                
+                //
+                // Check for results notes
+                //
+                if( isset($s['results-only']) && $s['results-only'] == 'yes' ) {
+                    if( isset($timeslot['results_notes']) && $timeslot['results_notes'] != '' ) {
+                        $division['timeslots'][$tid]['synopsis'] = $timeslot['results_notes'];
+                    }
+                    if( isset($timeslot['results_video_url']) && $timeslot['results_video_url'] != '' ) {
+                        $division['timeslots'][$tid]['video-url'] = $timeslot['results_video_url'];
+                    }
+                }
+
                 //
                 // Create the items table for the schedule
                 //

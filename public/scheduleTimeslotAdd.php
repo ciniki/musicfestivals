@@ -23,10 +23,12 @@ function ciniki_musicfestivals_scheduleTimeslotAdd(&$ciniki) {
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'sdivision_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Division'),
         'slot_time'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'time', 'name'=>'Time'),
+        'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name'),
         'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),
         'runsheet_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Runsheet Notes'),
-        'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
+        'results_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Results Notes'),
+        'results_video_url'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Results Video URL'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

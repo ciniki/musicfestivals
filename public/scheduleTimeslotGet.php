@@ -93,6 +93,8 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             'name'=>'',
             'description'=>'',
             'runsheet_notes'=>'',
+            'results_notes' => '',
+            'results_video_url' => '',
         );
     }
 
@@ -107,7 +109,9 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "timeslots.flags, "
             . "timeslots.name, "
             . "timeslots.description, "
-            . "timeslots.runsheet_notes "
+            . "timeslots.runsheet_notes, "
+            . "timeslots.results_notes, "
+            . "timeslots.results_video_url "
             . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
             . "WHERE timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND timeslots.id = '" . ciniki_core_dbQuote($ciniki, $args['scheduletimeslot_id']) . "' "
@@ -115,7 +119,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'scheduletimeslot', 'fname'=>'id', 
                 'fields'=>array('id', 'festival_id', 'sdivision_id', 'slot_time', 
-                    'flags', 'name', 'description', 'runsheet_notes', 
+                    'flags', 'name', 'description', 'runsheet_notes', 'results_notes', 'results_video_url',
                     ),
                 ),
             ));
