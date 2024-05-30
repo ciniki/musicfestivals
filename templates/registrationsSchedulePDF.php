@@ -180,8 +180,16 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
 //                . "registrations.billing_customer_id = customers.id "
 //                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
 //                . ") "
-            . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-            . "AND ("
+            . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
+        if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
+            $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";
+        } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
+            $strsql .= "AND registrations.participation = 1 ";
+        }
+        if( isset($args['paidonly']) && $args['paidonly'] == 'yes' ) {
+            $strsql .= "AND registrations.status = 50 ";
+        }
+        $strsql .= "AND ("
                 . "registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' "
                 . "OR ("
                     . "registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['customer_id']) . "' ";
@@ -336,8 +344,9 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
             $this->SetFont('helvetica', 'B', 10);
             $this->Cell(90, 10, $this->footer_msg, 0, false, 'L', 0, '', 0, false, 'T', 'M');
             $this->SetFont('helvetica', '', 10);
-            $this->Cell(90, 10, 'Page ' . $this->getPageNumGroupAlias() . ' / ' . $this->getPageGroupAlias(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+            $this->Cell(90, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
         } 
+
         public function labelValue($w1, $label, $w2, $value) {
             $lh = 12;
             $border = 'TLRB';

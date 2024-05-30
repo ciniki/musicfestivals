@@ -720,6 +720,11 @@ function ciniki_musicfestivals_main() {
             'headerValues':['Date', 'Time', 'Location', 'Registration', 'Class'],
             'cellClasses':[''],
             },
+        'accompanist_buttons':{'label':'', 'aside':'no',
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'accompanists') == 'yes' && M.ciniki_musicfestivals_main.festival.accompanist_customer_id > 0 ? 'yes' : 'no'; },
+            'buttons':{
+                'download':{'label':'Download Schedule', 'fn':'M.ciniki_musicfestivals_main.festival.downloadAccompanistSchedulePDF();'},
+            }},
         'schedule_results':{'label':'Results', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.schedulesection_id>0 && M.ciniki_musicfestivals_main.festival.scheduledivision_id>0 && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'results') == 'yes' ? 'yes' : 'no'; },
             'dataMaps':['', '', '', '', 'mark', 'placement', 'level'],
@@ -1176,6 +1181,13 @@ function ciniki_musicfestivals_main() {
             'schedulesection_id':(s==null ? this.schedulesection_id : s),
             };
         M.api.openFile('ciniki.musicfestivals.backtracksZip',args);
+    }
+    this.festival.downloadAccompanistSchedulePDF = function() {
+        var args = {'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'customer_id':this.accompanist_customer_id,
+            };
+        M.api.openPDF('ciniki.musicfestivals.accompanistSchedulePDF',args);
     }
     this.festival.listLabel = function(s, i, d) { 
         if( s == 'details' ) {
