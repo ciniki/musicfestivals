@@ -529,7 +529,9 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             $videos = 'no';
             foreach($division['timeslots'] as $tid => $timeslot) {
                 $name = $timeslot['title'];
-                if( $name == '' && $timeslot['class_name'] != '' ) {
+                if( $name == '' && $timeslot['class_name'] != '' 
+                    && !ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) 
+                    ) {
                     $name = $timeslot['class_name'];
                 }
                 if( isset($s['separate-classes']) && $s['separate-classes'] == 'yes' && $timeslot['class_code'] != '' ) {
@@ -772,6 +774,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                         $blocks[] = array(
                             'type' => 'table', 
                             'class' => 'fold-at-50',
+                            'title' => $timeslot['title'],
                             'columns' => $columns,
                             'rows' => $timeslot['items'],
                             );
