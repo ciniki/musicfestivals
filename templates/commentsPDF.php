@@ -644,7 +644,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                     elseif( isset($festival['comments-placement-pdf']) && $festival['comments-placement-pdf'] == 'yes' 
                         && $reg['placement'] != 'NA'
                         ) {
-                        $wa = array(27, 70, 30, 50);
+                        $wa = array(27, 60, 27, 66);
                     }
                     elseif( isset($festival['comments-mark-pdf']) && $festival['comments-mark-pdf'] == 'yes' 
                         && $reg['mark'] != 'NA'
