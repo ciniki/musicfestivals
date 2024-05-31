@@ -143,6 +143,10 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.202', 'msg'=>'Unable to find requested registration'));
     }
     $registration = $rc['registration'];
+
+    if( isset($args['timeslot_sequence']) && $args['timeslot_sequence'] > 0 && !isset($args['timeslot_id']) ) {
+        $args['timeslot_id'] = $registration['timeslot_id'];
+    }
     
     //
     // Get the tenant storage directory
@@ -389,6 +393,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                 // If the number is not where it's suppose to be, change
                 //
                 if( $cur_number != $seq['number'] ) {
+                    error_log('update number: ' . $seq['id']);
                     $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.registration', $seq['id'], array('timeslot_sequence'=>$cur_number), 0x04);
                     if( $rc['stat'] != 'ok' ) {
                         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
