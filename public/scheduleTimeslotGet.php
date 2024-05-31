@@ -169,10 +169,15 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "registrations.perf_time5, "
             . "registrations.perf_time6, "
             . "registrations.perf_time7, "
-            . "registrations.perf_time8, "
-            . "TIME_FORMAT(registrations.timeslot_time, '%l:%i') AS timeslot_time, "
-            . "registrations.timeslot_sequence, "
-            . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS status_text, "
+            . "registrations.perf_time8, ";
+        if( ($scheduletimeslot['flags']&0x02) == 0x02 ) {
+            $strsql .= "TIME_FORMAT(registrations.finals_timeslot_time, '%l:%i') AS timeslot_time, ";
+            $strsql .= "registrations.finals_timeslot_sequence AS timeslot_sequence, ";
+        } else {
+            $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i') AS timeslot_time, ";
+            $strsql .= "registrations.timeslot_sequence, ";
+        }
+        $strsql .= "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS status_text, "
             . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
             . "IFNULL(members.name, '') AS member_name, "
             . "classes.code AS class_code, "
@@ -203,11 +208,18 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "LEFT JOIN ciniki_musicfestivals_members AS members ON ("
                 . "registrations.member_id = members.id "
                 . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . ") "
-            . "WHERE registrations.timeslot_id = '" . ciniki_core_dbQuote($ciniki, $scheduletimeslot['id']) . "' "
-            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "ORDER BY registrations.timeslot_sequence, registrations.display_name "
-            . "";
+                . ") ";
+        if( ($scheduletimeslot['flags']&0x02) == 0x02 ) {
+            $strsql .= "WHERE registrations.finals_timeslot_id = '" . ciniki_core_dbQuote($ciniki, $scheduletimeslot['id']) . "' ";
+        } else {
+            $strsql .= "WHERE registrations.timeslot_id = '" . ciniki_core_dbQuote($ciniki, $scheduletimeslot['id']) . "' ";
+        }
+        $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
+        if( ($scheduletimeslot['flags']&0x02) == 0x02 ) {
+            $strsql .= "ORDER BY registrations.finals_timeslot_sequence, registrations.display_name ";
+        } else {
+            $strsql .= "ORDER BY registrations.timeslot_sequence, registrations.display_name ";
+        }
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
@@ -295,9 +307,13 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
-                . "classes.id = registrations.class_id "
-                . "AND registrations.timeslot_id = 0 "
-                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "classes.id = registrations.class_id ";
+        if( ($scheduletimeslot['flags']&0x02) == 0x02 ) {
+            $strsql .= "AND registrations.finals_timeslot_id = 0 ";
+        } else {
+            $strsql .= "AND registrations.timeslot_id = 0 ";
+        }
+        $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
                 . "registrations.invoice_id = invoices.id "
@@ -337,9 +353,13 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
-                . "classes.id = registrations.class_id "
-                . "AND registrations.timeslot_id = 0 "
-                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "classes.id = registrations.class_id ";
+        if( ($scheduletimeslot['flags']&0x02) == 0x02 ) {
+            $strsql .= "AND registrations.finals_timeslot_id = 0 ";
+        } else {
+            $strsql .= "AND registrations.timeslot_id = 0 ";
+        }
+        $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
                 . "registrations.invoice_id = invoices.id "
@@ -430,9 +450,13 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                 . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
-                . "classes.id = registrations.class_id "
-                . "AND registrations.timeslot_id = 0 "
-                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "classes.id = registrations.class_id ";
+        if( ($scheduletimeslot['flags']&0x02) == 0x02 ) {
+            $strsql .= "AND registrations.finals_timeslot_id = 0 ";
+        } else {
+            $strsql .= "AND registrations.timeslot_id = 0 ";
+        }
+        $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
                 . "registrations.invoice_id = invoices.id "
@@ -533,9 +557,13 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
-                . "classes.id = registrations.class_id "
-                . "AND registrations.timeslot_id = 0 "
-                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "classes.id = registrations.class_id ";
+        if( ($scheduletimeslot['flags']&0x02) == 0x02 ) {
+            $strsql .= "AND registrations.finals_timeslot_id = 0 ";
+        } else {
+            $strsql .= "AND registrations.timeslot_id = 0 ";
+        }
+        $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
                 . "registrations.invoice_id = invoices.id "

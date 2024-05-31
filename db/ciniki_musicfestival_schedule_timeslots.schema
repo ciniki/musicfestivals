@@ -23,6 +23,9 @@
 # flags:                The options for this timeslot.
 #
 #                           0x01 - Split - Partial Registration List, registrations are linked by timeslot_id in registrations table. **deprecated**
+#                           0x02 - Final/Playoffs timeslot
+#                           0x04 - 
+#                           0x08 - 
 #
 # name:                 The name for the category.
 # description:          The longer text description of the category.

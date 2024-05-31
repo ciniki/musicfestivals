@@ -94,6 +94,12 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         'mark'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Mark'),
         'placement'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Placement'),
         'level'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Level'),
+        'finals_timeslot_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Finals Timeslot'),
+        'finals_timeslot_time'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'time', 'name'=>'Finals Scheduled Time'),
+        'finals_timeslot_sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Finals Timeslot Sequence'),
+        'finals_mark'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Finals Mark'),
+        'finals_placement'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Finals Placement'),
+        'finals_level'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Finals Level'),
         'provincials_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Provincials Recommendation Status'),
         'provincials_position'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Provincials Recommendation Position'),
         'comments'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Comments'),
@@ -128,6 +134,8 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         . "registrations.festival_id, "
         . "registrations.timeslot_id, "
         . "registrations.timeslot_sequence, "
+        . "registrations.finals_timeslot_id, "
+        . "registrations.finals_timeslot_sequence, "
         . "registrations.music_orgfilename1, "
         . "registrations.music_orgfilename2, "
         . "registrations.music_orgfilename3 "
@@ -236,6 +244,87 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                 $dt = new DateTime($dt->format('Y-m-d') . ' ' . $lastreg['timeslot_time'], new DateTimezone('UTC'));
                 $dt->add(new DateInterval('PT' . $total_time . 'S')); 
                 $args['timeslot_time'] = $dt->format('H:i');
+            }
+        }
+    }
+
+    // 
+    // Check for finals_timeslot_id and no sequence
+    //
+    if( isset($args['finals_timeslot_id']) && $args['finals_timeslot_id'] > 0 
+        && (!isset($args['finals_timeslot_sequence']) || $args['finals_timeslot_sequence'] == 0 || $args['finals_timeslot_sequence'] == '')
+        ) {
+        $strsql = "SELECT MAX(finals_timeslot_sequence) AS max_seq "
+            . "FROM ciniki_musicfestival_registrations "
+            . "WHERE finals_timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['finals_timeslot_id']) . "' "
+            . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'seq');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.11', 'msg'=>'Unable to load seq', 'err'=>$rc['err']));
+        }
+        $args['finals_timeslot_sequence'] = 1;
+        if( isset($rc['seq']['max_seq']) ) {
+            $args['finals_timeslot_sequence'] = $rc['seq']['max_seq'] + 1;
+        }
+    }
+    if( isset($args['finals_timeslot_id']) && $args['finals_timeslot_id'] > 0 
+        && !isset($args['finals_timeslot_time'])
+        ) {
+        //
+        // Get the last registration 
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+            if( isset($args['finals_timeslot_sequence']) && $args['finals_timeslot_sequence'] == 1 ) {
+                $strsql = "SELECT slot_time "
+                    . "FROM ciniki_musicfestival_schedule_timeslots "
+                    . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['finals_timeslot_id']) . "' "
+                    . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
+                    . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "";
+                $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'timeslot');
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.121', 'msg'=>'Unable to load timeslot', 'err'=>$rc['err']));
+                }
+                if( !isset($rc['timeslot']) ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.122', 'msg'=>'Unable to find requested timeslot'));
+                }
+                $args['finals_timeslot_time'] = $rc['timeslot']['slot_time'];
+            } 
+            else {
+                $strsql = "SELECT finals_timeslot_time, "
+                    . "perf_time1, perf_time2, perf_time3, perf_time4, perf_time5, perf_time6, perf_time7, perf_time8 "
+                    . "FROM ciniki_musicfestival_registrations "
+                    . "WHERE finals_timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['finals_timeslot_id']) . "' "
+                    . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' ";
+                if( isset($args['finals_timeslot_sequence']) ) {
+                    $strsql .= "AND finals_timeslot_sequence < '" . ciniki_core_dbQuote($ciniki, $args['finals_timeslot_sequence']) . "' ";
+                }
+                $strsql .= "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "ORDER BY finals_timeslot_sequence DESC "
+                    . "LIMIT 1 "
+                    . "";
+                $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'lastreg');
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.123', 'msg'=>'Unable to load lastreg', 'err'=>$rc['err']));
+                }
+                if( !isset($rc['lastreg']) ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.124', 'msg'=>'Unable to find requested lastreg'));
+                }
+                $lastreg = $rc['lastreg'];
+                $total_time = 0;
+                for($i = 1; $i <= 10; $i++) {
+                    if( isset($lastreg["perf_time{$i}"]) && $lastreg["perf_time{$i}"] > 0 ) {
+                        $total_time += $lastreg["perf_time{$i}"];
+                    }
+                }
+                $total_time += 60 - ($total_time%60);
+                // FIXME: Add setting for buffer time
+                $dt = new DateTime('now', new DateTimezone('UTC'));
+                $dt = new DateTime($dt->format('Y-m-d') . ' ' . $lastreg['finals_timeslot_time'], new DateTimezone('UTC'));
+                $dt->add(new DateInterval('PT' . $total_time . 'S')); 
+                $args['finals_timeslot_time'] = $dt->format('H:i');
             }
         }
     }
@@ -395,6 +484,84 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                 if( $cur_number != $seq['number'] ) {
                     error_log('update number: ' . $seq['id']);
                     $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.registration', $seq['id'], array('timeslot_sequence'=>$cur_number), 0x04);
+                    if( $rc['stat'] != 'ok' ) {
+                        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+                        return $rc;
+                    }
+                }
+                $cur_number++; 
+            }
+        }
+    }
+
+    //
+    // Check if registration moved finals timeslots and old timeslot needs to be renumbered
+    //
+    if( $registration['finals_timeslot_id'] > 0 && isset($args['finals_timeslot_id']) && $args['finals_timeslot_id'] != $registration['finals_timeslot_id'] ) {
+        $strsql = "SELECT id, finals_timeslot_sequence AS number "
+            . "FROM ciniki_musicfestival_registrations "
+            . "WHERE finals_timeslot_id = '" . ciniki_core_dbQuote($ciniki, $registration['finals_timeslot_id']) . "' "
+            . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY finals_timeslot_sequence "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'sequence');
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, $m);
+            return $rc;
+        }
+        $cur_number = 1;
+        if( isset($rc['rows']) ) {
+            $sequences = $rc['rows'];
+            foreach($sequences as $sid => $seq) {
+                //
+                // If the number is not where it's suppose to be, change
+                //
+                if( $cur_number != $seq['number'] ) {
+                    $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.registration', $seq['id'], array('finals_timeslot_sequence'=>$cur_number), 0x04);
+                    if( $rc['stat'] != 'ok' ) {
+                        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+                        return $rc;
+                    }
+                }
+                $cur_number++;
+            }
+        }
+    }
+
+    //
+    // Check if finals moved into a timeslot
+    //
+    if( isset($args['finals_timeslot_id']) && $args['finals_timeslot_id'] > 0 ) {
+        $new_seq = $args['finals_timeslot_sequence'];
+        $old_seq = $registration['finals_timeslot_sequence'];
+        $strsql = "SELECT id, finals_timeslot_sequence AS number "
+            . "FROM ciniki_musicfestival_registrations "
+            . "WHERE finals_timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['finals_timeslot_id']) . "' "
+            . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        // Use the last_updated to determine which is in the proper position for duplicate numbers
+        if( $new_seq < $old_seq || $old_seq == -1 || $registration['finals_timeslot_id'] == 0 ) {
+            $strsql .= "ORDER BY finals_timeslot_sequence, last_updated DESC";
+        } else {
+            $strsql .= "ORDER BY finals_timeslot_sequence, last_updated ";
+        } 
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'sequence');
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, $m);
+            return $rc;
+        }
+        $cur_number = 1;
+        if( isset($rc['rows']) ) {
+            $sequences = $rc['rows'];
+            foreach($sequences as $sid => $seq) {
+                //
+                // If the number is not where it's suppose to be, change
+                //
+                if( $cur_number != $seq['number'] ) {
+                    error_log('update number: ' . $seq['id']);
+                    $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.registration', $seq['id'], array('finals_timeslot_sequence'=>$cur_number), 0x04);
                     if( $rc['stat'] != 'ok' ) {
                         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
                         return $rc;

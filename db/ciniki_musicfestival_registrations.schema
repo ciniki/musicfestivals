@@ -124,6 +124,13 @@
 # placement:            The placement of the registration (if used).
 # level
 #
+# finals_timeslot_id:       The ID of the finals timeslot in the schedule.
+# finals_timeslot_time:     The individual time for the registration in the finals.
+# finals_timeslot_sequence: The order in the finals timeslot.
+# finals_mark:              The mark in the finals.
+# finals_placement:         The placement in the finals.
+# finals_level:             The level in the finals.
+#
 # provincials_status:   The current status of the provincials recommendation.
 #
 #                           30 - Recommended
@@ -236,6 +243,12 @@ create table ciniki_musicfestival_registrations (
     mark varchar(50) not null,
     placement varchar(50) not null,
     level varchar(50) not null,
+    finals_timeslot_id int not null,
+    finals_timeslot_time time not null,
+    finals_timeslot_sequence tinyint unsigned not null,
+    finals_mark varchar(50) not null,
+    finals_placement varchar(50) not null,
+    finals_level varchar(50) not null,
     provincials_status tinying unsigned not null,
     provincials_position smallint unsigned not null,
     comments text not null,
@@ -248,4 +261,4 @@ create table ciniki_musicfestival_registrations (
     index (festival_id, teacher_customer_id, billing_customer_id, accompanist_customer_id, member_id),
     index (festival_id, class_id, tnid),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.22';
+) ENGINE='InnoDB', COMMENT='v1.23';

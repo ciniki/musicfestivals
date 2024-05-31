@@ -1,0 +1,7 @@
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN finals_timeslot_id int not null AFTER level;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN finals_timeslot_time time not null AFTER finals_timeslot_id;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN finals_timeslot_sequence tinyint unsigned not null AFTER finals_timeslot_time;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN finals_mark varchar(50) not null AFTER finals_timeslot_sequence;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN finals_placement varchar(50) not null AFTER finals_mark;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN finals_level varchar(50) not null AFTER finals_placement;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.23';

@@ -140,6 +140,9 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'mark' => '',
             'placement' => '',
             'level' => '',
+            'finals_mark' => '',
+            'finals_placement' => '',
+            'finals_level' => '',
             'provincials_status' => 0,
             'provincials_position' => '',
             'comments' => '',
@@ -204,13 +207,19 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "FORMAT(registrations.fee, 2) AS fee, ";
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
             $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS slot_time, ";
+            $strsql .= "TIME_FORMAT(registrations.finals_timeslot_time, '%l:%i %p') AS finals_slot_time, ";
         } else {
             $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time, ";
+            $strsql .= "TIME_FORMAT(finals_timeslots.slot_time, '%l:%i %p') AS finals_slot_time, ";
         }
         $strsql .= "IFNULL(divisions.name, '') AS division_name, "
+            . "IFNULL(finals_divisions.name, '') AS finals_division_name, "
             . "IFNULL(DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y'), '') AS division_date, "
+            . "IFNULL(DATE_FORMAT(finals_divisions.division_date, '%W, %M %D, %Y'), '') AS finals_division_date, "
             . "IFNULL(locations.name, '') AS location_name, "
+            . "IFNULL(finals_locations.name, '') AS finals_location_name, "
             . "IFNULL(ssections.name, '') AS section_name, "
+            . "IFNULL(finals_ssections.name, '') AS finals_section_name, "
             . "registrations.payment_type, "
             . "registrations.participation, "
             . "registrations.video_url1, "
@@ -241,6 +250,9 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "registrations.mark, "
             . "registrations.placement, "
             . "registrations.level, "
+            . "registrations.finals_mark, "
+            . "registrations.finals_placement, "
+            . "registrations.finals_level, "
             . "registrations.provincials_status, "
             . "registrations.provincials_position, "
             . "registrations.comments, "
@@ -259,9 +271,25 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                 . "divisions.location_id = locations.id "
                 . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS finals_timeslots ON ("
+                . "registrations.finals_timeslot_id = finals_timeslots.id "
+                . "AND finals_timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "LEFT JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
                 . "divisions.ssection_id = ssections.id "
                 . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS finals_divisions ON ("
+                . "finals_timeslots.sdivision_id = finals_divisions.id "
+                . "AND finals_divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_locations AS finals_locations ON ("
+                . "finals_divisions.location_id = finals_locations.id "
+                . "AND finals_locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_schedule_sections AS finals_ssections ON ("
+                . "finals_divisions.ssection_id = finals_ssections.id "
+                . "AND finals_ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
@@ -272,6 +300,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                 'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'billing_customer_id', 
                     'accompanist_customer_id', 'member_id',
                     'slot_time', 'division_date', 'division_name', 'location_name', 'section_name',
+                    'finals_slot_time', 'finals_division_date', 'finals_division_name', 'finals_location_name', 'finals_section_name',
                     'rtype', 'status', 'flags', 'invoice_id', 'display_name', 
                     'competitor1_id', 'competitor2_id', 'competitor3_id', 
                     'competitor4_id', 'competitor5_id', 
@@ -292,6 +321,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     'backtrack1', 'backtrack2', 'backtrack3',  'backtrack4', 
                     'backtrack5', 'backtrack6',  'backtrack7', 'backtrack8',  
                     'instrument', 'mark', 'placement', 'level', 'comments', 'provincials_status', 'provincials_position',
+                    'finals_mark', 'finals_placement', 'finals_level',
                     'notes', 'internal_notes'),
                 ),
             ));

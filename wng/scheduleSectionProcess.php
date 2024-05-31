@@ -108,6 +108,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         foreach($options as $o) {
             $psorts[trim($o)] = $i++;
         }
+        $psorts[''] = 'zzzz';
     }
 
     //
@@ -311,6 +312,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     }
     $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
         . "timeslots.name AS timeslot_name, "
+        . "timeslots.flags AS timeslot_flags, "
         . "timeslots.description, "
         . "timeslots.results_notes AS timeslot_results_notes, "
         . "timeslots.results_video_url AS timeslot_results_video_url, "
@@ -318,6 +320,8 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "registrations.display_name, "
         . "registrations.public_name, "
         . "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS timeslot_time, "
+        . "TIME_FORMAT(registrations.finals_timeslot_time, '%l:%i %p') AS finals_timeslot_time, "
+        . "TIME_FORMAT(registrations.finals_timeslot_time, '%H%i') AS reg_finals_sort_time, "
         . "registrations.flags, "
         . "registrations.title1, "
         . "registrations.title2, "
@@ -354,6 +358,8 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "registrations.participation, "
         . "registrations.mark, "
         . "registrations.placement, "
+        . "registrations.finals_mark, "
+        . "registrations.finals_placement, "
         . "classes.code AS class_code, "
         . "classes.name AS class_name, "
         . "categories.name AS category_name, "
@@ -369,7 +375,10 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
-            . "timeslots.id = registrations.timeslot_id "
+            . "("
+                . "((timeslots.flags&0x02) = 0 AND timeslots.id = registrations.timeslot_id) "
+                . "OR ((timeslots.flags&0x02) = 0x02 AND timeslots.id = registrations.finals_timeslot_id) "
+                . ") "
             . "AND (registrations.flags&0x1000) = 0 "   // Not Red
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
@@ -428,18 +437,19 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 ),
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
-            'fields'=>array('id'=>'timeslot_id', 'title'=>'timeslot_name', 'time'=>'slot_time_text', 'synopsis'=>'description', 
+            'fields'=>array('id'=>'timeslot_id', 'flags'=>'timeslot_flags', 'title'=>'timeslot_name', 'time'=>'slot_time_text', 'synopsis'=>'description', 
                 'class_code', 'class_name', 'category_name', 'section_name',
                 'results_notes'=>'timeslot_results_notes', 'results_video_url'=>'timeslot_results_video_url',
                 ),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
-            'fields'=>array('id'=>'reg_id', 'display_name', 'public_name', 'timeslot_time', 'flags',
+            'fields'=>array('id'=>'reg_id', 'display_name', 'public_name', 'flags',
+                'timeslot_time', 'finals_timeslot_time', 'reg_finals_sort_time',
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                 'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
                 'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
-                'participation', 'class_name', 'mark', 'placement', 'member_name'),
+                'participation', 'class_name', 'mark', 'placement', 'finals_mark', 'finals_placement', 'member_name'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -566,6 +576,15 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 // Create the items table for the schedule
                 //
                 if( isset($timeslot['registrations']) ) {
+                    // Sort registrations based on finals_time for this finals timeslot
+                    if( ($timeslot['flags']&0x02) == 0x02 ) {
+                        usort($timeslot['registrations'], function($a, $b) {
+                            if( $a['reg_finals_sort_time'] == $b['reg_finals_sort_time'] ) {
+                                return 0;
+                            }
+                            return ($a['reg_finals_sort_time'] < $b['reg_finals_sort_time']) ? -1 : 1;
+                            });
+                    }
                     foreach($timeslot['registrations'] as $registration) {
                         //
                         // Setup name
@@ -604,28 +623,57 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                                     }
                                 }
                             }
-                            $division['timeslots'][$tid]['items'][] = array(
-                                'name' => $name,
-                                'titles' => $titles,
-                                'videos' => $video_links,
-                                'timeslot_time' => $registration['timeslot_time'],
-                                'member_name' => $registration['member_name'],
-                                'mark' => $registration['mark'],
-                                'placement' => $registration['placement'] 
-                                    . (($registration['flags']&0x10) == 0x10 ? '<br/><span class="best-in-class">Best In Class</span>' : ''),
-                                'psort' => isset($psorts[$registration['placement']]) ? $psorts[$registration['placement']] : $registration['placement'],
-                                );
+                            //
+                            // Finals/playoffs timeslots
+                            //
+                            if( ($timeslot['flags']&0x02) == 0x02 ) {
+                                $division['timeslots'][$tid]['items'][] = array(
+                                    'name' => $name,
+                                    'titles' => $titles,
+                                    'videos' => $video_links,
+                                    'timeslot_time' => $registration['finals_timeslot_time'],
+                                    'member_name' => $registration['member_name'],
+                                    'mark' => $registration['finals_mark'],
+                                    'placement' => $registration['finals_placement'] 
+                                        . (($registration['flags']&0x10) == 0x10 ? '<br/><span class="best-in-class">Best In Class</span>' : ''),
+                                    'psort' => isset($psorts[$registration['finals_placement']]) ? $psorts[$registration['finals_placement']] : $registration['finals_placement'],
+                                    );
+                            } else {
+                                $division['timeslots'][$tid]['items'][] = array(
+                                    'name' => $name,
+                                    'titles' => $titles,
+                                    'videos' => $video_links,
+                                    'timeslot_time' => $registration['timeslot_time'],
+                                    'member_name' => $registration['member_name'],
+                                    'mark' => $registration['mark'],
+                                    'placement' => $registration['placement'] 
+                                        . (($registration['flags']&0x10) == 0x10 ? '<br/><span class="best-in-class">Best In Class</span>' : ''),
+                                    'psort' => isset($psorts[$registration['placement']]) ? $psorts[$registration['placement']] : $registration['placement'],
+                                    );
+                            }
                         } 
                         else {
-                            $division['timeslots'][$tid]['items'][] = array(
-                                'name' => $name,
-                                'timeslot_time' => $registration['timeslot_time'],
-                                'member_name' => $registration['member_name'],
-                                'mark' => $registration['mark'],
-                                'placement' => $registration['placement']
-                                    . (($registration['flags']&0x10) == 0x10 ? '<br/><span class="best-in-class">Best In Class</span>' : ''),
-                                'psort' => isset($psorts[$registration['placement']]) ? $psorts[$registration['placement']] : $registration['placement'],
-                                );
+                            if( ($timeslot['flags']&0x02) == 0x02 ) {
+                                $division['timeslots'][$tid]['items'][] = array(
+                                    'name' => $name,
+                                    'timeslot_time' => $registration['finals_timeslot_time'],
+                                    'member_name' => $registration['member_name'],
+                                    'mark' => $registration['finals_mark'],
+                                    'placement' => $registration['finals_placement']
+                                        . (($registration['flags']&0x10) == 0x10 ? '<br/><span class="best-in-class">Best In Class</span>' : ''),
+                                    'psort' => isset($psorts[$registration['finals_placement']]) ? $psorts[$registration['finals_placement']] : $registration['finals_placement'],
+                                    );
+                            } else {
+                                $division['timeslots'][$tid]['items'][] = array(
+                                    'name' => $name,
+                                    'timeslot_time' => $registration['timeslot_time'],
+                                    'member_name' => $registration['member_name'],
+                                    'mark' => $registration['mark'],
+                                    'placement' => $registration['placement']
+                                        . (($registration['flags']&0x10) == 0x10 ? '<br/><span class="best-in-class">Best In Class</span>' : ''),
+                                    'psort' => isset($psorts[$registration['placement']]) ? $psorts[$registration['placement']] : $registration['placement'],
+                                    );
+                            }
                         }
                     }
                     if( isset($s['results-only']) && $s['results-only'] == 'yes' ) {
@@ -655,6 +703,12 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                             $prev_name = $item['name'];
                         }
                     }
+                }
+                //
+                // No registrations and results, remove timeslot
+                //
+                elseif( isset($s['results-only']) && $s['results-only'] == 'yes' ) {
+                    unset($division['timeslots'][$tid]);
                 }
             }
 
@@ -775,6 +829,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                             'type' => 'table', 
                             'class' => 'fold-at-50',
                             'title' => $timeslot['title'],
+                            'content' => $timeslot['synopsis'],
                             'columns' => $columns,
                             'rows' => $timeslot['items'],
                             );
