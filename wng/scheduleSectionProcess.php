@@ -816,7 +816,8 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     //
     // Check for provincial information
     //
-    if( isset($schedulesection['provincials_title']) && $schedulesection['provincials_title'] != '' 
+    if( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000)
+        && isset($schedulesection['provincials_title']) && $schedulesection['provincials_title'] != '' 
         && isset($schedulesection['provincials_content']) && $schedulesection['provincials_content'] != '' 
         && (!isset($s['results-only']) || $s['results-only'] != 'yes')
         ) {
