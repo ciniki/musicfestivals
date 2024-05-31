@@ -1548,6 +1548,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "timeslots.name, "
                     . "timeslots.description, "
                     . "registrations.id AS reg_id, "
+                    . "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS reg_time_text, "
                     . "registrations.title1, "
                     . "registrations.title2, "
                     . "registrations.title3, "
@@ -1610,7 +1611,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             'class_id', 'class_name',
                             )),
                     array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name',
-                        'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
+                        'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 'reg_time_text',
                         'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
                         'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
                         'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
@@ -1650,7 +1651,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                                     if( $ptime > 0 ) {
                                         $ptime_text = ' [' . intval($ptime/60) . ':' . str_pad(($ptime%60), 2, '0', STR_PAD_LEFT) . ']';
                                     }
-                                    $festival['schedule_timeslots'][$iid]['description'] .= ($festival['schedule_timeslots'][$iid]['description'] != '' ? "\n":'') . $reg['class_code'] . ' - ' . $reg['name'] . $ptime_text;
+                                    $individual_time_text = '';
+                                    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) 
+                                        && $reg['reg_time_text'] != ''
+                                        ) {
+                                        $individual_time_text = $reg['reg_time_text'] . ' - ';
+                                    }
+                                    $festival['schedule_timeslots'][$iid]['description'] .= ($festival['schedule_timeslots'][$iid]['description'] != '' ? "\n":'') . $individual_time_text . $reg['class_code'] . ' - ' . $reg['name'] . $ptime_text;
                                 }
                                 unset($festival['schedule_timeslots'][$iid]['registrations']);
                             }
