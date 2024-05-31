@@ -559,6 +559,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
     //
     // Export to excel
     //
+    ini_set('memory_limit', '1024M');
     require($ciniki['config']['core']['lib_dir'] . '/PHPExcel/PHPExcel.php');
     $objPHPExcel = new PHPExcel();
     $objPHPExcelWorksheet = $objPHPExcel->setActiveSheetIndex(0);
