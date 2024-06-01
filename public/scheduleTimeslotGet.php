@@ -91,6 +91,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             'sdivision_id'=>(isset($args['sdivision_id']) ? $args['sdivision_id'] : 0),
             'slot_time'=>'',
             'name'=>'',
+            'flags' => 0,
             'description'=>'',
             'runsheet_notes'=>'',
             'results_notes' => '',
