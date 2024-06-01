@@ -113,7 +113,10 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
                 $registrations[$rid]['scheduled'] .= '<br/>' . $reg['location_name'];
             }
         }
-        if( (($reg['section_flags']&0x02) == 0x02 || ($reg['division_flags']&0x02) == 0x02) 
+        //
+        // If results have been released on the website, show them instead of the scheduled time
+        //
+        if( (($reg['section_flags']&0x20) == 0x20 || ($reg['division_flags']&0x20) == 0x20) 
             && $reg['placement'] != '' 
             ) {
             $registrations[$rid]['scheduled'] = $reg['placement'];
