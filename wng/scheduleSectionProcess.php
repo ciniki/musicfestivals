@@ -304,6 +304,8 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "IFNULL(locations.longitude, '') AS longitude, "
         . "IFNULL(customers.display_name, '') AS adjudicator_name, "
         . "IFNULL(customers.permalink, '') AS adjudicator_permalink, "
+        . "IFNULL(adjudicators.image_id, 0) AS adjudicator_image_id, "
+        . "IFNULL(adjudicators.description, 0) AS adjudicator_description, "
         . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, ";
     if( isset($s['separate-classes']) && $s['separate-classes'] == 'yes' ) {
         $strsql .= "CONCAT_WS('-', timeslots.id, classes.id) AS timeslot_id, ";
@@ -434,6 +436,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 
                 'address', 'location_name', 'location_address1', 'location_city', 'location_province', 'location_postal', 
                 'latitude', 'longitude', 'adjudicator_name', 'adjudicator_permalink', 'results_notes', 'results_video_url',
+                'adjudicator_image_id', 'adjudicator_description',
                 ),
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
@@ -770,7 +773,22 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     }
                 }
                 if( $division['latitude'] != '' && $division['longitude'] != '' ) {
-                    if( $adjudicator_name != '' ) {
+                    if( $adjudicator_name != '' 
+                        && isset($division['adjudicator_image_id']) && $division['adjudicator_image_id'] > 0 
+                        && isset($division['adjudicator_description']) && $division['adjudicator_description'] != '' 
+                        ) {
+                        $blocks[] = array(
+                            'type' => 'contentphoto',
+                            'title' => $division['name'],
+                            'subtitle' => 'Adjudicator: ' . $division['adjudicator_name'],
+                            'content' => $division['adjudicator_description'],
+                            'image-id' => $division['adjudicator_image_id'],
+                            'image-position' => 'top-right-inline',
+                            'image-size' => 'small',
+                            );
+
+                    }
+                    elseif( $adjudicator_name != '' ) {
                         $blocks[] = array(
                             'type' => 'text',
                             'level' => 2,
