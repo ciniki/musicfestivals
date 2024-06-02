@@ -513,6 +513,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                 }
 
                 foreach($timeslot['registrations'] as $reg) {
+                    $pdf->SetAutoPageBreak(true, PDF_MARGIN_FOOTER+20);
                     if( isset($festival['comments-header-adjudicator']) && $festival['comments-header-adjudicator'] == 'yes'
                         && isset($adjudicators[$reg['adjudicator_id']]['name'])
                         && $adjudicators[$reg['adjudicator_id']]['name'] != '' 
@@ -598,8 +599,14 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                     $pdf->MultiCell(180, 1, '', 'T', 'L', 0, 0, '', '');
                     if( isset($reg['comments']) && $reg['comments'] != '' ) {
                         $pdf->Ln(2);
+                        $lh = $pdf->getStringHeight($w[0] + $w[1], $reg['comments']);
+                        if( $lh > 175 && $lh < 202 ) {
+                            $pdf->SetFont('', '', 11);
+                            $lh = $pdf->getStringHeight($w[0] + $w[1], $reg['comments']);
+                        }
                         $pdf->MultiCell($w[0] + $w[1], $lh, $reg['comments'], 0, 'L', 0, 1, '', '');
                     }
+                    $pdf->SetFont('', '', 12);
 
                     // Position at 15 mm from bottom
                     $pdf->SetDrawColor(50);
@@ -652,6 +659,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         $wa = array(27, 80, 35, 35);
                     }
                     $wapos = 0;
+                    $pdf->SetAutoPageBreak(true, PDF_MARGIN_FOOTER);
                     if( isset($festival['comments-adjudicator-signature'])
                         && (($festival['comments-adjudicator-signature'] == 'filledout' && $reg['comments'] != '') 
                             || $festival['comments-adjudicator-signature'] == 'always')

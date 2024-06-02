@@ -197,6 +197,7 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
         header('Pragma: no-cache');
         header('Content-Type: application/pdf');
         header('Cache-Control: max-age=0');
+
         $rc['pdf']->Output($filename . '.pdf', 'I');
         return array('stat'=>'exit');
     }
