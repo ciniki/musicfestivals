@@ -123,6 +123,84 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
         }
     }
 
+    if( count($registrations) > 0 ) {
+        $blocks[] = array(
+            'type' => 'buttons',
+            'class' => 'aligncenter',
+            'items' => array(   
+                array('text' => 'Download Excel', 'url' => $base_url . '/' . $request['uri_split'][2] . '/registrations/registrations.xls'),
+                array('text' => 'Download PDF', 'url' => $base_url . '/' . $request['uri_split'][2] . '/registrations/registrations.pdf'),
+                ),
+            );
+    }
+
+    if( isset($request['uri_split'][4]) && $request['uri_split'][4] == 'registrations.xls' ) {
+        //
+        // Generate XLS of registrations
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'memberRegistrationsExcel');
+        $rc = ciniki_musicfestivals_templates_memberRegistrationsExcel($ciniki, $tnid, [
+            'festival_id' => $args['festival']['id'],
+            'registrations' => $registrations,
+            ]);
+        if( $rc['stat'] != 'ok' ) {
+            error_log('ERR: Unable to generate local festival registrations excel');
+            $blocks[] = array(
+                'type' => 'msg', 
+                'level' => 'error',
+                'content' => 'Unable to create Excel file, please contact us for help.',
+                );
+            return array('stat'=>'ok', 'blocks'=>$blocks);
+        }
+
+        //
+        // Output the excel file
+        //
+        $filename = $args['member']['name'] . ' - Registrations';
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xls"');
+        header('Cache-Control: max-age=0');
+        
+        $objWriter = PHPExcel_IOFactory::createWriter($rc['excel'], 'Excel5');
+        $objWriter->save('php://output');
+
+        return array('stat'=>'exit');
+    }
+    elseif( isset($request['uri_split'][4]) && $request['uri_split'][4] == 'registrations.pdf' ) {
+        //
+        // Generate PDF of registrations
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'memberRegistrationsPDF');
+        $rc = ciniki_musicfestivals_templates_memberRegistrationsPDF($ciniki, $tnid, [
+            'festival_id' => $args['festival']['id'],
+            'title' => $args['member']['name'],
+            'subtitle' => 'Registrations',
+            'registrations' => $registrations,
+            ]);
+        if( $rc['stat'] != 'ok' ) {
+            error_log('ERR: Unable to generate local festival registrations excel');
+            $blocks[] = array(
+                'type' => 'msg', 
+                'level' => 'error',
+                'content' => 'Unable to create PDF file, please contact us for help.',
+                );
+            return array('stat'=>'ok', 'blocks'=>$blocks);
+        }
+
+        //
+        // Output the excel file
+        //
+        $filename = $args['member']['name'] . ' - Registrations';
+        header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+        header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Pragma: no-cache');
+        header('Content-Type: application/pdf');
+        header('Cache-Control: max-age=0');
+        $rc['pdf']->Output($filename . '.pdf', 'I');
+        return array('stat'=>'exit');
+    }
+
     $blocks[] = array(
         'type' => 'table',
         'headers' => 'yes',
