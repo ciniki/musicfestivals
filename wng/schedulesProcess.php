@@ -334,11 +334,18 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
     if( (isset($sections) && count($sections) == 0) 
         || (isset($dates) && count($dates) == 0)
         ) {
+        $msg = 'The schedule has not been released.';
+        if( isset($s['notreleased']) && $s['notreleased'] != '' ) {
+            $msg = $s['notreleased'];
+        }
+        elseif( isset($s['results-only'])  && $s['results-only'] == 'yes' ) {
+            $msg = 'The results have not been released.';
+        }
         $blocks[] = array(
             'type' => 'text',
             'level' => $section['sequence'] == 1 ? 1 : 2,
             'title' => isset($s['title']) ? $s['title'] : '',
-            'content' => (isset($s['notreleased']) && $s['notreleased'] != '' ? $s['notreleased'] : 'The schedule has not yet been released.'),
+            'content' => $msg,
             );
         return array('stat'=>'ok', 'blocks'=>$blocks);
     }
