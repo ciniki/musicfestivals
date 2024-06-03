@@ -6133,7 +6133,7 @@ function ciniki_musicfestivals_main() {
     //
     // The results fast entry panel
     //
-    this.results = new M.panel('Results', 'ciniki_musicfestivals_main', 'results', 'mc', 'xlarge', 'sectioned', 'ciniki.musicfestivals.main.results');
+    this.results = new M.panel('Results', 'ciniki_musicfestivals_main', 'results', 'mc', 'xxlarge', 'sectioned', 'ciniki.musicfestivals.main.results');
     this.results.data = null;
     this.results.festival_id = 0;
     this.results.section_id = 0;
@@ -6155,6 +6155,16 @@ function ciniki_musicfestivals_main() {
             }
             if( this.sections[s].dataMaps[j] == 'placementvalue' ) {
                 return '<span id="' + this.panelUID + '_' + d.id + '_placement">' + d.placement + '</span>';
+            }
+            if( this.sections[s].dataMaps[j] == 'placementselect' ) {
+                var options = '';
+                for(var i in this.data.festival['comments-placement-options']) {
+                    options += '<option value="' + this.data.festival['comments-placement-options'][i] + '"'
+                        + (this.data.festival['comments-placement-options'][i] == d.placement ? ' selected' : '')
+                        + '>' + this.data.festival['comments-placement-options'][i] + '</option>';
+                }
+                return '<select id="' + this.panelUID + '_' + d.id + '_' + this.sections[s].dataMaps[j] + '" class="text" value="' + d[this.sections[s].dataMaps[j]] + '">' + options + '</select>';
+//                return '<span id="' + this.panelUID + '_' + d.id + '_placement">' + d.placement + '</span>';
             }
             if( this.sections[s].dataMaps[j] == 'levelvalue' ) {
                 return '<span id="' + this.panelUID + '_' + d.id + '_level">' + d.level + '</span>';
@@ -6209,8 +6219,14 @@ function ciniki_musicfestivals_main() {
                 } else {
                     p.sections.registrations.headerValues[p.sections.registrations.num_cols] = 'Placement';
                 }
+                p.sections.registrations.cellClasses[p.sections.registrations.num_cols] = '';
                 if( M.ciniki_musicfestivals_main.festival.data['comments-placement-autofills'] != null ) {
                     p.sections.registrations.dataMaps[p.sections.registrations.num_cols] = 'placementvalue';
+                } else if( M.ciniki_musicfestivals_main.results.data.festival['comments-placement-options'] != null 
+                    && typeof M.ciniki_musicfestivals_main.results.data.festival['comments-placement-options'] == 'object' 
+                    ) {
+                    p.sections.registrations.dataMaps[p.sections.registrations.num_cols] = 'placementselect';
+                    p.sections.registrations.cellClasses[p.sections.registrations.num_cols] = 'select';
                 } else {
                     p.sections.registrations.dataMaps[p.sections.registrations.num_cols] = 'placement';
                 }
@@ -6247,6 +6263,12 @@ function ciniki_musicfestivals_main() {
                         c += '&placement_' + this.data.registrations[i].id + '=' + M.eU(v.innerHTML);
                     }
                 }
+                else if( this.sections.registrations.dataMaps[j] == 'placementselect' ) {
+                    v = M.gE(this.panelUID + '_' + this.data.registrations[i].id + '_placementselect').value;
+                    if( v != this.data.registrations[i].placement ) {
+                        c += '&placement_' + this.data.registrations[i].id + '=' + M.eU(v );
+                    }
+                }
                 else if( this.sections.registrations.dataMaps[j] == 'levelvalue' ) {
                     v = M.gE(this.panelUID + '_' + this.data.registrations[i].id + '_level');
                     if( v.innerHTML != this.data.registrations[i].placement ) {
@@ -6268,6 +6290,8 @@ function ciniki_musicfestivals_main() {
                 }
                 eval(cb);
             });
+        } else {
+            eval(cb);
         }
     }
     this.results.addButton('save', 'Save', 'M.ciniki_musicfestivals_main.results.save();');

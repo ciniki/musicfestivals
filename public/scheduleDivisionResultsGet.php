@@ -112,11 +112,27 @@ function ciniki_musicfestivals_scheduleDivisionResultsGet(&$ciniki) {
     }
 
     //
+    // Setup options array
+    //
+    if( isset($festival['comments-placement-options']) && $festival['comments-placement-options'] != '' ) {
+        $options = explode(',', $festival['comments-placement-options']);
+        foreach($options as $oid => $option) {
+            $options[$oid] = trim($option);
+        }
+        array_unshift($options, '');
+        $festival['comments-placement-options'] = $options;
+    }
+
+    //
     // Load the registrations
     //
-    $strsql = "SELECT timeslots.id AS timeslot_id, "
-        . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
-        . "registrations.id, "
+    $strsql = "SELECT timeslots.id AS timeslot_id, ";
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+        $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i&nbsp;%p') AS slot_time_text, ";
+    } else {
+        $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i&nbsp;%p') AS slot_time_text, ";
+    }
+    $strsql .= "registrations.id, "
         . "registrations.display_name, "
         . "registrations.timeslot_sequence, "
         . "registrations.title1, "
