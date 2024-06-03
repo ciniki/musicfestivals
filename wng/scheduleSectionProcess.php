@@ -106,9 +106,10 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         $psorts = array();
         $i = 0;
         foreach($options as $o) {
-            $psorts[trim($o)] = $i++;
+            $psorts[trim($o)] = chr($i+65);
+            $i++;
         }
-        $psorts[''] = 'zzzz';
+        $psorts[''] = 'ZZ';
     }
 
     //
