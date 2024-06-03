@@ -116,7 +116,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     //
     // Check if request to download PDF
     //
-    if( isset($_GET['pdf']) && $_GET['pdf'] == 'yes' ) {
+    if( isset($_GET['pdf']) && $_GET['pdf'] == 'yes' ) {    
         if( $customer_type == 20 ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'teacherRegistrationsPDF');
             $rc = ciniki_musicfestivals_templates_teacherRegistrationsPDF($ciniki, $tnid, array(
@@ -526,7 +526,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "notes "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $registration_id) . "' ";
-        if( isset($_POST['action']) && ($_POST['action'] == 'view' || $_POST['action'] == 'comments' || $_POST['action'] == 'certificate' ) ) {
+        if( isset($_POST['action']) && ($_POST['action'] == 'view' || $_POST['action'] == 'comments' || $_POST['action'] == 'certificate' || $_POST['action'] == 'download' ) ) {
             $strsql .= "AND ("
                 . "billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
                 . "OR teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
