@@ -286,6 +286,7 @@ function ciniki_musicfestivals_templates_memberRegistrationsPDF(&$ciniki, $tnid,
         if( !isset($classes[$registration['class']]) ) {
             $classes[$registration['class']] = array(
                 'lh' => $registration['lh'],
+                'name' => $registration['class'],
                 'registrations' => array($registration),
                 );
         } else {
@@ -308,7 +309,7 @@ function ciniki_musicfestivals_templates_memberRegistrationsPDF(&$ciniki, $tnid,
             $pdf->ln(3);
         }
         $pdf->SetFont('', 'b');
-        $pdf->MultiCell(180, 0, $registration['class'], 0, 'L', 0, 1);
+        $pdf->MultiCell(180, 0, $class['name'], 0, 'L', 0, 1);
         $fill = 1;
 
         $pdf->SetFont('', '');
