@@ -932,6 +932,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 );
         }
 
+        if( $registration["perf_time{$i}"] == '' ) {
+            $registration["perf_time{$i}"] = 0;
+        }
         $perf_time = (isset($_POST["f-perf_time{$i}-min"]) ? ($_POST["f-perf_time{$i}-min"]*60) : (isset($registration["perf_time{$i}"]) ? (intval($registration["perf_time{$i}"]/60)*60) : 0))
             + (isset($_POST["f-perf_time{$i}-sec"]) ? $_POST["f-perf_time{$i}-sec"] : (isset($registration["perf_time{$i}"]) ? ($registration["perf_time{$i}"] % 60) :0));
         $fields["perf_time{$i}"] = array(
