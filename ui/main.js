@@ -2021,23 +2021,28 @@ function ciniki_musicfestivals_main() {
         this.open();
     }
     this.festival.downloadExcel = function(fid) {
+        var args = {
+            'tnid':M.curTenantID, 
+            'festival_id':fid,
+            'ipv':this.sections.ipv_tabs.selected
+            };
         if( this.sections.registration_tabs.selected == 'sections' && this.section_id > 0 ) {
-            M.api.openFile('ciniki.musicfestivals.registrationsExcel', {'tnid':M.curTenantID, 'festival_id':fid, 'section_id':this.section_id});
+            args['section_id'] = this.section_id;
         } else if( this.sections.registration_tabs.selected == 'classes' && this.section_id > 0 && this.class_id > 0 ) {
-            M.api.openFile('ciniki.musicfestivals.registrationsExcel', {'tnid':M.curTenantID, 'festival_id':fid, 'section_id':this.section_id, 'class_id':this.class_id});
+            args['section_id'] = this.section_id;
+            args['class_id'] = this.class_id;
         } else if( this.sections.registration_tabs.selected == 'classes' && this.section_id > 0 ) {
-            M.api.openFile('ciniki.musicfestivals.registrationsExcel', {'tnid':M.curTenantID, 'festival_id':fid, 'section_id':this.section_id});
+            args['section_id'] = this.section_id;
         } else if( this.sections.registration_tabs.selected == 'teachers' && this.teacher_customer_id > 0 ) {
-            M.api.openFile('ciniki.musicfestivals.registrationsExcel', {'tnid':M.curTenantID, 'festival_id':fid, 'teacher_customer_id':this.teacher_customer_id});
+            args['teacher_customer_id'] = this.teacher_customer_id;
         } else if( this.sections.registration_tabs.selected == 'accompanists' && this.accompanist_customer_id > 0 ) {
-            M.api.openFile('ciniki.musicfestivals.registrationsExcel', {'tnid':M.curTenantID, 'festival_id':fid, 'accompanist_customer_id':this.accompanist_customer_id});
+            args['accompanist_customer_id'] = this.accompanist_customer_id;
         } else if( this.sections.registration_tabs.selected == 'tags' && this.registration_tag != '' ) {
-            M.api.openFile('ciniki.musicfestivals.registrationsExcel', {'tnid':M.curTenantID, 'festival_id':fid, 'registration_tag':this.registration_tag});
+            args['registration_tag'] = this.registration_tag;
         } else if( this.sections.registration_tabs.selected == 'members' && this.member_id > 0 ) {
-            M.api.openFile('ciniki.musicfestivals.registrationsExcel', {'tnid':M.curTenantID, 'festival_id':fid, 'member_id':this.member_id});
-        } else {
-            M.api.openFile('ciniki.musicfestivals.registrationsExcel', {'tnid':M.curTenantID, 'festival_id':fid});
+            args['member_id'] = this.member_id;
         }
+        M.api.openFile('ciniki.musicfestivals.registrationsExcel', args);
     }
     this.festival.downloadPDF = function(fid) {
         if( this.sections.registration_tabs.selected == 'sections' && this.section_id > 0 ) {

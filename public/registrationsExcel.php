@@ -27,6 +27,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         'accompanist_customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Accompanist'),
         'registration_tag'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registration Tag'),
         'member_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Member'),
+        'ipv'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'In Person/Virtual'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -166,8 +167,13 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
     if( isset($args['registration_tag']) && $args['registration_tag'] != '' ) {
         $strsql .= "FROM ciniki_musicfestival_registration_tags AS tags "
             . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
-                . "tags.registration_id = registrations.id "
-                . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "tags.registration_id = registrations.id ";
+        if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
+            $strsql .= "AND registrations.participation = 0 ";
+        } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
+            $strsql .= "AND registrations.participation = 1 ";
+        }
+        $strsql .= "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
@@ -255,8 +261,13 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' "
-            . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
+        if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
+            $strsql .= "AND registrations.participation = 0 ";
+        } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
+            $strsql .= "AND registrations.participation = 1 ";
+        }
+        $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY registrations.id "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -334,8 +345,13 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE registrations.accompanist_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['accompanist_customer_id']) . "' "
-            . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
+        if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
+            $strsql .= "AND registrations.participation = 0 ";
+        } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
+            $strsql .= "AND registrations.participation = 1 ";
+        }
+        $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY registrations.id "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -416,8 +432,13 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE registrations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' "
-            . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
+        if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
+            $strsql .= "AND registrations.participation = 0 ";
+        } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
+            $strsql .= "AND registrations.participation = 1 ";
+        }
+        $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY registrations.date_added DESC "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -481,8 +502,13 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
-                . "classes.id = registrations.class_id "
-                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "classes.id = registrations.class_id ";
+        if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
+            $strsql .= "AND registrations.participation = 0 ";
+        } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
+            $strsql .= "AND registrations.participation = 1 ";
+        }
+        $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ("
                 . "("
