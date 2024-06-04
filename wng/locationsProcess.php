@@ -68,12 +68,17 @@ function ciniki_musicfestivals_wng_locationsProcess(&$ciniki, $tnid, &$request, 
     }
     $locations = isset($rc['categories']) ? $rc['categories'] : array();
 
-    if( (isset($s['title']) && $s['title'] != '') || (isset($s['content']) && $s['content'] != '') ) {
+    $content = isset($s['intro']) ? $s['intro'] : '';
+    if( count($locations) == 0 && isset($s['no-locations-intro']) && $s['no-locations-intro'] != '' ) {
+        $content = $s['no-locations-intro'];
+    }
+
+    if( (isset($s['title']) && $s['title'] != '') || $content != '' ) {
         $blocks[] = array(
-            'type' => (!isset($s['content']) || $s['content'] == '' ? 'title' : 'text'),
+            'type' => ($content == '' ? 'title' : 'text'),
             'title' => isset($s['title']) ? $s['title'] : '',
             'level' => $section['sequence'] == 1 ? 1 : 2,
-            'content' => isset($s['content']) ? $s['content'] : '',
+            'content' => $content,
             );
     }
 
