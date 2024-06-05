@@ -381,6 +381,52 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
                             }
                         }
                         $certificates[] = $certificate;
+
+                        //
+                        // Check if Best in Class flag set and add second certificate
+                        //
+                        if( ($reg['flags']&0x10) == 0x10 ) {
+                            $org_certificate = $default_cert;
+                            if( $reg['participation'] == 2 && isset($live_plus_cert) ) {
+                                $org_certificate = $live_plus_cert;
+                            } elseif( $reg['participation'] == 1 && isset($virtual_cert) ) {
+                                $org_certificate = $virtual_cert;
+                            } elseif( $reg['participation'] == 0 && isset($live_cert) ) {
+                                $org_certificate = $live_cert;
+                            }
+                            foreach($certificate['fields'] as $fid => $field) {
+                                if( $field['field'] == 'placement' ) {
+                                    $certificate['fields'][$fid]['text'] = 'Best in Class';
+                                }
+                                elseif( $field['field'] == 'class' || $field['field'] == 'class-group' ) {
+                                    $class_name = $reg['class_name'];
+                                    if( isset($festival['certificates-class-format']) 
+                                        && $festival['certificates-class-format'] == 'code-section-category-class' 
+                                        ) {
+                                        $class_name = $reg['class_code'] . ' - ' . $reg['syllabus_section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name']; 
+                                    } elseif( isset($festival['certificates-class-format']) 
+                                        && $festival['certificates-class-format'] == 'section-category-class' 
+                                        ) {
+                                        $class_name = $reg['syllabus_section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name']; 
+                                    } elseif( isset($festival['certificates-class-format']) 
+                                        && $festival['certificates-class-format'] == 'code-category-class' 
+                                        ) {
+                                        $class_name = $reg['class_code'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name']; 
+                                    } elseif( isset($festival['certificates-class-format']) 
+                                        && $festival['certificates-class-format'] == 'category-class' 
+                                        ) {
+                                        $class_name = $reg['category_name'] . ' - ' . $reg['class_name']; 
+                                    } else {
+                                        $class_name = $reg['class_name']; 
+                                    }
+                                    $certificate['fields'][$fid]['text'] = $class_name;
+                                }
+                                elseif( $field['field'] == 'text' ) {
+                                    $certificate['fields'][$fid]['text'] = str_replace('{_placement_}', 'Best in Class', $org_certificate['fields'][$fid]['text']);
+                                }
+                            }
+                            $certificates[] = $certificate;
+                        }
                     }
                 }
             }
