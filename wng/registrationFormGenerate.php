@@ -932,11 +932,23 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 );
         }
 
-        if( $registration["perf_time{$i}"] == '' ) {
-            $registration["perf_time{$i}"] = 0;
+        if( isset($registration["perf_time{$i}"]) ) {
+            $perf_time = $registration["perf_time{$i}"];
+        } else {
+            $perf_time = 0;
         }
-        $perf_time = (isset($_POST["f-perf_time{$i}-min"]) ? ($_POST["f-perf_time{$i}-min"]*60) : (isset($registration["perf_time{$i}"]) ? (intval($registration["perf_time{$i}"]/60)*60) : 0))
-            + (isset($_POST["f-perf_time{$i}-sec"]) ? $_POST["f-perf_time{$i}-sec"] : (isset($registration["perf_time{$i}"]) ? ($registration["perf_time{$i}"] % 60) :0));
+        if( $perf_time == '' ) {
+            $perf_time = 0;
+        }
+        if( isset($_POST["f-perf_time{$i}-min"]) ) {
+            $perf_time = $_POST["f-perf_time{$i}-min"]*60;
+        }
+        if( isset($_POST["f-perf_time{$i}-sec"]) ) {
+            $perf_time += $_POST["f-perf_time{$i}-sec"];
+        }
+//            $perf_time = (isset($_POST["f-perf_time{$i}-min"]) ? ($_POST["f-perf_time{$i}-min"]*60) : (isset($registration["perf_time{$i}"]) ? (intval($registration["perf_time{$i}"]/60)*60) : 0))
+//                + (isset($_POST["f-perf_time{$i}-sec"]) ? $_POST["f-perf_time{$i}-sec"] : (isset($registration["perf_time{$i}"]) ? ($registration["perf_time{$i}"] % 60) :0));
+//        }
         $fields["perf_time{$i}"] = array(
             'id' => "perf_time{$i}",
             'required' => $required,
