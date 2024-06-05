@@ -176,6 +176,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             $strsql .= "IFNULL(ssections.adjudicator1_id, 0) AS adjudicator_id, ";
         }
         $strsql .= "registrations.mark, "
+            . "registrations.flags, "
             . "registrations.placement, "
             . "registrations.level, "
             . "registrations.comments "
@@ -270,6 +271,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             $strsql .= "IFNULL(ssections.adjudicator1_id, 0) AS adjudicator_id, ";
         }
         $strsql .= "registrations.mark, "
+            . "registrations.flags, "
             . "registrations.placement, "
             . "registrations.level, "
             . "registrations.comments "
@@ -330,7 +332,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
             'class_code', 'class_name', 'category_name', 'syllabus_section_name', 'class_flags', 
             'competitor2_id', 'timeslot_date', 'timeslot_time', 'participation',
-            'adjudicator_id', 'mark', 'placement', 'level', 'comments',
+            'adjudicator_id', 'mark', 'flags', 'placement', 'level', 'comments',
             )),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -727,7 +729,11 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                             $pdf->Cell($wa[$wapos++], 16, "Placement ", 0, false, 'R', 0, '', 0, false, '', 'B');
                         }
                         $pdf->SetCellPaddings(0,2,0,2);
-                        $pdf->Cell($wa[$wapos++], 16, $reg['placement'], 'B', false, 'C', 0, '', 0, false, '', 'B');
+                        if( ($reg['flags']&0x10) == 0x10 ) {
+                            $pdf->Cell($wa[$wapos++], 16, $reg['placement'] . ' - Best in Class', 'B', false, 'C', 0, '', 0, false, '', 'B');
+                        } else {
+                            $pdf->Cell($wa[$wapos++], 16, $reg['placement'], 'B', false, 'C', 0, '', 0, false, '', 'B');
+                        }
                         $pdf->SetCellPaddings(2,2,2,2);
                     }
                     if( isset($festival['comments-level-pdf']) 

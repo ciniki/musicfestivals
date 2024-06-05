@@ -2045,6 +2045,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "registrations.movements8, "
             . "registrations.fee, "
             . "registrations.participation, "
+            . "registrations.comments, "
             . "classes.code AS class_code, "
             . "sections.name AS section_name, "
             . "categories.name AS category_name, "
@@ -2060,6 +2061,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "IFNULL(locations.address1, '') AS location_address, "
             . "IFNULL(locations.city, '') AS location_city, "
             . "IFNULL(ssections.flags, 0) AS timeslot_flags, "
+            . "IFNULL(divisions.flags, 0) AS division_flags, "
             . "IFNULL(invoices.status, 0) AS invoice_status "
             . "FROM ciniki_musicfestival_registrations AS registrations "
             . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
@@ -2131,7 +2133,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
-                    'timeslot_time', 'timeslot_date', 'location_name', 'location_address', 'location_city', 'timeslot_flags',
+                    'timeslot_time', 'timeslot_date', 'location_name', 'location_address', 'location_city', 
+                    'timeslot_flags', 'division_flags', 'comments',
                     ),
                 ),
             ));
