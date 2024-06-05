@@ -165,6 +165,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
     $strsql .= "registrations.title1, "
         . "registrations.participation, "
         . "registrations.mark, "
+        . "registrations.flags, "
         . "registrations.placement, "
         . "registrations.level, "
         . "IFNULL(classes.code, '') AS class_code, "
@@ -235,7 +236,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                 'title1', 
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name',
                 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 
-                'participation', 'mark', 'placement', 'level', 'timeslot_date_text',
+                'participation', 'mark', 'flags', 'placement', 'level', 'timeslot_date_text',
                 )),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -357,6 +358,13 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                     } elseif( $reg['participation'] == 0 && isset($live_cert) ) {
                         $certificate = $live_cert;
                     }
+
+                    //
+                    // Check for best in class flag
+                    //
+//                    if( ($reg['flags']&0x10) == 0x10 ) {
+//                        $reg['placement'] .= ' - Best in Class';
+//                    }
 
                     $num_copies = 1;
                     if( $reg['num_people'] > 0 ) {

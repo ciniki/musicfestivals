@@ -1893,17 +1893,6 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         } elseif( $editable == 'yes' ) {
             $fields['action']['value'] = 'update';
         }
-        $blocks[] = array(
-            'type' => 'form',
-            'title' => 'Registration',
-            'class' => 'limit-width limit-width-80',
-            'problem-list' => $form_errors,
-            'cancel-label' => $editable == 'yes' ? 'Cancel' : 'Back',
-            'submit-label' => 'Save',
-            'submit-hide' => $editable == 'no' ? 'yes' : 'no',
-            'fields' => $fields,
-            'js' => $js,
-            );
         if( $registration['timeslot_id'] > 0 ) {
             //
             // Get the timeslot->division->section flags to know if comments have been released
@@ -1948,21 +1937,41 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $download_buttons .= ($download_buttons != '' ? ' &nbsp; ' : '')
                     . "<input class='button' type='submit' name='submit' value='Download Certificate'>";
             }
-            if( $download_buttons != '' ) {
-                $blocks[] = array(
-                    'type' => 'html',
-                    'class' => 'aligncenter',
-                    'html' => "<div class='block-text aligncenter'><div class='wrap'><div class='content'>"
-                        . "<form action='' target='_blank' method='POST'>"
-                        . "<input type='hidden' name='f-registration_id' value='{$registration['registration_id']}' />"
-                        . "<input type='hidden' name='action' value='download' />"
-                        . $download_buttons
-                        . "</form>"
-                        . "<br/>"
-                        . "</div></div></div>",
-                    );
-            }
         }
+        $intro = '';
+        if( isset($download_buttons) && $download_buttons != '' ) {
+            $intro = "<div class='aligncenter'><form action='' target='_blank' method='POST'>"
+                    . "<input type='hidden' name='f-registration_id' value='{$registration['registration_id']}' />"
+                    . "<input type='hidden' name='action' value='download' />"
+                    . $download_buttons
+                    . "</form></div>";
+        }
+        $blocks[] = array(
+            'type' => 'form',
+            'title' => 'Registration',
+            'guidelines' => $intro,
+            'class' => 'limit-width limit-width-80',
+            'problem-list' => $form_errors,
+            'cancel-label' => $editable == 'yes' ? 'Cancel' : 'Back',
+            'submit-label' => 'Save',
+            'submit-hide' => $editable == 'no' ? 'yes' : 'no',
+            'fields' => $fields,
+            'js' => $js,
+            );
+        if( isset($download_buttons) && $download_buttons != '' ) {
+            $blocks[] = array(
+                'type' => 'html',
+                'class' => 'aligncenter',
+                'html' => "<div class='block-text aligncenter'><div class='wrap'><div class='content'>"
+                    . "<form action='' target='_blank' method='POST'>"
+                    . "<input type='hidden' name='f-registration_id' value='{$registration['registration_id']}' />"
+                    . "<input type='hidden' name='action' value='download' />"
+                    . $download_buttons
+                    . "</form>"
+                    . "<br/>"
+                    . "</div></div></div>",
+                );
+        } 
     }
     //
     // Show the delete form
