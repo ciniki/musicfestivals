@@ -599,7 +599,7 @@ function ciniki_musicfestivals_main() {
             'buttons':{
                 'multislot':{'label':'Open Class Scheduler', 'fn':'M.ciniki_musicfestivals_main.schedulemultislot.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.festival_id);'},
             }},
-        'schedule_divisions':{'label':'Divisions', 'type':'simplegrid', 'num_cols':2, 'aside':'no',
+        'schedule_divisions':{'label':'Divisions', 'type':'simplegrid', 'num_cols':2, 'aside':'no', 'panelcolumn':1,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.schedulesection_id != 'unscheduled' && M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['timeslots','comments','results','photos']) == 'yes' ? 'yes' : 'no'; },
             'headerValues':['Division', 'Date', 'Adjudicator'],
             'cellClasses':['multiline', 'multiline', ''],
@@ -704,7 +704,7 @@ function ciniki_musicfestivals_main() {
 //                'comments':{'label':'Adjudicators Comments', 'fn':'M.ciniki_musicfestivals_main.festival.downloadCommentsPDF();'},
 //                'runsheet':{'label':'Run Sheets', 'fn':'M.ciniki_musicfestivals_main.festival.downloadRunSheetsPDF = function(s) {
             }},
-        'schedule_timeslots':{'label':'Time Slots', 'type':'simplegrid', 'num_cols':2, 
+        'schedule_timeslots':{'label':'Time Slots', 'type':'simplegrid', 'num_cols':2,  'panelcolumn':2,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.schedulesection_id>0 && M.ciniki_musicfestivals_main.festival.scheduledivision_id>0 && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'timeslots') == 'yes' ? 'yes' : 'no'; },
             'cellClasses':['label multiline', 'multiline', 'fabuttons'],
             'addTxt':'Add Time Slot',
@@ -2137,7 +2137,9 @@ function ciniki_musicfestivals_main() {
             args['schedule'] = 'yes';
             args['ssection_id'] = this.schedulesection_id;
             args['sdivision_id'] = this.scheduledivision_id;
-            if( this.sections.schedule_tabs.selected == 'comments' ) {
+            if( this.sections.schedule_tabs.selected == 'timeslots' ) {
+                this.size = 'xlarge mediumaside columns';
+            } else if( this.sections.schedule_tabs.selected == 'comments' ) {
                 args['comments'] = 'yes';
             } else if( this.sections.schedule_tabs.selected == 'photos' ) {
                 args['photos'] = 'yes';
@@ -3928,6 +3930,15 @@ function ciniki_musicfestivals_main() {
             'fields':{
                 'tags':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new tag:'},
             }},
+        '_results':{'label':'Results', 'fields':{
+            'mark':{'label':'Mark', 'type':'text', 'visible':'yes', 'size':'small', 
+                'onkeyup':'M.ciniki_musicfestivals_main.registration.updatePlacement',
+                },
+            'placement':{'label':'Placement', 'type':'text', 'separator':'no', 'visible':'yes'},
+            'level':{'label':'Level', 'type':'text', 'separator':'no', 'visible':'yes', 'size':'small'},
+            'finals_placement':{'label':'Finals Placement', 'type':'text', 'separator':'no', 'visible':'yes'},
+            'flags5':{'label':'Best in Class', 'type':'flagtoggle', 'bit':0x10, 'default':'off', 'field':'flags'},
+            }},
         '_class':{'label':'Registration', 'fields':{
 //            'status':{'label':'Status', 'required':'yes', 'type':'toggle', 'toggles':{'5':'Draft', '10':'Applied', '50':'Paid', '60':'Cancelled'}},
 //            'payment_type':{'label':'Payment', 'type':'toggle', 'toggles':{'20':'Square', '50':'Visa', '55':'Mastercard', '100':'Cash', '105':'Cheque', '110':'Email', '120':'Other', '121':'Online'}},
@@ -4060,13 +4071,6 @@ function ciniki_musicfestivals_main() {
             'music_orgfilename3':{'label':'3rd Music', 'type':'file', 'visible':'no',
                 'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(3);',
                 }, */
-            'mark':{'label':'Mark', 'type':'text', 'separator':'yes', 'visible':'yes', 'size':'small', 
-                'onkeyup':'M.ciniki_musicfestivals_main.registration.updatePlacement',
-                },
-            'placement':{'label':'Placement', 'type':'text', 'separator':'no', 'visible':'yes'},
-            'level':{'label':'Level', 'type':'text', 'separator':'no', 'visible':'yes', 'size':'small'},
-            'finals_placement':{'label':'Finals Placement', 'type':'text', 'separator':'no', 'visible':'yes'},
-            'flags5':{'label':'Best in Class', 'type':'flagtoggle', 'bit':0x10, 'default':'off', 'field':'flags'},
             }},
 /*        'music_buttons':{'label':'', 
             'visible':function() { return (M.ciniki_musicfestivals_main.registration.data.festival.flags&0x02) == 0x02 ? 'yes' : 'no'},
@@ -4512,43 +4516,43 @@ function ciniki_musicfestivals_main() {
                     p.sections._class.fields.mark.label = p.data.festival['comments-mark-label'];
                 }
             } else {
-                p.sections._class.fields.mark.visible = 'no';
-                p.sections._class.fields.placement.separator = 'yes';
-                p.sections._class.fields.level.visible = 'no';
+                p.sections._results.fields.mark.visible = 'no';
+                p.sections._results.fields.placement.separator = 'yes';
+                p.sections._results.fields.level.visible = 'no';
             }
             if( p.data.festival['comments-placement-ui'] != null && p.data.festival['comments-placement-ui'] == 'yes' ) {
-                p.sections._class.fields.placement.visible = 'yes';
-                p.sections._class.fields.finals_placement.visible = 'yes';
+                p.sections._results.fields.placement.visible = 'yes';
+                p.sections._results.fields.finals_placement.visible = 'yes';
                 if( p.data.festival['comments-placement-label'] != null && p.data.festival['comments-placement-label'] != '' ) {
-                    p.sections._class.fields.placement.label = p.data.festival['comments-placement-label'];
-                    p.sections._class.fields.finals_placement.label = p.data.festival['comments-placement-label'];
+                    p.sections._results.fields.placement.label = p.data.festival['comments-placement-label'];
+                    p.sections._results.fields.finals_placement.label = p.data.festival['comments-placement-label'];
                 }
                 if( p.data.festival['comments-placement-options'] != null && p.data.festival['comments-placement-options'] != '' ) {
-                    p.sections._class.fields.placement.type = 'select';
-                    p.sections._class.fields.placement.options = {'':''};
-                    p.sections._class.fields.finals_placement.type = 'select';
-                    p.sections._class.fields.finals_placement.options = {'':''};
+                    p.sections._results.fields.placement.type = 'select';
+                    p.sections._results.fields.placement.options = {'':''};
+                    p.sections._results.fields.finals_placement.type = 'select';
+                    p.sections._results.fields.finals_placement.options = {'':''};
                     var options = p.data.festival['comments-placement-options'].split(",");
                     for(var i in options) {
                         var option = options[i].trim();
-                        p.sections._class.fields.placement.options[option] = option;
-                        p.sections._class.fields.finals_placement.options[option] = option;
+                        p.sections._results.fields.placement.options[option] = option;
+                        p.sections._results.fields.finals_placement.options[option] = option;
                     }
                 } else {
-                    p.sections._class.fields.placement.type = 'text';
-                    p.sections._class.fields.finals_placement.type = 'text';
+                    p.sections._results.fields.placement.type = 'text';
+                    p.sections._results.fields.finals_placement.type = 'text';
                 }
             } else {
-                p.sections._class.fields.placement.visible = 'no';
-                p.sections._class.fields.finals_placement.visible = 'no';
+                p.sections._results.fields.placement.visible = 'no';
+                p.sections._results.fields.finals_placement.visible = 'no';
             }
             if( p.data.festival['comments-level-ui'] != null && p.data.festival['comments-level-ui'] == 'yes' ) {
-                p.sections._class.fields.level.visible = 'yes';
+                p.sections._results.fields.level.visible = 'yes';
                 if( p.data.festival['comments-level-label'] != null && p.data.festival['comments-level-label'] != '' ) {
-                    p.sections._class.fields.level.label = p.data.festival['comments-level-label'];
+                    p.sections._results.fields.level.label = p.data.festival['comments-level-label'];
                 }
             } else {
-                p.sections._class.fields.level.visible = 'no';
+                p.sections._results.fields.level.visible = 'no';
             }
             p.refresh();
             p.show(cb);
