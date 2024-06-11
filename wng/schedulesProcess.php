@@ -168,7 +168,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
     //
     // Load the schedules
     //
-    if( isset($s['layout']) && ($s['layout'] == 'division-buttons' || $s['layout'] == 'division-grouped-buttons') ) {
+    if( isset($s['layout']) && ($s['layout'] == 'section-grouped-buttons' || $s['layout'] == 'division-buttons' || $s['layout'] == 'division-grouped-buttons') ) {
         $strsql = "SELECT sections.id, "
             . "sections.name, "
             . "divisions.id AS division_id, "
@@ -431,7 +431,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                     'type' => 'table',
                     'section' => 'schedule-divisions',
                     'headers' => 'no',
-                    'class' => 'fold-at-50 schedule-buttons',
+                    'class' => 'fold-at-50 schedule-grouped-buttons',
                     'columns' => array(
                         array('label' => 'Section', 'fold-label'=>'', 'field'=>'title', 'class'=>'section-title'),
                         array('label' => 'Buttons', 'fold-label'=>'', 'field'=>'buttons', 'class'=>'alignleft fold-alignleft buttons'),
@@ -481,11 +481,32 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
         if( isset($top_download_block) ) {
             $blocks[] = $top_download_block;
         }
-        $blocks[] = array(
-            'type' => 'buttons',
-            'class' => 'schedule-buttons',
-            'list' => $sections,
-            );
+        if( isset($s['layout']) && $s['layout'] == 'section-grouped-buttons' ) {
+            error_log(print_r($sections,true));
+            foreach($sections as $sid => $section) {    
+                $sections[$sid]['buttons'] = '';
+                foreach($section['divisions'] as $did => $division) {
+                    $sections[$sid]['buttons'] .= "<a class='button' href='{$division['url']}'>{$division['name']}</a>";
+                }
+            }
+            $blocks[] = array(
+                'type' => 'table',
+                'section' => 'schedule-divisions',
+                'headers' => 'no',
+                'class' => 'fold-at-50 schedule-grouped-buttons',
+                'columns' => array(
+                    array('label' => 'Section', 'fold-label'=>'', 'field'=>'name', 'class'=>'section-title'),
+                    array('label' => 'Buttons', 'fold-label'=>'', 'field'=>'buttons', 'class'=>'alignleft fold-alignleft buttons'),
+                    ),
+                'rows' => $sections,
+                );
+        } else {
+            $blocks[] = array(
+                'type' => 'buttons',
+                'class' => 'schedule-buttons',
+                'list' => $sections,
+                );
+        }
     }
 
     //
