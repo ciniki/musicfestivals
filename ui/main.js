@@ -2138,7 +2138,7 @@ function ciniki_musicfestivals_main() {
             args['ssection_id'] = this.schedulesection_id;
             args['sdivision_id'] = this.scheduledivision_id;
             if( this.sections.schedule_tabs.selected == 'timeslots' ) {
-                this.size = 'xlarge mediumaside columns';
+//                this.size = 'xlarge mediumaside columns';
             } else if( this.sections.schedule_tabs.selected == 'comments' ) {
                 args['comments'] = 'yes';
             } else if( this.sections.schedule_tabs.selected == 'photos' ) {
