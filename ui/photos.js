@@ -49,7 +49,7 @@ function ciniki_musicfestivals_photos() {
         'timeslots':{'label':'Time Slots', 'type':'simplegrid', 'num_cols':3,
             'cellClasses':['multiline', 'thumbnails', 'alignright fabuttons'],
             'addDropImage':function(iid, i) {
-                var row = M.ciniki_musicfestivals_photos.festival.data.timeslot_photos[i];
+                var row = M.ciniki_musicfestivals_photos.timeslots.data.timeslots[i];
                 M.api.getJSONCb('ciniki.musicfestivals.timeslotImageAdd', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 
                     'timeslot_id':row.id, 'image_id':iid},
                     function(rsp) {
