@@ -115,13 +115,20 @@ function ciniki_musicfestivals_scheduleDivisionResultsUpdate(&$ciniki) {
     // Load the registrations
     //
     $strsql = "SELECT timeslots.id AS timeslot_id, "
+        . "timeslots.flags AS timeslot_flags, "
         . "registrations.id, "
         . "registrations.mark, "
         . "registrations.placement, "
-        . "registrations.level "
+        . "registrations.level, "
+        . "registrations.finals_mark, "
+        . "registrations.finals_placement, "
+        . "registrations.finals_level "
         . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
         . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
-            . "timeslots.id = registrations.timeslot_id "
+            . "("
+                . "((timeslots.flags&0x02) = 0 && timeslots.id = registrations.timeslot_id) "
+                . "OR ((timeslots.flags&0x02) = 0x02 && timeslots.id = registrations.finals_timeslot_id) "
+                . ") "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "WHERE timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -131,7 +138,7 @@ function ciniki_musicfestivals_scheduleDivisionResultsUpdate(&$ciniki) {
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'registrations', 'fname'=>'id', 'fields'=>array('id', 'mark', 'placement', 'level')),
+        array('container'=>'registrations', 'fname'=>'id', 'fields'=>array('id', 'timeslot_flags', 'mark', 'placement', 'level')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.697', 'msg'=>'Unable to load results', 'err'=>$rc['err']));
@@ -140,13 +147,25 @@ function ciniki_musicfestivals_scheduleDivisionResultsUpdate(&$ciniki) {
     foreach($registrations as $rid => $result) {
         $update_args = array();
         if( isset($ciniki['request']['args']["mark_{$rid}"]) ) {
-            $update_args['mark'] = $ciniki['request']['args']["mark_{$rid}"];
+            if( ($result['timeslot_flags']&0x02) == 0x02 ) {
+                $update_args['finals_mark'] = $ciniki['request']['args']["mark_{$rid}"];
+            } else {
+                $update_args['mark'] = $ciniki['request']['args']["mark_{$rid}"];
+            }
         }
         if( isset($ciniki['request']['args']["placement_{$rid}"]) ) {
-            $update_args['placement'] = $ciniki['request']['args']["placement_{$rid}"];
+            if( ($result['timeslot_flags']&0x02) == 0x02 ) {
+                $update_args['finals_placement'] = $ciniki['request']['args']["placement_{$rid}"];
+            } else {
+                $update_args['placement'] = $ciniki['request']['args']["placement_{$rid}"];
+            }
         }
         if( isset($ciniki['request']['args']["level_{$rid}"]) ) {
-            $update_args['level'] = $ciniki['request']['args']["level_{$rid}"];
+            if( ($result['timeslot_flags']&0x02) == 0x02 ) {
+                $update_args['finals_level'] = $ciniki['request']['args']["level_{$rid}"];
+            } else {
+                $update_args['level'] = $ciniki['request']['args']["level_{$rid}"];
+            }
         }
         if( count($update_args) ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');

@@ -126,7 +126,8 @@ function ciniki_musicfestivals_scheduleDivisionResultsGet(&$ciniki) {
     //
     // Load the registrations
     //
-    $strsql = "SELECT timeslots.id AS timeslot_id, ";
+    $strsql = "SELECT timeslots.id AS timeslot_id, "
+        . "timeslots.flags AS timeslot_flags, ";
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
         $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i&nbsp;%p') AS slot_time_text, ";
     } else {
@@ -159,16 +160,19 @@ function ciniki_musicfestivals_scheduleDivisionResultsGet(&$ciniki) {
         . "registrations.movements6, "
         . "registrations.movements7, "
         . "registrations.movements8, "
-        . "registrations.mark, "
-        . "registrations.placement, "
-        . "registrations.level, "
+        . "IF((timeslots.flags&0x02)=0x02, registrations.finals_mark, registrations.mark) AS mark, "
+        . "IF((timeslots.flags&0x02)=0x02, registrations.finals_placement, registrations.placement) AS placement, "
+        . "IF((timeslots.flags&0x02)=0x02, registrations.finals_level, registrations.level) AS level, "
         . "classes.code AS class_code, "
         . "classes.name AS class_name, "
         . "categories.name AS category_name, "
         . "sections.name AS section_name "
         . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
         . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
-            . "timeslots.id = registrations.timeslot_id "
+            . "("
+                . "((timeslots.flags&0x02) = 0 && timeslots.id = registrations.timeslot_id) "
+                . "OR ((timeslots.flags&0x02) = 0x02 && timeslots.id = registrations.finals_timeslot_id) "
+                . ") "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
@@ -191,11 +195,11 @@ function ciniki_musicfestivals_scheduleDivisionResultsGet(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
-            'fields'=>array('id', 'timeslot_id', 'display_name', 'slot_time_text', 'timeslot_sequence', 
+            'fields'=>array('id', 'timeslot_id', 'timeslot_flags', 'display_name', 'slot_time_text', 'timeslot_sequence', 
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
                 'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
-                'mark', 'placement', 'level',
+                'mark', 'placement', 'level', 
                 'class_code', 'class_name', 'category_name', 'section_name',
                 ),
             ),
