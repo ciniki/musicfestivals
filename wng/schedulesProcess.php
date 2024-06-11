@@ -168,7 +168,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
     //
     // Load the schedules
     //
-    if( isset($s['layout']) && $s['layout'] == 'division-buttons' ) {
+    if( isset($s['layout']) && ($s['layout'] == 'division-buttons' || $s['layout'] == 'division-grouped-buttons') ) {
         $strsql = "SELECT sections.id, "
             . "sections.name, "
             . "divisions.id AS division_id, "
@@ -367,7 +367,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
             'title' => isset($s['title']) ? $s['title'] : 'Schedule',
             );
     }
-    
+
     if( isset($selected_section) && isset($selected_division) ) {
         $section['settings']['section-id'] = $selected_section['id'];
         $section['settings']['division-id'] = $selected_division['id'];
@@ -391,7 +391,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
     //
     // Display the buttons for the list of schedules
     //
-    elseif( isset($s['layout']) && $s['layout'] == 'division-buttons' ) {
+    elseif( isset($s['layout']) && ($s['layout'] == 'division-buttons' || $s['layout'] == 'division-grouped-buttons') ) {
         if( isset($division_permalink) && $division_permalink != '' ) {
             $blocks[] = array(
                 'type' => 'msg',
@@ -403,13 +403,50 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
             $blocks[] = $top_download_block;
         }
         foreach($sections as $section) {
-            $blocks[] = array(
-                'type' => 'buttons',
-                'class' => 'schedule-buttons',
-                'title' => $section['name'],
-                'level' => 2,
-                'list' => $section['divisions'],
-                );
+            if( $s['layout'] == 'division-grouped-buttons' ) {
+                $groups = array();
+                foreach($section['divisions'] as $division) {
+                    if( preg_match("/^(.*)\s+-\s+([^-]+)$/", $division['name'], $m) ) {
+                        $name = $m[1];
+                        $button = "<a class='button' href='{$division['url']}'>{$m[2]}</a>";
+                    } else {
+                        $name = $division['name'];
+                        $button = "<a class='button' href='{$division['url']}'>{$division['name']}</a>";
+                    }
+                    if( !isset($groups[$name]) ) {
+                        $groups[$name] = array(
+                            'title' => $name,
+                            'buttons' => $button,
+                            );
+                    } else {
+                        $groups[$name]['buttons'] .= $button;
+                    }
+                }
+                $blocks[] = array(
+                    'type' => 'title',
+                    'level' => 2,
+                    'title' => $section['name'],
+                    );
+                $blocks[] = array(
+                    'type' => 'table',
+                    'section' => 'schedule-divisions',
+                    'headers' => 'no',
+                    'class' => 'fold-at-50 schedule-buttons',
+                    'columns' => array(
+                        array('label' => 'Section', 'fold-label'=>'', 'field'=>'title', 'class'=>'section-title'),
+                        array('label' => 'Buttons', 'fold-label'=>'', 'field'=>'buttons', 'class'=>'alignleft fold-alignleft buttons'),
+                        ),
+                    'rows' => $groups,
+                    );
+            } else {
+                $blocks[] = array(
+                    'type' => 'buttons',
+                    'class' => 'schedule-buttons',
+                    'title' => $section['name'],
+                    'level' => 2,
+                    'list' => $section['divisions'],
+                    );
+            }
         }
     }
     elseif( isset($s['layout']) && $s['layout'] == 'date-buttons' ) {
