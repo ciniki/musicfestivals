@@ -50,6 +50,7 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
         . "registrations.display_name, "
         . "registrations.participation, "
         . "registrations.placement, "
+        . "registrations.finals_placement, "
         . "classes.name AS class_name, "
         . "CONCAT_WS(' - ', classes.code, classes.name) AS class, ";
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
@@ -57,7 +58,8 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
     } else {
         $strsql .= "IFNULL(TIME_FORMAT(timeslots.slot_time, '%l:%i %p'), '') AS timeslot_time, ";
     }
-    $strsql .= "IFNULL(DATE_FORMAT(divisions.division_date, '%b %D'), '') AS timeslot_date, "
+    $strsql .= "IFNULL(timeslots.flags, 0) AS timeslot_flags, "
+        . "IFNULL(DATE_FORMAT(divisions.division_date, '%b %D'), '') AS timeslot_date, "
         . "IFNULL(locations.name, '') AS location_name, "
         . "divisions.flags AS division_flags, "
         . "ssections.flags AS section_flags "
@@ -89,8 +91,9 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
-            'fields'=>array( 'id', 'display_name', 'participation', 'class', 'class_name',
-                'timeslot_time', 'timeslot_date', 'location_name', 'division_flags', 'section_flags', 'placement',
+            'fields'=>array( 'id', 'display_name', 'participation', 'class', 'class_name', 'timeslot_flags',
+                'timeslot_time', 'timeslot_date', 'location_name', 'division_flags', 'section_flags', 
+                'placement', 'finals_placement',
                 ),
             ),
         ));
@@ -116,10 +119,11 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
         //
         // If results have been released on the website, show them instead of the scheduled time
         //
-        if( (($reg['section_flags']&0x20) == 0x20 || ($reg['division_flags']&0x20) == 0x20) 
-            && $reg['placement'] != '' 
-            ) {
+        if( (($reg['section_flags']&0x20) == 0x20 || ($reg['division_flags']&0x20) == 0x20) ) {
             $registrations[$rid]['scheduled'] = $reg['placement'];
+            if( $reg['finals_placement'] != '' ) {
+                $registrations[$rid]['scheduled'] .= ($registrations[$rid]['scheduled'] != '' ? ' - ' : '') . $reg['finals_placement'];
+            }
         }
     }
 
@@ -128,8 +132,8 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
             'type' => 'buttons',
             'class' => 'aligncenter',
             'items' => array(   
-                array('text' => 'Download Excel', 'url' => $base_url . '/' . $request['uri_split'][2] . '/registrations/registrations.xls'),
-                array('text' => 'Download PDF', 'url' => $base_url . '/' . $request['uri_split'][2] . '/registrations/registrations.pdf'),
+                array('text' => 'Download Excel', 'target' => '_blank', 'url' => $base_url . '/' . $request['uri_split'][2] . '/registrations/registrations.xls'),
+                array('text' => 'Download PDF', 'target' => '_blank', 'url' => $base_url . '/' . $request['uri_split'][2] . '/registrations/registrations.pdf'),
                 ),
             );
     }
