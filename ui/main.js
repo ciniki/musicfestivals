@@ -4509,15 +4509,15 @@ function ciniki_musicfestivals_main() {
                 p.sections._tags.fields.tags.tags = rsp.tags;
             }
             if( p.data.festival['comments-mark-ui'] != null && p.data.festival['comments-mark-ui'] == 'yes' ) {
-                p.sections._class.fields.mark.visible = 'yes';
-                p.sections._class.fields.placement.separator = 'no';
-                p.sections._class.fields.level.separator = 'no';
+                p.sections._results.fields.mark.visible = 'yes';
+                p.sections._results.fields.placement.separator = 'no';
+                p.sections._results.fields.level.separator = 'no';
                 if( p.data.festival['comments-mark-label'] != null && p.data.festival['comments-mark-label'] != '' ) {
-                    p.sections._class.fields.mark.label = p.data.festival['comments-mark-label'];
+                    p.sections._results.fields.mark.label = p.data.festival['comments-mark-label'];
                 }
             } else {
                 p.sections._results.fields.mark.visible = 'no';
-                p.sections._results.fields.placement.separator = 'yes';
+                p.sections._results.fields.placement.separator = 'no';
                 p.sections._results.fields.level.visible = 'no';
             }
             if( p.data.festival['comments-placement-ui'] != null && p.data.festival['comments-placement-ui'] == 'yes' ) {
