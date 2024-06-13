@@ -482,7 +482,6 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
             $blocks[] = $top_download_block;
         }
         if( isset($s['layout']) && $s['layout'] == 'section-grouped-buttons' ) {
-            error_log(print_r($sections,true));
             foreach($sections as $sid => $section) {    
                 $sections[$sid]['buttons'] = '';
                 foreach($section['divisions'] as $did => $division) {
