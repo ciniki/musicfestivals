@@ -71,13 +71,16 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
     }
     $festival = isset($rc['festival']) ? $rc['festival'] : array();
 
-/*    $start_dt = new DateTime($festival['start_date'], new DateTimezone($intl_timezone));
-    $end_dt = new DateTime($festival['end_date'], new DateTimezone($intl_timezone));
-    $now = new DateTime('now', new DateTimezone($intl_timezone));
+    if( isset($festival['start_date']) && $festival['start_date'] != '' ) {
+        $start_dt = new DateTime($festival['start_date'], new DateTimezone($intl_timezone));
+        $end_dt = new DateTime($festival['end_date'], new DateTimezone($intl_timezone));
+        $now = new DateTime('now', new DateTimezone($intl_timezone));
 
-    if( $start_dt < $now && $end_dt > $now ) {
-        $current_festival = 'yes';
-    } */
+        if( $start_dt < $now && $end_dt > $now ) {
+            $current_festival = 'yes';
+        }
+    }
+
 
     //
     // Check if current/active festivals to show in main menu
@@ -118,6 +121,7 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
     if( isset($festival['num_schedule_sections']) && $festival['num_schedule_sections'] > 0 
         && ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x04) // photos
         && isset($festival['id'])
+        && isset($current_festival)
         && isset($ciniki['tenant']['modules']['ciniki.musicfestivals'])
         && (isset($args['permissions']['owners'])
             || isset($args['permissions']['employees'])
