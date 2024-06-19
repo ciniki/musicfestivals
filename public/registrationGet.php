@@ -355,8 +355,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         // Get the teacher details
         //
         if( isset($registration['teacher_customer_id']) && $registration['teacher_customer_id'] > 0 ) {
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
-            $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['tnid'], 
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
+            $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], 
                 array('customer_id'=>$registration['teacher_customer_id'], 'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
@@ -394,8 +394,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) 
             && isset($registration['accompanist_customer_id']) && $registration['accompanist_customer_id'] > 0 
             ) {
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
-            $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['tnid'], 
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
+            $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], 
                 array('customer_id'=>$registration['accompanist_customer_id'], 'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
