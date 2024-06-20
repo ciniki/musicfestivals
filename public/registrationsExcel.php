@@ -562,7 +562,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         }
     }
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
 
     //
     // Create an ALL sheet
@@ -719,7 +719,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     $registration['teacher_phone'] = $teachers[$registration['teacher_customer_id']]['teacher_phone'];
                     $registration['teacher_email'] = $teachers[$registration['teacher_customer_id']]['teacher_email'];
                 } else {
-                    $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['tnid'], 
+                    $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], 
                         array('customer_id'=>$registration['teacher_customer_id'], 'phones'=>'yes', 'emails'=>'yes'));
                     if( isset($rc['customer']) ) {
                         $registration['teacher_name'] = $rc['customer']['display_name'];
@@ -753,7 +753,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     $registration['accompanist_phone'] = $accompanists[$registration['accompanist_customer_id']]['accompanist_phone'];
                     $registration['accompanist_email'] = $accompanists[$registration['accompanist_customer_id']]['accompanist_email'];
                 } else {
-                    $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['tnid'], 
+                    $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], 
                         array('customer_id'=>$registration['accompanist_customer_id'], 'phones'=>'yes', 'emails'=>'yes'));
                     if( $rc['stat'] != 'ok' ) {
                         return $rc;

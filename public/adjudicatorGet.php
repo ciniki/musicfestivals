@@ -100,8 +100,8 @@ function ciniki_musicfestivals_adjudicatorGet($ciniki) {
     // If the customer is specified, load the details
     //
     if( isset($adjudicator['customer_id']) && $adjudicator['customer_id'] > 0 ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
-        $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['tnid'], 
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
+        $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], 
             array('customer_id'=>$adjudicator['customer_id'], 'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
         if( $rc['stat'] != 'ok' ) {
             return $rc;

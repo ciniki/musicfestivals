@@ -169,8 +169,8 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
     //
     // Lookup the teacher info
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails');
-    $rc = ciniki_customers_hooks_customerDetails($ciniki, $args['tnid'], 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
+    $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], 
         array('customer_id'=>$args['teacher_id'], 'phones'=>'no', 'emails'=>'yes', 'addresses'=>'no', 'subscriptions'=>'no'));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -183,7 +183,7 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
     //
     // if customer is set
     //
-    if( !isset($customer['emails'][0]['email']['address']) ) {
+    if( !isset($customer['emails'][0]['address']) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.103', 'msg'=>"The teacher doesn't have an email address, we are unable to send the email."));
     }
 
@@ -191,7 +191,7 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
     $rc = ciniki_mail_hooks_addMessage($ciniki, $args['tnid'], array(
         'customer_id'=>$args['teacher_id'],
         'customer_name'=>(isset($customer['display_name'])?$customer['display_name']:''),
-        'customer_email'=>$customer['emails'][0]['email']['address'],
+        'customer_email'=>$customer['emails'][0]['address'],
         'subject'=>$args['subject'],
         'html_content'=>$html_message,
         'text_content'=>$text_message,
