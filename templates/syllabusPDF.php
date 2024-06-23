@@ -111,7 +111,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             . "categories.id = classes.category_id ";
     if( isset($args['live-virtual']) && $args['live-virtual'] == 'live' ) {
         $strsql .= "AND classes.fee > 0 ";
-    } elseif( isset($args['live-virtual']) && $args['live-virtual'] == 'live' ) {
+    } elseif( isset($args['live-virtual']) && $args['live-virtual'] == 'virtual' ) {
         $strsql .= "AND classes.virtual_fee > 0 ";
     }
     $strsql .= "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
