@@ -50,14 +50,14 @@ function ciniki_musicfestivals_wng_festivalLoad(&$ciniki, $tnid, $festival_id) {
     $edit_end_dt = new DateTime($festival['edit_end_dt'], new DateTimezone('UTC'));
     $accompanist_end_dt = new DateTime($festival['accompanist_end_dt'], new DateTimezone('UTC'));
     $upload_end_dt = new DateTime($festival['upload_end_dt'], new DateTimezone('UTC'));
-    if( ($festival['flags']&0x01) == 0x01 ) {
+    if( ($festival['flags']&0x20) == 0x20 ) {
         $earlybird_dt = new DateTime($festival['earlybird_date'], new DateTimezone('UTC'));
         $festival['earlybird'] = ($earlybird_dt > $now ? 'yes' : 'no');
     } else {
         $festival['earlybird'] = 'no';
     }
     $festival['live'] = (($festival['flags']&0x01) == 0x01 && $live_dt > $now ? 'yes' : 'no');
-    if( ($festival['flags']&0x01) == 0x01 ) {
+    if( ($festival['flags']&0x02) == 0x02 ) {
         $virtual_dt = new DateTime($festival['virtual_date'], new DateTimezone('UTC'));
         $festival['virtual'] = (($festival['flags']&0x02) == 0x02 && $virtual_dt > $now ? 'yes' : 'no');
     } else {
