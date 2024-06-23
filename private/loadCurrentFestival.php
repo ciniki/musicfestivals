@@ -63,6 +63,13 @@ function ciniki_musicfestivals_loadCurrentFestival(&$ciniki, $tnid) {
     } else {
         $festival['virtual'] = 'no';
     }
+    if( ($festival['flags']&0x10) == 0x10 ) {   // Adjudication Plus
+        $festival['earlybird_plus_live'] = $festival['earlybird'];
+        $festival['plus_live'] = $festival['live'];
+    } else {
+        $festival['earlybird_plus_live'] = 'no';
+        $festival['plus_live'] = 'no';
+    }
     $festival['edit'] = ($edit_end_dt > $now ? 'yes' : 'no');
     $festival['edit-accompanist'] = ($accompanist_end_dt > $now ? 'yes' : 'no');
     $festival['upload'] = (($festival['flags']&0x03) == 0x03 && $upload_end_dt > $now ? 'yes' : 'no');
