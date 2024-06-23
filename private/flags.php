@@ -16,10 +16,10 @@ function ciniki_musicfestivals_flags(&$ciniki) {
     //
     $flags = array(
         // 0x01
-        array('flag'=>array('bit'=>'1', 'name'=>'Earlybird **deprecated**')),
-        array('flag'=>array('bit'=>'2', 'name'=>'Online Registrations **deprecated**')),
+//        array('flag'=>array('bit'=>'1', 'name'=>'Earlybird **deprecated**')), // now festival flag
+//        array('flag'=>array('bit'=>'2', 'name'=>'Online Registrations **deprecated**')),
         array('flag'=>array('bit'=>'3', 'name'=>'Timeslot Photos')),
-        array('flag'=>array('bit'=>'4', 'name'=>'Placement **deprecated**')),
+//        array('flag'=>array('bit'=>'4', 'name'=>'Placement **deprecated**')), 
         // 0x10
         array('flag'=>array('bit'=>'5', 'name'=>'Sponsors')),
         array('flag'=>array('bit'=>'6', 'name'=>'Lists')),
@@ -29,11 +29,11 @@ function ciniki_musicfestivals_flags(&$ciniki) {
         array('flag'=>array('bit'=>'9', 'name'=>'Main Menu Festivals')),
         array('flag'=>array('bit'=>'10', 'name'=>'Email Lists')),
         array('flag'=>array('bit'=>'11', 'name'=>'Messages')),
-        array('flag'=>array('bit'=>'12', 'name'=>'Adjudication Plus **deprecated**')),
+//        array('flag'=>array('bit'=>'12', 'name'=>'Adjudication Plus **deprecated**')), // now festival flag
         // 0x1000
         array('flag'=>array('bit'=>'13', 'name'=>'Class Levels')), // May be changed to tags in the future
-        array('flag'=>array('bit'=>'14', 'name'=>'Reg Tags **deprecated**')),              // Old registration flags, no enabled by default
-        array('flag'=>array('bit'=>'15', 'name'=>'Virtual Entries **deprecated**')), // 
+//        array('flag'=>array('bit'=>'14', 'name'=>'Reg Tags **deprecated**')), // Old registration flags, now enabled by default
+//        array('flag'=>array('bit'=>'15', 'name'=>'Virtual Entries **deprecated**')),  // now festival flag
         array('flag'=>array('bit'=>'16', 'name'=>'Accompanists')),
         // 0x010000
         array('flag'=>array('bit'=>'17', 'name'=>'Provincials')), // Name may change
