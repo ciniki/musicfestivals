@@ -2442,7 +2442,6 @@ function ciniki_musicfestivals_main() {
             'status':{'label':'Status', 'type':'toggle', 'toggles':{'10':'Active', '30':'Current', '60':'Archived'}},
             'flags1':{'label':'Registrations Open', 'type':'flagtoggle', 'default':'off', 'bit':0x01, 'field':'flags'},
             'flags2':{'label':'Virtual Option', 'type':'flagtoggle', 'default':'off', 'bit':0x02, 'field':'flags',
-                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x4000); },
                 'on_fields':['flags3','virtual_date', 'upload_end_dt'],
                 },
             'flags3':{'label':'Virtual Pricing', 'type':'flagtoggle', 'default':'off', 'bit':0x04, 'field':'flags', 'visible':'no'},
@@ -3272,8 +3271,8 @@ function ciniki_musicfestivals_main() {
                     p.sections.classes.dataMaps.push('virtual_fee');
                     p.sections.classes.cellClasses.push('alignright');
                 }
-                if( M.modFlagOn('ciniki.musicfestivals', 0x0800) ) {
-                    if( (rsp.festival.flags&0x20) == 0x20 ) {
+                if( (rsp.festival.flags&0x10) == 0x10 ) {   // Adjudication plus
+                    if( (rsp.festival.flags&0x20) == 0x20 ) {   // Earlybird Pricing
                         p.sections.classes.headerValues.push('Earlybird Plus');
                         p.sections.classes.sortTypes.push('number');
                         p.sections.classes.dataMaps.push('earlybird_plus_fee');
@@ -3993,17 +3992,11 @@ function ciniki_musicfestivals_main() {
                     },
                 },
             },
-//        '_tags':{'label':'Tags', 
-//            'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x2000); },
-//            'fields':{
-//                'tags':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new tag:'},
-//            }},
         '_class':{'label':'Registration', 
             'fields':{
 //            'status':{'label':'Status', 'required':'yes', 'type':'toggle', 'toggles':{'5':'Draft', '10':'Applied', '50':'Paid', '60':'Cancelled'}},
 //            'payment_type':{'label':'Payment', 'type':'toggle', 'toggles':{'20':'Square', '50':'Visa', '55':'Mastercard', '100':'Cash', '105':'Cheque', '110':'Email', '120':'Other', '121':'Online'}},
 //            'flags1':{'label':'Festivals', 'type':'flagspiece', 'mask':0x03, 'field':'flags', 'join':'yes', 'toggle':'yes',
-//                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x4000); },
 //                'flags':{'0':{'name':'Both'}, '1':{'name':'Live'}, '2':{'name':'Virtual'}},
 //                },
                 'flags13':{'label':'Colour', 'type':'flagspiece', 'mask':0xFF00, 'field':'flags', 'toggle':'yes', 'none':'yes', 'join':'yes', 'separator':'yes',
@@ -6516,7 +6509,7 @@ function ciniki_musicfestivals_main() {
         '_details':{'label':'Adjudicator Details', 'aside':'yes', 'fields':{
             'discipline':{'label':'Discipline', 'type':'text'},
             'flags1':{'label':'Festivals', 'type':'flagspiece', 'mask':0x03, 'field':'flags', 'join':'yes', 'toggle':'yes',
-                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x4000); },
+                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x020000); },   // Split live/virtual festivals
                 'flags':{'0':{'name':'Both'}, '1':{'name':'Live'}, '2':{'name':'Virtual'}},
                 },
             }},

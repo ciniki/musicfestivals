@@ -117,8 +117,9 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 )),
             ),
         );
-    
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x4000) ) {
+ 
+//      FIXME: Add check to see if any festivals are using virtual, then provide option
+//    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x4000) ) {
         $sections['ciniki.musicfestivals.syllabus']['settings']['display-live-virtual'] = array(
             'label'=>'Classes', 
             'type'=>'toggle', 'default'=>'all', 'toggles'=>array(
@@ -126,7 +127,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'live' => 'Live',
                 'virtual' => 'Virtual',
                 ));
-    }
+//    }
 
     //
     // Section to display the file download for a festival - deprecated
@@ -180,7 +181,8 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 )),
             ),
         );
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x4000) ) {
+//      FIXME: Add check to see if any festivals are using virtual
+//    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x4000) ) {
         $sections['ciniki.musicfestivals.adjudicators']['settings']['display-live-virtual'] = array(
             'label'=>'Classes', 
             'type'=>'toggle', 'default'=>'all', 'toggles'=>array(
@@ -188,7 +190,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'live' => 'Live',
                 'virtual' => 'Virtual',
                 ));
-    }
+//    }
 
     //
     // Section to display the schedules for a festival

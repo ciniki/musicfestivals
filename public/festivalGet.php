@@ -633,9 +633,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             //
             // Get the list of tags
             //
-            elseif( isset($args['registrations_list']) && $args['registrations_list'] == 'tags'
-                && ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x2000) 
-                ) {
+            elseif( isset($args['registrations_list']) && $args['registrations_list'] == 'tags' ) {
                 $strsql = "SELECT tags.tag_name AS name, ";
                 if( ($festival['flags']&0x02) == 0x02 && isset($args['ipv']) ) {
                     if( $args['ipv'] == 'inperson' ) {
@@ -708,9 +706,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             //
             // Get the list of colours
             //
-            else if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x2000) 
-                && isset($args['registrations_list']) && $args['registrations_list'] == 'colours'
-                ) {
+            elseif( isset($args['registrations_list']) && $args['registrations_list'] == 'colours') {
                 $strsql = "SELECT (registrations.flags&0xFF00) AS colour, "
                     . "COUNT(registrations.id) AS num_registrations "
                     . "FROM ciniki_musicfestival_registrations AS registrations "
