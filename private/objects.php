@@ -153,6 +153,8 @@ function ciniki_musicfestivals_objects($ciniki) {
             'virtual_fee'=>array('name'=>'Virtual Fee', 'type'=>'currency', 'default'=>'0'),
             'earlybird_plus_fee'=>array('name'=>'Earlybird Plus Fee', 'type'=>'currency', 'default'=>'0'),
             'plus_fee'=>array('name'=>'Plus Fee', 'type'=>'currency', 'default'=>'0'),
+            'min_competitors'=>array('name'=>'Minimum Competitors', 'default'=>'1'),
+            'max_competitors'=>array('name'=>'Maximum Competitors', 'default'=>'1'),
             'min_titles'=>array('name'=>'Minimum Titles', 'default'=>'1'),
             'max_titles'=>array('name'=>'Maximum Titles', 'default'=>'1'),
             'provincials_code'=>array('name'=>'Provincial Class Code', 'default'=>''),

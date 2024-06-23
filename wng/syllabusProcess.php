@@ -44,30 +44,12 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     //
     // Get the music festival details
     //
-    $dt = new DateTime('now', new DateTimezone('UTC'));
-    $strsql = "SELECT id, name, flags, "
-        . "earlybird_date, "
-        . "live_date, "
-        . "virtual_date "
-//        . "IFNULL(DATEDIFF(earlybird_date, '" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d')) . "'), -1) AS earlybird, "
-//        . "IFNULL(DATEDIFF(virtual_date, '" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d')) . "'), -1) AS virtual "
-        . "FROM ciniki_musicfestivals "
-        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
-        . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'festivalLoad');
+    $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $s['festival-id']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-    if( isset($rc['festival']) ) {
-        $festival = $rc['festival'];
-        $earlybird_dt = new DateTime($rc['festival']['earlybird_date'], new DateTimezone('UTC'));
-        $live_dt = new DateTime($rc['festival']['live_date'], new DateTimezone('UTC'));
-        $virtual_dt = new DateTime($rc['festival']['virtual_date'], new DateTimezone('UTC'));
-        $festival['earlybird'] = ($earlybird_dt > $dt ? 'yes' : 'no');
-        $festival['live'] = ($live_dt > $dt ? 'yes' : 'no');
-        $festival['virtual'] = ($virtual_dt > $dt ? 'yes' : 'no');
-    }
+    $festival = $rc['festival'];
 
     //
     // Check if download of syllabus requested

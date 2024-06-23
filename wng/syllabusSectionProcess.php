@@ -81,34 +81,12 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     //
     // Get the music festival details
     //
-    $dt = new DateTime('now', new DateTimezone('UTC'));
-    $strsql = "SELECT id, name, flags, "
-        . "earlybird_date, "
-        . "live_date, "
-        . "virtual_date "
-//        . "IFNULL(DATEDIFF(earlybird_date, '" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d')) . "'), -1) AS earlybird, "
-//        . "IFNULL(DATEDIFF(virtual_date, '" . ciniki_core_dbQuote($ciniki, $dt->format('Y-m-d')) . "'), -1) AS virtual "
-        . "FROM ciniki_musicfestivals "
-        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
-        . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'festivalLoad');
+    $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $s['festival-id']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-    if( isset($rc['festival']) ) {
-        $festival = $rc['festival'];
-        $earlybird_dt = new DateTime($rc['festival']['earlybird_date'], new DateTimezone('UTC'));
-        $live_dt = new DateTime($rc['festival']['live_date'], new DateTimezone('UTC'));
-        $virtual_dt = new DateTime($rc['festival']['virtual_date'], new DateTimezone('UTC'));
-        $festival['earlybird'] = ($earlybird_dt > $dt ? 'yes' : 'no');
-        $festival['live'] = ($live_dt > $dt ? 'yes' : 'no');
-        $festival['virtual'] = ($virtual_dt > $dt ? 'yes' : 'no');
-        if( ($festival['flags']&0x10) == 0x10 ) {   // Adjudication Plus
-            $festival['earlybird_plus_live'] = $festival['earlybird'];
-            $festival['plus_live'] = $festival['live'];
-        }
-    }
+    $festival = $rc['festival'];
 
     //
     // Get the section details
@@ -151,6 +129,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     //
     // Check if section has other deadlines
     //
+    $dt = new DateTime('now', new DateTimezone('UTC'));
     if( $section['live_end_dt'] != '' && $section['live_end_dt'] != '0000-00-00 00:00:00' ) {
         $live_dt = new DateTime($section['live_end_dt'], new DateTimezone('UTC'));
         $festival['live'] = ($live_dt > $dt ? 'yes' : 'no');

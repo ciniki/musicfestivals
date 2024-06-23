@@ -155,13 +155,29 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
         }
         $details = array();
         $details[] = array('label'=>'Name', 'value'=>$competitor['name']);
-        if( $competitor['parent'] != '' ) { $details[] = array('label'=>'Parent', 'value'=>$competitor['parent']); }
+        if( $competitor['ctype'] == 10 && ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+            $details[] = array('label'=>'Pronoun', 'value'=>$competitor['pronoun']);
+        }
+        if( $competitor['ctype'] == 10 && $competitor['parent'] != '' ) { 
+            $details[] = array('label'=>'Parent', 'value'=>$competitor['parent']); 
+        }
+        if( $competitor['ctype'] == 50 && $competitor['parent'] != '' ) { 
+            $details[] = array('label'=>'Contact', 'value'=>$competitor['parent']); 
+        }
         $address = '';
-        if( $competitor['address'] != '' ) { $address .= $competitor['address']; }
+        if( $competitor['address'] != '' ) { 
+            $address .= $competitor['address']; 
+        }
         $city = $competitor['city'];
-        if( $competitor['province'] != '' ) { $city .= ($city != '' ? ", " : '') . $competitor['province']; }
-        if( $competitor['postal'] != '' ) { $city .= ($city != '' ? "  " : '') . $competitor['postal']; }
-        if( $city != '' ) { $address .= ($address != '' ? "\n" : '' ) . $city; }
+        if( $competitor['province'] != '' ) { 
+            $city .= ($city != '' ? ", " : '') . $competitor['province']; 
+        }
+        if( $competitor['postal'] != '' ) { 
+            $city .= ($city != '' ? "  " : '') . $competitor['postal']; 
+        }
+        if( $city != '' ) { 
+            $address .= ($address != '' ? "\n" : '' ) . $city; 
+        }
         if( $address != '' ) {
             $details[] = array('label'=>'Address', 'value'=>$address);
         }
@@ -172,6 +188,9 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
         if( $competitor['study_level'] != '' ) { $details[] = array('label'=>'Study/Level', 'value'=>$competitor['study_level']); }
         if( $competitor['instrument'] != '' ) { $details[] = array('label'=>'Instrument', 'value'=>$competitor['instrument']); }
         if( ($competitor['flags']&0x01) == 0x01 ) { $details[] = array('label'=>'Waiver', 'value'=>'Signed'); }
+        if( $competitor['notes'] != '' ) {
+            $details[] = array('label'=>'Notes', 'value'=>$competitor['notes']);
+        }
     }
 
     //

@@ -604,7 +604,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'id' => '-1',
             'name' => 'Add Teacher',
             );
-        $fields['teacher_share'] = array(
+/*        $fields['teacher_share'] = array(
             'id' => 'teacher_share',
             'label' => 'Share registration with Teacher',
             'ftype' => 'checkbox',
@@ -616,7 +616,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             $fields['teacher_share']['value'] = $_POST["f-teacher_share"];
         } elseif( isset($_POST["f-teacher_customer_id"]) ) {
             $fields['teacher_share']['value'] = 'off';
-        }
+        } */
     }
 
     //
@@ -668,7 +668,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'id' => '-1',
             'name' => 'Add Accompanist',
             );
-        $fields['accompanist_share'] = array(
+/*        $fields['accompanist_share'] = array(
             'id' => 'accompanist_share',
             'label' => 'Share registration with Accompanist',
             'ftype' => 'checkbox',
@@ -680,7 +680,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             $fields['accompanist_share']['value'] = $_POST["f-accompanist_share"];
         } elseif( isset($_POST["f-accompanist_customer_id"]) ) {
             $fields['accompanist_share']['value'] = 'off';
-        }
+        } */
     }
 
     //
@@ -1438,42 +1438,42 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         . "};"
         . "function teacherSelected(){"
             . "var t=C.gE('f-teacher_customer_id').value;"
-            . "if(t>0){"
-                . "C.rC(C.gE('f-teacher_share').parentNode,'hidden');"
-            . "}else{"
-                . "C.aC(C.gE('f-teacher_share').parentNode,'hidden');"
-            . "}"
+//            . "if(t>0){"
+//                . "C.rC(C.gE('f-teacher_share').parentNode,'hidden');"
+//            . "}else{"
+//                . "C.aC(C.gE('f-teacher_share').parentNode,'hidden');"
+//            . "}"
             . "if(t==-1){"
                 . "C.rC(C.gE('f-teacher_name').parentNode,'hidden');"
                 . "C.rC(C.gE('f-teacher_phone').parentNode,'hidden');"
                 . "C.rC(C.gE('f-teacher_email').parentNode,'hidden');"
-                . "C.rC(C.gE('f-teacher_share').parentNode,'hidden');"
-                . "C.gE('f-teacher_share').checked=true;"
+//                . "C.rC(C.gE('f-teacher_share').parentNode,'hidden');"
+//                . "C.gE('f-teacher_share').checked=true;"
             . "}else{"
                 . "C.aC(C.gE('f-teacher_name').parentNode,'hidden');"
                 . "C.aC(C.gE('f-teacher_phone').parentNode,'hidden');"
                 . "C.aC(C.gE('f-teacher_email').parentNode,'hidden');"
-                . "C.aC(C.gE('f-teacher_share').parentNode,'hidden');"
-                . "C.gE('f-teacher_share').checked=true;"
+//                . "C.aC(C.gE('f-teacher_share').parentNode,'hidden');"
+//                . "C.gE('f-teacher_share').checked=true;"
             . "}"
         . "}; "
         . "function accompanistSelected(){"
             . "var t=C.gE('f-accompanist_customer_id').value;"
-            . "if(t!=0){"
-                . "C.rC(C.gE('f-accompanist_share').parentNode,'hidden');"
-            . "}else{"
-                . "C.aC(C.gE('f-accompanist_share').parentNode,'hidden');"
-            . "}"
+//            . "if(t!=0){"
+//                . "C.rC(C.gE('f-accompanist_share').parentNode,'hidden');"
+//            . "}else{"
+//                . "C.aC(C.gE('f-accompanist_share').parentNode,'hidden');"
+//            . "}"
             . "if(t==-1){"
                 . "C.rC(C.gE('f-accompanist_name').parentNode,'hidden');"
                 . "C.rC(C.gE('f-accompanist_phone').parentNode,'hidden');"
                 . "C.rC(C.gE('f-accompanist_email').parentNode,'hidden');"
-                . "C.gE('f-accompanist_share').checked=true;"
+//                . "C.gE('f-accompanist_share').checked=true;"
             . "}else{"
                 . "C.aC(C.gE('f-accompanist_name').parentNode,'hidden');"
                 . "C.aC(C.gE('f-accompanist_phone').parentNode,'hidden');"
                 . "C.aC(C.gE('f-accompanist_email').parentNode,'hidden');"
-                . "C.gE('f-accompanist_share').checked=true;"
+//                . "C.gE('f-accompanist_share').checked=true;"
             . "}"
         . "}; ";
 

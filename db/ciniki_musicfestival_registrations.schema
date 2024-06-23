@@ -38,8 +38,8 @@
 #
 # flags:                The options for the registration.
 #
-#                           0x01 - Share with teacher (valid only when customer type is not teacher)
-#                           0x02 - Share with accompanist
+#                           0x01 - Share with teacher (valid only when customer type is not teacher) ** Deprecated** 
+#                           0x02 - Share with accompanist **deprecated**
 #                           0x04 - 
 #                           0x08 - 
 #                           0x10 - Best in Class

@@ -204,7 +204,9 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "registrations.composer8, "
             . "registrations.movements8, "
             . "registrations.perf_time8, "
-            . "FORMAT(registrations.fee, 2) AS fee, ";
+            . "registrations.fee, "
+            . "registrations.timeslot_id, "
+            . "registrations.finals_timeslot_id, ";
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
             $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS slot_time, ";
             $strsql .= "TIME_FORMAT(registrations.finals_timeslot_time, '%l:%i %p') AS finals_slot_time, ";
@@ -320,9 +322,12 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     'music_orgfilename5', 'music_orgfilename6',  'music_orgfilename7', 'music_orgfilename8',  
                     'backtrack1', 'backtrack2', 'backtrack3',  'backtrack4', 
                     'backtrack5', 'backtrack6',  'backtrack7', 'backtrack8',  
+                    'timeslot_id', 'finals_timeslot_id', 
                     'instrument', 'mark', 'placement', 'level', 'comments', 'provincials_status', 'provincials_position',
                     'finals_mark', 'finals_placement', 'finals_level',
-                    'notes', 'internal_notes'),
+                    'notes', 'internal_notes',
+                    ),
+                'naprices' => array('fee'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -413,6 +418,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                 $strsql = "SELECT ciniki_musicfestival_competitors.id, "
                     . "ciniki_musicfestival_competitors.festival_id, "
                     . "ciniki_musicfestival_competitors.ctype, "
+                    . "ciniki_musicfestival_competitors.flags, "
                     . "ciniki_musicfestival_competitors.name, "
                     . "ciniki_musicfestival_competitors.pronoun, "
                     . "ciniki_musicfestival_competitors.parent, "
@@ -434,7 +440,9 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'competitors', 'fname'=>'id', 
-                        'fields'=>array('festival_id', 'ctype', 'name', 'pronoun', 'parent', 'address', 'city', 'province', 'postal', 'phone_home', 'phone_cell', 'email', '_age', 'study_level', 'instrument', 'notes'),
+                        'fields'=>array('festival_id', 'ctype', 'flags', 'name', 'pronoun', 'parent', 
+                            'address', 'city', 'province', 'postal', 'phone_home', 'phone_cell', 
+                            'email', '_age', 'study_level', 'instrument', 'notes'),
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
@@ -471,7 +479,10 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                 if( $competitor['age'] != '' ) { $details[] = array('label'=>'Age', 'value'=>$competitor['_age']); }
                 if( $competitor['study_level'] != '' ) { $details[] = array('label'=>'Study/Level', 'value'=>$competitor['study_level']); }
                 if( $competitor['instrument'] != '' ) { $details[] = array('label'=>'Instrument', 'value'=>$competitor['instrument']); }
-                $details[] = array('label'=>'Notes', 'value'=>$competitor['notes']);
+                if( ($competitor['flags']&0x01) == 0x01 ) { $details[] = array('label'=>'Waiver', 'value'=>'Signed'); }
+                if( $competitor['notes'] != '' ) {
+                    $details[] = array('label'=>'Notes', 'value'=>$competitor['notes']);
+                }
                 $registration['competitor' . $i . '_details'] = $details;
             }
         }

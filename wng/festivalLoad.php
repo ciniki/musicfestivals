@@ -12,7 +12,7 @@
 // Returns
 // ---------
 // 
-function ciniki_musicfestivals_loadCurrentFestival(&$ciniki, $tnid) {
+function ciniki_musicfestivals_wng_festivalLoad(&$ciniki, $tnid, $festival_id) {
 
     //
     // Get the current festival
@@ -28,13 +28,13 @@ function ciniki_musicfestivals_loadCurrentFestival(&$ciniki, $tnid) {
         . "upload_end_dt "
         . "FROM ciniki_musicfestivals "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND status = 30 "        // Current
+        . "AND id = '" . ciniki_core_dbQuote($ciniki, $festival_id) . "' "
         . "ORDER BY start_date DESC "
         . "LIMIT 1 "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.259', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.766', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
     }
     if( !isset($rc['festival']) ) {
         // No festivals published, no items to return
@@ -50,18 +50,25 @@ function ciniki_musicfestivals_loadCurrentFestival(&$ciniki, $tnid) {
     $edit_end_dt = new DateTime($festival['edit_end_dt'], new DateTimezone('UTC'));
     $accompanist_end_dt = new DateTime($festival['accompanist_end_dt'], new DateTimezone('UTC'));
     $upload_end_dt = new DateTime($festival['upload_end_dt'], new DateTimezone('UTC'));
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x01) ) {
+    if( ($festival['flags']&0x01) == 0x01 ) {
         $earlybird_dt = new DateTime($festival['earlybird_date'], new DateTimezone('UTC'));
-        $festival['earlybird'] = (($festival['flags']&0x01) == 0x01 && $earlybird_dt > $now ? 'yes' : 'no');
+        $festival['earlybird'] = ($earlybird_dt > $now ? 'yes' : 'no');
     } else {
         $festival['earlybird'] = 'no';
     }
     $festival['live'] = (($festival['flags']&0x01) == 0x01 && $live_dt > $now ? 'yes' : 'no');
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x4000) ) {
+    if( ($festival['flags']&0x01) == 0x01 ) {
         $virtual_dt = new DateTime($festival['virtual_date'], new DateTimezone('UTC'));
-        $festival['virtual'] = (($festival['flags']&0x03) == 0x03 && $virtual_dt > $now ? 'yes' : 'no');
+        $festival['virtual'] = (($festival['flags']&0x02) == 0x02 && $virtual_dt > $now ? 'yes' : 'no');
     } else {
         $festival['virtual'] = 'no';
+    }
+    if( ($festival['flags']&0x10) == 0x10 ) {
+        $festival['earlybird_plus_live'] = $festival['earlybird'];
+        $festival['plus_live'] = $festival['live'];
+    } else {
+        $festival['earlybird_plus_live'] = 'no';
+        $festival['plus_live'] = 'no';
     }
     $festival['edit'] = ($edit_end_dt > $now ? 'yes' : 'no');
     $festival['edit-accompanist'] = ($accompanist_end_dt > $now ? 'yes' : 'no');

@@ -148,11 +148,14 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
             . "classes.code, "
             . "classes.name AS class_name, "
             . "classes.sequence AS class_sequence, "
+            . "classes.flags, "
             . "classes.earlybird_fee, "
             . "classes.fee, "
             . "classes.virtual_fee, "
             . "classes.earlybird_plus_fee, "
             . "classes.plus_fee, "
+            . "classes.min_competitors, "
+            . "classes.max_competitors, "
             . "classes.min_titles, "
             . "classes.max_titles, "
             . "GROUP_CONCAT(DISTINCT classtags.tag_name ORDER BY classtags.tag_sort_name SEPARATOR ', ') AS levels, "
@@ -179,8 +182,9 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'classes', 'fname'=>'id', 
                 'fields'=>array('id', 'joined_sequence', 'category_id', 'category_name', 'permalink', 'category_sequence', 
-                    'code', 'class_name', 'class_sequence', 'levels',
-                    'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 'min_titles', 'max_titles', 
+                    'code', 'class_name', 'class_sequence', 'levels', 'flags',
+                    'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 
+                    'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 
                     'num_registrations'),
                 ),
             ));

@@ -32,6 +32,8 @@ function ciniki_musicfestivals_classAdd(&$ciniki) {
         'virtual_fee'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Virtual Fee'),
         'earlybird_plus_fee'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Earlybird Plus Fee'),
         'plus_fee'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Plus Fee'),
+        'min_competitors'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Minimum Competitors'),
+        'max_competitors'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Maximum Competitors'),
         'min_titles'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Minimum Titles'),
         'max_titles'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Maximum Titles'),
         'provincials_code'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Provincials Class Code'),

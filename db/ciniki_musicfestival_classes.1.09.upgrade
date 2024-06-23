@@ -1,0 +1,10 @@
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN min_competitors tinyint unsigned not null AFTER plus_fee;
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN max_competitors tinyint unsigned not null AFTER min_competitors;
+ALTER TABLE ciniki_musicfestival_classes COMMENT='v1.09';
+UPDATE ciniki_musicfestival_classes SET min_competitors = 1, max_competitors = 1 WHERE (flags&0x0770) = 0;
+UPDATE ciniki_musicfestival_classes SET min_competitors = 1, max_competitors = 2 WHERE (flags&0x0110) = 0x0110;
+UPDATE ciniki_musicfestival_classes SET min_competitors = 2, max_competitors = 2 WHERE (flags&0x0010) = 0x0010;
+UPDATE ciniki_musicfestival_classes SET min_competitors = 2, max_competitors = 3 WHERE (flags&0x0220) = 0x0220;
+UPDATE ciniki_musicfestival_classes SET min_competitors = 3, max_competitors = 3 WHERE (flags&0x0020) = 0x0020;
+UPDATE ciniki_musicfestival_classes SET min_competitors = 3, max_competitors = 4 WHERE (flags&0x0440) = 0x0440;
+UPDATE ciniki_musicfestival_classes SET min_competitors = 4, max_competitors = 4 WHERE (flags&0x0040) = 0x0040;

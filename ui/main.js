@@ -151,71 +151,16 @@ function ciniki_musicfestivals_main() {
             'videos':{'label':'Videos', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'videos\');',
                 'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x02) == 0x02 ? 'yes' : 'no'},
                 },
-//            'comments':{'label':'Comments', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'comments\');',
-//                'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x02) == 0x02 ? 'yes' : 'no'},
-//                },
             'competitors':{'label':'Competitors', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'competitors\');'},
-//            'adjudicators':{'label':'Adjudicators', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'adjudicators\');'},
-//            'files':{'label':'Files', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'files\');'},
-//            'photos':{'label':'Photos', 
-//                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x04); },
-//                'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'photos\');',
-//                },
-//            'sponsors':{'label':'Sponsors', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'sponsors\');',
-//                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x10); },
-//                },
             'messages':{'label':'Messages', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'messages\');',
                 'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x0400); },
                 },
-//            'sponsors-old':{'label':'Sponsors', 
-//                'visible':function() { 
-//                    return (M.curTenant.modules['ciniki.sponsors'] != null && (M.curTenant.modules['ciniki.sponsors'].flags&0x02) == 0x02) ? 'yes':'no'; 
-//                    },
-//                'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'sponsors-old\');',
-//                },
             'more':{'label':'More...', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'more\');'},
             }};
     this.festival.sections = {
-/*        '_tabs':{'label':'', 'type':'menutabs', 'selected':'sections', 'tabs':{
-            'sections':{'label':'Syllabus', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'sections\');'},
-            'recommendations':{'label':'Recommendations', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'recommendations\');',
-                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); },
-                },
-            'registrations':{'label':'Registrations', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'registrations\');'},
-            'schedule':{'label':'Schedule', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'schedule\');'},
-            'videos':{'label':'Videos', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'videos\');',
-                'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x02) == 0x02 ? 'yes' : 'no'},
-                },
-            'comments':{'label':'Comments', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'comments\');',
-                'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x02) == 0x02 ? 'yes' : 'no'},
-                },
-            'competitors':{'label':'Competitors', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'competitors\');'},
-//            'adjudicators':{'label':'Adjudicators', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'adjudicators\');'},
-//            'files':{'label':'Files', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'files\');'},
-            'photos':{'label':'Photos', 
-                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x04); },
-                'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'photos\');',
-                },
-//            'sponsors':{'label':'Sponsors', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'sponsors\');',
-//                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x10); },
-//                },
-            'messages':{'label':'Messages', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'messages\');',
-                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x0400); },
-                },
-//            'sponsors-old':{'label':'Sponsors', 
-//                'visible':function() { 
-//                    return (M.curTenant.modules['ciniki.sponsors'] != null && (M.curTenant.modules['ciniki.sponsors'].flags&0x02) == 0x02) ? 'yes':'no'; 
-//                    },
-//                'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'sponsors-old\');',
-//                },
-            'more':{'label':'More...', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'more\');'},
-            }}, */
         '_moretabs':{'label':'', 'type':'menutabs', 'selected':'adjudicators', 
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'more' ? 'yes' : 'no'; },
             'tabs':{
-//                'members':{'label':'Members', 'fn':'M.ciniki_musicfestivals_main.festival.switchMTab(\'members\');',
-//                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); },
-//                    },
                 'invoices':{'label':'Invoices', 'fn':'M.ciniki_musicfestivals_main.festival.switchMTab(\'invoices\');'},
                 'adjudicators':{'label':'Adjudicators', 'fn':'M.ciniki_musicfestivals_main.festival.switchMTab(\'adjudicators\');'},
                 'locations':{'label':'Locations', 'fn':'M.ciniki_musicfestivals_main.festival.switchMTab(\'locations\');'},
@@ -232,12 +177,6 @@ function ciniki_musicfestivals_main() {
                 'sponsors':{'label':'Sponsors', 'fn':'M.ciniki_musicfestivals_main.festival.switchMTab(\'sponsors\');',
                     'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x10); },
                     },
-/*                'sponsors-old':{'label':'Sponsors', 
-                    'visible':function() { 
-                        return (M.curTenant.modules['ciniki.sponsors'] != null && (M.curTenant.modules['ciniki.sponsors'].flags&0x02) == 0x02) ? 'yes':'no'; 
-                        },
-                    'fn':'M.ciniki_musicfestivals_main.festival.switchMTab(\'sponsors-old\');',
-                    }, */
             }},
         'details':{'label':'Details', 'aside':'yes', 
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'sections' ? 'yes' : 'no';},
@@ -247,10 +186,6 @@ function ciniki_musicfestivals_main() {
                 'end_date':{'label':'End'},
                 'num_registrations':{'label':'# Reg'},
             }},
-//        '_more':{'label':'', 'aside':'yes', 
-//            'list':{
-//                'adjudicators':{'label':'Adjudicators', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(\'adjudicators\');'},
-//            }},
         'download_buttons':{'label':'', 'aside':'yes',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'sections' && M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'sections' ? 'yes' : 'no'; },
             'buttons':{
@@ -365,11 +300,9 @@ function ciniki_musicfestivals_main() {
                     'fn':'M.ciniki_musicfestivals_main.festival.switchRegTab("members");',
                     },
                 'tags':{'label':'Tags', 
-                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x2000); },
                     'fn':'M.ciniki_musicfestivals_main.festival.switchRegTab("tags");',
                     },
                 'colours':{'label':'Colours', 
-                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x2000); },
                     'fn':'M.ciniki_musicfestivals_main.festival.switchRegTab("colours");',
                     },
             }}, 
@@ -2514,8 +2447,9 @@ function ciniki_musicfestivals_main() {
                 },
             'flags3':{'label':'Virtual Pricing', 'type':'flagtoggle', 'default':'off', 'bit':0x04, 'field':'flags', 'visible':'no'},
             'flags4':{'label':'Section End Dates', 'type':'flagtoggle', 'default':'off', 'bit':0x08, 'field':'flags'},
+            'flags6':{'label':'Earlybird Fees', 'type':'flagtoggle', 'default':'off', 'bit':0x20, 'field':'flags',
+                },
             'flags5':{'label':'Adjudication Plus', 'type':'flagtoggle', 'default':'off', 'bit':0x10, 'field':'flags',
-                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x0800); },
                 },
             'flags10':{'label':'Live Music PDF', 'type':'flagtoggle', 'default':'off', 'bit':0x0200, 'field':'flags'},
             'earlybird_date':{'label':'Earlybird Deadline', 'type':'datetime'},
@@ -3228,11 +3162,11 @@ function ciniki_musicfestivals_main() {
                 'fees':{'label':'Fees', 'fn':'M.ciniki_musicfestivals_main.classes.switchTab("fees");'},
                 'trophies':{'label':'Trophies', 'fn':'M.ciniki_musicfestivals_main.classes.switchTab("trophies");'},
             }},
-        'classes':{'label':'Classes', 'type':'simplegrid', 'num_cols':7,
-            'headerValues':['Order', 'Category', 'Code', 'Class', 'Titles', 'Levels', 'Earlybird', 'Live', 'Virtual'],
+        'classes':{'label':'Classes', 'type':'simplegrid', 'num_cols':9,
+            'headerValues':['Order', 'Category', 'Code', 'Class', '#', 'Competitors', 'Titles', 'Levels', 'Earlybird', 'Live', 'Virtual'],
             'sortable':'yes',
-            'sortTypes':['text', 'text', 'text', 'text', 'number', 'number', 'number'],
-            'dataMaps':['joined_sequence', 'category_name', 'code', 'class_name', 'num_titles', 'level', 'earlybird_fee', 'fee', 'virtual_fee'],
+            'sortTypes':['text', 'text', 'text', 'text', 'number', 'text', 'number', 'number', 'number'],
+            'dataMaps':['joined_sequence', 'category_name', 'code', 'class_name', 'num_competitors', 'competitor_type', 'num_titles', 'level', 'earlybird_fee', 'fee', 'virtual_fee'],
             },
 /*        '_buttons':{'label':'', 'halfsize':'yes', 'buttons':{
             'syllabuspdf':{'label':'Download Syllabus (PDF)', 'fn':'M.ciniki_musicfestivals_main.section.downloadSyllabusPDF();'},
@@ -3250,6 +3184,27 @@ function ciniki_musicfestivals_main() {
         if( this.sections.classes.dataMaps[j] != null ) {
             if( this.sections.classes.dataMaps[j].match(/fee/) ) {
                 return M.formatDollar(d[this.sections.classes.dataMaps[j]]);
+            }
+            else if( this.sections.classes.dataMaps[j] == 'num_competitors' ) {
+                if( d.min_competitors == d.max_competitors ) {
+                    return d.min_competitors;
+                }
+                return d.min_competitors + ' - ' + d.max_competitors;
+            }
+            else if( this.sections.classes.dataMaps[j] == 'competitor_type' ) {
+                var ig = ' [I or G]';
+                if( (d.flags&0xC000) == 0x4000 ) {
+                    ig = ' person';
+                    if( d.min_competitors > 1 || d.max_competitors > 1 ) {
+                        ig = ' people';
+                    }
+                } else if( (d.flags&0xC000) == 0x8000 ) {
+                    ig = ' group';
+                    if( d.min_competitors > 1 || d.max_competitors > 1 ) {
+                        ig = ' groups';
+                    }
+                }
+                return ig;
             }
             else if( this.sections.classes.dataMaps[j] == 'num_titles' ) {
                 if( d.min_titles == d.max_titles ) {
@@ -3280,47 +3235,62 @@ function ciniki_musicfestivals_main() {
             }
             var p = M.ciniki_musicfestivals_main.classes;
             p.data = rsp;
-            p.sections.classes.headerValues = ['Order', 'Category', 'Code', 'Class', 'Titles'];
-            p.sections.classes.sortTypes = ['text', 'text', 'text', 'text', 'number'];
-            p.sections.classes.dataMaps = ['joined_sequence', 'category_name', 'code', 'class_name', 'num_titles'];
+            p.sections.classes.headerValues = ['Order', 'Category', 'Code', 'Class', '#', 'Competitors', 'Titles'];
+            p.sections.classes.sortTypes = ['text', 'text', 'text', 'text', 'number', 'text', 'number'];
+            p.sections.classes.dataMaps = ['joined_sequence', 'category_name', 'code', 'class_name', 'num_competitors', 'competitor_type', 'num_titles'];
+            p.sections.classes.cellClasses = ['', '', '', '', 'alignright', '', 'aligncenter'];
             if( p.sections._tabs.selected == 'trophies' ) {
                 p.sections.classes.headerValues.push('Trophies');
                 p.sections.classes.sortTypes.push('text');
                 p.sections.classes.dataMaps.push('trophies');
-                p.sections.classes.headerValues.push('Registrations');
+                p.sections.classes.cellClasses.push('');
+                p.sections.classes.headerValues.push('# Reg');
                 p.sections.classes.sortTypes.push('number');
                 p.sections.classes.dataMaps.push('num_registrations');
+                p.sections.classes.cellClasses.push('alignright');
                 p.sections.classes.num_cols = p.sections.classes.headerValues.length;
             } else {
                 if( M.modFlagOn('ciniki.musicfestivals', 0x1000) ) {
                     p.sections.classes.headerValues.push('Levels');
                     p.sections.classes.sortTypes.push('text');
                     p.sections.classes.dataMaps.push('levels');
+                    p.sections.classes.cellClasses.push('');
                 }
-                p.sections.classes.headerValues.push('Earlybird');
-                p.sections.classes.sortTypes.push('number');
-                p.sections.classes.dataMaps.push('earlybird_fee');
+                if( (rsp.festival.flags&0x20) == 0x20 ) {
+                    p.sections.classes.headerValues.push('Earlybird');
+                    p.sections.classes.sortTypes.push('number');
+                    p.sections.classes.dataMaps.push('earlybird_fee');
+                    p.sections.classes.cellClasses.push('alignright');
+                }
                 p.sections.classes.headerValues.push('Fee');
                 p.sections.classes.sortTypes.push('number');
                 p.sections.classes.dataMaps.push('fee');
+                p.sections.classes.cellClasses.push('alignright');
                 if( (rsp.festival.flags&0x04) == 0x04 ) {
                     p.sections.classes.headerValues.push('Virtual');
                     p.sections.classes.sortTypes.push('number');
                     p.sections.classes.dataMaps.push('virtual_fee');
+                    p.sections.classes.cellClasses.push('alignright');
                 }
                 if( M.modFlagOn('ciniki.musicfestivals', 0x0800) ) {
-                    p.sections.classes.headerValues.push('Earlybird Plus');
-                    p.sections.classes.sortTypes.push('number');
-                    p.sections.classes.dataMaps.push('earlybird_plus_fee');
+                    if( (rsp.festival.flags&0x20) == 0x20 ) {
+                        p.sections.classes.headerValues.push('Earlybird Plus');
+                        p.sections.classes.sortTypes.push('number');
+                        p.sections.classes.dataMaps.push('earlybird_plus_fee');
+                        p.sections.classes.cellClasses.push('alignright');
+                    }
                     p.sections.classes.headerValues.push('Plus');
                     p.sections.classes.sortTypes.push('number');
                     p.sections.classes.dataMaps.push('plus_fee');
+                    p.sections.classes.cellClasses.push('alignright');
                 }
-                p.sections.classes.headerValues.push('Registrations');
+                p.sections.classes.headerValues.push('# Reg');
                 p.sections.classes.sortTypes.push('number');
                 p.sections.classes.dataMaps.push('num_registrations');
+                p.sections.classes.cellClasses.push('alignright');
                 p.sections.classes.num_cols = p.sections.classes.headerValues.length;
             }
+            p.sections.classes.headerClasses = p.sections.classes.cellClasses;
 
             p.festival_id = rsp.section.festival_id;
             p.sections.classes.label = rsp.section.name + ' - Classes';
@@ -3551,7 +3521,7 @@ function ciniki_musicfestivals_main() {
     this.class.nplists = {};
     this.class.nplist = [];
     this.class.sections = {
-        'general':{'label':'', 'aside':'yes', 'fields':{
+        'general':{'label':'Class Details', 'aside':'yes', 'fields':{
             'category_id':{'label':'Category', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}},
             'code':{'label':'Code', 'type':'text', 'size':'small'},
             'name':{'label':'Name', 'type':'text'},
@@ -3562,7 +3532,14 @@ function ciniki_musicfestivals_main() {
                 'visible':function() {return M.modFlagSet('ciniki.musicfestivals', 0x1000); },
                 },
             'sequence':{'label':'Order', 'type':'text'},
-            'earlybird_fee':{'label':'Earlybird Fee', 'type':'text', 'size':'small'},
+            'earlybird_fee':{'label':'Earlybird Fee', 'type':'text', 'size':'small',
+                'visible':function() {
+                    if( M.ciniki_musicfestivals_main.festival.data.flags != null 
+                        && (M.ciniki_musicfestivals_main.festival.data.flags&0x20) == 0x20 ) {
+                        return 'yes';
+                    }
+                    return 'no';
+                }},
             'fee':{'label':'Fee', 'type':'text', 'size':'small'},
             'virtual_fee':{'label':'Virtual Fee', 'type':'text', 'size':'small',
                 'visible':function() {
@@ -3573,40 +3550,51 @@ function ciniki_musicfestivals_main() {
                     return 'no';
                 }},
             'earlybird_plus_fee':{'label':'Earlybird Plus Fee', 'type':'text', 'size':'small',
-                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x0800); },
-                },
+                'visible':function() {
+                    if( M.ciniki_musicfestivals_main.festival.data.flags != null 
+                        && (M.ciniki_musicfestivals_main.festival.data.flags&0x30) == 0x30 ) {
+                        return 'yes';
+                    }
+                    return 'no';
+                }},
             'plus_fee':{'label':'Plus Fee', 'type':'text', 'size':'small',
-                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x0800); },
-                },
+                'visible':function() {
+                    if( M.ciniki_musicfestivals_main.festival.data.flags != null 
+                        && (M.ciniki_musicfestivals_main.festival.data.flags&0x10) == 0x10 ) {
+                        return 'yes';
+                    }
+                    return 'no';
+                }},
             }},
-//        '_tags':{'label':'Tags', 
-//            'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x2000); },
-//            'fields':{
-//            }},
         'registration':{'label':'Registration Options', 'aside':'yes', 'fields':{
             'flags1':{'label':'Online Registrations', 'type':'flagtoggle', 'default':'on', 'bit':0x01, 'field':'flags'},
-            'flags2':{'label':'Multiple/Registrant', 'type':'flagtoggle', 'default':'on', 'bit':0x02, 'field':'flags'},
+// class flag 0x02 was never implemented in WNG system.
+//            'flags2':{'label':'Multiple/Registrant', 'type':'flagtoggle', 'default':'on', 'bit':0x02, 'field':'flags'},
             'flags15':{'label':'Individuals/Group', 'type':'flagspiece', 'mask':0xC000, 'field':'flags', 'join':'yes', 'toggle':'yes',
                 'onchange':'M.ciniki_musicfestivals_main.class.updateForm',
-                'flags':{'0':{'name':'Either'}, '15':{'name':'Individual/Duet/Trio'}, '16':{'name':'Group/Ensemble'}},
+                'flags':{'0':{'name':'Either'}, '15':{'name':'Individual(s)'}, '16':{'name':'Group/Ensemble'}},
                 },
-            'flags5':{'label':'2nd Competitor', 'type':'flagtoggle', 'default':'off', 'bit':0x10, 'field':'flags', 'visible':'yes'},
-            'flags6':{'label':'3rd Competitor', 'type':'flagtoggle', 'default':'off', 'bit':0x20, 'field':'flags', 'visible':'yes'},
-            'flags7':{'label':'4th Competitor', 'type':'flagtoggle', 'default':'off', 'bit':0x40, 'field':'flags', 'visible':'yes'},
+            'min_competitors':{'label':'Min Competitors', 'type':'toggle', 'default':'1', 
+                'toggles':{'0':'0', '1':'1', '2':'2', '3':'3', '4':'4'},
+                },
+            'max_competitors':{'label':'Max Competitors', 'type':'toggle', 'default':'1', 
+                'toggles':{'0':'0', '1':'1', '2':'2', '3':'3', '4':'4'},
+                },
+//            'flags5':{'label':'2nd Competitor', 'type':'flagtoggle', 'default':'off', 'bit':0x10, 'field':'flags', 'visible':'yes'},
+//            'flags6':{'label':'3rd Competitor', 'type':'flagtoggle', 'default':'off', 'bit':0x20, 'field':'flags', 'visible':'yes'},
+//            'flags7':{'label':'4th Competitor', 'type':'flagtoggle', 'default':'off', 'bit':0x40, 'field':'flags', 'visible':'yes'},
             'flags3':{'label':'Instrument Required', 'type':'flagtoggle', 'default':'off', 'bit':0x04, 'field':'flags'},
             'flags13':{'label':'Accompanist', 'type':'flagspiece', 'mask':0x3000, 'field':'flags', 'join':'yes', 'toggle':'yes',
                 'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x8000); },
                 'flags':{'0':{'name':'None'}, '13':{'name':'Required'}, '14':{'name':'Optional'}},
                 },
-            'flags25':{'label':'Backtrack', 'type':'flagspiece', 'mask':0x03000000, 'field':'flags', 'join':'yes', 'toggle':'yes',
-//                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); }, 
-                'flags':{'0':{'name':'None'}, '25':{'name':'Required'}, '26':{'name':'Optional'}},
-                },
-            'min_titles':{'label':'Minimum Titles', 'type':'toggle', 'default':'1', 
-                'toggles':{'1':'1', '2':'2', '3':'3', '4':'4', '5':'5', '6':'6', '7':'7', '8':'8'},
+            }},
+        'titles':{'label':'Registration Titles', 'aside':'yes', 'fields':{
+            'min_titles':{'label':'Minimum Titles', 'type':'toggle', 'default':'1', 'separator':'yes',
+                'toggles':{'0':'0', '1':'1', '2':'2', '3':'3', '4':'4', '5':'5', '6':'6', '7':'7', '8':'8'},
                 },
             'max_titles':{'label':'Maximum Titles', 'type':'toggle', 'default':'1', 
-                'toggles':{'1':'1', '2':'2', '3':'3', '4':'4', '5':'5', '6':'6', '7':'7', '8':'8'},
+                'toggles':{'0':'0', '1':'1', '2':'2', '3':'3', '4':'4', '5':'5', '6':'6', '7':'7', '8':'8'},
                 },
             'flags27':{'label':'Movements/Musical', 'type':'flagspiece', 'mask':0x0C000000, 'field':'flags', 'join':'yes', 'toggle':'yes',
                 'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); }, // Movements/Composers fields enabled
@@ -3617,18 +3605,22 @@ function ciniki_musicfestivals_main() {
                 'flags':{'0':{'name':'Hidden'}, '29':{'name':'Required'}, '30':{'name':'Optional'}},
                 },
             'flags17':{'label':'Virtual - Video', 'type':'flagspiece', 'mask':0x030000, 'field':'flags', 'join':'yes', 'toggle':'yes',
-//                'visible':function() { return M.ciniki_musicfestivals_main.festival.isVirtual(); },
-                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); }, //Provincials only
-                'flags':{'0':{'name':'Optional'}, '17':{'name':'Required'}, '18':{'name':'Hidden'}},
+                'visible':function() { return M.ciniki_musicfestivals_main.festival.isVirtual(); },
+//                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); }, //Provincials only
+                'flags':{' 18':{'name':'Hidden'}, ' 17':{'name':'Required'}, ' 0':{'name':'Optional'}},
                 },
             'flags21':{'label':'Virtual - Music', 'type':'flagspiece', 'mask':0x300000, 'field':'flags', 'join':'yes', 'toggle':'yes',
-//                'visible':function() { return M.ciniki_musicfestivals_main.festival.isVirtual(); },
-                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); }, //Provincials only
-                'flags':{'0':{'name':'Optional'}, '21':{'name':'Required'}, '22':{'name':'Hidden'}},
+                'visible':function() { return M.ciniki_musicfestivals_main.festival.isVirtual(); },
+//                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); }, //Provincials only
+                'flags':{' 22':{'name':'Hidden'}, ' 21':{'name':'Required'}, ' 0':{'name':'Optional'}},
                 },
 //            'flags23':{'label':'Live Music PDF', 'type':'flagspiece', 'mask':0xC00000, 'field':'flags', 'join':'yes', 'toggle':'yes',
 //                'flags':{'0':{'name':'Hidden'}, '23':{'name':'Required'}, '24':{'name':'Optional'}},
 //                },
+            'flags25':{'label':'Backtrack', 'type':'flagspiece', 'mask':0x03000000, 'field':'flags', 'join':'yes', 'toggle':'yes',
+//                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); }, 
+                'flags':{'0':{'name':'None'}, '25':{'name':'Required'}, '26':{'name':'Optional'}},
+                },
             }},
         'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':3, 
             'headerValues':['Competitor', 'Teacher', 'Status'],
@@ -3721,6 +3713,16 @@ function ciniki_musicfestivals_main() {
     this.class.updateForm = function() {
         var f = this.formValue('flags15');
         if( (f&0xC000) == 0x8000 ) {
+            M.gE(this.panelUID + '_min_competitors_formlabel').innerHTML = 'Min Groups';
+            M.gE(this.panelUID + '_max_competitors_formlabel').innerHTML = 'Max Groups';
+        } else if( (f&0xC000) == 0x4000 ) {
+            M.gE(this.panelUID + '_min_competitors_formlabel').innerHTML = 'Min Individuals';
+            M.gE(this.panelUID + '_max_competitors_formlabel').innerHTML = 'Max Individuals';
+        } else {
+            M.gE(this.panelUID + '_min_competitors_formlabel').innerHTML = 'Min Competitors';
+            M.gE(this.panelUID + '_max_competitors_formlabel').innerHTML = 'Max Competitors';
+        }
+/*        if( (f&0xC000) == 0x8000 ) {
             this.sections.registration.fields.flags5.visible = 'no';
             this.sections.registration.fields.flags6.visible = 'no';
             this.sections.registration.fields.flags7.visible = 'no';
@@ -3734,8 +3736,8 @@ function ciniki_musicfestivals_main() {
             this.showHideFormField('registration', 'flags5');
             this.showHideFormField('registration', 'flags6');
             this.showHideFormField('registration', 'flags7');
-        }
-    }
+        } */
+    } 
     this.class.open = function(cb, iid, cid, fid, list) {
         if( iid != null ) { this.class_id = iid; }
         if( cid != null ) { this.category_id = cid; }
@@ -3857,6 +3859,7 @@ function ciniki_musicfestivals_main() {
     this.registration = new M.panel('Registration', 'ciniki_musicfestivals_main', 'registration', 'mc', 'large mediumaside', 'sectioned', 'ciniki.musicfestivals.main.registration');
     this.registration.data = null;
     this.registration.festival_id = 0;
+    this.registration.selected_class = null;
     this.registration.competitor1_id = 0;
     this.registration.competitor2_id = 0;
     this.registration.competitor3_id = 0;
@@ -3866,12 +3869,6 @@ function ciniki_musicfestivals_main() {
     this.registration.nplist = [];
     this.registration._source = '';
     this.registration.sections = {
-//        '_tabs':{'label':'', 'type':'paneltabs', 'field_id':'rtype', 'selected':'30', 'tabs':{
-//            '30':{'label':'Individual', 'fn':'M.ciniki_musicfestivals_main.registration.switchTab("30");'},
-//            '50':{'label':'Duet', 'fn':'M.ciniki_musicfestivals_main.registration.switchTab("50");'},
-//            '60':{'label':'Trio', 'fn':'M.ciniki_musicfestivals_main.registration.switchTab("60");'},
-//            '90':{'label':'Ensemble', 'fn':'M.ciniki_musicfestivals_main.registration.switchTab("90");'},
-//            }},
         'teacher_details':{'label':'Teacher', 'type':'customer', 'num_cols':2, 'aside':'yes',
             'customer_id':0,
             'customer_field':'teacher_customer_id',
@@ -3886,233 +3883,370 @@ function ciniki_musicfestivals_main() {
             'noData':'No Accompanist',
             },
         '_display_name':{'label':'Duet/Trio/Ensemble Name', 'aside':'yes',
-            'visible':'hidden',
-//            'visible':function(){return (parseInt(M.ciniki_musicfestivals_main.registration.sections._tabs.selected)>60?'yes':'hidden');},
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.nameVisible(); },
             'fields':{ 
                 'display_name':{'label':'', 'hidelabel':'yes', 'type':'text'},
             }},
         'competitor1_details':{'label':'Competitor 1', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
             'cellClasses':['label', ''],
-            'addTxt':'',
-            'addFn':'M.ciniki_musicfestivals_main.registration.addCompetitor(M.ciniki_musicfestivals_main.registration.competitor1_id, 1);',
-            'changeTxt':'Add',
-            'changeFn':'M.ciniki_musicfestivals_main.registration.addCompetitor(0, 1);',
+            'menu':{
+                'add':{
+                    'label':'Add Competitor',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.competitor1_id == 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.registration.addCompetitor(0, 1);',
+                    },
+                'change':{
+                    'label':'Different Competitor',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.competitor1_id > 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.registration.addCompetitor(0, 1);',
+                    },
+                'edit':{
+                    'label':'Edit Competitor Details',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.competitor1_id > 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.registration.addCompetitor(M.ciniki_musicfestivals_main.registration.competitor1_id, 1);',
+                    },
+                'del':{
+                    'label':'No Competitor',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.competitor1_id > 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.registration.delCompetitor(1);',
+                    },
+                },
             },
         'competitor2_details':{'label':'Competitor 2', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
-            'visible':'hidden',
-//            'visible':function(){return (parseInt(M.ciniki_musicfestivals_main.registration.sections._tabs.selected)>30?'yes':'hidden');},
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.competitorVisible(2); },
             'cellClasses':['label', ''],
-            'addTxt':'Edit',
-            'addFn':'M.ciniki_musicfestivals_main.registration.addCompetitor(M.ciniki_musicfestivals_main.registration.competitor1_id, 2);',
-            'changeTxt':'Change',
-            'changeFn':'M.ciniki_musicfestivals_main.registration.addCompetitor(0, 2);',
-            },
-        'competitor2_buttons':{'label':'', 'aside':'yes', 
-            'visible':function() { return M.ciniki_musicfestivals_main.registration.competitor2_id > 0 ? 'yes' : 'no'; },
-            'buttons':{
-                'remove':{'label':'Remove Competitor 2', 'fn':'M.ciniki_musicfestivals_main.registration.delCompetitor(2);'},
-            }},
-        'competitor3_details':{'label':'Competitor 3', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
-            'visible':'hidden',
-//            'visible':function(){return (parseInt(M.ciniki_musicfestivals_main.registration.sections._tabs.selected)>50?'yes':'hidden');},
-            'cellClasses':['label', ''],
-            'addTxt':'Edit',
-            'addFn':'M.ciniki_musicfestivals_main.registration.addCompetitor(M.ciniki_musicfestivals_main.registration.competitor1_id, 3);',
-            'changeTxt':'Change',
-            'changeFn':'M.ciniki_musicfestivals_main.registration.addCompetitor(0, 3);',
-            },
-        'competitor3_buttons':{'label':'', 'aside':'yes', 
-            'visible':function() { return M.ciniki_musicfestivals_main.registration.competitor3_id > 0 ? 'yes' : 'no'; },
-            'buttons':{
-                'remove':{'label':'Remove Competitor 3', 'fn':'M.ciniki_musicfestivals_main.registration.delCompetitor(3);'},
-            }},
-        'competitor4_details':{'label':'Competitor 4', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
-            'visible':'hidden',
-//            'visible':function(){return (parseInt(M.ciniki_musicfestivals_main.registration.sections._tabs.selected)>60?'yes':'hidden');},
-            'cellClasses':['label', ''],
-            'addTxt':'Edit',
-            'addFn':'M.ciniki_musicfestivals_main.registration.addCompetitor(M.ciniki_musicfestivals_main.registration.competitor1_id, 4);',
-            'changeTxt':'Change',
-            'changeFn':'M.ciniki_musicfestivals_main.registration.addCompetitor(0, 4);',
-            },
-        'competitor4_buttons':{'label':'', 'aside':'yes', 
-            'visible':function() { return M.ciniki_musicfestivals_main.registration.competitor4_id > 0 ? 'yes' : 'no'; },
-            'buttons':{
-                'remove':{'label':'Remove Competitor 4', 'fn':'M.ciniki_musicfestivals_main.registration.delCompetitor(4);'},
-            }},
-/*        'competitor5_details':{'label':'Competitor 5', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
-            'visible':function(){return (parseInt(M.ciniki_musicfestivals_main.registration.sections._tabs.selected)>60?'yes':'hidden');},
-            'cellClasses':['label', ''],
-            'addTxt':'Edit',
-            'addFn':'M.ciniki_musicfestivals_main.registration.addCompetitor(M.ciniki_musicfestivals_main.registration.competitor1_id, 5);',
-            'changeTxt':'Change',
-            'changeFn':'M.ciniki_musicfestivals_main.registration.addCompetitor(0, 5);',
-            }, */
-        'invoice_details':{'label':'Invoice', 'type':'simplegrid', 'num_cols':2,
-            'cellClasses':['label', ''],
-            },
-        '_tags':{'label':'Tags', 
-            'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x2000); },
-            'fields':{
-                'tags':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new tag:'},
-            }},
-        '_results':{'label':'Results', 'fields':{
-            'mark':{'label':'Mark', 'type':'text', 'visible':'yes', 'size':'small', 
-                'onkeyup':'M.ciniki_musicfestivals_main.registration.updatePlacement',
+            'noData':'No Competitor',
+            'menu':{
+                'add':{
+                    'label':'Add Competitor',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.competitor2_id == 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.registration.addCompetitor(0, 2);',
+                    },
+                'change':{
+                    'label':'Different Competitor',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.competitor2_id > 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.registration.addCompetitor(0, 2);',
+                    },
+                'edit':{
+                    'label':'Edit Competitor Details',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.competitor2_id > 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.registration.addCompetitor(M.ciniki_musicfestivals_main.registration.competitor2_id, 2);',
+                    },
+                'del':{
+                    'label':'No Competitor',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.competitor2_id > 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.registration.delCompetitor(2);',
+                    },
                 },
-            'placement':{'label':'Placement', 'type':'text', 'separator':'no', 'visible':'yes'},
-            'level':{'label':'Level', 'type':'text', 'separator':'no', 'visible':'yes', 'size':'small'},
-            'finals_placement':{'label':'Finals Placement', 'type':'text', 'separator':'no', 'visible':'yes'},
-            'flags5':{'label':'Best in Class', 'type':'flagtoggle', 'bit':0x10, 'default':'off', 'field':'flags'},
-            }},
-        '_class':{'label':'Registration', 'fields':{
+            },
+        'competitor3_details':{'label':'Competitor 3', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.competitorVisible(3); },
+            'cellClasses':['label', ''],
+            'noData':'No Competitor',
+            'menu':{
+                'add':{
+                    'label':'Add Competitor',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.competitor3_id == 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.registration.addCompetitor(0, 3);',
+                    },
+                'change':{
+                    'label':'Different Competitor',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.competitor3_id > 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.registration.addCompetitor(0, 3);',
+                    },
+                'edit':{
+                    'label':'Edit Competitor Details',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.competitor3_id > 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.registration.addCompetitor(M.ciniki_musicfestivals_main.registration.competitor3_id, 3);',
+                    },
+                'del':{
+                    'label':'No Competitor',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.competitor3_id > 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.registration.delCompetitor(3);',
+                    },
+                },
+            },
+        'competitor4_details':{'label':'Competitor 4', 'aside':'yes', 'type':'simplegrid', 'num_cols':2,
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.competitorVisible(4); },
+            'cellClasses':['label', ''],
+            'noData':'No Competitor',
+            'menu':{
+                'add':{
+                    'label':'Add Competitor',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.competitor4_id == 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.registration.addCompetitor(0, 4);',
+                    },
+                'change':{
+                    'label':'Different Competitor',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.competitor4_id > 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.registration.addCompetitor(0, 4);',
+                    },
+                'edit':{
+                    'label':'Edit Competitor Details',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.competitor4_id > 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.registration.addCompetitor(M.ciniki_musicfestivals_main.registration.competitor4_id, 4);',
+                    },
+                'del':{
+                    'label':'No Competitor',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.competitor4_id > 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.registration.delCompetitor(4);',
+                    },
+                },
+            },
+//        '_tags':{'label':'Tags', 
+//            'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x2000); },
+//            'fields':{
+//                'tags':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new tag:'},
+//            }},
+        '_class':{'label':'Registration', 
+            'fields':{
 //            'status':{'label':'Status', 'required':'yes', 'type':'toggle', 'toggles':{'5':'Draft', '10':'Applied', '50':'Paid', '60':'Cancelled'}},
 //            'payment_type':{'label':'Payment', 'type':'toggle', 'toggles':{'20':'Square', '50':'Visa', '55':'Mastercard', '100':'Cash', '105':'Cheque', '110':'Email', '120':'Other', '121':'Online'}},
-            'flags13':{'label':'Colour', 'type':'flagspiece', 'mask':0xFF00, 'field':'flags', 'toggle':'yes', 'none':'yes', 'join':'yes', 
-                'flags':{'9':{'name':'Grey'}, '10':{'name':'Teal'}, '11':{'name':'Blue'}, '12':{'name':'Purple'},'13':{'name':'Red'}, '14':{'name':'Orange'}, '15':{'name':'Yellow'}, '16':{'name':'Green'}},
-                },
 //            'flags1':{'label':'Festivals', 'type':'flagspiece', 'mask':0x03, 'field':'flags', 'join':'yes', 'toggle':'yes',
 //                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x4000); },
 //                'flags':{'0':{'name':'Both'}, '1':{'name':'Live'}, '2':{'name':'Virtual'}},
 //                },
-            'member_id':{'label':'From', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}, 
-                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); },
-                'onchangeFn':'M.ciniki_musicfestivals_main.registration.updateForm',
+                'flags13':{'label':'Colour', 'type':'flagspiece', 'mask':0xFF00, 'field':'flags', 'toggle':'yes', 'none':'yes', 'join':'yes', 'separator':'yes',
+                    'flags':{'9':{'name':'Grey'}, '10':{'name':'Teal'}, '11':{'name':'Blue'}, '12':{'name':'Purple'},'13':{'name':'Red'}, '14':{'name':'Orange'}, '15':{'name':'Yellow'}, '16':{'name':'Green'}},
+                    },
+                'member_id':{'label':'From', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}, 
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); },
+                    'onchangeFn':'M.ciniki_musicfestivals_main.registration.updateForm',
+                    },
+                'class_id':{'label':'Class', 'required':'yes', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}, 
+                    'onchangeFn':'M.ciniki_musicfestivals_main.registration.updateForm',
+                    },
+                'participation':{'label':'Participate', 'type':'select', 
+                    'visible':function() { return (M.ciniki_musicfestivals_main.registration.data.festival.flags&0x12) > 0 ? 'yes' : 'no'},
+                    'onchangeFn':'M.ciniki_musicfestivals_main.registration.updateForm',
+                    'options':{
+                        '0':'in person on a date to be scheduled',
+                        '1':'virtually and submit a video online',
+                    }},
+                'scheduled':{'label':'Scheduled', 'type':'text', 'editable':'no', },
+                'scheduled_sd':{'label':'Section/Division', 'type':'text', 'editable':'no', },
+//              'flags1':{'label':'Options', 'type':'flagspiece', 'visible':'no', 'mask':0x03, 'field':'flags', 'flags':{
+//                  '1':{'name':'Share with Teacher'}, 
+//                  '2':{'name':'Share with Accompanist'},
+//                  }},
+                'instrument':{'label':'Instrument', 'type':'text', 
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.instrumentVisible(); },
+                    },
+                'tags':{'label':'Tags', 'type':'tags', 'tags':[], 'separator':'yes', 'hint':'Enter a new tag:'},
                 },
-            'class_id':{'label':'Class', 'required':'yes', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}, 
-                'onchangeFn':'M.ciniki_musicfestivals_main.registration.updateForm',
-                },
-            'participation':{'label':'Participate', 'type':'select', 
-                'visible':function() { return (M.ciniki_musicfestivals_main.registration.data.festival.flags&0x12) > 0 ? 'yes' : 'no'},
-                'onchangeFn':'M.ciniki_musicfestivals_main.registration.updateForm',
-                'options':{
-                    '0':'in person on a date to be scheduled',
-                    '1':'virtually and submit a video online',
+            'menu':{
+                'comments':{
+                    'label':'Download Comments PDF',
+                    'fn':'M.ciniki_musicfestivals_main.registration.printComments();',
+                    },
+                'cert':{
+                    'label':'Download Certificate PDF',
+                    'fn':'M.ciniki_musicfestivals_main.registration.printCert();',
+                    },
                 }},
-            'scheduled':{'label':'Scheduled', 'type':'text', 'editable':'no', },
-            'scheduled_sd':{'label':'Section/Division', 'type':'text', 'editable':'no', },
-            'fee':{'label':'Fee', 'type':'text', 'size':'small'},
-            'flags1':{'label':'Options', 'type':'flagspiece', 'visible':'no', 'mask':0x03, 'field':'flags', 'flags':{
-                '1':{'name':'Share with Teacher'}, 
-                '2':{'name':'Share with Accompanist'},
-                }},
-            'instrument':{'label':'Instrument', 'type':'text', 'visible':'no'},
-            'title1':{'label':'Title', 'type':'text', 'separator':'yes'},
-            'movements1':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
-            'composer1':{'label':'Composer', 'type':'text', 'visible':'no'},
-            'perf_time1':{'label':'Time', 'type':'minsec', 'size':'small'},
-            'video_url1':{'label':'Video', 'type':'url', 'visible':'no'},
-            'music_orgfilename1':{'label':'Music', 'type':'file', 'visible':'no',
-                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(1);',
-                },
-            'backtrack1':{'label':'Backtrack', 'type':'file', 'visible':'no',
-                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(1);',
-                },
-            'title2':{'label':'2nd Title', 'type':'text', 'separator':'yes', 'visible':'no'},
-            'movements2':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
-            'composer2':{'label':'Composer', 'type':'text', 'visible':'no'},
-            'perf_time2':{'label':'Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small', 'visible':'no'},
-            'video_url2':{'label':'Video', 'type':'url', 'visible':'no'},
-            'music_orgfilename2':{'label':'Music', 'type':'file', 'visible':'no',
-                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(2);',
-                },
-            'backtrack2':{'label':'Backtrack', 'type':'file', 'visible':'no',
-                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(2);',
-                },
-            'title3':{'label':'3rd Title', 'type':'text', 'separator':'yes', 'visible':'no'},
-            'movements3':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
-            'composer3':{'label':'Composer', 'type':'text', 'visible':'no'},
-            'perf_time3':{'label':'3rd Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small', 'visible':'no'},
-            'video_url3':{'label':'Video', 'type':'url', 'visible':'no'},
-            'music_orgfilename3':{'label':'Music', 'type':'file', 'visible':'no',
-                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(3);',
-                },
-            'backtrack3':{'label':'Backtrack', 'type':'file', 'visible':'no',
-                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(3);',
-                },
-            'title4':{'label':'4th Title', 'type':'text', 'separator':'yes', 'visible':'no'},
-            'movements4':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
-            'composer4':{'label':'Composer', 'type':'text', 'visible':'no'},
-            'perf_time4':{'label':'Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small', 'visible':'no'},
-            'video_url4':{'label':'Video', 'type':'url', 'visible':'no'},
-            'music_orgfilename4':{'label':'Music', 'type':'file', 'visible':'no',
-                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(4);',
-                },
-            'backtrack4':{'label':'Backtrack', 'type':'file', 'visible':'no',
-                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(4);',
-                },
-            'title5':{'label':'5th Title', 'type':'text', 'separator':'yes', 'visible':'no'},
-            'movements5':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
-            'composer5':{'label':'Composer', 'type':'text', 'visible':'no'},
-            'perf_time5':{'label':'Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small', 'visible':'no'},
-            'video_url5':{'label':'Video', 'type':'url', 'visible':'no'},
-            'music_orgfilename5':{'label':'Music', 'type':'file', 'visible':'no',
-                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(5);',
-                },
-            'backtrack5':{'label':'Backtrack', 'type':'file', 'visible':'no',
-                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(5);',
-                },
-            'title6':{'label':'6th Title', 'type':'text', 'separator':'yes', 'visible':'no'},
-            'movements6':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
-            'composer6':{'label':'Composer', 'type':'text', 'visible':'no'},
-            'perf_time6':{'label':'Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small', 'visible':'no'},
-            'video_url6':{'label':'Video', 'type':'url', 'visible':'no'},
-            'music_orgfilename6':{'label':'Music', 'type':'file', 'visible':'no',
-                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(6);',
-                },
-            'backtrack6':{'label':'Backtrack', 'type':'file', 'visible':'no',
-                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(6);',
-                },
-            'title7':{'label':'7th Title', 'type':'text', 'separator':'yes', 'visible':'no'},
-            'movements7':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
-            'composer7':{'label':'Composer', 'type':'text', 'visible':'no'},
-            'perf_time7':{'label':'Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small', 'visible':'no'},
-            'video_url7':{'label':'Video', 'type':'url', 'visible':'no'},
-            'music_orgfilename7':{'label':'Music', 'type':'file', 'visible':'no',
-                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(7);',
-                },
-            'backtrack7':{'label':'Backtrack', 'type':'file', 'visible':'no',
-                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(7);',
-                },
-            'title8':{'label':'8th Title', 'type':'text', 'separator':'yes', 'visible':'no'},
-            'movements8':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
-            'composer8':{'label':'Composer', 'type':'text', 'visible':'no'},
-            'perf_time8':{'label':'Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small', 'visible':'no'},
-            'video_url8':{'label':'Video', 'type':'url', 'visible':'no'},
-            'music_orgfilename8':{'label':'Music', 'type':'file', 'visible':'no',
-                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(8);',
-                },
-            'backtrack8':{'label':'Backtrack', 'type':'file', 'visible':'no',
-                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(8);',
-                },
-/*            'video_url1':{'label':'1st Video', 'type':'text', 'visible':'no'},
-            'music_orgfilename1':{'label':'1st Music', 'type':'file', 'visible':'no',
-                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(1);',
-                },
-            'video_url2':{'label':'2nd Video', 'type':'text', 'visible':'no'},
-            'music_orgfilename2':{'label':'2nd Music', 'type':'file', 'visible':'no',
-                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(2);',
-                },
-            'video_url3':{'label':'3rd Video', 'type':'text', 'visible':'no'},
-            'music_orgfilename3':{'label':'3rd Music', 'type':'file', 'visible':'no',
-                'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(3);',
-                }, */
+        '_tabs':{'label':'', 'type':'paneltabs', 'selected':'titles', 'tabs':{
+            'titles':{'label':'Titles', 'fn':'M.ciniki_musicfestivals_main.registration.switchTab("titles");'},
+            'results':{'label':'Results', 'fn':'M.ciniki_musicfestivals_main.registration.switchTab("results");'},
+            'payment':{'label':'Payment', 'fn':'M.ciniki_musicfestivals_main.registration.switchTab("payment");'},
+            'notes':{'label':'Notes', 'fn':'M.ciniki_musicfestivals_main.registration.switchTab("notes");'},
             }},
-/*        'music_buttons':{'label':'', 
-            'visible':function() { return (M.ciniki_musicfestivals_main.registration.data.festival.flags&0x02) == 0x02 ? 'yes' : 'no'},
-            'buttons':{
-                'add':{'label':'Upload Music PDF', 'fn':'M.ciniki_musicfestivals_main.registration.uploadPDF();',
-                    'visible':function() { return M.ciniki_musicfestivals_main.registration.data.music_orgfilename == '' ? 'yes' : 'no'},
+        '_title1':{'label':'Title', 
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'titles' ? 'yes' : 'hidden'; },
+            'fields':{
+                'title1':{'label':'Title', 'type':'text', 'separator':'yes'},
+                'movements1':{'label':'Movements/Musical', 'type':'text',
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); },
                     },
-                'upload':{'label':'Replace Music PDF', 'fn':'M.ciniki_musicfestivals_main.registration.uploadPDF();',
-                    'visible':function() { return M.ciniki_musicfestivals_main.registration.data.music_orgfilename != '' ? 'yes' : 'no'},
+                'composer1':{'label':'Composer', 'type':'text',
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); },
                     },
-                'download':{'label':'Download PDF', 'fn':'M.ciniki_musicfestivals_main.registration.downloadPDF();',
-                    'visible':function() { return M.ciniki_musicfestivals_main.registration.data.music_orgfilename != '' ? 'yes' : 'no'},
+                'perf_time1':{'label':'Time', 'type':'minsec', 'size':'small'},
+                'video_url1':{'label':'Video', 'type':'url',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.videoVisible(1); },
                     },
-            }}, */
+                'music_orgfilename1':{'label':'Music', 'type':'file',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.musicVisible(1); },
+                    'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(1);',
+                    },
+                'backtrack1':{'label':'Backtrack', 'type':'file',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.backtrackVisible(1); },
+                    'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(1);',
+                    },
+            }},
+        '_title2':{'label':'Title #2', 
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.titleVisible(2); },
+            'fields':{
+                'title2':{'label':'Title', 'type':'text', 'separator':'yes'},
+                'movements2':{'label':'Movements/Musical', 'type':'text',
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); },
+                    },
+                'composer2':{'label':'Composer', 'type':'text',
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); },
+                    },
+                'perf_time2':{'label':'Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small'},
+                'video_url2':{'label':'Video', 'type':'url',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.videoVisible(2); },
+                    },
+                'music_orgfilename2':{'label':'Music', 'type':'file',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.musicVisible(2); },
+                    'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(2);',
+                    },
+                'backtrack2':{'label':'Backtrack', 'type':'file',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.backtrackVisible(2); },
+                    'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(2);',
+                    },
+            }},
+        '_title3':{'label':'Title #3', 
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.titleVisible(3); },
+            'fields':{
+                'title3':{'label':'Title', 'type':'text', 'separator':'yes'},
+                'movements3':{'label':'Movements/Musical', 'type':'text',
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); },
+                    },
+                'composer3':{'label':'Composer', 'type':'text',
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); },
+                    },
+                'perf_time3':{'label':'3rd Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small'},
+                'video_url3':{'label':'Video', 'type':'url',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.videoVisible(3); },
+                    },
+                'music_orgfilename3':{'label':'Music', 'type':'file',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.musicVisible(3); },
+                    'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(3);',
+                    },
+                'backtrack3':{'label':'Backtrack', 'type':'file',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.backtrackVisible(3); },
+                    'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(3);',
+                    },
+            }},
+        '_title4':{'label':'Title #4', 
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.titleVisible(4); },
+            'fields':{
+                'title4':{'label':'Title', 'type':'text', 'separator':'yes'},
+                'movements4':{'label':'Movements/Musical', 'type':'text',
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); },
+                    },
+                'composer4':{'label':'Composer', 'type':'text',
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); },
+                    },
+                'perf_time4':{'label':'Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small'},
+                'video_url4':{'label':'Video', 'type':'url',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.videoVisible(4); },
+                    },
+                'music_orgfilename4':{'label':'Music', 'type':'file',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.musicVisible(4); },
+                    'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(4);',
+                    },
+                'backtrack4':{'label':'Backtrack', 'type':'file',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.backtrackVisible(4); },
+                    'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(4);',
+                    },
+            }},
+        '_title5':{'label':'Title #5', 
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.titleVisible(5); },
+            'fields':{
+                'title5':{'label':'Title', 'type':'text', 'separator':'yes'},
+                'movements5':{'label':'Movements/Musical', 'type':'text',
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); },
+                    },
+                'composer5':{'label':'Composer', 'type':'text', 
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); },
+                    },
+                'perf_time5':{'label':'Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small'},
+                'video_url5':{'label':'Video', 'type':'url',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.videoVisible(5); },
+                    },
+                'music_orgfilename5':{'label':'Music', 'type':'file', 'visible':'no',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.musicVisible(5); },
+                    'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(5);',
+                    },
+                'backtrack5':{'label':'Backtrack', 'type':'file',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.backtrackVisible(5); },
+                    'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(5);',
+                    },
+            }},
+        '_title6':{'label':'Title #6', 
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.titleVisible(6); },
+            'fields':{
+                'title6':{'label':'Title', 'type':'text', 'separator':'yes'},
+                'movements6':{'label':'Movements/Musical', 'type':'text',
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); },
+                    },
+                'composer6':{'label':'Composer', 'type':'text',
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); },
+                    },
+                'perf_time6':{'label':'Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small'},
+                'video_url6':{'label':'Video', 'type':'url',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.videoVisible(6); },
+                    },
+                'music_orgfilename6':{'label':'Music', 'type':'file',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.musicVisible(6); },
+                    'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(6);',
+                    },
+                'backtrack6':{'label':'Backtrack', 'type':'file',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.backtrackVisible(6); },
+                    'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(6);',
+                    },
+            }},
+        '_title7':{'label':'Title #7', 
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.titleVisible(7); },
+            'fields':{
+                'title7':{'label':'Title', 'type':'text', 'separator':'yes'},
+                'movements7':{'label':'Movements/Musical', 'type':'text',
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); },
+                    },
+                'composer7':{'label':'Composer', 'type':'text',
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); },
+                    },
+                'perf_time7':{'label':'Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small'},
+                'video_url7':{'label':'Video', 'type':'url', 
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.videoVisible(7); },
+                    },
+                'music_orgfilename7':{'label':'Music', 'type':'file',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.musicVisible(7); },
+                    'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(7);',
+                    },
+                'backtrack7':{'label':'Backtrack', 'type':'file', 
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.backtrackVisible(7); },
+                    'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(7);',
+                    },
+            }},
+        '_title8':{'label':'Title #8', 
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.titleVisible(8); },
+            'fields':{
+                'title8':{'label':'Title', 'type':'text', 'separator':'yes'},
+                'movements8':{'label':'Movements/Musical', 'type':'text',
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); },
+                    },
+                'composer8':{'label':'Composer', 'type':'text', 
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); },
+                    },
+                'perf_time8':{'label':'Time', 'type':'minsec', 'max_minutes':30, 'second_interval':5, 'size':'small'},
+                'video_url8':{'label':'Video', 'type':'url', 
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.videoVisible(8); },
+                    },
+                'music_orgfilename8':{'label':'Music', 'type':'file',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.musicVisible(8); },
+                    'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadMusic(8);',
+                    },
+                'backtrack8':{'label':'Backtrack', 'type':'file', 
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.backtrackVisible(8); },
+                    'deleteFn':'M.ciniki_musicfestivals_main.registration.downloadBacktrack(8);',
+                    },
+            }},
+        '_results':{'label':'Results', 
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'results' ? 'yes' : 'hidden'; },
+            'fields':{
+                'mark':{'label':'Mark', 'type':'text', 'visible':'yes', 'size':'small', 
+                    'onkeyup':'M.ciniki_musicfestivals_main.registration.updatePlacement',
+                    },
+                'placement':{'label':'Placement', 'type':'text', 'separator':'no', 'visible':'yes'},
+                'level':{'label':'Level', 'type':'text', 'separator':'no', 'visible':'yes', 'size':'small'},
+                'finals_placement':{'label':'Finals Placement', 'type':'text', 'separator':'no', 'visible':'yes'},
+                'flags5':{'label':'Best in Class', 'type':'flagtoggle', 'bit':0x10, 'default':'off', 'field':'flags'},
+            }},
         'provincials':{'label':'Provincials Recommendation',
-            'visible':function() { return !M.modFlagOn('ciniki.musicfestivals', 0x010000) ? 'yes' : 'no';},
+            'visible':function() { return !M.modFlagOn('ciniki.musicfestivals', 0x010000) && M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'results' ? 'yes' : 'hidden';},
             'fields':{
                 'provincials_position':{'label':'Place', 'type':'toggle', 'none':'yes', 
                     'visible':function() { return !M.modFlagOn('ciniki.musicfestivals', 0x010000) ? 'yes' : 'no';},
@@ -4132,36 +4266,76 @@ function ciniki_musicfestivals_main() {
                         '90':'Declined',
                     }},
             }},
-        '_comments':{'label':'Adjudicator Comments', 'fields':{
-            'comments':{'label':'', 'hidelabel':'yes', 'type':'textarea'},
+        '_comments':{'label':'Adjudicator Comments', 
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'results' ? 'yes' : 'hidden'; },
+            'fields':{
+                'comments':{'label':'', 'hidelabel':'yes', 'type':'textarea'},
             }},
-        '_notes':{'label':'Registration Notes', 'fields':{
-            'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea'},
+        'invoice_details':{'label':'Invoice', 'type':'simplegrid', 'num_cols':2,
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'payment' ? 'yes' : 'hidden'; },
+            'cellClasses':['label', ''],
+            },
+        '_fee':{'label':'', 
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'payment' ? 'yes' : 'hidden'; },
+            'fields':{
+                'fee':{'label':'Fee', 'type':'text', 'size':'small'},
             }},
-        '_internal_notes':{'label':'Internal Admin Notes', 'fields':{
-            'internal_notes':{'label':'', 'hidelabel':'yes', 'type':'textarea'},
+        '_notes':{'label':'Registration Notes', 
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'notes' ? 'yes' : 'hidden'; },
+            'fields':{
+                'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea'},
+            }},
+        '_internal_notes':{'label':'Internal Admin Notes', 
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'notes' ? 'yes' : 'hidden'; },
+            'fields':{
+                'internal_notes':{'label':'', 'hidelabel':'yes', 'type':'textarea'},
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.registration.save();'},
-            'printcert':{'label':'Download Certificate PDF', 
-                'visible':function() {return M.ciniki_musicfestivals_main.registration.registration_id > 0 ? 'yes' : 'no'; },
-                'fn':'M.ciniki_musicfestivals_main.registration.printCert();'},
-            'printcomments':{'label':'Download Comments PDF', 
-                'visible':function() {return M.ciniki_musicfestivals_main.registration.registration_id > 0 ? 'yes' : 'no'; },
-                'fn':'M.ciniki_musicfestivals_main.registration.printComments();'},
+//            'printcert':{'label':'Download Certificate PDF', 
+//                'visible':function() {return M.ciniki_musicfestivals_main.registration.registration_id > 0 ? 'yes' : 'no'; },
+//                'fn':'M.ciniki_musicfestivals_main.registration.printCert();'},
+//            'printcomments':{'label':'Download Comments PDF', 
+//                'visible':function() {return M.ciniki_musicfestivals_main.registration.registration_id > 0 ? 'yes' : 'no'; },
+//                'fn':'M.ciniki_musicfestivals_main.registration.printComments();'},
             'delete':{'label':'Delete', 
                 'visible':function() {return M.ciniki_musicfestivals_main.registration.registration_id > 0 ? 'yes' : 'no'; },
                 'fn':'M.ciniki_musicfestivals_main.registration.remove();'},
             }},
         };
+    this.registration.switchTab = function(t) {
+        this.sections._tabs.selected = t;
+        this.refreshSection('_tabs');
+        this.showHideSections(['_title1', '_title2', '_title3', '_title4', '_title5', '_title6', '_title7', '_title8', '_results', 'provincials', '_comments', 'invoice_details', '_fee', '_notes', '_internal_notes']);
+    }
+    this.registration.nameVisible = function() {
+        if( (this.selected_class != null && (this.selected_class.flags&0x70) > 0) || this.data.competitor2_id > 0 ) {
+            return 'yes';
+        }
+        return 'hidden';
+    }
+    this.registration.competitorVisible = function(i) {
+        if( (this.selected_class != null && (this.selected_class.flags&0x10) == 0x10) || this.data.competitor2_id > 0 ) {
+            return 'yes';
+        }
+        return 'hidden';
+    }
+    this.registration.instrumentVisible = function() {
+        return this.selected_class != null && (this.selected_class.flags&0x04) == 0x04 ? 'yes' : 'no';
+    }
+    this.registration.titleVisible = function(i) {
+        return this.sections._tabs.selected == 'titles' && this.selected_class != null && this.selected_class.max_titles >= i ? 'yes' : 'hidden';
+    }
+    this.registration.videoVisible = function(i) {
+        return this.formFieldValue('_class', 'participation') == 1 ? 'yes' : 'no';
+    }
+    this.registration.musicVisible = function(i) {
+        return this.formFieldValue('_class', 'participation') == 1 ? 'yes' : 'no';
+    }
+    this.registration.backtrackVisible = function(i) {
+        return (this.selected_class != null && this.selected_class.flags&0x03000000) > 0 ? 'yes' : 'no';
+    }
     this.registration.fieldValue = function(s, i, d) { 
-//        if( i == 'music_orgfilename' ) {
-//            if( this.data[i] == '' ) {
-//                return '<button>Upload</button>';
-//            } else {
-//                return this.data[i] + ' <button>Upload</button>';
-//            }
-//        }
         return this.data[i]; 
     }
     this.registration.fieldHistoryArgs = function(s, i) {
@@ -4201,92 +4375,104 @@ function ciniki_musicfestivals_main() {
     }
     this.registration.rowFn = function(s, i, d) {
         if( s == 'invoice_details' && this._source != 'invoice' && this._source != 'pos' ) {
-            return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_musicfestivals_main.registration.open();\',\'mc\',{\'invoice_id\':\'' + this.data.invoice_id + '\'});';
+            return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_musicfestivals_main.registration.show();\',\'mc\',{\'invoice_id\':\'' + this.data.invoice_id + '\'});';
         }
-    }
-    this.registration.switchTab = function(t) {
-        this.sections._tabs.selected = t;
-        this.refreshSection('_tabs');
-        this.showHideSections(['_display_name', 'competitor2_details', 'competitor2_buttons', 'competitor3_details', 'competitor3_buttons', 'competitor4_details', 'competitor4_buttons']);
-//        this.showHideSection('competitor5_details');
     }
     this.registration.updateForm = function(s, i, cf) {
         var festival = this.data.festival;
         var cid = this.formValue('class_id');
         var participation = this.formValue('participation');
-        var flags = {};
-/*        if( this.teacher_customer_id > 0 ) {
-            flags['1'] = {'name':'Share with Teacher'};
-        }
-        if( this.accompanist_customer_id > 0 ) {
-            flags['2'] = {'name':'Share with Accompanist'};
-        } */
-        this.sections._class.fields.flags1.flags = flags;
-        if( flags['1'] != null || flags['2'] != null ) {
-            this.sections._class.fields.flags1.visible = 'yes';
-        } else {
-            this.sections._class.fields.flags1.visible = 'no';
-        }
-        this.refreshFormField('_class', 'flags1');
-        this.showHideFormField('_class', 'flags1');
         for(var i in this.classes) {
             if( this.classes[i].id == cid ) {
+                this.selected_class = this.classes[i];
                 var c = this.classes[i];
+                var new_fee = 0;
+                var old_fee = parseFloat(this.formFieldValue('_fee', 'fee').replace(/[^\d\.]/,''));
                 if( cf == null ) {
                     if( (festival.flags&0x10) == 0x10 && participation == 2 && c.earlybird_plus_fee > 0 ) {
-                        this.setFieldValue('fee', c.earlybird_plus_fee);
+                        new_fee = c.earlybird_plus_fee;
+//                        this.setFieldValue('fee', c.earlybird_plus_fee);
                     } else if( (festival.flags&0x10) == 0x10 && participation == 2 && c.plus_fee > 0 ) {
-                        this.setFieldValue('fee', c.plus_fee);
+                        new_fee = c.plus_fee;
+//                        this.setFieldValue('fee', c.plus_fee);
                     } else if( (festival.flags&0x04) == 0x04 && participation == 1 ) {
-                        this.setFieldValue('fee', c.virtual_fee);
+                        new_fee = c.virtual_fee;
+//                        this.setFieldValue('fee', c.virtual_fee);
                     } else if( festival.earlybird == 'yes' && c.earlybird_fee > 0 ) {
-                        this.setFieldValue('fee', c.earlybird_fee);
+                        new_fee = c.earlybird_fee;
+//                        this.setFieldValue('fee', c.earlybird_fee);
                     } else {
-                        this.setFieldValue('fee', c.fee);
+                        new_fee = c.fee;
+//                        this.setFieldValue('fee', c.fee);
+                    }
+                    if( new_fee != old_fee ) {
+                        console.log(M.formatDollar(old_fee));
+                        console.log(M.formatDollar(new_fee));
+                        if( old_fee < new_fee ) {
+                            var msg = 'The new class has a different fee. '
+                                + 'Do you want to update the fee from ' + M.formatDollar(old_fee) 
+                                + ' to ' + M.formatDollar(new_fee) + '? '
+                                + 'This will change the invoice status to payment required.';
+                        } else {
+                            var msg = 'The new class has a different fee. '
+                            + 'Do you want to update the fee from ' + M.formatDollar(old_fee) 
+                            + ' to ' + M.formatDollar(new_fee) + '? '
+                            + 'This will change the invoice status to refund required.';
+                        }
+                        M.simpleAsk(msg, 
+                            'Update fee to ' + M.formatDollar(new_fee), 
+                            'Keep old fee of ' + M.formatDollar(old_fee), 
+                            function(yesno) {
+                                if( yesno == 'yes' ) {
+                                    M.ciniki_musicfestivals_main.registration.setFieldValue('fee', M.formatDollar(new_fee));
+                                }
+                            });
                     }
                 }
-                if( (c.flags&0x04) == 0x04 ) {
-                    this.sections._class.fields.instrument.visible = 'yes';
-                } else {
-                    this.sections._class.fields.instrument.visible = 'no';
-                }
+                /*
                 for(var i = 1; i <= 8; i++) {
                     if( i <= c.max_titles ) {
-                        this.sections._class.fields['title'+i].visible = 'yes';
+                        this.sections['_titles'+i].fields['title'+i].visible = 'yes';
                         if( M.modFlagOn('ciniki.musicfestivals', 0x040000) ) {
-                            this.sections._class.fields['movements'+i].visible = 'yes';
-                            this.sections._class.fields['composer'+i].visible = 'yes';
+                            this.sections['_title'+i].fields['movements'+i].visible = 'yes';
+                            this.sections['_title'+i].fields['composer'+i].visible = 'yes';
                         } else {
-                            this.sections._class.fields['movements'+i].visible = 'no';
-                            this.sections._class.fields['composer'+i].visible = 'no';
+                            this.sections['_title'+i].fields['movements'+i].visible = 'no';
+                            this.sections['_title'+i].fields['composer'+i].visible = 'no';
                         }
-                        this.sections._class.fields['perf_time'+i].visible = 'yes';
-                        this.sections._class.fields['video_url'+i].visible = 'yes';
-                        this.sections._class.fields['music_orgfilename'+i].visible = 'yes';
-                        this.sections._class.fields['backtrack'+i].visible = ((c.flags&0x03000000) > 0 ? 'yes' : 'no');
+                        this.sections['_title'+i].fields['perf_time'+i].visible = 'yes';
+                        this.sections['_title'+i].fields['video_url'+i].visible = 'yes';
+                        this.sections['_title'+i].fields['music_orgfilename'+i].visible = 'yes';
+                        this.sections['_title'+i].fields['backtrack'+i].visible = ((c.flags&0x03000000) > 0 ? 'yes' : 'no');
                     } else {
-                        this.sections._class.fields['title'+i].visible = 'no';
-                        this.sections._class.fields['movements'+i].visible = 'no';
-                        this.sections._class.fields['composer'+i].visible = 'no';
-                        this.sections._class.fields['perf_time'+i].visible = 'no';
-                        this.sections._class.fields['video_url'+i].visible = 'no';
-                        this.sections._class.fields['music_orgfilename'+i].visible = 'no';
-                        this.sections._class.fields['backtrack'+i].visible = 'no';
-                    }
-                    this.showHideFormField('_class', 'title'+i);
-                    this.showHideFormField('_class', 'movements'+i);
-                    this.showHideFormField('_class', 'composer'+i);
-                    this.showHideFormField('_class', 'perf_time'+i);
-                    this.showHideFormField('_class', 'video_url'+i);
-                    this.showHideFormField('_class', 'music_orgfilename'+i);
-                    this.showHideFormField('_class', 'backtrack'+i);
-                }
+                        this.sections['_title'+i].fields['title'+i].visible = 'no';
+                        this.sections['_title'+i].fields['movements'+i].visible = 'no';
+                        this.sections['_title'+i].fields['composer'+i].visible = 'no';
+                        this.sections['_title'+i].fields['perf_time'+i].visible = 'no';
+                        this.sections['_title'+i].fields['video_url'+i].visible = 'no';
+                        this.sections['_title'+i].fields['music_orgfilename'+i].visible = 'no';
+                        this.sections['_title'+i].fields['backtrack'+i].visible = 'no';
+                    } 
+                    this.showHideFormField('_title'+i, 'title'+i);
+                    this.showHideFormField('_title'+i, 'movements'+i);
+                    this.showHideFormField('_title'+i, 'composer'+i);
+                    this.showHideFormField('_title'+i, 'perf_time'+i);
+                    this.showHideFormField('_title'+i, 'video_url'+i);
+                    this.showHideFormField('_title'+i, 'music_orgfilename'+i);
+                    this.showHideFormField('_title'+i, 'backtrack'+i);
+                } */
 
-                this.sections._display_name.visible = (c.flags&0x70) > 0 ? 'yes' : 'hidden';
-                this.sections.competitor2_details.visible = ((c.flags&0x10) == 0x10 || this.data.competitor2_id > 0 ? 'yes' : 'hidden');
-                this.sections.competitor3_details.visible = ((c.flags&0x20) == 0x20 || this.data.competitor3_id > 0 ? 'yes' : 'hidden');
-                this.sections.competitor4_details.visible = ((c.flags&0x40) == 0x40 || this.data.competitor4_id > 0 ? 'yes' : 'hidden');
-                this.showHideSections(['_display_name', 'competitor2_details', 'competitor2_buttons', 'competitor3_details', 'competitor3_buttons', 'competitor4_details', 'competitor4_buttons']);
+//                this.sections._display_name.visible = (c.flags&0x70) > 0 ? 'yes' : 'hidden';
+//                this.sections.competitor2_details.visible = ((c.flags&0x10) == 0x10 || this.data.competitor2_id > 0 ? 'yes' : 'hidden');
+//                this.sections.competitor3_details.visible = ((c.flags&0x20) == 0x20 || this.data.competitor3_id > 0 ? 'yes' : 'hidden');
+//                this.sections.competitor4_details.visible = ((c.flags&0x40) == 0x40 || this.data.competitor4_id > 0 ? 'yes' : 'hidden');
+                this.showHideSections(['_display_name', 'competitor2_details', 'competitor3_details', 'competitor4_details']);
+                for(var i = 1; i <= 8; i++) {
+                    this.showHideSection('_title'+i);
+                    this.showHideFormField('_title'+i, 'video_url'+i);
+                    this.showHideFormField('_title'+i, 'music_orgfilename'+i);
+                    this.showHideFormField('_title'+i, 'backtrack'+i);
+                }
                 this.showHideFormField('_class', 'instrument');
             }
         }
@@ -4312,27 +4498,41 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.registration.addCompetitor = function(cid,c) {
-        this.save("M.ciniki_musicfestivals_main.competitor.open('M.ciniki_musicfestivals_main.registration.updateCompetitor(" + c + ");'," + cid + "," + this.festival_id + ",null,M.ciniki_musicfestivals_main.registration.data.billing_customer_id);");
+        this.popupMenuClose('competitor'+c+'_details');
+        M.ciniki_musicfestivals_main.competitor.open('M.ciniki_musicfestivals_main.registration.updateCompetitor(' + c + ');',cid,this.festival_id,null,M.ciniki_musicfestivals_main.registration.data.billing_customer_id);
     }
     this.registration.updateCompetitor = function(c) {
-        var p = M.ciniki_musicfestivals_main.competitor;
-        if( p.competitor_id > 0 && this['competitor' + c + '_id'] != p.competitor_id ) {
-            this['competitor' + c + '_id'] = p.competitor_id;
-            this.save("M.ciniki_musicfestivals_main.registration.open();");
-        } else {    
-            this.open();
+        var new_cid = M.ciniki_musicfestivals_main.competitor.competitor_id;
+        if( new_cid > 0 ) {
+            this['competitor' + c + '_id'] = new_cid;
+            M.api.getJSONCb('ciniki.musicfestivals.competitorGet', {'tnid':M.curTenantID, 'competitor_id':new_cid}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                var p = M.ciniki_musicfestivals_main.registration;
+                p.data['competitor'+c+'_details'] = rsp.details;
+                p.refreshSection('competitor'+c+'_details');
+                p.show();
+                });
+        } else {
+            this.show();
         }
     }
     this.registration.delCompetitor = function(cn) {
-        M.confirm('Are you sure you want to remove competitor ' + cn + '?',null,function() {
-            M.ciniki_musicfestivals_main.registration['competitor'+cn+'_id'] = 0;
-            M.ciniki_musicfestivals_main.registration.save("M.ciniki_musicfestivals_main.registration.open();");
-            });
+        var p = M.ciniki_musicfestivals_main.registration;
+        M.ciniki_musicfestivals_main.registration;
+        p['competitor'+cn+'_id'] = 0;
+        p.data['competitor' + cn + '_details'] = {};
+        console.log('refresh');
+        p.refreshSection('competitor'+cn+'_details');
     }
     this.registration.printCert = function() {
+        this.popupMenuClose('_class');
         M.api.openFile('ciniki.musicfestivals.registrationCertificatesPDF', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'registration_id':this.registration_id});
     }
     this.registration.printComments = function() {
+        this.popupMenuClose('_class');
         M.api.openFile('ciniki.musicfestivals.registrationCommentsPDF', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'registration_id':this.registration_id});
     }
 /*    this.registration.uploadPDF = function() {
@@ -4396,18 +4596,17 @@ function ciniki_musicfestivals_main() {
             }
 //            p.sections._tabs.selected = rsp.registration.rtype;
             p.sections._class.fields.class_id.options = rsp.classes;
+            this.selected_class = null;
+            for(i in rsp.classes) {
+                if( rsp.registration.class_id == rsp.classes[i].id ) {
+                    this.selected_class = rsp.classes[i];
+                }
+            }
             p.sections._class.fields.class_id.options.unshift({'id':0, 'name':''});
             p.sections.teacher_details.customer_id = parseInt(rsp.registration.teacher_customer_id);
             p.sections.accompanist_details.customer_id = parseInt(rsp.registration.accompanist_customer_id);
             for(var i = 1; i<= 4; i++) {
                 p['competitor' + i + '_id'] = parseInt(rsp.registration['competitor' + i + '_id']);
-                if( p['competitor' + i + '_id'] == 0 ) {
-                    p.sections['competitor' + i + '_details'].addTxt = '';
-                    p.sections['competitor' + i + '_details'].changeTxt = 'Add';
-                } else {
-                    p.sections['competitor' + i + '_details'].addTxt = 'Edit';
-                    p.sections['competitor' + i + '_details'].changeTxt = 'Change';
-                }
             }
             if( (p.data.festival.flags&0x10) == 0x10 ) {
                 p.sections._class.fields.participation.options = {
@@ -4428,7 +4627,7 @@ function ciniki_musicfestivals_main() {
                 }
             }
             if( rsp.tags != null ) {
-                p.sections._tags.fields.tags.tags = rsp.tags;
+                p.sections._class.fields.tags.tags = rsp.tags;
             }
             if( p.data.festival['comments-mark-ui'] != null && p.data.festival['comments-mark-ui'] == 'yes' ) {
                 p.sections._results.fields.mark.visible = 'yes';
@@ -4442,9 +4641,12 @@ function ciniki_musicfestivals_main() {
                 p.sections._results.fields.placement.separator = 'no';
                 p.sections._results.fields.level.visible = 'no';
             }
+            p.sections._results.fields.finals_placement.visible = 'no';
             if( p.data.festival['comments-placement-ui'] != null && p.data.festival['comments-placement-ui'] == 'yes' ) {
                 p.sections._results.fields.placement.visible = 'yes';
-                p.sections._results.fields.finals_placement.visible = 'yes';
+                if( p.data.finals_timeslot_id > 0 ) {
+                    p.sections._results.fields.finals_placement.visible = 'yes';
+                }
                 if( p.data.festival['comments-placement-label'] != null && p.data.festival['comments-placement-label'] != '' ) {
                     p.sections._results.fields.placement.label = p.data.festival['comments-placement-label'];
                     p.sections._results.fields.finals_placement.label = p.data.festival['comments-placement-label'];
@@ -4488,10 +4690,6 @@ function ciniki_musicfestivals_main() {
             M.alert("You must select a class.");
             return false;
         }
-//        if( this.competitor1_id == 0 ) {
-//            M.alert("You must have a competitor.");
-//            return false;
-//        }
         if( this.registration_id > 0 ) {
             var c = this.serializeFormData('no');
             if( this.competitor1_id != this.data.competitor1_id ) { c.append('competitor1_id', this.competitor1_id); }
@@ -8212,7 +8410,6 @@ function ciniki_musicfestivals_main() {
                 'fn':'M.ciniki_musicfestivals_main.messagerefs.switchTab("timeslots");',
                 },
             'tags':{'label':'Registration Tags', 
-                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x2000); },
                 'fn':'M.ciniki_musicfestivals_main.messagerefs.switchTab("tags");',
                 },
             'teachers':{'label':'Teachers', 'fn':'M.ciniki_musicfestivals_main.messagerefs.switchTab("teachers");'},
@@ -9080,7 +9277,7 @@ function ciniki_musicfestivals_main() {
         this.festival.city_prov = 'All';
         this.festival.province = 'All';
         this.festival.registration_tag = '';
-        this.festival.sections.sbuttons2.label = M.modFlagOn('ciniki.musicfestivals', 0x02) ? '' : 'Downloads';
+        this.festival.sections.sbuttons2.label = 'Current Section Downloads';
         this.scheduletimeslot.section_id = 0;
         this.scheduletimeslot.category_id = 0;
     }

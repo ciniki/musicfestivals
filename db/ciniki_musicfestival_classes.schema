@@ -19,16 +19,16 @@
 # flags:                The options for the class.
 #
 #                           0x01 - Online registration
-#                           0x02 - Multireg - Allow for same student to register multiple times.
+#                           0x02 - Multireg - Allow for same student to register multiple times. **Not currently implemented**
 #                           0x04 - Instrument required on registration
 #                           0x08 - Instrument optional **future placeholder, not implemented**
-#                           0x10 - Enable Second competitor
-#                           0x20 - Enable Third competitor
-#                           0x40 - Enable Fourth competitor
-#                           0x80 - Enable Fifth competitor **future**
-#                           0x0100 - Second Competitor optional
-#                           0x0200 - Third Competitor optional
-#                           0x0400 - Fourth Competitor optional
+#                           0x10 - Enable Second competitor **deprecated**
+#                           0x20 - Enable Third competitor **deprecated**
+#                           0x40 - Enable Fourth competitor **deprecated**
+#                           0x80 - 
+#                           0x0100 - Second Competitor optional **deprecated**
+#                           0x0200 - Third Competitor optional **deprecated**
+#                           0x0400 - Fourth Competitor optional **deprecated**
 #                           0x0800 - 
 #                           0x1000 - Accompanist Required
 #                           0x2000 - Accompanist Optional
@@ -36,8 +36,8 @@
 #                           0x8000 - Group/Ensemble Registration
 #                           0x010000 - Virtual Entry Youtube URL Required
 #                           0x020000 - Virtual Entry Youtube URL Hidden
-#                           0x040000 - Live Entry Music PDF Required **future**
-#                           0x080000 - Virtual Entry Music PDF Required **future**
+#                           0x040000 - 
+#                           0x080000 - 
 #                           0x100000 - Virtual Entry Music PDF Required
 #                           0x200000 - Virtual Entry Music PDF Hidden
 #                           0x400000 - Live Entry Music PDF Required **future**
@@ -56,6 +56,9 @@
 # virtual_fee:          The fee for the class.
 # earlybird_plus_fee:   The Earlybird Adjudication Plus fee for the class.
 # plus_fee:             The Adjudication Plus fee for the class.
+#
+# min_competitors:      The minimum number of competitors for this class (0-4).
+# max_competitors:      The maximum number of competitors for this class (0-4).
 #
 # min_titles:           The minimum number of titles that must be performed.
 # max_titles:           The maximum number of titles that can be performed.
@@ -81,6 +84,8 @@ create table ciniki_musicfestival_classes (
     virtual_fee decimal(19,6) not null,
     earlybird_plus_fee decimal(19,6) not null,
     plus_fee decimal(19,6) not null,
+    min_competitors tinyint unsigned not null,
+    max_competitors tinyint unsigned not null,
     min_titles tinyint unsigned not null,
     max_titles tinyint unsigned not null,
     provincials_code varchar(20) not null,
