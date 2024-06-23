@@ -3313,7 +3313,6 @@ function ciniki_musicfestivals_main() {
         }
         return null;
     }
-    this.classes.addButton('save', 'Save', 'M.ciniki_musicfestivals_main.section.save();');
     this.classes.addClose('Cancel');
     this.classes.addButton('next', 'Next');
     this.classes.addLeftButton('prev', 'Prev');
