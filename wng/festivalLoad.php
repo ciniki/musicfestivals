@@ -66,9 +66,6 @@ function ciniki_musicfestivals_wng_festivalLoad(&$ciniki, $tnid, $festival_id) {
     if( ($festival['flags']&0x10) == 0x10 ) {
         $festival['earlybird_plus_live'] = $festival['earlybird'];
         $festival['plus_live'] = $festival['live'];
-    } else {
-        $festival['earlybird_plus_live'] = 'no';
-        $festival['plus_live'] = 'no';
     }
     $festival['edit'] = ($edit_end_dt > $now ? 'yes' : 'no');
     $festival['edit-accompanist'] = ($accompanist_end_dt > $now ? 'yes' : 'no');
