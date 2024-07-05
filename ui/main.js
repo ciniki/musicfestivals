@@ -978,6 +978,14 @@ function ciniki_musicfestivals_main() {
             'cellClasses':['flexlabel', 'alignleft'],
             'noData':'No Statistics yet',
         },
+        'cityprovincestats':{'label':'', 'type':'simplegrid', 'num_cols':2,
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'statistics'); },
+            'cellClasses':['flexlabel', 'alignleft'],
+            'headerValues':['City, Province', 'Number of Registrations'],
+            'sortable':'yes',
+            'sortTypes':['text', 'number'],
+            'noData':'No Statistics yet',
+        },
     }
     this.festival.isSelected = function(t, m) {
         if( this.menutabs.selected == t ) {
@@ -1542,7 +1550,7 @@ function ciniki_musicfestivals_main() {
         if( s == 'sponsors-old' && j == 0 ) {
             return '<span class="maintext">' + d.sponsor.title + '</span>';
         }
-        if( s == 'statistics' ) {
+        if( s == 'statistics' || s == 'cityprovincestats' ) {
             switch(j) {
                 case 0: return d.label;
                 case 1: return d.value;

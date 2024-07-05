@@ -1969,7 +1969,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . ") "
                 . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "ORDER BY name ";
+                . "ORDER BY competitors.name ";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'competitors', 'fname'=>'id', 
@@ -3016,6 +3016,27 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.768', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
             }
             $festival['statistics']['num_accompanists'] = array('label'=>'Number of Accompanists', 'value'=>$rc['num']);
+
+            //
+            // Get the number of city, province stats
+            //
+            $strsql = "SELECT CONCAT_WS(', ', city, province) AS cityprov, COUNT(*) AS num "
+                . "FROM ciniki_musicfestival_competitors AS competitors "
+                . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "GROUP BY cityprov "
+                . "ORDER BY cityprov "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'cityprovincestats', 'fname'=>'cityprov', 
+                    'fields'=>array('label'=>'cityprov', 'value'=>'num'),
+                    ),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.769', 'msg'=>'Unable to load cityprovincestats', 'err'=>$rc['err']));
+            }
+            $festival['cityprovincestats'] = isset($rc['cityprovincestats']) ? $rc['cityprovincestats'] : array();
         }
     }
 
