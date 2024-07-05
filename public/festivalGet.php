@@ -70,6 +70,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sequence'),
         'ipv'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'In Person/Virtual'),
         'registration_tag'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registration Tag'),
+        'statistics'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Statistics'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -2921,7 +2922,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         //
         // Get the number of registrations 
         //
-        $strsql = "SELECT COUNT(id) "
+/*        $strsql = "SELECT COUNT(id) "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -2933,6 +2934,88 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         }
         if( isset($rc['registrations']) ) {
             $festival['num_registrations'] = $rc['registrations'];
+        } */
+        if( isset($args['statistics']) && $args['statistics'] == 'yes' ) {
+
+            $festival['statistics'] = array(
+                'num_registrations' => array('label' => 'Total Registrations', 'value' => ''),
+                );
+
+            $strsql = "SELECT participation, COUNT(*) AS num "
+                . "FROM ciniki_musicfestival_registrations AS registrations "
+                . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "GROUP BY participation "
+                . "ORDER BY participation "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
+            $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.767', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+            }
+
+            $total_reg = 0;
+            if( ($festival['flags']&0x02) == 0x02 ) {
+                $festival['statistics']['live_registrations'] = array('label'=>'Live Registrations', 'value'=>'');
+                $festival['statistics']['virtual_registrations'] = array('label'=>'Virtual Registrations', 'value'=>'');
+                foreach($rc['num'] as $p => $v) {
+                    $total_reg += $v;
+                    if( $p == 0 ) {
+                        $festival['statistics']['live_registrations']['value'] = $v;
+                    } elseif( $p == 1 ) {
+                        $festival['statistics']['virtual_registrations']['value'] = $v;
+                    }
+                }
+            }
+            elseif( ($festival['flags']&0x10) == 0x10 ) {
+                $festival['statistics']['reg_registrations'] = array('label'=>'Regular Registrations', 'value'=>'');
+                $festival['statistics']['plus_registrations'] = array('label'=>'Plus Registrations', 'value'=>'');
+                foreach($rc['num'] as $p => $v) {
+                    $total_reg += $v;
+                    if( $p == 0 ) {
+                        $festival['statistics']['reg_registrations']['value'] = $v;
+                    } elseif( $p == 2 ) {
+                        $festival['statistics']['plus_registrations']['value'] = $v;
+                    }
+                }
+            } else {
+                foreach($rc['num'] as $p => $v) {
+                    $total_reg += $v;
+                }
+            }
+            $festival['statistics']['num_registrations']['value'] = $total_reg;
+
+            //
+            // Get the number of teachers
+            //
+            $strsql = "SELECT COUNT(DISTINCT teacher_customer_id) AS num "
+                . "FROM ciniki_musicfestival_registrations AS registrations "
+                . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "AND teacher_customer_id > 0 "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+            $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.768', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+            }
+            $festival['statistics']['num_teachers'] = array('label'=>'Number of Teachers', 'value'=>$rc['num']);
+
+            //
+            // Get the number of accompanists
+            //
+            $strsql = "SELECT COUNT(DISTINCT accompanist_customer_id) AS num "
+                . "FROM ciniki_musicfestival_registrations AS registrations "
+                . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "AND accompanist_customer_id > 0 "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+            $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.768', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+            }
+            $festival['statistics']['num_accompanists'] = array('label'=>'Number of Accompanists', 'value'=>$rc['num']);
         }
     }
 
