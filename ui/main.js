@@ -974,6 +974,7 @@ function ciniki_musicfestivals_main() {
             'addFn':'M.startApp(\'ciniki.sponsors.ref\',null,\'M.ciniki_musicfestivals_main.festival.open();\',\'mc\',{\'object\':\'ciniki.musicfestivals.festival\',\'object_id\':M.ciniki_musicfestivals_main.festival.festival_id});',
         },
         'statistics':{'label':'Statistics', 'type':'simplegrid', 'num_cols':2,
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'statistics'); },
             'cellClasses':['flexlabel', 'alignleft'],
             'noData':'No Statistics yet',
         },
