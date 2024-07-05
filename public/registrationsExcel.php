@@ -730,7 +730,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                         }
                         if( isset($rc['customer']['emails']) ) {
                             foreach($rc['customer']['emails'] as $email) {
-                                $registration['teacher_email'] .= ($registration['teacher_email'] != '' ? ', ' : '') . $email['email']['address'];
+                                $registration['teacher_email'] .= ($registration['teacher_email'] != '' ? ', ' : '') . $email['address'];
                             }
                         }
 
@@ -767,7 +767,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                         }
                         if( isset($rc['customer']['emails']) ) {
                             foreach($rc['customer']['emails'] as $email) {
-                                $registration['accompanist_email'] .= ($registration['accompanist_email'] != '' ? ', ' : '') . $email['email']['address'];
+                                $registration['accompanist_email'] .= ($registration['accompanist_email'] != '' ? ', ' : '') . $email['address'];
                             }
                         }
 

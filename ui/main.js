@@ -3688,26 +3688,6 @@ function ciniki_musicfestivals_main() {
             M.ciniki_musicfestivals_main.class.open();
             });
     }
-/*    this.class.liveSearchCb = function(s, i, value) {
-        if( i == 'level' ) {
-            M.api.getJSONBgCb('ciniki.musicfestivals.classFieldSearch', {'tnid':M.curTenantID, 'field':i, 'start_needle':value, 'festival_id':M.ciniki_musicfestivals_main.class.festival_id, 'limit':15}, 
-                function(rsp) {
-                    M.ciniki_musicfestivals_main.class.liveSearchShow(s, i, M.gE(M.ciniki_musicfestivals_main.class.panelUID + '_' + i), rsp.results); 
-                });
-        }
-    }
-    this.class.liveSearchResultValue = function(s, f, i, j, d) {
-        return d.name;
-    }
-    this.class.liveSearchResultRowFn = function(s, f, i, j, d) {
-        if( f == 'level' ) {
-            return 'M.ciniki_musicfestivals_main.class.updateField(\'' + s + '\',\'' + f + '\',\'' + escape(d.name) + '\');';
-        }
-    }
-    this.class.updateField = function(s, f, r) {
-        M.gE(this.panelUID + '_' + f).value = unescape(r);
-        this.removeLiveSearch(s, f);
-    } */
     this.class.updateForm = function() {
         var f = this.formValue('flags15');
         if( (f&0xC000) == 0x8000 ) {
