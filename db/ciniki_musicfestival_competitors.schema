@@ -89,6 +89,6 @@ create table ciniki_musicfestival_competitors (
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
-    index festival (id, tnid, festival_id),
+    index name (id, tnid, festival_id, name, city, province),
     index tenant_uuid (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.05';
