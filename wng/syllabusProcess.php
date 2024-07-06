@@ -129,7 +129,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
             . "AND (sections.flags&0x01) = 0 "
             . "ORDER BY sections.sequence, sections.name "
             . "";
-    } elseif( isset($s['layout']) && $s['layout'] == 'groups' ) {
+    } elseif( isset($s['layout']) && ($s['layout'] == 'groups' || $s['layout'] == 'groupbuttons') ) {
         $strsql = "SELECT sections.id, "
             . "sections.permalink, "
             . "sections.name, "
@@ -195,7 +195,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     //
     // Check for syllabus section requested
     //
-    if( isset($s['layout']) && $s['layout'] == 'groups' 
+    if( isset($s['layout']) && ($s['layout'] == 'groups' || $s['layout'] == 'groupbuttons') 
         && isset($request['uri_split'][($request['cur_uri_pos']+2)])
         && $request['uri_split'][($request['cur_uri_pos']+2)] != '' 
         ) {
@@ -318,6 +318,30 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
                 ),
             'rows' => $sections,
             );
+    }
+
+    //
+    // Display as table with groups
+    //
+    elseif( isset($s['layout']) && $s['layout'] == 'groupbuttons' ) {
+        foreach($sections as $sid => $section) {
+            $buttons = array();
+            foreach($section['groups'] as $groupname => $group) {
+                $buttons[] = array(
+                    'title' => $groupname == '' ? 'Other' : $groupname,
+                    'url' => "{$request['ssl_domain_base_url']}{$request['page']['path']}/{$section['permalink']}/" . urlencode($groupname),
+                    );
+            }
+            
+            $blocks[] = array(
+                'type' => 'buttons',
+                'section' => 'syllabus',
+                'class' => 'musicfestival-syllabus syllabus-groupbuttons',
+                'title' => $section['title'],
+                'level' => 2,
+                'items' => $buttons,
+                );
+        }
     }
     
     //

@@ -161,6 +161,7 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
         . "c.id AS cid, "
         . "c.name AS cn, "
         . "c.permalink AS cp, "
+        . "c.groupname, "
         . "c.synopsis AS cs, "
         . "c.sequence AS co, "
         . "c.primary_image_id AS ci, "
@@ -205,7 +206,7 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
         array('container'=>'sections', 'fname'=>'sid',
             'fields'=>array('name'=>'sn', 'permalink'=>'sp', 'sequence'=>'so', 'flags'=>'sf', 'primary_image_id'=>'si', 'synopsis'=>'ss', 'description'=>'sd')),
         array('container'=>'categories', 'fname'=>'cid',
-            'fields'=>array('name'=>'cn', 'permalink'=>'cp', 'sequence'=>'co', 'primary_image_id'=>'ci', 'synopsis'=>'cs', 'description'=>'cd')),
+            'fields'=>array('name'=>'cn', 'permalink'=>'cp', 'sequence'=>'co', 'groupname', 'primary_image_id'=>'ci', 'synopsis'=>'cs', 'description'=>'cd')),
         array('container'=>'classes', 'fname'=>'iid',
             'fields'=>array('code', 'name'=>'iname', 'permalink'=>'ip', 'synopsis'=>'class_synopsis', 'sequence'=>'io', 
                 'flags', 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
