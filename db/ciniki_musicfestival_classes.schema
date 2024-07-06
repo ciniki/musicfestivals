@@ -65,6 +65,8 @@
 #
 # provincials_code:     The provincial class code any students in this class can be recommended for.
 #
+# synopsis:             The synopsis/short description of the class.
+#
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.
 #
@@ -89,6 +91,7 @@ create table ciniki_musicfestival_classes (
     min_titles tinyint unsigned not null,
     max_titles tinyint unsigned not null,
     provincials_code varchar(20) not null,
+    synopsis varchar(2000) not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
@@ -97,4 +100,4 @@ create table ciniki_musicfestival_classes (
     unique index (festival_id, code),
     index (festival_id, category_id, tnid),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.09';
+) ENGINE='InnoDB', COMMENT='v1.10';

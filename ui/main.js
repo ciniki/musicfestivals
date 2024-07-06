@@ -3643,6 +3643,9 @@ function ciniki_musicfestivals_main() {
                 'flags':{'0':{'name':'None'}, '25':{'name':'Required'}, '26':{'name':'Optional'}},
                 },
             }},
+        '_synopsis':{'label':'Synopsis', 'fields':{
+            'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+            }},
         'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':3, 
             'headerValues':['Competitor', 'Teacher', 'Status'],
             'noData':'No registrations',

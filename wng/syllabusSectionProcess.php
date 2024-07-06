@@ -306,6 +306,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         . "categories.description AS category_description, "
         . "classes.code, "
         . "classes.name, "
+        . "classes.synopsis, "
         . "classes.permalink, "
         . "classes.sequence, "
         . "classes.flags, "
@@ -337,8 +338,8 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         array('container'=>'categories', 'fname'=>'category_id', 
             'fields'=>array('name'=>'category_name', 'image_id'=>'category_image_id', 'synopsis'=>'category_synopsis', 'description'=>'category_description',
             )),
-        array('container'=>'classes', 'fname'=>'id', 
-            'fields'=>array('id', 'uuid', 'festival_id', 'category_id', 'code', 'name', 
+        array('container'=>'classes', 'fname'=>'id',  
+            'fields'=>array('id', 'uuid', 'festival_id', 'category_id', 'code', 'name', 'synopsis',
                 'permalink', 'sequence', 'flags', 
                 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
                 )),
@@ -428,7 +429,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                         'headers' => ($festival['flags']&0x04) == 0x04 ? 'yes' : 'no',
                         'class' => 'fold-at-40 musicfestival-classes',
                         'columns' => array(
-                            array('label'=>'Class', 'fold-label'=>'Class:', 'field'=>'fullname', 'class'=>''),
+                            array('label'=>'Class', 'fold-label'=>'Class:', 'field'=>'fullname', 'info-field'=>'synopsis', 'class'=>''),
     //                            array('label'=>'Course', 'field'=>'name', 'class'=>''),
                             array('label'=>$live_label, 'fold-label'=>$live_label . ':', 'field'=>'live_fee', 'class'=>'aligncenter fold-alignleft'),
                             array('label'=>'Virtual', 'fold-label'=>'Virtual:', 'field'=>'virtual_fee', 'class'=>'aligncenter fold-alignleft'),
@@ -443,7 +444,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                         'headers' => 'no',
                         'class' => 'fold-at-40 musicfestival-classes musicfestival-syllabus-section',
                         'columns' => array(
-                            array('label'=>'Class', 'fold-label'=>'Class:', 'field'=>'fullname', 'class'=>''),
+                            array('label'=>'Class', 'fold-label'=>'Class:', 'field'=>'fullname', 'info-field'=>'synopsis', 'class'=>''),
                             array('label'=>$live_label, 'fold-label'=>$live_label . ':', 'field'=>'live_fee', 'class'=>'aligncenter fold-alignleft'),
                             ),
                         'rows' => $category['classes'],

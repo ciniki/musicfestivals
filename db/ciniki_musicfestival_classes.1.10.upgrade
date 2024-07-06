@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN synopsis varchar(2000) not null AFTER provincials_code;
+ALTER TABLE ciniki_musicfestival_classes COMMENT='v1.10';
