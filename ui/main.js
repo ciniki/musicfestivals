@@ -974,12 +974,12 @@ function ciniki_musicfestivals_main() {
             'addFn':'M.startApp(\'ciniki.sponsors.ref\',null,\'M.ciniki_musicfestivals_main.festival.open();\',\'mc\',{\'object\':\'ciniki.musicfestivals.festival\',\'object_id\':M.ciniki_musicfestivals_main.festival.festival_id});',
         },
         'statistics':{'label':'Statistics', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
-            'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'statistics'); },
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'statistics') == 'yes' && M.ciniki_musicfestivals_main.festival.sections.stats_tabs.selected != 'members' ? 'yes' : 'no'; },
             'cellClasses':['flexlabel', 'alignleft'],
             'noData':'No Statistics yet',
         },
         'stats_placements':{'label':'Placements', 'type':'simplegrid', 'num_cols':2, 'aside':'yes',
-            'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'statistics') == 'yes' && M.ciniki_musicfestivals_main.festival.data.stats_placements != null ? 'yes' : 'no'; },
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'statistics') == 'yes' && M.ciniki_musicfestivals_main.festival.data.stats_placements != null && M.ciniki_musicfestivals_main.festival.sections.stats_tabs.selected != 'members' ? 'yes' : 'no'; },
             'cellClasses':['flexlabel', 'alignleft'],
             'noData':'No Statistics yet',
         },
@@ -2266,11 +2266,11 @@ function ciniki_musicfestivals_main() {
             this.size = 'large';
             args['sponsors'] = 'yes';
         } else if( this.isSelected('more', 'statistics') == 'yes' ) {
-            this.size = 'large narrowaside';
+            this.size = 'large mediumaside';
             args['statistics'] = 'cities';
             if( this.sections.stats_tabs.selected == 'members' ) {
                 args['statistics'] = 'members';
-                this.size = 'full narrowaside';
+                this.size = 'full';
             }
         } else if( this.isSelected('more', 'sponsors-old') == 'yes' ) {
             args['sponsors'] = 'yes';
