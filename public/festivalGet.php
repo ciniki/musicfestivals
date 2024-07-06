@@ -2975,7 +2975,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         if( isset($rc['registrations']) ) {
             $festival['num_registrations'] = $rc['registrations'];
         } */
-        if( isset($args['statistics']) && $args['statistics'] == 'yes' ) {
+        if( isset($args['statistics']) 
+            && ($args['statistics'] == 'cities' || $args['statistics'] == 'members') 
+            ) {
 
             $festival['statistics'] = array(
                 'num_registrations' => array('label' => 'Total Registrations', 'value' => ''),
@@ -3058,25 +3060,151 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $festival['statistics']['num_accompanists'] = array('label'=>'Number of Accompanists', 'value'=>$rc['num']);
 
             //
+            // Get the placements
+            //
+            if( isset($festival['comments-placement-options']) && $festival['comments-placement-options'] != '' ) {
+                $placements = explode(',', $festival['comments-placement-options']);
+                foreach($placements as $pid => $placement) {
+                    $placement = trim($placement);
+                    $festival['stats_placements'][$placement] = array(
+                        'label' => $placement,
+                        'value' => 0,
+                        );
+                }
+
+                //
+                // Get the list of registrations
+                //
+                $strsql = "SELECT registrations.id, "
+                    . "registrations.participation, "
+                    . "registrations.timeslot_id, "
+                    . "registrations.placement, "
+                    . "registrations.finals_timeslot_id, "
+                    . "registrations.finals_placement "
+                    . "FROM ciniki_musicfestival_registrations AS registrations "
+                    . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'registrations', 'fname'=>'id', 
+                        'fields'=>array('id', 'participation', 'timeslot_id', 'placement', 'finals_timeslot_id', 'finals_placement'),
+                        ),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.771', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+                }
+                $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
+
+                foreach($registrations as $reg) {
+                    if( $reg['finals_placement'] != '' ) {
+                        $festival['stats_placements'][$reg['finals_placement']]['value'] += 1;
+                    } elseif( $reg['placement'] != '' ) {
+                        $festival['stats_placements'][$reg['placement']]['value'] += 1;
+                    }
+                }
+            }
+
+            //
             // Get the number of city, province stats
             //
-            $strsql = "SELECT CONCAT_WS(', ', city, province) AS cityprov, COUNT(*) AS num "
-                . "FROM ciniki_musicfestival_competitors AS competitors "
-                . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-                . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "GROUP BY cityprov "
-                . "ORDER BY cityprov "
-                . "";
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-                array('container'=>'cityprovincestats', 'fname'=>'cityprov', 
-                    'fields'=>array('label'=>'cityprov', 'value'=>'num'),
-                    ),
-                ));
-            if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.769', 'msg'=>'Unable to load cityprovincestats', 'err'=>$rc['err']));
+            if( $args['statistics'] == 'cities' ) {
+                $strsql = "SELECT CONCAT_WS(', ', city, province) AS cityprov, COUNT(*) AS num "
+                    . "FROM ciniki_musicfestival_competitors AS competitors "
+                    . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "GROUP BY cityprov "
+                    . "ORDER BY cityprov "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'cityprovincestats', 'fname'=>'cityprov', 
+                        'fields'=>array('label'=>'cityprov', 'value'=>'num'),
+                        ),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.769', 'msg'=>'Unable to load cityprovincestats', 'err'=>$rc['err']));
+                }
+                $festival['stats_cities'] = isset($rc['cityprovincestats']) ? $rc['cityprovincestats'] : array();
             }
-            $festival['cityprovincestats'] = isset($rc['cityprovincestats']) ? $rc['cityprovincestats'] : array();
+
+            //
+            // Get the member stats
+            //
+            if( $args['statistics'] == 'members' ) {
+                if( isset($festival['comments-placement-options']) && $festival['comments-placement-options'] != '' ) {
+                    $placements = explode(',', $festival['comments-placement-options']);
+                    foreach($placements as $pid => $placement) {
+                        $placements[$pid] = trim($placement);
+                    }
+                }
+
+                //
+                // Get the list of members
+                //
+                $strsql = "SELECT registrations.member_id, "
+                    . "members.name, "
+                    . "registrations.id AS reg_id, "
+                    . "registrations.participation, "
+                    . "registrations.timeslot_id, "
+                    . "registrations.placement, "
+                    . "registrations.finals_timeslot_id, "
+                    . "registrations.finals_placement "
+                    . "FROM ciniki_musicfestival_registrations AS registrations "
+                    . "LEFT JOIN ciniki_musicfestivals_members AS members ON ("
+                        . "registrations.member_id = members.id "
+                        . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "ORDER BY members.name "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'members', 'fname'=>'member_id', 
+                        'fields'=>array('id'=>'member_id', 'name'),
+                        ),
+                    array('container'=>'registrations', 'fname'=>'reg_id', 
+                        'fields'=>array('id'=>'reg_id', 'participation', 'timeslot_id', 'placement', 'finals_timeslot_id', 'finals_placement'),
+                        ),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.771', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+                }
+                $members = isset($rc['members']) ? $rc['members'] : array();
+
+                foreach($members as $mid => $member) {
+                    $members[$mid]['num_registrations'] = 0;
+                    $members[$mid]['num_live'] = 0;
+                    $members[$mid]['num_virtual'] = 0;
+                    foreach($placements as $p) {
+                        $members[$mid][$p] = 0;
+                    }
+                   
+                    foreach($member['registrations'] as $reg) {
+                        $members[$mid]['num_registrations']++;
+                        if( $reg['participation'] == 1 ) {
+                            $members[$mid]['num_virtual']++;
+                        } else {
+                            $members[$mid]['num_live']++;
+                        }
+                        if( $reg['finals_placement'] != '' ) {
+                            $members[$mid][$reg['finals_placement']] += 1;
+                        } elseif( $reg['placement'] != '' ) {
+                            $members[$mid][$reg['placement']] += 1;
+                        }
+                    }
+
+                    unset($member[$mid]['registrations']);
+                }
+                $festival['stats_members_headerValues'] = array('Name', 'Registrations', 'Live', 'Virtual');
+                $festival['stats_members_dataMaps'] = array('name', 'num_registrations', 'num_live', 'num_virtual');
+                foreach($placements as $p) {
+                    $festival['stats_members_headerValues'][] = $p;
+                    $festival['stats_members_dataMaps'][] = $p;
+                }
+                $festival['stats_members'] = $members;
+            }
         }
     }
 
