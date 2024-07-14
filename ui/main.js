@@ -2865,7 +2865,10 @@ function ciniki_musicfestivals_main() {
                 'fn':'M.ciniki_musicfestivals_main.edit.updateNames();'},
             'delete':{'label':'Delete', 
                 'visible':function() {return M.ciniki_musicfestivals_main.edit.festival_id > 0 ? 'yes' : 'no'; },
-                'fn':'M.ciniki_musicfestivals_main.edit.save();'},
+                'fn':'M.ciniki_musicfestivals_main.edit.remove();'},
+            'deletefile':{'label':'Delete All Upload Music and Music', 'class':'delete',
+                'visible':function() {return M.ciniki_musicfestivals_main.edit.festival_id > 0 ? 'yes' : 'no'; },
+                'fn':'M.ciniki_musicfestivals_main.edit.removeFiles();'},
             }},
         };
     this.edit.fieldValue = function(s, i, d) { return this.data[i]; }
@@ -2956,6 +2959,17 @@ function ciniki_musicfestivals_main() {
                 eval(cb);
             });
         }
+    }
+    this.edit.removeFiles = function() {
+        M.confirm('Are you sure you want to remove all uploaded music files and backtrack files for this festival?',null,function() {
+            M.api.getJSONCb('ciniki.musicfestivals.festivalFilesDelete', {'tnid':M.curTenantID, 'festival_id':M.ciniki_musicfestivals_main.edit.festival_id}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_musicfestivals_main.edit.close();
+            });
+        });
     }
     this.edit.remove = function() {
         M.confirm('Are you sure you want to remove festival?',null,function() {

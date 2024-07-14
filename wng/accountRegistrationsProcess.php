@@ -1562,8 +1562,11 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 // Item doesn't exist in the cart, remove the registration
                 //
                 else {
-                    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
-                    $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration['registration_id'], $registration['uuid'], 0x04);
+                    //
+                    // Remove registration files and object
+                    //
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationDelete');
+                    $rc = ciniki_musicfestivals_registrationDelete($ciniki, $tnid, $registration['registration_id']);
                     if( $rc['stat'] != 'ok' ) {
                         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.714', 'msg'=>'Unable to remove registration', 'err'=>$rc['err']));
                     }
@@ -1579,8 +1582,11 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 }
 
             } else {
-                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
-                $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration['registration_id'], $registration['uuid'], 0x04);
+                //
+                // Remove registration files and object
+                //
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationDelete');
+                $rc = ciniki_musicfestivals_registrationDelete($ciniki, $tnid, $registration['registration_id']);
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.331', 'msg'=>'Unable to remove registration', 'err'=>$rc['err']));
                 }

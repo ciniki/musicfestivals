@@ -168,7 +168,7 @@ function ciniki_musicfestivals_wng_accountMembersProcess(&$ciniki, $tnid, &$requ
 //                    'url' => $base_url . '/' . $member['permalink'] . '/recommendations',
 //                ),
                 array(
-                    'text' => (isset($registrations[$mid]) ? $registrations[$mid] : '0') . ' Registrations',
+                    'text' => 'View Your ' . (isset($registrations[$mid]) ? $registrations[$mid] : '0') . ' Registrations',
                     'url' => $base_url . '/' . $member['permalink'] . '/registrations',
                 ),
             ));

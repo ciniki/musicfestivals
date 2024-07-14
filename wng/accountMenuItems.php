@@ -38,6 +38,38 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
     $festival = $rc['festival'];
 
     //
+    // Check if customer is an admin for a member festival
+    //
+    $member_festival = 'no';
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+        $strsql = "SELECT members.id, "
+            . "members.name "
+            . "FROM ciniki_musicfestivals_members AS members "
+            . "INNER JOIN ciniki_musicfestival_members AS fm ON ("
+                . "members.id = fm.member_id "
+                . "AND fm.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+                . "AND fm.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE members.customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+            . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'member');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.749', 'msg'=>'Unable to load member', 'err'=>$rc['err']));
+        }
+        if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
+            $items[] = array(
+                'title' => 'Local Festival' . (count($rc['rows']) > 1 ? 's' : ''), 
+                'priority' => 3760, 
+                'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivalmember' ? 'yes' : 'no',
+                'ref' => 'ciniki.musicfestivals.members',
+                'url' => $base_url . '/musicfestivalmember',
+                );
+            $member_festival = 'yes';
+        }
+    }
+
+    //
     // Check if the customer is an adjudicator
     //
     $adjudicator = 'no';
@@ -97,8 +129,8 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'customer');
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.327', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
-    }
-    if( isset($rc['customer']) ) { */
+    } */
+    if( $member_festival == 'no' ) {
         $items[] = array(
             'title' => 'Registrations', 
             'priority' => 3749, 
@@ -113,55 +145,25 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
             'ref' => 'ciniki.musicfestivals.competitors',
             'url' => $base_url . '/musicfestivalcompetitors',
             );
-//    }
 
-    //
-    // Check if schedule posted yet
-    //
-    $strsql = "SELECT COUNT(sections.id) "
-        . "FROM ciniki_musicfestival_schedule_sections AS sections "
-        . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
-        . "AND (sections.flags&0x01) = 0x01 "
-        . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
-    $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
-    if( $rc['stat'] == 'ok' && isset($rc['num']) && $rc['num'] > 0 ) {
-        $items[] = array(
-            'title' => 'Schedule', 
-            'priority' => 3747, 
-            'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivalschedule' ? 'yes' : 'no',
-            'ref' => 'ciniki.musicfestivals.schedule',
-            'url' => $base_url . '/musicfestivalschedule',
-            );
-    }
-
-    //
-    // Check if customer is an admin for a member festival
-    //
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
-        $strsql = "SELECT members.id, "
-            . "members.name "
-            . "FROM ciniki_musicfestivals_members AS members "
-            . "INNER JOIN ciniki_musicfestival_members AS fm ON ("
-                . "members.id = fm.member_id "
-                . "AND fm.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
-                . "AND fm.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "WHERE members.customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
-            . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        //
+        // Check if schedule posted yet
+        //
+        $strsql = "SELECT COUNT(sections.id) "
+            . "FROM ciniki_musicfestival_schedule_sections AS sections "
+            . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+            . "AND (sections.flags&0x01) = 0x01 "
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
-        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'member');
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.749', 'msg'=>'Unable to load member', 'err'=>$rc['err']));
-        }
-        if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+        $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
+        if( $rc['stat'] == 'ok' && isset($rc['num']) && $rc['num'] > 0 ) {
             $items[] = array(
-                'title' => 'Local Festival' . (count($rc['rows']) > 1 ? 's' : ''), 
-                'priority' => 3746, 
-                'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivalmember' ? 'yes' : 'no',
-                'ref' => 'ciniki.musicfestivals.members',
-                'url' => $base_url . '/musicfestivalmember',
+                'title' => 'Schedule', 
+                'priority' => 3747, 
+                'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivalschedule' ? 'yes' : 'no',
+                'ref' => 'ciniki.musicfestivals.schedule',
+                'url' => $base_url . '/musicfestivalschedule',
                 );
         }
     }
