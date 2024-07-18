@@ -2700,16 +2700,23 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "sponsors.name, "
                 . "sponsors.url, "
                 . "sponsors.sequence, "
-                . "sponsors.flags "
+                . "sponsors.flags, "
+                . "tags.tag_name AS tags "
                 . "FROM ciniki_musicfestival_sponsors AS sponsors "
+                . "LEFT JOIN ciniki_musicfestival_sponsor_tags AS tags ON ("
+                    . "sponsors.id = tags.sponsor_id "
+                    . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
                 . "WHERE sponsors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "AND sponsors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-                . "ORDER BY sponsors.flags DESC, sponsors.sequence "
+                . "ORDER BY sponsors.name, tags.tag_name "
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'sponsors', 'fname'=>'id', 
-                    'fields'=>array('id', 'name', 'url', 'sequence', 'flags')),
+                    'fields'=>array('id', 'name', 'url', 'sequence', 'flags', 'tags'),
+                    'dlists'=>array('tags'=>','),
+                    ),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;

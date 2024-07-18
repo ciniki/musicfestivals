@@ -18,10 +18,10 @@
 #
 # flags:                The options for the section.
 #
-#                           0x01 - Level 1 sponsor
-#                           0x02 - Level 2 sponsor
-#                           0x04 - Level 3 sponsor
-#                           0x08 - Level 4 Sponsor
+#                           0x01 - Level 1 sponsor **deprecated - switched to tags**
+#                           0x02 - Level 2 sponsor **deprecated - switched to tags**
+#                           0x04 - 
+#                           0x08 - 
 #                           0x10 - 
 #                           0x20 - 
 #                           0x40 - 

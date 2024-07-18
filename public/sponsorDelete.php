@@ -57,6 +57,17 @@ function ciniki_musicfestivals_sponsorDelete(&$ciniki) {
     //
     // Check for any dependencies before deleting
     //
+    $strsql = "SELECT tags.id, tags.uuid "
+        . "FROM ciniki_musicfestival_sponsor_tags AS tags "
+        . "WHERE tags.sponsor_id = '" . ciniki_core_dbQuote($ciniki, $args['sponsor_id']) . "' "
+        . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.777', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+    }
+    $tags = isset($rc['rows']) ? $rc['rows'] : array();
+    
 
     //
     // Check if any modules are currently using this object
@@ -81,6 +92,17 @@ function ciniki_musicfestivals_sponsorDelete(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
     $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.musicfestivals');
     if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+
+    //
+    // Remove the tags
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsDelete');
+    $rc = ciniki_core_tagsDelete($ciniki, 'ciniki.musicfestivals', 'tag', $args['tnid'],
+        'ciniki_musicfestival_sponsor_tags', 'ciniki_musicfestivals_history', 'sponsor_id', $args['sponsor_id']);
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.events');
         return $rc;
     }
 

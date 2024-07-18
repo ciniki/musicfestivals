@@ -436,6 +436,23 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     // Section to display the sponsors for a festival
     //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x10) ) {
+        $strsql = "SELECT DISTINCT tags.tag_name AS id, tags.tag_name AS value "
+            . "FROM ciniki_musicfestival_sponsor_tags AS tags "
+            . "INNER JOIN ciniki_musicfestival_sponsors AS sponsors ON ("
+                . "tags.sponsor_id = sponsors.id "
+                . "AND sponsors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE tags.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND tags.tag_type = 10 "
+            . "ORDER BY tags.tag_type, tags.tag_name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
+        $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'tags');
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $sponsor_tags = isset($rc['tags']) ? $rc['tags'] : array();
+
         $sections['ciniki.musicfestivals.sponsors'] = array(
             'name' => 'Sponsors',
             'module' => 'Music Festivals',
@@ -452,7 +469,12 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'large' => 'Large',
                     'xlarge' => 'X-Large',
                     )),
-                'level' => array('label'=>'Sponsor Level', 'type'=>'toggle', 'default'=>'1', 'toggles'=>array('1'=>'1', '2'=>'2')),
+                'level' => array('label'=>'Sponsor Level **deprecated**', 'type'=>'toggle', 'default'=>'1', 
+                    'toggles'=>array('1'=>'1', '2'=>'2'),
+                    ),
+                'tag' => array('label'=>'Sponsor Tag', 'type'=>'select', 
+                    'options'=>$sponsor_tags,
+                    ),
                 ),
             );
     }

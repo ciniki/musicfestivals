@@ -981,7 +981,7 @@ function ciniki_musicfestivals_main() {
             },
         'sponsors':{'label':'', 'type':'simplegrid', 'num_cols':2,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'sponsors'); },
-            'headerValues':['Name', 'Level'],
+            'headerValues':['Name', 'Tags'],
             'addTxt':'Add Sponsor',
             'addFn':'M.ciniki_musicfestivals_main.sponsor.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.festival_id);',
         },
@@ -1555,7 +1555,7 @@ function ciniki_musicfestivals_main() {
         if( s == 'sponsors' ) {
             switch(j) { 
                 case 0: return d.name;
-                case 1: return d.level;
+                case 1: return d.tags;
             }
         }
         if( s == 'recommendation_members' ) {
@@ -7060,7 +7060,13 @@ function ciniki_musicfestivals_main() {
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
             'url':{'label':'Website', 'type':'text'},
             'sequence':{'label':'Order', 'type':'text', 'size':'small'},
-            'flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'Level 1'}, '2':{'name':'Level 2'}}},
+            'flags':{'label':'Options', 'type':'flags', 'flags':{
+                '1':{'name':'Level 1'}, 
+                '2':{'name':'Level 2'},
+                }},
+            }},
+        '_tags':{'label':'Tags', 'fields':{
+            'tags':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new tag:'},
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.sponsor.save();'},
@@ -7083,6 +7089,7 @@ function ciniki_musicfestivals_main() {
             }
             var p = M.ciniki_musicfestivals_main.sponsor;
             p.data = rsp.sponsor;
+            p.sections._tags.fields.tags.tags = rsp.tags;
             p.refresh();
             p.show(cb);
         });

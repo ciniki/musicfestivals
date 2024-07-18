@@ -23,6 +23,7 @@ function ciniki_musicfestivals_sponsorUpdate(&$ciniki) {
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Logo'),
+        'tags'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Registration Tags'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -59,6 +60,20 @@ function ciniki_musicfestivals_sponsorUpdate(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;
+    }
+
+    //
+    // Update the tags
+    //
+    if( isset($args['tags']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
+        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.musicfestivals', 'tag', $args['tnid'],
+            'ciniki_musicfestival_sponsor_tags', 'ciniki_musicfestivals_history',
+            'sponsor_id', $args['sponsor_id'], 10, $args['tags']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
     }
 
     //
