@@ -7060,10 +7060,8 @@ function ciniki_musicfestivals_main() {
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
             'url':{'label':'Website', 'type':'text'},
             'sequence':{'label':'Order', 'type':'text', 'size':'small'},
-            'flags':{'label':'Options', 'type':'flags', 'flags':{
-                '1':{'name':'Level 1'}, 
-                '2':{'name':'Level 2'},
-                }},
+//            'flags':{'label':'Options', 'type':'flags', 'flags':{
+//                }},
             }},
         '_tags':{'label':'Tags', 'fields':{
             'tags':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new tag:'},
