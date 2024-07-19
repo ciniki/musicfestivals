@@ -212,16 +212,28 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                 $args['timeslot_time'] = $rc['timeslot']['slot_time'];
             } 
             else {
-                $strsql = "SELECT timeslot_time, "
-                    . "perf_time1, perf_time2, perf_time3, perf_time4, perf_time5, perf_time6, perf_time7, perf_time8 "
-                    . "FROM ciniki_musicfestival_registrations "
-                    . "WHERE timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' "
-                    . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' ";
+                $strsql = "SELECT registrations.timeslot_time, "
+                    . "registrations.perf_time1, "
+                    . "registrations.perf_time2, "
+                    . "registrations.perf_time3, "
+                    . "registrations.perf_time4, "
+                    . "registrations.perf_time5, "
+                    . "registrations.perf_time6, "
+                    . "registrations.perf_time7, "
+                    . "registrations.perf_time8, "
+                    . "IFNULL(classes.schedule_seconds, 0) AS schedule_seconds "
+                    . "FROM ciniki_musicfestival_registrations AS registrations "
+                    . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+                        . "registrations.class_id = classes.id "
+                        . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE registrations.timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' "
+                    . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' ";
                 if( isset($args['timeslot_sequence']) ) {
-                    $strsql .= "AND timeslot_sequence < '" . ciniki_core_dbQuote($ciniki, $args['timeslot_sequence']) . "' ";
+                    $strsql .= "AND registrations.timeslot_sequence < '" . ciniki_core_dbQuote($ciniki, $args['timeslot_sequence']) . "' ";
                 }
-                $strsql .= "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . "ORDER BY timeslot_sequence DESC "
+                $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "ORDER BY registrations.timeslot_sequence DESC "
                     . "LIMIT 1 "
                     . "";
                 $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'lastreg');
@@ -232,13 +244,17 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.124', 'msg'=>'Unable to find requested lastreg'));
                 }
                 $lastreg = $rc['lastreg'];
-                $total_time = 0;
-                for($i = 1; $i <= 10; $i++) {
-                    if( isset($lastreg["perf_time{$i}"]) && $lastreg["perf_time{$i}"] > 0 ) {
-                        $total_time += $lastreg["perf_time{$i}"];
+                if( $lastreg['schedule_seconds'] > 0 ) {
+                    $total_time = $lastreg['schedule_seconds'];
+                } else {
+                    $total_time = 0;
+                    for($i = 1; $i <= 10; $i++) {
+                        if( isset($lastreg["perf_time{$i}"]) && $lastreg["perf_time{$i}"] > 0 ) {
+                            $total_time += $lastreg["perf_time{$i}"];
+                        }
                     }
+                    $total_time += 60 - ($total_time%60);
                 }
-                $total_time += 60 - ($total_time%60);
                 // FIXME: Add setting for buffer time
                 $dt = new DateTime('now', new DateTimezone('UTC'));
                 $dt = new DateTime($dt->format('Y-m-d') . ' ' . $lastreg['timeslot_time'], new DateTimezone('UTC'));
@@ -293,16 +309,29 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                 $args['finals_timeslot_time'] = $rc['timeslot']['slot_time'];
             } 
             else {
-                $strsql = "SELECT finals_timeslot_time, "
-                    . "perf_time1, perf_time2, perf_time3, perf_time4, perf_time5, perf_time6, perf_time7, perf_time8 "
-                    . "FROM ciniki_musicfestival_registrations "
-                    . "WHERE finals_timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['finals_timeslot_id']) . "' "
-                    . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' ";
+                // FIXME: Add code to adjust individual timeslots times for class schedule_seconds
+                $strsql = "SELECT registrations.finals_timeslot_time, "
+                    . "registrations.perf_time1, "
+                    . "registrations.perf_time2, "
+                    . "registrations.perf_time3, "
+                    . "registrations.perf_time4, "
+                    . "registrations.perf_time5, "
+                    . "registrations.perf_time6, "
+                    . "registrations.perf_time7, "
+                    . "registrations.perf_time8, "
+                    . "IFNULL(classes.schedule_seconds, 0) AS schedule_seconds "
+                    . "FROM ciniki_musicfestival_registrations AS registrations "
+                    . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+                        . "registrations.class_id = classes.id "
+                        . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE registrations.finals_timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['finals_timeslot_id']) . "' "
+                    . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' ";
                 if( isset($args['finals_timeslot_sequence']) ) {
-                    $strsql .= "AND finals_timeslot_sequence < '" . ciniki_core_dbQuote($ciniki, $args['finals_timeslot_sequence']) . "' ";
+                    $strsql .= "AND registrations.finals_timeslot_sequence < '" . ciniki_core_dbQuote($ciniki, $args['finals_timeslot_sequence']) . "' ";
                 }
-                $strsql .= "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . "ORDER BY finals_timeslot_sequence DESC "
+                $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "ORDER BY registrations.finals_timeslot_sequence DESC "
                     . "LIMIT 1 "
                     . "";
                 $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'lastreg');
@@ -313,13 +342,17 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.124', 'msg'=>'Unable to find requested lastreg'));
                 }
                 $lastreg = $rc['lastreg'];
-                $total_time = 0;
-                for($i = 1; $i <= 10; $i++) {
-                    if( isset($lastreg["perf_time{$i}"]) && $lastreg["perf_time{$i}"] > 0 ) {
-                        $total_time += $lastreg["perf_time{$i}"];
+                if( $lastreg['schedule_seconds'] > 0 ) {
+                    $total_time = $lastreg['schedule_seconds'];
+                } else {
+                    $total_time = 0;
+                    for($i = 1; $i <= 10; $i++) {
+                        if( isset($lastreg["perf_time{$i}"]) && $lastreg["perf_time{$i}"] > 0 ) {
+                            $total_time += $lastreg["perf_time{$i}"];
+                        }
                     }
+                    $total_time += 60 - ($total_time%60);
                 }
-                $total_time += 60 - ($total_time%60);
                 // FIXME: Add setting for buffer time
                 $dt = new DateTime('now', new DateTimezone('UTC'));
                 $dt = new DateTime($dt->format('Y-m-d') . ' ' . $lastreg['finals_timeslot_time'], new DateTimezone('UTC'));
@@ -420,6 +453,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     // Check if registration moved timeslots and old timeslot needs to be renumbered
     //
     if( $registration['timeslot_id'] > 0 && isset($args['timeslot_id']) && $args['timeslot_id'] != $registration['timeslot_id'] ) {
+        // FIXME: Need to figure out how to auto update times when individual registration timeslot times
         $strsql = "SELECT id, timeslot_sequence AS number "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE timeslot_id = '" . ciniki_core_dbQuote($ciniki, $registration['timeslot_id']) . "' "
@@ -455,19 +489,26 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     // Check if moved into a timeslot
     //
     if( isset($args['timeslot_id']) && $args['timeslot_id'] > 0 ) {
+        // FIXME: Need to figure out how to auto update times when individual registration timeslot times
         $new_seq = $args['timeslot_sequence'];
         $old_seq = $registration['timeslot_sequence'];
-        $strsql = "SELECT id, timeslot_sequence AS number "
-            . "FROM ciniki_musicfestival_registrations "
-            . "WHERE timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' "
-            . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
-            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        $strsql = "SELECT registrations.id, "
+            . "registrations.timeslot_sequence AS number, "
+            . "IFNULL(classes.schedule_seconds, 0) AS schedule_seconds "
+            . "FROM ciniki_musicfestival_registrations AS registrations "
+            . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+                . "registrations.class_id = classes.id "
+                . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE registrations.timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' "
+            . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
+            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
         // Use the last_updated to determine which is in the proper position for duplicate numbers
         if( $new_seq < $old_seq || $old_seq == -1 || $registration['timeslot_id'] == 0 ) {
-            $strsql .= "ORDER BY timeslot_sequence, last_updated DESC";
+            $strsql .= "ORDER BY registrations.timeslot_sequence, registrations.last_updated DESC";
         } else {
-            $strsql .= "ORDER BY timeslot_sequence, last_updated ";
+            $strsql .= "ORDER BY registrations.timeslot_sequence, registrations.last_updated ";
         } 
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'sequence');
         if( $rc['stat'] != 'ok' ) {
@@ -498,6 +539,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     // Check if registration moved finals timeslots and old timeslot needs to be renumbered
     //
     if( $registration['finals_timeslot_id'] > 0 && isset($args['finals_timeslot_id']) && $args['finals_timeslot_id'] != $registration['finals_timeslot_id'] ) {
+        // FIXME: Need to figure out how to auto update times when individual registration timeslot times
         $strsql = "SELECT id, finals_timeslot_sequence AS number "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE finals_timeslot_id = '" . ciniki_core_dbQuote($ciniki, $registration['finals_timeslot_id']) . "' "
@@ -533,6 +575,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     // Check if finals moved into a timeslot
     //
     if( isset($args['finals_timeslot_id']) && $args['finals_timeslot_id'] > 0 ) {
+        // FIXME: Need to figure out how to auto update times when individual registration timeslot times
         $new_seq = $args['finals_timeslot_sequence'];
         $old_seq = $registration['finals_timeslot_sequence'];
         $strsql = "SELECT id, finals_timeslot_sequence AS number "
