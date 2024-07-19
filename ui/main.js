@@ -3740,6 +3740,7 @@ function ciniki_musicfestivals_main() {
 //                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); }, 
                 'flags':{'0':{'name':'None'}, '25':{'name':'Required'}, '26':{'name':'Optional'}},
                 },
+            'schedule_seconds':{'label':'Schedule Time', 'type':'minsec'},
             }},
         '_synopsis':{'label':'Synopsis', 'fields':{
             'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},

@@ -36,6 +36,7 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
         'provincials_code'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Provincials Class Code'),
         'levels'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Level Tags'),
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
+        'schedule_seconds'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Seconds'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

@@ -159,6 +159,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'max_titles'=>array('name'=>'Maximum Titles', 'default'=>'1'),
             'provincials_code'=>array('name'=>'Provincial Class Code', 'default'=>''),
             'synopsis'=>array('name'=>'Synopsis', 'default'=>''),
+            'schedule_seconds'=>array('name'=>'Schedule Seconds', 'default'=>'0'),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );

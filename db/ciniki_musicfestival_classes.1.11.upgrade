@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN schedule_seconds int not null AFTER synopsis;
+ALTER TABLE ciniki_musicfestival_classes COMMENT='v1.11';
