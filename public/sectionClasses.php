@@ -158,6 +158,7 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
             . "classes.max_competitors, "
             . "classes.min_titles, "
             . "classes.max_titles, "
+            . "classes.schedule_seconds, "
             . "GROUP_CONCAT(DISTINCT classtags.tag_name ORDER BY classtags.tag_sort_name SEPARATOR ', ') AS levels, "
             . "COUNT(registrations.id) AS num_registrations "
             . "FROM ciniki_musicfestival_categories AS categories "
@@ -184,7 +185,7 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
                 'fields'=>array('id', 'joined_sequence', 'category_id', 'category_name', 'permalink', 'category_sequence', 
                     'code', 'class_name', 'class_sequence', 'levels', 'flags',
                     'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 
-                    'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 
+                    'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 'schedule_seconds',
                     'num_registrations'),
                 ),
             ));
@@ -197,6 +198,13 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
         $classes_ids = array();
         foreach($classes as $k => $v) {
             $classes_ids[] = $v['id'];
+            $classes[$k]['schedule_time'] = '';
+            if( $v['schedule_seconds'] > 0 ) {
+                $classes[$k]['schedule_time'] = floor($v['schedule_seconds']/60) . ' min';
+                if( ($v['schedule_seconds']%60) > 0 ) {
+                    $classes[$k]['schedule_time'] .= ' ' . ($v['schedule_seconds']%60) . ' sec';
+                }
+            }
         }
     } else {
         $classes = array();

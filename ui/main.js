@@ -3534,7 +3534,6 @@ function ciniki_musicfestivals_main() {
                 p.sections.classes.sortTypes.push('number');
                 p.sections.classes.dataMaps.push('num_registrations');
                 p.sections.classes.cellClasses.push('alignright');
-                p.sections.classes.num_cols = p.sections.classes.headerValues.length;
             } else {
                 if( M.modFlagOn('ciniki.musicfestivals', 0x1000) ) {
                     p.sections.classes.headerValues.push('Levels');
@@ -3574,9 +3573,13 @@ function ciniki_musicfestivals_main() {
                 p.sections.classes.sortTypes.push('number');
                 p.sections.classes.dataMaps.push('num_registrations');
                 p.sections.classes.cellClasses.push('alignright');
-                p.sections.classes.num_cols = p.sections.classes.headerValues.length;
             }
+            p.sections.classes.headerValues.push('Time');
+            p.sections.classes.sortTypes.push('number');
+            p.sections.classes.dataMaps.push('schedule_time');
+            p.sections.classes.cellClasses.push('');
             p.sections.classes.headerClasses = p.sections.classes.cellClasses;
+            p.sections.classes.num_cols = p.sections.classes.headerValues.length;
 
             p.festival_id = rsp.section.festival_id;
             p.sections.classes.label = rsp.section.name + ' - Classes';
