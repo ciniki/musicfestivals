@@ -31,6 +31,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Categories'),
         'classes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Classes'),
         'levels'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Levels'),
+        'trophies'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Trophies'),
         'recommendations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicator Recommendations'),
         'class_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Class'),
         'registrations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registrations'),
@@ -426,7 +427,6 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         if( isset($args['classes']) && $args['classes'] == 'yes' 
             && isset($args['section_id']) && $args['section_id'] > 0 
             ) {
-            error_log('classes');
             $strsql = "SELECT classes.id, "
                 . "classes.festival_id, "
                 . "classes.category_id, "
@@ -447,9 +447,19 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "classes.min_titles, "
                 . "classes.max_titles, "
                 . "classes.synopsis, "
-                . "classes.schedule_seconds "
+                . "classes.schedule_seconds, ";
+            if( isset($args['levels']) && $args['levels'] == 'yes' ) {
+                $strsql .= "'' AS trophies, "
+                    . "tags.tag_name AS levels ";
+            } elseif( isset($args['trophies']) && $args['trophies'] == 'yes' ) {
+                $strsql .= "trophies.name AS trophies, "
+                    . "'' AS levels ";
+            } else {
+                $strsql .= "'' AS trophies, "
+                    . "'' AS levels ";
+            }
 //                . "COUNT(registrations.id) AS num_registrations "
-                . "FROM ciniki_musicfestival_sections AS sections "
+            $strsql .= "FROM ciniki_musicfestival_sections AS sections "
                 . "INNER JOIN ciniki_musicfestival_categories AS categories USE INDEX (festival_id_2) ON ("
                     . "sections.id = categories.section_id "
                     . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -457,13 +467,29 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "INNER JOIN ciniki_musicfestival_classes AS classes USE INDEX (festival_id_3) ON ("
                     . "categories.id = classes.category_id "
                     . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") ";
+            if( isset($args['levels']) && $args['levels'] == 'yes' ) {
+                $strsql .= "LEFT JOIN ciniki_musicfestival_class_tags AS tags ON ("
+                    . "classes.id = tags.class_id "
+                    . "AND tags.tag_type = 20 "
+                    . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") ";
+            } elseif( isset($args['trophies']) && $args['trophies'] == 'yes' ) {
+                $strsql .= "LEFT JOIN ciniki_musicfestival_trophy_classes AS tc ON ("
+                    . "classes.id = tc.class_id "
+                    . "AND tc.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
+                . "LEFT JOIN ciniki_musicfestival_trophies AS trophies ON ("
+                    . "tc.trophy_id = trophies.id "
+                    . "AND trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") ";
+            }
 //                . "LEFT JOIN ciniki_musicfestival_registrations AS registrations USE INDEX (festival_id_2) ON ("
 //                    . "classes.id = registrations.class_id "
 //                    . $ipv_sql
 //                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
 //                    . ") "
-                . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            $strsql .= "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
 //                . "GROUP BY classes.id "
@@ -478,8 +504,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         'code', 'name', 'permalink', 'sequence', 'flags', 
                         'earlybird_fee', 'fee', 'virtual_fee', 'plus_fee', 'earlybird_plus_fee',
                         'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 
-                        'synopsis', 'schedule_seconds',
-                        )),
+                        'synopsis', 'schedule_seconds', 'levels', 'trophies',
+                        ),
+                    'dlists'=>array('levels'=>', ', 'trophies'=>', '),
+                    ),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
@@ -545,13 +573,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         // Get the list of levels
         //
         if( isset($args['levels']) && $args['levels'] == 'yes' 
-            && isset($args['section_id']) && $args['section_id'] > 0 
+            && !isset($args['sections']) 
             ) {
             $strsql = "SELECT DISTINCT tags.tag_name, tags.tag_sort_name "
                 . "FROM ciniki_musicfestival_classes AS classes "
                 . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
                     . "classes.category_id = categories.id "
-//                    . "AND categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
                     . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "INNER JOIN ciniki_musicfestival_class_tags AS tags ON ("
