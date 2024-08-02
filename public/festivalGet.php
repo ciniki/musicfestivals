@@ -305,35 +305,52 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         // Get the list of sections
         //
         if( isset($args['sections']) && $args['sections'] == 'yes' ) {
-            $strsql = "SELECT sections.id, "
-                . "sections.festival_id, "
-                . "sections.name, "
-                . "sections.permalink, "
-                . "sections.sequence, "
-                . "COUNT(registrations.id) AS num_registrations "
-                . "FROM ciniki_musicfestival_sections AS sections "
-                . "LEFT JOIN ciniki_musicfestival_categories AS categories USE INDEX (festival_id_2) ON ("
-                    . "sections.id = categories.section_id "
-                    . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . ") "
-                . "LEFT JOIN ciniki_musicfestival_classes AS classes USE INDEX (festival_id_3) ON ("
-                    . "categories.id = classes.category_id "
-                    . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . ") "
-                . "LEFT JOIN ciniki_musicfestival_registrations AS registrations USE INDEX (festival_id_2) ON ("
-                    . "classes.id = registrations.class_id "
-                    . $ipv_sql
-                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . ") "
-                . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-                . "GROUP BY sections.id "
-                . "ORDER BY sections.sequence, sections.name "
-                . "";
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-                array('container'=>'sections', 'fname'=>'id', 'fields'=>array('id', 'festival_id', 'name', 'permalink', 'sequence', 'num_registrations')),
-                ));
+            if( isset($args['registrations_list']) && $args['registrations_list'] == 'sections' ) {
+                $strsql = "SELECT sections.id, "
+                    . "sections.festival_id, "
+                    . "sections.name, "
+                    . "sections.permalink, "
+                    . "sections.sequence, "
+                    . "COUNT(registrations.id) AS num_registrations "
+                    . "FROM ciniki_musicfestival_sections AS sections "
+                    . "LEFT JOIN ciniki_musicfestival_categories AS categories USE INDEX (festival_id_2) ON ("
+                        . "sections.id = categories.section_id "
+                        . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_musicfestival_classes AS classes USE INDEX (festival_id_3) ON ("
+                        . "categories.id = classes.category_id "
+                        . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_musicfestival_registrations AS registrations USE INDEX (festival_id_2) ON ("
+                        . "classes.id = registrations.class_id "
+                        . $ipv_sql
+                        . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "GROUP BY sections.id "
+                    . "ORDER BY sections.sequence, sections.name "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'sections', 'fname'=>'id', 'fields'=>array('id', 'festival_id', 'name', 'permalink', 'sequence', 'num_registrations')),
+                    ));
+            } else {
+                $strsql = "SELECT sections.id, "
+                    . "sections.festival_id, "
+                    . "sections.name, "
+                    . "sections.permalink, "
+                    . "sections.sequence "
+                    . "FROM ciniki_musicfestival_sections AS sections "
+                    . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "ORDER BY sections.sequence, sections.name "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'sections', 'fname'=>'id', 'fields'=>array('id', 'festival_id', 'name', 'permalink', 'sequence')),
+                    ));
+            }
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
@@ -353,15 +370,18 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         //
         // Get the list of categories
         //
-        if( isset($args['categories']) && $args['categories'] == 'yes' ) {
+        if( isset($args['categories']) && $args['categories'] == 'yes' 
+            && isset($args['section_id']) && $args['section_id'] > 0 
+            ) {
+            // FIXME: **deprecated** - remove Aug 1, 2024 while updating syllabus UI
             $strsql = "SELECT categories.id, "
                 . "categories.festival_id, "
                 . "categories.section_id, "
                 . "sections.name AS section_name, "
                 . "categories.name, "
                 . "categories.permalink, "
-                . "categories.sequence, "
-                . "COUNT(registrations.class_id) AS num_registrations "
+                . "categories.sequence "
+//                . "COUNT(registrations.class_id) AS num_registrations "
                 . "FROM ciniki_musicfestival_sections AS sections "
                 . "INNER JOIN ciniki_musicfestival_categories AS categories USE INDEX (festival_id_2) ON ("
                     . "sections.id = categories.section_id "
@@ -371,13 +391,14 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "categories.id = classes.category_id "
                     . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
-                . "LEFT JOIN ciniki_musicfestival_registrations AS registrations USE INDEX (festival_id_2) ON ("
-                    . "classes.id = registrations.class_id "
-                    . $ipv_sql
-                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . ") "
+//                . "LEFT JOIN ciniki_musicfestival_registrations AS registrations USE INDEX (festival_id_2) ON ("
+//                    . "classes.id = registrations.class_id "
+//                    . $ipv_sql
+//                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+//                    . ") "
                 . "WHERE categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "AND categories.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
                 . "GROUP BY sections.id, categories.id "
                 . "ORDER BY sections.sequence, sections.name, categories.sequence, categories.name "
                 . "";
@@ -402,7 +423,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         //
         // Get the list of classes
         //
-        if( isset($args['classes']) && $args['classes'] == 'yes' ) {
+        if( isset($args['classes']) && $args['classes'] == 'yes' 
+            && isset($args['section_id']) && $args['section_id'] > 0 
+            ) {
+            error_log('classes');
             $strsql = "SELECT classes.id, "
                 . "classes.festival_id, "
                 . "classes.category_id, "
@@ -415,7 +439,16 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "classes.flags, "
                 . "classes.earlybird_fee, "
                 . "classes.fee, "
-                . "COUNT(registrations.id) AS num_registrations "
+                . "classes.virtual_fee, "
+                . "classes.earlybird_plus_fee, "
+                . "classes.plus_fee, "
+                . "classes.min_competitors, "
+                . "classes.max_competitors, "
+                . "classes.min_titles, "
+                . "classes.max_titles, "
+                . "classes.synopsis, "
+                . "classes.schedule_seconds "
+//                . "COUNT(registrations.id) AS num_registrations "
                 . "FROM ciniki_musicfestival_sections AS sections "
                 . "INNER JOIN ciniki_musicfestival_categories AS categories USE INDEX (festival_id_2) ON ("
                     . "sections.id = categories.section_id "
@@ -425,14 +458,15 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "categories.id = classes.category_id "
                     . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
-                . "LEFT JOIN ciniki_musicfestival_registrations AS registrations USE INDEX (festival_id_2) ON ("
-                    . "classes.id = registrations.class_id "
-                    . $ipv_sql
-                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . ") "
+//                . "LEFT JOIN ciniki_musicfestival_registrations AS registrations USE INDEX (festival_id_2) ON ("
+//                    . "classes.id = registrations.class_id "
+//                    . $ipv_sql
+//                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+//                    . ") "
                 . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-                . "GROUP BY classes.id "
+                . "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
+//                . "GROUP BY classes.id "
                 . "ORDER BY sections.sequence, sections.name, "
                     . "categories.sequence, categories.name, "
                     . "classes.sequence, classes.name "
@@ -441,7 +475,11 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'classes', 'fname'=>'id', 
                     'fields'=>array('id', 'festival_id', 'category_id', 'section_name', 'category_name', 
-                        'code', 'name', 'permalink', 'sequence', 'flags', 'earlybird_fee', 'fee', 'num_registrations')),
+                        'code', 'name', 'permalink', 'sequence', 'flags', 
+                        'earlybird_fee', 'fee', 'virtual_fee', 'plus_fee', 'earlybird_plus_fee',
+                        'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 
+                        'synopsis', 'schedule_seconds',
+                        )),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
@@ -449,8 +487,53 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             if( isset($rc['classes']) ) {
                 $festival['classes'] = $rc['classes'];
                 foreach($festival['classes'] as $iid => $class) {
-                    $festival['classes'][$iid]['earlybird_fee'] = numfmt_format_currency($intl_currency_fmt, $class['earlybird_fee'], $intl_currency);
-                    $festival['classes'][$iid]['fee'] = numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency);
+                    $festival['classes'][$iid]['earlybird_fee'] = '$' . number_format($class['earlybird_fee'], 2);
+                    $festival['classes'][$iid]['fee'] = '$' . number_format($class['fee'], 2);
+                    $festival['classes'][$iid]['virtual_fee'] = '$' . number_format($class['virtual_fee'], 2);
+                    $festival['classes'][$iid]['earlybird_plus_fee'] = '$' . number_format($class['earlybird_plus_fee'], 2);
+                    $festival['classes'][$iid]['plus_fee'] = '$' . number_format($class['plus_fee'], 2);
+                    if( $class['min_competitors'] == $class['max_competitors'] ) {
+                        $festival['classes'][$iid]['num_competitors'] = $class['min_competitors'];
+                    } else {
+                        $festival['classes'][$iid]['num_competitors'] = $class['min_competitors'] . ' - ' . $class['max_competitors'];
+                    }
+                    $festival['classes'][$iid]['competitor_type'] = 'I or G';
+                    if( ($class['flags']&0x4000) == 0x4000 ) {
+                        $festival['classes'][$iid]['competitor_type'] = 'person';
+                        if( $class['min_competitors'] > 1 || $class['max_competitors'] > 1 ) {
+                            $festival['classes'][$iid]['competitor_type'] = 'people';
+                        }
+                    } elseif( ($class['flags']&0x8000) == 0x8000 ) {
+                        $festival['classes'][$iid]['competitor_type'] = 'group';
+                    } 
+                    if( $class['min_titles'] == $class['max_titles'] ) {
+                        $festival['classes'][$iid]['num_titles'] = $class['min_titles'];
+                    } else {
+                        $festival['classes'][$iid]['num_titles'] = $class['min_titles'] . ' - ' . $class['max_titles'];
+                    }
+                    $festival['classes'][$iid]['backtrack'] = '';
+                    if( ($class['flags']&0x01000000) == 0x01000000 ) {
+                        $festival['classes'][$iid]['backtrack'] = 'Required';
+                    } elseif( ($class['flags']&0x01000000) == 0x01000000 ) {
+                        $festival['classes'][$iid]['backtrack'] = 'Optional';
+                    }
+                    $festival['classes'][$iid]['instrument'] = '';
+                    if( ($class['flags']&0x04) == 0x04 ) {
+                        $festival['classes'][$iid]['instrument'] = 'Yes';
+                    }
+                    $festival['classes'][$iid]['accompanist'] = '';
+                    if( ($class['flags']&0x1000) == 0x1000 ) {
+                        $festival['classes'][$iid]['accompanist'] = 'Required';
+                    } elseif( ($class['flags']&0x2000) == 0x2000 ) {
+                        $festival['classes'][$iid]['accompanist'] = 'Optional';
+                    }
+                    $festival['classes'][$iid]['schedule_time'] = '';
+                    if( $class['schedule_seconds'] > 0 ) {
+                        $festival['classes'][$iid]['schedule_time'] = floor($class['schedule_seconds']/60) . ' min';
+                        if( ($class['schedule_seconds']%60) > 0 ) {
+                            $festival['classes'][$iid]['schedule_time'] .= ' ' . ($class['schedule_seconds']%60) . ' sec';
+                        }
+                    }
                     $nplists['classes'][] = $class['id'];
                 }
             } else {
@@ -461,9 +544,16 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         //
         // Get the list of levels
         //
-        if( isset($args['levels']) && $args['levels'] == 'yes' ) {
+        if( isset($args['levels']) && $args['levels'] == 'yes' 
+            && isset($args['section_id']) && $args['section_id'] > 0 
+            ) {
             $strsql = "SELECT DISTINCT tags.tag_name, tags.tag_sort_name "
                 . "FROM ciniki_musicfestival_classes AS classes "
+                . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
+                    . "classes.category_id = categories.id "
+//                    . "AND categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
+                    . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
                 . "INNER JOIN ciniki_musicfestival_class_tags AS tags ON ("
                     . "classes.id = tags.class_id "
                     . "AND tags.tag_type = 20 "
@@ -487,8 +577,6 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         // Get the list of registrations
         //
         if( isset($args['registrations']) && $args['registrations'] == 'yes' ) {
-
-
             //
             // Get the list of classes and how many registrations in each
             //
