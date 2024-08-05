@@ -555,6 +555,18 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     } elseif( ($class['flags']&0x2000) == 0x2000 ) {
                         $festival['classes'][$iid]['accompanist'] = 'Optional';
                     }
+                    $festival['classes'][$iid]['movements'] = '';
+                    if( ($class['flags']&0x04000000) == 0x04000000 ) {
+                        $festival['classes'][$iid]['movements'] = 'Required';
+                    } elseif( ($class['flags']&0x08000000) == 0x08000000 ) {
+                        $festival['classes'][$iid]['movements'] = 'Optional';
+                    }
+                    $festival['classes'][$iid]['composer'] = '';
+                    if( ($class['flags']&0x10000000) == 0x10000000 ) {
+                        $festival['classes'][$iid]['composer'] = 'Required';
+                    } elseif( ($class['flags']&0x20000000) == 0x20000000 ) {
+                        $festival['classes'][$iid]['composer'] = 'Optional';
+                    }
                     $festival['classes'][$iid]['schedule_time'] = '';
                     if( $class['schedule_seconds'] > 0 ) {
                         $festival['classes'][$iid]['schedule_time'] = floor($class['schedule_seconds']/60) . ' min';

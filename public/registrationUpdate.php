@@ -694,11 +694,9 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
             $titles = '';
             for($i = 1; $i <= 8; $i++) {
                 if( $registration["title{$i}"] != '' ) {
-                    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x040000) ) {
-                        $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
-                        if( isset($rc['title']) ) {
-                            $registration["title{$i}"] = $rc['title'];
-                        }
+                    $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
+                    if( isset($rc['title']) ) {
+                        $registration["title{$i}"] = $rc['title'];
                     }
                     if( $titles != '' && $i > 1 ) {
                         if( strncmp($titles, '1', 1) != 0 ) {

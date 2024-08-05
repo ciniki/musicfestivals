@@ -611,11 +611,11 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Class Name', false);
         for($i = 1; $i <= 8; $i++) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, "Title #{$i}", false);
-            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x040000) ) {
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, "Movements", false);
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, "Composer", false);
-            }
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Time(sec)', false);
+//            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x040000) ) {
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, "Movements", false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, "Composer", false);
+//            }
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Time(sec)', false);
             if( ($festival['flags']&0x02) == 0x02 ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Video URL', false);
             }
@@ -814,10 +814,10 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['class_name'], false);
             for($i = 1; $i <= 8; $i++) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration["title{$i}"], false);
-                if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x040000) ) {
-                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration["movements{$i}"], false);
-                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration["composer{$i}"], false);
-                }
+//                if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x040000) ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration["movements{$i}"], false);
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration["composer{$i}"], false);
+//                }
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration["perf_time{$i}"], false);
                 if( ($festival['flags']&0x02) == 0x02 ) {
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration["video_url{$i}"], false);
