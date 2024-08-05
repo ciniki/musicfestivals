@@ -808,9 +808,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             foreach($fields as $field) {
                 if( $field['ftype'] == 'line'
                     || ($field['id'] == 'parent' && $customer_type == 30)
-                    || (($selected_class['flags']&0x40) == 0 && $field['id'] == 'competitor4_id')
-                    || (($selected_class['flags']&0x20) == 0 && $field['id'] == 'competitor3_id')
-                    || (($selected_class['flags']&0x10) == 0 && $field['id'] == 'competitor2_id')
+//                    || ($selected_class['max_competitors'] < 4 && $field['id'] == 'competitor4_id')
+//                    || ($selected_class['max_competitors'] < 3 && $field['id'] == 'competitor3_id')
+//                    || ($selected_class['max_competitors'] < 2 && $field['id'] == 'competitor2_id')
+//                    || (($selected_class['flags']&0x40) == 0 && $field['id'] == 'competitor4_id')
+//                    || (($selected_class['flags']&0x20) == 0 && $field['id'] == 'competitor3_id')
+//                    || (($selected_class['flags']&0x10) == 0 && $field['id'] == 'competitor2_id')
                     || (($selected_class['flags']&0x04) == 0 && $field['id'] == 'instrument')
                     || ($customer_type != 20 && $fields['teacher_customer_id'] != -1 && $field['id'] == 'teacher_email')
                     ) {

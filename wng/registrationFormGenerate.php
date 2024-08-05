@@ -218,7 +218,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
 //                    $classes_instrument[] = $cid;
 //                }
                 // Check if class is NOT group/ensemble and 2,3,4 competitors enabled
-                if( ($section_class['flags']&0x8010) == 0x10 ) {
+/*                if( ($section_class['flags']&0x8010) == 0x10 ) {
                     $classes_2c[] = $cid;
                 }
                 if( ($section_class['flags']&0x8020) == 0x20 ) {
@@ -226,7 +226,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 }
                 if( ($section_class['flags']&0x8040) == 0x40 ) { 
                     $classes_4c[] = $cid;
-                }
+                } */
 //                $classes_min_titles[$cid] = $section_class['min_titles'];
 //                $classes_max_titles[$cid] = $section_class['max_titles'];
                 if( isset($_GET['cl']) && $_GET['cl'] == $section_class['uuid'] ) {
@@ -486,6 +486,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     // Add competitor information 
     //
     for($i = 1; $i <= 4; $i++) {
+        $required = 'no';
         if( $i <= $selected_class['max_competitors'] ) {
             $class = '';
             if( $i <= $selected_class['min_competitors'] ) {
@@ -505,7 +506,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             $prefix = '4th ';
         }
         $label = $prefix . (($selected_class['flags']&0x8000) == 0x8000 ? 'Group/Ensemble' : 'Competitor');
-        $comp_id = isset($_POST["f-competitor{$i}_id"]) && $_POST["f-competitor{$i}_id"] > -1 ? $_POST["f-competitor{$i}_id"] : (isset($registration["competitor{$i}_id"]) ? $registration["competitor{$i}_id"] : 0);
+        $comp_id = isset($_POST["f-competitor{$i}_id"]) && ($_POST["f-competitor{$i}_id"] == '' || $_POST["f-competitor{$i}_id"] > -1) ? $_POST["f-competitor{$i}_id"] : (isset($registration["competitor{$i}_id"]) ? $registration["competitor{$i}_id"] : 0);
         $fields["competitor{$i}_id"] = array(
             'id' => "competitor{$i}_id",
             'ftype' => 'select',
