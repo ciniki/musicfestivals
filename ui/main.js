@@ -222,6 +222,8 @@ function ciniki_musicfestivals_main() {
                     'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x1000); },
                     'fn':'M.ciniki_musicfestivals_main.levels.open(\'M.ciniki_musicfestivals_main.festival.open();\');',
                     },
+                // Add Update Fees options
+                // Add set movements/composers - (none/hidden/required)
                 'download':{
                     'label':'Download Syllabus (PDF)', 
                     'fn':'M.ciniki_musicfestivals_main.festival.syllabusDownload();',
@@ -320,6 +322,8 @@ function ciniki_musicfestivals_main() {
                     'label':'Add Class',
                     'fn':'M.ciniki_musicfestivals_main.class.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,0,M.ciniki_musicfestivals_main.festival.festival_id,null);',
                     },
+                // Add update fees
+                // Add set movements/composers - (none/hidden/required)
                 'view':{
                     'label':'Open All Details',
                     'fn':'M.ciniki_musicfestivals_main.classes.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.section_id,M.ciniki_musicfestivals_main.festival.festival_id, M.ciniki_musicfestivals_main.festival.nplists.sections);',

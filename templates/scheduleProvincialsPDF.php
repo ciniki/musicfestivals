@@ -67,10 +67,10 @@ function ciniki_musicfestivals_templates_scheduleProvincialsPDF(&$ciniki, $tnid,
                 'document_logo_id', 'document_header_msg', 'document_footer_msg')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.718', 'msg'=>'Festival not found', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.791', 'msg'=>'Festival not found', 'err'=>$rc['err']));
     }
     if( !isset($rc['festivals'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.719', 'msg'=>'Unable to find Festival'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.792', 'msg'=>'Unable to find Festival'));
     }
     $festival = $rc['festivals'][0];
 
@@ -85,7 +85,7 @@ function ciniki_musicfestivals_templates_scheduleProvincialsPDF(&$ciniki, $tnid,
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
     $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.720', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.793', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
     }
     foreach($rc['settings'] as $k => $v) {
         $festival[$k] = $v;
@@ -114,7 +114,7 @@ function ciniki_musicfestivals_templates_scheduleProvincialsPDF(&$ciniki, $tnid,
             array('container'=>'adjudicators', 'fname'=>'id', 'fields'=>array('id', 'name', 'image_id', 'description')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.691', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.794', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
         }
         $adjudicators = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
     }
@@ -662,7 +662,7 @@ function ciniki_musicfestivals_templates_scheduleProvincialsPDF(&$ciniki, $tnid,
                 array('container'=>'sponsors', 'fname'=>'id', 'fields'=>array('url', 'image_id')),
                 ));
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.199', 'msg'=>'Unable to load sponsors', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.787', 'msg'=>'Unable to load sponsors', 'err'=>$rc['err']));
             }
             $top_sponsors = isset($rc['sponsors']) ? $rc['sponsors'] : array();
             $num_sponsors = count($top_sponsors);
@@ -785,7 +785,7 @@ function ciniki_musicfestivals_templates_scheduleProvincialsPDF(&$ciniki, $tnid,
                 array('container'=>'sponsors', 'fname'=>'id', 'fields'=>array('url', 'image_id')),
                 ));
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.198', 'msg'=>'Unable to load sponsors', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.786', 'msg'=>'Unable to load sponsors', 'err'=>$rc['err']));
             }
             $bottom_sponsors = isset($rc['sponsors']) ? $rc['sponsors'] : array();
             $num_sponsors = count($bottom_sponsors);

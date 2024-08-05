@@ -33,7 +33,7 @@ function ciniki_musicfestivals_wng_accountMembersProcess(&$ciniki, $tnid, &$requ
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
     $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.395', 'msg'=>'', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.798', 'msg'=>'', 'err'=>$rc['err']));
     }
     $festival = $rc['festival'];
 
@@ -48,7 +48,7 @@ function ciniki_musicfestivals_wng_accountMembersProcess(&$ciniki, $tnid, &$requ
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
     $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.396', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.799', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
     }
     if( isset($rc['settings']) ) {
         foreach($rc['settings'] as $k => $v) {

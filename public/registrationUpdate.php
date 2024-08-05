@@ -238,10 +238,10 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                     . "";
                 $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'lastreg');
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.123', 'msg'=>'Unable to load lastreg', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.784', 'msg'=>'Unable to load lastreg', 'err'=>$rc['err']));
                 }
                 if( !isset($rc['lastreg']) ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.124', 'msg'=>'Unable to find requested lastreg'));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.785', 'msg'=>'Unable to find requested lastreg'));
                 }
                 $lastreg = $rc['lastreg'];
                 if( $lastreg['schedule_seconds'] > 0 ) {
@@ -278,7 +278,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'seq');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.11', 'msg'=>'Unable to load seq', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.780', 'msg'=>'Unable to load seq', 'err'=>$rc['err']));
         }
         $args['finals_timeslot_sequence'] = 1;
         if( isset($rc['seq']['max_seq']) ) {
@@ -301,10 +301,10 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                     . "";
                 $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'timeslot');
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.121', 'msg'=>'Unable to load timeslot', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.782', 'msg'=>'Unable to load timeslot', 'err'=>$rc['err']));
                 }
                 if( !isset($rc['timeslot']) ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.122', 'msg'=>'Unable to find requested timeslot'));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.783', 'msg'=>'Unable to find requested timeslot'));
                 }
                 $args['finals_timeslot_time'] = $rc['timeslot']['slot_time'];
             } 

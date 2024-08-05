@@ -82,10 +82,10 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.499', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.795', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
     }
     if( !isset($rc['festival']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.500', 'msg'=>'Unable to find requested festival'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.796', 'msg'=>'Unable to find requested festival'));
     }
     $festival = $rc['festival'];
    
@@ -114,7 +114,7 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.501', 'msg'=>'Unable to load classes', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.797', 'msg'=>'Unable to load classes', 'err'=>$rc['err']));
     }
     $classes = isset($rc['classes']) ? $rc['classes'] : array();
 

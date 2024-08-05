@@ -884,24 +884,6 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     if( $rc['stat'] == 'ok' ) {
                         $teacher_added = 'yes';
                         $fields['teacher_customer_id']['value'] = $rc['teacher_customer_id'];
-                        // Note: Added reset below line 968 instead of adding immediately to registration
-/*                        $teachers[$rc['teacher_customer_id']] = array(
-                            'id' => $rc['teacher_customer_id'],
-                            'name' => (isset($_POST['f-teacher_name']) && $_POST['f-teacher_name'] != '' ? $_POST['f-teacher_name'] : $_POST['f-teacher_email']),
-                            );
-                        $fields['teacher_customer_id']['options'] = $teachers;
-                        $fields['teacher_name']['class'] = 'hidden';
-                        $fields['teacher_email']['class'] = 'hidden';
-                        $fields['teacher_phone']['class'] = 'hidden';
-                        if( isset($registration['registration_id']) && $registration['registration_id'] > 0 ) {
-                            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-                            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration['registration_id'], array(
-                                'teacher_customer_id' => $rc['teacher_customer_id'],
-                                ), 0x04);
-                            if( $rc['stat'] != 'ok' ) {
-                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.747', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
-                            } 
-                        } */
                     }
                     elseif( $rc['stat'] == '404' ) {
                         return $rc;
@@ -933,24 +915,6 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     if( $rc['stat'] == 'ok' ) {
                         $accompanist_added = 'yes';
                         $fields['accompanist_customer_id']['value'] = $rc['accompanist_customer_id'];
-                        // Note: Added reset below line 968 instead of adding immediately to registration
-/*                        $accompanists[$rc['accompanist_customer_id']] = array(
-                            'id' => $rc['accompanist_customer_id'],
-                            'name' => (isset($_POST['f-accompanist_name']) && $_POST['f-accompanist_name'] != '' ? $_POST['f-accompanist_name'] : $_POST['f-accompanist_email']),
-                            );
-                        $fields['accompanist_customer_id']['options'] = $accompanists;
-                        $fields['accompanist_name']['class'] = 'hidden';
-                        $fields['accompanist_email']['class'] = 'hidden';
-                        $fields['accompanist_phone']['class'] = 'hidden';
-                        if( isset($registration['registration_id']) && $registration['registration_id'] > 0 ) {
-                            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-                            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration['registration_id'], array(
-                                'accompanist_customer_id' => $rc['accompanist_customer_id'],
-                                ), 0x04);
-                            if( $rc['stat'] != 'ok' ) {
-                                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.747', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
-                            }
-                        } */
                     }
                     elseif( $rc['stat'] == '404' ) {
                         return $rc;
@@ -1585,7 +1549,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationDelete');
                 $rc = ciniki_musicfestivals_registrationDelete($ciniki, $tnid, $registration['registration_id']);
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.331', 'msg'=>'Unable to remove registration', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.788', 'msg'=>'Unable to remove registration', 'err'=>$rc['err']));
                 }
             }
            

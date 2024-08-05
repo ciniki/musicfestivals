@@ -3174,7 +3174,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
             $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.768', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.778', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
             }
             $festival['statistics']['num_teachers'] = array('label'=>'Number of Teachers', 'value'=>$rc['num']);
 
@@ -3304,7 +3304,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.771', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.779', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
                 }
                 $members = isset($rc['members']) ? $rc['members'] : array();
 
