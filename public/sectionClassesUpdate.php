@@ -28,6 +28,8 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         'virtual_fee_update'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Virtual Fee Update'),
         'earlybird_plus_fee_update'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Earlybird Plus Fee Update'),
         'plus_fee_update'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Plus Fee Update'),
+        'movements'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Movements Setting'),
+        'composer'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Composer Setting'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -93,6 +95,7 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
     // Get the list of classes in the section
     //
     $strsql = "SELECT classes.id, "
+        . "classes.flags, "
         . "classes.earlybird_fee, "
         . "classes.fee, "
         . "classes.virtual_fee, "
@@ -103,14 +106,19 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
             . "categories.id = classes.category_id "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-        . "WHERE categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
-        . "GROUP BY classes.id "
+        . "WHERE categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
+    if( isset($args['section_id']) && $args['section_id'] == 0 ) {
+        // Apply to all classes in festival when section_id is zero
+        $strsql .= "AND categories.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
+    } else {
+        $strsql .= "AND categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' ";
+    }
+    $strsql .= "GROUP BY classes.id "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'classes', 'fname'=>'id', 
-            'fields'=>array('id', 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee'),
+            'fields'=>array('id', 'flags', 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -156,6 +164,28 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
             && $args['earlybird_plus_fee_update'] != 0 
             ) {
             $update_args['earlybird_plus_fee'] = $class['earlybird_plus_fee'] + $args['earlybird_plus_fee_update'];
+        }
+
+        //
+        // Update movements
+        //
+        if( isset($args['movements']) && strtolower($args['movements']) == 'none' && ($class['flags']&0x0C000000) > 0 ) {
+            $update_args['flags'] = ($class['flags']&0xF3FFFFFF);
+        } elseif( isset($args['movements']) && strtolower($args['movements']) == 'required' && ($class['flags']&0x04000000) == 0 ) {
+            $update_args['flags'] = ($class['flags']&0xF3FFFFFF) | 0x04000000;
+        } elseif( isset($args['movements']) && strtolower($args['movements']) == 'optional' && ($class['flags']&0x08000000) == 0 ) {
+            $update_args['flags'] = ($class['flags']&0xF3FFFFFF) | 0x08000000;
+        }
+
+        //
+        // Update composer
+        //
+        if( isset($args['composer']) && strtolower($args['composer']) == 'none' && ($class['flags']&0x30000000) > 0 ) {
+            $update_args['flags'] = ($class['flags']&0xCFFFFFFF);
+        } elseif( isset($args['composer']) && strtolower($args['composer']) == 'required' && ($class['flags']&0x10000000) == 0 ) {
+            $update_args['flags'] = ($class['flags']&0xCFFFFFFF) | 0x10000000;
+        } elseif( isset($args['composer']) && strtolower($args['composer']) == 'optional' && ($class['flags']&0x20000000) == 0 ) {
+            $update_args['flags'] = ($class['flags']&0xCFFFFFFF) | 0x20000000;
         }
 
         if( count($update_args) > 0 ) {

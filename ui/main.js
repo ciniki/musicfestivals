@@ -222,7 +222,30 @@ function ciniki_musicfestivals_main() {
                     'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x1000); },
                     'fn':'M.ciniki_musicfestivals_main.levels.open(\'M.ciniki_musicfestivals_main.festival.open();\');',
                     },
-                // Add Update Fees options
+                'updateearlybirdfees':{
+                    'label':'Update Earlybird Fees',
+                    'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x20) == 0x20 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.updateFees(0, "earlybird", "earlybird_fee");',
+                    },
+                'updatefees':{
+                    'label':'Update Fees',
+                    'fn':'M.ciniki_musicfestivals_main.festival.updateFees(0, "", "fee");',
+                    },
+                'updatevirtualfees':{
+                    'label':'Update Virtual Fees',
+                    'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x04) == 0x04 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.updateFees(0, "virtual", "virtual_fee");',
+                    },
+                'updateearlybirdplusfees':{
+                    'label':'Update Earlybird Plus Fees',
+                    'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x30) == 0x30 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.updateFees(0, "earlybird plus", "earlybird_plus_fee");',
+                    },
+                'updateplusfees':{
+                    'label':'Update Plus Fees',
+                    'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x10) == 0x10 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.updateFees(0, "plus", "plus_fee");',
+                    },
                 // Add set movements/composers - (none/hidden/required)
                 'download':{
                     'label':'Download Syllabus (PDF)', 
@@ -322,8 +345,61 @@ function ciniki_musicfestivals_main() {
                     'label':'Add Class',
                     'fn':'M.ciniki_musicfestivals_main.class.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,0,M.ciniki_musicfestivals_main.festival.festival_id,null);',
                     },
-                // Add update fees
-                // Add set movements/composers - (none/hidden/required)
+                'updateearlybirdfees':{
+                    'label':'Update Earlybird Fees',
+                    'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x20) == 0x20 && M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'fees' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.updateFees(M.ciniki_musicfestivals_main.festival.section_id, "earlybird", "earlybird_fee");',
+                    },
+                'updatefees':{
+                    'label':'Update Fees',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'fees' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.updateFees(M.ciniki_musicfestivals_main.festival.section_id, "", "fee");',
+                    },
+                'updatevirtualfees':{
+                    'label':'Update Virtual Fees',
+                    'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x04) == 0x04 && M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'fees' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.updateFees(M.ciniki_musicfestivals_main.festival.section_id, "virtual", "virtual_fee");',
+                    },
+                'updateearlybirdplusfees':{
+                    'label':'Update Earlybird Plus Fees',
+                    'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x30) == 0x30 && M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'fees' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.updateFees(M.ciniki_musicfestivals_main.festival.section_id, "earlybird plus", "earlybird_plus_fee");',
+                    },
+                'updateplusfees':{
+                    'label':'Update Plus Fees',
+                    'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x10) == 0x10 && M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'fees' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.updateFees(M.ciniki_musicfestivals_main.festival.section_id, "plus", "plus_fee");',
+                    },
+                'movementsnone':{
+                    'label':'Set Movements to None',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setMovements(M.ciniki_musicfestivals_main.festival.section_id, "None");',
+                    },
+                'movementsrequired':{
+                    'label':'Set Movements to Required',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setMovements(M.ciniki_musicfestivals_main.festival.section_id, "Required");',
+                    },
+                'movementsoptions':{
+                    'label':'Set Movements to Optional',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setMovements(M.ciniki_musicfestivals_main.festival.section_id, "Optional");',
+                    },
+                'composernone':{
+                    'label':'Set Composer to None',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setComposer(M.ciniki_musicfestivals_main.festival.section_id, "None");',
+                    },
+                'composerrequired':{
+                    'label':'Set Composer to Required',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setComposer(M.ciniki_musicfestivals_main.festival.section_id, "Required");',
+                    },
+                'composeroptions':{
+                    'label':'Set Composer to Optional',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setComposer(M.ciniki_musicfestivals_main.festival.section_id, "Optional");',
+                    },
                 'view':{
                     'label':'Open All Details',
                     'fn':'M.ciniki_musicfestivals_main.classes.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.section_id,M.ciniki_musicfestivals_main.festival.festival_id, M.ciniki_musicfestivals_main.festival.nplists.sections);',
@@ -1925,6 +2001,73 @@ function ciniki_musicfestivals_main() {
         this.section_id = sid;
         this.open();
     }
+    this.festival.updateFees = function(sid, label, field) {
+        if( sid == 0 ) {
+            this.popupMenuClose('sections');
+            var str = 'Enter how much to add to each ' + label + ' fee in all classes:';
+        } else {
+            this.popupMenuClose('classes');
+            var str = 'Enter how much to add to each ' + label + ' fee in the list:';
+            for(var i in this.data.sections) {
+                if( this.data.sections[i].id == sid ) {
+                    var str = 'Enter how much to add to each ' + label + ' fee in ' + this.data.sections[i].name + ' classes:';
+                    break;
+                }
+            }
+        }
+        M.prompt(str, '', 'Update', function(n) {
+            if( n != 0 && n != '0' && n != '' ) {
+                var args = {
+                    'tnid':M.curTenantID, 
+                    'section_id':sid,
+                    'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
+                    }; 
+                args[field+'_update'] = n;
+                M.api.getJSONCb('ciniki.musicfestivals.sectionClassesUpdate', args, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    M.ciniki_musicfestivals_main.festival.open();
+                    });
+            }
+        });
+    }
+    this.festival.setMovements = function(sid, label) {
+        M.confirm("Are you sure you want to update Movements to " + label + "?", "Confirm", function(rsp) {
+            var args = {
+                'tnid':M.curTenantID, 
+                'section_id':sid,
+                'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
+                'movements':label,
+                }; 
+                M.api.getJSONCb('ciniki.musicfestivals.sectionClassesUpdate', args, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    M.ciniki_musicfestivals_main.festival.open();
+                    });
+            });
+        
+    }
+    this.festival.setComposer = function(sid, label) {
+        M.confirm("Are you sure you want to update Composer to " + label + "?", "Confirm", function(rsp) {
+            var args = {
+                'tnid':M.curTenantID, 
+                'section_id':sid,
+                'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
+                'composer':label,
+                }; 
+                M.api.getJSONCb('ciniki.musicfestivals.sectionClassesUpdate', args, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    M.ciniki_musicfestivals_main.festival.open();
+                    });
+            });
+    }
     this.festival.registrationMarkChange = function(rid, m) {
         m = unescape(m);
         var label = 'Mark';
@@ -3507,7 +3650,7 @@ function ciniki_musicfestivals_main() {
                         M.api.err(rsp);
                         return false;
                     }
-                    var p = M.ciniki_musicfestivals_main.classes.open();
+                    M.ciniki_musicfestivals_main.classes.open();
                     });
             }
         });
