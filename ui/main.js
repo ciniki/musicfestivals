@@ -400,6 +400,21 @@ function ciniki_musicfestivals_main() {
                     'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.festival.setComposer(M.ciniki_musicfestivals_main.festival.section_id, "Optional");',
                     },
+                'backtracknone':{
+                    'label':'Set Backtrack to None',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setBacktrack(M.ciniki_musicfestivals_main.festival.section_id, "None");',
+                    },
+                'backtrackrequired':{
+                    'label':'Set Backtrack to Required',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setBacktrack(M.ciniki_musicfestivals_main.festival.section_id, "Required");',
+                    },
+                'backtrackoptions':{
+                    'label':'Set Backtrack to Optional',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setBacktrack(M.ciniki_musicfestivals_main.festival.section_id, "Optional");',
+                    },
                 'view':{
                     'label':'Open All Details',
                     'fn':'M.ciniki_musicfestivals_main.classes.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.section_id,M.ciniki_musicfestivals_main.festival.festival_id, M.ciniki_musicfestivals_main.festival.nplists.sections);',
@@ -2068,6 +2083,23 @@ function ciniki_musicfestivals_main() {
                     });
             });
     }
+    this.festival.setBacktrack = function(sid, label) {
+        M.confirm("Are you sure you want to update Backtrack to " + label + "?", "Confirm", function(rsp) {
+            var args = {
+                'tnid':M.curTenantID, 
+                'section_id':sid,
+                'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
+                'backtrack':label,
+                }; 
+                M.api.getJSONCb('ciniki.musicfestivals.sectionClassesUpdate', args, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    M.ciniki_musicfestivals_main.festival.open();
+                    });
+            });
+    }
     this.festival.registrationMarkChange = function(rid, m) {
         m = unescape(m);
         var label = 'Mark';
@@ -2386,7 +2418,7 @@ function ciniki_musicfestivals_main() {
             this.sections.classes.cellClasses = ['', '', '', 'aligncenter', '', '', '', ''];
             this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'num_titles', 'movements', 'composer', 'backtrack', 'schedule_time'];
             this.sections.classes.sortTypes = ['text', 'text', 'text', 'number', 'text', 'text', 'text', 'number'];
-            this.sections.classes.num_cols = 6;
+            this.sections.classes.num_cols = 8;
         }
         else if( this.sections._stabs.selected == 'levels' ) {
             this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Levels'];

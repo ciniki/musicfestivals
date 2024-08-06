@@ -30,6 +30,7 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         'plus_fee_update'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Plus Fee Update'),
         'movements'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Movements Setting'),
         'composer'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Composer Setting'),
+        'backtrack'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Backtrack Setting'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -186,6 +187,17 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
             $update_args['flags'] = ($class['flags']&0xCFFFFFFF) | 0x10000000;
         } elseif( isset($args['composer']) && strtolower($args['composer']) == 'optional' && ($class['flags']&0x20000000) == 0 ) {
             $update_args['flags'] = ($class['flags']&0xCFFFFFFF) | 0x20000000;
+        }
+
+        //
+        // Update backtrack
+        //
+        if( isset($args['backtrack']) && strtolower($args['backtrack']) == 'none' && ($class['flags']&0x03000000) > 0 ) {
+            $update_args['flags'] = ($class['flags']&0xFCFFFFFF);
+        } elseif( isset($args['backtrack']) && strtolower($args['backtrack']) == 'required' && ($class['flags']&0x01000000) == 0 ) {
+            $update_args['flags'] = ($class['flags']&0xFCFFFFFF) | 0x01000000;
+        } elseif( isset($args['backtrack']) && strtolower($args['backtrack']) == 'optional' && ($class['flags']&0x02000000) == 0 ) {
+            $update_args['flags'] = ($class['flags']&0xFCFFFFFF) | 0x02000000;
         }
 
         if( count($update_args) > 0 ) {

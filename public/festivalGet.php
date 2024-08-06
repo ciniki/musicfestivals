@@ -542,7 +542,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     $festival['classes'][$iid]['backtrack'] = '';
                     if( ($class['flags']&0x01000000) == 0x01000000 ) {
                         $festival['classes'][$iid]['backtrack'] = 'Required';
-                    } elseif( ($class['flags']&0x01000000) == 0x01000000 ) {
+                    } elseif( ($class['flags']&0x02000000) == 0x02000000 ) {
                         $festival['classes'][$iid]['backtrack'] = 'Optional';
                     }
                     $festival['classes'][$iid]['instrument'] = '';
@@ -569,9 +569,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     }
                     $festival['classes'][$iid]['schedule_time'] = '';
                     if( $class['schedule_seconds'] > 0 ) {
-                        $festival['classes'][$iid]['schedule_time'] = floor($class['schedule_seconds']/60) . ' min';
+                        $festival['classes'][$iid]['schedule_time'] = floor($class['schedule_seconds']/60) . '&nbsp;min';
                         if( ($class['schedule_seconds']%60) > 0 ) {
-                            $festival['classes'][$iid]['schedule_time'] .= ' ' . ($class['schedule_seconds']%60) . ' sec';
+                            $festival['classes'][$iid]['schedule_time'] .= ' ' . ($class['schedule_seconds']%60) . '&nbsp;sec';
                         }
                     }
                     $nplists['classes'][] = $class['id'];
