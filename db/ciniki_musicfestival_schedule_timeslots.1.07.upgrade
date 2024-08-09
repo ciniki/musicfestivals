@@ -1,0 +1,6 @@
+ALTER TABLE ciniki_musicfestival_schedule_timeslots DROP COLUMN class1_id;
+ALTER TABLE ciniki_musicfestival_schedule_timeslots DROP COLUMN class2_id;
+ALTER TABLE ciniki_musicfestival_schedule_timeslots DROP COLUMN class3_id;
+ALTER TABLE ciniki_musicfestival_schedule_timeslots DROP COLUMN class4_id;
+ALTER TABLE ciniki_musicfestival_schedule_timeslots DROP COLUMN class5_id;
+ALTER TABLE ciniki_musicfestival_schedule_timeslots COMMENT='v1.07';

@@ -14,12 +14,6 @@
 #
 # slot_time:            The time for the slot on the division date.
 #
-# class1_id:            The class 1 that is in this time slot. **deprecated**
-# class2_id:            The class 2 that is in this time slot. **deprecated**
-# class3_id:            The class 3 that is in this time slot. **deprecated**
-# class4_id:            The class 4 that is in this time slot. **deprecated**
-# class5_id:            The class 5 that is in this time slot. **deprecated**
-#
 # flags:                The options for this timeslot.
 #
 #                           0x01 - Split - Partial Registration List, registrations are linked by timeslot_id in registrations table. **deprecated**
@@ -44,11 +38,6 @@ create table ciniki_musicfestival_schedule_timeslots (
     festival_id int not null,
     sdivision_id int not null,
     slot_time time not null,
-    class1_id int not null,
-    class2_id int not null,
-    class3_id int not null,
-    class4_id int not null,
-    class5_id int not null,
     flags tinyint unsigned not null,
     name varchar(150) not null,
     description varchar(2000) not null,
@@ -59,6 +48,6 @@ create table ciniki_musicfestival_schedule_timeslots (
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
-    index (festival_id, sdivision_id, class1_id, class2_id, class3_id, class4_id, class5_id),
+    index (festival_id, sdivision_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.06';
+) ENGINE='InnoDB', COMMENT='v1.07';
