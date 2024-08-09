@@ -2636,7 +2636,7 @@ function ciniki_musicfestivals_main() {
             p.updateClasses();
             // Syllabus tabs
             if( (rsp.festival.flags&0x0800) == 0x0800 ) {
-                console.log(rsp.festival.syllabi);
+                p.sections.syllabi_tabs.tabs = {};
                 for(var i in rsp.festival.syllabi) {
                     if( p.sections.syllabi_tabs.selected == null ) {
                         p.sections.syllabi_tabs.selected = rsp.festival.syllabi[i].name;   
@@ -9826,6 +9826,7 @@ function ciniki_musicfestivals_main() {
         this.festival.menutabs.selected = 'syllabus';
         this.festival.sections.ipv_tabs.selected = 'all';
         this.festival.sections.syllabi_tabs.selected = null;
+        this.festival.sections.syllabi_tabs.tabs = {};
         this.section.sections._tabs.selected = 'categories';
         this.classes.sections._tabs.selected = 'fees';
         this.festival.colour = 'white';
