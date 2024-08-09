@@ -164,7 +164,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
             $strsql .= "AND sections.syllabus = '" . ciniki_core_dbQuote($ciniki, $section['syllabus']) . "' ";
         }
         $strsql .= "AND (sections.flags&0x01) = 0 "
-            . "ORDER BY sections.sequence, sections.name "
+            . "ORDER BY sections.sequence, sections.name, categories.sequence "
             . "";
     } else {
         $strsql = "SELECT sections.id, "
