@@ -104,8 +104,11 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         . "classes.plus_fee "
         . "FROM ciniki_musicfestival_sections AS sections "
         . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
-            . "sections.id = categories.section_id "
-            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "sections.id = categories.section_id ";
+    if( isset($args['groupname']) && $args['groupname'] != '' ) {
+        $strsql .= "AND categories.groupname = '" . ciniki_core_dbQuote($ciniki, $args['groupname']) . "' ";
+    }
+        $strsql .= "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
             . "categories.id = classes.category_id ";
@@ -123,6 +126,9 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
     if( isset($args['section_id']) && $args['section_id'] != '' && $args['section_id'] > 0 ) {
         $strsql .= "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' ";
     } 
+    if( isset($args['syllabus']) ) {
+        $strsql .= "AND sections.syllabus = '" . ciniki_core_dbQuote($ciniki, $args['syllabus']) . "' ";
+    }
     $strsql .= "ORDER BY sections.sequence, sections.name, "
             . "categories.sequence, categories.name, "
             . "classes.sequence, classes.name "
@@ -289,13 +295,21 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         //
         // Start a new section
         //
-        $pdf->header_sub_title = $section['name'] . ' Syllabus';
+        if( isset($args['groupname']) && $args['groupname'] != '' ) {
+            $pdf->header_sub_title = $section['name'] . ' - ' . $args['groupname'] . ' Syllabus';
+        } else {
+            $pdf->header_sub_title = $section['name'] . ' Syllabus';
+        }
         $pdf->AddPage();
 
-        if( isset($section['description']) && $section['description'] != '' ) {
-            $pdf->SetFont('', 'B', '18');
+        $pdf->SetFont('', 'B', '18');
+        if( isset($args['groupname']) && $args['groupname'] != '' ) {
+            $pdf->MultiCell(180, 5, $section['name'] . ' - ' . $args['groupname'], 0, 'L', 0, 1);
+        } else {
             $pdf->MultiCell(180, 5, $section['name'], 0, 'L', 0, 1);
-            $pdf->SetFont('', '', '12');
+        }
+        $pdf->SetFont('', '', '12');
+        if( isset($section['description']) && $section['description'] != '' ) {
 //            $pdf->MultiCell(180, 5, $section['description'], 0, 'L', 0, 1);
             $pdf->writeHTMLCell(180, '', '', '', preg_replace("/\n/", '<br/>', $section['description']), 0, 1);
         }

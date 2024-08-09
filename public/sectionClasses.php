@@ -111,6 +111,7 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
             . "classes.code, "
             . "classes.name AS class_name, "
             . "classes.sequence AS class_sequence, "
+            . "classes.schedule_seconds, "
             . "trophies.name AS trophies "
             . "FROM ciniki_musicfestival_categories AS categories "
             . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
@@ -133,7 +134,7 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'classes', 'fname'=>'id', 
                 'fields'=>array('id', 'joined_sequence', 'category_id', 'category_name', 'permalink', 'category_sequence', 
-                    'code', 'class_name', 'class_sequence', 'trophies'),
+                    'code', 'class_name', 'class_sequence', 'trophies', 'schedule_seconds'),
                 'dlists'=>array('trophies'=>', '),
                 ),
             ));

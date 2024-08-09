@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_sections ADD COLUMN syllabus varchar(150) not null AFTER festival_id;
+ALTER TABLE ciniki_musicfestival_sections COMMENT='v1.06';

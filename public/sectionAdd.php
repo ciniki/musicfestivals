@@ -21,6 +21,7 @@ function ciniki_musicfestivals_sectionAdd(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
+        'syllabus'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Syllabus'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'),
         'permalink'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Permalink'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),

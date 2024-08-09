@@ -27,6 +27,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'schedule'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule'),
+        'syllabus'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus'),
         'sections'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sections'),
         'categories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Categories'),
         'classes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Classes'),
@@ -306,9 +307,31 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         // Get the list of sections
         //
         if( isset($args['sections']) && $args['sections'] == 'yes' ) {
+            if( ($festival['flags']&0x0800) == 0x0800 ) {
+                $strsql = "SELECT DISTINCT sections.syllabus AS name "
+                    . "FROM ciniki_musicfestival_sections AS sections "
+                    . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "ORDER BY name ";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'syllabi', 'fname'=>'name', 'fields'=>array('name')),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                $festival['syllabi'] = isset($rc['syllabi']) ? $rc['syllabi'] : array();
+                if( count($festival['syllabi']) == 0 ) {
+                    $festival['syllabi'] = array(array('name'=>''));
+                }
+                if( !isset($args['syllabus']) ) {
+                    $args['syllabus'] = $festival['syllabi'][0]['name'];
+                }
+            }
             if( isset($args['registrations_list']) && $args['registrations_list'] == 'sections' ) {
                 $strsql = "SELECT sections.id, "
                     . "sections.festival_id, "
+                    . "sections.syllabus, "
                     . "sections.name, "
                     . "sections.permalink, "
                     . "sections.sequence, "
@@ -334,22 +357,26 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-                    array('container'=>'sections', 'fname'=>'id', 'fields'=>array('id', 'festival_id', 'name', 'permalink', 'sequence', 'num_registrations')),
+                    array('container'=>'sections', 'fname'=>'id', 'fields'=>array('id', 'festival_id', 'syllabus', 'name', 'permalink', 'sequence', 'num_registrations')),
                     ));
             } else {
                 $strsql = "SELECT sections.id, "
                     . "sections.festival_id, "
+                    . "sections.syllabus, "
                     . "sections.name, "
                     . "sections.permalink, "
                     . "sections.sequence "
                     . "FROM ciniki_musicfestival_sections AS sections "
                     . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-                    . "ORDER BY sections.sequence, sections.name "
+                    . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
+                if( isset($args['syllabus']) ) {
+                    $strsql .= "AND sections.syllabus = '" . ciniki_core_dbQuote($ciniki, $args['syllabus']) . "' ";
+                }
+                $strsql .= "ORDER BY sections.sequence, sections.name "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-                    array('container'=>'sections', 'fname'=>'id', 'fields'=>array('id', 'festival_id', 'name', 'permalink', 'sequence')),
+                    array('container'=>'sections', 'fname'=>'id', 'fields'=>array('id', 'festival_id', 'syllabus', 'name', 'permalink', 'sequence')),
                     ));
             }
             if( $rc['stat'] != 'ok' ) {

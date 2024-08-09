@@ -98,6 +98,7 @@ function ciniki_musicfestivals_objects($ciniki) {
         'table'=>'ciniki_musicfestival_sections',
         'fields'=>array(
             'festival_id'=>array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'syllabus'=>array('name'=>'Syllabus', 'default'=>''),
             'name'=>array('name'=>'Name'),
             'permalink'=>array('name'=>'Permalink', 'default'=>''),
             'sequence'=>array('name'=>'Order', 'default'=>'1'),

@@ -61,6 +61,38 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     }
 
     //
+    // Get the syllabi (festival_id - Syllabus), this is used for festival that have multiple syllabi
+    //
+    $strsql = "SELECT DISTINCT festivals.id, "
+        . "CONCAT_WS('-', festivals.id, sections.syllabus) AS sid, "
+        . "festivals.name, "
+        . "festivals.flags, "
+        . "sections.syllabus "
+        . "FROM ciniki_musicfestivals AS festivals "
+        . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+            . "festivals.id = sections.festival_id "
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "WHERE festivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "ORDER BY festivals.start_date DESC, syllabus "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'syllabi', 'fname'=>'sid', 
+            'fields'=>array('id', 'flags', 'name', 'syllabus')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.747', 'msg'=>'Unable to load syllabi', 'err'=>$rc['err']));
+    }
+    $syllabi = isset($rc['syllabi']) ? $rc['syllabi'] : array();
+    foreach($syllabi as $sid => $syllabus) {
+        if( ($syllabus['flags']&0x0800) == 0x0800 ) {
+            $syllabi[$sid]['id'] = $syllabus['id'] . '-' . $syllabus['syllabus'];
+            $syllabi[$sid]['name'] .= ' - ' . ($syllabus['syllabus'] == '' ? 'Default' : $syllabus['syllabus']);
+        }
+    }
+
+    //
     // Section to display the syllabus
     //
     $sections['ciniki.musicfestivals.syllabus'] = array(
@@ -69,9 +101,9 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         'settings' => array(
             'title' => array('label'=>'Title', 'type'=>'text'),
             'content' => array('label'=>'Intro', 'type'=>'textarea'),
-            'festival-id' => array('label'=>'Festival', 'type'=>'select', 
+            'syllabus-id' => array('label'=>'Syllabus', 'type'=>'select', 
                 'complex_options'=>array('value'=>'id', 'name'=>'name'),
-                'options'=>$festivals,
+                'options'=>$syllabi,
                 ),
             'layout' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
                 'tradingcards' => 'Trading Cards',

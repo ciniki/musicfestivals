@@ -28,8 +28,8 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     //
     // Make sure a festival was specified
     //
-    if( !isset($s['festival-id']) || $s['festival-id'] == '' || $s['festival-id'] == 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.212', 'msg'=>"No festival specified"));
+    if( !isset($s['syllabus-id']) || $s['syllabus-id'] == '' || $s['syllabus-id'] == 0 ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.212', 'msg'=>"No syllabus specified"));
     }
 
     //
@@ -42,10 +42,20 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     }
 
     //
+    // FIXME: Check if syllabus-id contains - 
+    //
+    if( preg_match("/^(.*)\-(.*)$/", $s['syllabus-id'], $m) ) {
+        $festival_id = $m[1];
+        $section['syllabus'] = $m[2];
+    } else {
+        $festival_id = $s['syllabus-id'];
+    }
+
+    //
     // Get the music festival details
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'festivalLoad');
-    $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $s['festival-id']);
+    $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $festival_id);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -61,10 +71,14 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
         // Download the syllabus section pdf
         //
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'syllabusPDF');
-        $rc = ciniki_musicfestivals_templates_syllabusPDF($ciniki, $tnid, array(
-            'festival_id' => $s['festival-id'],
+        $pdf_args = array(
+            'festival_id' => $festival['id'],
             'live-virtual' => isset($s['display-live-virtual']) ? $s['display-live-virtual'] : '',
-            ));
+            );
+        if( isset($section['syllabus']) ) {
+            $pdf_args['syllabus'] = $section['syllabus'];
+        }
+        $rc = ciniki_musicfestivals_templates_syllabusPDF($ciniki, $tnid, $pdf_args);
         if( isset($rc['pdf']) ) {
             $filename = $festival['name'];
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
@@ -125,8 +139,11 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
         $strsql .= "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
-            . "AND (sections.flags&0x01) = 0 "
+            . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' ";
+        if( isset($section['syllabus']) ) {
+            $strsql .= "AND sections.syllabus = '" . ciniki_core_dbQuote($ciniki, $section['syllabus']) . "' ";
+        }
+        $strsql .= "AND (sections.flags&0x01) = 0 "
             . "ORDER BY sections.sequence, sections.name "
             . "";
     } elseif( isset($s['layout']) && ($s['layout'] == 'groups' || $s['layout'] == 'groupbuttons') ) {
@@ -142,8 +159,11 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
                 . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
-            . "AND (sections.flags&0x01) = 0 "
+            . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' ";
+        if( isset($section['syllabus']) ) {
+            $strsql .= "AND sections.syllabus = '" . ciniki_core_dbQuote($ciniki, $section['syllabus']) . "' ";
+        }
+        $strsql .= "AND (sections.flags&0x01) = 0 "
             . "ORDER BY sections.sequence, sections.name "
             . "";
     } else {
@@ -155,8 +175,11 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
             . "'' AS groupname "
             . "FROM ciniki_musicfestival_sections AS sections "
             . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
-            . "AND (sections.flags&0x01) = 0 "
+            . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' ";
+        if( isset($section['syllabus']) ) {
+            $strsql .= "AND sections.syllabus = '" . ciniki_core_dbQuote($ciniki, $section['syllabus']) . "' ";
+        }
+        $strsql .= "AND (sections.flags&0x01) = 0 "
             . "ORDER BY sections.sequence, sections.name "
             . "";
     }
