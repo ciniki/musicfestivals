@@ -209,7 +209,7 @@ function ciniki_musicfestivals_main() {
 //                    },
 //            }},
         'syllabi_tabs':{'label':'', 'type':'paneltabs', 'selected':null, 'aside':'yes',
-            'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x0800) == 0x0800 ? 'yes' : 'no'; },
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'syllabus' && (M.ciniki_musicfestivals_main.festival.data.flags&0x0800) == 0x0800 ? 'yes' : 'no'; },
             'tabs':{
             }},
         'sections':{'label':'Sections', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
