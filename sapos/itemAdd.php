@@ -122,7 +122,6 @@ function ciniki_musicfestivals_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item)
             'perf_time2' => '',
             'title3' => '',
             'perf_time3' => '',
-            'payment_type' => 0,
             'fee' => $fee,
             'participation' => $participation,
             );

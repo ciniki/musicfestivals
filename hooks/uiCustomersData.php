@@ -200,7 +200,6 @@ function ciniki_musicfestivals_hooks_uiCustomersData($ciniki, $tnid, $args) {
         . "registrations.title3, "
         . "registrations.perf_time3, "
         . "FORMAT(registrations.fee, 2) AS fee, "
-        . "registrations.payment_type, "
         . "registrations.video_url1, "
         . "registrations.video_url2, "
         . "registrations.video_url3, "
@@ -264,14 +263,13 @@ function ciniki_musicfestivals_hooks_uiCustomersData($ciniki, $tnid, $args) {
                 'billing_customer_id', 'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
                 'class_id', 'class_code', 'class_name', 
                 'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 
-                'fee', 'payment_type',
+                'fee',
                 'video_url1', 'video_url2', 'video_url3', 'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3',
                 'timeslot_time', 'division_date',
                 ),
             'maps'=>array(
                 'rtype_text'=>$maps['registration']['rtype'],
                 'status_text'=>$maps['registration']['status'],
-                'payment_type'=>$maps['registration']['payment_type'],
                 ),
             ),
         ));

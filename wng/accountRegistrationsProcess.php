@@ -728,6 +728,27 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     }
 
     //
+    // Get the payment status for the invoice 
+    //
+    $registration['payment_status'] = 0;
+    if( $registration['invoice_id'] > 0 ) {
+        $strsql = "SELECT invoices.payment_status "
+            . "FROM ciniki_sapos_invoices AS invoices "
+            . "WHERE invoices.id = '" . ciniki_core_dbQuote($ciniki, $registration['invoice_id']) . "' "
+            . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'invoice');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.807', 'msg'=>'Unable to load invoice', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['invoice']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.808', 'msg'=>'Unable to find requested invoice'));
+        }
+        $invoice = $rc['invoice'];
+        $registration['payment_status'] = $invoice['payment_status'];
+    }
+
+    //
     // Setup the fields for the form
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'registrationFormGenerate');
@@ -988,7 +1009,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'accompanist_customer_id' => isset($fields['accompanist_customer_id']['value']) ? $fields['accompanist_customer_id']['value'] : 0,
                 'member_id' => isset($fields['member_id']['value']) ? $fields['member_id']['value'] : 0,
                 'rtype' => 30,
-                'status' => 6,
+                'status' => 5,
                 'flags' => 0,
                 'invoice_id' => $request['session']['cart']['id'],
                 'display_name' => '',
@@ -1000,7 +1021,6 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'class_id' => $selected_class['id'],
                 'timeslot_id' => 0,
                 'instrument' => isset($fields['instrument']['value']) ? $fields['instrument']['value'] : '',
-                'payment_type' => 0,
                 'participation' => (isset($fields['participation']['value']) ? $fields['participation']['value'] : ''),
                 'notes' => $fields['notes']['value'],
                 );
@@ -1300,7 +1320,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 //
                 // Skip fields when editing a pending or paid registration
                 //
-                if( isset($registration['status']) && $registration['status'] != 6 
+                if( isset($registration['status']) && $registration['status'] > 10 
                     && !preg_match("/(title|composer|movements|perf_time|video_url|music_orgfilename|backtrack)/", $field['id'])
                     ) {
                     continue;
@@ -1333,7 +1353,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     $update_args[$field['id']] = $field['value'];
                 }
             }
-            if( !isset($registration['status']) || $registration['status'] < 50 ) {
+            if( !isset($registration['status']) || $registration['status'] < 10 ) {
                 if( $selected_class['id'] != $registration['class_id'] ) {
                     $update_args['class_id'] = $selected_class['id'];
                 }
@@ -1480,9 +1500,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     }
     elseif( isset($_POST['f-delete']) && $_POST['f-delete'] == 'Remove' && isset($registration) ) {
         //
-        // Check if paid registration
+        // Check if paid invoice
         //
-        if( $registration['status'] >= 10 ) {
+        if( $registration['payment_status'] >= 20 ) {
             $blocks[] = array(
                 'type' => 'msg',
                 'class' => 'limit-width limit-width-70',
@@ -2038,7 +2058,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "IFNULL(locations.city, '') AS location_city, "
             . "IFNULL(ssections.flags, 0) AS timeslot_flags, "
             . "IFNULL(divisions.flags, 0) AS division_flags, "
-            . "IFNULL(invoices.status, 0) AS invoice_status "
+            . "IFNULL(invoices.status, 0) AS invoice_status, "
+            . "IFNULL(invoices.payment_status, 0) AS payment_status "
             . "FROM ciniki_musicfestival_registrations AS registrations "
             . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "registrations.class_id = classes.id "
@@ -2104,7 +2125,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'status', 'invoice_status', 'invoice_id', 
+                'fields'=>array('id', 'status', 'payment_status', 'invoice_status', 'invoice_id', 
                     'billing_customer_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 'display_name', 
                     'class_code', 'class_name', 'section_name', 'category_name', 'codename', 
                     'fee', 'participation', 
@@ -2164,7 +2185,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $etransfer_registrations[] = $reg;
             } elseif( $reg['invoice_status'] == 40 ) {
                 $paymentrequired_registrations[] = $reg;
-            } elseif( $reg['status'] == 60 ) {
+            } elseif( $reg['status'] == 80 ) {
                 $cancelled_registrations[] = $reg;
             } elseif( $reg['accompanist_customer_id'] == $request['session']['customer']['id'] ) {
                 $accompanist_registrations[] = $reg;

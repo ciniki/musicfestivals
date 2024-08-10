@@ -29,12 +29,16 @@
 #
 # status:               The current status of the registration.
 #
-#                            5 - Draft (online)
-#                            6 - Cart (online)
-#                            7 - E-Transfer Pending
-#                           10 - Applied
-#                           50 - Paid
-#                           60 - Cancelled
+#                            5 - Draft (in shopping cart, unpaid or pending e-transfer)
+#                           10 - Registered
+#                           30 - User Defined 
+#                           31 - User Defined 
+#                           32 - User Defined 
+#                           33 - User Defined 
+#                           34 - User Defined 
+#                           50 - Approved
+#                           70 - Disqualified
+#                           80 - Cancelled
 #
 # flags:                The options for the registration.
 #
@@ -46,14 +50,14 @@
 #                           0x20 - 
 #                           0x40 - 
 #                           0x80 - 
-#                           0x0100 - Grey
-#                           0x0200 - Teal
-#                           0x0400 - Blue
-#                           0x0800 - Purple
-#                           0x1000 - Red
-#                           0x2000 - Orange
-#                           0x4000 - Yellow
-#                           0x8000 - Green
+#                           0x0100 - Grey **deprecated**
+#                           0x0200 - Teal **deprecated**
+#                           0x0400 - Blue **deprecated**
+#                           0x0800 - Purple **deprecated**
+#                           0x1000 - Red **deprecated**
+#                           0x2000 - Orange **deprecated**
+#                           0x4000 - Yellow **deprecated**
+#                           0x8000 - Green **deprecated**
 #
 # invoice_id:           The ID of the invoice in ciniki.sapos if paid online.
 #
@@ -92,18 +96,6 @@
 # perf_time3:           The time of the 3rd performance in seconds.
 #
 # fee:                  The entry fee for the registration.
-#
-# payment_type:         The type of payment.
-#
-#                           10 - Paypal
-#                           20 - Square
-#                           50 - Visa
-#                           55 - Mastercard
-#                           100 - Cash
-#                           105 - Cheque
-#                           110 - Email Transfer
-#                           120 - Other
-#                           121 - Paid Online
 #
 # participation:        Set to 1 when the registration is doing the class virtually, otherwise
 #                       assumed to be in person.

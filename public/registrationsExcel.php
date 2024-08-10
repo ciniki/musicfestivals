@@ -140,7 +140,6 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         . "registrations.perf_time8, "
         . "registrations.video_url8, "
         . "registrations.music_orgfilename8, "
-        . "registrations.payment_type, "
         . "registrations.participation, "
         . "registrations.notes AS reg_notes, "
         . "registrations.teacher_customer_id, "
@@ -215,7 +214,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'payment_type', 'participation', 'notes'=>'reg_notes', 'flags',
+                    'participation', 'notes'=>'reg_notes', 'flags',
                     'mark', 'placement', 'level', 
                     ),
                 ),
@@ -283,7 +282,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'payment_type', 'participation', 'notes'=>'reg_notes', 'flags',
+                    'participation', 'notes'=>'reg_notes', 'flags',
                     'mark', 'placement', 'level',
                     ),
                 ),
@@ -367,7 +366,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'payment_type', 'participation', 'notes'=>'reg_notes', 'flags',
+                    'participation', 'notes'=>'reg_notes', 'flags',
                     'mark', 'placement', 'level',
                     ),
                 ),
@@ -454,7 +453,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'payment_type', 'participation', 'notes'=>'reg_notes', 'flags',
+                    'participation', 'notes'=>'reg_notes', 'flags',
                     'mark', 'placement', 'level',
                     ),
                 ),
@@ -544,7 +543,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'payment_type', 'participation', 'notes'=>'reg_notes', 'flags',
+                    'participation', 'notes'=>'reg_notes', 'flags',
                     'mark', 'placement', 'level',
                     ),
                 ),
@@ -630,7 +629,6 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         if( ($festival['flags']&0x02) == 0x02 ) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Virtual', false);
         }
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Type', false);
         if( isset($festival['comments-mark-ui']) && $festival['comments-mark-ui'] == 'yes' ) {
             if( isset($festival['comments-mark-label']) && $festival['comments-mark-label'] != '' ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['comments-mark-label'], false);
@@ -833,7 +831,6 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             if( ($festival['flags']&0x02) == 0x02 ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, ($registration['participation'] == 1 ? 'Virtual' : 'In Person'), false);
             }
-            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['payment_type'], false);
             if( isset($festival['comments-mark-ui']) && $festival['comments-mark-ui'] == 'yes' ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['mark'], false);
             }

@@ -39,7 +39,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'class_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Class'),
         'registrations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registrations'),
         'registrations_list'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registration List'),
-        'colour'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registration Colour'),
+        'registration_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registration Status'),
+//        'colour'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registration Colour'),
         'schedule'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule'),
         'adjudicator_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicator'),
         'ssection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Section'),
@@ -108,16 +109,6 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'datetimeFormat');
     $datetime_format = ciniki_users_datetimeFormat($ciniki, 'php');
-
-    //
-    // Load conference maps
-    //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'maps');
-    $rc = ciniki_musicfestivals_maps($ciniki);
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
-    }
-    $maps = $rc['maps'];
 
     //
     // Check for update sequence actions
@@ -288,6 +279,16 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $festival['comments-level-autofills'][trim($mark)] = trim($text);
             }
         }
+
+        //
+        // Load festival maps
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalMaps');
+        $rc = ciniki_musicfestivals_festivalMaps($ciniki, $args['tnid'], $festival);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $maps = $rc['maps'];
 
         //
         // Get the number of registrations
@@ -879,9 +880,41 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $festival['registration_members'] = isset($rc['members']) ? $rc['members'] : array();
             }
             //
+            // Get the list of statuses
+            //
+            elseif( isset($args['registrations_list']) && $args['registrations_list'] == 'statuses') {
+                $strsql = "SELECT status, "
+                    . "status AS name, "
+                    . "COUNT(registrations.id) AS num_registrations "
+                    . "FROM ciniki_musicfestival_registrations AS registrations "
+                    . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
+                    if( ($festival['flags']&0x02) == 0x02 && isset($args['ipv']) ) {
+                        if( $args['ipv'] == 'inperson' ) {
+                            $strsql .= "AND registrations.participation = 0 ";
+                        } elseif( $args['ipv'] == 'virtual' ) {
+                            $strsql .= "AND registrations.participation = 1 ";
+                        }
+                    }
+                $strsql .= "GROUP BY status "
+                    . "ORDER BY status "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+                $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'statuses', 'fname'=>'status', 
+                        'fields'=>array('status', 'name', 'num_registrations'),
+                        'maps'=>array('name'=>$maps['registration']['status']),
+                        ),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.809', 'msg'=>'Unable to load statuses', 'err'=>$rc['err']));
+                }
+                $festival['registration_statuses'] = isset($rc['statuses']) ? $rc['statuses'] : array();
+            }
+            //
             // Get the list of colours
             //
-            elseif( isset($args['registrations_list']) && $args['registrations_list'] == 'colours') {
+/*            elseif( isset($args['registrations_list']) && $args['registrations_list'] == 'colours') {
                 $strsql = "SELECT (registrations.flags&0xFF00) AS colour, "
                     . "COUNT(registrations.id) AS num_registrations "
                     . "FROM ciniki_musicfestival_registrations AS registrations "
@@ -924,217 +957,219 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     array('name' => 'Grey', 
                         'num_registrations' => isset($rc['colours'][0x0100]['num_registrations']) ? $rc['colours'][0x0100]['num_registrations'] : 0),
                     );
-            }
+            } */
 
             //
             // Load the registration list
             //
-            $strsql = "SELECT registrations.id, "
-                . "registrations.festival_id, "
-                . "sections.id AS section_id, "
-                . "registrations.teacher_customer_id, "
-                . "teachers.display_name AS teacher_name, "
-                . "registrations.accompanist_customer_id, "
-                . "accompanists.display_name AS accompanist_name, "
-                . "classes.flags AS class_flags, "
-                . "classes.min_titles, "
-                . "classes.max_titles, "
-                . "registrations.billing_customer_id, "
-                . "registrations.rtype, "
-                . "registrations.rtype AS rtype_text, "
-                . "registrations.flags, "
-                . "registrations.status, "
-                . "registrations.status AS status_text, ";
-            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
-                $strsql .= "registrations.pn_display_name AS display_name, ";
-            } else {
-                $strsql .= "registrations.display_name, ";
-            }
-            $strsql .= "registrations.class_id, "
-                . "classes.code AS class_code, "
-                . "classes.name AS class_name, "
-                . "registrations.title1, "
-                . "registrations.composer1, "
-                . "registrations.movements1, "
-                . "registrations.perf_time1, "
-                . "registrations.video_url1, "
-                . "registrations.music_orgfilename1, "
-                . "registrations.title2, "
-                . "registrations.composer2, "
-                . "registrations.movements2, "
-                . "registrations.perf_time2, "
-                . "registrations.video_url2, "
-                . "registrations.music_orgfilename2, "
-                . "registrations.title3, "
-                . "registrations.composer3, "
-                . "registrations.movements3, "
-                . "registrations.perf_time3, "
-                . "registrations.video_url3, "
-                . "registrations.music_orgfilename3, "
-                . "registrations.title4, "
-                . "registrations.composer4, "
-                . "registrations.movements4, "
-                . "registrations.perf_time4, "
-                . "registrations.video_url4, "
-                . "registrations.music_orgfilename4, "
-                . "registrations.title5, "
-                . "registrations.composer5, "
-                . "registrations.movements5, "
-                . "registrations.perf_time5, "
-                . "registrations.video_url5, "
-                . "registrations.music_orgfilename5, "
-                . "registrations.title6, "
-                . "registrations.composer6, "
-                . "registrations.movements6, "
-                . "registrations.perf_time6, "
-                . "registrations.video_url6, "
-                . "registrations.music_orgfilename6, "
-                . "registrations.title7, "
-                . "registrations.composer7, "
-                . "registrations.movements7, "
-                . "registrations.perf_time7, "
-                . "registrations.video_url7, "
-                . "registrations.music_orgfilename7, "
-                . "registrations.title8, "
-                . "registrations.composer8, "
-                . "registrations.movements8, "
-                . "registrations.perf_time8, "
-                . "registrations.video_url8, "
-                . "registrations.music_orgfilename8, "
-                . "FORMAT(registrations.fee, 2) AS fee, "
-                . "registrations.payment_type, "
-                . "registrations.participation, "
-                . "DATE_FORMAT(invoices.invoice_date, '%b %e') AS invoice_date "
-                . "FROM ciniki_musicfestival_registrations AS registrations USE INDEX(festival_id_2) ";
-            if( isset($args['registration_tag']) && $args['registration_tag'] != '' ) {
-                $strsql .= "INNER JOIN ciniki_musicfestival_registration_tags AS tags ON ("
-                    . "registrations.id = tags.registration_id "
-                    . "AND tags.tag_name = '" . ciniki_core_dbQuote($ciniki, $args['registration_tag']) . "' "
-                    . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . ") ";
-            }
-            $strsql .= "LEFT JOIN ciniki_customers AS teachers ON ("
-                    . "registrations.teacher_customer_id = teachers.id "
-                    . "AND teachers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . ") "
-                . "LEFT JOIN ciniki_customers AS accompanists ON ("
-                    . "registrations.accompanist_customer_id = accompanists.id "
-                    . "AND accompanists.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . ") "
-                . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
-                    . "registrations.class_id = classes.id "
-                    . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . ") "
-                . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
-                    . "classes.category_id = categories.id "
-                    . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . ") "
-                . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
-                    . "categories.section_id = sections.id "
-                    . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . ") "
-                . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
-                    . "registrations.invoice_id = invoices.id "
-                    . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . ") "
-                . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-                . $ipv_sql
-                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "";
-            if( isset($args['section_id']) && $args['section_id'] > 0 ) {
-                if( isset($args['class_id']) && $args['class_id'] > 0 ) {
-                    $strsql .= "AND class_id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' ";
+            if( isset($args['section_id']) && $args['section_id'] > -1 ) {
+                $strsql = "SELECT registrations.id, "
+                    . "registrations.festival_id, "
+                    . "sections.id AS section_id, "
+                    . "registrations.teacher_customer_id, "
+                    . "teachers.display_name AS teacher_name, "
+                    . "registrations.accompanist_customer_id, "
+                    . "accompanists.display_name AS accompanist_name, "
+                    . "classes.flags AS class_flags, "
+                    . "classes.min_titles, "
+                    . "classes.max_titles, "
+                    . "registrations.billing_customer_id, "
+                    . "registrations.rtype, "
+                    . "registrations.rtype AS rtype_text, "
+                    . "registrations.flags, "
+                    . "registrations.status, "
+                    . "registrations.status AS status_text, ";
+                if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+                    $strsql .= "registrations.pn_display_name AS display_name, ";
+                } else {
+                    $strsql .= "registrations.display_name, ";
                 }
-                $strsql .= "AND categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' ";
-            } elseif( isset($args['colour']) && $args['colour'] != '' ) {
-                if( $args['colour'] == 'White' ) {
-                    $strsql .= "AND (registrations.flags&0xFF00) = 0 ";
-                } elseif( $args['colour'] == 'Grey' ) {
-                    $strsql .= "AND (registrations.flags&0x0100) = 0x0100 ";
-                } elseif( $args['colour'] == 'Teal' ) {
-                    $strsql .= "AND (registrations.flags&0x0200) = 0x0200 ";
-                } elseif( $args['colour'] == 'Blue' ) {
-                    $strsql .= "AND (registrations.flags&0x0400) = 0x0400 ";
-                } elseif( $args['colour'] == 'Purple' ) {
-                    $strsql .= "AND (registrations.flags&0x0800) = 0x0800 ";
-                } elseif( $args['colour'] == 'Red' ) {
-                    $strsql .= "AND (registrations.flags&0x1000) = 0x1000 ";
-                } elseif( $args['colour'] == 'Orange' ) {
-                    $strsql .= "AND (registrations.flags&0x2000) = 0x2000 ";
-                } elseif( $args['colour'] == 'Yellow' ) {
-                    $strsql .= "AND (registrations.flags&0x4000) = 0x4000 ";
-                } elseif( $args['colour'] == 'Green' ) {
-                    $strsql .= "AND (registrations.flags&0x8000) = 0x8000 ";
+                $strsql .= "registrations.class_id, "
+                    . "classes.code AS class_code, "
+                    . "classes.name AS class_name, "
+                    . "registrations.title1, "
+                    . "registrations.composer1, "
+                    . "registrations.movements1, "
+                    . "registrations.perf_time1, "
+                    . "registrations.video_url1, "
+                    . "registrations.music_orgfilename1, "
+                    . "registrations.title2, "
+                    . "registrations.composer2, "
+                    . "registrations.movements2, "
+                    . "registrations.perf_time2, "
+                    . "registrations.video_url2, "
+                    . "registrations.music_orgfilename2, "
+                    . "registrations.title3, "
+                    . "registrations.composer3, "
+                    . "registrations.movements3, "
+                    . "registrations.perf_time3, "
+                    . "registrations.video_url3, "
+                    . "registrations.music_orgfilename3, "
+                    . "registrations.title4, "
+                    . "registrations.composer4, "
+                    . "registrations.movements4, "
+                    . "registrations.perf_time4, "
+                    . "registrations.video_url4, "
+                    . "registrations.music_orgfilename4, "
+                    . "registrations.title5, "
+                    . "registrations.composer5, "
+                    . "registrations.movements5, "
+                    . "registrations.perf_time5, "
+                    . "registrations.video_url5, "
+                    . "registrations.music_orgfilename5, "
+                    . "registrations.title6, "
+                    . "registrations.composer6, "
+                    . "registrations.movements6, "
+                    . "registrations.perf_time6, "
+                    . "registrations.video_url6, "
+                    . "registrations.music_orgfilename6, "
+                    . "registrations.title7, "
+                    . "registrations.composer7, "
+                    . "registrations.movements7, "
+                    . "registrations.perf_time7, "
+                    . "registrations.video_url7, "
+                    . "registrations.music_orgfilename7, "
+                    . "registrations.title8, "
+                    . "registrations.composer8, "
+                    . "registrations.movements8, "
+                    . "registrations.perf_time8, "
+                    . "registrations.video_url8, "
+                    . "registrations.music_orgfilename8, "
+                    . "FORMAT(registrations.fee, 2) AS fee, "
+                    . "registrations.participation, "
+                    . "DATE_FORMAT(invoices.invoice_date, '%b %e') AS invoice_date "
+                    . "FROM ciniki_musicfestival_registrations AS registrations USE INDEX(festival_id_2) ";
+                if( isset($args['registration_tag']) && $args['registration_tag'] != '' ) {
+                    $strsql .= "INNER JOIN ciniki_musicfestival_registration_tags AS tags ON ("
+                        . "registrations.id = tags.registration_id "
+                        . "AND tags.tag_name = '" . ciniki_core_dbQuote($ciniki, $args['registration_tag']) . "' "
+                        . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") ";
                 }
-            } elseif( isset($args['member_id']) && $args['member_id'] > 0 ) {
-                $strsql .= "AND registrations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' "
-                    . "ORDER BY registrations.date_added DESC "
+                $strsql .= "LEFT JOIN ciniki_customers AS teachers ON ("
+                        . "registrations.teacher_customer_id = teachers.id "
+                        . "AND teachers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_customers AS accompanists ON ("
+                        . "registrations.accompanist_customer_id = accompanists.id "
+                        . "AND accompanists.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+                        . "registrations.class_id = classes.id "
+                        . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
+                        . "classes.category_id = categories.id "
+                        . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+                        . "categories.section_id = sections.id "
+                        . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
+                        . "registrations.invoice_id = invoices.id "
+                        . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . $ipv_sql
+                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "";
-            } elseif( isset($args['teacher_customer_id']) && $args['teacher_customer_id'] > 0 ) {
-                $strsql .= "AND registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' ";
-            } elseif( isset($args['accompanist_customer_id']) && $args['accompanist_customer_id'] > 0 ) {
-                $strsql .= "AND registrations.accompanist_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['accompanist_customer_id']) . "' ";
-            }
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-                array('container'=>'registrations', 'fname'=>'id', 
-                    'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 
-                        'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 'invoice_date', 
-                        'class_id', 'class_code', 'class_name', 'class_flags', 'min_titles', 'max_titles',
-                        'fee', 'payment_type', 'participation', 'flags',
-                        'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
-                        'title2', 'composer2', 'movements2', 'perf_time2', 'video_url2', 'music_orgfilename2',
-                        'title3', 'composer3', 'movements3', 'perf_time3', 'video_url3', 'music_orgfilename3',
-                        'title4', 'composer4', 'movements4', 'perf_time4', 'video_url4', 'music_orgfilename4',
-                        'title5', 'composer5', 'movements5', 'perf_time5', 'video_url5', 'music_orgfilename5',
-                        'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
-                        'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
-                        'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                        ),
-                    'maps'=>array(
-                        'rtype_text'=>$maps['registration']['rtype'],
-                        'status_text'=>$maps['registration']['status'],
-                        'payment_type'=>$maps['registration']['payment_type'],
-                        ),
-                    ),
-                ));
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
-            }
-//            $festival['registrations_copy'] = '';
-            if( isset($rc['registrations']) ) {
-                $festival['registrations'] = $rc['registrations'];
-                $festival['nplists']['registrations'] = array();
-                $total = 0;
-//                $festival['registrations_copy'] = "<table cellpadding=2 cellspacing=0>";
-                foreach($festival['registrations'] as $rid => $registration) {
-                    $festival['nplists']['registrations'][] = $registration['id'];
-                    $festival['registrations'][$rid]['titles'] = '';
-                    $festival['registrations'][$rid]['titles'] = '';
-                    for($i = 1; $i <= 8; $i++) {
-                        if( $registration["title{$i}"] != '' ) {
-                            $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
-                            if( $rc['stat'] == 'ok' ) {
-                                $festival['registrations'][$rid]["title{$i}"] = $rc['title'];
-                                $registration["title{$i}"] = $rc['title'];
-                                $festival['registrations'][$rid]['titles'] .= ($festival['registrations'][$rid]['titles'] != '' ? '<br/>' : '') . $rc['title'];
-                            }
-                        }
-                        unset($festival['registrations'][$rid]["movements{$i}"]);
-                        unset($festival['registrations'][$rid]["composer{$i}"]);
-                        if( $i > $registration['max_titles'] ) {
-                            unset($festival['registrations'][$rid]["title{$i}"]);
-                            unset($festival['registrations'][$rid]["perf_time{$i}"]);
-                            unset($festival['registrations'][$rid]["music_orgfilename{$i}"]);
-                            unset($festival['registrations'][$rid]["video_url{$i}"]);
-                        }
-                    } 
-//                    $festival['registrations_copy'] .= '<tr><td>' . $registration['class_code'] . '</td><td>' . $registration['title1'] . '</td><td>' . $registration['perf_time1'] . "</td></tr>\n";
+                if( isset($args['section_id']) && $args['section_id'] > 0 ) {
+                    if( isset($args['class_id']) && $args['class_id'] > 0 ) {
+                        $strsql .= "AND class_id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' ";
+                    }
+                    $strsql .= "AND categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' ";
+                } elseif( isset($args['registration_status']) && $args['registration_status'] != '' ) {
+                    $strsql .= "AND registrations.status = '" . ciniki_core_dbQuote($ciniki, $args['registration_status']) . "' ";
+/*                } elseif( isset($args['colour']) && $args['colour'] != '' ) {
+                    if( $args['colour'] == 'White' ) {
+                        $strsql .= "AND (registrations.flags&0xFF00) = 0 ";
+                    } elseif( $args['colour'] == 'Grey' ) {
+                        $strsql .= "AND (registrations.flags&0x0100) = 0x0100 ";
+                    } elseif( $args['colour'] == 'Teal' ) {
+                        $strsql .= "AND (registrations.flags&0x0200) = 0x0200 ";
+                    } elseif( $args['colour'] == 'Blue' ) {
+                        $strsql .= "AND (registrations.flags&0x0400) = 0x0400 ";
+                    } elseif( $args['colour'] == 'Purple' ) {
+                        $strsql .= "AND (registrations.flags&0x0800) = 0x0800 ";
+                    } elseif( $args['colour'] == 'Red' ) {
+                        $strsql .= "AND (registrations.flags&0x1000) = 0x1000 ";
+                    } elseif( $args['colour'] == 'Orange' ) {
+                        $strsql .= "AND (registrations.flags&0x2000) = 0x2000 ";
+                    } elseif( $args['colour'] == 'Yellow' ) {
+                        $strsql .= "AND (registrations.flags&0x4000) = 0x4000 ";
+                    } elseif( $args['colour'] == 'Green' ) {
+                        $strsql .= "AND (registrations.flags&0x8000) = 0x8000 ";
+                    } */
+                } elseif( isset($args['member_id']) && $args['member_id'] > 0 ) {
+                    $strsql .= "AND registrations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' "
+                        . "ORDER BY registrations.date_added DESC "
+                        . "";
+                } elseif( isset($args['teacher_customer_id']) && $args['teacher_customer_id'] > 0 ) {
+                    $strsql .= "AND registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' ";
+                } elseif( isset($args['accompanist_customer_id']) && $args['accompanist_customer_id'] > 0 ) {
+                    $strsql .= "AND registrations.accompanist_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['accompanist_customer_id']) . "' ";
                 }
-//                $festival['registrations_copy'] .= "</table>";
-            } else {
-                $festival['registrations'] = array();
-                $festival['nplists']['registrations'] = array();
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'registrations', 'fname'=>'id', 
+                        'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 
+                            'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 'invoice_date', 
+                            'class_id', 'class_code', 'class_name', 'class_flags', 'min_titles', 'max_titles',
+                            'fee', 'participation', 'flags',
+                            'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
+                            'title2', 'composer2', 'movements2', 'perf_time2', 'video_url2', 'music_orgfilename2',
+                            'title3', 'composer3', 'movements3', 'perf_time3', 'video_url3', 'music_orgfilename3',
+                            'title4', 'composer4', 'movements4', 'perf_time4', 'video_url4', 'music_orgfilename4',
+                            'title5', 'composer5', 'movements5', 'perf_time5', 'video_url5', 'music_orgfilename5',
+                            'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
+                            'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
+                            'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
+                            ),
+                        'maps'=>array(
+                            'rtype_text'=>$maps['registration']['rtype'],
+                            'status_text'=>$maps['registration']['status'],
+                            ),
+                        ),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+    //            $festival['registrations_copy'] = '';
+                if( isset($rc['registrations']) ) {
+                    $festival['registrations'] = $rc['registrations'];
+                    $festival['nplists']['registrations'] = array();
+                    $total = 0;
+    //                $festival['registrations_copy'] = "<table cellpadding=2 cellspacing=0>";
+                    foreach($festival['registrations'] as $rid => $registration) {
+                        $festival['nplists']['registrations'][] = $registration['id'];
+                        $festival['registrations'][$rid]['titles'] = '';
+                        $festival['registrations'][$rid]['titles'] = '';
+                        for($i = 1; $i <= 8; $i++) {
+                            if( $registration["title{$i}"] != '' ) {
+                                $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
+                                if( $rc['stat'] == 'ok' ) {
+                                    $festival['registrations'][$rid]["title{$i}"] = $rc['title'];
+                                    $registration["title{$i}"] = $rc['title'];
+                                    $festival['registrations'][$rid]['titles'] .= ($festival['registrations'][$rid]['titles'] != '' ? '<br/>' : '') . $rc['title'];
+                                }
+                            }
+                            unset($festival['registrations'][$rid]["movements{$i}"]);
+                            unset($festival['registrations'][$rid]["composer{$i}"]);
+                            if( $i > $registration['max_titles'] ) {
+                                unset($festival['registrations'][$rid]["title{$i}"]);
+                                unset($festival['registrations'][$rid]["perf_time{$i}"]);
+                                unset($festival['registrations'][$rid]["music_orgfilename{$i}"]);
+                                unset($festival['registrations'][$rid]["video_url{$i}"]);
+                            }
+                        } 
+    //                    $festival['registrations_copy'] .= '<tr><td>' . $registration['class_code'] . '</td><td>' . $registration['title1'] . '</td><td>' . $registration['perf_time1'] . "</td></tr>\n";
+                    }
+    //                $festival['registrations_copy'] .= "</table>";
+                } else {
+                    $festival['registrations'] = array();
+                    $festival['nplists']['registrations'] = array();
+                }
             }
 
         }

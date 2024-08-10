@@ -123,7 +123,6 @@ function ciniki_musicfestivals_templates_parentRegistrationsPDF(&$ciniki, $tnid,
             . "registrations.movements8, "
             . "registrations.perf_time8, "
             . "registrations.fee, "
-            . "registrations.payment_type, "
             . "registrations.notes, "
             . "sections.name AS section_name, "
             . "categories.name AS category_name, "
@@ -168,7 +167,7 @@ function ciniki_musicfestivals_templates_parentRegistrationsPDF(&$ciniki, $tnid,
                     'title6', 'composer6', 'movements6', 'perf_time6', 
                     'title7', 'composer7', 'movements7', 'perf_time7', 
                     'title8', 'composer8', 'movements8', 'perf_time8', 
-                    'fee', 'payment_type', 'notes',
+                    'fee', 'notes',
                     'section_name', 'category_name',
                     'class_code', 'class_name', 'class_flags'),
                 'maps'=>array('status_text'=>$maps['registration']['status']),

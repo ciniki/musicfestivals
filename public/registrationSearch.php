@@ -69,7 +69,6 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         . "classes.code AS class_code, "
         . "classes.name AS class_name, "
         . "FORMAT(registrations.fee, 2) AS fee, "
-        . "registrations.payment_type, "
         . "registrations.participation, "
         . "registrations.title1, "
         . "registrations.title2, "
@@ -164,7 +163,7 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
             'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 'rtype', 'rtype_text', 
                 'status', 'status_text', 'invoice_id', 'display_name', 
                 'class_id', 'class_code', 'class_name', 
-                'fee', 'payment_type', 'participation', 
+                'fee', 'participation', 
                 'title1', 'composer1', 'movements1', 'video_url1', 'music_orgfilename1',
                 'title2', 'composer2', 'movements2', 'video_url2', 'music_orgfilename2',
                 'title3', 'composer3', 'movements3', 'video_url3', 'music_orgfilename3',
@@ -177,7 +176,6 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
             'maps'=>array(
                 'rtype_text'=>$maps['registration']['rtype'],
                 'status_text'=>$maps['registration']['status'],
-                'payment_type'=>$maps['registration']['payment_type'],
                 ),
             ),
         ));

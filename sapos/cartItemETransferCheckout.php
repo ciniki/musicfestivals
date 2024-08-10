@@ -24,7 +24,7 @@ function ciniki_musicfestivals_sapos_cartItemETransferCheckout($ciniki, $tnid, $
         //
         // Get the current details for the registration
         //
-        $strsql = "SELECT status, payment_type, invoice_id "
+        $strsql = "SELECT status, invoice_id "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
             . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -42,12 +42,6 @@ function ciniki_musicfestivals_sapos_cartItemETransferCheckout($ciniki, $tnid, $
         // Change the status to paid
         //
         $update_args = array();
-        if( $item['status'] != 7 ) {
-            $update_args['status'] = 7;
-        }
-        if( $item['payment_type'] != 110 ) {
-            $update_args['payment_type'] = 110;
-        }
         if( $item['invoice_id'] != $args['invoice_id'] ) {
             $update_args['invoice_id'] = $args['invoice_id'];
         }

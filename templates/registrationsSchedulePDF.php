@@ -126,7 +126,6 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
             . "registrations.perf_time8, "
             . "registrations.participation, "
             . "registrations.fee, "
-            . "registrations.payment_type, "
             . "registrations.notes, "
             . "sections.name AS section_name, "
             . "categories.name AS category_name, "
@@ -225,7 +224,7 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
                     'title6', 'composer6', 'movements6', 'perf_time6', 
                     'title7', 'composer7', 'movements7', 'perf_time7', 
                     'title8', 'composer8', 'movements8', 'perf_time8', 
-                    'participation', 'fee', 'payment_type', 'notes',
+                    'participation', 'fee', 'notes',
                     'section_name', 'category_name',
                     'class_code', 'class_name', 'class_flags',
                     'slot_time_text', 'section_flags', 'division_date_text', 'location_name', 'location_address', 'location_city',

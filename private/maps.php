@@ -12,10 +12,11 @@
 //
 function ciniki_musicfestivals_maps($ciniki) {
     $maps = array();
-    $maps['festival'] = array('status'=>array(
-        '10'=>'Active',
-        '30'=>'Current',
-        '60'=>'Archived',
+    $maps['festival'] = array(
+        'status'=>array(
+            '10'=>'Active',
+            '30'=>'Current',
+            '60'=>'Archived',
         ));
     $maps['registration'] = array(
         'rtype'=>array(
@@ -25,23 +26,22 @@ function ciniki_musicfestivals_maps($ciniki) {
             '90'=>'Ensemble',
         ),
         'status'=>array(
-            '5'=>'Unpaid',
-            '6'=>'Cart',
-            '7'=>'E-Transfer Required',
-            '10'=>'Applied',
-            '50'=>'Paid',
-            '60'=>'Cancelled',
-        ),
-        'payment_type'=>array(
-            '10'=>'Paypal',
-            '20'=>'Square',
-            '50'=>'Visa',
-            '55'=>'Mastercard',
-            '100'=>'Cash',
-            '102'=>'Cheque',
-            '110'=>'Email',
-            '120'=>'Other',
-            '121'=>'Online',
+            '5'=>'Draft',
+            '10'=>'Registered',
+            '31'=>'Other',
+            '32'=>'Other',
+            '33'=>'Other',
+            '34'=>'Other',
+            '35'=>'Other',
+            '36'=>'Other',
+            '37'=>'Other',
+            '38'=>'Other',
+            '50'=>'Approved',
+            '51'=>'Approved',
+            '52'=>'Approved',
+            '53'=>'Approved',
+            '70'=>'Disqualified',
+            '80'=>'Cancelled',
         ),
         'participation'=>array(
             '0' => 'Live',

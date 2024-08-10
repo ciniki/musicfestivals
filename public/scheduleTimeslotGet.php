@@ -65,8 +65,8 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
     //
     // Load maps
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'maps');
-    $rc = ciniki_musicfestivals_maps($ciniki);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalMaps');
+    $rc = ciniki_musicfestivals_festivalMaps($ciniki, $args['tnid'], $args['festival_id']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -138,6 +138,8 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         $strsql = "SELECT registrations.id, "
             . "registrations.display_name, "
             . "registrations.flags, "
+            . "registrations.status, "
+            . "registrations.status AS status_text, "
             . "registrations.participation, "
             . "registrations.title1, "
             . "registrations.title2, "
@@ -178,7 +180,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i') AS timeslot_time, ";
             $strsql .= "registrations.timeslot_sequence, ";
         }
-        $strsql .= "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS status_text, "
+        $strsql .= "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS invoice_status_text, "
             . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
             . "IFNULL(members.name, '') AS member_name, "
             . "classes.code AS class_code, "
@@ -225,17 +227,18 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
                 'fields'=>array('id', 'display_name', 'timeslot_time', 'timeslot_sequence', 
-                    'flags', 'accompanist_name', 'member_name', 
+                    'flags', 'status', 'status_text', 'accompanist_name', 'member_name', 
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
                     'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
                     'class_code', 'class_name', 'category_name', 'section_name', 
-                    'participation', 'status_text', 
+                    'participation', 'invoice_status_text', 
                     ),
                 'maps'=>array(
                     'participation'=>$maps['registration']['participation'],
-                    'status_text'=>$sapos_maps['invoice']['typestatus'],
+                    'status_text'=>$maps['registration']['status'],
+                    'invoice_status_text'=>$sapos_maps['invoice']['typestatus'],
                     ),
                 ),
             ));
@@ -405,6 +408,8 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         $strsql = "SELECT registrations.id, "
             . "registrations.display_name, "
             . "registrations.flags, "
+            . "registrations.status, "
+            . "registrations.status AS status_text, "
             . "registrations.title1, "
             . "registrations.title2, "
             . "registrations.title3, "
@@ -438,7 +443,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "registrations.perf_time7, "
             . "registrations.perf_time8, "
             . "registrations.participation, "
-            . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS status_text, "
+            . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS invoice_status_text, "
             . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
             . "IFNULL(members.name, '') AS member_name, "
             . "classes.code AS class_code, "
@@ -487,16 +492,17 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'flags', 'accompanist_name', 'member_name', 
+                'fields'=>array('id', 'display_name', 'flags', 'status', 'status_text', 'accompanist_name', 'member_name', 
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
                     'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
-                    'class_code', 'class_name', 'category_name', 'section_name', 'participation', 'status_text',
+                    'class_code', 'class_name', 'category_name', 'section_name', 'participation', 'invoice_status_text',
                     ),
                 'maps'=>array(
                     'participation'=>$maps['registration']['participation'],
-                    'status_text'=>$sapos_maps['invoice']['typestatus'],
+                    'status_text'=>$maps['registration']['status'],
+                    'invoice_status_text'=>$sapos_maps['invoice']['typestatus'],
                     ),
                 ),
             ));
@@ -512,6 +518,8 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         $strsql = "SELECT registrations.id, "
             . "registrations.display_name, "
             . "registrations.flags, "
+            . "registrations.status, "
+            . "registrations.status AS status_text, "
             . "registrations.title1, "
             . "registrations.title2, "
             . "registrations.title3, "
@@ -545,7 +553,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "registrations.perf_time7, "
             . "registrations.perf_time8, "
             . "registrations.participation, "
-            . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS status_text, "
+            . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS invoice_status_text, "
             . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
             . "IFNULL(members.name, '') AS member_name, "
             . "classes.code AS class_code, "
@@ -590,16 +598,17 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'flags', 'accompanist_name', 'member_name', 
+                'fields'=>array('id', 'display_name', 'flags', 'status', 'status_text', 'accompanist_name', 'member_name', 
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
                     'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
-                    'class_code', 'class_name', 'category_name', 'section_name', 'participation', 'status_text',
+                    'class_code', 'class_name', 'category_name', 'section_name', 'participation', 'invoice_status_text',
                     ),
                 'maps'=>array(
                     'participation'=>$maps['registration']['participation'],
-                    'status_text'=>$sapos_maps['invoice']['typestatus'],
+                    'status_text'=>$maps['registration']['status'],
+                    'invoice_status_text'=>$sapos_maps['invoice']['typestatus'],
                     ),
                 ),
             ));

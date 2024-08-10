@@ -127,6 +127,7 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
             $strsql = "SELECT registrations.id, "
                 . "registrations.display_name, "
                 . "registrations.flags, "
+                . "registrations.status, "
                 . "registrations.participation, "
                 . "registrations.title1, "
                 . "registrations.title2, "
@@ -210,7 +211,7 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'registrations', 'fname'=>'id', 
                     'fields'=>array('id', 'display_name', 'timeslot_id', 'timeslot_time', 'timeslot_sequence', 
-                        'flags', 'accompanist_name', 'member_name', 
+                        'flags', 'status', 'accompanist_name', 'member_name', 
                         'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                         'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                         'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
@@ -313,6 +314,7 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
         $strsql = "SELECT registrations.id, "
             . "registrations.display_name, "
             . "registrations.flags, "
+            . "registrations.status, "
             . "registrations.title1, "
             . "registrations.title2, "
             . "registrations.title3, "
@@ -403,7 +405,7 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'flags', 'accompanist_name', 'member_name', 
+                'fields'=>array('id', 'display_name', 'flags', 'status', 'accompanist_name', 'member_name', 
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',

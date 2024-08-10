@@ -219,8 +219,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
             . "registrations.perf_time2, "
             . "registrations.title3, "
             . "registrations.perf_time3, "
-            . "FORMAT(registrations.fee, 2) AS fee, "
-            . "registrations.payment_type "
+            . "FORMAT(registrations.fee, 2) AS fee "
             . "FROM ciniki_musicfestival_registrations AS registrations "
             . "LEFT JOIN ciniki_customers AS teachers ON ("
                 . "registrations.teacher_customer_id = teachers.id "
@@ -248,12 +247,11 @@ function ciniki_musicfestivals_classGet($ciniki) {
                 'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 
                     'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
                     'class_id', 'class_code', 'class_name', 
-                    'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 'fee', 'payment_type',
+                    'title1', 'perf_time1', 'title2', 'perf_time2', 'title3', 'perf_time3', 'fee',
                     ),
                 'maps'=>array(
                     'rtype_text'=>$maps['registration']['rtype'],
                     'status_text'=>$maps['registration']['status'],
-                    'payment_type'=>$maps['registration']['payment_type'],
                     ),
                 ),
             ));

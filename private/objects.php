@@ -293,7 +293,6 @@ function ciniki_musicfestivals_objects($ciniki) {
             'movements8'=>array('name'=>'8th Movements', 'default'=>''),
             'perf_time8'=>array('name'=>'8th Performance Time', 'default'=>''),
             'fee'=>array('name'=>'Fee', 'type'=>'currency', 'default'=>'0'),
-            'payment_type'=>array('name'=>'Payment Type', 'default'=>'0'),
             'participation'=>array('name'=>'Virtual Submission', 'default'=>'0'),
             'video_url1'=>array('name'=>'Video Link 1', 'default'=>''),
             'video_url2'=>array('name'=>'Video Link 2', 'default'=>''),

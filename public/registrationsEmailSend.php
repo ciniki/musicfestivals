@@ -86,8 +86,7 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
         . "registrations.perf_time7, "
         . "registrations.perf_time8, "
         . "IF(registrations.participation = 1, 'Virtual', 'In Person') AS participation, "
-        . "FORMAT(registrations.fee, 2) AS fee, "
-        . "registrations.payment_type "
+        . "FORMAT(registrations.fee, 2) AS fee "
         . "FROM ciniki_musicfestival_registrations AS registrations "
         . "LEFT JOIN ciniki_customers AS teachers ON ("
             . "registrations.teacher_customer_id = teachers.id "
@@ -118,7 +117,7 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                 'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
                 'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
-                'fee', 'payment_type', 'participation'),
+                'fee', 'participation'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {

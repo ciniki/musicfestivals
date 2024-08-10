@@ -33,7 +33,6 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $tnid, $registra
         . "registrations.competitor5_id, "
         . "registrations.class_id, "
         . "FORMAT(registrations.fee, 2) AS fee, "
-        . "registrations.payment_type, "
         . "registrations.notes, "
         . "competitors.id AS competitor_id, "
         . "competitors.name AS competitor_name, "

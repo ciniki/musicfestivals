@@ -41,10 +41,10 @@ function ciniki_musicfestivals_sapos_itemPaymentReceived($ciniki, $tnid, $args) 
         //
         // Change the status to paid
         //
-        if( $item['status'] != 50 ) {
+        if( $item['status'] < 10 ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
             $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $args['object_id'], array(
-                'status'=>50,
+                'status' => 10, // Registered Status
                 ));
             if( $rc['stat'] != 'ok' ) {
                 error_log("ERR: Unable to process payment for registration: {$item['id']}");
