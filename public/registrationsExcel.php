@@ -80,6 +80,16 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
     }
 
     //
+    // Load maps
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalMaps');
+    $rc = ciniki_musicfestivals_festivalMaps($ciniki, $args['tnid'], $festival);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $maps = $rc['maps'];
+
+    //
     // Load registrations
     //
     $strsql = "SELECT sections.id AS section_id, "
@@ -92,6 +102,8 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         . "registrations.display_name, "
         . "registrations.fee AS reg_fee, "
         . "registrations.flags, "
+        . "registrations.status, "
+        . "registrations.status AS status_text, "
         . "registrations.title1, "
         . "registrations.composer1, "
         . "registrations.movements1, "
@@ -214,8 +226,11 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'participation', 'notes'=>'reg_notes', 'flags',
+                    'participation', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
                     'mark', 'placement', 'level', 
+                    ),
+                'maps'=>array(
+                    'status_text'=>$maps['registration']['status'],
                     ),
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
@@ -282,8 +297,11 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'participation', 'notes'=>'reg_notes', 'flags',
+                    'participation', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
                     'mark', 'placement', 'level',
+                    ),
+                'maps'=>array(
+                    'status_text'=>$maps['registration']['status'],
                     ),
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
@@ -366,8 +384,11 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'participation', 'notes'=>'reg_notes', 'flags',
+                    'participation', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
                     'mark', 'placement', 'level',
+                    ),
+                'maps'=>array(
+                    'status_text'=>$maps['registration']['status'],
                     ),
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
@@ -453,8 +474,11 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'participation', 'notes'=>'reg_notes', 'flags',
+                    'participation', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
                     'mark', 'placement', 'level',
+                    ),
+                'maps'=>array(
+                    'status_text'=>$maps['registration']['status'],
                     ),
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
@@ -527,7 +551,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         if( isset($args['class_id']) && $args['class_id'] > 0 ) {
             $strsql .= "AND classes.id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' ";
         }
-        $strsql .= "ORDER BY sections.id, registrations.id "
+        $strsql .= "ORDER BY sections.id, classes.code, registrations.id "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -543,8 +567,11 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'participation', 'notes'=>'reg_notes', 'flags',
+                    'participation', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
                     'mark', 'placement', 'level',
+                    ),
+                'maps'=>array(
+                    'status_text'=>$maps['registration']['status'],
                     ),
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
@@ -629,6 +656,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         if( ($festival['flags']&0x02) == 0x02 ) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Virtual', false);
         }
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Status', false);
         if( isset($festival['comments-mark-ui']) && $festival['comments-mark-ui'] == 'yes' ) {
             if( isset($festival['comments-mark-label']) && $festival['comments-mark-label'] != '' ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['comments-mark-label'], false);
@@ -831,6 +859,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             if( ($festival['flags']&0x02) == 0x02 ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, ($registration['participation'] == 1 ? 'Virtual' : 'In Person'), false);
             }
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['status_text'], false);
             if( isset($festival['comments-mark-ui']) && $festival['comments-mark-ui'] == 'yes' ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['mark'], false);
             }
@@ -876,7 +905,13 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             }
 
             $color = '';
-            if( ($registration['flags']&0x0100) == 0x0100 ) {
+            if( isset($festival["registration-status-{$registration['status']}-colour"]) 
+                && $festival["registration-status-{$registration['status']}-colour"] != ''
+                && $festival["registration-status-{$registration['status']}-colour"] != '#FFFFFF'
+                ) {
+                $color = substr($festival["registration-status-{$registration['status']}-colour"], 1);
+            }
+/*            if( ($registration['flags']&0x0100) == 0x0100 ) {
                 $color = 'EEEEEE';  // grey
             } else if( ($registration['flags']&0x0200) == 0x0200 ) {
                 $color = 'CEFFF8';  // teal
@@ -892,7 +927,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 $color = 'FFFDC5';  // Yellow
             } elseif( ($registration['flags']&0x8000) == 0x8000 ) {
                 $color = 'DDFFDD';  // Green
-            }
+            } */
             if( $color != '' ) {
                 $objPHPExcelWorksheet->getStyle("A{$row}:AG{$row}")->applyFromArray(
                     array('fill'=>array(
