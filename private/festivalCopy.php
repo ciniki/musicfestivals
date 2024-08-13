@@ -158,6 +158,8 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
         . "s.primary_image_id AS si, "
         . "s.synopsis AS ss, "
         . "s.description AS sd, "
+        . "s.live_description AS sld, "
+        . "s.virtual_description AS svd, "
         . "c.id AS cid, "
         . "c.name AS cn, "
         . "c.permalink AS cp, "
@@ -204,7 +206,7 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'sid',
-            'fields'=>array('name'=>'sn', 'permalink'=>'sp', 'sequence'=>'so', 'flags'=>'sf', 'primary_image_id'=>'si', 'synopsis'=>'ss', 'description'=>'sd')),
+            'fields'=>array('name'=>'sn', 'permalink'=>'sp', 'sequence'=>'so', 'flags'=>'sf', 'primary_image_id'=>'si', 'synopsis'=>'ss', 'description'=>'sd', 'live_description'=>'sld', 'virtual_descrsiption'=>'svd')),
         array('container'=>'categories', 'fname'=>'cid',
             'fields'=>array('name'=>'cn', 'permalink'=>'cp', 'sequence'=>'co', 'groupname', 'primary_image_id'=>'ci', 'synopsis'=>'cs', 'description'=>'cd')),
         array('container'=>'classes', 'fname'=>'iid',

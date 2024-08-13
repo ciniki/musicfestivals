@@ -1179,7 +1179,7 @@ function ciniki_musicfestivals_main() {
         'emails_html':{'label':'Emails', 'type':'html', 
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'emails'); },
             },
-        'sponsors':{'label':'', 'type':'simplegrid', 'num_cols':2,
+        'sponsors':{'label':'Sponsors', 'type':'simplegrid', 'num_cols':2,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'sponsors'); },
             'headerValues':['Name', 'Tags'],
             'menu':{
