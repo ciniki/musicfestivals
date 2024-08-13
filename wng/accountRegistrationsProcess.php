@@ -730,22 +730,24 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     //
     // Get the payment status for the invoice 
     //
-    $registration['payment_status'] = 0;
-    if( $registration['invoice_id'] > 0 ) {
-        $strsql = "SELECT invoices.payment_status "
-            . "FROM ciniki_sapos_invoices AS invoices "
-            . "WHERE invoices.id = '" . ciniki_core_dbQuote($ciniki, $registration['invoice_id']) . "' "
-            . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "";
-        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'invoice');
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.807', 'msg'=>'Unable to load invoice', 'err'=>$rc['err']));
+    if( isset($registration) ) {
+        $registration['payment_status'] = 0;
+        if( $registration['invoice_id'] > 0 ) {
+            $strsql = "SELECT invoices.payment_status "
+                . "FROM ciniki_sapos_invoices AS invoices "
+                . "WHERE invoices.id = '" . ciniki_core_dbQuote($ciniki, $registration['invoice_id']) . "' "
+                . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'invoice');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.807', 'msg'=>'Unable to load invoice', 'err'=>$rc['err']));
+            }
+            if( !isset($rc['invoice']) ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.808', 'msg'=>'Unable to find requested invoice'));
+            }
+            $invoice = $rc['invoice'];
+            $registration['payment_status'] = $invoice['payment_status'];
         }
-        if( !isset($rc['invoice']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.808', 'msg'=>'Unable to find requested invoice'));
-        }
-        $invoice = $rc['invoice'];
-        $registration['payment_status'] = $invoice['payment_status'];
     }
 
     //

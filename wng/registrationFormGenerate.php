@@ -487,7 +487,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     //
     for($i = 1; $i <= 4; $i++) {
         $required = 'no';
-        if( $i <= $selected_class['max_competitors'] ) {
+        if( isset($selected_class) && $i <= $selected_class['max_competitors'] ) {
             $class = '';
             if( $i <= $selected_class['min_competitors'] ) {
                 $required = 'yes';
@@ -496,7 +496,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             $class = 'hidden';
         }
         $prefix = '';
-        if( $i == 1 && $selected_class['max_competitors'] > 1 ) {
+        if( $i == 1 && isset($selected_class) && $selected_class['max_competitors'] > 1 ) {
             $prefix = '1st ';
         } elseif( $i == 2 ) {
             $prefix = '2nd ';
@@ -505,7 +505,11 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         } elseif( $i == 4 ) {
             $prefix = '4th ';
         }
-        $label = $prefix . (($selected_class['flags']&0x8000) == 0x8000 ? 'Group/Ensemble' : 'Competitor');
+        if( isset($selected_class) ) {
+            $label = $prefix . (($selected_class['flags']&0x8000) == 0x8000 ? 'Group/Ensemble' : 'Competitor');
+        } else {
+            $label = 'Competitor';
+        }
         $comp_id = isset($_POST["f-competitor{$i}_id"]) && ($_POST["f-competitor{$i}_id"] == '' || $_POST["f-competitor{$i}_id"] > -1) ? $_POST["f-competitor{$i}_id"] : (isset($registration["competitor{$i}_id"]) ? $registration["competitor{$i}_id"] : 0);
         $fields["competitor{$i}_id"] = array(
             'id' => "competitor{$i}_id",
@@ -858,7 +862,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'error_label' => "{$prefix} " . (isset($festival['registration-movements-label']) && $festival['registration-movements-label'] != '' ? $festival['registration-movements-label'] : "Movements/Musical"),
             'value' => isset($_POST["f-movements{$i}"]) ? $_POST["f-movements{$i}"] : (isset($registration["movements{$i}"]) ? $registration["movements{$i}"] : ''),
             );
-        if( ($selected_class['flags']&0x0C000000) == 0 ) {
+        if( !isset($selected_class) || ($selected_class['flags']&0x0C000000) == 0 ) {
             $fields["movements{$i}"]['required'] = 'no';
             $fields["movements{$i}"]['class'] = 'hidden';
         }
@@ -877,7 +881,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'error_label' => "{$prefix} " . (isset($festival['registration-composer-label']) && $festival['registration-composer-label'] != '' ? $festival['registration-composer-label'] : "Composer"),
             'value' => isset($_POST["f-composer{$i}"]) ? $_POST["f-composer{$i}"] : (isset($registration["composer{$i}"]) ? $registration["composer{$i}"] : ''),
             );
-        if( ($selected_class['flags']&0x30000000) == 0 ) {
+        if( !isset($selected_class) || ($selected_class['flags']&0x30000000) == 0 ) {
             $fields["composer{$i}"]['required'] = 'no';
             $fields["composer{$i}"]['class'] = 'hidden';
         }
