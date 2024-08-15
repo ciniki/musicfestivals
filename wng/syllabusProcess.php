@@ -139,7 +139,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
         $strsql .= "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' ";
+            . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' ";
         if( isset($section['syllabus']) ) {
             $strsql .= "AND sections.syllabus = '" . ciniki_core_dbQuote($ciniki, $section['syllabus']) . "' ";
         }
@@ -159,7 +159,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
                 . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' ";
+            . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' ";
         if( isset($section['syllabus']) ) {
             $strsql .= "AND sections.syllabus = '" . ciniki_core_dbQuote($ciniki, $section['syllabus']) . "' ";
         }
@@ -175,7 +175,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
             . "'' AS groupname "
             . "FROM ciniki_musicfestival_sections AS sections "
             . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' ";
+            . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' ";
         if( isset($section['syllabus']) ) {
             $strsql .= "AND sections.syllabus = '" . ciniki_core_dbQuote($ciniki, $section['syllabus']) . "' ";
         }
@@ -226,11 +226,13 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
         $groupname = urldecode($request['uri_split'][($request['cur_uri_pos']+1)]);
         if( $groupname == 'Other' || $groupname == 'other' ) {
             $section['groupname'] = '';
+            $section['festival_id'] = $festival['id'];
             ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'syllabusSectionProcess');
             return ciniki_musicfestivals_wng_syllabusSectionProcess($ciniki, $tnid, $request, $section);
         }
         elseif( isset($sections[$request['uri_split'][$request['cur_uri_pos']]]['groups'][$groupname]) ) {
             $section['groupname'] = $groupname;
+            $section['festival_id'] = $festival['id'];
             ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'syllabusSectionProcess');
             return ciniki_musicfestivals_wng_syllabusSectionProcess($ciniki, $tnid, $request, $section);
         } else {
@@ -250,6 +252,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
         ) {
         $request['cur_uri_pos']++;
         if( isset($sections[$request['uri_split'][$request['cur_uri_pos']]]) ) {
+            $section['festival_id'] = $festival['id'];
             ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'syllabusSectionProcess');
             return ciniki_musicfestivals_wng_syllabusSectionProcess($ciniki, $tnid, $request, $section);
         } else {

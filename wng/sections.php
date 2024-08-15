@@ -33,7 +33,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'festivals', 'fname'=>'id', 'fields'=>array('id', 'name')),
+        array('container'=>'festivals', 'fname'=>'id', 'fields'=>array('id', 'name', 'flags')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.351', 'msg'=>'Unable to load festivals', 'err'=>$rc['err']));

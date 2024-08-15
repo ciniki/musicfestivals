@@ -40,7 +40,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     //
     // Make sure a festival was specified
     //
-    if( !isset($s['festival-id']) || $s['festival-id'] == '' || $s['festival-id'] == 0 ) {
+    if( !isset($section['festival_id']) || $section['festival_id'] == '' || $section['festival_id'] == 0 ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.247', 'msg'=>"No festival specified"));
     }
 
@@ -82,7 +82,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     // Get the music festival details
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'festivalLoad');
-    $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $s['festival-id']);
+    $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $section['festival_id']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -113,7 +113,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         . "sections.virtual_end_dt "
         . "FROM ciniki_musicfestival_sections AS sections "
         . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
+        . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
         . "AND sections.permalink = '" . ciniki_core_dbQuote($ciniki, $section_permalink) . "' "
         . "ORDER BY sections.sequence, sections.name "
         . "";
@@ -163,7 +163,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         // Download the syllabus section pdf
         //
         $pdf_args = array(
-            'festival_id' => $s['festival-id'],
+            'festival_id' => $festival['id'],
             'section_id' => $section['id'],
             'live-virtual' => isset($s['display-live-virtual']) ? $s['display-live-virtual'] : '',
             );
