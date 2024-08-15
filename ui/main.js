@@ -2567,7 +2567,13 @@ function ciniki_musicfestivals_main() {
         this.open(cb,fid,list);
     }
     this.festival.open = function(cb, fid, list) {
-        if( fid != null ) { this.festival_id = fid; }
+        if( fid != null ) { 
+            if( this.festival_id != fid ) {
+                this.section_id = -1;
+                this.sections.syllabi_tabs.selected = null;
+            }
+            this.festival_id = fid; 
+        }
         var args = {'tnid':M.curTenantID, 'festival_id':this.festival_id};
         this.size = 'xlarge narrowaside';
         if( this.menutabs.selected == 'syllabus' ) {
@@ -5507,7 +5513,7 @@ function ciniki_musicfestivals_main() {
     }
     this.registration.prevButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.registration_id) > 0 ) {
-            return 'M.ciniki_musicfestivals_main.registration.save(\'M.ciniki_musicfestivals_main.registration_id.open(null,' + this.nplist[this.nplist.indexOf('' + this.registration_id) - 1] + ');\');';
+            return 'M.ciniki_musicfestivals_main.registration.save(\'M.ciniki_musicfestivals_main.registration.open(null,' + this.nplist[this.nplist.indexOf('' + this.registration_id) - 1] + ');\');';
         }
         return null;
     }

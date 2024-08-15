@@ -1138,11 +1138,11 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
     //            $festival['registrations_copy'] = '';
                 if( isset($rc['registrations']) ) {
                     $festival['registrations'] = $rc['registrations'];
-                    $festival['nplists']['registrations'] = array();
+                    $nplists['registrations'] = array();
                     $total = 0;
     //                $festival['registrations_copy'] = "<table cellpadding=2 cellspacing=0>";
                     foreach($festival['registrations'] as $rid => $registration) {
-                        $festival['nplists']['registrations'][] = $registration['id'];
+                        $nplists['registrations'][] = $registration['id'];
                         $festival['registrations'][$rid]['titles'] = '';
                         $festival['registrations'][$rid]['titles'] = '';
                         for($i = 1; $i <= 8; $i++) {
@@ -1168,7 +1168,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
     //                $festival['registrations_copy'] .= "</table>";
                 } else {
                     $festival['registrations'] = array();
-                    $festival['nplists']['registrations'] = array();
+                    $nplists['registrations'] = array();
                 }
             }
 
@@ -2440,7 +2440,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             if( isset($rc['adjudicators']) ) {
                 $festival['adjudicators'] = $rc['adjudicators'];
                 foreach($festival['adjudicators'] as $iid => $adjudicator) {
-                    $festival['nplists']['adjudicators'][] = $adjudicator['id'];
+                    $nplists['adjudicators'][] = $adjudicator['id'];
                 }
             } else {
                 $festival['adjudicators'] = array();
@@ -2473,7 +2473,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             if( isset($rc['locations']) ) {
                 $festival['locations'] = $rc['locations'];
                 foreach($festival['locations'] as $iid => $location) {
-                    $festival['nplists']['locations'][] = $location['id'];
+                    $nplists['locations'][] = $location['id'];
                 }
             } else {
                 $festival['locations'] = array();
