@@ -317,6 +317,12 @@ function ciniki_musicfestivals_main() {
         'syllabus_categories':{'label':'Categories', 'aside':'yes', 'type':'simplegrid', 'num_cols':1,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'syllabus' && M.ciniki_musicfestivals_main.festival.sections.syllabus_tabs.selected == 'categories' && M.ciniki_musicfestivals_main.festival.section_id > 0 ? 'yes' : 'no'; },
             'cellClasses':['multiline'],
+            'editFn':function(s,i,d) {
+                if( d != null && d.name != 'All' ) {
+                    return 'M.ciniki_musicfestivals_main.category.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.id + '\',M.ciniki_musicfestivals_main.festival.festival_id, M.ciniki_musicfestivals_main.festival.nplists.syllabus_categories);';
+                }
+                return '';
+                },
             },
         'syllabus_search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':5,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'syllabus' ? 'yes' : 'no'; },
