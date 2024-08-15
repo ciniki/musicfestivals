@@ -224,6 +224,7 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'syllabus' && M.ciniki_musicfestivals_main.festival.sections.syllabus_tabs.selected == 'sections' ? 'yes' : 'no'; },
             'sortable':'yes',
             'sortTypes':['text', 'number'],
+            'noData':'No Sections Added',
 //            'headerValues':['Section', 'Registrations'],
             'menu':{
                 'add':{

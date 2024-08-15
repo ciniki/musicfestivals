@@ -26,7 +26,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     //
     // Load the list of festivals in descending order
     //
-    $strsql = "SELECT id, name "
+    $strsql = "SELECT id, name, flags "
         . "FROM ciniki_musicfestivals "
         . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY start_date DESC "
@@ -39,6 +39,12 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.351', 'msg'=>'Unable to load festivals', 'err'=>$rc['err']));
     }
     $festivals = isset($rc['festivals']) ? $rc['festivals'] : array();
+    $virtual_festivals = 'no';
+    foreach($festivals as $festival) {
+        if( ($festival['flags']&0x02) == 0x02 ) {
+            $virtual_festivals = 'yes';
+        }
+    }
 
     if( isset($festivals[0]) ) {
         $festival = $festivals[0];
@@ -149,8 +155,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             ),
         );
  
-//      FIXME: Add check to see if any festivals are using virtual, then provide option
-//    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x4000) ) {
+    if( $virtual_festivals == 'yes' ) {
         $sections['ciniki.musicfestivals.syllabus']['settings']['display-live-virtual'] = array(
             'label'=>'Classes', 
             'type'=>'toggle', 'default'=>'all', 'toggles'=>array(
@@ -158,7 +163,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'live' => 'Live',
                 'virtual' => 'Virtual',
                 ));
-//    }
+    }
 
     //
     // Section to display the file download for a festival - deprecated
