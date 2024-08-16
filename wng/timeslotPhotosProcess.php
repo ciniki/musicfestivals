@@ -131,6 +131,7 @@ function ciniki_musicfestivals_wng_timeslotPhotosProcess(&$ciniki, $tnid, &$requ
         //
         $blocks[] = array(
             'type' => 'title', 
+            'level' => $section['sequence'] == 1 ? 1 : 2,
             'title' => isset($s['title']) ? $s['title'] : 'Festival Photos - ' . $selected_division['title'],
             );
         $blocks[] = array(
@@ -149,6 +150,7 @@ function ciniki_musicfestivals_wng_timeslotPhotosProcess(&$ciniki, $tnid, &$requ
         //
         $blocks[] = array(
             'type' => 'title', 
+            'level' => $section['sequence'] == 1 ? 1 : 2,
             'title' => isset($s['title']) ? $s['title'] : 'Festival Photos - ' . $selected_division['title'],
             );
         foreach($selected_division['images'] as $iid => $image) {
@@ -171,6 +173,7 @@ function ciniki_musicfestivals_wng_timeslotPhotosProcess(&$ciniki, $tnid, &$requ
         //
         $blocks[] = array(
             'type' => 'title', 
+            'level' => $section['sequence'] == 1 ? 1 : 2,
             'title' => isset($s['title']) ? $s['title'] : 'Festival Photos',
             );
         
