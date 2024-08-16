@@ -746,7 +746,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                 if( $pdf->GetY() > 70 && $pdf->GetY() > $pdf->getPageHeight() - $h - 32) {
                     $pdf->SetFont('', 'B');
                     if( $time == '' ) {
-                        $pdf->SetFont('', 'BI');
+                        $pdf->SetFont('', 'BI', '11');
                         $pdf->MultiCell(180, 0, '*** continued on next page ***', 0, 'C', 0, 0);
                         $continued = 'yes';
                     }
@@ -765,7 +765,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     $pdf->MultiCell($cw[0] + $cw[1], 0, $name, 0, 'L', 0, 1);
                 } else {
                     if( $continued == 'yes' ) {
-                        $pdf->SetFont('', 'BI', '12');
+                        $pdf->SetFont('', 'BI', '11');
                         $pdf->MultiCell(180, 0, '*** continued from previous page ***', 0, 'C', 0, 1);
                         $pdf->Ln(2);
                         $pdf->SetFont('', 'B', '14');
