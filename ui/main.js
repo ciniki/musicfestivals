@@ -3236,6 +3236,8 @@ function ciniki_musicfestivals_main() {
                 'runsheets-internal-notes':{'label':'Include Internal Admin Notes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'runsheets-registration-notes':{'label':'Include Registration Notes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'runsheets-competitor-notes':{'label':'Include Competitor Notes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'runsheets-competitor-age':{'label':'Include Competitor Age', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'runsheets-competitor-city':{'label':'Include Competitor City', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
             }},
         '_certificates_pdf':{'label':'Certificates PDF Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },

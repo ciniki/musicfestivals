@@ -282,17 +282,21 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
     //
     // Load competitor notes
     //
-    if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes' ) {
+    if( (isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes')
+        || (isset($festival['runsheets-competitor-age']) && $festival['runsheets-competitor-age'] == 'yes')
+        || (isset($festival['runsheets-competitor-city']) && $festival['runsheets-competitor-city'] == 'yes')
+        ) {
         $strsql = "SELECT competitors.id, "
+            . "competitors.age, "
+            . "competitors.city, "
             . "competitors.notes "
             . "FROM ciniki_musicfestival_competitors AS competitors "
             . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND competitors.notes <> '' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-            array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'notes')),
+            array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'age', 'city', 'notes')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.701', 'msg'=>'Unable to load cnotes', 'err'=>$rc['err']));
@@ -640,6 +644,28 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     $pdf->SetCellPadding(2);
                     // FIXME: add height of titles
                     foreach($timeslot['registrations'] as $rid => $reg) {
+                        $extra_info = '';
+                        for($i = 1; $i <= 4; $i++) {
+                            $info = '';
+                            if( isset($festival['runsheets-competitor-age']) && $festival['runsheets-competitor-age'] == 'yes'
+                                && isset($competitors[$reg["competitor{$i}_id"]]['age']) 
+                                && $competitors[$reg["competitor{$i}_id"]]['age'] != ''
+                                ) {
+                                $info .= $competitors[$reg["competitor{$i}_id"]]['age'];
+                            }
+                            if( isset($festival['runsheets-competitor-city']) && $festival['runsheets-competitor-city'] == 'yes'
+                                && isset($competitors[$reg["competitor{$i}_id"]]['city']) 
+                                && $competitors[$reg["competitor{$i}_id"]]['city'] != ''
+                                ) {
+                                $info .= ($info != '' ? '/' : '') . $competitors[$reg["competitor{$i}_id"]]['city'];
+                            }
+                            if( $info != '' ) {
+                                $extra_info .= ($extra_info != '' ? ', ' : '') . $info;
+                            }
+                        }
+                        if( $extra_info != '' ) {
+                            $timeslot['registrations'][$rid]['name'] .= ' [' . $extra_info . ']';
+                        }
                         for($i = 1; $i <= 8; $i++) {
                             if( $reg["title{$i}"] != '' ) {
                                 $timeslot['registrations'][$rid]['last_title'] = $i;
@@ -670,11 +696,13 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                             ) {
                             $notes .= ($notes != '' ? "\n" : '') . $reg['notes'];
                         }
-                        if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes'
-                            && isset($competitors[$reg['competitor1_id']]['notes']) 
-                            && $competitors[$reg['competitor1_id']]['notes'] != '' 
-                            ) {
-                            $notes .= ($notes != '' ? "\n" : '') . $competitors[$reg['competitor1_id']]['notes'];
+                        for($i = 1; $i <= 4; $i++ ) {
+                            if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes'
+                                && isset($competitors[$reg["competitor{$i}_id"]]['notes']) 
+                                && $competitors[$reg["competitor{$i}_id"]]['notes'] != '' 
+                                ) {
+                                $notes .= ($notes != '' ? "\n" : '') . $competitors[$reg["competitor{$i}_id"]]['notes'];
+                            }
                         }
                         if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes'
                             && isset($competitors[$reg['competitor2_id']]['notes']) 
@@ -713,10 +741,19 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                 } else {
                     $h += 5;
                 }
-               
+
+                $continued = 'no';
                 if( $pdf->GetY() > 70 && $pdf->GetY() > $pdf->getPageHeight() - $h - 32) {
+                    $pdf->SetFont('', 'B');
+                    if( $time == '' ) {
+                        $pdf->SetFont('', 'BI');
+                        $pdf->MultiCell(180, 0, '*** continued on next page ***', 0, 'C', 0, 0);
+                        $continued = 'yes';
+                    }
                     $pdf->AddPage();
-                    $pdf->DivisionHeader($args, $section, $division, 'yes');
+                    // Removed continued from division header so it will look better with split timeslots.
+                    //$pdf->DivisionHeader($args, $section, $division, 'yes');
+                    $pdf->DivisionHeader($args, $section, $division, 'no');
                     $pdf->SetFont('', '', '12');
                 }
 
@@ -727,6 +764,13 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     ) {
                     $pdf->MultiCell($cw[0] + $cw[1], 0, $name, 0, 'L', 0, 1);
                 } else {
+                    if( $continued == 'yes' ) {
+                        $pdf->SetFont('', 'BI', '12');
+                        $pdf->MultiCell(180, 0, '*** continued from previous page ***', 0, 'C', 0, 1);
+                        $pdf->Ln(2);
+                        $pdf->SetFont('', 'B', '14');
+                        $time = $timeslot['time'];
+                    }
                     $pdf->MultiCell($cw[0], 0, $time, 0, 'L', 0, 0);
                     $pdf->MultiCell($cw[1], 0, $name, 0, 'L', 0, 1);
                 }
@@ -771,7 +815,6 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     } else {
                         $pdf->MultiCell($w[2], 0, 'Place', 1, 'C', 1, 1);
                     }
-                    $pdf->SetFont('', '');
 
                     $pdf->SetFont('', '', '12');
                     $num = 1;
