@@ -262,8 +262,14 @@ function ciniki_musicfestivals_main() {
                     },
                 // Add set movements/composers - (none/hidden/required)
                 'download':{
-                    'label':'Download Syllabus (PDF)', 
+                    'label':'Download Complete Syllabus (PDF)', 
                     'fn':'M.ciniki_musicfestivals_main.festival.syllabusDownload();',
+                    },
+                'downloadsection':{
+//                    'label':'Download ' + M.ciniki_musicfestivals_main.festival.data.sectionsSyllabus (PDF)', 
+                    'label':'Download Section Syllabus (PDF)', 
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.section_id > 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.syllabusSectionDownload();',
                     },
                 'copy':{
                     'label':'Copy Previous Syllabus, Lists & Settings', 
@@ -2777,6 +2783,16 @@ function ciniki_musicfestivals_main() {
                         };
                 }
             }
+            // Download Section Syllabus button
+            p.sections.sections.menu.downloadsection.label = 'Download Section Syllabus (PDF)';
+            if( p.section_id > 0 && rsp.festival.sections != null ) {
+                for(var i in rsp.festival.sections) {
+                    if( rsp.festival.sections[i].id == p.section_id ) {
+                        p.sections.sections.menu.downloadsection.label = 'Download ' + rsp.festival.sections[i].name + ' Syllabus (PDF)';
+                        
+                    }
+                }
+            }
             // Registration lists
             p.sections.registration_search.livesearchcols = 5;
             p.sections.registrations.num_cols = 5;
@@ -2951,6 +2967,10 @@ function ciniki_musicfestivals_main() {
     this.festival.syllabusDownload = function() {
         this.popupMenuClose('sections');
         M.api.openPDF('ciniki.musicfestivals.festivalSyllabusPDF', {'tnid':M.curTenantID, 'festival_id':this.festival_id});
+    }
+    this.festival.syllabusSectionDownload = function() {
+        this.popupMenuClose('sections');
+        M.api.openPDF('ciniki.musicfestivals.festivalSyllabusPDF', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'section_id':this.section_id});
     }
     this.festival.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.festival_id) < (this.nplist.length - 1) ) {
