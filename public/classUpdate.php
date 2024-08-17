@@ -57,6 +57,7 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
     // Get the existing class
     //
     $strsql = "SELECT classes.id, "
+        . "classes.festival_id, "
         . "classes.code, "
         . "classes.category_id, "
         . "classes.name, "
@@ -74,6 +75,25 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
     }
     $class = $rc['class'];
     
+    //
+    // Check if the code is unique
+    //
+    if( isset($args['code']) && $args['code'] != $class['code'] ) {
+        $strsql = "SELECT id "
+            . "FROM ciniki_musicfestival_classes "
+            . "WHERE festival_id = '" . ciniki_core_dbQuote($ciniki, $class['festival_id']) . "' "
+            . "AND code = '" . ciniki_core_dbQuote($ciniki, $args['code']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.810', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+        }
+        if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
+            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.41', 'msg'=>'You already have a class with that code, please choose another.'));
+        }
+    }
+
     //
     // Build new permalink
     //
