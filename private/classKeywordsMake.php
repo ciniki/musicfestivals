@@ -99,7 +99,9 @@ function ciniki_musicfestivals_classKeywordsMake(&$ciniki, $tnid, $args) {
         //
         // Build the new keywords
         //
-        $keywords = strtolower($class['code'] . ' ' . $section['name'] . ' ' . $category['name'] . ' ' . $class['name'] . ' ' . $class['synopsis']);
+        $keywords = strtolower($class['code'] . ' ' . $section['name'] . ' ' . $category['name'] . ' ' . $class['name']);
+        // Removed synopsis because it had too many weird numbers words that aren't needed in keywords
+        // . ' ' . $class['synopsis']);
         $keywords = preg_replace("/(Levels\s+[0-9]+\s*\-[0-9]+)(.*Level\s+[0-9])/i", "$2", $keywords);
     }
   
