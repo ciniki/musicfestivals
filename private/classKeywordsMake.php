@@ -122,7 +122,7 @@ function ciniki_musicfestivals_classKeywordsMake(&$ciniki, $tnid, $args) {
     $keywords = preg_replace("/list (a|b|c|d|e)/i", "list-$1", $keywords);
     $keywords = preg_replace("/Grade\/Level (1|2|3|4|5|6|7|8|9|10)/i", "grade-$1 level-$1", $keywords);
     $keywords = preg_replace("/Grade (1|2|3|4|5|6|7|8|9|10)/i", "grade-$1", $keywords);
-    $keywords = preg_replace("/Level (1|2|3|4|5|6|7|8|9|10)/i", "level-$1", $keywords);
+    $keywords = preg_replace("/Level (1|2|3|4|5|6|7|8|9|10|A|B)/i", "level-$1", $keywords);
     $keywords = preg_replace("/ages? ([0-9]+)/i", "age-$1", $keywords);
     $keywords = preg_replace("/\//", " ", $keywords); // words joined by slash separate so separately indexed
 

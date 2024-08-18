@@ -54,11 +54,7 @@ function ciniki_musicfestivals_wng_apiClassSearch(&$ciniki, $tnid, $request) {
     // search the classes
     //
     if( $keywords != '' ) {
-        error_log('search: ' . $keywords);
         $strsql = "SELECT classes.id, "
-    //        . "classes.uuid, "
-    //        . "classes.festival_id, "
-    //        . "classes.category_id, "
             . "categories.id AS category_id, "
             . "categories.name AS category_name, "
             . "categories.permalink AS category_permalink, "
