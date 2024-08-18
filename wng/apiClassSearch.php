@@ -174,7 +174,7 @@ function ciniki_musicfestivals_wng_apiClassSearch(&$ciniki, $tnid, $request) {
             } else {
                 $classes[$cid]['fullname'] = $class['code'] . ' - ' . $class['name'];
             }
-            $classes[$cid]['synopsis'] = $class['keywords'];
+//            $classes[$cid]['synopsis'] = $class['keywords'];
             //
             // Determine which link to use
             //
