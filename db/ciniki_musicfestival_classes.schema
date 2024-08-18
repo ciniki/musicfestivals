@@ -22,13 +22,13 @@
 #                           0x02 - Multireg - Allow for same student to register multiple times. **Not currently implemented**
 #                           0x04 - Instrument required on registration
 #                           0x08 - Instrument optional **future placeholder, not implemented**
-#                           0x10 - Enable Second competitor **deprecated**
-#                           0x20 - Enable Third competitor **deprecated**
-#                           0x40 - Enable Fourth competitor **deprecated**
+#                           0x10 - 
+#                           0x20 - 
+#                           0x40 - 
 #                           0x80 - 
-#                           0x0100 - Second Competitor optional **deprecated**
-#                           0x0200 - Third Competitor optional **deprecated**
-#                           0x0400 - Fourth Competitor optional **deprecated**
+#                           0x0100 - 
+#                           0x0200 - 
+#                           0x0400 - 
 #                           0x0800 - 
 #                           0x1000 - Accompanist Required
 #                           0x2000 - Accompanist Optional
@@ -69,6 +69,8 @@
 #
 # schedule_seconds:     The seconds alotted for each registration in this class. 
 #
+# keywords:             The search keywords to be used for live search.
+#
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.
 #
@@ -95,6 +97,7 @@ create table ciniki_musicfestival_classes (
     provincials_code varchar(20) not null,
     synopsis varchar(2000) not null,
     schedule_seconds int not null,
+    keywords varchar(5000) not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
@@ -102,5 +105,6 @@ create table ciniki_musicfestival_classes (
     unique index (festival_id, permalink),
     unique index (festival_id, code),
     index (festival_id, category_id, tnid),
+    index keywords (keywords),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.11';
+) ENGINE='InnoDB', COMMENT='v1.12';

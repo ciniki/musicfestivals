@@ -140,6 +140,11 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'overlay-bottom' => 'Bottom',
                     'below' => 'Below',
                 )),
+            'live-search' => array('label'=>'Class Search', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
+                'no' => 'No',
+                'top' => 'Yes',
+                // In future can add bottom/both as options if needed
+                )),
             'section-pdf' => array('label'=>'Section PDF Download', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
                 'no' => 'Off',
                 'top' => 'Top',

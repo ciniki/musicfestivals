@@ -98,6 +98,19 @@ function ciniki_musicfestivals_classAdd(&$ciniki) {
     }
 
     //
+    // Create the keywords
+    //
+    $args['keywords'] = '';
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'classKeywordsMake');
+    $rc = ciniki_musicfestivals_classKeywordsMake($ciniki, $args['tnid'], [
+        'class' => $args,
+        ]);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.820', 'msg'=>'Unable to create search words', 'err'=>$rc['err']));
+    }
+    $args['keywords'] = $rc['keywords'];
+
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');

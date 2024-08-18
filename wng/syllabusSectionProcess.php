@@ -320,6 +320,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         . "classes.category_id, "
         . "categories.id AS category_id, "
         . "categories.name AS category_name, "
+        . "categories.permalink AS category_permalink, "
         . "categories.primary_image_id AS category_image_id, "
         . "categories.synopsis AS category_synopsis, "
         . "categories.description AS category_description, "
@@ -355,7 +356,9 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'categories', 'fname'=>'category_id', 
-            'fields'=>array('name'=>'category_name', 'image_id'=>'category_image_id', 'synopsis'=>'category_synopsis', 'description'=>'category_description',
+            'fields'=>array('name'=>'category_name', 'permalink'=>'category_permalink', 
+                'image_id'=>'category_image_id', 
+                'synopsis'=>'category_synopsis', 'description'=>'category_description',
             )),
         array('container'=>'classes', 'fname'=>'id',  
             'fields'=>array('id', 'uuid', 'festival_id', 'category_id', 'code', 'name', 'synopsis',
@@ -385,6 +388,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             if( $intro != '' ) {
                 $blocks[] = array(
                     'type' => 'text', 
+                    'id' => $category['permalink'],
                     'title' => $category['name'], 
                     'class' => 'musicfestival-syllabus-section',
                     'content' => ($category['description'] != '' ? $category['description'] : ($category['synopsis'] != '' ? $category['synopsis'] : ' ')),
@@ -396,7 +400,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 //
                 $live_label = $festival['earlybird'] == 'yes' ? 'Earlybird' : 'Fee';
                 foreach($category['classes'] as $cid => $class) {
-                    if( $festival['live'] == 'yes' ) {
+                    if( $festival['earlybird'] == 'yes' || $festival['live'] == 'yes' ) {
                         if( isset($festival['earlybird']) && $festival['earlybird'] == 'yes' && $class['earlybird_fee'] > 0 ) {
                             $category['classes'][$cid]['live_fee'] = '$' . number_format($class['earlybird_fee'], 2);
                         } elseif( isset($festival['live']) && $festival['live'] == 'yes' && $class['fee'] > 0 ) {

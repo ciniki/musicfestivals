@@ -123,6 +123,17 @@ function ciniki_musicfestivals_categoryUpdate(&$ciniki) {
     }
 
     //
+    // Update class search keywords
+    //
+    if( isset($args['name']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'classesKeywordsUpdate');
+        $rc = ciniki_musicfestivals_classesKeywordsUpdate($ciniki, $args['tnid'], ['category_id'=>$args['category_id']]);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.826', 'msg'=>'Unable to update search keywords', 'err'=>$rc['err']));
+        }
+    }
+
+    //
     // Commit the transaction
     //
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.musicfestivals');

@@ -61,7 +61,9 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
         . "classes.code, "
         . "classes.category_id, "
         . "classes.name, "
-        . "classes.sequence "
+        . "classes.sequence, "
+        . "classes.synopsis, "
+        . "classes.keywords "
         . "FROM ciniki_musicfestival_classes AS classes "
         . "WHERE classes.id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
         . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -121,6 +123,21 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
         if( $rc['num_rows'] > 0 ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.47', 'msg'=>'You already have an class with this name, please choose another.'));
         }
+    }
+
+    //
+    // Create the keywords
+    //
+    $args['keywords'] = '';
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'classKeywordsMake');
+    $rc = ciniki_musicfestivals_classKeywordsMake($ciniki, $args['tnid'], [
+        'class' => $class,
+        ]);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.821', 'msg'=>'Unable to create search words', 'err'=>$rc['err']));
+    }
+    if( $rc['keywords'] != $class['keywords'] ) {
+        $args['keywords'] = $rc['keywords'];
     }
 
     //

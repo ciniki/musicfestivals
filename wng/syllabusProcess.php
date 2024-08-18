@@ -42,7 +42,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     }
 
     //
-    // FIXME: Check if syllabus-id contains - 
+    // Check if syllabus-id contains - and is a combination of festival_id+syllabus
     //
     if( preg_match("/^(.*)\-(.*)$/", $s['syllabus-id'], $m) ) {
         $festival_id = $m[1];
@@ -279,6 +279,27 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
                     ),
                 ),
             );
+    }
+
+    //
+    // Check if class search is to be used
+    //
+    if( isset($s['live-search']) && $s['live-search'] == 'top' ) {
+        $api_args = [
+            'festival-id' => $festival['id'],
+            'layout' => $s['layout'],
+            'baseurl' => $request['ssl_domain_base_url'] . $request['page']['path'],
+            ];
+        if( isset($section['syllabus']) ) {
+            $api_args['syllabus'] = $section['syllabus'];
+        }
+        $blocks[] = [
+            'type' => 'livesearch',
+            'label' => 'Search Classes',
+            'id' => $section['sequence'],
+            'api-search-url' => $request['api_url'] . '/ciniki/musicfestivals/classSearch',
+            'api-args' => $api_args,
+            ];
     }
 
     //
