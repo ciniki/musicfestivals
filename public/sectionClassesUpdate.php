@@ -217,7 +217,6 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         // Check if anything changed flags
         //
         if( $flags != $class['flags'] ) {
-            error_log("Update flags from " . $class['flags'] . " to " . $flags);
             $update_args['flags'] = $flags;
         }
 
