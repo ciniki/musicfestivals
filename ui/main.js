@@ -5283,10 +5283,12 @@ function ciniki_musicfestivals_main() {
                 }
                 this.showHideFormField('_class', 'instrument');
 
-                // FIXME: Add check for class flags to see if mark is enabled on this class
-                this.showHideFormField('_class', 'mark');
-                this.showHideFormField('_class', 'placement');
-                this.showHideFormField('_class', 'level');
+                this.sections._results.fields.mark.visible = (c.flags&0x0100) == 0x0100 ? 'yes' : 'no';
+                this.sections._results.fields.placement.visible = (c.flags&0x0200) == 0x0200 ? 'yes' : 'no';
+                this.sections._results.fields.level.visible = (c.flags&0x0400) == 0x0400 ? 'yes' : 'no';
+                this.showHideFormField('_results', 'mark');
+                this.showHideFormField('_results', 'placement');
+                this.showHideFormField('_results', 'level');
             }
         }
     }
@@ -5462,59 +5464,6 @@ function ciniki_musicfestivals_main() {
             }
             if( rsp.tags != null ) {
                 p.sections._class.fields.tags.tags = rsp.tags;
-            }
-            //
-            // FIXME: This needs to be changed to include a check for class flags
-            // Also needs to be done when a class is changed
-            //
-            if( p.data.festival['comments-mark-ui'] != null && p.data.festival['comments-mark-ui'] == 'yes' ) {
-                p.sections._results.fields.mark.visible = 'yes';
-                p.sections._results.fields.placement.separator = 'no';
-                p.sections._results.fields.level.separator = 'no';
-                if( p.data.festival['comments-mark-label'] != null && p.data.festival['comments-mark-label'] != '' ) {
-                    p.sections._results.fields.mark.label = p.data.festival['comments-mark-label'];
-                }
-            } else {
-                p.sections._results.fields.mark.visible = 'no';
-                p.sections._results.fields.placement.separator = 'no';
-                p.sections._results.fields.level.visible = 'no';
-            }
-            p.sections._results.fields.finals_placement.visible = 'no';
-            if( p.data.festival['comments-placement-ui'] != null && p.data.festival['comments-placement-ui'] == 'yes' ) {
-                p.sections._results.fields.placement.visible = 'yes';
-                if( p.data.finals_timeslot_id > 0 ) {
-                    p.sections._results.fields.finals_placement.visible = 'yes';
-                }
-                if( p.data.festival['comments-placement-label'] != null && p.data.festival['comments-placement-label'] != '' ) {
-                    p.sections._results.fields.placement.label = p.data.festival['comments-placement-label'];
-                    p.sections._results.fields.finals_placement.label = p.data.festival['comments-placement-label'];
-                }
-                if( p.data.festival['comments-placement-options'] != null && p.data.festival['comments-placement-options'] != '' ) {
-                    p.sections._results.fields.placement.type = 'select';
-                    p.sections._results.fields.placement.options = {'':''};
-                    p.sections._results.fields.finals_placement.type = 'select';
-                    p.sections._results.fields.finals_placement.options = {'':''};
-                    var options = p.data.festival['comments-placement-options'].split(",");
-                    for(var i in options) {
-                        var option = options[i].trim();
-                        p.sections._results.fields.placement.options[option] = option;
-                        p.sections._results.fields.finals_placement.options[option] = option;
-                    }
-                } else {
-                    p.sections._results.fields.placement.type = 'text';
-                    p.sections._results.fields.finals_placement.type = 'text';
-                }
-            } else {
-                p.sections._results.fields.placement.visible = 'no';
-                p.sections._results.fields.finals_placement.visible = 'no';
-            }
-            if( p.data.festival['comments-level-ui'] != null && p.data.festival['comments-level-ui'] == 'yes' ) {
-                p.sections._results.fields.level.visible = 'yes';
-                if( p.data.festival['comments-level-label'] != null && p.data.festival['comments-level-label'] != '' ) {
-                    p.sections._results.fields.level.label = p.data.festival['comments-level-label'];
-                }
-            } else {
-                p.sections._results.fields.level.visible = 'no';
             }
             p.refresh();
             p.show(cb);
