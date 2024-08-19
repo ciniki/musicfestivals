@@ -626,6 +626,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         && $reg['placement'] != 'NA'
                         && isset($festival['comments-level-pdf']) && $festival['comments-level-pdf'] == 'yes' 
                         && $reg['level'] != 'NA'
+                        && ($reg['class_flags']&0x0700) == 0x0700
                         ) {
                         $wa = array(25, 48, 17, 10, 28, 16, 17, 18);
                     }
@@ -633,6 +634,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         && $reg['mark'] != 'NA'
                         && isset($festival['comments-placement-pdf']) && $festival['comments-placement-pdf'] == 'yes' 
                         && $reg['placement'] != 'NA'
+                        && ($reg['class_flags']&0x0300) == 0x0300
                         ) {
                         $wa = array(25, 70, 19, 17, 28, 20);
                     }
@@ -640,6 +642,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         && $reg['mark'] != 'NA'
                         && isset($festival['comments-level-pdf']) && $festival['comments-level-pdf'] == 'yes' 
                         && $reg['level'] != 'NA'
+                        && ($reg['class_flags']&0x0500) == 0x0500
                         ) {
                         $wa = array(25, 70, 20, 17, 24, 23);
                     }
@@ -647,16 +650,19 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         && $reg['placement'] != 'NA'
                         && isset($festival['comments-level-pdf']) && $festival['comments-level-pdf'] == 'yes' 
                         && $reg['level'] != 'NA'
+                        && ($reg['class_flags']&0x0600) == 0x0600
                         ) {
                         $wa = array(25, 70, 25, 17, 21, 21);
                     }
                     elseif( isset($festival['comments-placement-pdf']) && $festival['comments-placement-pdf'] == 'yes' 
                         && $reg['placement'] != 'NA'
+                        && ($reg['class_flags']&0x0200) == 0x0200
                         ) {
                         $wa = array(27, 60, 27, 66);
                     }
                     elseif( isset($festival['comments-mark-pdf']) && $festival['comments-mark-pdf'] == 'yes' 
                         && $reg['mark'] != 'NA'
+                        && ($reg['class_flags']&0x0100) == 0x0100
                         ) {
                         $wa = array(27, 80, 35, 35);
                     }
@@ -709,6 +715,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                     if( isset($festival['comments-mark-pdf']) 
                         && $festival['comments-mark-pdf'] == 'yes' 
                         && $reg['mark'] != 'NA'
+                        && ($reg['class_flags']&0x0100) == 0x0100
                         ) {
                         if( isset($festival['comments-mark-label']) && $festival['comments-mark-label'] != '' ) {
                             $pdf->Cell($wa[$wapos++], 16, $festival['comments-mark-label'] . ' ', 0, false, 'R', 0, '', 0, false, '', 'B');
@@ -722,6 +729,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                     if( isset($festival['comments-placement-pdf']) 
                         && $festival['comments-placement-pdf'] == 'yes' 
                         && $reg['placement'] != 'NA'
+                        && ($reg['class_flags']&0x0200) == 0x0200
                         ) {
                         if( isset($festival['comments-placement-label']) && $festival['comments-placement-label'] != '' ) {
                             $pdf->Cell($wa[$wapos++], 16, $festival['comments-placement-label'] . ' ', 0, false, 'R', 0, '', 0, false, '', 'B');
@@ -739,6 +747,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                     if( isset($festival['comments-level-pdf']) 
                         && $festival['comments-level-pdf'] == 'yes' 
                         && $reg['level'] != 'NA'
+                        && ($reg['class_flags']&0x0400) == 0x0400
                         ) {
                         if( isset($festival['comments-level-label']) && $festival['comments-level-label'] != '' ) {
                             $pdf->Cell($wa[$wapos++], 16, $festival['comments-level-label'] . ' ', 0, false, 'R', 0, '', 0, false, '', 'B');

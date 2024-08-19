@@ -622,6 +622,18 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             $festival['classes'][$iid]['schedule_time'] .= ' ' . ($class['schedule_seconds']%60) . '&nbsp;sec';
                         }
                     }
+                    $festival['classes'][$iid]['mark'] = '';
+                    $festival['classes'][$iid]['placement'] = '';
+                    $festival['classes'][$iid]['level'] = '';
+                    if( ($class['flags']&0x0100) == 0x0100 ) {
+                        $festival['classes'][$iid]['mark'] = 'Yes';
+                    }
+                    if( ($class['flags']&0x0200) == 0x0200 ) {
+                        $festival['classes'][$iid]['placement'] = 'Yes';
+                    }
+                    if( ($class['flags']&0x0400) == 0x0400 ) {
+                        $festival['classes'][$iid]['level'] = 'Yes';
+                    }
                     $nplists['classes'][] = $class['id'];
                 }
             } else {

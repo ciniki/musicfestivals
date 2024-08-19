@@ -439,7 +439,9 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 'size' => 'large',
                 'value' => $registration['comments'],
                 );
-            if( isset($festival['comments-mark-adjudicator']) && $festival['comments-mark-adjudicator'] == 'yes' ) {
+            if( isset($festival['comments-mark-adjudicator']) && $festival['comments-mark-adjudicator'] == 'yes' 
+                && ($registration['class_flags']&0x0100) == 0x0100
+                ) {
                 $label = 'Mark';
                 if( isset($festival['comments-mark-label']) && $festival['comments-mark-label'] != '' ) {
                     $label = $festival['comments-mark-label'];
@@ -454,7 +456,9 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                     'value' => $registration['mark'],
                     );
             }
-            if( isset($festival['comments-placement-adjudicator']) && $festival['comments-placement-adjudicator'] == 'yes' ) {
+            if( isset($festival['comments-placement-adjudicator']) && $festival['comments-placement-adjudicator'] == 'yes' 
+                && ($registration['class_flags']&0x0200) == 0x0200
+                ) {
                 $label = 'Placement';
                 if( isset($festival['comments-placement-label']) && $festival['comments-placement-label'] != '' ) {
                     $label = $festival['comments-placement-label'];
@@ -486,7 +490,9 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                         );
                 }
             }
-            if( isset($festival['comments-level-adjudicator']) && $festival['comments-level-adjudicator'] == 'yes' ) {
+            if( isset($festival['comments-level-adjudicator']) && $festival['comments-level-adjudicator'] == 'yes' 
+                && ($registration['class_flags']&0x0400) == 0x0400
+                ) {
                 $label = 'Level';
                 if( isset($festival['comments-level-label']) && $festival['comments-level-label'] != '' ) {
                     $label = $festival['comments-level-label'];
