@@ -41,6 +41,14 @@ function ciniki_musicfestivals_classHistory($ciniki) {
         return $rc;
     }
 
+    if( $args['field'] == 'flags9' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryFlagBits');
+        return ciniki_core_dbGetModuleHistoryFlagBits($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', $args['tnid'], 'ciniki_musicfestival_classes', $args['class_id'], 'flags', 0x0700);
+    }
+    if( $args['field'] == 'flags13' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryFlagBits');
+        return ciniki_core_dbGetModuleHistoryFlagBits($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', $args['tnid'], 'ciniki_musicfestival_classes', $args['class_id'], 'flags', 0x3000);
+    }
     if( $args['field'] == 'flags15' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryFlagBits');
         return ciniki_core_dbGetModuleHistoryFlagBits($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', $args['tnid'], 'ciniki_musicfestival_classes', $args['class_id'], 'flags', 0xC000);

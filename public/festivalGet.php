@@ -603,6 +603,18 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     } elseif( ($class['flags']&0x2000) == 0x2000 ) {
                         $festival['classes'][$iid]['accompanist'] = 'Optional';
                     }
+                    $festival['classes'][$iid]['video'] = 'Optional';
+                    if( ($class['flags']&0x010000) == 0x020000 ) {
+                        $festival['classes'][$iid]['video'] = 'Required';
+                    } elseif( ($class['flags']&0x020000) == 0x020000 ) {
+                        $festival['classes'][$iid]['video'] = '';
+                    }
+                    $festival['classes'][$iid]['music'] = 'Optional';
+                    if( ($class['flags']&0x100000) == 0x100000 ) {
+                        $festival['classes'][$iid]['music'] = 'Required';
+                    } elseif( ($class['flags']&0x200000) == 0x200000 ) {
+                        $festival['classes'][$iid]['music'] = '';
+                    }
                     $festival['classes'][$iid]['movements'] = '';
                     if( ($class['flags']&0x04000000) == 0x04000000 ) {
                         $festival['classes'][$iid]['movements'] = 'Required';
