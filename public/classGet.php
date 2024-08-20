@@ -43,6 +43,29 @@ function ciniki_musicfestivals_classGet($ciniki) {
     }
 
     //
+    // Load the festival
+    //
+    if( isset($args['festival_id']) && $args['festival_id'] > 0 ) {
+        //
+        // Get the additional settings
+        //
+        $festival = array();
+        $strsql = "SELECT detail_key, detail_value "
+            . "FROM ciniki_musicfestival_settings "
+            . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
+        $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.733', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+        }
+        foreach($rc['settings'] as $k => $v) {
+            $festival[$k] = $v;
+        }
+    }
+
+    //
     // Load tenant settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
@@ -97,7 +120,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
             'name' => '',
             'permalink' => '',
             'sequence' => $seq,
-            'flags' => 0x4000,
+            'flags' => 0x4001,
             'earlybird_fee' => '',
             'fee' => '',
             'virtual_fee' => '',
@@ -111,6 +134,16 @@ function ciniki_musicfestivals_classGet($ciniki) {
             'synopsis' => '',
             'schedule_minutes' => '',
         );
+        if( isset($festival['comments-mark-ui']) && $festival['comments-mark-ui'] == 'yes' ) {
+            $class['flags'] |= 0x0100;
+        }
+        if( isset($festival['comments-placement-ui']) && $festival['comments-placement-ui'] == 'yes' ) {
+            $class['flags'] |= 0x0200;
+        }
+        if( isset($festival['comments-level-ui']) && $festival['comments-level-ui'] == 'yes' ) {
+            $class['flags'] |= 0x0400;
+        }
+
     }
 
     //

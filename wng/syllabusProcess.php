@@ -385,6 +385,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
                 'section' => 'syllabus',
                 'class' => 'musicfestival-syllabus syllabus-groupbuttons',
                 'title' => $section['title'],
+                'content' => $section['synopsis'],
                 'level' => 2,
                 'items' => $buttons,
                 );

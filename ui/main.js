@@ -475,7 +475,7 @@ function ciniki_musicfestivals_main() {
                     },
                 'updatemarking':{
                     'label':'Update Marking',
-                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'marking' && M.ciniki_musicfestivals_main.festival.section_id > 0 ? 'yes' : 'no'; },
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'marking' && M.ciniki_musicfestivals_main.festival.section_id > 0 && M.ciniki_musicfestivals_main.festival.sections.syllabus_tabs.selected == 'sections' ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.marking.open(\"M.ciniki_musicfestivals_main.festival.open();\",M.ciniki_musicfestivals_main.festival.section_id);',
                     },
                 'view':{
@@ -3666,12 +3666,12 @@ function ciniki_musicfestivals_main() {
                 'fn':'M.ciniki_musicfestivals_main.section.switchTab(\'recommendations\');',
                 },
             }},
-//        '_synopsis':{'label':'Synopsis', 
-//            'visible':function() { return M.ciniki_musicfestivals_main.section.sections._tabs.selected == 'synopsis' ? 'yes' : 'hidden'; },
-//            'fields':{'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'}},
-//            },
+        '_synopsis':{'label':'Synopsis', 
+            'visible':function() { return M.ciniki_musicfestivals_main.section.sections._tabs.selected == 'synopsis' ? 'yes' : 'hidden'; },
+            'fields':{'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'small'}},
+            },
         '_description':{'label':'Description', 
-            'visible':function() { return /*!M.modFlagOn('ciniki.musicfestivals', 0x020000) && */M.ciniki_musicfestivals_main.section.sections._tabs.selected == 'synopsis' ? 'yes' : 'hidden'; },
+            'visible':function() { return !M.modFlagOn('ciniki.musicfestivals', 0x020000) && M.ciniki_musicfestivals_main.section.sections._tabs.selected == 'synopsis' ? 'yes' : 'hidden'; },
             'fields':{'description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'xlarge'}},
             },
         '_live_description':{'label':'Live Description', 
@@ -3761,7 +3761,7 @@ function ciniki_musicfestivals_main() {
     }
     this.section.switchTab = function(tab) {
         this.sections._tabs.selected = tab;
-        this.showHideSections(['categories', '_description', '_live_description', '_virtual_description', '_recommendations_description']);
+        this.showHideSections(['categories', '_synopsis', '_description', '_live_description', '_virtual_description', '_recommendations_description']);
         this.refreshSection('_tabs');
     }
     this.section.downloadSyllabusPDF = function() {
@@ -4361,7 +4361,7 @@ function ciniki_musicfestivals_main() {
             }},
         'registration':{'label':'Registration Options', 'aside':'yes', 'fields':{
             'flags1':{'label':'Online Registrations', 'type':'flagtoggle', 'default':'on', 'bit':0x01, 'field':'flags'},
-// class flag 0x02 was never implemented in WNG system.
+// FIXME: class flag 0x02 was never implemented in WNG system, should be default off
 //            'flags2':{'label':'Multiple/Registrant', 'type':'flagtoggle', 'default':'on', 'bit':0x02, 'field':'flags'},
             'flags15':{'label':'Individuals/Group', 'type':'flagspiece', 'mask':0xC000, 'field':'flags', 'join':'yes', 'toggle':'yes',
                 'onchange':'M.ciniki_musicfestivals_main.class.updateForm',

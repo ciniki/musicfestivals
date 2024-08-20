@@ -51,6 +51,7 @@
 # age:                  The age of the competitor.
 # study_level:          The study level of the competitor.
 # instrument:           The instrument of the competitor.
+# etransfer_email:      The email address to receive any etransfer awards.
 # 
 # notes:                Any notes for the competitor.
 #
