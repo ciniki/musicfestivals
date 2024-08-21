@@ -5618,9 +5618,9 @@ function ciniki_musicfestivals_main() {
                 'etransfer_email':{'label':'etransfer Email', 'type':'text',
                     'visible':function() { 
                         if( (M.ciniki_musicfestivals_main.festival.data['competitor-individual-etransfer-email'] != null
-                            && M.ciniki_musicfestivals_main.festival.data['competitor-individual-etransfer-email'] == 'yes')
+                            && M.ciniki_musicfestivals_main.festival.data['competitor-individual-etransfer-email'] != 'hidden')
                             || (M.ciniki_musicfestivals_main.festival.data['competitor-group-etransfer-email'] != null
-                            && M.ciniki_musicfestivals_main.festival.data['competitor-group-etransfer-email'] == 'yes')
+                            && M.ciniki_musicfestivals_main.festival.data['competitor-group-etransfer-email'] != 'hidden')
                             ) {
                             return 'yes';
                         }
