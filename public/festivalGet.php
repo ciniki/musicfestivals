@@ -2746,6 +2746,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . ") "
                 . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
                     . "members.id = registrations.member_id "
+                    . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "WHERE members.status < 90 " // Active, Closed
