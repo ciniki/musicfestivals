@@ -228,6 +228,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'age'=>array('name'=>'Age', 'default'=>''),
             'study_level'=>array('name'=>'Study/Level', 'default'=>''),
             'instrument'=>array('name'=>'Instrument', 'default'=>''),
+            'etransfer_email'=>array('name'=>'etransfer Email', 'default'=>''),
             'notes'=>array('name'=>'Notes', 'default'=>''),
             ),
         'history_table'=>'ciniki_musicfestivals_history',

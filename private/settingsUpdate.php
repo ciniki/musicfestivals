@@ -150,6 +150,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'competitor-individual-instrument',
         'competitor-individual-age',
         'competitor-individual-age-label',
+        'competitor-individual-etransfer-email',
         'competitor-group-parent-msg',
         'competitor-group-teacher-msg',
         'competitor-group-adult-msg',
@@ -157,6 +158,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'competitor-group-instrument',
         'competitor-group-age',
         'competitor-group-age-label',
+        'competitor-group-etransfer-email',
         );
     foreach($valid_settings as $field) {
         if( isset($args[$field]) ) {

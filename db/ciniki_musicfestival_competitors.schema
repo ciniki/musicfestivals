@@ -85,6 +85,7 @@ create table ciniki_musicfestival_competitors (
     age varchar(25) not null,
     study_level varchar(250) not null,
     instrument varchar(250) not null,
+    etransfer_email varhcar(250) not null,
     notes varchar(5000) not null,
     date_added datetime not null,
     last_updated datetime not null,
@@ -92,4 +93,4 @@ create table ciniki_musicfestival_competitors (
     unique index (uuid),
     index name (id, tnid, festival_id, name, city, province),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.05';
+) ENGINE='InnoDB', COMMENT='v1.06';

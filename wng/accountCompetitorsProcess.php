@@ -206,6 +206,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             . "age, "
             . "study_level, "
             . "instrument, "
+            . "etransfer_email, "
             . "notes "
             . "FROM ciniki_musicfestival_competitors "
             . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $competitor_id) . "' "
@@ -473,6 +474,36 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         'class' => $sl,
         'value' => (isset($_POST['f-study_level']) ? trim($_POST['f-study_level']) : (isset($competitor['study_level']) ? $competitor['study_level'] :'')),
         );
+    if( ($ctype != 50
+            && isset($festival['competitor-individual-etransfer-email']) 
+            && $festival['competitor-individual-etransfer-email'] != 'hidden'
+        ) || (
+            $ctype == 50 
+            && isset($festival['competitor-group-etransfer-email']) 
+            && $festival['competitor-group-etransfer-email'] != 'hidden'
+        ) ) {
+        $fields['etransfer_email'] = array(
+            'id' => 'etransfer_email',
+            'label' => 'Awards etransfer Email',
+            'ftype' => 'email',
+            'size' => 'large',
+            'required' => 'no',
+            'class' => '',
+            'value' => (isset($_POST['f-etransfer_email']) ? trim($_POST['f-etransfer_email']) : (isset($competitor['etransfer_email']) ? $competitor['etransfer_email'] :'')),
+            );
+        if( $ctype != 50
+            && isset($festival['competitor-individual-etransfer-email']) 
+            && $festival['competitor-individual-etransfer-email'] == 'required'
+            ) {
+            $fields['etransfer_email']['required'] = 'yes';
+        } 
+        if( $ctype == 50
+            && isset($festival['competitor-group-etransfer-email']) 
+            && $festival['competitor-group-etransfer-email'] == 'required'
+            ) {
+            $fields['etransfer_email']['required'] = 'yes';
+        }
+    }
     $fields['comp_notes'] = array(
         'id' => 'comp_notes',
         'label' => 'Competitor Notes',

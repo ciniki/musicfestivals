@@ -39,6 +39,7 @@ function ciniki_musicfestivals_competitorUpdate(&$ciniki) {
         'age'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Age'),
         'study_level'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Study/Level'),
         'instrument'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Instrument'),
+        'etransfer_email'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'etransfer Email'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         ));
     if( $rc['stat'] != 'ok' ) {
