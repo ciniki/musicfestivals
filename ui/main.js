@@ -1787,7 +1787,8 @@ function ciniki_musicfestivals_main() {
         if( s == 'members' ) {
             switch(j) {
                 case 0: return M.multiline(d.shortname, d.name);
-                case 1: return M.multiline(d.category, (d.customer_name != '' ? d.customer_name + ' [' + d.emails + ']' : ''));
+//                case 1: return M.multiline(d.category, (d.customer_name != '' ? d.customer_name + ' [' + d.emails + ']' : ''));
+                case 1: return M.multiline(d.category, d.admins);
                 case 2: return d.reg_start_dt_display;
                 case 3: return d.reg_end_dt_display;
                 case 4: return d.latedays;
@@ -9683,6 +9684,18 @@ function ciniki_musicfestivals_main() {
             'reg_end_dt':{'label':'Reg End', 'type':'datetime'},
             'latedays':{'label':'Late Days', 'type':'number', 'size':'small'},
             }},
+        'customers':{'label':'Admin Accounts', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
+            'noData':'No Admin Accounts',
+            'deleteFn':function(s, i, d) {
+                return 'M.ciniki_musicfestivals_main.member.removeCustomer(' + d.id + ');';
+                },
+            'menu':{
+                'add': {
+                    'label':'Add Admin',
+                    'fn':'M.ciniki_musicfestivals_main.member.save("M.ciniki_musicfestivals_main.member.openCustomer();");',
+                    }
+                },
+            },
         'customer_details':{'label':'Admin Account', 'type':'customer', 'num_cols':2, 'aside':'yes',
             'customer_id':0,
             'customer_field':'customer_id',
@@ -9721,6 +9734,9 @@ function ciniki_musicfestivals_main() {
         return {'method':'ciniki.musicfestivals.memberHistory', 'args':{'tnid':M.curTenantID, 'festival_id':this.festival_id, 'member_id':this.member_id, 'field':i}};
     }
     this.member.cellValue = function(s, i, j, d) {
+        if( s == 'customers' ) {
+            return d.display_name;
+        }
         if( s == 'customer_details' && j == 0 ) { return d.label; }
         if( s == 'customer_details' && j == 1 ) {
             if( d.label == 'Email' ) {
@@ -9731,6 +9747,39 @@ function ciniki_musicfestivals_main() {
             return d.value;
         }
     };
+    this.member.rowFn = function(s, i, d) {
+        return 'M.ciniki_musicfestivals_main.member.save("M.ciniki_musicfestivals_main.member.editCustomer(' + d.customer_id + ');");';
+    }
+    this.member.editCustomer = function(cid) {
+        M.startApp('ciniki.customers.edit',null,'M.ciniki_musicfestivals_main.member.open();','mc',{'customer_id':cid});
+    }
+    this.member.openCustomer = function() {
+        this.popupMenuClose('customers');
+        M.startApp('ciniki.customers.edit',null,'M.ciniki_musicfestivals_main.member.addCustomer(0);','mc',{'next':'M.ciniki_musicfestivals_main.member.addCustomer', 'customer_id':0});
+    }
+    this.member.addCustomer = function(cid) {
+        if( cid != null && cid > 0 ) {
+            M.api.getJSONCb('ciniki.musicfestivals.memberCustomerAdd', {'tnid':M.curTenantID, 'member_id':this.member_id, 'customer_id':cid}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_musicfestivals_main.member.open();
+            });
+        }
+        this.show();
+    }
+    this.member.removeCustomer = function(mcid) {
+        M.confirm('Are you sure you want to remove the admin?', null, function(rsp) {
+            M.api.getJSONCb('ciniki.musicfestivals.memberCustomerDelete', {'tnid':M.curTenantID, 'membercustomer_id':mcid}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_musicfestivals_main.member.open();
+            });
+        });
+    }
     this.member.open = function(cb, mid, fid, list) {
         if( mid != null ) { this.member_id = mid; }
         if( fid != null ) { this.festival_id = fid; }

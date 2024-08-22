@@ -44,14 +44,18 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
         $strsql = "SELECT members.id, "
             . "members.name "
-            . "FROM ciniki_musicfestivals_members AS members "
+            . "FROM ciniki_musicfestival_member_customers AS mc "
             . "INNER JOIN ciniki_musicfestival_members AS fm ON ("
-                . "members.id = fm.member_id "
+                . "mc.member_id = fm.member_id "
                 . "AND fm.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
                 . "AND fm.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
-            . "WHERE members.customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
-            . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "INNER JOIN ciniki_musicfestivals_members AS members ON ("
+                . "mc.member_id = members.id "
+                . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE mc.customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+            . "AND mc.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'member');
         if( $rc['stat'] != 'ok' ) {

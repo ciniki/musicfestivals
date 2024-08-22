@@ -100,7 +100,8 @@ function ciniki_musicfestivals_memberGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'members', 'fname'=>'id', 
-                'fields'=>array('name', 'shortname', 'category', 'synopsis', 'status', 'customer_id', 'reg_start_dt', 'reg_end_dt', 'latedays'),
+                'fields'=>array('name', 'shortname', 'category', 'synopsis', 'status', 
+                    'customer_id', 'reg_start_dt', 'reg_end_dt', 'latedays'),
                 'utctotz'=>array(
                     'reg_start_dt' => array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
                     'reg_end_dt' => array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
@@ -114,6 +115,30 @@ function ciniki_musicfestivals_memberGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.586', 'msg'=>'Unable to find Member Festival'));
         }
         $member = $rc['members'][0];
+
+        //
+        // Get the list of admins
+        //
+        $strsql = "SELECT mc.id, "
+            . "customers.id AS customer_id, "
+            . "customers.display_name "
+            . "FROM ciniki_musicfestival_member_customers AS mc "
+            . "INNER JOIN ciniki_customers AS customers ON ("
+                . "mc.customer_id = customers.id "
+                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE mc.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' "
+            . "AND mc.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY display_name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'customers', 'fname'=>'id', 'fields'=>array('id', 'customer_id', 'display_name')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.430', 'msg'=>'Unable to load customers', 'err'=>$rc['err']));
+        }
+        $member['customers'] = isset($rc['customers']) ? $rc['customers'] : array();
 
         //
         // If the customer is specified, load the details

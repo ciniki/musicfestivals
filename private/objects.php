@@ -667,6 +667,19 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );
+    $objects['membercustomer'] = array(
+        'name' => 'Member Admin',
+        'sync' => 'yes',
+        'o_name' => 'memberadmin',
+        'o_container' => 'memberadmins',
+        'table' => 'ciniki_musicfestival_member_customers',
+        'fields' => array(
+            'member_id' => array('name'=>'Member'),
+            'customer_id' => array('name'=>'Customer'),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
+
     $objects['recommendation'] = array(
         'name' => 'Adjudicator Recommendation',
         'sync' => 'yes',
