@@ -1,0 +1,5 @@
+#
+# Added upgrades to competitors
+#
+ALTER TABLE ciniki_musicfestival_competitors ADD COLUMN etransfer_email varchar(250) not null AFTER instrument;
+ALTER TABLE ciniki_musicfestival_competitors COMMENT='v1.06';
