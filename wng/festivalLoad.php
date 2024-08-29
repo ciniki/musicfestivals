@@ -23,7 +23,7 @@ function ciniki_musicfestivals_wng_festivalLoad(&$ciniki, $tnid, $festival_id) {
         . "earlybird_date, "
         . "live_date, "
         . "virtual_date, "
-        . "edit_end_dt, "
+        . "titles_end_dt, "
         . "accompanist_end_dt, "
         . "upload_end_dt "
         . "FROM ciniki_musicfestivals "
@@ -47,7 +47,7 @@ function ciniki_musicfestivals_wng_festivalLoad(&$ciniki, $tnid, $festival_id) {
     //
     $now = new DateTime('now', new DateTimezone('UTC'));
     $live_dt = new DateTime($festival['live_date'], new DateTimezone('UTC'));
-    $edit_end_dt = new DateTime($festival['edit_end_dt'], new DateTimezone('UTC'));
+    $titles_end_dt = new DateTime($festival['titles_end_dt'], new DateTimezone('UTC'));
     $accompanist_end_dt = new DateTime($festival['accompanist_end_dt'], new DateTimezone('UTC'));
     $upload_end_dt = new DateTime($festival['upload_end_dt'], new DateTimezone('UTC'));
     if( ($festival['flags']&0x20) == 0x20 ) {
@@ -67,7 +67,7 @@ function ciniki_musicfestivals_wng_festivalLoad(&$ciniki, $tnid, $festival_id) {
         $festival['earlybird_plus_live'] = $festival['earlybird'];
         $festival['plus_live'] = $festival['live'];
     }
-    $festival['edit'] = ($edit_end_dt > $now ? 'yes' : 'no');
+    $festival['edit'] = ($titles_end_dt > $now ? 'yes' : 'no');
     $festival['edit-accompanist'] = ($accompanist_end_dt > $now ? 'yes' : 'no');
     $festival['upload'] = (($festival['flags']&0x03) == 0x03 && $upload_end_dt > $now ? 'yes' : 'no');
 

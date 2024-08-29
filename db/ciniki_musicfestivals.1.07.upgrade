@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestivals CHANGE COLUMN edit_end_dt titles_end_dt datetime not null;
+ALTER TABLE ciniki_musicfestivals COMMENT='v1.07';

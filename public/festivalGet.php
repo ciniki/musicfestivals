@@ -204,7 +204,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             . "ciniki_musicfestivals.earlybird_date, "
             . "ciniki_musicfestivals.live_date, "
             . "ciniki_musicfestivals.virtual_date, "
-            . "ciniki_musicfestivals.edit_end_dt, "
+            . "ciniki_musicfestivals.titles_end_dt, "
             . "ciniki_musicfestivals.accompanist_end_dt, "
             . "ciniki_musicfestivals.upload_end_dt, "
             . "ciniki_musicfestivals.primary_image_id, "
@@ -222,7 +222,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'festivals', 'fname'=>'id', 
                 'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'status', 'flags', 
-                    'earlybird_date', 'live_date', 'virtual_date', 'edit_end_dt', 'accompanist_end_dt', 'upload_end_dt',
+                    'earlybird_date', 'live_date', 'virtual_date', 'titles_end_dt', 'accompanist_end_dt', 'upload_end_dt',
                     'primary_image_id', 'description', 
                     'document_logo_id', 'document_header_msg', 'document_footer_msg',
                     'comments_grade_label', 'comments_footer_msg',
@@ -232,7 +232,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     'earlybird_date'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
                     'live_date'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
                     'virtual_date'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
-                    'edit_end_dt'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                    'titles_end_dt'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
                     'accompanist_end_dt'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
                     'upload_end_dt'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
                     ),

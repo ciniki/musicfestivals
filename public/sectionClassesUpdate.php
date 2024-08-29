@@ -78,7 +78,7 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         . "ciniki_musicfestivals.earlybird_date, "
         . "ciniki_musicfestivals.live_date, "
         . "ciniki_musicfestivals.virtual_date, "
-        . "ciniki_musicfestivals.edit_end_dt, "
+        . "ciniki_musicfestivals.titles_end_dt, "
         . "ciniki_musicfestivals.upload_end_dt "
         . "FROM ciniki_musicfestivals "
         . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "

@@ -87,7 +87,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         . "sections.name AS section_name, "
         . "sections.live_end_dt, "
         . "sections.virtual_end_dt, "
-        . "sections.edit_end_dt, "
+        . "sections.titles_end_dt, "
         . "sections.upload_end_dt, "
         . "categories.name AS category_name, "
         . "classes.id AS class_id, "
@@ -123,7 +123,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'section_id', 
-            'fields'=>array('id'=>'section_id', 'name'=>'section_name', 'live_end_dt', 'virtual_end_dt', 'edit_end_dt', 'upload_end_dt'),
+            'fields'=>array('id'=>'section_id', 'name'=>'section_name', 'live_end_dt', 'virtual_end_dt', 'titles_end_dt', 'upload_end_dt'),
             ),
         array('container'=>'classes', 'fname'=>'class_id', 
             'fields'=>array('id'=>'class_id', 'uuid'=>'class_uuid', 'category_name', 'code'=>'class_code', 
@@ -174,8 +174,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     $section_virtual = 'yes';
                 }
             }
-            if( $section['edit_end_dt'] != '0000-00-00 00:00:00' ) {
-                $section_edit_dt = new DateTime($section['edit_end_dt'], new DateTimezone('UTC'));
+            if( $section['titles_end_dt'] != '0000-00-00 00:00:00' ) {
+                $section_edit_dt = new DateTime($section['titles_end_dt'], new DateTimezone('UTC'));
                 if( $section_edit_dt < $dt ) {
                     $section_edit = 'no';
                 } else {

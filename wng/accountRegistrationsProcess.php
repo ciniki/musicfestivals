@@ -1885,7 +1885,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 }
             }
             elseif( preg_match("/(title|composer|movements|perf_time|video_url|music_orgfilename|backtrack)/", $fid)
-                && $festival['edit'] == 'yes' 
+                && ($festival['edit'] == 'yes' || (isset($selected_section['edit']) && $selected_section['edit'] == 'yes'))
                 && $registration['billing_customer_id'] == $request['session']['customer']['id']
                 ) {
                 $fields[$fid]['editable'] = 'yes';

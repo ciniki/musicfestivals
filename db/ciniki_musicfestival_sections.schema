@@ -32,7 +32,7 @@
 #
 # live_end_dt:          The UTC date and time live registrations close for this section.
 # virtual_end_dt:       The UTC date and time virtual registrations close for this section.
-# edit_end_dt:          The UTC date and time deadline for editing titles and times
+# titles_end_dt:          The UTC date and time deadline for editing titles and times
 # upload_end_dt:        The UTC date and time deadline for uploading video URL's and music.
 #
 # date_added:           The UTC date and time the record was added.
@@ -56,7 +56,7 @@ create table ciniki_musicfestival_sections (
     recommendations_description text not null,
     live_end_dt datetime not null,
     virtual_end_dt datetime not null,
-    edit_end_dt datetime not null,
+    titles_end_dt datetime not null,
     upload_end_dt datetime not null,
     date_added datetime not null,
     last_updated datetime not null,
