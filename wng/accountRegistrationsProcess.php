@@ -2234,7 +2234,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $accompanist_registrations[] = $reg;
             } elseif( $reg['invoice_status'] == 10 ) {
                 $cart_registrations[] = $reg;
-            } elseif( $reg['status'] == 50 ) {  
+            } elseif( $reg['invoice_status'] == 50 ) {  
                 // Based on status from registration NOT invoice status
                 $paid_registrations[] = $reg;
             } elseif( $reg['invoice_status'] == 42 ) {
