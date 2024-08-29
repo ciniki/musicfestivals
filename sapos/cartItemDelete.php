@@ -38,7 +38,7 @@ function ciniki_musicfestivals_sapos_cartItemDelete($ciniki, $tnid, $invoice_id,
         }
         $item = $rc['item'];
 
-        if( $item['status'] != 6 ) {
+        if( $item['status'] != 5 ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.137', 'msg'=>'This registration cannot be removed.'));
         }
 

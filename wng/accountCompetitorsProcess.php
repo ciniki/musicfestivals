@@ -118,11 +118,8 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         }
     }
 
-//    if( !isset($festival['waiver-msg']) || $festival['waiver-msg'] == '' ) {
-//        $festival['waiver-msg'] = 'Terms and Conditions';
-//    }
-    if( !isset($festival['waiver-title']) || $festival['waiver-title'] == '' ) {
-        $festival['waiver-title'] = 'Terms and Conditions';
+    if( !isset($festival['waiver-general-title']) || $festival['waiver-general-title'] == '' ) {
+        $festival['waiver-general-title'] = 'Terms and Conditions';
     }
 
     //
@@ -512,10 +509,10 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         'class' => '',
         'value' => (isset($_POST['f-comp_notes']) ? trim($_POST['f-comp_notes']) : (isset($competitor['notes']) ? $competitor['notes'] :'')),
         );
-    if( isset($festival['waiver-msg']) && $festival['waiver-msg'] != '' ) {
+    if( isset($festival['waiver-general-msg']) && $festival['waiver-general-msg'] != '' ) {
         $fields['termstitle'] = array(
             'id' => "termstitle",
-            'label' => $festival['waiver-title'],
+            'label' => $festival['waiver-general-title'],
             'ftype' => 'content',
             'required' => 'yes',
             'size' => 'large',
@@ -524,7 +521,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             );
         $fields['terms'] = array(
             'id' => "terms",
-            'label' => $festival['waiver-msg'],
+            'label' => $festival['waiver-general-msg'],
             'ftype' => 'checkbox',
             'size' => 'large',
             'required' => 'yes',
@@ -561,11 +558,11 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     );
             }
         }
-        if( isset($festival['waiver-msg']) && $festival['waiver-msg'] != '' 
+        if( isset($festival['waiver-general-msg']) && $festival['waiver-general-msg'] != '' 
             && (!isset($fields['terms']['value']) || $fields['terms']['value'] != 'on') 
             ) {
             $errors[] = array(
-                'msg' => "You must accept the {$festival['waiver-title']} for the competitor.",
+                'msg' => "You must accept the {$festival['waiver-general-title']} for the competitor.",
                 );
         }
         //

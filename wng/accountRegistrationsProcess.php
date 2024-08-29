@@ -806,6 +806,55 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         }
 
         //
+        // Check if not a duplicate entry for same class
+        //
+        if( isset($selected_class['flags']) && ($selected_class['flags']&0x02) == 0 ) {
+            $competitor_ids = array();
+            for( $i = 1; $i <= 5; $i++) {
+                if( isset($_POST["f-competitor{$i}_id"]) 
+                    && is_numeric($_POST["f-competitor{$i}_id"]) 
+                    && $_POST["f-competitor{$i}_id"] > 0 
+                    ) {
+                    $competitor_ids[] = $_POST["f-competitor{$i}_id"];
+                } elseif( isset($registration["competitor{$i}_id"]) 
+                    && is_numeric($registration["competitor{$i}_id"]) 
+                    && $registration["competitor{$i}_id"] > 0 
+                    ) {
+                    $competitor_ids[] = $registration["competitor{$i}_id"];
+                }
+            }
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
+            $strsql = "SELECT COUNT(*) AS num_registrations "
+                . "FROM ciniki_musicfestival_registrations AS registrations "
+                . "WHERE festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+                . "AND class_id = '" . ciniki_core_dbQuote($ciniki, $selected_class['id']) . "' "
+                . "AND ("
+                    . "registrations.competitor1_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
+                    . "OR registrations.competitor2_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
+                    . "OR registrations.competitor3_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
+                    . "OR registrations.competitor4_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
+                    . "OR registrations.competitor5_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
+                    . ") "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "";
+            if( isset($registration['registration_id']) && $registration['registration_id'] > 0 ) {
+                $strsql .= "AND registrations.id <> '" . ciniki_core_dbQuote($ciniki, $registration['registration_id']) . "' ";
+            }
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+            $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.329', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+            }
+            $num_items = isset($rc['num']) ? $rc['num'] : '';
+            if( $num_items > 0 ) {  
+                $errors[] = array(
+                    'msg' => 'You have already registered for this class.',
+                    );
+            } 
+
+        }
+
+        //
         // Check if member is still open
         //
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
@@ -1539,7 +1588,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                         'item_id' => $rc['item']['id'],
                         ));
                     if( $rc['stat'] != 'ok' ) {
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.329', 'msg'=>'Unable to remove registration', 'err'=>$rc['err']));
+                        $blocks[] = array(
+                            'type' => 'msg',
+                            'level' => 'error',
+                            'content' => 'This registration cannot be removed, please contact us.',
+                            );
+                        return array('stat'=>'ok', 'blocks'=>$blocks);
                     }
                 } 
                 //
@@ -1701,7 +1755,6 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $fields[$fid]['flex-basis'] = '50%';
             } elseif( $field['ftype'] == 'select' ) {
                 $fields[$fid]['ftype'] = 'viewtext';
-                //error_log(print_r($field,true));
                 if( isset($field['options'][$field['value']]['codename']) ) {
                     $fields[$fid]['value'] = $field['options'][$field['value']]['codename'];
                 } 
