@@ -63,7 +63,8 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
         . "classes.name, "
         . "classes.sequence, "
         . "classes.synopsis, "
-        . "classes.keywords "
+        . "classes.keywords, "
+        . "classes.options "
         . "FROM ciniki_musicfestival_classes AS classes "
         . "WHERE classes.id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
         . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -76,6 +77,11 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.383', 'msg'=>'Unable to find requested class'));
     }
     $class = $rc['class'];
+   
+    $options = array();
+    if( $class['options'] != '' ) {
+        $options = json_decode($class['options'], true);
+    }
     
     //
     // Check if the code is unique
@@ -138,6 +144,29 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
     }
     if( $rc['keywords'] != $class['keywords'] ) {
         $args['keywords'] = $rc['keywords'];
+    }
+
+    //
+    // Update the options
+    //
+    for($i = 1; $i <= 8; $i++) {
+        if( isset($ciniki['request']['args']["title{$i}"]) ) {
+            $options["title{$i}"] = $ciniki['request']['args']["title{$i}"];
+        }
+        if( isset($ciniki['request']['args']["movements{$i}"]) ) {
+            $options["movements{$i}"] = $ciniki['request']['args']["movements{$i}"];
+        }
+        if( isset($ciniki['request']['args']["composer{$i}"]) ) {
+            $options["composer{$i}"] = $ciniki['request']['args']["composer{$i}"];
+        }
+        if( isset($ciniki['request']['args']["perf_time{$i}"]) ) {
+            $options["perf_time{$i}"] = $ciniki['request']['args']["perf_time{$i}"];
+        }
+    }
+
+    $options = json_encode($options);
+    if( $options != $class['options'] ) {
+        $args['options'] = $options;
     }
 
     //

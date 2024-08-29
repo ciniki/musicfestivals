@@ -64,6 +64,26 @@ function ciniki_musicfestivals_classAdd(&$ciniki) {
     }
 
     //
+    // Update the options
+    //
+    $options = array();
+    for($i = 1; $i <= 8; $i++) {
+        if( isset($ciniki['request']['args']["title{$i}"]) ) {
+            $options["title{$i}"] = $ciniki['request']['args']["title{$i}"];
+        }
+        if( isset($ciniki['request']['args']["movements{$i}"]) ) {
+            $options["movements{$i}"] = $ciniki['request']['args']["movements{$i}"];
+        }
+        if( isset($ciniki['request']['args']["composer{$i}"]) ) {
+            $options["composer{$i}"] = $ciniki['request']['args']["composer{$i}"];
+        }
+        if( isset($ciniki['request']['args']["perf_time{$i}"]) ) {
+            $options["perf_time{$i}"] = $ciniki['request']['args']["perf_time{$i}"];
+        }
+    }
+    $args['options'] = json_encode($options);
+
+    //
     // Check if the code is unique
     //
     $strsql = "SELECT id "

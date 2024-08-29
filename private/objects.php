@@ -162,6 +162,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'synopsis'=>array('name'=>'Synopsis', 'default'=>''),
             'schedule_seconds'=>array('name'=>'Schedule Seconds', 'default'=>'0'),
             'keywords'=>array('name'=>'Keywords', 'default'=>''),
+            'options'=>array('name'=>'Options', 'default'=>'{}'),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );

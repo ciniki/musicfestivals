@@ -170,7 +170,8 @@ function ciniki_musicfestivals_classGet($ciniki) {
             . "ciniki_musicfestival_classes.max_titles, "
             . "ciniki_musicfestival_classes.provincials_code, "
             . "ciniki_musicfestival_classes.synopsis, "
-            . "ciniki_musicfestival_classes.schedule_seconds "
+            . "ciniki_musicfestival_classes.schedule_seconds, "
+            . "ciniki_musicfestival_classes.options "
             . "FROM ciniki_musicfestival_classes "
             . "INNER JOIN ciniki_musicfestival_categories ON ( "
                 . "ciniki_musicfestival_classes.category_id = ciniki_musicfestival_categories.id "
@@ -184,7 +185,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
                 'fields'=>array('festival_id', 'category_id', 'section_id', 'code', 'name', 'permalink', 'sequence', 'flags', 
                     'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 
                     'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 'provincials_code', 'synopsis',
-                    'schedule_seconds',
+                    'schedule_seconds', 'options',
                     )),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -199,6 +200,15 @@ function ciniki_musicfestivals_classGet($ciniki) {
         $class['virtual_fee'] = number_format($class['virtual_fee'], 2);
         $class['earlybird_plus_fee'] = number_format($class['earlybird_plus_fee'], 2);
         $class['plus_fee'] = number_format($class['plus_fee'], 2);
+
+        if( $class['options'] != '' ) {
+            $options = json_decode($class['options'], true);
+            foreach($options as $k => $v) {
+                if( $k != '' ) {
+                    $class[$k] = $v;
+                }
+            }
+        }
 
         //
         // Get the tags for the class

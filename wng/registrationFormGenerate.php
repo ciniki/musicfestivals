@@ -104,7 +104,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         . "classes.fee, "
         . "classes.virtual_fee, "
         . "classes.earlybird_plus_fee, "
-        . "classes.plus_fee "
+        . "classes.plus_fee, "
+        . "classes.options "
         . "FROM ciniki_musicfestival_sections AS sections "
         . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
             . "sections.id = categories.section_id "
@@ -130,7 +131,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     'min_competitors', 'max_competitors', 
                     'min_titles', 'max_titles', 
                     'earlybird_fee', 'fee', 
-                    'vfee' => 'virtual_fee', 'earlybird_plus_fee', 'plus_fee'),
+                    'vfee' => 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 'options'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -201,6 +202,12 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     'mit' => $section_class['min_titles'],
                     'mat' => $section_class['max_titles'],
                     );
+                if( ($section_class['flags']&0x10) == 0x10 ) {
+                    $js_classes[$cid]['opt'] = [];
+                    if( isset($section_class['options']) && $section_class['options'] != '' ) {
+                        $js_classes[$cid]['opt'] = json_decode($section_class['options'], true);
+                    }
+                }
                 //
                 // Check syllabus class name format
                 //
@@ -380,6 +387,10 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             break;
         }
     }
+    if( isset($selected_class['options']) && $selected_class['options'] != '' ) {
+        $selected_class['options'] = json_decode($selected_class['options'], true);
+    }
+
 
     //
     // Setup the fields for the form
@@ -850,6 +861,15 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'label' => "{$prefix} " . (isset($festival['registration-title-label']) && $festival['registration-title-label'] != '' ? $festival['registration-title-label'] : "Title"),
             'value' => isset($_POST["f-title{$i}"]) ? $_POST["f-title{$i}"] : (isset($registration["title{$i}"]) ? $registration["title{$i}"] : ''),
             );
+        if( isset($selected_class) && ($selected_class['flags']&0x10) == 0x10 && isset($selected_class['options']["title{$i}"]) ) {
+            $fields["title{$i}"]['value'] = $selected_class['options']["title{$i}"];
+            $fields["title{$i}"]['editable'] = 'no';
+            $fields["title{$i}"]['disabled'] = 'yes';
+        } elseif( isset($_POST["f-title{$i}"]) ) {
+            $fields["title{$i}"]['value'] = $_POST["f-title{$i}"];
+        } elseif( isset($registration["title{$i}"]) ) {
+            $fields["title{$i}"]['value'] = $registration["title{$i}"];
+        }
 
         $fields["movements{$i}"] = array(
             'id' => "movements{$i}",
@@ -868,6 +888,15 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         }
         elseif( $required == 'yes' && ($selected_class['flags']&0x08000000) == 0x08000000 ) {
             $fields["movements{$i}"]['required'] = 'no';
+        }
+        if( isset($selected_class) && ($selected_class['flags']&0x10) == 0x10 && isset($selected_class['options']["movements{$i}"]) ) {
+            $fields["movements{$i}"]['value'] = $selected_class['options']["movements{$i}"];
+            $fields["movements{$i}"]['editable'] = 'no';
+            $fields["movements{$i}"]['disabled'] = 'yes';
+        } elseif( isset($_POST["f-movements{$i}"]) ) {
+            $fields["movements{$i}"]['value'] = $_POST["f-movements{$i}"];
+        } elseif( isset($registration["movements{$i}"]) ) {
+            $fields["movements{$i}"]['value'] = $registration["movements{$i}"];
         }
 
         $fields["composer{$i}"] = array(
@@ -888,6 +917,15 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         elseif( ($selected_class['flags']&0x20000000) == 0x20000000 ) {
             $fields["composer{$i}"]['required'] = 'no';
         }
+        if( isset($selected_class) && ($selected_class['flags']&0x10) == 0x10 && isset($selected_class['options']["composer{$i}"]) ) {
+            $fields["composer{$i}"]['value'] = $selected_class['options']["composer{$i}"];
+            $fields["composer{$i}"]['editable'] = 'no';
+            $fields["composer{$i}"]['disabled'] = 'yes';
+        } elseif( isset($_POST["f-composer{$i}"]) ) {
+            $fields["composer{$i}"]['value'] = $_POST["f-composer{$i}"];
+        } elseif( isset($registration["composer{$i}"]) ) {
+            $fields["composer{$i}"]['value'] = $registration["composer{$i}"];
+        }
 
 /*            $fields["title{$i}"] = array(
                 'id' => "title{$i}",
@@ -902,19 +940,22 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 );
         } */
 
-        if( isset($registration["perf_time{$i}"]) ) {
+        if( isset($selected_class) && ($selected_class['flags']&0x10) == 0x10 && isset($selected_class['options']["perf_time{$i}"]) ) {
+            $perf_time = $selected_class['options']["perf_time{$i}"];
+        } elseif( isset($_POST["f-perf_time{$i}-min"]) || isset($_POST["f-perf_time{$i}-sec"]) ) {
+            if( isset($_POST["f-perf_time{$i}-min"]) ) {
+                $perf_time = $_POST["f-perf_time{$i}-min"]*60;
+            }
+            if( isset($_POST["f-perf_time{$i}-sec"]) ) {
+                $perf_time += $_POST["f-perf_time{$i}-sec"];
+            }
+        } elseif( isset($registration["perf_time{$i}"]) ) {
             $perf_time = $registration["perf_time{$i}"];
         } else {
             $perf_time = 0;
         }
         if( $perf_time == '' ) {
             $perf_time = 0;
-        }
-        if( isset($_POST["f-perf_time{$i}-min"]) ) {
-            $perf_time = $_POST["f-perf_time{$i}-min"]*60;
-        }
-        if( isset($_POST["f-perf_time{$i}-sec"]) ) {
-            $perf_time += $_POST["f-perf_time{$i}-sec"];
         }
 //            $perf_time = (isset($_POST["f-perf_time{$i}-min"]) ? ($_POST["f-perf_time{$i}-min"]*60) : (isset($registration["perf_time{$i}"]) ? (intval($registration["perf_time{$i}"]/60)*60) : 0))
 //                + (isset($_POST["f-perf_time{$i}-sec"]) ? $_POST["f-perf_time{$i}-sec"] : (isset($registration["perf_time{$i}"]) ? ($registration["perf_time{$i}"] % 60) :0));
@@ -933,6 +974,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'error_label' => "{$prefix} " . (isset($festival['registration-length-label']) && $festival['registration-length-label'] != '' ? $festival['registration-length-label'] : 'Piece Length'),
             'value' => $perf_time,
             );
+        if( isset($selected_class) && ($selected_class['flags']&0x10) == 0x10 && isset($selected_class['options']["perf_time{$i}"]) && $perf_time > 0 ) {
+            $fields["perf_time{$i}"]['disabled'] = 'yes';
+        }
         $fields["video_url{$i}"] = array(
             'id' => "video_url{$i}",
             'ftype' => 'text',
@@ -1246,7 +1290,41 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                         . "C.aC(C.gE('f-music_orgfilename'+i).parentNode,'hidden');"
                         . "C.aC(C.gE('f-backtrack'+i).parentNode,'hidden');"
                     . "}"
-                . "}"
+                    . "C.gE('f-title'+i).readOnly=false;"
+                    . "C.gE('f-movements'+i).readOnly=false;"
+                    . "C.gE('f-composer'+i).readOnly=false;"
+                    . "C.gE('f-title'+i).disabled=false;"
+                    . "C.gE('f-movements'+i).disabled=false;"
+                    . "C.gE('f-composer'+i).disabled=false;"
+                    . "C.gE('f-perf_time'+i+'-min').disabled=false;"
+                    . "C.gE('f-perf_time'+i+'-sec').disabled=false;"
+                    . "if(classes[c]!=null&&(classes[c].f&0x10)==0x10&&classes[c].opt!=null){"
+                        . "if(classes[c].opt['title'+i]!=null&&classes[c].opt['title'+i]!=''){"
+                            . "C.gE('f-title'+i).value=classes[c].opt['title'+i];"
+                            . "C.gE('f-title'+i).readOnly=true;"
+                            . "C.gE('f-title'+i).disabled=true;"
+                        . "}" 
+                        . "if(classes[c].opt['movements'+i]!=null&&classes[c].opt['movements'+i]!=''){"
+                            . "C.gE('f-movements'+i).value=classes[c].opt['movements'+i];"
+                            . "C.gE('f-movements'+i).readOnly=true;"
+                            . "C.gE('f-movements'+i).disabled=true;"
+                        . "}"
+                        . "if(classes[c].opt['composer'+i]!=null&&classes[c].opt['composer'+i]!=''){"
+                            . "C.gE('f-composer'+i).value=classes[c].opt['composer'+i];"
+                            . "C.gE('f-composer'+i).readOnly=true;"
+                            . "C.gE('f-composer'+i).disabled=true;"
+                        . "}"
+                        . "if(classes[c].opt['perf_time'+i]!=null&&classes[c].opt['perf_time'+i]!=''){"
+                            . "var n=parseInt(classes[c].opt['perf_time'+i]);"
+                            . "if(n>0){"
+                                . "C.gE('f-perf_time'+i+'-min').value=Math.floor(n/60);"
+                                . "C.gE('f-perf_time'+i+'-min').disabled=true;"
+                                . "C.gE('f-perf_time'+i+'-sec').value=Math.ceil((n%60)/5)*5;"
+                                . "C.gE('f-perf_time'+i+'-sec').disabled=true;"
+                            . "}"
+                        . "}"
+                    . "}"
+                . "}" // End of processing titles
             . "}"
         . "};"
         . "function competitorSelected(c) {"

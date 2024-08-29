@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN options text NOT NULL AFTER keywords;
+ALTER TABLE ciniki_musicfestival_classes COMMENT='v1.13';
