@@ -404,7 +404,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
         }
         $blocks[] = array(
             'type' => 'buttons',
-            'class' => 'syllabus-buttons',
+            'class' => 'musicfestival-syllabus syllabus-buttons',
             'list' => $sections,
             );
     }
