@@ -62,6 +62,7 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
             . ") "
         . "WHERE festivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND festivals.status = 30 "
+        . "GROUP BY festivals.id "
         . "ORDER BY festivals.start_date DESC "
         . "LIMIT 1 "
         . "";
