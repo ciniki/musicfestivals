@@ -3062,7 +3062,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . ") "
                 . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
                 . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "GROUP BY classes.id "
+                . "GROUP BY categories.sequence, classes.id "
                 . "ORDER BY categories.sequence, classes.sequence, classes.code, classes.name "
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
