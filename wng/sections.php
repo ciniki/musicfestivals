@@ -26,7 +26,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     //
     // Load the list of festivals in descending order
     //
-    $strsql = "SELECT id, name, flags "
+    $strsql = "SELECT id, name, flags, start_date "
         . "FROM ciniki_musicfestivals "
         . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY start_date DESC "
@@ -73,6 +73,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         . "CONCAT_WS('-', festivals.id, sections.syllabus) AS sid, "
         . "festivals.name, "
         . "festivals.flags, "
+        . "festivals.start_date, "
         . "sections.syllabus "
         . "FROM ciniki_musicfestivals AS festivals "
         . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
