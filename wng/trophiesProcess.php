@@ -44,7 +44,13 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.561', 'msg'=>'Unable to load section', 'err'=>$rc['err']));
         }
         if( isset($rc['section']) ) {
-            $festival_id = json_decode($rc['section']['settings'], true)['festival-id'];
+            $settings = json_decode($rc['section']['settings'], true);
+            if( isset($settings['syllabus-id']) && preg_match("/^([0-9]+)(\-|$)/", $settings['syllabus-id'], $m) ) {
+                $festival_id = $m[1];
+            }
+            elseif( isset($settings['festival-id']) ) {
+                $festival_id = $settings['festival-id'];
+            }
         }
     }
 
@@ -216,6 +222,7 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
 
         $blocks[] = array(
             'type' => 'title',
+            'level' => 2,
             'class' => 'limit-width limit-width-80',
             'title' => $category_permalink . ' - ' . $trophy['name'],
             );
@@ -298,6 +305,7 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
                     );
             }
         }
+        return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
 
 
     }
@@ -310,7 +318,11 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
         $strsql = "SELECT id, "
             . "name, "
             . "permalink, "
-            . "primary_image_id "
+            . "primary_image_id, "
+            . "donated_by, "
+            . "first_presented, "
+            . "criteria, "
+            . "description "
             . "FROM ciniki_musicfestival_trophies "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND category = '" . ciniki_core_dbQuote($ciniki, $category_permalink) . "' "
@@ -319,7 +331,8 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'trophies', 'fname'=>'permalink', 
-                'fields'=>array('id', 'title'=>'name', 'permalink', 'image-id'=>'primary_image_id')),
+                'fields'=>array('id', 'title'=>'name', 'permalink', 'image-id'=>'primary_image_id',
+                    'donated_by', 'first_presented', 'criteria', 'description')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.343', 'msg'=>'Unable to load trophies', 'err'=>$rc['err']));
@@ -329,6 +342,25 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
         foreach($trophies as $tid =>$trophy) {
             $trophies[$tid]['url'] = $base_url . '/' . urlencode($category_permalink) . '/' . urlencode($trophy['permalink']);
             $trophies[$tid]['title-position'] = 'overlay-bottomhalf';
+
+            if( isset($s['display-format']) && $s['display-format'] == 'buttons-list' ) {
+                $trophies[$tid]['full_description'] = '';
+                if( $trophy['donated_by'] != '' ) {
+                    $trophies[$tid]['full_description'] .= '<b>Donated By:</b> ' . $trophy['donated_by'] . '<br/>';
+                }
+                if( $trophy['first_presented'] != '' ) {
+                    $trophies[$tid]['full_description'] .= '<b>First Presented:</b> ' . $trophy['first_presented'] . '<br/>';
+                }
+                if( $trophy['criteria'] != '' ) {
+                    $trophies[$tid]['full_description'] .= '<b>Criteria:</b> ' . $trophy['criteria'] . '<br/>';
+                }
+                if( $trophy['description'] != '' ) {
+                    if( $trophies[$tid]['full_description'] != '' ) {   
+                        $trophies[$tid]['full_description'] .= '<br/>';
+                    }
+                    $trophies[$tid]['full_description'] .= $trophy['description'];
+                }
+            }
         }
 
         $blocks[] = array(
@@ -337,15 +369,29 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
             'class' => 'limit-width limit-width-80',
             'title' => $category_permalink,
             );
-        $blocks[] = array(
-            'type' => 'imagebuttons',
-            'class' => 'limit-width limit-width-80',
-            'image-version' => 'original',
-            'title-position' => 'overlay-bottomhalf',
-            'image-size' => 1024,
-            'items' => $trophies,
-            );
+        if( isset($s['display-format']) && $s['display-format'] == 'buttons-list' ) {
+            foreach($trophies as $trophy) {
+                $blocks[] = array(
+                    'type' => 'contentphoto',
+                    'image-position' => 'top-right-inline',
+                    'image-size' => 'large',
+                    'title' => $trophy['title'],
+                    'image-id' => $trophy['image-id'],
+                    'content' => $trophy['full_description'],
+                    );
+            }
+        } else {
+            $blocks[] = array(
+                'type' => 'imagebuttons',
+                'class' => 'limit-width limit-width-80',
+                'image-version' => 'original',
+                'title-position' => 'overlay-bottomhalf',
+                'image-size' => 1024,
+                'items' => $trophies,
+                );
+        }
 
+        return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
     }
 
     return array('stat'=>'ok', 'blocks'=>$blocks);
