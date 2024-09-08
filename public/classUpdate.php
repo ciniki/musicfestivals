@@ -95,10 +95,10 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.810', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.830', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
         }
         if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
-            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.41', 'msg'=>'You already have a class with that code, please choose another.'));
+            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.837', 'msg'=>'You already have a class with that code, please choose another.'));
         }
     }
 

@@ -114,7 +114,7 @@ function ciniki_musicfestivals_classAdd(&$ciniki) {
         return $rc;
     }
     if( $rc['num_rows'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.41', 'msg'=>'You already have a class with that name, please choose another.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.835', 'msg'=>'You already have a class with that name, please choose another.'));
     }
 
     //

@@ -3490,7 +3490,7 @@ function ciniki_musicfestivals_main() {
             'delete':{'label':'Delete', 
                 'visible':function() {return M.ciniki_musicfestivals_main.edit.festival_id > 0 ? 'yes' : 'no'; },
                 'fn':'M.ciniki_musicfestivals_main.edit.remove();'},
-            'deletefile':{'label':'Delete All Upload Music and Music', 'class':'delete',
+            'deletefile':{'label':'Delete All Upload Music PDFs and Backtracks', 'class':'delete',
                 'visible':function() {return M.ciniki_musicfestivals_main.edit.festival_id > 0 ? 'yes' : 'no'; },
                 'fn':'M.ciniki_musicfestivals_main.edit.removeFiles();'},
             }},

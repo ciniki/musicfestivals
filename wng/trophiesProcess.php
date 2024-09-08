@@ -366,7 +366,6 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
         $blocks[] = array(
             'type' => 'title',
             'level' => 1,
-            'class' => 'limit-width limit-width-80',
             'title' => $category_permalink,
             );
         if( isset($s['display-format']) && $s['display-format'] == 'buttons-list' ) {
@@ -383,7 +382,6 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
         } else {
             $blocks[] = array(
                 'type' => 'imagebuttons',
-                'class' => 'limit-width limit-width-80',
                 'image-version' => 'original',
                 'title-position' => 'overlay-bottomhalf',
                 'image-size' => 1024,
