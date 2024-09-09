@@ -437,6 +437,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                     }
                     $category['classes'][$cid]['fullname'] = $class['code'] . ' - ' . $class['name'];
                     if( ($festival['flags']&0x01) == 0x01 
+                        && ($class['flags']&0x01) == 0x01
                         && ($festival['live'] == 'yes' || $festival['virtual'] == 'yes') 
                         ) {
                         $category['classes'][$cid]['register'] = "<a class='button' href='{$request['ssl_domain_base_url']}/account/musicfestivalregistrations?add=yes&cl=" . $class['uuid'] . "'>Register</a>";

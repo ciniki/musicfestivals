@@ -113,6 +113,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             . ") "
         . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
             . "categories.id = classes.category_id "
+            . "AND (classes.flags&0x01) = 0x01 "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
