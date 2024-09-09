@@ -799,13 +799,12 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
 
     }
 
-
     //
     // Add performing titles
     //
     for($i = 1; $i <= 8; $i++ ) {
         $css_class = '';
-        $css_class = ($i > 1 ? 'hidden' : '');
+        $css_class = ($i > 0 ? 'hidden' : '');
         $required = 'yes';
         if( isset($selected_class) && $i <= $selected_class['max_titles'] ) {
             $css_class = '';
