@@ -97,7 +97,9 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         . "classes.name, "
         . "classes.permalink, "
         . "classes.sequence, "
+        . "classes.synopsis as class_synopsis, "
         . "classes.flags, "
+        . "classes.feeflags, "
         . "classes.earlybird_fee, "
         . "classes.fee, "
         . "classes.virtual_fee, "
@@ -143,8 +145,8 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         array('container'=>'categories', 'fname'=>'category_id', 
             'fields'=>array('name'=>'category_name', 'synopsis'=>'category_synopsis', 'description'=>'category_description')),
         array('container'=>'classes', 'fname'=>'id', 
-            'fields'=>array('id', 'festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 
-                'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee')),
+            'fields'=>array('id', 'festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 'feeflags',
+                'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 'synopsis'=>'class_synopsis')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -585,24 +587,41 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                     $fill=!$fill;
                 }
             } else {
-                $w = array(30, 120, 30);
+                $w = array(150, 30);
                 foreach($category['classes'] as $class) {
-                    $lh = $pdf->getStringHeight($w[1], $class['name']);
-                    if( $pdf->getY() > $pdf->getPageHeight() - $lh - 20) {
+                    $lh = $pdf->getStringHeight($w[0], $class['code'] . ' - ' . $class['name']);
+                    $lhs = 0;
+                    if( $class['synopsis'] != '' ) {
+                        $pdf->setCellPaddings(2, 2, 2, 1);
+                        $lh = $pdf->getStringHeight($w[0], $class['code'] . ' - ' . $class['name']);
+                        $indent = $pdf->getStringWidth($class['code'] . ' - ') + 2;
+                        $pdf->setCellPaddings($indent, 0, 2, 2);
+                        $lhs = $pdf->getStringHeight($w[0], $class['synopsis']);
+                        $pdf->setCellPaddings(2, 2, 2, 2);
+                    }
+                    if( $pdf->getY() > $pdf->getPageHeight() - $lh - $lhs - 20) {
                         $pdf->AddPage();
                         $pdf->SetFont('', 'B', '18');
                         $pdf->MultiCell(180, 10, $category['name'] . ' (continued)', 0, 'L', 0, 1);
-                        //$pdf->Cell(180, 10, $category['name'] . ' (continued)', 0, 0, 'L', 0);
-                        //$pdf->Ln(12);
                         $pdf->SetFont('', '', '12');
                     }
-//                    $pdf->Cell($w[0], $lh, $class['code'], 'TLB', 0, 'L', $fill);
-//                    $pdf->Cell($w[1], $lh, $class['name'], 'TB', 0, 'L', $fill);
-//                    $pdf->Cell($w[2], $lh, numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency), 'TRB', 0, 'C', $fill);
-                    $pdf->MultiCell($w[0], $lh, $class['code'], 'TLB', 'L', $fill, 0);
-                    $pdf->MultiCell($w[1], $lh, $class['name'], 'TB', 'L', $fill, 0);
-                    $pdf->MultiCell($w[2], $lh, number_format($class['fee'], 2), 'TRB', 'C', $fill, 0);
-                    $pdf->Ln($lh);
+
+                    if( $class['synopsis'] != '' ) {
+                        $x = $pdf->getX();
+                        $y = $pdf->getY();
+                        $pdf->setCellPaddings(2, 2, 2, 1);
+                        $pdf->MultiCell($w[0], $lh, $class['code'] . ' - ' . $class['name'], 'LT', 'L', $fill, 1);
+                        $pdf->SetFont('', 'I', '12');
+                        $pdf->setCellPaddings($indent, 0, 2, 2);
+                        $pdf->MultiCell($w[0], $lhs, $class['synopsis'], 'LB', 'L', $fill, 0);
+                        $pdf->setCellPaddings(2, 2, 2, 2);
+                        $pdf->SetFont('', '', '12');
+                        $pdf->setY($y);
+                        $pdf->setX($x+$w[0]);
+                    } else {
+                        $pdf->MultiCell($w[0], $lh, $class['code'] . ' - ' . $class['name'], 'LTB', 'L', $fill, 0);
+                    }
+                    $pdf->MultiCell($w[1], $lh+$lhs, number_format($class['fee'], 2), 'TRB', 'C', $fill, 1);
                     $fill=!$fill;
                 }
             }
