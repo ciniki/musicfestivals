@@ -199,7 +199,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             }
 
             $this->Ln(8);
-            $this->SetFont('times', 'B', 20);
+            $this->SetFont('helvetica', 'B', 20);
             if( $img_width > 0 ) {
                 $this->Cell($img_width, 10, '', 0);
             }
@@ -207,12 +207,12 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             $this->Cell(180-$img_width, 12, $this->header_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
             $this->Ln(7);
 
-            $this->SetFont('times', 'B', 14);
+            $this->SetFont('helvetica', 'B', 14);
             $this->setX($this->left_margin + $img_width);
             $this->Cell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
             $this->Ln(6);
 
-            $this->SetFont('times', 'B', 12);
+            $this->SetFont('helvetica', 'B', 12);
             $this->setX($this->left_margin + $img_width);
             $this->Cell(180-$img_width, 10, $this->header_msg, 0, false, 'R', 0, '', 0, false, 'M', 'M');
             $this->Ln(6);
@@ -276,7 +276,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
     // set font
-    $pdf->SetFont('times', 'BI', 10);
+    $pdf->SetFont('helvetica', 'BI', 10);
     $pdf->SetCellPadding(2);
 
     // add a page
@@ -621,7 +621,10 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                     } else {
                         $pdf->MultiCell($w[0], $lh, $class['code'] . ' - ' . $class['name'], 'LTB', 'L', $fill, 0);
                     }
-                    $pdf->MultiCell($w[1], $lh+$lhs, number_format($class['fee'], 2), 'TRB', 'C', $fill, 1);
+                    $pdf->setCellPaddings(2, 2, 3, 2);
+                    $pdf->MultiCell($w[1], $lh+$lhs, '$' . number_format($class['fee'], 2), 'TRB', 'R', $fill, 0, null, null, true, 0, false, true, ($lh+$lhs), 'M');
+                    $pdf->setCellPaddings(2, 2, 2, 2);
+                    $pdf->Ln($lh+$lhs);
                     $fill=!$fill;
                 }
             }
