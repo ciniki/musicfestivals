@@ -96,6 +96,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         . "classes.name AS class_name, "
         . "CONCAT_WS(' - ', sections.name, classes.code, classes.name) AS sectionclassname, "
         . "classes.flags AS class_flags, "
+        . "classes.feeflags, "
         . "classes.min_competitors, "
         . "classes.max_competitors, "
         . "classes.min_titles, "
@@ -128,7 +129,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             ),
         array('container'=>'classes', 'fname'=>'class_id', 
             'fields'=>array('id'=>'class_id', 'uuid'=>'class_uuid', 'category_name', 'code'=>'class_code', 
-                'name'=>'class_name', 'sectionclassname', 'flags'=>'class_flags', 
+                'name'=>'class_name', 'sectionclassname', 'flags'=>'class_flags', 'feeflags',
                     'min_competitors', 'max_competitors', 
                     'min_titles', 'max_titles', 
                     'earlybird_fee', 'fee', 
@@ -198,6 +199,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             foreach($section['classes'] as $cid => $section_class) {
                 $js_classes[$cid] = array(
                     'f' => $section_class['flags'],
+                    'ff' => $section_class['feeflags'],
                     'mic' => $section_class['min_competitors'],
                     'mac' => $section_class['max_competitors'],
                     'mit' => $section_class['min_titles'],
@@ -711,7 +713,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     }
     // Virtual
     if( ($festival['flags']&0x02) == 0x02 ) {
-        $fields['line-virtual'] = array(
+        $fields['line-participation'] = array(
+            'id' => 'line-participation',
             'ftype' => 'line',
             );
         $fields['participation'] = array(
@@ -768,13 +771,18 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 unset($fields['participation']['options'][0]);
             }
         }
-//        $fields['line-b'] = array(
-//            'ftype' => 'line',
-//            );
+        //
+        // Check if selected class should hide participation
+        //
+        if( ($selected_class['feeflags']&0x0a) != 0x0a ) {
+            $fields['line-participation']['class'] = 'hidden';
+            $fields['participation']['class'] = 'hidden';
+        }
     }
     // Adjudication Plus
-    if( ($festival['flags']&0x10) == 0x10 ) {
+    elseif( ($festival['flags']&0x10) == 0x10 ) {
         $fields['line-participation'] = array(
+            'id' => 'line-participation',
             'ftype' => 'line',
             );
         $fields['participation'] = array(
@@ -797,7 +805,10 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         //
         $fields['participation']['options'][0] .= ' - $' . number_format($selected_class['fee'], 2);
         $fields['participation']['options'][2] .= ' - $' . number_format($selected_class['plus_fee'], 2);
-
+        if( ($selected_class['feeflags']&0x22) != 0x22 ) {
+            $fields['line-participation']['class'] = 'hidden';
+            $fields['participation']['class'] = 'hidden';
+        }
     }
 
     //
@@ -1101,6 +1112,15 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 . "}"
                 . "s.appendChild(new Option('virtually and submit a video - '+clsvp[c]+latefee, 1,0,(v==1?1:0)));"
             . "}"
+            . "var sl=C.gE('f-line-participation');"
+            . "if(classes[c]!=null&&(classes[c].ff&0x0a)!=0x0a){"
+                . "s.parentNode.classList.add('hidden');"
+                . "sl.classList.add('hidden');"
+            . "}else{"
+                . "s.parentNode.classList.remove('hidden');"
+                . "sl.classList.remove('hidden');"
+            . "}"
+            . "console.log(classes[c]);"
             . "video=v;"
             . "music=" . (($festival['flags']&0x0200) == 0x0200 ? '1' : 'v') . ";"
             . "";

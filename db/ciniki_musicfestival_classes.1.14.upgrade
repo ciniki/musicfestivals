@@ -1,4 +1,4 @@
-ALTER TABLE ciniki_musicfestival_classes ADD COLUMN feeflags int NOT NULL AFTER flags;
-UPDATE ciniki_musicfestival_classes SET feeflags = IF(earlybird_fee > 0, 1, 0) | IF(fee > 0, 2, 0) | IF(virtual_fee > 0, 8) | IF(earlybird_plus_fee > 0, 16, 0) | IF(plus_fee > 0, 32, 0);
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN feeflags int unsigned NOT NULL AFTER flags;
+UPDATE ciniki_musicfestival_classes SET feeflags = IF(earlybird_fee > 0, 1, 0) | IF(fee > 0, 2, 0) | IF(virtual_fee > 0, 8, 0) | IF(earlybird_plus_fee > 0, 16, 0) | IF(plus_fee > 0, 32, 0);
 UPDATE ciniki_musicfestival_classes SET feeflags = 2 where feeflags = 0;
 ALTER TABLE ciniki_musicfestival_classes COMMENT='v1.14';

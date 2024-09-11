@@ -24,8 +24,8 @@
 #                           0x08 - Instrument optional **future placeholder, not implemented**
 #                           0x10 - Fixed title(s)
 #                           0x20 - 
-#                           0x40 - 
-#                           0x80 - 
+#                           0x40 - Teacher Required
+#                           0x80 - Teacher Optional
 #                           0x0100 - Mark
 #                           0x0200 - Placement
 #                           0x0400 - Level
@@ -50,6 +50,17 @@
 #                           0x20000000 - Composer Optional
 #                           0x40000000 - 
 #                           0x80000000 - 
+#
+# feeflags:             The options for the fees
+
+#                           0x01 - Earlybird Live Fee
+#                           0x02 - Live Fee
+#                           0x04 - Earlybird Virtual Fee **future**
+#                           0x08 - Virtual Fee
+#                           0x10 - Earlybird Plus Plus Fee
+#                           0x20 - Plus Live Fee
+#                           0x40 -      ** saved for possible future fee type **
+#                           0x80 -      ** saved for possible future fee type **
 #
 # earlybird_fee:        The earlybird fee for the class.
 # fee:                  The fee for the class.
@@ -87,6 +98,7 @@ create table ciniki_musicfestival_classes (
     permalink varchar(150) not null,
     sequence tinyint unsigned not null,
     flags int unsigned not null,
+    feeflags int unsigned not null,
     earlybird_fee decimal(19,6) not null,
     fee decimal(19,6) not null,
     virtual_fee decimal(19,6) not null,
@@ -110,4 +122,4 @@ create table ciniki_musicfestival_classes (
     index (festival_id, category_id, tnid),
     index keywords (keywords),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.13';
+) ENGINE='InnoDB', COMMENT='v1.14';

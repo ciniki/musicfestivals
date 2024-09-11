@@ -49,20 +49,12 @@ function ciniki_musicfestivals_classGet($ciniki) {
         //
         // Get the additional settings
         //
-        $festival = array();
-        $strsql = "SELECT detail_key, detail_value "
-            . "FROM ciniki_musicfestival_settings "
-            . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-            . "";
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
-        $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.733', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+        $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $args['festival_id']);
+        if( $rc['stat'] != 'ok' ) { 
+            return $rc;
         }
-        foreach($rc['settings'] as $k => $v) {
-            $festival[$k] = $v;
-        }
+        $festival = $rc['festival'];
     }
 
     //
@@ -119,6 +111,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
             'permalink' => '',
             'sequence' => $seq,
             'flags' => 0x4001,
+            'feeflags' => 0,
             'earlybird_fee' => '',
             'fee' => '',
             'virtual_fee' => '',
@@ -141,7 +134,19 @@ function ciniki_musicfestivals_classGet($ciniki) {
         if( isset($festival['comments-level-ui']) && $festival['comments-level-ui'] == 'yes' ) {
             $class['flags'] |= 0x0400;
         }
-
+        if( ($festival['flags']&0x20) == 0x20 ) {
+            $class['feeflags'] |= 0x01;     // Earlybird
+        }
+        $class['feeflags'] |= 0x02;         // Live
+        if( ($festival['flags']&0x02) == 0x02 ) {
+            $class['feeflags'] |= 0x08;     // Virtual
+        }
+        if( ($festival['flags']&0x10) == 0x10 ) {
+            if( ($festival['flags']&0x20) == 0x20 ) {
+                $class['feeflags'] |= 0x10;     // Earlybird Plus live
+            }
+            $class['feeflags'] |= 0x20;     // Plus live
+        }
     }
 
     //
@@ -157,6 +162,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
             . "ciniki_musicfestival_classes.permalink, "
             . "ciniki_musicfestival_classes.sequence, "
             . "ciniki_musicfestival_classes.flags, "
+            . "ciniki_musicfestival_classes.feeflags, "
             . "ciniki_musicfestival_classes.earlybird_fee, "
             . "ciniki_musicfestival_classes.fee, "
             . "ciniki_musicfestival_classes.virtual_fee, "
@@ -180,7 +186,8 @@ function ciniki_musicfestivals_classGet($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'classes', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'category_id', 'section_id', 'code', 'name', 'permalink', 'sequence', 'flags', 
+                'fields'=>array('festival_id', 'category_id', 'section_id', 'code', 'name', 'permalink', 
+                    'sequence', 'flags', 'feeflags', 
                     'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 
                     'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 'provincials_code', 'synopsis',
                     'schedule_seconds', 'options',

@@ -334,6 +334,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         . "classes.permalink, "
         . "classes.sequence, "
         . "classes.flags, "
+        . "classes.feeflags, "
         . "earlybird_fee, "
         . "fee, "
         . "virtual_fee, "
@@ -366,7 +367,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             )),
         array('container'=>'classes', 'fname'=>'id',  
             'fields'=>array('id', 'uuid', 'festival_id', 'category_id', 'code', 'name', 'synopsis',
-                'permalink', 'sequence', 'flags', 
+                'permalink', 'sequence', 'flags', 'feeflags',
                 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
                 )),
         ));
@@ -402,8 +403,20 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 //
                 // Process the classes to determine which fee to show
                 //
+                $live_column = 'no';
+                $virtual_column = 'no';
+                $plus_live_column = 'no';
                 $live_label = $festival['earlybird'] == 'yes' ? 'Earlybird' : 'Fee';
                 foreach($category['classes'] as $cid => $class) {
+                    if( ($class['feeflags']&0x03) > 0 ) {
+                        $live_column = 'yes';
+                    }
+                    if( ($class['feeflags']&0x08) == 0x08 ) {
+                        $virtual_column = 'yes';
+                    }
+                    if( ($class['feeflags']&0x30) > 0 ) {
+                        $plus_live_column = 'yes';
+                    }
                     if( $festival['earlybird'] == 'yes' || $festival['live'] == 'yes' ) {
                         if( isset($festival['earlybird']) && $festival['earlybird'] == 'yes' && $class['earlybird_fee'] > 0 ) {
                             $category['classes'][$cid]['live_fee'] = '$' . number_format($class['earlybird_fee'], 2);
@@ -416,7 +429,9 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                         $category['classes'][$cid]['live_fee'] = 'closed';
                     }
                     if( ($festival['flags']&0x04) == 0x04 ) {
-                        $live_label = $festival['earlybird'] == 'yes' ? 'Earlybird Live' : 'Live';
+                        if( $virtual_column == 'yes' ) {
+                            $live_label = $festival['earlybird'] == 'yes' ? 'Earlybird Live' : 'Live';
+                        }
                         if( $festival['virtual'] == 'yes' && $class['virtual_fee'] > 0 ) {
                             $category['classes'][$cid]['virtual_fee'] = '$' . number_format($class['virtual_fee'], 2);
                         } elseif( $festival['virtual'] == 'yes' ) {
@@ -450,7 +465,36 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 //
                 // Check if online registrations enabled, and online registrations enabled for this class
                 //
-                if( ($festival['flags']&0x06) == 0x06 ) {   // Virtual option & Virtual Pricing
+                $block = array(
+                    'type' => 'table', 
+                    'section' => 'classes', 
+                    'headers' => 'yes',
+                    'class' => 'fold-at-40 musicfestival-classes musicfestival-syllabus-section',
+                    'columns' => array(
+                        array('label'=>'Class', 'fold-label'=>'Class:', 'field'=>'fullname', 'info-field'=>'synopsis', 'class'=>'class'),
+                        ),
+                    'rows' => $category['classes'],
+                    );
+
+                if( $live_column == 'yes' ) {
+                    $block['columns'][] = array(
+                        'label' => $live_label, 
+                        'fold-label' => $live_label . ':', 
+                        'field' => 'live_fee', 
+                        'class' => 'aligncenter fold-alignleft fee live-fee',
+                        );
+                }
+                if( $virtual_column == 'yes' ) {
+                    $block['headers'] = 'yes';
+                    $block['columns'][] = array(
+                        'label' => 'Virtual',
+                        'fold-label' => 'Virtual:', 
+                        'field' => 'virtual_fee', 
+                        'class' => 'aligncenter fold-alignleft fee virtual-fee',
+                        );
+                }
+
+/*                if( ($festival['flags']&0x06) == 0x06 ) {   // Virtual option & Virtual Pricing
                     $block = array(
                         'type' => 'table', 
                         'section' => 'classes', 
@@ -466,19 +510,8 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                         'rows' => $category['classes'],
                         );
                 } else {
-                    $block = array(
-                        'type' => 'table', 
-                        'section' => 'classes', 
-                        'headers' => 'no',
-                        'class' => 'fold-at-40 musicfestival-classes musicfestival-syllabus-section',
-                        'columns' => array(
-                            array('label'=>'Class', 'fold-label'=>'Class:', 'field'=>'fullname', 'info-field'=>'synopsis', 'class'=>'class'),
-                            array('label'=>$live_label, 'fold-label'=>$live_label . ':', 'field'=>'live_fee', 'class'=>'aligncenter fold-alignleft fee live-fee'),
-                            ),
-                        'rows' => $category['classes'],
-                        );
-                }
-                if( isset($festival['plus_live']) ) {
+                } */
+                if( isset($festival['plus_live']) && $plus_live_column == 'yes' ) {
                     $block['headers'] = 'yes';
                     $block['columns'][] = array('label'=>'Adjudication Plus Fee', 'fold-label'=>'Adjudication Plus Fee:', 'field'=>'plus_live_fee', 'class'=>'aligncenter fold-alignleft fee plus-fee');
                     

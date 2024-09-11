@@ -150,6 +150,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'level'=>array('name'=>'Level', 'default'=>''),
             'sequence'=>array('name'=>'Order', 'default'=>'1'),
             'flags'=>array('name'=>'Options', 'default'=>'0'),
+            'feeflags'=>array('name'=>'Fee Options', 'default'=>'0'),
             'earlybird_fee'=>array('name'=>'Earlybird Fee', 'type'=>'currency', 'default'=>'0'),
             'fee'=>array('name'=>'Fee', 'type'=>'currency', 'default'=>'0'),
             'virtual_fee'=>array('name'=>'Virtual Fee', 'type'=>'currency', 'default'=>'0'),

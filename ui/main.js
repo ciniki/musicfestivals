@@ -4361,7 +4361,8 @@ function ciniki_musicfestivals_main() {
                 'visible':function() {return M.modFlagSet('ciniki.musicfestivals', 0x1000); },
                 },
             'sequence':{'label':'Order', 'type':'text'},
-            'earlybird_fee':{'label':'Earlybird Fee', 'type':'text', 'size':'small',
+            'feeflags1':{'label':'Earlybird', 'type':'flagtoggle', 'bit':0x01, 'default':'on', 'field':'feeflags',
+                'onchange':'M.ciniki_musicfestivals_main.class.updateForm',
                 'visible':function() {
                     if( M.ciniki_musicfestivals_main.festival.data.flags != null 
                         && (M.ciniki_musicfestivals_main.festival.data.flags&0x20) == 0x20 ) {
@@ -4369,16 +4370,23 @@ function ciniki_musicfestivals_main() {
                     }
                     return 'no';
                 }},
-            'fee':{'label':'Fee', 'type':'text', 'size':'small'},
-            'virtual_fee':{'label':'Virtual Fee', 'type':'text', 'size':'small',
+            'earlybird_fee':{'label':'Earlybird Fee', 'type':'text', 'size':'small', 'visible':'no', },
+            'feeflags2':{'label':'Regular', 'type':'flagtoggle', 'bit':0x02, 'default':'on', 'field':'feeflags',
+                'onchange':'M.ciniki_musicfestivals_main.class.updateForm',
+                },
+            'fee':{'label':'Fee', 'type':'text', 'size':'small', 'visible':'no'},
+            'feeflags4':{'label':'Virtual', 'type':'flagtoggle', 'bit':0x08, 'default':'on', 'field':'feeflags',
+                'onchange':'M.ciniki_musicfestivals_main.class.updateForm',
                 'visible':function() {
                     if( M.ciniki_musicfestivals_main.festival.data.flags != null 
-                        && (M.ciniki_musicfestivals_main.festival.data.flags&0x04) == 0x04 ) {
+                        && (M.ciniki_musicfestivals_main.festival.data.flags&0x06) == 0x06 ) {
                         return 'yes';
                     }
                     return 'no';
                 }},
-            'earlybird_plus_fee':{'label':'Earlybird Plus Fee', 'type':'text', 'size':'small',
+            'virtual_fee':{'label':'Virtual Fee', 'type':'text', 'size':'small', 'visible':'no'},
+            'feeflags5':{'label':'Earlybird Plus', 'type':'flagtoggle', 'bit':0x10, 'default':'on', 'field':'feeflags',
+                'onchange':'M.ciniki_musicfestivals_main.class.updateForm',
                 'visible':function() {
                     if( M.ciniki_musicfestivals_main.festival.data.flags != null 
                         && (M.ciniki_musicfestivals_main.festival.data.flags&0x30) == 0x30 ) {
@@ -4386,7 +4394,9 @@ function ciniki_musicfestivals_main() {
                     }
                     return 'no';
                 }},
-            'plus_fee':{'label':'Plus Fee', 'type':'text', 'size':'small',
+            'earlybird_plus_fee':{'label':'Earlybird Plus Fee', 'type':'text', 'size':'small', 'visible':'no'},
+            'feeflags6':{'label':'Plus', 'type':'flagtoggle', 'bit':0x20, 'default':'on', 'field':'feeflags',
+                'onchange':'M.ciniki_musicfestivals_main.class.updateForm',
                 'visible':function() {
                     if( M.ciniki_musicfestivals_main.festival.data.flags != null 
                         && (M.ciniki_musicfestivals_main.festival.data.flags&0x10) == 0x10 ) {
@@ -4394,6 +4404,7 @@ function ciniki_musicfestivals_main() {
                     }
                     return 'no';
                 }},
+            'plus_fee':{'label':'Plus Fee', 'type':'text', 'size':'small', 'visible':'no'},
             }},
         'registration':{'label':'Registration Options', 'aside':'yes', 'fields':{
             'flags1':{'label':'Online Registrations', 'type':'flagtoggle', 'default':'on', 'bit':0x01, 'field':'flags'},
@@ -4595,6 +4606,50 @@ function ciniki_musicfestivals_main() {
             });
     }
     this.class.updateForm = function() {
+        this.sections.general.fields.earlybird_fee.visible = 'no';
+        if( M.ciniki_musicfestivals_main.festival.data.flags != null 
+            && (M.ciniki_musicfestivals_main.festival.data.flags&0x20) == 0x20 
+            && this.formValue('feeflags1') == 'on' 
+            ) {
+            this.sections.general.fields.earlybird_fee.visible = 'yes';
+        }
+        this.showHideFormField('general','fee');
+        this.sections.general.fields.fee.visible = 'no';
+        if( this.formValue('feeflags2') == 'on' ) {
+            this.sections.general.fields.fee.visible = 'yes';
+        }
+        this.sections.general.fields.virtual_fee.visible = 'no';
+        if( M.ciniki_musicfestivals_main.festival.data.flags != null 
+            && (M.ciniki_musicfestivals_main.festival.data.flags&0x06) == 0x06 
+            && this.formValue('feeflags4') == 'on' 
+            ) {
+            this.sections.general.fields.virtual_fee.visible = 'yes';
+        }
+        this.sections.general.fields.earlybird_plus_fee.visible = 'no';
+        if( M.ciniki_musicfestivals_main.festival.data.flags != null 
+            && (M.ciniki_musicfestivals_main.festival.data.flags&0x30) == 0x30 
+            && this.formValue('feeflags5') == 'on' 
+            ) {
+            this.sections.general.fields.earlybird_plus_fee.visible = 'yes';
+        }
+        this.sections.general.fields.plus_fee.visible = 'no';
+        if( M.ciniki_musicfestivals_main.festival.data.flags != null 
+            && (M.ciniki_musicfestivals_main.festival.data.flags&0x10) == 0x10 
+            && this.formValue('feeflags6') == 'on' 
+            ) {
+            this.sections.general.fields.plus_fee.visible = 'yes';
+        }
+        // Force fee visible when no other options for pricing
+        if( M.ciniki_musicfestivals_main.festival.data.flags != null 
+            && (M.ciniki_musicfestivals_main.festival.data.flags&0x34) == 0 
+            ) {
+            this.sections.general.fields.fee.visible = 'yes';
+        }
+        this.showHideFormField('general','earlybird_fee');
+        this.showHideFormField('general','fee');
+        this.showHideFormField('general','virtual_fee');
+        this.showHideFormField('general','earlybird_plus_fee');
+        this.showHideFormField('general','plus_fee');
         var f = this.formValue('flags15');
         if( (f&0xC000) == 0x8000 ) {
             M.gE(this.panelUID + '_min_competitors_formlabel').innerHTML = 'Min Groups';
@@ -4668,6 +4723,14 @@ function ciniki_musicfestivals_main() {
             if( rsp.levels != null ) {
                 p.sections.general.fields.levels.tags = rsp.levels;
             }
+            p.sections.general.fields.feeflags2.visible = 'no';
+            if( M.ciniki_musicfestivals_main.festival.data.flags != null 
+                && (M.ciniki_musicfestivals_main.festival.data.flags&0x34) > 0 
+                ) {
+                p.sections.general.fields.feeflags2.visible = 'yes';
+            } else {
+                p.sections.general.fields.fee.visible = 'yes';
+            }
             p.refresh();
             p.show(cb);
             p.updateForm();
@@ -4679,6 +4742,7 @@ function ciniki_musicfestivals_main() {
         if( this.class_id > 0 ) {
             var c = this.serializeForm('no');
             if( c != '' ) {
+                console.log(c);
                 M.api.postJSONCb('ciniki.musicfestivals.classUpdate', {'tnid':M.curTenantID, 'class_id':this.class_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
