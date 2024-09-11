@@ -54,17 +54,21 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     }
     $intl_timezone = $rc['settings']['intl-default-timezone'];
 
-    $section_permalink = $request['uri_split'][$request['cur_uri_pos']];
-    $base_url = $request['base_url'] . $request['page']['path'];
-
     //
     // Check for syllabus section requested
     //
-    if( !isset($request['uri_split'][$request['cur_uri_pos']])
+    if( isset($section['section_permalink']) ) {
+        $section_permalink = $section['section_permalink'];
+    }
+    elseif( !isset($request['uri_split'][$request['cur_uri_pos']])
         || $request['uri_split'][$request['cur_uri_pos']] == '' 
         ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.216', 'msg'=>"No syllabus specified"));
+    } else {
+        $section_permalink = $request['uri_split'][$request['cur_uri_pos']];
     }
+
+    $base_url = $request['base_url'] . $request['page']['path'];
 
     //
     // Check for image format

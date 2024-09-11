@@ -118,6 +118,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'buttons' => 'Buttons',
                 'groups' => 'Groups - Table',
                 'groupbuttons' => 'Groups - Buttons',
+                'classlist' => 'Class List',
                 )),
             'image-ratio' => array('label' => 'Image Ratio (Image Buttons Only)', 
                 'type'=>'select', 
