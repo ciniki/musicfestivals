@@ -412,6 +412,29 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
             }
         }
     }
+
+    // 
+    // Display as Price List, no categories or category descriptions
+    //
+    elseif( isset($s['layout']) && $s['layout'] == 'pricelist' ) {
+        foreach($sections as $sid => $s) {
+            $section['festival_id'] = $festival['id'];
+            $section['section_permalink'] = $s['permalink'];
+            $section['intros'] = 'no';
+            $section['tableheader'] = 'multiprices';
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'syllabusSectionProcess');
+            $rc = ciniki_musicfestivals_wng_syllabusSectionProcess($ciniki, $tnid, $request, $section);
+            if( isset($rc['blocks']) ) {
+                foreach($rc['blocks'] as $bid => $block) {
+                    // Skip title block
+                    if( $bid == 0 ) {
+                        continue;
+                    }
+                    $blocks[] = $block;
+                }
+            }
+        }
+    }
     
     //
     // Default to buttons

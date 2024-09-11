@@ -128,28 +128,28 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     if( !isset($rc['section']) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.218', 'msg'=>'Unable to find requested section'));
     }
-    $section = $rc['section'];
+    $syllabus_section = $rc['section'];
 
     //
     // Check if section has other deadlines
     //
     $dt = new DateTime('now', new DateTimezone('UTC'));
-    if( $section['live_end_dt'] != '' && $section['live_end_dt'] != '0000-00-00 00:00:00' ) {
-        $live_dt = new DateTime($section['live_end_dt'], new DateTimezone('UTC'));
+    if( $syllabus_section['live_end_dt'] != '' && $syllabus_section['live_end_dt'] != '0000-00-00 00:00:00' ) {
+        $live_dt = new DateTime($syllabus_section['live_end_dt'], new DateTimezone('UTC'));
         $festival['live'] = ($live_dt > $dt ? 'yes' : 'no');
         if( ($festival['flags']&0x10) == 0x10 ) {   // Adjudication Plus
             $festival['plus_live'] = $festival['live'];
         }
     }
-    if( $section['virtual_end_dt'] != '' && $section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
-        $virtual_dt = new DateTime($section['virtual_end_dt'], new DateTimezone('UTC'));
+    if( $syllabus_section['virtual_end_dt'] != '' && $syllabus_section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
+        $virtual_dt = new DateTime($syllabus_section['virtual_end_dt'], new DateTimezone('UTC'));
         $festival['virtual'] = ($virtual_dt > $dt ? 'yes' : 'no');
     }
   
     if( isset($groupname) ) {
-        $download_url = $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $section['permalink'] . '/' . $groupname . '/download.pdf';
+        $download_url = $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $syllabus_section['permalink'] . '/' . $groupname . '/download.pdf';
     } else {
-        $download_url = $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $section['permalink'] . '/download.pdf';
+        $download_url = $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $syllabus_section['permalink'] . '/download.pdf';
     }
 
     //
@@ -168,7 +168,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         //
         $pdf_args = array(
             'festival_id' => $festival['id'],
-            'section_id' => $section['id'],
+            'section_id' => $syllabus_section['id'],
             'live-virtual' => isset($s['display-live-virtual']) ? $s['display-live-virtual'] : '',
             );
         if( isset($groupname) ) {
@@ -177,7 +177,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'syllabusPDF');
         $rc = ciniki_musicfestivals_templates_syllabusPDF($ciniki, $tnid, $pdf_args);
         if( isset($rc['pdf']) ) {
-            $filename = $festival['name'] . ' - ' . $section['name'];
+            $filename = $festival['name'] . ' - ' . $syllabus_section['name'];
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
             $filename = ciniki_core_makePermalink($ciniki, $filename) . '.pdf';
             header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
@@ -203,14 +203,14 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     // Check for section end dates
     //
     if( ($festival['flags']&0x08) == 0x08 ) {
-        if( $section['live_end_dt'] != '0000-00-00 00:00:00' ) {
-            $section_live_dt = new DateTime($section['live_end_dt'], new DateTimezone('UTC'));
+        if( $syllabus_section['live_end_dt'] != '0000-00-00 00:00:00' ) {
+            $section_live_dt = new DateTime($syllabus_section['live_end_dt'], new DateTimezone('UTC'));
             if( $section_live_dt < $dt ) {
                 $festival['live'] = 'no';
             }
         }
-        if( $section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
-            $section_virtual_dt = new DateTime($section['virtual_end_dt'], new DateTimezone('UTC'));
+        if( $syllabus_section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
+            $section_virtual_dt = new DateTime($syllabus_section['virtual_end_dt'], new DateTimezone('UTC'));
             if( $section_virtual_dt < $dt ) {
                 $festival['virtual'] = 'no';
             }
@@ -220,21 +220,21 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         }
     }
   
-    if( isset($section['description']) && $section['description'] != '' ) {
+    if( isset($syllabus_section['description']) && $syllabus_section['description'] != '' ) {
         $blocks[] = array(
             'type' => 'text',
             'level' => 1,
             'class' => 'musicfestival-syllabus-section',
-            'title' => (isset($s['title']) ? $s['title'] . ($s['title'] != '' ? ' - ' : '') : 'Syllabus - ') . $section['name']
+            'title' => (isset($s['title']) ? $s['title'] . ($s['title'] != '' ? ' - ' : '') : 'Syllabus - ') . $syllabus_section['name']
                     . (isset($groupname) && $groupname != '' ? ' - ' . $groupname : ''),
-            'content' => $section['description'],
+            'content' => $syllabus_section['description'],
             );
     } else {
         $blocks[] = array(
             'type' => 'title', 
             'level' => 1,
             'class' => 'musicfestival-syllabus-section',
-            'title' => (isset($s['title']) ? $s['title'] : 'Syllabus') . ' - ' . $section['name']
+            'title' => (isset($s['title']) ? $s['title'] : 'Syllabus') . ' - ' . $syllabus_section['name']
                     . (isset($groupname) && $groupname != '' ? ' - ' . $groupname : ''),
             );
     }
@@ -245,13 +245,13 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     if( isset($s['section-pdf']) && ($s['section-pdf'] == 'top' || $s['section-pdf'] == 'both') ) {
         $blocks[] = array(
             'type' => 'buttons',
-            'class' => "buttons-top-{$section['permalink']} musicfestival-syllabus-section",
+            'class' => "buttons-top-{$syllabus_section['permalink']} musicfestival-syllabus-section",
             'list' => array(
                 array(
                     'url' => $download_url,
                     'target' => '_blank',
                     'text' => 'Download ' . (isset($lv_word) && $lv_word != '' ? "{$lv_word} " : '') 
-                        . 'Syllabus PDF for ' . $section['name']
+                        . 'Syllabus PDF for ' . $syllabus_section['name']
                         . (isset($groupname) && $groupname != '' ? ' - ' . $groupname : ''),
                     ),
                 ),
@@ -274,7 +274,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 . "AND tags.tag_type = 20 "
                 . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
-            . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $section['id']) . "' "
+            . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $syllabus_section['id']) . "' "
             . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "ORDER BY tags.tag_sort_name, tags.tag_name "
             . "";
@@ -292,7 +292,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 'text' => 'All Classes',
 //                'class' => (!isset($_GET['level']) ? 'selected' : ''),
                 'selected' => (!isset($_GET['level']) ? 'yes' : ''),
-                'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $section['permalink'],
+                'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $syllabus_section['permalink'],
                 ),
             );
         if( isset($rc['tags']) && count($rc['tags']) > 0 ) {
@@ -309,7 +309,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                     'text' => $tag['name'],
 //                    'class' => (isset($_GET['level']) && $_GET['level'] == $tag['permalink'] ? 'selected' : ''),
                     'selected' => (isset($_GET['level']) && $_GET['level'] == $tag['permalink'] ? 'yes' : ''),
-                    'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $section['permalink'] . '?level=' . $tag['permalink'],
+                    'url' => $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $syllabus_section['permalink'] . '?level=' . $tag['permalink'],
                     );
             }
         }
@@ -351,7 +351,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         $strsql .= "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . $level_strsql 
-        . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $section['id']) . "' "
+        . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $syllabus_section['id']) . "' "
         . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
     if( isset($groupname) ) {
         $strsql .= "AND categories.groupname = '" . ciniki_core_dbQuote($ciniki, $groupname) . "' ";
@@ -390,13 +390,13 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
 
         foreach($categories as $category) {
             $intro = ($category['description'] != '' ? $category['description'] : ($category['synopsis'] != '' ? $category['synopsis'] : ''));
-            if( $intro != '' ) {
+            if( $intro != '' && (!isset($section['intros']) || $section['intros'] == 'yes') ) {
                 $blocks[] = array(
                     'type' => 'text', 
                     'id' => $category['permalink'],
                     'title' => $category['name'], 
                     'class' => 'musicfestival-syllabus-section',
-                    'content' => ($category['description'] != '' ? $category['description'] : ($category['synopsis'] != '' ? $category['synopsis'] : ' ')),
+                    'content' => $intro,
                     );
             }
             if( isset($category['classes']) && count($category['classes']) > 0 ) {
@@ -516,8 +516,11 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                     $block['columns'][] = array('label'=>'Adjudication Plus Fee', 'fold-label'=>'Adjudication Plus Fee:', 'field'=>'plus_live_fee', 'class'=>'aligncenter fold-alignleft fee plus-fee');
                     
                 }
+                if( isset($section['tableheader']) && $section['tableheader'] == 'multiprices' && count($block['columns']) < 3 ) {
+                    $block['headers'] = 'no';
+                }
                 $block['columns'][] = array('label'=>'', 'field'=>'register', 'class'=>'alignright buttons');
-                if( $intro == '' ) {
+                if( $intro == '' && (!isset($section['intros']) || $section['intros'] == 'yes') ) {
                     $block['title'] = $category['name']; 
                 }
                 $blocks[] = $block;
@@ -531,12 +534,12 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     if( isset($s['section-pdf']) && ($s['section-pdf'] == 'bottom' || $s['section-pdf'] == 'both') ) {
         $blocks[] = array(
             'type' => 'buttons',
-            'class' => "buttons-bottom-{$section['permalink']} musicfestival-syllabus-section",
+            'class' => "buttons-bottom-{$syllabus_section['permalink']} musicfestival-syllabus-section",
             'list' => array(
                 array(
                     'url' => $download_url,
                     'target' => '_blank',
-                    'text' => 'Download ' . (isset($lv_word) && $lv_word != '' ? "{$lv_word} " : '') . 'Syllabus PDF for ' . $section['name'],
+                    'text' => 'Download ' . (isset($lv_word) && $lv_word != '' ? "{$lv_word} " : '') . 'Syllabus PDF for ' . $syllabus_section['name'],
                     ),
                 ),
             );
