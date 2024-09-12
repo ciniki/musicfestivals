@@ -3016,7 +3016,11 @@ function ciniki_musicfestivals_main() {
     }
     this.festival.syllabusDownload = function() {
         this.popupMenuClose('sections');
-        M.api.openPDF('ciniki.musicfestivals.festivalSyllabusPDF', {'tnid':M.curTenantID, 'festival_id':this.festival_id});
+        if( this.sections.syllabi_tabs.selected != null ) {
+            M.api.openPDF('ciniki.musicfestivals.festivalSyllabusPDF', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'syllabus':this.sections.syllabi_tabs.selected});
+        } else {
+            M.api.openPDF('ciniki.musicfestivals.festivalSyllabusPDF', {'tnid':M.curTenantID, 'festival_id':this.festival_id});
+        }
     }
     this.festival.syllabusSectionDownload = function() {
         this.popupMenuClose('sections');

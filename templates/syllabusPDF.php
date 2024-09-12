@@ -227,6 +227,119 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             $this->SetFont('helvetica', '', 10);
             $this->Cell(90, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
         }
+
+        //
+        // Display list of classes
+        //
+        public function ClassesAddHeaders($w, $headers, $fields) {
+            $this->SetFont('', 'B', '12');
+            $lh = $this->getStringHeight($w[0], $headers[0]);
+            foreach($headers as $i => $header) {
+                if( $fields[$i] == 'earlybird_fee'
+                    || $fields[$i] == 'fee'
+                    || $fields[$i] == 'virtual_fee'
+                    || $fields[$i] == 'earlybird_plus_fee'
+                    || $fields[$i] == 'plus_fee'
+                    ) {
+                    $this->Cell($w[$i], $lh, $header, 1, 0, 'C', 1);
+                } else {
+                    $this->Cell($w[$i], $lh, $header, 1, 0, 'L', 1);
+                }
+            }
+            $this->Ln($lh);
+            $this->SetFont('', '', '12');
+        }
+
+        //
+        // Display list of classes
+        //
+        public function ClassesAdd($w, $category, $headers, $fields) {
+
+            $fill = 1;
+            if( isset($headers[0]) && $headers[0] != '' ) {
+                $this->ClassesAddHeaders($w, $headers, $fields);
+                $fill = 0;
+            }
+            $this->SetFont('', '', '12');
+            foreach($category['classes'] as $class) {
+                $lh = 0;
+                $lhs = 0;
+                foreach($fields as $i => $field) {
+                    if( $field == 'code_name_synopsis' ) {
+                        $lh = $this->getStringHeight($w[$i], $class['code'] . ' - ' . $class['name']);
+                        if( $class['synopsis'] != '' ) {
+                            $this->setCellPaddings(2, 2, 2, 1);
+                            $lh = $this->getStringHeight($w[$i], $class['code'] . ' - ' . $class['name']);
+                            $indent = $this->getStringWidth($class['code'] . ' - ') + 2;
+                            $this->setCellPaddings($indent, 0, 2, 2);
+                            $lhs = $this->getStringHeight($w[$i], strip_tags($class['synopsis']));
+                            $this->setCellPaddings(2, 2, 2, 2);
+                        }
+                    } elseif( $field == 'code_name' ) {
+                        $lh = $this->getStringHeight($w[$i], $class['code'] . ' - ' . $class['name']);
+                    }
+                }
+                if( $this->getY() > ($this->getPageHeight() - $lh - $lhs - 22) ) {
+                    $this->AddPage();
+                    $this->SetFont('', 'B', '18');
+                    $this->MultiCell(180, 10, $category['name'] . ' (continued)', 0, 'L', 0, 1);
+                    $this->SetFont('', '', '12');
+                    if( isset($headers[0]) && $headers[0] != '' ) {
+                        $this->ClassesAddHeaders($w, $headers, $fields);
+                        $fill = 0;
+                    }
+                }
+                
+                foreach($fields as $i => $field) {
+                    if( $field == 'code_name_synopsis' ) {
+                        if( $class['synopsis'] != '' ) {
+                            $x = $this->getX();
+                            $y = $this->getY();
+                            $this->setCellPaddings(2, 2, 2, 1);
+                            $this->MultiCell($w[$i], $lh, $class['code'] . ' - ' . $class['name'], 'LT', 'L', $fill, 1);
+                            $this->SetFont('', 'I', '12');
+                            $this->setCellPaddings($indent, 0, 2, 2);
+                            $this->writeHTMLCell($w[$i], $lhs, '', '', preg_replace("/\n/", '<br/>', $class['synopsis']), 'LB', 0, $fill);
+                            $this->setCellPaddings(2, 2, 2, 2);
+                            $this->SetFont('', '', '12');
+                            $this->setY($y);
+                            $this->setX($x+$w[$i]);
+                        } else {
+                            $this->MultiCell($w[$i], $lh, $class['code'] . ' - ' . $class['name'], 'LTB', 'L', $fill, 0);
+                        }
+                    } elseif( $field == 'code_name' ) {
+                        $lh = $this->getStringHeight($w[$i], $class['code'] . ' - ' . $class['name']);
+                    } else {
+                        $this->setCellPaddings(2, 2, 3, 2);
+                        $val = '$' . number_format($class[$field], 2);
+                        if( $field == 'earlybird_fee' && ($class['feeflags']&0x01) == 0 ) {
+                            $val = 'n/a';
+                        }
+                        elseif( $field == 'fee' && ($class['feeflags']&0x02) == 0 ) {
+                            $val = 'n/a';
+                        }
+                        elseif( $field == 'virtual_fee' && ($class['feeflags']&0x08) == 0 ) {
+                            $val = 'n/a';
+                        }
+                        elseif( $field == 'earlybird_plus_fee' && ($class['feeflags']&0x10) == 0 ) {
+                            $val = 'n/a';
+                        }
+                        elseif( $field == 'plus_fee' && ($class['feeflags']&0x20) == 0 ) {
+                            $val = 'n/a';
+                        }
+                        if( !isset($headers[0]) || $headers[0] == '' ) {
+                            $this->MultiCell($w[$i], $lh+$lhs, $val, 'TRB', 'R', $fill, 0, '', '', true, 0, false, true, ($lh+$lhs), 'M');
+                        } else {
+                            $this->MultiCell($w[$i], $lh+$lhs, $val, 'TRBL', 'C', $fill, 0, '', '', true, 0, false, true, ($lh+$lhs), 'M');
+                        }
+                        $this->setCellPaddings(2, 2, 2, 2);
+                    }
+                }
+
+                $this->Ln($lh+$lhs);
+                $fill=!$fill;
+            } 
+        }
     }
 
     //
@@ -313,7 +426,6 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         }
         $pdf->SetFont('', '', '12');
         if( isset($section['description']) && $section['description'] != '' ) {
-//            $pdf->MultiCell(180, 5, $section['description'], 0, 'L', 0, 1);
             $pdf->writeHTMLCell(180, '', '', '', preg_replace("/\n/", '<br/>', $section['description']), 0, 1);
         }
 
@@ -338,8 +450,8 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             }
 
             $pdf->SetFont('', 'B', '18');
-//            $pdf->Cell(180, 10, $category['name'], 0, 0, 'L', 0);
             $lh = $pdf->getStringHeight(180, $category['name']);
+
             //
             // Determine if new page should be started
             //
@@ -354,279 +466,59 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             $pdf->MultiCell(180, 5, $category['name'], 0, 'L', 0, 1);
             $pdf->SetFont('', '', '12');
             if( $description != '' ) {
-//                $pdf->MultiCell(180, $lh, $description, 0, 'L', 0, 2);
                 $pdf->writeHTMLCell(180, '', '', '', preg_replace("/\n/", '<br/>', $description), 0, 1);
-//                $pdf->Ln(2);
             }
             $fill = 1;
-//            $pdf->Cell($w[0], $lh, '', 0, 0, 'L', $fill);
-//            $pdf->Cell($w[1], $lh, '', 0, 0, 'L', $fill);
-//            $pdf->Cell($w[2], $lh, 'Fee', 0, 0, 'C', $fill);
-//            $pdf->Ln();
             $pdf->Ln(3);
             
             //
             // Output the classes
             //
-            $fill = 1;
+
             //
             // Adjudication plus
             //
             if( ($festival['flags']&0x10) == 0x10 ) {
                 $earlybird = 'no';
-                $w = array(130, 25, 25);
-                if( $festival['earlybird_date'] != '0000-00-00 00:00:00' ) {
+                if( ($festival['flags']&0x20) == 0x20 && $festival['earlybird_date'] != '0000-00-00 00:00:00' ) {
                     $earlybird_dt = new DateTime($festival['earlybird_date'], new DateTimezone('UTC'));
                     $now_dt = new DateTime('now', new DateTimezone('UTC'));
                     if( $now_dt < $earlybird_dt ) {
                         $earlybird = 'yes';
-                        $w = array(75, 25, 25, 30, 25);
                     }
                 }
-                $pdf->SetFont('', 'B', '12');
-                $lh = $pdf->getStringHeight($w[0], 'Class');
-                $i = 0;
-                $pdf->Cell($w[$i++], $lh, 'Class', 1, 0, 'L', $fill);
                 if( $earlybird == 'yes' ) {
-                    $pdf->Cell($w[$i++], $lh, 'Earlybird', 1, 0, 'C', $fill);
-                }
-                $pdf->Cell($w[$i++], $lh, 'Regular', 1, 0, 'C', $fill);
-                if( $earlybird == 'yes' ) {
-                    $pdf->Cell($w[$i++], $lh, 'Earlybird Plus', 1, 0, 'C', $fill);
-                }
-                $pdf->Cell($w[$i++], $lh, 'Plus', 1, 0, 'C', $fill);
-                $pdf->Ln($lh);
-                $pdf->SetFont('', '', '12');
-                $fill = 0;
-                foreach($category['classes'] as $class) {
-                    $lh = $pdf->getStringHeight($w[0], $class['code'] . ' - ' . $class['name']);
-                    if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 22) ) {
-                        $pdf->AddPage();
-                        // Category
-                        $pdf->SetFont('', 'B', '18');
-                        $pdf->MultiCell(180, 10, $category['name'] . ' (continued)', 0, 'L', 0, 1);
-                        // Headers
-                        $pdf->SetFont('', 'B', '12');
-                        $fill = 1;
-                        $i = 0;
-                        $pdf->Cell($w[$i++], $lh, 'Class', 1, 0, 'L', $fill);
-                        if( $earlybird == 'yes' ) {
-                            $pdf->Cell($w[$i++], $lh, 'Earlybird', 1, 0, 'C', $fill);
-                        }
-                        $pdf->Cell($w[$i++], $lh, 'Regular', 1, 0, 'C', $fill);
-                        if( $earlybird == 'yes' ) {
-                            $pdf->Cell($w[$i++], $lh, 'Earlybird Plus', 1, 0, 'C', $fill);
-                        }
-                        $pdf->Cell($w[$i++], $lh, 'Plus', 1, 0, 'C', $fill);
-                        $pdf->Ln($lh);
-                        $pdf->SetFont('', '', '12');
-                        $fill = 0;
-                    }
-                    $i = 0;
-                    $pdf->MultiCell($w[$i++], $lh, $class['code'] . ' - ' . $class['name'], 1, 'L', $fill, 0);
-                    if( $earlybird == 'yes' ) {
-                        if( $class['earlybird_fee'] > 0 ) {
-                            $pdf->Cell($w[$i++], $lh, '$' . number_format($class['earlybird_fee'], 2), 1, 0, 'C', $fill);
-                        } else {
-                            $pdf->Cell($w[$i++], $lh, 'n/a', 1, 0, 'C', $fill);
-                        }
-                    }
-                    if( $class['fee'] > 0 ) {
-                        $pdf->Cell($w[$i++], $lh, '$' . number_format($class['fee'], 2), 1, 0, 'C', $fill);
-                    } else {
-                        $pdf->Cell($w[$i++], $lh, 'n/a', 1, 0, 'C', $fill);
-                    }
-                    if( $earlybird == 'yes' ) {
-                        if( $class['earlybird_plus_fee'] > 0 ) {
-                            $pdf->Cell($w[$i++], $lh, '$' . number_format($class['earlybird_plus_fee'], 2), 1, 0, 'C', $fill);
-                        } else {
-                            $pdf->Cell($w[$i++], $lh, 'n/a', 1, 0, 'C', $fill);
-                        }
-                    }
-                    if( $class['plus_fee'] > 0 ) {
-                        $pdf->Cell($w[$i++], $lh, '$' . number_format($class['plus_fee'], 2), 1, 0, 'C', $fill);
-                    } else {
-                        $pdf->Cell($w[$i++], $lh, 'n/a', 1, 0, 'C', $fill);
-                    }
-                    $pdf->Ln($lh);
-                    $fill=!$fill;
+                    $pdf->ClassesAdd([76, 24, 24, 32, 24], 
+                        $category, 
+                        ['Class', 'Earlybird', 'Regular', 'Earlybird Plus', 'Plus'], 
+                        ['code_name_synopsis', 'earlybird_fee', 'fee', 'earlybird_plus_fee', 'plus_fee']
+                        );
+                } else {
+                    $pdf->ClassesAdd([130, 25, 25], 
+                        $category, 
+                        ['Class', 'Regular', 'Plus'], 
+                        ['code_name_synopsis', 'fee', 'plus_fee']);
                 }
             }
             //
             // Earlybird & Virtual Fees
             //
             elseif( ($festival['flags']&0x04) == 0x04 && $festival['earlybird_date'] != '0000-00-00 00:00:00' ) {
-                $w = array(105, 25, 25, 25);
-                $pdf->SetFont('', 'B', '12');
-                $lh = $pdf->getStringHeight($w[0], 'Class');
-                $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
-                $pdf->Cell($w[1], $lh, 'Earlybird', 1, 0, 'C', $fill);
-                $pdf->Cell($w[2], $lh, 'Live', 1, 0, 'C', $fill);
-                $pdf->Cell($w[3], $lh, 'Virtual', 1, 0, 'C', $fill);
-                $pdf->Ln($lh);
-                $pdf->SetFont('', '', '12');
-                $fill = 0;
-                foreach($category['classes'] as $class) {
-                    $lh = $pdf->getStringHeight($w[0], $class['code'] . ' - ' . $class['name']);
-                    if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 22) ) {
-                        $pdf->AddPage();
-                        // Category
-                        $pdf->SetFont('', 'B', '18');
-                        //$pdf->Cell(180, 10, $category['name'] . ' (continued)', 0, 0, 'L', 0);
-                        $pdf->MultiCell(180, 10, $category['name'] . ' (continued)', 0, 'L', 0, 1);
-                        //$pdf->Ln(12);
-                        // Headers
-                        $pdf->SetFont('', 'B', '12');
-                        $fill = 1;
-                        $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
-                        $pdf->Cell($w[1], $lh, 'Earlybird', 1, 0, 'C', $fill);
-                        $pdf->Cell($w[2], $lh, 'Live', 1, 0, 'C', $fill);
-                        $pdf->Cell($w[3], $lh, 'Virtual', 1, 0, 'C', $fill);
-                        $pdf->Ln($lh);
-                        $pdf->SetFont('', '', '12');
-                        $fill = 0;
-                    }
-                    $pdf->MultiCell($w[0], $lh, $class['code'] . ' - ' . $class['name'], 1, 'L', $fill, 0);
-                    $pdf->Cell($w[1], $lh, numfmt_format_currency($intl_currency_fmt, $class['earlybird_fee'], $intl_currency), 1, 0, 'C', $fill);
-                    if( $class['fee'] > 0 ) {
-                        $pdf->Cell($w[2], $lh, numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency), 1, 0, 'C', $fill);
-                    } else {
-                        $pdf->Cell($w[2], $lh, 'n/a', 1, 0, 'C', $fill);
-                    }
-                    if( $class['virtual_fee'] > 0 ) {
-                        $pdf->Cell($w[3], $lh, numfmt_format_currency($intl_currency_fmt, $class['virtual_fee'], $intl_currency), 1, 0, 'C', $fill);
-                    } else {
-                        $pdf->Cell($w[3], $lh, 'n/a', 1, 0, 'C', $fill);
-                    }
-                    $pdf->Ln($lh);
-                    $fill=!$fill;
-                }
+                $pdf->ClassesAdd([105, 25, 25, 25], $category, ['Class', 'Earlybird', 'Live', 'Virtual'], ['code_name_synopsis', 'earlybird_fee', 'fee', 'virtual_fee']);
 
             } elseif( ($festival['flags']&0x04) == 0x04 && (!isset($args['live-virtual']) || !in_array($args['live-virtual'], ['live','virtual'])) ) {
-                $w = array(130, 25, 25);
-                $pdf->SetFont('', 'B', '12');
-                $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
-                $pdf->Cell($w[1], $lh, 'Live', 1, 0, 'C', $fill);
-                $pdf->Cell($w[2], $lh, 'Virtual', 1, 0, 'C', $fill);
-                $pdf->Ln($lh);
-                $pdf->SetFont('', '', '12');
-                $fill = 0;
-                foreach($category['classes'] as $class) {
-                    $lh = $pdf->getStringHeight($w[0], $class['code'] . ' - ' . $class['name']);
-                    if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 25) ) {
-                        $pdf->AddPage();
-                        // Category
-                        $pdf->SetFont('', 'B', '18');
-                        $pdf->MultiCell(180, 10, $category['name'] . ' (continued)', 0, 'L', 0, 1);
-                        //$pdf->Cell(180, 10, $category['name'] . ' (continued)', 0, 0, 'L', 0);
-                        //$pdf->Ln(12);
-                        // Headers
-                        $pdf->SetFont('', 'B', '12');
-                        $fill = 1;
-                        $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
-                        $pdf->Cell($w[1], $lh, 'Live', 1, 0, 'C', $fill);
-                        $pdf->Cell($w[2], $lh, 'Virtual', 1, 0, 'C', $fill);
-                        $pdf->Ln($lh);
-                        $pdf->SetFont('', '', '12');
-                        $fill = 0;
-                    }
-                    $pdf->MultiCell($w[0], $lh, $class['code'] . ' - ' . $class['name'], 1, 'L', $fill, 0);
-                    if( $class['fee'] > 0 ) {
-                        $pdf->Cell($w[1], $lh, numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency), 1, 0, 'C', $fill);
-                    } else {
-                        $pdf->Cell($w[1], $lh, 'n/a', 1, 0, 'C', $fill);
-                    }
-                    if( $class['virtual_fee'] > 0 ) {
-                        $pdf->Cell($w[2], $lh, numfmt_format_currency($intl_currency_fmt, $class['virtual_fee'], $intl_currency), 1, 0, 'C', $fill);
-                    } else {
-                        $pdf->Cell($w[2], $lh, 'n/a', 1, 0, 'C', $fill);
-                    }
-                    //$pdf->Cell($w[1], $lh, numfmt_format_currency($intl_currency_fmt, $class['fee'], $intl_currency), 1, 0, 'C', $fill);
-                    //$pdf->Cell($w[2], $lh, numfmt_format_currency($intl_currency_fmt, $class['virtual_fee'], $intl_currency), 1, 0, 'C', $fill);
-                    $pdf->Ln($lh);
-                    $fill=!$fill;
-                }
+                $pdf->ClassesAdd([130,25, 25], $category, ['Class', 'Live', 'Virtual'], ['code_name_synopsis', 'fee', 'virtual_fee']);
             } elseif( isset($args['live-virtual']) && in_array($args['live-virtual'], ['live','virtual']) ) {
-                $w = array(150, 30);
-                $lh = $pdf->getStringHeight($w[0], 'Class');
-                $pdf->SetFont('', 'B', '12');
-                $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
-                if( $args['live-virtual'] == 'live' ) {
-                    $pdf->Cell($w[1], $lh, 'Live', 1, 0, 'C', $fill);
-                } elseif( $args['live-virtual'] == 'virtual' ) {
-                    $pdf->Cell($w[1], $lh, 'Virtual', 1, 0, 'C', $fill);
+                $headers = ['Class', 'Live'];
+                $fields = ['code_name_synopsis', 'fee'];
+                if( $args['live-virtual'] == 'virtual' ) {
+                    $headers[1] = 'Virtual';
+                    $fields[1] = 'Virtual';
                 }
-                $pdf->Ln($lh);
-                $pdf->SetFont('', '', '12');
-                $fill = 0;
-                foreach($category['classes'] as $class) {
-                    $lh = $pdf->getStringHeight($w[0], $class['code'] . ' - ' . $class['name']);
-                    if( $pdf->getY() > $pdf->getPageHeight() - $lh - 20) {
-                        $pdf->AddPage();
-                        $pdf->SetFont('', 'B', '18');
-                        $pdf->MultiCell(180, 10, $category['name'] . ' (continued)', 0, 'L', 0, 1);
-                        $pdf->SetFont('', 'B', '12');
-                        $fill = 1;
-                        $pdf->Cell($w[0], $lh, 'Class', 1, 0, 'L', $fill);
-                        if( $args['live-virtual'] == 'live' ) {
-                            $pdf->Cell($w[1], $lh, 'Live', 1, 0, 'C', $fill);
-                        } elseif( $args['live-virtual'] == 'virtual' ) {
-                            $pdf->Cell($w[1], $lh, 'Virtual', 1, 0, 'C', $fill);
-                        }
-                        $pdf->Ln($lh);
-                        $pdf->SetFont('', '', '12');
-                        $fill = 0;
-                    }
-                    $pdf->MultiCell($w[0], $lh, $class['code'] . ' - ' . $class['name'], 1, 'L', $fill, 0);
-                    if( $args['live-virtual'] == 'live' ) {
-                        $pdf->MultiCell($w[1], $lh, '$' . number_format($class['fee'], 2), 1, 'C', $fill, 0);
-                    } elseif( $args['live-virtual'] == 'virtual' ) {
-                        $pdf->MultiCell($w[1], $lh, '$' . number_format($class['virtual_fee'], 2), 1, 'C', $fill, 0);
-                    }
-                    $pdf->Ln($lh);
-                    $fill=!$fill;
-                }
-            } else {
-                $w = array(150, 30);
-                foreach($category['classes'] as $class) {
-                    $lh = $pdf->getStringHeight($w[0], $class['code'] . ' - ' . $class['name']);
-                    $lhs = 0;
-                    if( $class['synopsis'] != '' ) {
-                        $pdf->setCellPaddings(2, 2, 2, 1);
-                        $lh = $pdf->getStringHeight($w[0], $class['code'] . ' - ' . $class['name']);
-                        $indent = $pdf->getStringWidth($class['code'] . ' - ') + 2;
-                        $pdf->setCellPaddings($indent, 0, 2, 2);
-                        $lhs = $pdf->getStringHeight($w[0], $class['synopsis']);
-                        $pdf->setCellPaddings(2, 2, 2, 2);
-                    }
-                    if( $pdf->getY() > $pdf->getPageHeight() - $lh - $lhs - 20) {
-                        $pdf->AddPage();
-                        $pdf->SetFont('', 'B', '18');
-                        $pdf->MultiCell(180, 10, $category['name'] . ' (continued)', 0, 'L', 0, 1);
-                        $pdf->SetFont('', '', '12');
-                    }
+                $pdf->ClassesAdd([150,30], $category, $headers, $fields);
 
-                    if( $class['synopsis'] != '' ) {
-                        $x = $pdf->getX();
-                        $y = $pdf->getY();
-                        $pdf->setCellPaddings(2, 2, 2, 1);
-                        $pdf->MultiCell($w[0], $lh, $class['code'] . ' - ' . $class['name'], 'LT', 'L', $fill, 1);
-                        $pdf->SetFont('', 'I', '12');
-                        $pdf->setCellPaddings($indent, 0, 2, 2);
-                        $pdf->MultiCell($w[0], $lhs, $class['synopsis'], 'LB', 'L', $fill, 0);
-                        $pdf->setCellPaddings(2, 2, 2, 2);
-                        $pdf->SetFont('', '', '12');
-                        $pdf->setY($y);
-                        $pdf->setX($x+$w[0]);
-                    } else {
-                        $pdf->MultiCell($w[0], $lh, $class['code'] . ' - ' . $class['name'], 'LTB', 'L', $fill, 0);
-                    }
-                    $pdf->setCellPaddings(2, 2, 3, 2);
-                    $pdf->MultiCell($w[1], $lh+$lhs, '$' . number_format($class['fee'], 2), 'TRB', 'R', $fill, 0, null, null, true, 0, false, true, ($lh+$lhs), 'M');
-                    $pdf->setCellPaddings(2, 2, 2, 2);
-                    $pdf->Ln($lh+$lhs);
-                    $fill=!$fill;
-                }
+            } else {
+                $pdf->ClassesAdd([150,30], $category, [], ['code_name_synopsis', 'fee']);
             }
         }
     }
