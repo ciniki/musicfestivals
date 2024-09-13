@@ -426,10 +426,6 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
             $rc = ciniki_musicfestivals_wng_syllabusSectionProcess($ciniki, $tnid, $request, $section);
             if( isset($rc['blocks']) ) {
                 foreach($rc['blocks'] as $bid => $block) {
-                    // Skip title block
-                    if( $bid == 0 ) {
-                        continue;
-                    }
                     $blocks[] = $block;
                 }
             }

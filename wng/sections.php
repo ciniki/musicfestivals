@@ -174,6 +174,87 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     }
 
     //
+    // Option to show only 1 section of the syllabus
+    //
+    $strsql = "SELECT sections.id, "
+        . "CONCAT_WS(' - ', festivals.name, sections.name) AS name "
+        . "FROM ciniki_musicfestivals AS festivals "
+        . "INNER JOIN ciniki_musicfestival_sections AS sections ON ("
+            . "festivals.id = sections.festival_id "
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "WHERE festivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "ORDER BY festivals.start_date DESC, sections.sequence "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'sections', 'fname'=>'id', 'fields'=>array('id', 'name')),));
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $syllabus_sections = isset($rc['sections']) ? $rc['sections'] : array();
+
+    $sections['ciniki.musicfestivals.syllabussection'] = array(
+        'name' => 'Syllabus Section',
+        'module' => 'Music Festivals',
+        'settings' => array(
+            'title' => array('label'=>'Title', 'type'=>'text'),
+            'content' => array('label'=>'Intro', 'type'=>'textarea'),
+            'section-id' => array('label'=>'Syllabus Section', 'type'=>'select', 
+                'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                'options'=>$syllabus_sections,
+                ),
+            'layout' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
+//                'tradingcards' => 'Trading Cards',
+//                'imagebuttons' => 'Image Buttons',
+//                'buttons' => 'Buttons',
+//                'groups' => 'Groups - Table',
+//                'groupbuttons' => 'Groups - Buttons',
+                'classlist' => 'Categories and Class Lists',
+                'pricelist' => 'Price List',
+                )),
+/*            'image-ratio' => array('label' => 'Image Ratio (Image Buttons Only)', 
+                'type'=>'select', 
+                'default'=>'4-3', 
+                'options'=>array(
+                    '2-1' => 'Panoramic',
+                    '16-9' => 'Letterbox',
+                    '6-4' => 'Wider',
+                    '4-3' => 'Wide',
+                    '1-1' => 'Square',
+                    '3-4' => 'Tall',
+                    '4-6' => 'Taller',)), 'title-position' => array('label' => 'Title Position (Image Buttons Only)', 
+               'type'=>'select', 
+                'default'=>'overlay-bottomhalf', 
+                'options'=>array(
+                    'above' => 'Above',
+                    'overlay-top' => 'Overlay Top',
+                    'overlay-tophalf' => 'Overlay Top Half',
+                    'overlay-center' => 'Centered',
+                    'overlay-bottomhalf' => 'Bottom Half',
+                    'overlay-bottom' => 'Bottom',
+                    'below' => 'Below',
+                )),
+            'live-search' => array('label'=>'Class Search', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
+                'no' => 'No',
+                'top' => 'Yes',
+                // In future can add bottom/both as options if needed
+                )),
+            'section-pdf' => array('label'=>'Section PDF Download', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
+                'no' => 'Off',
+                'top' => 'Top',
+                'bottom' => 'Bottom',
+                'both' => 'Both',
+                )),
+            'syllabus-pdf' => array('label'=>'Complete Syllabus PDF Download', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
+                'no' => 'Off',
+                'top' => 'Top',
+                'bottom' => 'Bottom',
+                'both' => 'Both',
+                )), */
+            ),
+        );
+    //
     // Section to display the file download for a festival - deprecated
     //
 /*    $sections['ciniki.musicfestivals.files'] = array(

@@ -40,7 +40,9 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     //
     // Make sure a festival was specified
     //
-    if( !isset($section['festival_id']) || $section['festival_id'] == '' || $section['festival_id'] == 0 ) {
+    if( (!isset($section['festival_id']) || $section['festival_id'] == '' || $section['festival_id'] == 0)
+        && (!isset($s['section-id']) || $s['section-id'] == '' || $s['section-id'] == 0)
+        ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.247', 'msg'=>"No festival specified"));
     }
 
@@ -59,6 +61,9 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     //
     if( isset($section['section_permalink']) ) {
         $section_permalink = $section['section_permalink'];
+    }
+    elseif( isset($s['section-id']) ) {
+        $section_id = $s['section-id'];
     }
     elseif( !isset($request['uri_split'][$request['cur_uri_pos']])
         || $request['uri_split'][$request['cur_uri_pos']] == '' 
@@ -81,54 +86,104 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             $thumbnail_padding_color = $s['thumbnail-padding-color'];
         } 
     }
-    
-    //
-    // Get the music festival details
-    //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'festivalLoad');
-    $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $section['festival_id']);
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
-    }
-    $festival = $rc['festival'];
+   
+    if( isset($s['section-id']) ) {
+        //
+        // Get the section details
+        //
+        $strsql = "SELECT sections.id, "
+            . "sections.festival_id, "
+            . "sections.permalink, "
+            . "sections.name, "
+            . "sections.primary_image_id, "
+            . "sections.synopsis, ";
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x020000) 
+            && isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'live'
+            ) {
+            $strsql .= "sections.live_description AS description, ";
+        } 
+        elseif( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x020000) 
+            && isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'virtual'
+            ) {
+            $strsql .= "sections.virtual_description AS description, ";
+        } 
+        else {
+            $strsql .= "sections.description, ";
+        }
+        $strsql .= "sections.live_end_dt, "
+            . "sections.virtual_end_dt "
+            . "FROM ciniki_musicfestival_sections AS sections "
+            . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $s['section-id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'section');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.217', 'msg'=>'Unable to load section', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['section']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.218', 'msg'=>'Unable to find requested section'));
+        }
+        $syllabus_section = $rc['section'];
+        $section['festival_id'] = $syllabus_section['festival_id'];
 
-    //
-    // Get the section details
-    //
-    $strsql = "SELECT sections.id, "
-        . "sections.permalink, "
-        . "sections.name, "
-        . "sections.primary_image_id, "
-        . "sections.synopsis, ";
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x020000) 
-        && isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'live'
-        ) {
-        $strsql .= "sections.live_description AS description, ";
-    } 
-    elseif( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x020000) 
-        && isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'virtual'
-        ) {
-        $strsql .= "sections.virtual_description AS description, ";
-    } 
-    else {
-        $strsql .= "sections.description, ";
+        //
+        // Get the music festival details
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'festivalLoad');
+        $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $section['festival_id']);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $festival = $rc['festival'];
+
+    } else {
+        //
+        // Get the music festival details
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'festivalLoad');
+        $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $section['festival_id']);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $festival = $rc['festival'];
+
+        //
+        // Get the section details
+        //
+        $strsql = "SELECT sections.id, "
+            . "sections.permalink, "
+            . "sections.name, "
+            . "sections.primary_image_id, "
+            . "sections.synopsis, ";
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x020000) 
+            && isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'live'
+            ) {
+            $strsql .= "sections.live_description AS description, ";
+        } 
+        elseif( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x020000) 
+            && isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'virtual'
+            ) {
+            $strsql .= "sections.virtual_description AS description, ";
+        } 
+        else {
+            $strsql .= "sections.description, ";
+        }
+        $strsql .= "sections.live_end_dt, "
+            . "sections.virtual_end_dt "
+            . "FROM ciniki_musicfestival_sections AS sections "
+            . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+            . "AND sections.permalink = '" . ciniki_core_dbQuote($ciniki, $section_permalink) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'section');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.217', 'msg'=>'Unable to load section', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['section']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.218', 'msg'=>'Unable to find requested section'));
+        }
+        $syllabus_section = $rc['section'];
     }
-    $strsql .= "sections.live_end_dt, "
-        . "sections.virtual_end_dt "
-        . "FROM ciniki_musicfestival_sections AS sections "
-        . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
-        . "AND sections.permalink = '" . ciniki_core_dbQuote($ciniki, $section_permalink) . "' "
-        . "ORDER BY sections.sequence, sections.name "
-        . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'section');
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.217', 'msg'=>'Unable to load section', 'err'=>$rc['err']));
-    }
-    if( !isset($rc['section']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.218', 'msg'=>'Unable to find requested section'));
-    }
-    $syllabus_section = $rc['section'];
 
     //
     // Check if section has other deadlines
@@ -219,24 +274,46 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             $festival['plus_live'] = $festival['live'];
         }
     }
-  
-    if( isset($syllabus_section['description']) && $syllabus_section['description'] != '' ) {
-        $blocks[] = array(
-            'type' => 'text',
-            'level' => 1,
-            'class' => 'musicfestival-syllabus-section',
-            'title' => (isset($s['title']) ? $s['title'] . ($s['title'] != '' ? ' - ' : '') : 'Syllabus - ') . $syllabus_section['name']
-                    . (isset($groupname) && $groupname != '' ? ' - ' . $groupname : ''),
-            'content' => $syllabus_section['description'],
-            );
+
+    //
+    // Don't show titles or intros when displaying a pricelist
+    //
+    if( isset($s['layout']) && $s['layout'] == 'pricelist' && isset($s['section-id']) ) {
+        $section['intros'] = 'no';
+        $section['tableheader'] = 'multiprices';
+        if( isset($s['title']) && $s['title'] != '' && isset($s['content']) && $s['content'] != '' ) {
+            $blocks[] = array(
+                'type' => 'text',
+                'level' => $section['sequence'] == 1 ? 1 : 2,
+                'title' => $s['title'],
+                'content' => $s['content'],
+                );
+        } elseif( isset($s['title']) && $s['title'] != '' ) {
+            $blocks[] = array(
+                'type' => 'title',
+                'level' => $section['sequence'] == 1 ? 1 : 2,
+                'title' => $s['title'],
+                );
+        }
     } else {
-        $blocks[] = array(
-            'type' => 'title', 
-            'level' => 1,
-            'class' => 'musicfestival-syllabus-section',
-            'title' => (isset($s['title']) ? $s['title'] : 'Syllabus') . ' - ' . $syllabus_section['name']
-                    . (isset($groupname) && $groupname != '' ? ' - ' . $groupname : ''),
-            );
+        if( isset($syllabus_section['description']) && $syllabus_section['description'] != '' ) {
+            $blocks[] = array(
+                'type' => 'text',
+                'level' => 1,
+                'class' => 'musicfestival-syllabus-section',
+                'title' => (isset($s['title']) ? $s['title'] . ($s['title'] != '' ? ' - ' : '') : 'Syllabus - ') . $syllabus_section['name']
+                        . (isset($groupname) && $groupname != '' ? ' - ' . $groupname : ''),
+                'content' => $syllabus_section['description'],
+                );
+        } else {
+            $blocks[] = array(
+                'type' => 'title', 
+                'level' => 1,
+                'class' => 'musicfestival-syllabus-section',
+                'title' => (isset($s['title']) ? $s['title'] . ($s['title'] != '' ? ' - ' : ''): 'Syllabus - ') . $syllabus_section['name']
+                        . (isset($groupname) && $groupname != '' ? ' - ' . $groupname : ''),
+                );
+        }
     }
 
     //
@@ -525,6 +602,9 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     }
 
 
+    if( isset($s['section-id']) ) {
+        return array('stat'=>'ok', 'blocks'=>$blocks);
+    }
 
     return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
 }
