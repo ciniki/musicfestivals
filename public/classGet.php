@@ -134,14 +134,14 @@ function ciniki_musicfestivals_classGet($ciniki) {
         if( isset($festival['comments-level-ui']) && $festival['comments-level-ui'] == 'yes' ) {
             $class['flags'] |= 0x0400;
         }
-        if( ($festival['flags']&0x20) == 0x20 ) {
+        if( isset($festival['flags']) && ($festival['flags']&0x20) == 0x20 ) {
             $class['feeflags'] |= 0x01;     // Earlybird
         }
         $class['feeflags'] |= 0x02;         // Live
-        if( ($festival['flags']&0x02) == 0x02 ) {
+        if( isset($festival['flags']) && ($festival['flags']&0x02) == 0x02 ) {
             $class['feeflags'] |= 0x08;     // Virtual
         }
-        if( ($festival['flags']&0x10) == 0x10 ) {
+        if( isset($festival['flags']) && ($festival['flags']&0x10) == 0x10 ) {
             if( ($festival['flags']&0x20) == 0x20 ) {
                 $class['feeflags'] |= 0x10;     // Earlybird Plus live
             }
