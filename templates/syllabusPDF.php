@@ -309,7 +309,13 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                         }
                     } elseif( $field == 'code_name' ) {
                         $lh = $this->getStringHeight($w[$i], $class['code'] . ' - ' . $class['name']);
-                    } else {
+                        $this->MultiCell($w[$i], $lh, $class['code'] . ' - ' . $class['name'], 'LTB', 'L', $fill, 0);
+                    } elseif( $field == 'earlybird_fee'
+                        || $field == 'fee'
+                        || $field == 'virtual_fee'
+                        || $field == 'earlybird_plus_fee'
+                        || $field == 'plus_fee'
+                        ) {
                         $this->setCellPaddings(2, 2, 3, 2);
                         $val = '$' . number_format($class[$field], 2);
                         if( $field == 'earlybird_fee' && ($class['feeflags']&0x01) == 0 ) {
@@ -333,6 +339,8 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                             $this->MultiCell($w[$i], $lh+$lhs, $val, 'TRBL', 'C', $fill, 0, '', '', true, 0, false, true, ($lh+$lhs), 'M');
                         }
                         $this->setCellPaddings(2, 2, 2, 2);
+                    } else {
+                        $this->MultiCell($w[$i], $lh+$lhs, $class[$field], 'TRBL', 'C', $fill, 0, '', '', true, 0, false, true, ($lh+$lhs), 'M');
                     }
                 }
 
@@ -513,7 +521,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                 $fields = ['code_name_synopsis', 'fee'];
                 if( $args['live-virtual'] == 'virtual' ) {
                     $headers[1] = 'Virtual';
-                    $fields[1] = 'Virtual';
+                    $fields[1] = 'virtual_fee';
                 }
                 $pdf->ClassesAdd([150,30], $category, $headers, $fields);
 
