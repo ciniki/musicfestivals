@@ -334,7 +334,7 @@ function ciniki_musicfestivals_main() {
             'cellClasses':['multiline'],
             'editFn':function(s,i,d) {
                 if( d != null && d.name != 'All' ) {
-                    return 'M.ciniki_musicfestivals_main.category.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.id + '\',M.ciniki_musicfestivals_main.festival.festival_id, M.ciniki_musicfestivals_main.festival.nplists.syllabus_categories);';
+                    return 'M.ciniki_musicfestivals_main.category.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.id + '\',M.ciniki_musicfestivals_main.festival.section_id,M.ciniki_musicfestivals_main.festival.festival_id, M.ciniki_musicfestivals_main.festival.nplists.syllabus_categories);';
                 }
                 return '';
                 },
@@ -4236,7 +4236,7 @@ function ciniki_musicfestivals_main() {
         return 'M.ciniki_musicfestivals_main.category.openClass(\'' + d.id + '\');';
     }
     this.category.openClass = function(cid) {
-        this.save("M.ciniki_musicfestivals_main.class.open('M.ciniki_musicfestivals_main.category.open();','" + cid + "', this.category_id, this.festival_id, this.nplists.classes);");
+        this.save("M.ciniki_musicfestivals_main.class.open('M.ciniki_musicfestivals_main.category.open();','" + cid + "', M.ciniki_musicfestivals_main.category.category_id, M.ciniki_musicfestivals_main.category.festival_id, M.ciniki_musicfestivals_main.category.nplists.classes);");
     }
     this.category.switchTab = function(tab) {
         this.sections._tabs.selected = tab;
@@ -4746,7 +4746,6 @@ function ciniki_musicfestivals_main() {
         if( this.class_id > 0 ) {
             var c = this.serializeForm('no');
             if( c != '' ) {
-                console.log(c);
                 M.api.postJSONCb('ciniki.musicfestivals.classUpdate', {'tnid':M.curTenantID, 'class_id':this.class_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
