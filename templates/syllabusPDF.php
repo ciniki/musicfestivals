@@ -340,7 +340,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                         }
                         $this->setCellPaddings(2, 2, 2, 2);
                     } else {
-                        $this->MultiCell($w[$i], $lh+$lhs, $class[$field], 'TRBL', 'C', $fill, 0, '', '', true, 0, false, true, ($lh+$lhs), 'M');
+                        $this->MultiCell($w[$i], $lh+$lhs, (isset($class[$field]) ? $class[$field] : ''), 'TRBL', 'C', $fill, 0, '', '', true, 0, false, true, ($lh+$lhs), 'M');
                     }
                 }
 
