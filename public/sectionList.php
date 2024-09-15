@@ -75,7 +75,6 @@ function ciniki_musicfestivals_sectionList($ciniki) {
     }
     $strsql .= "ORDER BY sections.sequence, sections.name "
         . "";
-        error_log(print_r($strsql,true));
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'id', 
