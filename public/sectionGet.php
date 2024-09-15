@@ -113,7 +113,10 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
             . "ciniki_musicfestival_sections.live_end_dt, "
             . "ciniki_musicfestival_sections.virtual_end_dt, "
             . "ciniki_musicfestival_sections.titles_end_dt, "
-            . "ciniki_musicfestival_sections.upload_end_dt "
+            . "ciniki_musicfestival_sections.upload_end_dt, "
+            . "ciniki_musicfestival_sections.latefees_start_amount, "
+            . "ciniki_musicfestival_sections.latefees_daily_increase, "
+            . "ciniki_musicfestival_sections.latefees_days "
             . "FROM ciniki_musicfestival_sections "
             . "WHERE ciniki_musicfestival_sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_musicfestival_sections.id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
@@ -126,6 +129,7 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
                     'primary_image_id', 'synopsis', 'description',
                     'live_description', 'virtual_description', 'recommendations_description', 
                     'live_end_dt', 'virtual_end_dt', 'titles_end_dt', 'upload_end_dt',
+                    'latefees_start_amount', 'latefees_daily_increase', 'latefees_days',
                     ),
                 'utctotz'=>array(
                     'live_end_dt'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
@@ -142,6 +146,17 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.22', 'msg'=>'Unable to find Section'));
         }
         $section = $rc['sections'][0];
+
+        if( $section['latefees_start_amount'] != 0 ) {
+            $section['latefees_start_amount'] = '$' . number_format($section['latefees_start_amount'], 2);
+        } else {
+            $section['latefees_start_amount'] = '';
+        }
+        if( $section['latefees_daily_increase'] != 0 ) {
+            $section['latefees_daily_increase'] = '$' . number_format($section['latefees_daily_increase'], 2);
+        } else {
+            $section['latefees_daily_increase'] = '';
+        }
 
         //
         // Check if to include categories

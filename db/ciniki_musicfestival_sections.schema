@@ -21,6 +21,10 @@
 #                           0x02 - Edit Titles & Times
 #                           0x04 - 
 #                           0x08 - 
+#                           0x10 - Late Fees per Invoice
+#                           0x20 - Late Fees per Registratrion
+#                           0x40 - 
+#                           0x80 - 
 #
 # primary_image_id:     The ID of the image section.
 # synopsis:             The show synopsis to show on listing pages.
@@ -34,6 +38,10 @@
 # virtual_end_dt:       The UTC date and time virtual registrations close for this section.
 # titles_end_dt:          The UTC date and time deadline for editing titles and times
 # upload_end_dt:        The UTC date and time deadline for uploading video URL's and music.
+#
+# latefees_start_amount:        The amount to charge for late fees on 1st day after end_dt.
+# latefees_daily_increase:      How much to increase fees per day.
+# latefees_days:                The number of days to allow late registrations/fees.
 #
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.
@@ -58,10 +66,13 @@ create table ciniki_musicfestival_sections (
     virtual_end_dt datetime not null,
     titles_end_dt datetime not null,
     upload_end_dt datetime not null,
+    latefees_start_amount decimal(19,6) not null,
+    latefees_daily_increase decimal(19,6) not null,
+    latefees_days tinyint not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
     unique index (festival_id, permalink),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.07';
+) ENGINE='InnoDB', COMMENT='v1.08';
