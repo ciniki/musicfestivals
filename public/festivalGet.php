@@ -367,7 +367,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "sections.syllabus, "
                     . "sections.name, "
                     . "sections.permalink, "
-                    . "sections.sequence "
+                    . "sections.sequence, "
+                    . "sections.flags, "
                     . "FROM ciniki_musicfestival_sections AS sections "
                     . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
