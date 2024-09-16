@@ -3532,6 +3532,8 @@ function ciniki_musicfestivals_main() {
         this.showHideSection('_competitor_group_teacher_msg');
         this.showHideSection('_competitor_group_adult_msg');
         this.showHideSection('_waiver');
+//        this.showHideSection('_photowaiver');
+//        this.showHideSection('_namewaiver');
         this.refreshSection('_tabs');
     }
     this.edit.updateNames = function() {
@@ -5873,7 +5875,9 @@ function ciniki_musicfestivals_main() {
             'age':{'label':'Age', 'type':'text'},
             'study_level':{'label':'Study/Level', 'type':'text'},
             'instrument':{'label':'Instrument', 'type':'text'},
-            'flags1':{'label':'Waiver', 'type':'flagtoggle', 'bit':0x01, 'field':'flags', 'toggles':{'':'Unsigned', 'signed':'Signed'}},
+            'flags1':{'label':'Waiver', 'type':'flagtoggle', 'bit':0x01, 'field':'flags', 'off':'Unsigned', 'on':'Signed'},
+            'flags2':{'label':'Photo Waiver', 'type':'flagtoggle', 'bit':0x02, 'field':'flags', 'off':'Disagreed(Do Not Publish)', 'on':'Agreed (publish)'},
+            'flags3':{'label':'Name Waiver', 'type':'flagtoggle', 'bit':0x04, 'field':'flags', 'off':'Disagreed(Do Not Publish)', 'on':'Agreed (publish)'},
             }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'contact', 'visible':'yes',
             'tabs':{
