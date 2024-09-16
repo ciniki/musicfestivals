@@ -135,10 +135,9 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
     //
     // Create the keywords
     //
-    $args['keywords'] = '';
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'classKeywordsMake');
     $rc = ciniki_musicfestivals_classKeywordsMake($ciniki, $args['tnid'], [
-        'class' => $class,
+        'class_id' => $args['class_id'],
         ]);
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.821', 'msg'=>'Unable to create search words', 'err'=>$rc['err']));
