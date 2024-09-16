@@ -290,7 +290,7 @@ function ciniki_musicfestivals_main() {
                     },
                 'updatekeywords':{
                     'label':'Update Search Keywords',
-                    'visible':function() { return (M.userPerms&0x01) == 0x01 ? 'yes' : 'no'; },
+//                    'visible':function() { return (M.userPerms&0x01) == 0x01 ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.festival.updateKeywords();',
                     },
                 'copy':{
