@@ -1226,6 +1226,10 @@ function ciniki_musicfestivals_main() {
                     'label':'Add Sponsor',
                     'fn':'M.ciniki_musicfestivals_main.sponsor.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.festival_id);',
                     },
+                'copyprevious':{
+                    'label':'Copy Previous Years Sponsors',
+                    'fn':'M.ciniki_musicfestivals_main.festival.festivalSponsorsCopy("previous");',
+                    },
                 },
         },
         'sponsors-old':{'label':'', 'type':'simplegrid', 'num_cols':1,
@@ -3010,6 +3014,15 @@ function ciniki_musicfestivals_main() {
     }
     this.festival.festivalCopy = function(old_fid) {
         M.api.getJSONCb('ciniki.musicfestivals.festivalCopy', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'old_festival_id':old_fid}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            M.ciniki_musicfestivals_main.festival.open();
+        });
+    }
+    this.festival.festivalSponsorsCopy = function(old_fid) {
+        M.api.getJSONCb('ciniki.musicfestivals.festivalSponsorsCopy', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'old_festival_id':old_fid}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
