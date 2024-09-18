@@ -4438,7 +4438,7 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.category.remove = function() {
-        M.confirm('Are you sure you want to remove category?',null,function() {
+        M.confirm('Are you sure you want to remove category? All classes in the category will be deleted.',null,function() {
             M.api.getJSONCb('ciniki.musicfestivals.categoryDelete', {'tnid':M.curTenantID, 'category_id':M.ciniki_musicfestivals_main.category.category_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);

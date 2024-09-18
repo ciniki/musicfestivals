@@ -57,7 +57,7 @@ function ciniki_musicfestivals_categoryDelete(&$ciniki) {
     //
     // Check for any dependencies before deleting
     //
-    $strsql = "SELECT 'items', COUNT(*) "
+/*    $strsql = "SELECT 'items', COUNT(*) "
         . "FROM ciniki_musicfestival_classes "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND category_id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
@@ -70,7 +70,7 @@ function ciniki_musicfestivals_categoryDelete(&$ciniki) {
     if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
         $count = $rc['num']['items'];
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.28', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' class' . ($count==1?'':'es') . ' in that category.'));
-    }
+    } */
 
     //
     // Check if any modules are currently using this object
@@ -85,6 +85,20 @@ function ciniki_musicfestivals_categoryDelete(&$ciniki) {
     }
 
     //
+    // Get the list of classes
+    //
+    $strsql = "SELECT id, uuid "
+        . "FROM ciniki_musicfestival_classes "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND category_id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $classes = isset($rc['rows']) ? $rc['rows'] : array();
+    
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
@@ -96,6 +110,17 @@ function ciniki_musicfestivals_categoryDelete(&$ciniki) {
     $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.musicfestivals');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
+    }
+
+    //
+    // Remove the classes
+    //
+    foreach($classes as $class) {
+        $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.musicfestivals.class', $class['id'], $class['uuid'], 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
     }
 
     //
