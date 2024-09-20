@@ -85,7 +85,7 @@ function ciniki_musicfestivals_wng_ssamchartProcess(&$ciniki, $tnid, &$request, 
 
             $blocks[] = array(
                 'type' => 'accordion',
-                'class' => 'section-' . ciniki_core_makePermalink($ciniki, $section['name']),
+                'class' => 'musicfestival-ssam-chart',
                 'items' => $items,
                 );
         }
