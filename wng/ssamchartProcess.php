@@ -26,15 +26,59 @@ function ciniki_musicfestivals_wng_ssamchartProcess(&$ciniki, $tnid, &$request, 
     $blocks = array();
     $base_url = $request['page']['path'];
 
+    
     //
-    // Load the chart
+    // Load the festival if not specified
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'ssamLoad');
-    $rc = ciniki_musicfestivals_ssamLoad($ciniki, $tnid, $s['festival-id']);
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
+    if( !isset($s['festival-id']) && isset($s['provincial-tnid']) ) {
+        $strsql = "SELECT festivals.id, festivals.tnid "
+            . "FROM ciniki_musicfestivals AS festivals "
+            . "INNER JOIN ciniki_musicfestival_settings AS settings ON ("
+                . "festivals.id = settings.festival_id "
+                . "AND detail_key = 'content-ssam-chart' "
+                . "AND festivals.tnid = settings.tnid "
+                . ") "
+            . "WHERE festivals.tnid = '" . ciniki_core_dbQuote($ciniki, $s['provincial-tnid']) . "' "
+            . "ORDER BY festivals.start_date DESC "
+            . "LIMIT 1 "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.854', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['festival']) ) {
+            $blocks[] = array(
+                'type' => 'msg',
+                'level' => 'error', 
+                'message' => 'No SSAM chart available',
+                );
+            return array('stat'=>'ok', 'blocks'=>$blocks);
+        }
+        $festival = $rc['festival'];
+
+        //
+        // Load the chart
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'ssamLoad');
+        $rc = ciniki_musicfestivals_ssamLoad($ciniki, $festival['tnid'], $festival['id']);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $ssam = $rc['ssam'];
+
+    } else {
+        //
+        // Load the chart
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'ssamLoad');
+        $rc = ciniki_musicfestivals_ssamLoad($ciniki, $tnid, $s['festival-id']);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $ssam = $rc['ssam'];
+
+
     }
-    $ssam = $rc['ssam'];
 
     //
     // Generate title/content to the ssamchart

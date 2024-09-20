@@ -78,6 +78,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'registration_tag'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registration Tag'),
         'statistics'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Statistics'),
         'ssam'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'SSAM'),
+        'provincial_festivals'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Return Provincial Festivals'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -3500,6 +3501,35 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 return $rc;
             }
             $festival['ssam'] = $rc['ssam'];
+        }
+
+        //
+        // Load the list of provincial festivals
+        //
+        if( isset($args['provincials']) && $args['provincials'] == 'festivals' ) {
+            $strsql = "SELECT festivals.id, "
+                . "CONCAT_WS(' - ', festivals.name, tenants.name) AS name "
+                . "FROM ciniki_tenant_modules AS modules "
+                . "INNER JOIN ciniki_tenants AS tenants ON ("
+                    . "modules.tnid = tenants.id "
+                    . ") "
+                . "INNER JOIN ciniki_musicfestivals AS festivals ON ("
+                    . "modules.tnid = festivals.tnid "
+                    . ") "
+                . "WHERE modules.package = 'ciniki' "
+                . "AND modules.module = 'musicfestivals' "
+                . "AND (modules.flags&0x010000) = 0x010000 "  // Provincials Tenant
+                . "ORDER BY tenants.name, festivals.start_date DESC "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'festivals', 'fname'=>'id', 
+                    'fields'=>array('id', 'name')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.853', 'msg'=>'Unable to load festivals', 'err'=>$rc['err']));
+            }
+            $festival['provincial_festivals'] = isset($rc['festivals']) ? $rc['festivals'] : array();
         }
     }
 

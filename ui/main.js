@@ -3187,15 +3187,21 @@ function ciniki_musicfestivals_main() {
             'accompanist_end_dt':{'label':'Accompanist Deadline', 'type':'datetime'},
             'upload_end_dt':{'label':'Upload Deadline', 'type':'datetime', 'visible':'no'},
             }},
-        '_settings':{'label':'', 'aside':'yes', 'fields':{
-            'age-restriction-msg':{'label':'Age Restriction Message', 'type':'text'},
+//        '_settings':{'label':'', 'aside':'yes', 'fields':{
+//            'age-restriction-msg':{'label':'Age Restriction Message', 'type':'text'},
 //            'president-name':{'label':'President Name', 'type':'text'},
-            }},
+//            }},
 // Remove 2022, could be readded in future
 //        '_hybrid':{'label':'In Person/Virtual Choices', 'aside':'yes', 'fields':{
 //            'inperson-choice-msg':{'label':'In Person Choice', 'type':'text', 'hint':'in person on a scheduled date'},
 //            'virtual-choice-msg':{'label':'Virtual Choice', 'type':'text', 'hint':'virtually and submit a video'},
 //            }},
+        '_provincials':{'label':'Provincial Festival', 'aside':'yes',
+            'visible':function() { return !M.modFlagOn('ciniki.musicfestivals', 0x010000) ? 'yes' : 'no'; },
+            'fields':{
+                'provincial-festival-id':{'label':'', 'hidelabel':'yes', 'type':'select', 'options':[],
+                    'complex_options':{'value':'id', 'name':'name'}},
+            }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'documents', 'tabs':{
 //            'website':{'label':'Website', 'fn':'M.ciniki_musicfestivals_main.edit.switchTab(\'website\');'},
             'documents':{'label':'Documents', 'fn':'M.ciniki_musicfestivals_main.edit.switchTab(\'documents\');'},
@@ -3664,7 +3670,7 @@ function ciniki_musicfestivals_main() {
     this.edit.open = function(cb, fid, list) {
         if( fid != null ) { this.festival_id = fid; }
         if( list != null ) { this.nplist = list; }
-        M.api.getJSONCb('ciniki.musicfestivals.festivalGet', {'tnid':M.curTenantID, 'festival_id':this.festival_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.musicfestivals.festivalGet', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'provincials':'festivals'}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -3679,6 +3685,13 @@ function ciniki_musicfestivals_main() {
                 p.sections.general.fields.virtual_date.visible = 'no';
                 p.sections.general.fields.upload_end_dt.visible = 'no';
             }
+            p.sections._provincials.fields['provincial-festival-id'].options = [{'id':0, 'name':'None'}];
+            if( rsp.festival.provincial_festivals != null ) {
+                for(var i in rsp.festival.provincial_festivals) {
+                    p.sections._provincials.fields['provincial-festival-id'].options.push(rsp.festival.provincial_festivals[i]);
+                }
+            }
+
             p.refresh();
             p.show(cb);
         });

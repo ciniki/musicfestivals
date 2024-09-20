@@ -79,6 +79,10 @@ function ciniki_musicfestivals_wng_process(&$ciniki, $tnid, &$request, $section)
     } elseif( $section['ref'] == 'ciniki.musicfestivals.ssamchart' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'ssamchartProcess');
         return ciniki_musicfestivals_wng_ssamchartProcess($ciniki, $tnid, $request, $section);
+    } elseif( $section['ref'] == 'ciniki.musicfestivals.provincialsssamchart' ) {
+        $section['provincial-festival'] = 'yes';
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'ssamchartProcess');
+        return ciniki_musicfestivals_wng_ssamchartProcess($ciniki, $tnid, $request, $section);
     }
 
     return array('stat'=>'ok');

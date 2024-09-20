@@ -736,6 +736,47 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 ),
             );
     } 
+
+    if( isset($festival['provincial-festival-id']) && $festival['provincial-festival-id'] > 0 ) {
+        //
+        // Get the list of provincial orgs
+        //
+        $strsql = "SELECT tenants.id, "
+            . "tenants.name "
+            . "FROM ciniki_tenant_modules AS modules "
+            . "INNER JOIN ciniki_tenants AS tenants ON ("
+                . "modules.tnid = tenants.id "
+                . "AND tenants.status = 1 "
+                . ") "
+            . "WHERE modules.package = 'ciniki' "
+            . "AND modules.module = 'musicfestivals' "
+            . "AND (modules.flags&0x010000) = 0x010000 "  // Provincials Tenant
+            . "ORDER BY tenants.name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'tenants', 'fname'=>'id', 
+                'fields'=>array('id', 'name')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.853', 'msg'=>'Unable to load festivals', 'err'=>$rc['err']));
+        }
+        $provincials = isset($rc['tenants']) ? $rc['tenants'] : array();
+        array_unshift($provincials, ['id'=>0, 'name'=>'None']);
+        
+        $sections['ciniki.musicfestivals.provincialsssamchart'] = array(
+            'name' => 'Provincials SSAM Chart',
+            'module' => 'Music Festivals',
+            'settings' => array(
+                'title' => array('label'=>'Title', 'type'=>'text'),
+                'content' => array('label'=>'Intro', 'type'=>'textarea'),
+                'provincial-tnid' => array('label'=>'Provincials', 'type'=>'select', 
+                    'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                    'options'=>$provincials,
+                    ),
+                ),
+            );
+    }
     
 
     return array('stat'=>'ok', 'sections'=>$sections);
