@@ -66,19 +66,24 @@ function ciniki_musicfestivals_wng_ssamchartProcess(&$ciniki, $tnid, &$request, 
                 $content = '';
                 if( isset($category['items']) ) {
                     foreach($category['items'] as $item) {
-                        $content .= ($content != '' ? "\n\n" : '') . "<span class='musicfestival-ssam-chart-title'>" . $item['name'] . "</span>";
+                        $content .= "<div class='musicfestival-ssam-chart-title'><span class='musicfestival-ssam-chart-title'>" . $item['name'] . "</span>";
+                        $songs = '';
                         for($i = 1; $i <= 4; $i++) {
                             if( isset($item["song{$i}"]) && $item["song{$i}"] != '' ) {
-                                $content .= "\n<span class='musicfestival-ssam-chart-song'>" . $item["song{$i}"] . "</span>";
+                                $songs .= "<li class='musicfestival-ssam-chart-song'>" . $item["song{$i}"] . "</li>";
                             }
                         }
+                        if( $songs != '' ) {
+                            $content .= "<ul class='musicfestival-ssam-chart-songs'>" . $songs . "</ul>";
+                        }
+                        $content .= "</div>";
                     }
                 }
                 if( $content != '' ) {
                     $items[] = [
                         'title' => $category['name'],
                         'collapsed' => 'yes',
-                        'content' => $content,
+                        'html' => $content,
                         ];
                 }
             }
