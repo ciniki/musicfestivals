@@ -121,7 +121,7 @@ function ciniki_musicfestivals_ssamItemUpdate(&$ciniki) {
                 if( isset($args['name']) ) {
                     $ssam['sections'][$sid]['categories'][$cid]['items'][$iid]['name'] = $args['name'];
                 }
-                foreach($i = 1; $i <= 9; $i++) {
+                for($i = 1; $i <= 9; $i++) {
                     if( isset($args["song{$i}"]) ) {
                         $ssam['sections'][$sid]['categories'][$cid]['items'][$iid]["song{$i}"] = $args["song{$i}"];
                     }

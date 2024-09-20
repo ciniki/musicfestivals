@@ -45,7 +45,6 @@ function ciniki_musicfestivals_ssamSectionDelete(&$ciniki) {
         return $rc;
     }
     $ssam = $rc['ssam'];
-    error_log(print_r($ssam,true));
 
     //
     // Find the section and remove it
