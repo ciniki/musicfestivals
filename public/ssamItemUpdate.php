@@ -28,6 +28,11 @@ function ciniki_musicfestivals_ssamItemUpdate(&$ciniki) {
         'song2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Song 2'),
         'song3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Song 3'),
         'song4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Song 4'),
+        'song5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Song 5'),
+        'song6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Song 6'),
+        'song7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Song 7'),
+        'song8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Song 8'),
+        'song9'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Song 9'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
