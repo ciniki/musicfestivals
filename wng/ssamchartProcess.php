@@ -66,10 +66,10 @@ function ciniki_musicfestivals_wng_ssamchartProcess(&$ciniki, $tnid, &$request, 
                 $content = '';
                 if( isset($category['items']) ) {
                     foreach($category['items'] as $item) {
-                        $content .= ($content != '' ? "\n\n" : '') . $item['name'];
+                        $content .= ($content != '' ? "\n\n" : '') . "<span class='musicfestival-ssam-chart-title'>" . $item['name'] . "</span>";
                         for($i = 1; $i <= 4; $i++) {
                             if( isset($item["song{$i}"]) && $item["song{$i}"] != '' ) {
-                                $content .= "\n- " . $item["song{$i}"];
+                                $content .= "\n<span class='musicfestival-ssam-chart-song'>" . $item["song{$i}"] . "</span>";
                             }
                         }
                     }
