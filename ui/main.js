@@ -1286,8 +1286,8 @@ function ciniki_musicfestivals_main() {
                 return 'M.ciniki_musicfestivals_main.ssamcategory.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.sections.ssam_sections.selected,M.ciniki_musicfestivals_main.festival.sections.ssam_categories.selected,M.ciniki_musicfestivals_main.festival.festival_id);';
                 },
             },
-        'ssam_items':{'label':'List', 'type':'simplegrid', 'num_cols':5, 
-            'headerValues':['Name', 'Song 1', 'Song 2', 'Song 3', 'Song 4'],
+        'ssam_items':{'label':'List', 'type':'simplegrid', 'num_cols':10, 
+            'headerValues':['Name', 'Song 1', 'Song 2', 'Song 3', 'Song 4', 'Song 5', 'Song 6', 'Song 7', 'Song 8', 'Song 9'],
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'ssam') == 'yes' && M.ciniki_musicfestivals_main.festival.sections.ssam_sections.selected != '' && M.ciniki_musicfestivals_main.festival.sections.ssam_categories.selected != '' ? 'yes' : 'no'; },
             'menu':{
                 'add':{
@@ -1908,6 +1908,11 @@ function ciniki_musicfestivals_main() {
                 case 2: return d.song2;
                 case 3: return d.song3;
                 case 4: return d.song4;
+                case 5: return d.song5;
+                case 6: return d.song6;
+                case 7: return d.song7;
+                case 8: return d.song8;
+                case 9: return d.song9;
             }
         }
     }
@@ -10697,6 +10702,11 @@ function ciniki_musicfestivals_main() {
             'song2':{'label':'Song 2', 'type':'text'},
             'song3':{'label':'Song 3', 'type':'text'},
             'song4':{'label':'Song 4', 'type':'text'},
+            'song5':{'label':'Song 5', 'type':'text'},
+            'song6':{'label':'Song 6', 'type':'text'},
+            'song7':{'label':'Song 7', 'type':'text'},
+            'song8':{'label':'Song 8', 'type':'text'},
+            'song9':{'label':'Song 9', 'type':'text'},
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.ssamitem.save();'},

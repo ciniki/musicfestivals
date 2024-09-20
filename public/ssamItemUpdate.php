@@ -103,6 +103,11 @@ function ciniki_musicfestivals_ssamItemUpdate(&$ciniki) {
                 'song2' => isset($args['song2']) ? $args['song2'] : '',
                 'song3' => isset($args['song3']) ? $args['song3'] : '',
                 'song4' => isset($args['song4']) ? $args['song4'] : '',
+                'song5' => isset($args['song5']) ? $args['song5'] : '',
+                'song6' => isset($args['song6']) ? $args['song6'] : '',
+                'song7' => isset($args['song7']) ? $args['song7'] : '',
+                'song8' => isset($args['song8']) ? $args['song8'] : '',
+                'song9' => isset($args['song9']) ? $args['song9'] : '',
                 ];
         }
     } else {
@@ -111,17 +116,10 @@ function ciniki_musicfestivals_ssamItemUpdate(&$ciniki) {
                 if( isset($args['name']) ) {
                     $ssam['sections'][$sid]['categories'][$cid]['items'][$iid]['name'] = $args['name'];
                 }
-                if( isset($args['song1']) ) {
-                    $ssam['sections'][$sid]['categories'][$cid]['items'][$iid]['song1'] = $args['song1'];
-                }
-                if( isset($args['song2']) ) {
-                    $ssam['sections'][$sid]['categories'][$cid]['items'][$iid]['song2'] = $args['song2'];
-                }
-                if( isset($args['song3']) ) {
-                    $ssam['sections'][$sid]['categories'][$cid]['items'][$iid]['song3'] = $args['song3'];
-                }
-                if( isset($args['song4']) ) {
-                    $ssam['sections'][$sid]['categories'][$cid]['items'][$iid]['song4'] = $args['song4'];
+                foreach($i = 1; $i <= 9; $i++) {
+                    if( isset($args["song{$i}"]) ) {
+                        $ssam['sections'][$sid]['categories'][$cid]['items'][$iid]["song{$i}"] = $args["song{$i}"];
+                    }
                 }
                 break;
             }

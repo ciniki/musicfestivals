@@ -28,7 +28,6 @@ function ciniki_musicfestivals_ssamItemGet(&$ciniki) {
         return $rc;
     }
     $args = $rc['args'];
-    error_log(print_r($args,true));
 
     //
     // Check access to tnid as owner
