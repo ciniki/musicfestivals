@@ -133,20 +133,6 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
     }
 
     //
-    // Create the keywords
-    //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'classKeywordsMake');
-    $rc = ciniki_musicfestivals_classKeywordsMake($ciniki, $args['tnid'], [
-        'class_id' => $args['class_id'],
-        ]);
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.821', 'msg'=>'Unable to create search words', 'err'=>$rc['err']));
-    }
-    if( $rc['keywords'] != $class['keywords'] ) {
-        $args['keywords'] = $rc['keywords'];
-    }
-
-    //
     // Update the options
     //
     for($i = 1; $i <= 8; $i++) {
@@ -210,6 +196,26 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'sequencesUpdate');
         $rc = ciniki_core_sequencesUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.class', 
             'category_id', $class['category_id'], $args['sequence'], $class['sequence']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
+    }
+
+    //
+    // Create the keywords
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'classKeywordsMake');
+    $rc = ciniki_musicfestivals_classKeywordsMake($ciniki, $args['tnid'], [
+        'class_id' => $args['class_id'],
+        ]);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.821', 'msg'=>'Unable to create search words', 'err'=>$rc['err']));
+    }
+    if( $rc['keywords'] != $class['keywords'] ) {
+        $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.class', $args['class_id'], [
+            'keywords' => $rc['keywords'],
+            ], 0x04);
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
             return $rc;

@@ -77,6 +77,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'ipv'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'In Person/Virtual'),
         'registration_tag'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registration Tag'),
         'statistics'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Statistics'),
+        'ssam'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'SSAM'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -3487,6 +3488,18 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 }
                 $festival['stats_members'] = $members;
             }
+        }
+
+        //
+        // Load Songs from the screen and more chart
+        //
+        if( isset($args['ssam']) && $args['ssam'] == 'yes' ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'ssamLoad');
+            $rc = ciniki_musicfestivals_ssamLoad($ciniki, $args['tnid'], $args['festival_id']);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $festival['ssam'] = $rc['ssam'];
         }
     }
 
