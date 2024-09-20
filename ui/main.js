@@ -1283,7 +1283,7 @@ function ciniki_musicfestivals_main() {
                     },
                 },
             'editFn':function(s, i, d) {
-                return 'M.ciniki_musicfestivals_main.ssamcategory.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.sections.ssam_sections.selected,M.ciniki_musicfestivals_main.festival.sections.ssam_categories.selected,M.ciniki_musicfestivals_main.festival.festival_id);';
+                return 'M.ciniki_musicfestivals_main.ssamcategory.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.sections.ssam_sections.selected,\'' + M.eU(d.name) + '\',M.ciniki_musicfestivals_main.festival.festival_id);';
                 },
             },
         'ssam_items':{'label':'List', 'type':'simplegrid', 'num_cols':10, 
