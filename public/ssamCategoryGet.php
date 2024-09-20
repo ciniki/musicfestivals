@@ -50,7 +50,7 @@ function ciniki_musicfestivals_ssamCategoryGet(&$ciniki) {
     if( isset($ssam['sections']) ) {
         foreach($ssam['sections'] as $section) {
             if( $section['name'] == $args['section_name'] ) {
-                if( isset($ssam['categories']) ) {
+                if( isset($section['categories']) ) {
                     foreach($section['categories'] as $category) {
                         if( $category['name'] == $args['category_name'] ) {
                             return array('stat'=>'ok', 'category'=>$category);
