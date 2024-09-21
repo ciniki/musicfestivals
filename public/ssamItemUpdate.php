@@ -130,6 +130,12 @@ function ciniki_musicfestivals_ssamItemUpdate(&$ciniki) {
             }
         }
     }
+    uasort($ssam['sections'][$sid]['categories'][$cid]['items'], function($a, $b) {
+        return strcasecmp($a['name'], $b['name']);
+        });
+
+    // Reset index number so it saves the new order in the json 
+    $ssam['sections'][$sid]['categories'][$cid]['items'] = array_values($ssam['sections'][$sid]['categories'][$cid]['items']);
 
     //
     // Load the current ssam content

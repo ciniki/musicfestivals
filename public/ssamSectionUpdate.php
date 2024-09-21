@@ -23,6 +23,7 @@ function ciniki_musicfestivals_ssamSectionUpdate(&$ciniki) {
         'section_name'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Old Name'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'New Name'),
         'content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Content'),
+        'moveto_name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Move Section'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -63,14 +64,31 @@ function ciniki_musicfestivals_ssamSectionUpdate(&$ciniki) {
         }
     } else {
         foreach($ssam['sections'] as $sid => $section) {
-            if( $section['name'] == $args['section_name'] ) {
+            if( isset($args['moveto_name']) && $args['moveto_name'] == $section['name'] ) {
+                $to = $sid;
+            }
+            if( isset($section['name']) && $section['name'] == $args['section_name'] ) {
                 if( isset($args['name']) ) {
                     $ssam['sections'][$sid]['name'] = $args['name'];
                 }
                 if( isset($args['content']) ) {
                     $ssam['sections'][$sid]['content'] = $args['content'];
                 }
-                break;
+                if( isset($args['name']) || isset($args['content']) ) {
+                    break;
+                }
+                if( isset($args['moveto_name']) ) {
+                    $from = $sid;
+                }
+            }
+        }
+        if( isset($to) && isset($from) ) {
+            $item = $ssam['sections'][$from];
+            unset($ssam['sections'][$from]);
+            if( $to == 0 ) {
+                array_unshift($ssam['sections'], $item);
+            } else {
+                array_splice($ssam['sections'], $to, 0, array('0'=>$item));
             }
         }
     }

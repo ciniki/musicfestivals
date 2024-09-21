@@ -51,9 +51,15 @@ function ciniki_musicfestivals_ssamCategoryDelete(&$ciniki) {
     // Find the category and remove it
     //
     foreach($ssam['sections'] as $sid => $section) {
-        if( $section['name'] == $args['section_name'] ) {
+        if( !isset($section['name']) ) {
+            unset($ssam['sections'][$sid]);
+        }
+        if( isset($section['name']) && $section['name'] == $args['section_name'] ) {
             foreach($section['categories'] as $cid => $category) {
-                if( $category['name'] == $args['category_name'] ) {
+                if( !isset($category['name']) ) {
+                    unset($ssam['sections'][$sid]['categories'][$cid]);
+                }
+                if( isset($category['name']) && $category['name'] == $args['category_name'] ) {
                     unset($ssam['sections'][$sid]['categories'][$cid]);
                     break;
                 }

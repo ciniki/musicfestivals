@@ -23,6 +23,7 @@ function ciniki_musicfestivals_ssamCategoryUpdate(&$ciniki) {
         'section_name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Section'),
         'category_name'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Category'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
+        'moveto_name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Move Category'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -51,7 +52,7 @@ function ciniki_musicfestivals_ssamCategoryUpdate(&$ciniki) {
     $sid = -1;
     if( isset($ssam['sections']) ) {
         foreach($ssam['sections'] as $k => $section) {
-            if( $section['name'] == $args['section_name'] ) {
+            if( isset($section['name']) && $section['name'] == $args['section_name'] ) {
                 $sid = $k;
                 break;
             }
@@ -79,7 +80,7 @@ function ciniki_musicfestivals_ssamCategoryUpdate(&$ciniki) {
             // Make sure the category doesn't exist
             //
             foreach($ssam['sections'][$sid]['categories'] as $cid => $category) {
-                if( $category['name'] == $args['name'] ) {
+                if( isset($category['name']) && $category['name'] == $args['name'] ) {
                     return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.852', 'msg'=>'Category already exists'));
                 }
             }
@@ -90,11 +91,26 @@ function ciniki_musicfestivals_ssamCategoryUpdate(&$ciniki) {
         }
     } else {
         foreach($ssam['sections'][$sid]['categories'] as $cid => $category) {
-            if( $category['name'] == $args['category_name'] ) {
+            if( isset($args['moveto_name']) && $args['moveto_name'] == $category['name'] ) {
+                $to = $cid;
+            }
+            if( isset($category['name']) && $category['name'] == $args['category_name'] ) {
                 if( isset($args['name']) ) {
                     $ssam['sections'][$sid]['categories'][$cid]['name'] = $args['name'];
+                    break;
                 }
-                break;
+                if( isset($args['moveto_name']) ) {
+                    $from = $cid;
+                }
+            }
+        }
+        if( isset($to) && isset($from) ) {
+            $item = $ssam['sections'][$sid]['categories'][$from];
+            unset($ssam['sections'][$sid]['categories'][$from]);
+            if( $to == 0 ) {
+                array_unshift($ssam['sections'][$sid]['categories'], $item);
+            } else {
+                array_splice($ssam['sections'][$sid]['categories'], $to, 0, array('0'=>$item));
             }
         }
     }
