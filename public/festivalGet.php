@@ -484,6 +484,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "classes.permalink, "
                 . "classes.sequence, "
                 . "classes.flags, "
+                . "classes.feeflags, "
                 . "classes.earlybird_fee, "
                 . "classes.fee, "
                 . "classes.virtual_fee, "
@@ -554,7 +555,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'classes', 'fname'=>'id', 
                     'fields'=>array('id', 'festival_id', 'category_id', 'section_name', 'groupname', 'category_name', 
-                        'code', 'name', 'permalink', 'sequence', 'flags', 
+                        'code', 'name', 'permalink', 'sequence', 'flags', 'feeflags', 
                         'earlybird_fee', 'fee', 'virtual_fee', 'plus_fee', 'earlybird_plus_fee',
                         'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 
                         'synopsis', 'schedule_seconds', 'levels', 'trophies',
@@ -568,11 +569,31 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             if( isset($rc['classes']) ) {
                 $festival['classes'] = $rc['classes'];
                 foreach($festival['classes'] as $iid => $class) {
-                    $festival['classes'][$iid]['earlybird_fee'] = '$' . number_format($class['earlybird_fee'], 2);
-                    $festival['classes'][$iid]['fee'] = '$' . number_format($class['fee'], 2);
-                    $festival['classes'][$iid]['virtual_fee'] = '$' . number_format($class['virtual_fee'], 2);
-                    $festival['classes'][$iid]['earlybird_plus_fee'] = '$' . number_format($class['earlybird_plus_fee'], 2);
-                    $festival['classes'][$iid]['plus_fee'] = '$' . number_format($class['plus_fee'], 2);
+                    if( ($class['feeflags']&0x02) == 0x01 ) {
+                        $festival['classes'][$iid]['earlybird_fee'] = '$' . number_format($class['earlybird_fee'], 2);
+                    } else {
+                        $festival['classes'][$iid]['earlybird_fee'] = 'n/a';
+                    }
+                    if( ($class['feeflags']&0x02) == 0x02 ) {
+                        $festival['classes'][$iid]['fee'] = '$' . number_format($class['fee'], 2);
+                    } else {
+                        $festival['classes'][$iid]['fee'] = 'n/a';
+                    }
+                    if( ($class['feeflags']&0x08) == 0x08 ) {
+                        $festival['classes'][$iid]['virtual_fee'] = '$' . number_format($class['virtual_fee'], 2);
+                    } else {
+                        $festival['classes'][$iid]['virtual_fee'] = 'n/a';
+                    }
+                    if( ($class['feeflags']&0x10) == 0x10 ) {
+                        $festival['classes'][$iid]['earlybird_plus_fee'] = '$' . number_format($class['earlybird_plus_fee'], 2);
+                    } else {
+                        $festival['classes'][$iid]['earlybird_plus_fee'] = 'n/a';
+                    }
+                    if( ($class['feeflags']&0x20) == 0x20 ) {
+                        $festival['classes'][$iid]['plus_fee'] = '$' . number_format($class['plus_fee'], 2);
+                    } else {
+                        $festival['classes'][$iid]['plus_fee'] = '';
+                    }
                     if( $class['min_competitors'] == $class['max_competitors'] ) {
                         $festival['classes'][$iid]['num_competitors'] = $class['min_competitors'];
                     } else {
