@@ -135,6 +135,8 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
             }
             $blocks[] = array(
                 'type' => 'tradingcards',
+                'class' => 'musicfestival-adjudicators',
+                'size' => '25',
                 'items' => $adjudicators,
                 );
         } 
