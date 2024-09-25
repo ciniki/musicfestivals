@@ -1,0 +1,4 @@
+ALTER TABLE ciniki_musicfestival_trophies ADD COLUMN itemtype tinyint unsigned not null AFTER permalink;
+ALTER TABLE ciniki_musicfestival_trophies ADD COLUMN amount varchar(250) not null AFTER criteria;
+UPDATE ciniki_musicfestival_trophies SET itemtype = 10;
+ALTER TABLE ciniki_musicfestival_trophies COMMENT='v1.02';

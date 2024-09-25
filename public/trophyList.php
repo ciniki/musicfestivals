@@ -21,6 +21,8 @@ function ciniki_musicfestivals_trophyList($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'class_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Class'),
+        'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'),
+        'itemtype'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Type'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -42,9 +44,11 @@ function ciniki_musicfestivals_trophyList($ciniki) {
     if( isset($args['class_id']) && $args['class_id'] > 0 ) {
         $strsql = "SELECT trophies.id, "
             . "trophies.name, "
+            . "trophies.itemtype, "
             . "trophies.category, "
             . "trophies.donated_by, "
             . "trophies.first_presented, "
+            . "trophies.amount, "
             . "trophies.criteria, "
             . "classes.class_id "
             . "FROM ciniki_musicfestival_trophies AS trophies "
@@ -54,25 +58,35 @@ function ciniki_musicfestivals_trophyList($ciniki) {
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "HAVING ISNULL(classes.class_id) "
+            . "AND trophies.itemtype = '" . ciniki_core_dbQuote($ciniki, $args['itemtype']) . "' ";
+        if( isset($args['category']) && $args['category'] != '' && $args['category'] != 'All' ) {
+            $strsql .= "AND trophies.category = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' ";
+        }
+        $strsql .= "HAVING ISNULL(classes.class_id) "
             . "ORDER BY trophies.category, trophies.name "
             . "";
     } else {
-        $strsql = "SELECT ciniki_musicfestival_trophies.id, "
-            . "ciniki_musicfestival_trophies.name, "
-            . "ciniki_musicfestival_trophies.category, "
-            . "ciniki_musicfestival_trophies.donated_by, "
-            . "ciniki_musicfestival_trophies.first_presented, "
-            . "ciniki_musicfestival_trophies.criteria "
-            . "FROM ciniki_musicfestival_trophies "
-            . "WHERE ciniki_musicfestival_trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "ORDER BY category, name "
+        $strsql = "SELECT trophies.id, "
+            . "trophies.name, "
+            . "trophies.itemtype, "
+            . "trophies.category, "
+            . "trophies.donated_by, "
+            . "trophies.first_presented, "
+            . "trophies.amount, "
+            . "trophies.criteria "
+            . "FROM ciniki_musicfestival_trophies AS trophies "
+            . "WHERE trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND trophies.itemtype = '" . ciniki_core_dbQuote($ciniki, $args['itemtype']) . "' ";
+        if( isset($args['category']) && $args['category'] != '' && $args['category'] != 'All' ) {
+            $strsql .= "AND trophies.category = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' ";
+        }
+        $strsql .= "ORDER BY category, name "
             . "";
     }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'trophies', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'category', 'donated_by', 'first_presented', 'criteria')),
+            'fields'=>array('id', 'name', 'itemtype', 'category', 'donated_by', 'first_presented', 'amount', 'criteria')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -83,6 +97,25 @@ function ciniki_musicfestivals_trophyList($ciniki) {
         $trophy_ids[] = $trophy['id'];
     }
 
-    return array('stat'=>'ok', 'trophies'=>$trophies, 'nplist'=>$trophy_ids);
+    //
+    // Get the list of categories
+    //
+    $strsql = "SELECT DISTINCT trophies.category "
+        . "FROM ciniki_musicfestival_trophies AS trophies "
+        . "WHERE trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND trophies.itemtype = '" . ciniki_core_dbQuote($ciniki, $args['itemtype']) . "' "
+        . "ORDER BY trophies.category "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'categories', 'fname'=>'category', 'fields'=>array('name'=>'category')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.855', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
+    }
+    $categories = isset($rc['categories']) ? $rc['categories'] : array();
+    array_unshift($categories, ['name'=>'All']);
+
+    return array('stat'=>'ok', 'trophies'=>$trophies, 'trophy_categories'=>$categories, 'nplist'=>$trophy_ids);
 }
 ?>

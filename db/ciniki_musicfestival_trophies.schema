@@ -12,10 +12,16 @@
 #
 # name:                     The name of the trophy.
 # category:                 The category for the trophy (Piano, Voice, Strings, etc)
+# itemtype:                 The item of item:
+#
+#                               10 - Trophy
+#                               40 - Award
+#
 # primary_image_id:         The image of the trophy.
 # donated_by:               Who donated the trophy.
 # first_presented:          The first year it was presented
 # criteria:                 The criteria for choosing the winner.
+# amount:                   The Amount for the award. Stored as text so they can format however or add extra text if required.
 # description:              The description for the trophy.
 #
 # date_added:               The UTC date and time the record was added.
@@ -28,11 +34,13 @@ create table ciniki_musicfestival_trophies (
 
     name varchar(250) not null,
     permalink varchar(250) not null,
+    itemtype tinyint unsigned not null,
     category varchar(150) not null,
     primary_image_id int not null,
     donated_by varchar(250) not null,
     first_presented varchar(250) not null,
     criteria varchar(250) not null,
+    amount varchar(250) not null,
     description text not null,
 
     date_added datetime not null,
@@ -40,4 +48,4 @@ create table ciniki_musicfestival_trophies (
     primary key (id),
     unique index (uuid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

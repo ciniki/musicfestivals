@@ -21,11 +21,13 @@ function ciniki_musicfestivals_trophyAdd(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'),
-        'category'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>''),
+        'itemtype'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Type'),
+        'category'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Category'),
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
-        'donated_by'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>''),
-        'first_presented'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>''),
-        'criteria'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>''),
+        'donated_by'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Donated By'),
+        'first_presented'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'First Presented'),
+        'criteria'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Criteria'),
+        'amount'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Amount'),
         'description'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Description'),
         ));
     if( $rc['stat'] != 'ok' ) {
