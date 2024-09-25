@@ -22,6 +22,10 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
     if( !isset($section['ref']) || !isset($section['settings']) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.364', 'msg'=>"No festival specified"));
     }
+    $itemtype = 10;
+    if( isset($section['itemtype']) ) {
+        $itemtype = $section['itemtype'];
+    }
     $s = $section['settings'];
     $blocks = array();
     $base_url = $request['page']['path'];
@@ -60,6 +64,7 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
     $strsql = "SELECT DISTINCT category "
         . "FROM ciniki_musicfestival_trophies "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND itemtype = '" . ciniki_core_dbQuote($ciniki, $itemtype) . "' "
         . "ORDER BY category "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
@@ -101,6 +106,7 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
             . "FROM ciniki_musicfestival_trophies "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND category = '" . ciniki_core_dbQuote($ciniki, $category_permalink) . "' "
+            . "AND itemtype = '" . ciniki_core_dbQuote($ciniki, $itemtype) . "' "
             . "ORDER BY name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -123,10 +129,12 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
             . "trophies.donated_by, "
             . "trophies.first_presented, "
             . "trophies.criteria, "
+            . "trophies.amount, "
             . "trophies.description "
             . "FROM ciniki_musicfestival_trophies AS trophies "
             . "WHERE trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND trophies.permalink = '" . ciniki_core_dbQuote($ciniki, $trophy_permalink) . "' "
+            . "AND trophies.itemtype = '" . ciniki_core_dbQuote($ciniki, $itemtype) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'trophy');
         if( $rc['stat'] != 'ok' ) {
@@ -151,6 +159,9 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
         }
         if( $trophy['criteria'] != '' ) {
             $trophy['full_description'] .= '<b>Criteria:</b> ' . $trophy['criteria'] . '<br/>';
+        }
+        if( $trophy['amount'] != '' ) {
+            $trophy['full_description'] .= '<b>Amount:</b> ' . $trophy['amount'] . '<br/>';
         }
         if( $trophy['description'] != '' ) {
             if( $trophy['full_description'] != '' ) {   
@@ -322,6 +333,7 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
             . "donated_by, "
             . "first_presented, "
             . "criteria, "
+            . "amount, "
             . "description "
             . "FROM ciniki_musicfestival_trophies "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -332,7 +344,7 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'trophies', 'fname'=>'permalink', 
                 'fields'=>array('id', 'title'=>'name', 'permalink', 'image-id'=>'primary_image_id',
-                    'donated_by', 'first_presented', 'criteria', 'description')),
+                    'donated_by', 'first_presented', 'criteria', 'amount', 'description')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.343', 'msg'=>'Unable to load trophies', 'err'=>$rc['err']));
@@ -353,6 +365,9 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
                 }
                 if( $trophy['criteria'] != '' ) {
                     $trophies[$tid]['full_description'] .= '<b>Criteria:</b> ' . $trophy['criteria'] . '<br/>';
+                }
+                if( $trophy['amount'] != '' ) {
+                    $trophies[$tid]['full_description'] .= '<b>Amount:</b> ' . $trophy['amount'] . '<br/>';
                 }
                 if( $trophy['description'] != '' ) {
                     if( $trophies[$tid]['full_description'] != '' ) {   

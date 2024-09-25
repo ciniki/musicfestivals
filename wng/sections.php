@@ -621,6 +621,17 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'syllabus-page' => array('label'=>'Syllabus Page', 'type'=>'select', 'pages'=>'yes'),
                 ),
             );
+        $sections['ciniki.musicfestivals.awards'] = array(
+            'name' => 'Awards',
+            'module' => 'Music Festivals',
+            'settings' => array(
+                'title' => array('label'=>'Title', 'type'=>'text'),
+                'display-format' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
+                    'buttons-list' => 'Buttons - List',
+                    )),
+                'syllabus-page' => array('label'=>'Syllabus Page', 'type'=>'select', 'pages'=>'yes'),
+                ),
+            );
     }
 
     //
