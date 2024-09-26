@@ -323,7 +323,6 @@ function ciniki_musicfestivals_classGet($ciniki) {
                 . "FROM ciniki_musicfestival_trophy_classes AS tc "
                 . "INNER JOIN ciniki_musicfestival_trophies AS trophies ON ("
                     . "tc.trophy_id = trophies.id "
-                    . "AND trophies.itemtype = 10 "
                     . "AND trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "WHERE tc.class_id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
