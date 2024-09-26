@@ -549,8 +549,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
 //                . "GROUP BY classes.id "
                 . "ORDER BY sections.sequence, sections.name, "
                     . "categories.sequence, categories.name, "
-                    . "classes.sequence, classes.name "
-                . "";
+                    . "classes.sequence, classes.name ";
+            if( isset($args['trophies']) && $args['trophies'] == 'yes' ) {
+                $strsql .= ", trophies.name ";
+            }
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'classes', 'fname'=>'id', 

@@ -2718,7 +2718,7 @@ function ciniki_musicfestivals_main() {
             this.sections.classes.num_cols = 6;
         }
         else if( this.sections._stabs.selected == 'trophies' ) {
-            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Tropies'];
+            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Trophies & Awards'];
             this.sections.classes.cellClasses = ['', '', '', ''];
             this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'trophies'];
             this.sections.classes.sortTypes = ['text', 'text', 'text', 'text'];
