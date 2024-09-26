@@ -425,7 +425,7 @@ function ciniki_musicfestivals_main() {
                     'fn':'M.ciniki_musicfestivals_main.festival.switchTab(null,\'levels\');',
                     },
                 'marking':{'label':'Marking', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(null,\'marking\');'},
-                'trophies':{'label':'Trophies', 
+                'trophies':{'label':'Trophies & Awards', 
                     'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x40); },
                     'fn':'M.ciniki_musicfestivals_main.festival.switchTab(null,\'trophies\');',
                     },
@@ -4850,6 +4850,18 @@ function ciniki_musicfestivals_main() {
                     },
                 },
             },
+        'awards':{'label':'Awards', 'type':'simplegrid', 'num_cols':3, 
+            'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x40); }, 
+            'headerValues':['Category', 'Name'],
+            'cellClasses':['', '', 'alignright'],
+            'noData':'No awards',
+            'menu':{
+                'add':{
+                    'label':'Add Award',
+                    'fn':'M.ciniki_musicfestivals_main.class.save("M.ciniki_musicfestivals_main.class.addAward();");',
+                    },
+                },
+            },
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.class.save();'},
             'delete':{'label':'Delete', 
@@ -4869,7 +4881,7 @@ function ciniki_musicfestivals_main() {
                 case 2: return d.status_text;
             }
         }
-        if( s == 'trophies' ) {
+        if( s == 'trophies' || s == 'awards' ) {
             switch(j) {
                 case 0: return d.category;
                 case 1: return d.name;
@@ -4884,7 +4896,10 @@ function ciniki_musicfestivals_main() {
         return '';
     }
     this.class.addTrophy = function() {
-        M.ciniki_musicfestivals_main.classtrophy.open('M.ciniki_musicfestivals_main.class.open();',this.class_id);
+        M.ciniki_musicfestivals_main.classtrophy.open('M.ciniki_musicfestivals_main.class.open();',this.class_id,10);
+    }
+    this.class.addAward = function() {
+        M.ciniki_musicfestivals_main.classtrophy.open('M.ciniki_musicfestivals_main.class.open();',this.class_id,40);
     }
     this.class.attachTrophy = function(i) {
         M.api.getJSONCb('ciniki.musicfestivals.classTrophyAdd', {'tnid':M.curTenantID, 'class_id':this.class_id, 'trophy_id':i}, function(rsp) {
@@ -5166,6 +5181,7 @@ function ciniki_musicfestivals_main() {
     this.classtrophy.sections = {
         'trophies':{'label':'Select Trophy', 'type':'simplegrid', 'num_cols':3,
             'noData':'No trophies',
+            'cellClasses':['', '', 'alignright'],
             },
         };
     this.classtrophy.cellValue = function(s, i, j, d) {
@@ -5177,8 +5193,15 @@ function ciniki_musicfestivals_main() {
             }
         }
     }
-    this.classtrophy.open = function(cb, cid) {
-        M.api.getJSONCb('ciniki.musicfestivals.trophyList', {'tnid':M.curTenantID, 'class_id':cid, 'itemtype':10}, function(rsp) {
+    this.classtrophy.open = function(cb, cid, itemtype) {
+        if( itemtype == 40 ) {
+            this.sections.trophies.label = 'Select Award';
+            this.sections.trophies.noData = 'No awards';
+        } else {
+            this.sections.trophies.label = 'Select Trophy';
+            this.sections.trophies.noData = 'No trophies';
+        }
+        M.api.getJSONCb('ciniki.musicfestivals.trophyList', {'tnid':M.curTenantID, 'class_id':cid, 'itemtype':itemtype}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
