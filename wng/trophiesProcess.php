@@ -180,6 +180,7 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
             . "FROM ciniki_musicfestival_trophy_winners "
             . "WHERE trophy_id = '" . ciniki_core_dbQuote($ciniki, $trophy['id']) . "' "
             . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND itemtype = '" . ciniki_core_dbQuote($ciniki, $itemtype) . "' "
             . "ORDER BY year DESC, name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -338,6 +339,7 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
             . "FROM ciniki_musicfestival_trophies "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND category = '" . ciniki_core_dbQuote($ciniki, $category_permalink) . "' "
+            . "AND itemtype = '" . ciniki_core_dbQuote($ciniki, $itemtype) . "' "
             . "ORDER BY name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
