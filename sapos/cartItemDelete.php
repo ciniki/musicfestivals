@@ -43,7 +43,7 @@ function ciniki_musicfestivals_sapos_cartItemDelete($ciniki, $tnid, $invoice_id,
         }
 
         //
-        // Change the status back to Draft
+        // Delete the registration
         //
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationDelete');
         $rc = ciniki_musicfestivals_registrationDelete($ciniki, $tnid, $item['id']);
