@@ -609,8 +609,25 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     // Section to display trophies
     //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x40) ) {
+        //
+        // Get the list of typenames
+        //
+        $strsql = "SELECT DISTINCT trophies.typename "
+            . "FROM ciniki_musicfestival_trophies AS trophies "
+            . "WHERE trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "ORDER BY trophies.typename "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'types', 'fname'=>'typename', 'fields'=>array('name'=>'typename')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.855', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
+        }
+        $types = isset($rc['types']) ? $rc['types'] : array();
+
         $sections['ciniki.musicfestivals.trophies'] = array(
-            'name' => 'Trophies',
+            'name' => 'Trophies & Awards',
             'module' => 'Music Festivals',
             'settings' => array(
                 'title' => array('label'=>'Title', 'type'=>'text'),
@@ -621,17 +638,16 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'syllabus-page' => array('label'=>'Syllabus Page', 'type'=>'select', 'pages'=>'yes'),
                 ),
             );
-        $sections['ciniki.musicfestivals.awards'] = array(
-            'name' => 'Awards',
-            'module' => 'Music Festivals',
-            'settings' => array(
-                'title' => array('label'=>'Title', 'type'=>'text'),
-                'display-format' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
-                    'buttons-list' => 'Buttons - List',
-                    )),
-                'syllabus-page' => array('label'=>'Syllabus Page', 'type'=>'select', 'pages'=>'yes'),
-                ),
-            );
+        if( count($types) > 1 ) { 
+            array_unshift($types, ['name'=>'All']);
+            $sections['ciniki.musicfestivals.trophies']['settings']['typename'] = array(
+                'label' => 'Type',
+                'type' => 'select',
+                'complex_options' => array('value'=>'name', 'name'=>'name'),
+                'options' => $types,
+                );
+        }
+
     }
 
     //

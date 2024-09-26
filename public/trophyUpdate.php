@@ -18,7 +18,7 @@ function ciniki_musicfestivals_trophyUpdate(&$ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'trophy_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Trophy'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'),
-        'itemtype'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Type'),
+        'typename'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Type'),
         'category'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Category'),
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
         'donated_by'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Donated By'),

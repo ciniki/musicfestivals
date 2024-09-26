@@ -1,0 +1,5 @@
+ALTER TABLE ciniki_musicfestival_trophies ADD COLUMN typename varchar(250) not null AFTER permalink;
+UPDATE ciniki_musicfestival_trophies SET typename = 'Trophies' WHERE itemtype = 10;
+UPDATE ciniki_musicfestival_trophies SET typename = 'Awards' WHERE itemtype = 40;
+ALTER TABLE ciniki_musicfestival_trophies DROP COLUMN itemtype;
+ALTER TABLE ciniki_musicfestival_trophies COMMENT='v1.03';

@@ -57,7 +57,7 @@ function ciniki_musicfestivals_trophyGet($ciniki) {
     if( $args['trophy_id'] == 0 ) {
         $trophy = array('id'=>0,
             'name' => '',
-            'itemtype' => '10',
+            'typename' => (isset($args['typename']) ? $args['typename'] : 'Trophies'),
             'category' => '',
             'primary_image_id' => '0',
             'donated_by' => '',
@@ -75,7 +75,7 @@ function ciniki_musicfestivals_trophyGet($ciniki) {
     else {
         $strsql = "SELECT ciniki_musicfestival_trophies.id, "
             . "ciniki_musicfestival_trophies.name, "
-            . "ciniki_musicfestival_trophies.itemtype, "
+            . "ciniki_musicfestival_trophies.typename, "
             . "ciniki_musicfestival_trophies.category, "
             . "ciniki_musicfestival_trophies.primary_image_id, "
             . "ciniki_musicfestival_trophies.donated_by, "
@@ -90,7 +90,7 @@ function ciniki_musicfestivals_trophyGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'trophies', 'fname'=>'id', 
-                'fields'=>array('name', 'itemtype', 'category', 
+                'fields'=>array('name', 'typename', 'category', 
                     'primary_image_id', 'donated_by', 'first_presented', 'criteria', 'amount', 'description',
                     ),
                 ),

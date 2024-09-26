@@ -21,7 +21,7 @@ function ciniki_musicfestivals_trophyAdd(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'),
-        'itemtype'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Type'),
+        'typename'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Type'),
         'category'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Category'),
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
         'donated_by'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Donated By'),

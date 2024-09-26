@@ -17,7 +17,7 @@ function ciniki_musicfestivals_trophyFieldSearch($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
-        'field'=>array('required'=>'yes', 'blank'=>'no', 'validlist'=>array('category'), 'name'=>'Field'),
+        'field'=>array('required'=>'yes', 'blank'=>'no', 'validlist'=>array('typename', 'category'), 'name'=>'Field'),
         'start_needle'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Search'), 
         'limit'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Limit'), 
         )); 

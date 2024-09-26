@@ -95,25 +95,24 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
             || ($ciniki['session']['user']['perms']&0x01) == 0x01
             )
         ) {
-/*        $strsql = "SELECT id, name "
-            . "FROM ciniki_musicfestivals "
-            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND status = 30 "
-            . "ORDER BY start_date DESC "
-            . "";
-        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.736', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
-        }
-        $rows = isset($rc['rows']) ? $rc['rows'] : array();
-        foreach($rows as $festival) { */
+        $menu_item = array(
+            'priority'=>2805,
+            'label'=>$festival['name'],
+            'edit'=>array('app'=>'ciniki.musicfestivals.main', 'args'=>array('festival_id'=>$festival['id'])),
+            );
+        $rsp['menu_items'][] = $menu_item;
+
+        //
+        // Display current festival and trophies and awards enabled, show shortcut to trophies and awards
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0140) ) {
             $menu_item = array(
-                'priority'=>2805,
-                'label'=>$festival['name'],
-                'edit'=>array('app'=>'ciniki.musicfestivals.main', 'args'=>array('festival_id'=>$festival['id'])),
+                'priority'=>2800,
+                'label'=>'Trophies & Awards',
+                'edit'=>array('app'=>'ciniki.musicfestivals.main', 'args'=>array('trophies'=>1)),
                 );
             $rsp['menu_items'][] = $menu_item;
-//        }
+        }
     }
 
     //

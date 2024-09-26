@@ -42,7 +42,7 @@ function ciniki_musicfestivals_trophyRegistrations($ciniki) {
     //
     $strsql = "SELECT trophies.id, "
         . "trophies.name, "
-        . "trophies.itemtype, "
+        . "trophies.typename, "
         . "trophies.category, "
         . "trophies.donated_by, "
         . "trophies.first_presented, "
@@ -75,7 +75,7 @@ function ciniki_musicfestivals_trophyRegistrations($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'trophies', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'itemtype', 'category', 'donated_by', 'first_presented', 'criteria', 'amount', 
+            'fields'=>array('id', 'name', 'typename', 'category', 'donated_by', 'first_presented', 'criteria', 'amount', 
                 'description', 'num_registrations',
                 )),
         ));

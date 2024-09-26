@@ -317,6 +317,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
         //
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x40) ) {
             $strsql = "SELECT tc.id, "
+                . "trophies.typename, "
                 . "trophies.category, "
                 . "trophies.name "
                 . "FROM ciniki_musicfestival_trophy_classes AS tc "
@@ -331,34 +332,12 @@ function ciniki_musicfestivals_classGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'trophies', 'fname'=>'id', 
-                    'fields'=>array('id', 'category', 'name')),
+                    'fields'=>array('id', 'typename', 'category', 'name')),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.550', 'msg'=>'Unable to load trophies', 'err'=>$rc['err']));
             }
             $class['trophies'] = isset($rc['trophies']) ? $rc['trophies'] : array();
-
-            $strsql = "SELECT tc.id, "
-                . "trophies.category, "
-                . "trophies.name "
-                . "FROM ciniki_musicfestival_trophy_classes AS tc "
-                . "INNER JOIN ciniki_musicfestival_trophies AS trophies ON ("
-                    . "tc.trophy_id = trophies.id "
-                    . "AND trophies.itemtype = 40 "
-                    . "AND trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . ") "
-                . "WHERE tc.class_id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
-                . "AND tc.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "";
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-                array('container'=>'trophies', 'fname'=>'id', 
-                    'fields'=>array('id', 'category', 'name')),
-                ));
-            if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.550', 'msg'=>'Unable to load trophies', 'err'=>$rc['err']));
-            }
-            $class['awards'] = isset($rc['trophies']) ? $rc['trophies'] : array();
         }
     }
 
