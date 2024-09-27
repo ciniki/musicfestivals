@@ -588,6 +588,10 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'complex_options'=>array('value'=>'id', 'name'=>'name'),
                     'options'=>$festivals,
                     ),
+                'display-format' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
+                    'images' => 'Sponsor Logo Images Only',
+                    'contentphoto' => 'Content Photo List',
+                    )),
                 'image-size'=>array('label'=>'Image Size', 'type'=>'toggle', 'default'=>'medium', 'toggles'=>array(    
                     'xsmall' => 'X-Small',
                     'small' => 'Small',

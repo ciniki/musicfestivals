@@ -39,7 +39,8 @@ function ciniki_musicfestivals_wng_sponsorsProcess(&$ciniki, $tnid, &$request, $
         $strsql = "SELECT sponsors.id, "
             . "sponsors.name, "
             . "sponsors.image_id, "
-            . "sponsors.url "
+            . "sponsors.url, "
+            . "sponsors.description "
             . "FROM ciniki_musicfestival_sponsor_tags AS tags "
             . "INNER JOIN ciniki_musicfestival_sponsors AS sponsors ON ("
                 . "tags.sponsor_id = sponsors.id "
@@ -55,7 +56,8 @@ function ciniki_musicfestivals_wng_sponsorsProcess(&$ciniki, $tnid, &$request, $
         $strsql = "SELECT sponsors.id, "
             . "sponsors.name, "
             . "sponsors.image_id, "
-            . "sponsors.url "
+            . "sponsors.url, "
+            . "sponsors.description "
             . "FROM ciniki_musicfestival_sponsors AS sponsors "
             . "WHERE sponsors.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
             . "AND sponsors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
@@ -72,7 +74,7 @@ function ciniki_musicfestivals_wng_sponsorsProcess(&$ciniki, $tnid, &$request, $
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sponsors', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'image-id'=>'image_id', 'url'),
+            'fields'=>array('id', 'name', 'image-id'=>'image_id', 'url', 'description'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -94,16 +96,43 @@ function ciniki_musicfestivals_wng_sponsorsProcess(&$ciniki, $tnid, &$request, $
         }
 
         //
-        // Add the sponsors
+        // Display as a content photo list
         //
-        $blocks[] = array(
-//            'type' => 'imagescroll', 
-            'type' => 'sponsors', 
-//            'padding' => '#ffffff',
+        if( isset($s['display-format']) && $s['display-format'] == 'contentphoto' ) {
+            foreach($sponsors as $sponsor) {
+                $block = array(
+                    'type' => 'contentphoto',
+                    'title' => $sponsor['name'],
+                    'image-id' => $sponsor['image-id'],
+                    'content' => $sponsor['description'],
+                    'image-size' => $s['image-size'],
+                    'image-position' => 'top-left',
+                    );
+                if( $block['image-size'] == 'xsmall' ) {
+                    $block['image-size'] = 'tiny';
+                }
+                if( $block['image-size'] == 'xlarge' ) {
+                    $block['image-size'] = 'half';
+                }
+                if( $sponsor['url'] != '' ) {
+                    $block['button-1-text'] = 'Visit Website';
+                    $block['button-1-url'] = $sponsor['url'];
+                }
+                $blocks[] = $block;
+            }
+        } else {
+            //
+            // Display as list of sponsor images
+            //
+            $blocks[] = array(
+//                'type' => 'imagescroll', 
+                'type' => 'sponsors', 
+//                'padding' => '#ffffff',
             //'speed' => isset($s['speed']) ? $s['speed'] : 'medium',
-            'class' => 'sponsors image-size-' . (isset($s['image-size']) ? $s['image-size'] : 'medium'),
-            'items' => $sponsors,
-            );
+                'class' => 'sponsors image-size-' . (isset($s['image-size']) ? $s['image-size'] : 'medium'),
+                'items' => $sponsors,
+                );
+        }
     } 
 
     return array('stat'=>'ok', 'blocks'=>$blocks);

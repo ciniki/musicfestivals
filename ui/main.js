@@ -8317,6 +8317,9 @@ function ciniki_musicfestivals_main() {
         '_tags':{'label':'Tags', 'fields':{
             'tags':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new tag:'},
             }},
+        '_description':{'label':'Description', 'fields':{
+            'description':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+            }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.sponsor.save();'},
             'delete':{'label':'Delete', 

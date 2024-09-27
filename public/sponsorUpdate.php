@@ -23,6 +23,7 @@ function ciniki_musicfestivals_sponsorUpdate(&$ciniki) {
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Logo'),
+        'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),
         'tags'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Registration Tags'),
         ));
     if( $rc['stat'] != 'ok' ) {
