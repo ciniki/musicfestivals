@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_sponsors ADD COLUMN description text not null AFTER image_id;
+ALTER TABLE ciniki_musicfestival_sponsors COMMENT='v1.02';
