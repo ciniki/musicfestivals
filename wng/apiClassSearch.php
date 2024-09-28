@@ -46,7 +46,7 @@ function ciniki_musicfestivals_wng_apiClassSearch(&$ciniki, $tnid, $request) {
         error_log('Unable to create keywords: ' . $request['args']['search_string']);
         return array('stat'=>'ok');
     }
-    $keywords = str_replace(' ', '% ', $rc['keywords']);
+    $keywords = str_replace(' ', '% ', trim($rc['keywords']));
 
     $limit = 50;
 

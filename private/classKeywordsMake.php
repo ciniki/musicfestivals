@@ -130,6 +130,9 @@ function ciniki_musicfestivals_classKeywordsMake(&$ciniki, $tnid, $args) {
     $keywords = ciniki_core_makeKeywords($ciniki, $keywords, false, ['allow-dashes'=>'yes']);
     $keywords = preg_replace("/^\- /", '', $keywords);
 
-    return array('stat'=>'ok', 'keywords'=>$keywords);
+    //
+    // Must have a space at the start which makes for small search sql
+    //
+    return array('stat'=>'ok', 'keywords'=>' ' . $keywords);
 }
 ?>
