@@ -76,7 +76,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
             'name'=>'',
             'public_name'=>'',
             'pronoun'=>'',
-            'flags'=>'0',
+            'flags'=>0x07,
             'conductor'=>'',
             'num_people'=>'',
             'parent'=>'',

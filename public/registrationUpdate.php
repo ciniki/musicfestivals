@@ -442,7 +442,10 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     // Update the display_name for the registration
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationNameUpdate');
-    $rc = ciniki_musicfestivals_registrationNameUpdate($ciniki, $args['tnid'], $args['registration_id']);
+    $rc = ciniki_musicfestivals_registrationNameUpdate($ciniki, $args['tnid'], [
+        'festival_id' => $registration['festival_id'],
+        'registration_id' => $args['registration_id'],
+        ]);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;

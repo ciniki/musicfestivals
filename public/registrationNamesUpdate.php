@@ -20,6 +20,7 @@ function ciniki_musicfestivals_registrationNamesUpdate($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
+        'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -34,6 +35,13 @@ function ciniki_musicfestivals_registrationNamesUpdate($ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
+
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $args['festival_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $festival = $rc['festival'];
 
     //
     // Start transaction
@@ -53,11 +61,11 @@ function ciniki_musicfestivals_registrationNamesUpdate($ciniki) {
     $strsql = "SELECT ciniki_musicfestival_registrations.id "
         . "FROM ciniki_musicfestival_registrations "
         . "WHERE ciniki_musicfestival_registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND ciniki_musicfestival_registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'registrations', 'fname'=>'id', 
-            'fields'=>array('id')),
+        array('container'=>'registrations', 'fname'=>'id', 'fields'=>array('id')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -69,7 +77,10 @@ function ciniki_musicfestivals_registrationNamesUpdate($ciniki) {
             //
             // Update the display_name for the registration
             //
-            $rc = ciniki_musicfestivals_registrationNameUpdate($ciniki, $args['tnid'], $registration['id']);
+            $rc = ciniki_musicfestivals_registrationNameUpdate($ciniki, $args['tnid'], [
+                'festival' => $festival,
+                'registration_id' => $registration['id'],
+                ]);
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
                 return $rc;

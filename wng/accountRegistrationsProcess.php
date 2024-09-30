@@ -1197,16 +1197,21 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             // Update the names
             //
             ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationNameUpdate');
-            $rc = ciniki_musicfestivals_registrationNameUpdate($ciniki, $tnid, $registration_id);
+            $rc = ciniki_musicfestivals_registrationNameUpdate($ciniki, $tnid, [
+                'festival' => $festival,
+                'registration_id' => $registration_id,
+                ]);
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.416', 'msg'=>'Unable to updated registration name', 'err'=>$rc['err']));
             }
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
                 $registration['display_name'] = $rc['pn_display_name'];
                 $registration['public_name'] = $rc['pn_public_name'];
+                $registration['private_name'] = $rc['pn_private_name'];
             } else {
                 $registration['display_name'] = $rc['display_name'];
                 $registration['public_name'] = $rc['public_name'];
+                $registration['private_name'] = $rc['private_name'];
             }
 
             //
@@ -1444,7 +1449,10 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 // Check if any names need changing
                 //
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationNameUpdate');
-                $rc = ciniki_musicfestivals_registrationNameUpdate($ciniki, $tnid, $registration_id);
+                $rc = ciniki_musicfestivals_registrationNameUpdate($ciniki, $tnid, [
+                    'festival' => $festival,
+                    'registration_id' => $registration_id,
+                    ]);
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.311', 'msg'=>'Unable to updated registration name', 'err'=>$rc['err']));
                 }
@@ -1454,9 +1462,11 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
                     $registration['display_name'] = $rc['pn_display_name'];
                     $registration['public_name'] = $rc['pn_public_name'];
+                    $registration['private_name'] = $rc['pn_private_name'];
                 } else {
                     $registration['display_name'] = $rc['display_name'];
                     $registration['public_name'] = $rc['public_name'];
+                    $registration['private_name'] = $rc['private_name'];
                 }
                 for($i = 1; $i <= 8; $i++) {
                     if( isset($update_args["title{$i}"]) ) {

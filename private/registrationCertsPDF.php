@@ -101,10 +101,13 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
         . "1 AS timeslot_id, "
         . "timeslots.name AS timeslot_name, "
         . "'' AS slot_time_text, "
-        . "registrations.id AS reg_id, "
-        . "registrations.display_name, "
-        . "registrations.public_name, "
-        . "registrations.title1, "
+        . "registrations.id AS reg_id, ";
+    if( isset($festival['waiver-name-status']) && $festival['waiver-name-status'] != 'off' ) {
+        $strsql .= "registrations.private_name AS display_name, ";
+    } else {
+        $strsql .= "registrations.display_name, ";
+    }
+    $strsql .= "registrations.title1, "
         . "registrations.mark, "
         . "registrations.flags, "
         . "registrations.placement, "
@@ -163,7 +166,7 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
             'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 
                 )),
         array('container'=>'registrations', 'fname'=>'reg_id', 
-            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'title'=>'title1', 'class_name', 
+            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'title'=>'title1', 'class_name', 
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name',
                 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 
                 'participation', 'mark', 'flags', 'placement', 'level', 'division_date_text',

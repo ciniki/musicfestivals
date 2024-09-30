@@ -77,9 +77,13 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
             . "registrations.billing_customer_id, "
             . "registrations.rtype, "
             . "registrations.status, "
-            . "registrations.status AS status_text, "
-            . "registrations.display_name, "
-            . "registrations.public_name, "
+            . "registrations.status AS status_text, ";
+        if( isset($festival['waiver-name-status']) && $festival['waiver-name-status'] != 'off' ) {
+            $strsql .= "registrations.private_name AS display_name, ";
+        } else {
+            $strsql .= "registrations.display_name, ";
+        }
+        $strsql .= "registrations.public_name, "
             . "registrations.competitor1_id, "
 //            . "competitors.name, "
 //            . "competitors.parent, "

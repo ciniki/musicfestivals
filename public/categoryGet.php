@@ -133,6 +133,7 @@ function ciniki_musicfestivals_categoryGet($ciniki) {
                 . "ciniki_musicfestival_classes.permalink, "
                 . "ciniki_musicfestival_classes.sequence, "
                 . "ciniki_musicfestival_classes.flags, "
+                . "ciniki_musicfestival_classes.feeflags, "
                 . "ciniki_musicfestival_classes.earlybird_fee, "
                 . "ciniki_musicfestival_classes.fee, "
                 . "ciniki_musicfestival_classes.virtual_fee, "
@@ -146,7 +147,7 @@ function ciniki_musicfestivals_categoryGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'classes', 'fname'=>'id', 
-                    'fields'=>array('id', 'festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 
+                    'fields'=>array('id', 'festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 'feeflags',
                         'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee')),
                 ));
             if( $rc['stat'] != 'ok' ) {
@@ -155,9 +156,34 @@ function ciniki_musicfestivals_categoryGet($ciniki) {
             if( isset($rc['classes']) ) {
                 $category['classes'] = $rc['classes'];
                 foreach($category['classes'] as $iid => $class) {
-                    $category['classes'][$iid]['earlybird_fee'] = number_format($class['earlybird_fee'], 2);
-                    $category['classes'][$iid]['fee'] = number_format($class['fee'], 2);
-                    $category['classes'][$iid]['virtual_fee'] = number_format($class['virtual_fee'], 2);
+//                    $category['classes'][$iid]['earlybird_fee'] = number_format($class['earlybird_fee'], 2);
+//                    $category['classes'][$iid]['fee'] = number_format($class['fee'], 2);
+//                    $category['classes'][$iid]['virtual_fee'] = number_format($class['virtual_fee'], 2);
+                    if( ($class['feeflags']&0x02) == 0x01 ) {
+                        $category['classes'][$iid]['earlybird_fee'] = '$' . number_format($class['earlybird_fee'], 2);
+                    } else {
+                        $category['classes'][$iid]['earlybird_fee'] = 'n/a';
+                    }
+                    if( ($class['feeflags']&0x02) == 0x02 ) {
+                        $category['classes'][$iid]['fee'] = '$' . number_format($class['fee'], 2);
+                    } else {
+                        $category['classes'][$iid]['fee'] = 'n/a';
+                    }
+                    if( ($class['feeflags']&0x08) == 0x08 ) {
+                        $category['classes'][$iid]['virtual_fee'] = '$' . number_format($class['virtual_fee'], 2);
+                    } else {
+                        $category['classes'][$iid]['virtual_fee'] = 'n/a';
+                    }
+                    if( ($class['feeflags']&0x10) == 0x10 ) {
+                        $category['classes'][$iid]['earlybird_plus_fee'] = '$' . number_format($class['earlybird_plus_fee'], 2);
+                    } else {
+                        $category['classes'][$iid]['earlybird_plus_fee'] = 'n/a';
+                    }
+                    if( ($class['feeflags']&0x20) == 0x20 ) {
+                        $category['classes'][$iid]['plus_fee'] = '$' . number_format($class['plus_fee'], 2);
+                    } else {
+                        $category['classes'][$iid]['plus_fee'] = '';
+                    }
                     $nplists['classes'][] = $class['id'];
                 }
             } else {

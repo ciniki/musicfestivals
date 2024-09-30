@@ -154,11 +154,9 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
 //    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
 //    if( ($festival['flags']&0x80) == 0x80 ) {
     if( isset($festival['certificates-include-pronouns']) && $festival['certificates-include-pronouns'] == 'yes' ) {
-        $strsql .= "registrations.pn_display_name AS display_name, "
-            . "registrations.pn_public_name AS public_name, ";
+        $strsql .= "registrations.pn_private_name AS display_name, ";
     } else {
-        $strsql .= "registrations.display_name, "
-            . "registrations.public_name, ";
+        $strsql .= "registrations.private_name AS display_name, ";
     }
     $strsql .= "registrations.title1, "
         . "registrations.participation, "
@@ -230,7 +228,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 'description', 
                 )),
         array('container'=>'registrations', 'fname'=>'reg_id', 
-            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'num_people',
+            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'num_people',
                 'title1', 
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name',
                 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 

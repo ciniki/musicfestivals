@@ -126,7 +126,10 @@ function ciniki_musicfestivals_competitorUpdate(&$ciniki) {
     // Update the competitor registrations
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'competitorUpdateNames');
-    $rc = ciniki_musicfestivals_competitorUpdateNames($ciniki, $args['tnid'], $args['festival_id'], $args['competitor_id']);
+    $rc = ciniki_musicfestivals_competitorUpdateNames($ciniki, $args['tnid'], [
+        'festival_id' => $args['festival_id'], 
+        'competitor_id' => $args['competitor_id'],
+        ]);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;

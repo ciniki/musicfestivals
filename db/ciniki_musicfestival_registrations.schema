@@ -67,14 +67,18 @@
 #
 # invoice_id:           The ID of the invoice in ciniki.sapos if paid online.
 #
-# display_name:         Individuals, this field is ignored. 
-#                       Duet & Trio the name for certificates, programs etc goes here. 
+# display_name:         Individual, Duet & Trio the name for programs, schedules etc goes here. 
 #                       Ensembles, the name of the group goes here.
+#                       The name be "Name Withheld" if competitor name private.
 #
 # public_name:          The name to use for the PDF of the schedule, first initials and last names.
+#                       The name be "Name Withheld" if competitor name private.
+#
+# private_name:         To be used internally and not to be published. This will be actual competitor name.
 #
 # pn_display_name:      The display name with pronouns.
 # pn_public_name:       The public name with pronouns.
+# pn_private_name:      The private name with pronouns.
 #
 # competitor1_id:       The individual competitor, or first person of a duet/trio/ensemble.
 # competitor2_id:       The second person of a duet/trio/ensemble.
@@ -169,8 +173,10 @@ create table ciniki_musicfestival_registrations (
     invoice_id int not null,
     display_name varchar(250) not null,
     public_name varchar(250) not null,
+    private_name varchar(250) not null,
     pn_display_name varchar(250) not null,
     pn_public_name varchar(250) not null,
+    pn_private_name varchar(250) not null,
     competitor1_id int not null,
     competitor2_id int not null,
     competitor3_id int not null,
@@ -263,4 +269,4 @@ create table ciniki_musicfestival_registrations (
     index competitors (festival_id, competitor1_id, competitor2_id, competitor3_id, competitor4_id, competitor5_id),
     index (festival_id, class_id, tnid),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.23';
+) ENGINE='InnoDB', COMMENT='v1.24';

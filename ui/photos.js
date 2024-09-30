@@ -72,6 +72,9 @@ function ciniki_musicfestivals_photos() {
             for(var k in d.images) {
                 thumbs += '<img class="clickable" onclick="M.ciniki_musicfestivals_photos.timeslotimage.open(\'M.ciniki_musicfestivals_photos.timeslots.open();\',\'' + d.images[k].timeslot_image_id + '\');" width="50px" height="50px" src=\'' + d.images[k].image + '\' />';
             }
+            if( d.nophoto_names != null && d.nophoto_names != '' ) {
+                thumbs += '<div class="thumbtext">NO PHOTOS (' + d.nophoto_names + ')</div>';
+            }
             return thumbs;
         }
         switch(j) {

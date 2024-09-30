@@ -1509,6 +1509,45 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 && isset($args['photos']) && $args['photos'] == 'yes'
                 && isset($requested_section)
                 ) {
+                //
+                // Load competitors to check if photos
+                //
+                if( isset($festival['waiver-photo-status']) && $festival['waiver-photo-status'] != 'no' ) {
+                    // Load list of no photos
+                    $strsql = "SELECT timeslots.id, competitors.id AS comp_id, competitors.flags, competitors.name "
+                        . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
+                        . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                            . "(timeslots.id = registrations.timeslot_id "
+                                . "OR timeslots.id = registrations.finals_timeslot_id "
+                                . ") "
+                            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                            . ") "
+                        . "INNER JOIN ciniki_musicfestival_competitors AS competitors ON ("
+                            . "("
+                                . "registrations.competitor1_id = competitors.id "
+                                . "OR registrations.competitor2_id = competitors.id "
+                                . "OR registrations.competitor3_id = competitors.id "
+                                . "OR registrations.competitor4_id = competitors.id "
+                                . "OR registrations.competitor5_id = competitors.id "
+                                . ") "
+                            . "AND (competitors.flags&0x02) = 0 "   // No photos
+                            . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                            . ") "
+                        . "WHERE timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . "AND timeslots.sdivision_id = '" . ciniki_core_dbQuote($ciniki, $args['sdivision_id']) . "' "
+                        . "AND timeslots.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                        . "";
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+                    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                        array('container'=>'timeslots', 'fname'=>'id', 'fields'=>array('id')),
+                        array('container'=>'competitors', 'fname'=>'comp_id', 'fields'=>array('id'=>'comp_id', 'name', 'flags')),
+                        ));
+                    if( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.857', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
+                    }
+                    $nophoto_timeslots = isset($rc['timeslots']) ? $rc['timeslots'] : array();
+                }
+
                 $strsql = "SELECT timeslots.id, "
                     . "timeslots.festival_id, "
                     . "timeslots.sdivision_id, "
@@ -1545,6 +1584,15 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     $festival['timeslot_photos'] = $rc['scheduletimeslots'];
                     $nplists['timeslot_photos'] = array();
                     foreach($festival['timeslot_photos'] as $tid => $scheduletimeslot) {
+                        $nophoto_names = '';
+                        if( isset($nophoto_timeslots[$scheduletimeslot['id']]) ) {
+                            foreach($nophoto_timeslots[$scheduletimeslot['id']]['competitors'] as $competitor) {
+                                $nophoto_names .= ($nophoto_names != '' ? ', ' : '') . $competitor['name'];
+                            }
+                        }
+                        if( $nophoto_names != '' ) {
+                            $festival['timeslot_photos'][$tid]['nophoto_names'] = $nophoto_names;
+                        }
                         //
                         // Check if class is set, then use class name
                         //

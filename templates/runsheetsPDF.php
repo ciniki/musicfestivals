@@ -113,12 +113,16 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         . "timeslots.description, "
         . "timeslots.runsheet_notes, "
         . "registrations.id AS reg_id, ";
-    if( isset($festival['runsheets-include-pronouns']) && $festival['runsheets-include-pronouns'] == 'yes' ) {
-        $strsql .= "registrations.pn_display_name AS display_name, "
-            . "registrations.pn_public_name AS public_name, ";
+    if( isset($festival['waiver-name-status']) && $festival['waiver-name-status'] != 'off' ) {
+        if( isset($festival['runsheets-include-pronouns']) && $festival['runsheets-include-pronouns'] == 'yes' ) {
+            $strsql .= "registrations.pn_private_name AS display_name, ";
+        } else {
+            $strsql .= "registrations.private_name AS display_name, ";
+        }
+    } elseif( isset($festival['runsheets-include-pronouns']) && $festival['runsheets-include-pronouns'] == 'yes' ) {
+        $strsql .= "registrations.pn_display_name AS display_name, ";
     } else {
-        $strsql .= "registrations.display_name, "
-            . "registrations.public_name, ";
+        $strsql .= "registrations.display_name, ";
     }
     $strsql .= "registrations.competitor1_id, "
         . "registrations.competitor2_id, "
@@ -257,7 +261,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                 ),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
-            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'participation', 'reg_time_text',
+            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'participation', 'reg_time_text',
                 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id',
                 'notes', 'internal_notes',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
@@ -287,6 +291,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         $strsql = "SELECT competitors.id, "
             . "competitors.age, "
             . "competitors.city, "
+            . "competitors.flags, "
             . "competitors.notes "
             . "FROM ciniki_musicfestival_competitors AS competitors "
             . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
@@ -294,7 +299,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-            array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'age', 'city', 'notes')),
+            array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'age', 'city', 'flags', 'notes')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.701', 'msg'=>'Unable to load cnotes', 'err'=>$rc['err']));
@@ -645,11 +650,17 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                         $extra_info = '';
                         for($i = 1; $i <= 4; $i++) {
                             $info = '';
+                            if( isset($festival['waiver-photo-status']) && $festival['waiver-photo-status'] != 'no'
+                                && isset($competitors[$reg["competitor{$i}_id"]]['flags']) 
+                                && ($competitors[$reg["competitor{$i}_id"]]['flags']&0x02) == 0 
+                                ) {
+                                $info .= "**NO PHOTOS**";
+                            }
                             if( isset($festival['runsheets-competitor-age']) && $festival['runsheets-competitor-age'] == 'yes'
                                 && isset($competitors[$reg["competitor{$i}_id"]]['age']) 
                                 && $competitors[$reg["competitor{$i}_id"]]['age'] != ''
                                 ) {
-                                $info .= $competitors[$reg["competitor{$i}_id"]]['age'];
+                                $info .= ($info != '' ? '/' : '') . $competitors[$reg["competitor{$i}_id"]]['age'];
                             }
                             if( isset($festival['runsheets-competitor-city']) && $festival['runsheets-competitor-city'] == 'yes'
                                 && isset($competitors[$reg["competitor{$i}_id"]]['city']) 

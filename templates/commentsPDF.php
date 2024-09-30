@@ -128,12 +128,16 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "'' AS timeslot_name, "
             . "'' AS description, "
             . "registrations.id AS reg_id, ";
-        if( isset($festival['comments-include-pronouns']) && $festival['comments-include-pronouns'] == 'yes' ) {
-            $strsql .= "registrations.pn_display_name AS display_name, "
-                . "registrations.pn_public_name AS public_name, ";
+        if( isset($festival['waiver-name-status']) && $festival['waiver-name-status'] != 'off' ) {
+            if( isset($festival['comments-include-pronouns']) && $festival['comments-include-pronouns'] == 'yes' ) {
+                $strsql .= "registrations.pn_private_name AS display_name, ";
+            } else {
+                $strsql .= "registrations.private_name AS display_name, ";
+            }
+        } elseif( isset($festival['comments-include-pronouns']) && $festival['comments-include-pronouns'] == 'yes' ) {
+            $strsql .= "registrations.pn_display_name AS display_name, ";
         } else {
-            $strsql .= "registrations.display_name, "
-                . "registrations.public_name, ";
+            $strsql .= "registrations.display_name, ";
         }
         $strsql .= "registrations.title1, "
             . "registrations.title2, "
@@ -226,11 +230,9 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "registrations.id AS reg_id, "
             . "registrations.teacher_customer_id, ";
         if( isset($festival['comments-include-pronouns']) && $festival['comments-include-pronouns'] == 'yes' ) {
-            $strsql .= "registrations.pn_display_name AS display_name, "
-                . "registrations.pn_public_name AS public_name, ";
+            $strsql .= "registrations.pn_display_name AS display_name, ";
         } else {
-            $strsql .= "registrations.display_name, "
-                . "registrations.public_name, ";
+            $strsql .= "registrations.display_name, ";
         }
         $strsql .= "registrations.title1, "
             . "registrations.title2, "
@@ -324,7 +326,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'class_name', 'description', 
             )),
         array('container'=>'registrations', 'fname'=>'reg_id', 
-            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 
+            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 
             'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
             'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
             'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',

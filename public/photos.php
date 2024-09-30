@@ -67,12 +67,61 @@ function ciniki_musicfestivals_photos($ciniki) {
     }
     $maps = $rc['maps'];
 
+    //
+    // Get the additional settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $args['festival_id']);
+    if( $rc['stat'] != 'ok' ) { 
+        return $rc;
+    }
+    $festival = $rc['festival'];
+
     $rsp = array('stat'=>'ok', 'divisions'=>array(), 'timeslots'=>array());
 
     //
     // Get the list of timeslots/photos
     //
     if( isset($args['division_id']) && $args['division_id'] > 0 ) {
+        //
+        // Load competitors to check if photos
+        //
+        if( isset($festival['waiver-photo-status']) && $festival['waiver-photo-status'] != 'no' ) {
+            // Load list of no photos
+            $strsql = "SELECT timeslots.id, competitors.id AS comp_id, competitors.flags, competitors.name "
+                . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
+                . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                    . "(timeslots.id = registrations.timeslot_id "
+                        . "OR timeslots.id = registrations.finals_timeslot_id "
+                        . ") "
+                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_musicfestival_competitors AS competitors ON ("
+                    . "("
+                        . "registrations.competitor1_id = competitors.id "
+                        . "OR registrations.competitor2_id = competitors.id "
+                        . "OR registrations.competitor3_id = competitors.id "
+                        . "OR registrations.competitor4_id = competitors.id "
+                        . "OR registrations.competitor5_id = competitors.id "
+                        . ") "
+                    . "AND (competitors.flags&0x02) = 0 "   // No photos
+                    . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "AND timeslots.sdivision_id = '" . ciniki_core_dbQuote($ciniki, $args['division_id']) . "' "
+                . "AND timeslots.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+            $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'timeslots', 'fname'=>'id', 'fields'=>array('id')),
+                array('container'=>'competitors', 'fname'=>'comp_id', 'fields'=>array('id'=>'comp_id', 'name', 'flags')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.857', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
+            }
+            $nophoto_timeslots = isset($rc['timeslots']) ? $rc['timeslots'] : array();
+        }
+
         $strsql = "SELECT timeslots.id, "
             . "timeslots.festival_id, "
             . "timeslots.sdivision_id, "
@@ -108,6 +157,16 @@ function ciniki_musicfestivals_photos($ciniki) {
         if( isset($rc['scheduletimeslots']) ) {
             $rsp['timeslots'] = $rc['scheduletimeslots'];
             foreach($rsp['timeslots'] as $tid => $scheduletimeslot) {
+                $nophoto_names = '';
+                if( isset($nophoto_timeslots[$scheduletimeslot['id']]) ) {
+                    foreach($nophoto_timeslots[$scheduletimeslot['id']]['competitors'] as $competitor) {
+                        $nophoto_names .= ($nophoto_names != '' ? ', ' : '') . $competitor['name'];
+                    }
+                }
+                if( $nophoto_names != '' ) {
+                    $rsp['timeslots'][$tid]['nophoto_names'] = $nophoto_names;
+                }
+
                 //
                 // Create image thumbnails
                 //

@@ -1,0 +1,5 @@
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN private_name varchar(250) not null AFTER public_name;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN pn_private_name varchar(250) not null AFTER pn_public_name;
+UPDATE ciniki_musicfestival_registrations SET private_name = display_name;
+UPDATE ciniki_musicfestival_registrations SET pn_private_name = pn_display_name;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.24';

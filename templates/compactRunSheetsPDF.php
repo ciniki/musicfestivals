@@ -117,7 +117,13 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
         . "timeslots.description, "
         . "timeslots.runsheet_notes, "
         . "registrations.id AS reg_id, ";
-    if( isset($festival['runsheets-include-pronouns']) && $festival['runsheets-include-pronouns'] == 'yes' ) {
+    if( isset($festival['waiver-name-status']) && $festival['waiver-name-status'] != 'off' ) {
+        if( isset($festival['runsheets-include-pronouns']) && $festival['runsheets-include-pronouns'] == 'yes' ) {
+            $strsql .= "registrations.pn_private_name AS display_name, ";
+        } else {
+            $strsql .= "registrations.private_name AS display_name, ";
+        }
+    } elseif( isset($festival['runsheets-include-pronouns']) && $festival['runsheets-include-pronouns'] == 'yes' ) {
         $strsql .= "registrations.pn_display_name AS display_name, "
             . "registrations.pn_public_name AS public_name, ";
     } else {
@@ -246,7 +252,7 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                 ),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
-            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'participation',
+            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'participation',
                 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id',
                 'notes', 'internal_notes',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
@@ -259,7 +265,6 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
         array('container'=>'trophies', 'fname'=>'trophy_id', 
             'fields'=>array('id'=>'trophy_id', 'name'=>'trophy_name'),
             ),
-
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -271,15 +276,16 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
     //
     if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes' ) {
         $strsql = "SELECT competitors.id, "
+            . "competitors.flags, "
             . "competitors.notes "
             . "FROM ciniki_musicfestival_competitors AS competitors "
             . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND competitors.notes <> '' "
+//            . "AND competitors.notes <> '' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-            array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'notes')),
+            array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'flags', 'notes')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.683', 'msg'=>'Unable to load cnotes', 'err'=>$rc['err']));
@@ -835,7 +841,36 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
 
                     $pdf->SetFont('', '', $font_size);
                     $num = 1;
-                    foreach($timeslot['registrations'] as $reg) {
+                    foreach($timeslot['registrations'] as $rid => $reg) {
+                        $extra_info = '';
+                        for($i = 1; $i <= 4; $i++) {
+                            $info = '';
+                            if( isset($festival['waiver-photo-status']) && $festival['waiver-photo-status'] != 'no'
+                                && isset($competitors[$reg["competitor{$i}_id"]]['flags']) 
+                                && ($competitors[$reg["competitor{$i}_id"]]['flags']&0x02) == 0 
+                                ) {
+                                $info .= "**NO PHOTOS**";
+                            }
+                            if( isset($festival['runsheets-competitor-age']) && $festival['runsheets-competitor-age'] == 'yes'
+                                && isset($competitors[$reg["competitor{$i}_id"]]['age']) 
+                                && $competitors[$reg["competitor{$i}_id"]]['age'] != ''
+                                ) {
+                                $info .= ($info != '' ? '/' : '') . $competitors[$reg["competitor{$i}_id"]]['age'];
+                            }
+                            if( isset($festival['runsheets-competitor-city']) && $festival['runsheets-competitor-city'] == 'yes'
+                                && isset($competitors[$reg["competitor{$i}_id"]]['city']) 
+                                && $competitors[$reg["competitor{$i}_id"]]['city'] != ''
+                                ) {
+                                $info .= ($info != '' ? '/' : '') . $competitors[$reg["competitor{$i}_id"]]['city'];
+                            }
+                            if( $info != '' ) {
+                                $extra_info .= ($extra_info != '' ? ', ' : '') . $info;
+                            }
+                        }
+                        if( $extra_info != '' ) {
+                            $timeslot['registrations'][$rid]['name'] .= ' [' . $extra_info . ']';
+                            $reg['name'] .= ' [' . $extra_info . ']';
+                        }
                         //
                         // Check height and see if we need new page
                         //

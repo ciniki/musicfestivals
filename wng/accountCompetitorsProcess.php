@@ -444,33 +444,37 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     } elseif( isset($festival['competitor-individual-instrument']) ) {
         $ins = $festival['competitor-individual-instrument'];
     } else {
-        $ins = '';
+        $ins = 'hidden';
     }
-    $fields['instrument'] = array(
-        'id' => 'instrument',
-        'label' => 'Instrument',
-        'ftype' => 'text',
-        'size' => 'small',
-        'required' => ($ins == 'required' ? 'yes' : 'no'),
-        'class' => $ins,
-        'value' => (isset($_POST['f-instrument']) ? trim($_POST['f-instrument']) : (isset($competitor['instrument']) ? $competitor['instrument'] :'')),
-        );
+    if( $ins != 'hidden' ) {
+        $fields['instrument'] = array(
+            'id' => 'instrument',
+            'label' => 'Instrument',
+            'ftype' => 'text',
+            'size' => 'small',
+            'required' => ($ins == 'required' ? 'yes' : 'no'),
+            'class' => 'hidden',
+            'value' => (isset($_POST['f-instrument']) ? trim($_POST['f-instrument']) : (isset($competitor['instrument']) ? $competitor['instrument'] :'')),
+            );
+    }
     if( $ctype == 50 && isset($festival['competitor-group-study-level']) ) {
         $sl = $festival['competitor-group-study-level'];
     } elseif( isset($festival['competitor-individual-study-level']) ) {
         $sl = $festival['competitor-individual-study-level'];
     } else {
-        $sl = '';
+        $sl = 'hidden';
     }
-    $fields['study_level'] = array(
-        'id' => 'study_level',
-        'label' => 'Current Level of Study/Method book',
-        'ftype' => 'text',
-        'size' => 'large',
-        'required' => ($sl == 'required' ? 'yes' : 'no'),
-        'class' => $sl,
-        'value' => (isset($_POST['f-study_level']) ? trim($_POST['f-study_level']) : (isset($competitor['study_level']) ? $competitor['study_level'] :'')),
-        );
+    if( $sl != 'hidden' ) {
+        $fields['study_level'] = array(
+            'id' => 'study_level',
+            'label' => 'Current Level of Study/Method book',
+            'ftype' => 'text',
+            'size' => 'large',
+            'required' => ($sl == 'required' ? 'yes' : 'no'),
+            'class' => 'hidden',
+            'value' => (isset($_POST['f-study_level']) ? trim($_POST['f-study_level']) : (isset($competitor['study_level']) ? $competitor['study_level'] :'')),
+            );
+    }
     if( ($ctype != 50
             && isset($festival['competitor-individual-etransfer-email']) 
             && $festival['competitor-individual-etransfer-email'] != 'hidden'
@@ -538,6 +542,83 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     }
 
     //
+    // Photo waiver
+    //
+    if( isset($festival['waiver-photo-status']) && $festival['waiver-photo-status'] == 'on' 
+        && isset($festival['waiver-photo-title']) && $festival['waiver-photo-title'] != '' 
+        && isset($festival['waiver-photo-msg']) && $festival['waiver-photo-msg'] != '' 
+        ) {
+        $fields['photowaiver'] = array(
+            'id' => "photowaiver",
+            'label' => $festival['waiver-photo-title'],
+            'ftype' => 'radio',
+            'size' => 'large',
+            'required' => 'yes',
+            'description' => $festival['waiver-photo-msg'],
+            'value' => '',
+            'option-2' => isset($festival['waiver-photo-option-yes']) && $festival['waiver-photo-option-yes'] != '' ? $festival['waiver-photo-option-yes'] : 'Yes, I Agree',
+            'option-3' => isset($festival['waiver-photo-option-no']) && $festival['waiver-photo-option-no'] != '' ? $festival['waiver-photo-option-no'] : 'No, Do Not Publish Competitor Photos',
+            );
+        if( isset($competitor['flags']) ) {
+            $fields['photowaiver']['value'] = ($competitor['flags']&0x02) == 0x02 ? $fields['photowaiver']['option-2'] : $fields['photowaiver']['option-3'];
+            }
+        if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' ) {
+            if( isset($_POST['f-photowaiver']) ) {
+                $fields['photowaiver']['value'] = $_POST['f-photowaiver'];
+            }
+        }
+    }
+
+    //
+    // Name waiver
+    //
+    if( isset($festival['waiver-name-status']) && $festival['waiver-name-status'] == 'on' 
+        && isset($festival['waiver-name-title']) && $festival['waiver-name-title'] != '' 
+        && isset($festival['waiver-name-msg']) && $festival['waiver-name-msg'] != '' 
+        ) {
+        $fields['namewaiver'] = array(
+            'id' => "namewaiver",
+            'label' => $festival['waiver-name-title'],
+            'ftype' => 'radio',
+            'size' => 'large',
+            'required' => 'yes',
+            'description' => $festival['waiver-name-msg'],
+            'value' => '',
+            'option-2' => isset($festival['waiver-name-option-yes']) && $festival['waiver-name-option-yes'] != '' ? $festival['waiver-name-option-yes'] : 'Yes, I Agree',
+            'option-3' => isset($festival['waiver-name-option-no']) && $festival['waiver-name-option-no'] != '' ? $festival['waiver-name-option-no'] : 'No, Do Not Publish Competitor Name',
+            );
+        if( isset($competitor['flags']) ) {
+            $fields['namewaiver']['value'] = ($competitor['flags']&0x04) == 0x04 ? $fields['namewaiver']['option-2'] : $fields['namewaiver']['option-3'];
+            }
+        if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' ) {
+            if( isset($_POST['f-namewaiver']) ) {
+                $fields['namewaiver']['value'] = $_POST['f-namewaiver'];
+            }
+        }
+/*        $fields['namewaivertitle'] = array(
+            'id' => "namewaivertitle",
+            'label' => $festival['waiver-name-title'],
+            'ftype' => 'content',
+            'size' => 'large',
+            'value' => '',
+            );
+        $fields['namewaiver'] = array(
+            'id' => "namewaiver",
+            'label' => $festival['waiver-name-msg'],
+            'ftype' => 'checkbox',
+            'size' => 'large',
+            'value' => (isset($competitor['flags']) && ($competitor['flags']&0x04) == 0x04 ? 'on' : ''),
+            );
+        if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' ) {
+            if( isset($_POST['f-namewaiver']) && $_POST['f-namewaiver'] == 'on' ) {
+                $fields['namewaiver']['value'] = 'on';
+            } else {
+                $fields['namewaiver']['value'] = '';
+            }
+        } */
+    }
+
+    //
     // Check if the form is submitted
     //
     if( isset($_POST['f-competitor_id']) && isset($_POST['f-action']) && $_POST['f-action'] == 'update' && count($errors) == 0 ) {
@@ -545,7 +626,13 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         $fields['competitor_id']['value'] = $_POST['f-competitor_id'];
         $display = 'form';
         foreach($fields as $field) {
-            if( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == '' && $field['id'] != 'termstitle' && $field['id'] != 'terms' ) {
+            if( isset($field['required']) && $field['required'] == 'yes' 
+                && $field['value'] == '' 
+                && $field['id'] != 'termstitle' 
+                && $field['id'] != 'terms' 
+                && $field['id'] != 'photowaiver' 
+                && $field['id'] != 'namewaiver' 
+                ) {
                 $errors[] = array(
                     'msg' => 'You must specify the competitor ' . $field['label'] . '.',
                     );
@@ -563,6 +650,22 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             ) {
             $errors[] = array(
                 'msg' => "You must accept the {$festival['waiver-general-title']} for the competitor.",
+                );
+        }
+        if( isset($festival['waiver-photo-status']) && $festival['waiver-photo-status'] == 'on' 
+            && $fields['photowaiver']['value'] != $fields['photowaiver']['option-2']
+            && $fields['photowaiver']['value'] != $fields['photowaiver']['option-3']
+            ) {
+            $errors[] = array(
+                'msg' => "You must select an option for {$festival['waiver-photo-title']} for the competitor.",
+                );
+        }
+        if( isset($festival['waiver-name-status']) && $festival['waiver-name-status'] == 'on' 
+            && $fields['namewaiver']['value'] != $fields['namewaiver']['option-2']
+            && $fields['namewaiver']['value'] != $fields['namewaiver']['option-3']
+            ) {
+            $errors[] = array(
+                'msg' => "You must select an option for {$festival['waiver-name-title']} for the competitor.",
                 );
         }
         //
@@ -614,7 +717,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     'festival_id' => $festival['id'],
                     'billing_customer_id' => $request['session']['customer']['id'],
                     'ctype' => $fields['ctype']['value'],
-                    'flags' => (isset($fields['terms']['value']) && $fields['terms']['value'] == 'on' ? 0x01 : 0),
+                    'flags' => 0,
                     'parent' => $fields['parent']['value'],
                     'address' => $fields['address']['value'],
                     'city' => $fields['city']['value'],
@@ -629,6 +732,20 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     'instrument' => isset($fields['instrument']['value']) ? $fields['instrument']['value'] : '',
                     'notes' => $fields['comp_notes']['value'],
                     );
+                if( isset($fields['terms']['value']) && $fields['terms']['value'] == 'on' ) {
+                    $competitor['flags'] |= 0x01;
+                }
+                //
+                // Default to photo and name flags to set
+                // waiver-(photo/name)-status option can be missing, off, internal and they will be set to on by default
+                // Only when waiver-*-status set to on will they be visible in form
+                //
+                if( !isset($fields['photowaiver']['value']) || $fields['photowaiver']['value'] == $fields['photowaiver']['option-2'] ) {
+                    $competitor['flags'] |= 0x02;
+                }
+                if( !isset($fields['namewaiver']['value']) || $fields['namewaiver']['value'] == $fields['namewaiver']['option-2'] ) {
+                    $competitor['flags'] |= 0x04;
+                }
                 if( $fields['ctype']['value'] == 50 ) {
                     $competitor['first'] = '';
                     $competitor['last'] = '';
@@ -677,6 +794,24 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     elseif( !isset($competitor[$field['id']]) || (isset($field['value']) && $field['value'] != $competitor[$field['id']]) ) {
                         $update_args[$field['id']] = $field['value'];
                     }
+                }
+                $flags = $competitor['flags'];
+                if( isset($fields['photowaiver']['value']) ) {
+                    if( ($competitor['flags']&0x02) == 0 && $fields['photowaiver']['value'] == $fields['photowaiver']['option-2'] ) {
+                        $flags |= 0x02;
+                    } elseif( ($competitor['flags']&0x02) == 0x02 && $fields['photowaiver']['value'] != $fields['photowaiver']['option-2'] ) {
+                        $flags = ($competitor['flags']&0xFFFFFFFD);
+                    }
+                }
+                if( isset($fields['namewaiver']['value']) ) {
+                    if( ($competitor['flags']&0x04) == 0 && $fields['namewaiver']['value'] == $fields['namewaiver']['option-2'] ) {
+                        $flags |= 0x04;
+                    } elseif( ($competitor['flags']&0x04) == 0x04 && $fields['namewaiver']['value'] != $fields['namewaiver']['option-2'] ) {
+                        $flags = ($competitor['flags']&0xFFFFFFFB);
+                    }
+                }
+                if( $flags != $competitor['flags'] ) {
+                    $update_args['flags'] = $flags;
                 }
                 if( $ctype == 10 && (isset($update_args['first']) || isset($update_args['last'])) ) {
                     $name = (isset($update_args['first']) ? $update_args['first'] : $competitor['first']) 
@@ -741,7 +876,10 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                         // Update any registration this competitor is a part of
                         //
                         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'competitorUpdateNames');
-                        $rc = ciniki_musicfestivals_competitorUpdateNames($ciniki, $tnid, $festival['id'], $competitor_id);
+                        $rc = ciniki_musicfestivals_competitorUpdateNames($ciniki, $tnid, [
+                            'festival_id' => $festival['id'], 
+                            'competitor_id' => $competitor_id,
+                            ]);
                         if( $rc['stat'] != 'ok' ) {
                             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.328', 'msg'=>'Unable to update registrations', 'err'=>$rc['err']));
                         }
