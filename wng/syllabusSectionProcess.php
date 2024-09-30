@@ -595,7 +595,9 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 array(
                     'url' => $download_url,
                     'target' => '_blank',
-                    'text' => 'Download ' . (isset($lv_word) && $lv_word != '' ? "{$lv_word} " : '') . 'Syllabus PDF for ' . $syllabus_section['name'],
+                    'text' => 'Download ' . (isset($lv_word) && $lv_word != '' ? "{$lv_word} " : '') 
+                        . 'Syllabus PDF for ' . $syllabus_section['name']
+                        . (isset($groupname) && $groupname != '' ? ' - ' . $groupname : ''),
                     ),
                 ),
             );
