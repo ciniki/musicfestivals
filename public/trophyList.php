@@ -57,8 +57,7 @@ function ciniki_musicfestivals_trophyList($ciniki) {
                 . "AND classes.class_id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "WHERE trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND trophies.typename = '" . ciniki_core_dbQuote($ciniki, $args['typename']) . "' ";
+            . "WHERE trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
         if( isset($args['typename']) && $args['typename'] != '' && $args['typename'] != 'All' ) {
             $strsql .= "AND trophies.typename = '" . ciniki_core_dbQuote($ciniki, $args['typename']) . "' ";
         }
