@@ -23,8 +23,8 @@
 #                           0x08 - 
 #                           0x10 - Late Fees per Invoice
 #                           0x20 - Late Fees per Registratrion
-#                           0x40 - 
-#                           0x80 - 
+#                           0x40 - Admin Fees per Invoice
+#                           0x80 - Admin Fees per Registration
 #
 # primary_image_id:     The ID of the image section.
 # synopsis:             The show synopsis to show on listing pages.
@@ -42,6 +42,10 @@
 # latefees_start_amount:        The amount to charge for late fees on 1st day after end_dt.
 # latefees_daily_increase:      How much to increase fees per day.
 # latefees_days:                The number of days to allow late registrations/fees.
+#
+# adminfees_start_amount:        The amount to charge for late fees on 1st day after end_dt.
+# adminfees_daily_increase:      How much to increase fees per day.
+# adminfees_days:                The number of days to allow late registrations/fees.
 #
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.
