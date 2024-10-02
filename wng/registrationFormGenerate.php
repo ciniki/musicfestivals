@@ -1120,7 +1120,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 . "s.parentNode.classList.remove('hidden');"
                 . "sl.classList.remove('hidden');"
             . "}"
-            . "console.log(classes[c]);"
             . "video=v;"
             . "music=" . (($festival['flags']&0x0200) == 0x0200 ? '1' : 'v') . ";"
             . "";
