@@ -87,6 +87,7 @@ function ciniki_musicfestivals_categoryGet($ciniki) {
             'synopsis'=>'',
             'description'=>'',
         );
+        $rsp = array('stat'=>'ok', 'category'=>$category);
     }
 
     //
@@ -190,9 +191,9 @@ function ciniki_musicfestivals_categoryGet($ciniki) {
                 $category['classes'] = array();
             }
         }
+        $rsp = array('stat'=>'ok', 'category'=>$category, 'nplists'=>$nplists);
     }
 
-    $rsp = array('stat'=>'ok', 'category'=>$category);
 
     //
     // Get the list of sections
