@@ -192,6 +192,7 @@ function ciniki_musicfestivals_wng_timeslotPhotosProcess(&$ciniki, $tnid, &$requ
         $blocks[] = array(
             'type' => 'text', 
             'title' => isset($s['title']) ? $s['title'] : 'Festival Photos',
+            'level' => $section['sequence'] == 1 ? 1 : 2,
             'content' => "We don't currently have any photos for this festival.",
             );
     } 
