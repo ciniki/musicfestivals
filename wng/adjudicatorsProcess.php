@@ -160,6 +160,7 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
         $blocks[] = array(
             'type' => 'text', 
             'title' => isset($s['title']) ? $s['title'] : 'Adjudicators',
+            'level' => $section['sequence'] == 1 ? 1 : 2,
             'content' => "We don't currently have any adjudicators.",
             );
     } 
