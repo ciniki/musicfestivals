@@ -471,7 +471,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 $blocks[] = array(
                     'type' => 'text', 
                     'id' => $category['permalink'],
-                    'title' => $category['name'], 
+                    'title' => (!isset($groupname) || $groupname != $category['name'] ? $category['name'] : ''), 
                     'class' => 'musicfestival-syllabus-section',
                     'content' => $intro,
                     );
