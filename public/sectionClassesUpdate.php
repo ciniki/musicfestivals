@@ -23,6 +23,7 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'section_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Section'),
+        'category_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'),
         'earlybird_fee_update'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Earlybird Fee Update'),
         'fee_update'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Fee Update'),
         'virtual_fee_update'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Virtual Fee Update'),
@@ -32,6 +33,7 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         'composer'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Composer Setting'),
         'backtrack'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Backtrack Setting'),
         'marking'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Marking Flags Setting'),
+        'multireg'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Multi Registration Option'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -107,11 +109,14 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "WHERE categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
-    if( isset($args['section_id']) && $args['section_id'] == 0 ) {
+    if( !isset($args['section_id']) || $args['section_id'] == 0 ) {
         // Apply to all classes in festival when section_id is zero
         $strsql .= "AND categories.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
     } else {
         $strsql .= "AND categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' ";
+    }
+    if( isset($args['category_id']) && $args['category_id'] > 0 ) {
+        $strsql .= "AND categories.id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' ";
     }
     $strsql .= "GROUP BY classes.id "
         . "";
@@ -208,7 +213,16 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         // Update the marking
         //
         if( isset($args['marking']) && $args['marking'] != '' && is_numeric($args['marking']) ) {
-            $flags = ($flags&0XFFFFF0FF) | ($args['marking']&0x00000F00);
+            $flags = ($flags&0xFFFFF0FF) | ($args['marking']&0x00000F00);
+        }
+
+        //
+        // Check if multiple/registrant is changed
+        //
+        if( isset($args['multireg']) && $args['multireg'] == 'yes' && ($flags&0x02) == 0 ) {
+            $flags |= 0x02;
+        } elseif( isset($args['multireg']) && $args['multireg'] == 'no' && ($flags&0x02) == 0x02 ) {
+            $flags = $flags&0xFFFFFFFD;
         }
 
         //

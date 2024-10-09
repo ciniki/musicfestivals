@@ -601,6 +601,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     } else {
                         $festival['classes'][$iid]['num_competitors'] = $class['min_competitors'] . ' - ' . $class['max_competitors'];
                     }
+                    $festival['classes'][$iid]['multireg'] = '';
+                    if( ($class['flags']&0x02) == 0x02 ) {
+                        $festival['classes'][$iid]['multireg'] = 'yes';
+                    }
                     $festival['classes'][$iid]['competitor_type'] = 'I or G';
                     if( ($class['flags']&0x4000) == 0x4000 ) {
                         $festival['classes'][$iid]['competitor_type'] = 'person';
