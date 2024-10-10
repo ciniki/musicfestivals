@@ -125,6 +125,7 @@ function ciniki_musicfestivals_categoryGet($ciniki) {
         //
         // Return the list of classes for this category if requested
         //
+        $nplists = [];
         if( isset($args['classes']) && $args['classes'] == 'yes' ) {
             $strsql = "SELECT ciniki_musicfestival_classes.id, "
                 . "ciniki_musicfestival_classes.festival_id, "
