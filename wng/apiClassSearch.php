@@ -179,7 +179,8 @@ function ciniki_musicfestivals_wng_apiClassSearch(&$ciniki, $tnid, $request) {
                 $request['args']['baseurl'] .= '/';
             }
             if( isset($request['args']['layout']) && $request['args']['layout'] == 'groupbuttons' ) {
-                $classes[$cid]['link'] = "<a class='button' href='{$request['args']['baseurl']}{$class['section_permalink']}/{$class['groupname']}#{$class['category_permalink']}'>View</a>";
+                $group_permalink = ciniki_core_makePermalink($ciniki, $class['groupname']);
+                $classes[$cid]['link'] = "<a class='button' href='{$request['args']['baseurl']}{$class['section_permalink']}/{$group_permalink}#{$class['category_permalink']}'>View</a>";
             } else {
                 $classes[$cid]['link'] = "<a class='button' href='{$request['args']['baseurl']}{$class['section_permalink']}#{$class['category_permalink']}'>View</a>";
             }
