@@ -196,6 +196,17 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.213', 'msg'=>'Unable to load syllabus', 'err'=>$rc['err']));
     }
     $sections = isset($rc['sections']) ? $rc['sections'] : array();
+    foreach($sections as $sid => $sec) {
+        if( isset($sec['groups']) ) {
+            foreach($sec['groups'] as $gid => $group) {
+                $permalink = ciniki_core_makePermalink($ciniki, $group['groupname']);
+                if( $permalink != $gid ) {
+                    $sections[$sid]['groups'][$permalink] = $group;
+                    unset($sections[$sid]['groups'][$gid]);
+                }
+            }
+        }
+    }
 
     //
     // Add the title block
@@ -231,7 +242,8 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
             return ciniki_musicfestivals_wng_syllabusSectionProcess($ciniki, $tnid, $request, $section);
         }
         elseif( isset($sections[$request['uri_split'][$request['cur_uri_pos']]]['groups'][$groupname]) ) {
-            $section['groupname'] = $groupname;
+            $section['groupname'] = $sections[$request['uri_split'][$request['cur_uri_pos']]]['groups'][$groupname]['groupname'];
+//            $section['groupname'] = $groupname;
             $section['festival_id'] = $festival['id'];
             ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'syllabusSectionProcess');
             return ciniki_musicfestivals_wng_syllabusSectionProcess($ciniki, $tnid, $request, $section);
@@ -351,7 +363,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
                 if( $groupname == '' ) {
                     $groupname = 'Other';
                 }
-                $sections[$sid]['buttons'] .= "<a class='button' href='{$request['ssl_domain_base_url']}{$request['page']['path']}/{$section['permalink']}/" . urlencode($groupname) . "'>{$groupname}</a>";
+                $sections[$sid]['buttons'] .= "<a class='button' href='{$request['ssl_domain_base_url']}{$request['page']['path']}/{$section['permalink']}/{$groupname}'>{$group['groupname']}</a>";
             }
         }
         $blocks[] = array(
@@ -375,8 +387,8 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
             $buttons = array();
             foreach($section['groups'] as $groupname => $group) {
                 $buttons[] = array(
-                    'title' => $groupname == '' ? 'Other' : $groupname,
-                    'url' => "{$request['ssl_domain_base_url']}{$request['page']['path']}/{$section['permalink']}/" . urlencode($groupname),
+                    'title' => $group['groupname'] == '' ? 'Other' : $group['groupname'],
+                    'url' => "{$request['ssl_domain_base_url']}{$request['page']['path']}/{$section['permalink']}/{$groupname}",
                     );
             }
             

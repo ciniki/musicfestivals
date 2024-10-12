@@ -427,11 +427,11 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         $pdf->AddPage();
 
         $pdf->SetFont('', 'B', '18');
-        if( isset($args['groupname']) && $args['groupname'] != '' ) {
-            $pdf->MultiCell(180, 5, $section['name'] . ' - ' . $args['groupname'], 0, 'L', 0, 1);
-        } else {
+//        if( isset($args['groupname']) && $args['groupname'] != '' ) {
+//            $pdf->MultiCell(180, 5, $section['name'] . ' - ' . $args['groupname'], 0, 'L', 0, 1);
+//        } else {
             $pdf->MultiCell(180, 5, $section['name'], 0, 'L', 0, 1);
-        }
+//        }
         $pdf->SetFont('', '', '12');
         if( isset($section['description']) && $section['description'] != '' ) {
             $pdf->writeHTMLCell(180, '', '', '', preg_replace("/\n/", '<br/>', $section['description']), 0, 1);

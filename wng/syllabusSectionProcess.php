@@ -202,7 +202,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     }
   
     if( isset($groupname) ) {
-        $download_url = $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $syllabus_section['permalink'] . '/' . $groupname . '/download.pdf';
+        $download_url = $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $syllabus_section['permalink'] . '/' . ciniki_core_makePermalink($ciniki, $groupname) . '/download.pdf';
     } else {
         $download_url = $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $syllabus_section['permalink'] . '/download.pdf';
     }
@@ -301,8 +301,8 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 'type' => 'text',
                 'level' => 1,
                 'class' => 'musicfestival-syllabus-section',
-                'title' => (isset($s['title']) ? $s['title'] . ($s['title'] != '' ? ' - ' : '') : 'Syllabus - ') . $syllabus_section['name']
-                        . (isset($groupname) && $groupname != '' ? ' - ' . $groupname : ''),
+                'title' => (isset($s['title']) ? $s['title'] . ($s['title'] != '' ? ' - ' : '') : 'Syllabus - ') . $syllabus_section['name'],
+//                        . (isset($groupname) && $groupname != '' ? ' - ' . $groupname : ''),
                 'content' => $syllabus_section['description'],
                 );
         } else {
@@ -310,8 +310,8 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 'type' => 'title', 
                 'level' => 1,
                 'class' => 'musicfestival-syllabus-section',
-                'title' => (isset($s['title']) ? $s['title'] . ($s['title'] != '' ? ' - ' : ''): 'Syllabus - ') . $syllabus_section['name']
-                        . (isset($groupname) && $groupname != '' ? ' - ' . $groupname : ''),
+                'title' => (isset($s['title']) ? $s['title'] . ($s['title'] != '' ? ' - ' : ''): 'Syllabus - ') . $syllabus_section['name'],
+//                        . (isset($groupname) && $groupname != '' ? ' - ' . $groupname : ''),
                 );
         }
     }
@@ -471,7 +471,8 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 $blocks[] = array(
                     'type' => 'text', 
                     'id' => $category['permalink'],
-                    'title' => (!isset($groupname) || $groupname != $category['name'] ? $category['name'] : ''), 
+                    'title' => $category['name'],
+                    //'title' => (!isset($groupname) || $groupname != $category['name'] ? $category['name'] : ''), 
                     'class' => 'musicfestival-syllabus-section',
                     'content' => $intro,
                     );
