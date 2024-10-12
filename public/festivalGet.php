@@ -571,7 +571,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             if( isset($rc['classes']) ) {
                 $festival['classes'] = $rc['classes'];
                 foreach($festival['classes'] as $iid => $class) {
-                    if( ($class['feeflags']&0x02) == 0x01 ) {
+                    if( ($class['feeflags']&0x02) == 0x02 ) {
                         $festival['classes'][$iid]['earlybird_fee'] = '$' . number_format($class['earlybird_fee'], 2);
                     } else {
                         $festival['classes'][$iid]['earlybird_fee'] = 'n/a';
