@@ -172,7 +172,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
             . "sections.name, "
             . "sections.primary_image_id, "
             . "sections.synopsis, "
-            . "'' AS groupname "
+            . "NULL AS groupname "
             . "FROM ciniki_musicfestival_sections AS sections "
             . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' ";
