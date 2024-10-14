@@ -21,7 +21,7 @@
 #                           0x02 - Edit Titles & Times
 #                           0x04 - 
 #                           0x08 - 
-#                           0x10 - Late Fees per Invoice
+#                           0x10 - Late Fees per Invoice    **Will be moved to syllabi table**
 #                           0x20 - Late Fees per Registratrion ** future **
 #                           0x40 - Admin Fees per Invoice
 #                           0x80 - Admin Fees per Registration ** future **

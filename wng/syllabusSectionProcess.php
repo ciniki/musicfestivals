@@ -469,12 +469,15 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             $intro = ($category['description'] != '' ? $category['description'] : ($category['synopsis'] != '' ? $category['synopsis'] : ''));
             if( $intro != '' && (!isset($section['intros']) || $section['intros'] == 'yes') ) {
                 $blocks[] = array(
-                    'type' => 'text', 
+                    'type' => 'contentphoto', 
                     'id' => $category['permalink'],
                     'title' => $category['name'],
                     //'title' => (!isset($groupname) || $groupname != $category['name'] ? $category['name'] : ''), 
                     'class' => 'musicfestival-syllabus-section',
                     'content' => $intro,
+                    'image-id' => $category['image_id'],
+                    'image-position' => 'top-right',
+                    'image-size' => 'medium',
                     );
             }
             if( isset($category['classes']) && count($category['classes']) > 0 ) {
