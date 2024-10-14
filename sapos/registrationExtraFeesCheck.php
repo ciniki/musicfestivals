@@ -163,7 +163,7 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
         && ($registration['section_flags']&0x10) == 0x10
         && isset($registration['live_days_past'])
         && isset($registration['latefees_days'])
-        && $registration['live_days_past'] <= $registration['latefees_days']
+        && $registration['live_days_past'] < $registration['latefees_days']
         ) {
         $latefee = $registration['latefees_start_amount'] 
             + ($registration['latefees_daily_increase'] * $registration['live_days_past']);

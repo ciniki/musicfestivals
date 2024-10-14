@@ -64,10 +64,10 @@ function ciniki_musicfestivals_sapos_cartItemCheck($ciniki, $tnid, $customer, $a
         }
         $registration = $rc['registration'];
 
-        $dt = new DateTime('now', new DateTimezone('UTC'));
+        $now = new DateTime('now', new DateTimezone('UTC'));
         $edt = new DateTime($registration['reg_end_dt'], new DateTimezone('UTC'));
-        if( $edt < $dt ) {
-            $diff = $dt->diff($edt);
+        if( $edt < $now ) {
+            $diff = $now->diff($edt);
             if( $diff->days < 1 ) {
                 $latefee = 25;
             } elseif( $diff->days < 2 ) {
