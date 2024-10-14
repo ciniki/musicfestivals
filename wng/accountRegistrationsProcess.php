@@ -2235,7 +2235,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         $accompanist_registrations = array();
         $schedule_pdf = 'no';
         foreach($registrations as $rid => $reg) {
-            $schedule_pdf = 'yes';
+            // FIXME: Add check to see if schedule should be available
+//            $schedule_pdf = 'yes';
             if( ($festival['flags']&0x0100) == 0x0100 ) {
                 $reg['codename'] = $reg['class_code'] . ' - ' . $reg['section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name'];
             }
