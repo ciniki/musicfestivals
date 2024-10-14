@@ -107,7 +107,7 @@ function ciniki_musicfestivals_registrationDelete(&$ciniki) {
                 'object_id' => $registration['id'],
     //            'deleteinvoice' => 'yes',
                 ));
-            if( $rc['stat'] != 'ok' ) {
+            if( $rc['stat'] != 'ok' && $rc['stat'] != 'updated' && $rc['stat'] != 'blocked' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.154', 'msg'=>'Unable to remove item from invoice', 'err'=>$rc['err']));
             }
             return array('stat'=>'ok');

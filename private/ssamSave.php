@@ -27,7 +27,7 @@ function ciniki_musicfestivals_ssamSave(&$ciniki, $tnid, $festival_id, $new_ssam
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'content');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.840', 'msg'=>'Unable to load content', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.865', 'msg'=>'Unable to load content', 'err'=>$rc['err']));
     }
     if( isset($rc['content']['detail_value']) ) {
         if( $rc['content']['detail_value'] != $new_value ) {

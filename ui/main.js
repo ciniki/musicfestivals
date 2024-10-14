@@ -3952,6 +3952,16 @@ function ciniki_musicfestivals_main() {
             'headerValues':[],
             'cellClasses':[],
             'dataMaps':[],
+            'menu':{
+                'latefees':{
+                    'label':'Set Late Fees',
+                    'fn':'M.ciniki_musicfestivals_main.latefees.open(\'M.ciniki_musicfestivals_main.sections.open();\',M.ciniki_musicfestivals_main.sections.syllabi);',
+                    },
+                'adminfees':{
+                    'label':'Set Admin Fees',
+                    'fn':'M.ciniki_musicfestivals_main.adminfees.open(\'M.ciniki_musicfestivals_main.sections.open();\',M.ciniki_musicfestivals_main.sections.syllabi);',
+                    },
+                },
             },
         };
     this.sections.cellValue = function(s, i, j, d) {
@@ -4004,6 +4014,9 @@ function ciniki_musicfestivals_main() {
             p.sections.sections.headerValues.push('Days');
             p.sections.sections.cellClasses.push('alignright');
             p.sections.sections.dataMaps.push('latefees_days');
+            p.sections.sections.headerValues.push('Admin Fees');
+            p.sections.sections.cellClasses.push('alignright');
+            p.sections.sections.dataMaps.push('adminfees_amount');
             p.sections.sections.num_cols = p.sections.sections.headerValues.length;
             p.sections.sections.headerClasses = p.sections.sections.cellClasses;
 
@@ -4058,16 +4071,21 @@ function ciniki_musicfestivals_main() {
                 'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x0a) == 0x0a ? 'yes' : 'no';},
                 },
             }},
-        'latefees':{'label':'Late Fees', 'aside':'yes', 
+        'fees':{'label':'Extra Fees', 'aside':'yes', 
             'visible':function() { return !M.modFlagOn('ciniki.musicfestivals', 0x010000) ? 'yes' : 'hidden'; },
             'fields':{
-                'flags5':{'label':'Enable', 'type':'flagspiece', 'mask':0x30, 'field':'flags', 'join':'yes', 'toggle':'yes',
+                'flags5':{'label':'Late Fee', 'type':'flagspiece', 'mask':0x30, 'field':'flags', 'join':'yes', 'toggle':'yes',
                     'onchange':'M.ciniki_musicfestivals_main.section.updateForm',
-                    'flags':{'0':{'name':'None'}, '5':{'name':'Per Cart'}, '6':{'name':'Per Registration'}},
+                    'flags':{'0':{'name':'None'}, '5':{'name':'per Cart'}},// **future**, '6':{'name':'per Registration'}},
                     },
-                'latefees_start_amount':{'label':'First Day Amount', 'type':'text', 'size':'small'},
-                'latefees_daily_increase':{'label':'Daily Increase', 'type':'text', 'size':'small'},
-                'latefees_days':{'label':'Number of Days', 'type':'text', 'size':'small'},
+                'latefees_start_amount':{'label':'First Day Amount', 'type':'text', 'size':'small', 'visible':'no'},
+                'latefees_daily_increase':{'label':'Daily Increase', 'type':'text', 'size':'small', 'visible':'no'},
+                'latefees_days':{'label':'Number of Days', 'type':'text', 'size':'small', 'visible':'no'},
+                'flags7':{'label':'Admin Fee', 'type':'flagspiece', 'mask':0xC0, 'field':'flags', 'join':'yes', 'toggle':'yes',
+                    'onchange':'M.ciniki_musicfestivals_main.section.updateForm',
+                    'flags':{'0':{'name':'None'}, '7':{'name':'per Cart'}},// **future**, '8':{'name':'per Registration'}},
+                    },
+                'adminfees_amount':{'label':'Admin Fee Amount', 'type':'text', 'size':'small', 'visible':'no'},
             }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'categories', 'tabs':{
             'categories':{'label':'Categories', 'fn':'M.ciniki_musicfestivals_main.section.switchTab(\'categories\');'},
@@ -4203,19 +4221,26 @@ function ciniki_musicfestivals_main() {
         });
     }
     this.section.updateForm = function() {
-        var f = this.formValue('flags5');
-        if( f > 0 ) {
-            this.sections.latefees.fields.latefees_start_amount.visible = 'yes';
-            this.sections.latefees.fields.latefees_daily_increase.visible = 'yes';
-            this.sections.latefees.fields.latefees_days.visible = 'yes';
+        var f = this.formValue('flags7');
+        if( (f&0xC0) > 0 ) {
+            this.sections.fees.fields.adminfees_amount.visible = 'yes';
         } else {
-            this.sections.latefees.fields.latefees_start_amount.visible = 'no';
-            this.sections.latefees.fields.latefees_daily_increase.visible = 'no';
-            this.sections.latefees.fields.latefees_days.visible = 'no';
+            this.sections.fees.fields.adminfees_amount.visible = 'no';
         }
-        this.showHideFormField('latefees', 'latefees_start_amount');
-        this.showHideFormField('latefees', 'latefees_daily_increase');
-        this.showHideFormField('latefees', 'latefees_days');
+        var f = this.formValue('flags5');
+        if( (f&0x30) > 0 ) {
+            this.sections.fees.fields.latefees_start_amount.visible = 'yes';
+            this.sections.fees.fields.latefees_daily_increase.visible = 'yes';
+            this.sections.fees.fields.latefees_days.visible = 'yes';
+        } else {
+            this.sections.fees.fields.latefees_start_amount.visible = 'no';
+            this.sections.fees.fields.latefees_daily_increase.visible = 'no';
+            this.sections.fees.fields.latefees_days.visible = 'no';
+        }
+        this.showHideFormField('fees', 'latefees_start_amount');
+        this.showHideFormField('fees', 'latefees_daily_increase');
+        this.showHideFormField('fees', 'latefees_days');
+        this.showHideFormField('fees', 'adminfees_amount');
     }
     this.section.open = function(cb, sid, fid, list) {
         if( sid != null ) { this.section_id = sid; }
@@ -10859,16 +10884,159 @@ function ciniki_musicfestivals_main() {
                 'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
                 'marking':newflags,
                 }; 
-                M.api.getJSONCb('ciniki.musicfestivals.sectionClassesUpdate', args, function(rsp) {
-                    if( rsp.stat != 'ok' ) {
-                        M.api.err(rsp);
-                        return false;
-                    }
-                    M.ciniki_musicfestivals_main.festival.open();
-                    });
+            M.api.getJSONCb('ciniki.musicfestivals.sectionClassesUpdate', args, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_musicfestivals_main.festival.open();
+                });
         });
     }
     this.marking.addClose('Cancel');
+
+    //
+    // Window to select the new Mark, Placement, Level for the festival or section
+    //
+    this.adminfees = new M.panel('Update Admin Fees', 'ciniki_musicfestivals_main', 'adminfees', 'mc', 'medium', 'sectioned', 'ciniki.musicfestivals.main.adminfees');
+    this.adminfees.data = {};
+    this.adminfees.syllabus = '';
+    this.adminfees.nplist = [];
+    this.adminfees.sections = {
+        'general':{'label':'New Admin Fees', 'fields':{
+            'flags7':{'label':'Admin Fees', 'type':'flagspiece', 'mask':0xC0, 'field':'flags', 'join':'yes', 'none':'yes', 'toggle':'yes',
+                'onchange':'M.ciniki_musicfestivals_main.adminfees.updateForm',
+                'flags':{'0':{'name':'None'}, '7':{'name':'per Cart'}},// **future**, '8':{'name':'per Registration'}},
+                },
+            'adminfees_amount':{'label':'Admin Fee Amount', 'type':'text', 'size':'small', 'visible':'no'},
+            }},
+        '_buttons':{'label':'', 'buttons':{
+            'update':{'label':'Apply to Sections', 'fn':'M.ciniki_musicfestivals_main.adminfees.save();'},
+            'delete':{'label':'Cancel', 
+                'fn':'M.ciniki_musicfestivals_main.adminfees.close();'},
+            }},
+    }
+    this.adminfees.open = function(cb, syllabus) {
+        this.syllabus = syllabus;
+        this.refresh();
+        this.show(cb);
+        this.updateForm();
+    }
+    this.adminfees.updateForm = function() {
+        var f = this.formValue('flags7');
+        if( (f&0xC0) > 0 ) {
+            this.sections.general.fields.adminfees_amount.visible = 'yes';
+        } else {
+            this.sections.general.fields.adminfees_amount.visible = 'no';
+        }
+/*        var f = this.formValue('flags5');
+        if( (f&0x30) > 0 ) {
+            this.sections.general.fields.latefees_start_amount.visible = 'yes';
+            this.sections.general.fields.latefees_daily_increase.visible = 'yes';
+            this.sections.general.fields.latefees_days.visible = 'yes';
+        } else {
+            this.sections.general.fields.latefees_start_amount.visible = 'no';
+            this.sections.general.fields.latefees_daily_increase.visible = 'no';
+            this.sections.general.fields.latefees_days.visible = 'no';
+        }
+        this.showHideFormField('general', 'latefees_start_amount');
+        this.showHideFormField('general', 'latefees_daily_increase');
+        this.showHideFormField('general', 'latefees_days'); */
+        this.showHideFormField('general', 'adminfees_amount');
+    }
+    this.adminfees.save = function() {
+        var newflags = this.formValue('flags7');
+        var amount = this.formValue('adminfees_amount');
+        var question = "Are you sure you want to update Admin Fees on all Sections?";
+        M.confirm(question, "Confirm", function(rsp) {
+            var args = {
+                'tnid':M.curTenantID, 
+                'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
+                'syllabus':M.ciniki_musicfestivals_main.adminfees.syllabus,
+                'adminfees_flags':newflags,
+                'adminfees_amount':amount,
+                }; 
+            M.api.getJSONCb('ciniki.musicfestivals.sectionsUpdate', args, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_musicfestivals_main.adminfees.close();
+                });
+        });
+    }
+    this.adminfees.addClose('Cancel');
+
+    //
+    // Window to set the late fees for all sections in a syllabus
+    //
+    this.latefees = new M.panel('Update Late Fees', 'ciniki_musicfestivals_main', 'latefees', 'mc', 'medium', 'sectioned', 'ciniki.musicfestivals.main.latefees');
+    this.latefees.data = {};
+    this.latefees.syllabus = '';
+    this.latefees.nplist = [];
+    this.latefees.sections = {
+        'general':{'label':'New Late Fees', 'fields':{
+            'flags5':{'label':'Late Fees', 'type':'flagspiece', 'mask':0x30, 'field':'flags', 'join':'yes', 'none':'yes', 'toggle':'yes',
+                'onchange':'M.ciniki_musicfestivals_main.latefees.updateForm',
+                'flags':{'0':{'name':'None'}, '5':{'name':'per Cart'}},// **future**, '6':{'name':'per Registration'}},
+                },
+            'latefees_start_amount':{'label':'First Day Amount', 'type':'text', 'size':'small', 'visible':'no'},
+            'latefees_daily_increase':{'label':'Daily Increase', 'type':'text', 'size':'small', 'visible':'no'},
+            'latefees_days':{'label':'Number of Days', 'type':'text', 'size':'small', 'visible':'no'},
+            }},
+        '_buttons':{'label':'', 'buttons':{
+            'update':{'label':'Apply to Sections', 'fn':'M.ciniki_musicfestivals_main.latefees.save();'},
+            'delete':{'label':'Cancel', 
+                'fn':'M.ciniki_musicfestivals_main.latefees.close();'},
+            }},
+    }
+    this.latefees.open = function(cb, syllabus) {
+        this.syllabus = syllabus;
+        this.refresh();
+        this.show(cb);
+        this.updateForm();
+    }
+    this.latefees.updateForm = function() {
+        var f = this.formValue('flags5');
+        if( (f&0x30) > 0 ) {
+            this.sections.general.fields.latefees_start_amount.visible = 'yes';
+            this.sections.general.fields.latefees_daily_increase.visible = 'yes';
+            this.sections.general.fields.latefees_days.visible = 'yes';
+        } else {
+            this.sections.general.fields.latefees_start_amount.visible = 'no';
+            this.sections.general.fields.latefees_daily_increase.visible = 'no';
+            this.sections.general.fields.latefees_days.visible = 'no';
+        }
+        this.showHideFormField('general', 'latefees_start_amount');
+        this.showHideFormField('general', 'latefees_daily_increase');
+        this.showHideFormField('general', 'latefees_days'); 
+    }
+    this.latefees.save = function() {
+        var newflags = this.formValue('flags5');
+        var start_amount = this.formValue('latefees_start_amount');
+        var daily_increase = this.formValue('latefees_daily_increase');
+        var days = this.formValue('latefees_days');
+        var question = "Are you sure you want to update Late Fees on all Sections?";
+        M.confirm(question, "Confirm", function(rsp) {
+            var args = {
+                'tnid':M.curTenantID, 
+                'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
+                'syllabus':M.ciniki_musicfestivals_main.latefees.syllabus,
+                'latefees_flags':newflags,
+                'latefees_start_amount':start_amount,
+                'latefees_daily_increase':daily_increase,
+                'latefees_days':days,
+                }; 
+            M.api.getJSONCb('ciniki.musicfestivals.sectionsUpdate', args, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_musicfestivals_main.latefees.close();
+                });
+        });
+    }
+    this.latefees.addClose('Cancel');
 
     //
     // ssam section

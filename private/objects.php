@@ -116,6 +116,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'latefees_start_amount'=>array('name'=>'Late Fees Start Amount', 'default'=>'0'),
             'latefees_daily_increase'=>array('name'=>'Late Fees Daily Increase', 'default'=>'0'),
             'latefees_days'=>array('name'=>'Late Fees Days', 'default'=>'0'),
+            'adminfees_amount'=>array('name'=>'Admin Fee Amount', 'default'=>'0'),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );

@@ -1,4 +1,5 @@
 ALTER TABLE ciniki_musicfestival_sections ADD COLUMN latefees_start_amount DECIMAL(19,6) not null AFTER upload_end_dt;
 ALTER TABLE ciniki_musicfestival_sections ADD COLUMN latefees_daily_increase DECIMAL(19,6) not null AFTER latefees_start_amount;
 ALTER TABLE ciniki_musicfestival_sections ADD COLUMN latefees_days tinyint not null AFTER latefees_daily_increase;
+ALTER TABLE ciniki_musicfestival_sections ADD COLUMN adminfees_amount DECIMAL(19,6) not null AFTER latefees_days;
 ALTER TABLE ciniki_musicfestival_sections COMMENT='v1.08';

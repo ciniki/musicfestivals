@@ -18,7 +18,13 @@ function ciniki_musicfestivals_sapos_objectList($ciniki, $tnid) {
         // this object should only be added to carts
         //
         'ciniki.musicfestivals.registration' => array(
-            'name' => 'Music Festival Registration',
+            'name' => 'Music Festival Registrations',
+            ),
+        'ciniki.musicfestivals.adminfee' => array(
+            'name' => 'Music Festival Admin Fees',
+            ),
+        'ciniki.musicfestivals.latefee' => array(
+            'name' => 'Music Festival Late Fees',
             ),
         );
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {

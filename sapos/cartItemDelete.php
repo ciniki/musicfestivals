@@ -51,6 +51,17 @@ function ciniki_musicfestivals_sapos_cartItemDelete($ciniki, $tnid, $invoice_id,
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.138', 'msg'=>'Error trying to remove registration.', 'err'=>$rc['err']));
         }
 
+        //
+        // Update Extra Fees
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'sapos', 'invoiceExtraFeesCheck');
+        $rc = ciniki_musicfestivals_sapos_invoiceExtraFeesCheck($ciniki, $tnid, [
+            'invoice_id' => $invoice_id,
+            ]);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+
         return array('stat'=>'ok');
     }
 

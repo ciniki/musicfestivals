@@ -137,8 +137,17 @@ function ciniki_musicfestivals_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item)
         $reg_id = $rc['id'];
 
         //
-        // Check if member late fee needs to be added
+        // Check if extra fee needs to be added
         //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'sapos', 'registrationExtraFeesCheck');
+        $rc = ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, [
+            'registration_id' => $reg_id,
+            'invoice_id' => $invoice_id,
+            'closed' => 'ignore',
+            ]);
+        if( $rc['stat'] != 'ok' && $rc['stat'] != 'updated' ) {
+            return $rc;
+        }
         
         return array('stat'=>'ok', 'object'=>'ciniki.musicfestivals.registration', 'object_id'=>$reg_id);
     }

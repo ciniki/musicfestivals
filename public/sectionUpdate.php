@@ -33,9 +33,10 @@ function ciniki_musicfestivals_sectionUpdate(&$ciniki) {
         'virtual_end_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Virtual End Date'),
         'titles_end_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Edit Titles End Date'),
         'upload_end_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Upload End Date'),
-        'latefees_start_amount'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Late Fees Start Amount'),
-        'latefees_daily_increase'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Late Fees Daily Increase'),
+        'latefees_start_amount'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Late Fees Start Amount'),
+        'latefees_daily_increase'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Late Fees Daily Increase'),
         'latefees_days'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Late Fees Number of Days'),
+        'adminfees_amount'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Admin Fees Amount'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

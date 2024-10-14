@@ -66,7 +66,8 @@ function ciniki_musicfestivals_sectionList($ciniki) {
         . "sections.virtual_end_dt, "
         . "sections.latefees_start_amount, "
         . "sections.latefees_daily_increase, "
-        . "sections.latefees_days "
+        . "sections.latefees_days, "
+        . "sections.adminfees_amount "
         . "FROM ciniki_musicfestival_sections AS sections "
         . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
@@ -80,10 +81,10 @@ function ciniki_musicfestivals_sectionList($ciniki) {
         array('container'=>'sections', 'fname'=>'id', 
             'fields'=>array('id', 'festival_id', 'name', 'permalink', 'sequence', 'flags',
                 'live_end_dt', 'virtual_end_dt', 
-                'latefees_start_amount', 'latefees_daily_increase', 'latefees_days', 
+                'latefees_start_amount', 'latefees_daily_increase', 'latefees_days', 'adminfees_amount',
                 ),
             'naprices'=>array(
-                'latefees_start_amount', 'latefees_daily_increase'
+                'latefees_start_amount', 'latefees_daily_increase', 'adminfees_amount',
                 ),
             'utctotz'=>array(
                 'live_end_dt'=>array('format'=>$datetime_format, 'timezone'=>$intl_timezone),
@@ -105,6 +106,20 @@ function ciniki_musicfestivals_sectionList($ciniki) {
             }
             if( ($section['flags']&0x20) == 0x20 ) {
                 $sections[$iid]['latefees_text'] = 'per Registration';
+            }
+            if( ($section['flags']&0x30) == 0 ) {
+                $sections[$iid]['latefees_start_amount'] = '';
+                $sections[$iid]['latefees_daily_increase'] = '';
+                $sections[$iid]['latefees_days'] = '';
+            }
+            if( ($section['flags']&0x40) == 0x40 ) {
+                $sections[$iid]['adminfees_text'] = 'per Invoice';
+            }
+            if( ($section['flags']&0x80) == 0x80 ) {
+                $sections[$iid]['adminfees_text'] = 'per Registration';
+            }
+            if( ($section['flags']&0xC0) == 0 ) {
+                $sections[$iid]['adminfees_amount'] = '';
             }
         }
     } else {
