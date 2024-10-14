@@ -33,22 +33,21 @@ function ciniki_musicfestivals_sapos_cartItemDelete($ciniki, $tnid, $invoice_id,
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.135', 'msg'=>'Unable to find registrations', 'err'=>$rc['err']));
         }
-        if( !isset($rc['item']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.136', 'msg'=>'Unable to find registration'));
-        }
-        $item = $rc['item'];
+        if( isset($rc['item']) ) {
+            $item = $rc['item'];
 
-        if( $item['status'] != 5 ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.137', 'msg'=>'This registration cannot be removed.'));
-        }
+            if( $item['status'] != 5 ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.137', 'msg'=>'This registration cannot be removed.'));
+            }
 
-        //
-        // Delete the registration
-        //
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationDelete');
-        $rc = ciniki_musicfestivals_registrationDelete($ciniki, $tnid, $item['id']);
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.138', 'msg'=>'Error trying to remove registration.', 'err'=>$rc['err']));
+            //
+            // Delete the registration
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationDelete');
+            $rc = ciniki_musicfestivals_registrationDelete($ciniki, $tnid, $item['id']);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.138', 'msg'=>'Error trying to remove registration.', 'err'=>$rc['err']));
+            }
         }
 
         //
@@ -59,7 +58,7 @@ function ciniki_musicfestivals_sapos_cartItemDelete($ciniki, $tnid, $invoice_id,
             'invoice_id' => $invoice_id,
             'ignore_registration_id' => $args['object_id'],
             ]);
-        if( $rc['stat'] != 'ok' ) {
+        if( $rc['stat'] != 'ok' && $rc['stat'] != 'updated' ) {
             return $rc;
         }
 

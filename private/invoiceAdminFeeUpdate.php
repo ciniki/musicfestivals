@@ -65,7 +65,6 @@ function ciniki_musicfestivals_invoiceAdminFeeUpdate(&$ciniki, $tnid, $invoice_i
         // Add the admin fee
         //
         else {
-            error_log('add admin fee');
             ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'private', 'invoiceAddItem');
             $rc = ciniki_sapos_invoiceAddItem($ciniki, $tnid, array(
                 'invoice_id' => $invoice_id,

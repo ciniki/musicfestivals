@@ -221,6 +221,10 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
         return array('stat'=>'updated', 'msg'=>$fees_msg);
     }
 
+    if( isset($latefee) ) {
+        return array('stat'=>'ok', 'latefee'=>$latefee);
+    }
+
     return array('stat'=>'ok');
 }
 ?>

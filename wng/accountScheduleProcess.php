@@ -33,25 +33,6 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
     $festival = $rc['festival'];
 
     //
-    // Load the festival details
-    //
-    $strsql = "SELECT detail_key, detail_value "
-        . "FROM ciniki_musicfestival_settings "
-        . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
-    $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.790', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
-    }
-    if( isset($rc['settings']) ) {
-        foreach($rc['settings'] as $k => $v) {
-            $festival[$k] = $v;
-        }
-    }
-
-    //
     // Check if request to download PDF
     //
     if( isset($_GET['schedulepdf']) && $_GET['schedulepdf'] == 'yes' ) {

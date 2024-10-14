@@ -43,10 +43,29 @@ function ciniki_musicfestivals_loadCurrentFestival(&$ciniki, $tnid) {
     $festival = $rc['festival'];
 
     //
+    // Load festival settings
+    //
+    $strsql = "SELECT detail_key, detail_value "
+        . "FROM ciniki_musicfestival_settings "
+        . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
+    $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.352', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+    }
+    if( isset($rc['settings']) ) {
+        foreach($rc['settings'] as $k => $v) {
+            $festival[$k] = $v;
+        }
+    }
+
+    //
     // Determine which dates are still open for the festival
     //
     $now = new DateTime('now', new DateTimezone('UTC'));
-    $live_dt = new DateTime($festival['live_date'], new DateTimezone('UTC'));
+    $festival['live_end_dt'] = new DateTime($festival['live_date'], new DateTimezone('UTC'));
     $titles_end_dt = new DateTime($festival['titles_end_dt'], new DateTimezone('UTC'));
     $accompanist_end_dt = new DateTime($festival['accompanist_end_dt'], new DateTimezone('UTC'));
     $upload_end_dt = new DateTime($festival['upload_end_dt'], new DateTimezone('UTC'));
@@ -56,10 +75,10 @@ function ciniki_musicfestivals_loadCurrentFestival(&$ciniki, $tnid) {
     } else {
         $festival['earlybird'] = 'no';
     }
-    $festival['live'] = (($festival['flags']&0x01) == 0x01 && $live_dt > $now ? 'yes' : 'no');
+    $festival['live'] = (($festival['flags']&0x01) == 0x01 && $festival['live_end_dt'] > $now ? 'yes' : 'no');
     if( ($festival['flags']&0x02) == 0x02 ) {
-        $virtual_dt = new DateTime($festival['virtual_date'], new DateTimezone('UTC'));
-        $festival['virtual'] = (($festival['flags']&0x03) == 0x03 && $virtual_dt > $now ? 'yes' : 'no');
+        $festival['virtual_end_dt'] = new DateTime($festival['virtual_date'], new DateTimezone('UTC'));
+        $festival['virtual'] = (($festival['flags']&0x03) == 0x03 && $festival['virtual_end_dt'] > $now ? 'yes' : 'no');
     } else {
         $festival['virtual'] = 'no';
     }

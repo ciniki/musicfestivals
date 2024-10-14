@@ -38,6 +38,7 @@ function ciniki_musicfestivals_sapos_invoiceExtraFeesCheck($ciniki, $tnid, $args
     // Look for registrations 
     //
     $num_registrations = 0;
+    $latefee = 0;
     foreach($items as $iid => $item) {
         if( $item['object'] == 'ciniki.musicfestivals.registration' && $item['object_id'] > 0 ) {
             if( isset($args['ignore_registration_id']) && $args['ignore_registration_id'] == $item['object_id'] ) {
@@ -53,28 +54,37 @@ function ciniki_musicfestivals_sapos_invoiceExtraFeesCheck($ciniki, $tnid, $args
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
+            if( isset($rc['latefee']) ) {
+                $latefee += $rc['latefee'];
+            }
         }
     }
 
     //
     // If no items, check if fees still exist
     //
-    if( $num_registrations == 0 ) {
-        foreach($items as $iid => $item) {
-            if( $item['object'] == 'ciniki.musicfestivals.adminfee' 
-                || $item['object'] == 'ciniki.musicfestivals.latefee' 
-                || $item['object'] == 'ciniki.musicfestivals.memberlatefee' 
-                ) {
-                $rc = ciniki_sapos_hooks_invoiceItemDelete($ciniki, $tnid, [
-                    'invoice_id' => $args['invoice_id'],
-                    'object' => $item['object'],
-                    'object_id' => $item['object_id'],
-                    ]);
-                if( $rc['stat'] != 'ok' ) {
-                    return $rc;
-                }
+    $updated = 'no';
+    foreach($items as $iid => $item) {
+        if( ($item['object'] == 'ciniki.musicfestivals.latefee' && $latefee == 0) 
+            || ($item['object'] == 'ciniki.musicfestivals.adminfee' && $num_registrations == 0)
+            || ($item['object'] == 'ciniki.musicfestivals.memberlatefee' && $num_registrations == 0)
+            ) {
+            $rc = ciniki_sapos_hooks_invoiceItemDelete($ciniki, $tnid, [
+                'invoice_id' => $args['invoice_id'],
+                'object' => $item['object'],
+                'object_id' => $item['object_id'],
+                ]);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            if( $item['object'] == 'ciniki.musicfestivals.latefee' ) {
+                $updated = 'yes';
             }
         }
+    }
+
+    if( $updated == 'yes' ) {
+        return array('stat'=>'updated', 'msg'=>'Late fees have been removed.');
     }
 
     return array('stat'=>'ok');

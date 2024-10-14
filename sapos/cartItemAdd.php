@@ -13,7 +13,6 @@
 //
 function ciniki_musicfestivals_sapos_cartItemAdd($ciniki, $tnid, $invoice_id, $args) {
 
-    error_log('cartItemAdd');
     if( !isset($args['object']) || $args['object'] == '' 
         || !isset($args['object_id']) || $args['object_id'] == '' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.866', 'msg'=>'No registration specified.'));

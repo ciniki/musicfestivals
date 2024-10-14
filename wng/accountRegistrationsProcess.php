@@ -70,25 +70,6 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     $festival = $rc['festival'];
 
     //
-    // Load the festival details
-    //
-    $strsql = "SELECT detail_key, detail_value "
-        . "FROM ciniki_musicfestival_settings "
-        . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
-    $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.422', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
-    }
-    if( isset($rc['settings']) ) {
-        foreach($rc['settings'] as $k => $v) {
-            $festival[$k] = $v;
-        }
-    }
-
-    //
     // Load the customer type, or ask for customer type
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountCustomerTypeProcess');
@@ -214,9 +195,13 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     // Load the class list
     //
     $strsql = "SELECT sections.id AS section_id, "
+        . "sections.flags AS section_flags, "
         . "sections.name AS section_name, "
         . "sections.live_end_dt, "
         . "sections.virtual_end_dt, "
+        . "sections.latefees_start_amount, "
+        . "sections.latefees_daily_increase, "
+        . "sections.latefees_days, "
         . "categories.name AS category_name, "
         . "classes.id AS class_id, "
         . "classes.uuid AS class_uuid, "
@@ -245,7 +230,10 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'section_id', 
-            'fields'=>array('id'=>'section_id', 'name'=>'section_name', 'live_end_dt', 'virtual_end_dt'),
+            'fields'=>array('id'=>'section_id', 'name'=>'section_name', 'flags'=>'section_flags', 
+                'live_end_dt', 'virtual_end_dt',
+                'latefees_start_amount', 'latefees_daily_increase', 'latefees_days',
+                ),
             ),
         array('container'=>'classes', 'fname'=>'class_id', 
             'fields'=>array('id'=>'class_id', 'uuid'=>'class_uuid', 'category_name', 'code'=>'class_code', 
@@ -260,19 +248,49 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     //
     // Check for sections that are still open
     //
-    if( ($festival['flags']&0x09) == 0x09 ) {
-        $dt = new DateTime('now', new DateTimezone('UTC'));
-        foreach($sections as $sid => $section) {
-            if( $festival['live'] == 'no' && $section['live_end_dt'] != '0000-00-00 00:00:00' ) {
-                $live_dt = new DateTime($section['live_end_dt'], new DateTimezone('UTC'));
-                if( $live_dt > $dt ) {
+    $now = new DateTime('now', new DateTimezone('UTC'));
+    foreach($sections as $sid => $section) {
+        // No section end dates OR section end date is empty
+        if( ($festival['flags']&0x09) == 0x01 || $section['live_end_dt'] == '0000-00-00 00:00:00' ) {
+            $sections[$sid]['live_end_dt'] = $festival['live_date'];
+            $section['live_end_dt'] = $festival['live_date'];
+        }
+        // If virtual enabled for festival, and no section end dates OR section end date not set
+        if( ($festival['flags']&0x02) == 0x02 
+            && (($festival['flags']&0x09) == 0x01 || $section['virtual_end_dt'] == '0000-00-00 00:00:00')
+            ) {
+            $sections[$sid]['virtual_end_dt'] = $festival['virtual_date'];
+            $section['virtual_end_dt'] = $festival['virtual_date'];
+        }
+        if( $festival['live'] == 'no' && $section['live_end_dt'] != '0000-00-00 00:00:00' ) {
+            $live_dt = new DateTime($section['live_end_dt'], new DateTimezone('UTC'));
+            if( $live_dt > $now ) {
+                $festival['live'] = 'sections';
+            }
+            elseif( ($section['flags']&0x30) > 0 && $section['latefees_days'] > 0 ) {
+                $interval = $live_dt->diff($now);
+                $live_dt->add(new DateInterval("P{$section['latefees_days']}D"));
+                if( $live_dt > $now ) {      // is within latefees_days
                     $festival['live'] = 'sections';
+                    $sections[$sid]['live_days_past'] = $interval->format('%d');
+                    $sections[$sid]['live_latefees'] = $section['latefees_start_amount']
+                        + ($section['latefees_daily_increase'] * $sections[$sid]['live_days_past']);
                 }
             }
-            if( $festival['live'] == 'no' && $section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
-                $virtual_dt = new DateTime($section['virtual_end_dt'], new DateTimezone('UTC'));
-                if( $live_dt > $dt ) {
+        }
+        if( $festival['virtual'] == 'no' && $section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
+            $virtual_dt = new DateTime($section['virtual_end_dt'], new DateTimezone('UTC'));
+            if( $virtual_dt > $now ) {
+                $festival['virtual'] = 'sections';
+            } 
+            elseif( ($section['flags']&0x30) > 0 && $section['latefees_days'] > 0 ) {
+                $interval = $virtual_dt->diff($now);
+                $virtual_dt->add(new DateInterval("P{$section['latefees_days']}D"));
+                if( $virtual_dt > $now ) {   // is within latefees_days
                     $festival['virtual'] = 'sections';
+                    $sections[$sid]['virtual_days_past'] = $interval->format('%d');
+                    $sections[$sid]['virtual_latefees'] = $section['latefees_start_amount']
+                        + ($section['latefees_daily_increase'] * $sections[$sid]['virtual_days_past']);
                 }
             }
         }

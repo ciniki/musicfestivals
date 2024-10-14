@@ -94,8 +94,13 @@ function ciniki_musicfestivals_sapos_cartItemCheck($ciniki, $tnid, $customer, $a
         || $args['object'] == 'ciniki.musicfestivals.latefee' 
         ) {
 //        error_log('Check member late fee');
-        
-        return array('stat'=>'ok');
+        //
+        // Run the check on the entire invoice
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'sapos', 'invoiceExtraFeesCheck');
+        return ciniki_musicfestivals_sapos_invoiceExtraFeesCheck($ciniki, $tnid, [
+            'invoice_id' => $args['invoice_id'],
+            ]);
     }
     elseif( $args['object'] == 'ciniki.musicfestivals.registration' && isset($args['object_id']) && $args['object_id'] > 0 ) {
 
