@@ -57,6 +57,7 @@ function ciniki_musicfestivals_sapos_cartItemDelete($ciniki, $tnid, $invoice_id,
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'sapos', 'invoiceExtraFeesCheck');
         $rc = ciniki_musicfestivals_sapos_invoiceExtraFeesCheck($ciniki, $tnid, [
             'invoice_id' => $invoice_id,
+            'ignore_registration_id' => $args['object_id'],
             ]);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
