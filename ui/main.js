@@ -4194,7 +4194,7 @@ function ciniki_musicfestivals_main() {
         return 'M.ciniki_musicfestivals_main.section.openCategory(\'' + d.id + '\');';
     }
     this.section.openCategory = function(cid) {
-        this.save("M.ciniki_musicfestivals_main.category.open('M.ciniki_musicfestivals_main.section.open();', '" + cid + "', this.section_id, this.festival_id, this.nplists.categories);");
+        this.save("M.ciniki_musicfestivals_main.category.open('M.ciniki_musicfestivals_main.section.open();', '" + cid + "', M.ciniki_musicfestivals_main.section.section_id, M.ciniki_musicfestivals_main.section.festival_id, M.ciniki_musicfestivals_main.section.nplists.categories);");
     }
     this.section.switchTab = function(tab) {
         this.sections._tabs.selected = tab;
