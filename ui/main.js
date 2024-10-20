@@ -419,6 +419,21 @@ function ciniki_musicfestivals_main() {
                 }
                 return '';
                 },
+            'seqDrop':function(e,from,to){
+                if( from == 0 || to == 0 ) {
+                    return true;
+                }
+                M.api.getJSONCb('ciniki.musicfestivals.categoryUpdate', {'tnid':M.curTenantID, 
+                    'category_id':M.ciniki_musicfestivals_main.festival.data.syllabus_categories[from].id,
+                    'sequence':M.ciniki_musicfestivals_main.festival.data.syllabus_categories[to].sequence,
+                    }, function(rsp) {
+                        if( rsp.stat != 'ok' ) {
+                            M.api.err(rsp);
+                            return false;
+                        }
+                        M.ciniki_musicfestivals_main.festival.open();
+                    });
+                },
             'menu':{
                 'add':{
                     'label':'Add Class',
@@ -473,7 +488,7 @@ function ciniki_musicfestivals_main() {
             'menu':{
                 'add':{
                     'label':'Add Class',
-                    'fn':'M.ciniki_musicfestivals_main.class.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,0,M.ciniki_musicfestivals_main.festival.festival_id,null);',
+                    'fn':'M.ciniki_musicfestivals_main.class.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.category_id,M.ciniki_musicfestivals_main.festival.festival_id,null);',
                     },
                 'updateearlybirdfees':{
                     'label':'Update Earlybird Fees',
