@@ -3673,6 +3673,9 @@ function ciniki_musicfestivals_main() {
                 'flags9':{'label':'Include Section/Category as Class Name', 'type':'flagtoggle', 'default':'off', 'bit':0x0100, 'field':'flags'},
                 'flags11':{'label':'Category Group Names', 'type':'flagtoggle', 'default':'off', 'bit':0x0400, 'field':'flags'},
                 'flags12':{'label':'Multiple Syllabii', 'type':'flagtoggle', 'default':'off', 'bit':0x0800, 'field':'flags'},
+                'syllabus-schedule-time':{'label':'Class Time', 'type':'toggle', 'default':'none', 'toggles':{
+                    'none':'None', 'total':'Playing + Adjudication', 'adjudication':'Adjudication', 
+                    }},
             }},
         // Add for 2025
 /*        '_syllabus_pdf':{'label':'Syllabus PDF Options', 
@@ -5006,7 +5009,7 @@ function ciniki_musicfestivals_main() {
 //                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); }, 
                 'flags':{'0':{'name':'None'}, '25':{'name':'Required'}, '26':{'name':'Optional'}},
                 },
-            'schedule_seconds':{'label':'Schedule Time', 'type':'minsec'},
+            'schedule_seconds':{'label':'Schedule Time', 'type':'minsec', 'visible':'no'},
             'flags9':{'label':'Marking', 'type':'flagspiece', 'mask':0x0700, 'field':'flags', 'join':'yes', 'none':'yes',
                 'flags':{'9':{'name':'Mark'}, '10':{'name':'Placement'}, '11':{'name':'Level'}},
                 },
@@ -5231,6 +5234,22 @@ function ciniki_musicfestivals_main() {
             this.showHideFormField('_fixed_title'+i,'movements'+i);
             this.showHideFormField('_fixed_title'+i,'composer'+i);
         }
+        console.log(M.ciniki_musicfestivals_main.festival.data);
+        if( M.ciniki_musicfestivals_main.festival.data['syllabus-schedule-time'] != null 
+            && M.ciniki_musicfestivals_main.festival.data['syllabus-schedule-time'] == 'total'
+            ) {
+            this.sections.titles.fields.schedule_seconds.visible = 'yes';
+            this.sections.titles.fields.schedule_seconds.label = 'Schedule Time';
+        } else if( M.ciniki_musicfestivals_main.festival.data['syllabus-schedule-time'] != null 
+            && M.ciniki_musicfestivals_main.festival.data['syllabus-schedule-time'] == 'adjudication'
+            ) {
+            this.sections.titles.fields.schedule_seconds.visible = 'yes';
+            this.sections.titles.fields.schedule_seconds.label = 'Adjudication Time';
+        } else {
+            this.sections.titles.fields.schedule_seconds.visible = 'no';
+        }
+        this.showHideFormField('titles', 'schedule_seconds');
+            
 /*        if( (f&0xC000) == 0x8000 ) {
             this.sections.registration.fields.flags5.visible = 'no';
             this.sections.registration.fields.flags6.visible = 'no';

@@ -154,6 +154,16 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     if( isset($args['timeslot_sequence']) && $args['timeslot_sequence'] > 0 && !isset($args['timeslot_id']) ) {
         $args['timeslot_id'] = $registration['timeslot_id'];
     }
+
+    //
+    // Load the festival details
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $registration['festival_id']);
+    if( $rc['stat'] != 'ok' ) { 
+        return $rc;
+    }
+    $festival = $rc['festival'];
     
     //
     // Get the tenant storage directory
@@ -243,18 +253,23 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.785', 'msg'=>'Unable to find requested lastreg'));
                 }
                 $lastreg = $rc['lastreg'];
-                if( $lastreg['schedule_seconds'] > 0 ) {
-                    $total_time = $lastreg['schedule_seconds'];
-                } else {
-                    $total_time = 0;
-                    for($i = 1; $i <= 10; $i++) {
-                        if( isset($lastreg["perf_time{$i}"]) && $lastreg["perf_time{$i}"] > 0 ) {
-                            $total_time += $lastreg["perf_time{$i}"];
-                        }
+                $total_time = 0;
+                for($i = 1; $i <= 10; $i++) {
+                    if( isset($lastreg["perf_time{$i}"]) && $lastreg["perf_time{$i}"] > 0 ) {
+                        $total_time += $lastreg["perf_time{$i}"];
                     }
-                    $total_time += 60 - ($total_time%60);
                 }
-                // FIXME: Add setting for buffer time
+                $total_time += 60 - ($total_time%60);
+                //
+                // Check if there is a schedule time and if it should be total time or in adjudication time added to perf times
+                //
+                if( isset($festival['syllabus-schedule-time']) && $lastreg['schedule_seconds'] > 0 ) {
+                    if( $festival['syllabus-schedule-time'] == 'total' ) {
+                        $total_time = $lastreg['schedule_seconds'];
+                    } elseif( $festival['syllabus-schedule-time'] == 'adjudication' ) {
+                        $total_time += $lastreg['schedule_seconds'];
+                    }
+                }
                 $dt = new DateTime('now', new DateTimezone('UTC'));
                 $dt = new DateTime($dt->format('Y-m-d') . ' ' . $lastreg['timeslot_time'], new DateTimezone('UTC'));
                 $dt->add(new DateInterval('PT' . $total_time . 'S')); 
