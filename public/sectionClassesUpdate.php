@@ -29,6 +29,8 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         'virtual_fee_update'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Virtual Fee Update'),
         'earlybird_plus_fee_update'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Earlybird Plus Fee Update'),
         'plus_fee_update'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Plus Fee Update'),
+        'instrument'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Instrument Setting'),
+        'accompanist'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Accompanist Setting'),
         'movements'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Movements Setting'),
         'composer'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Composer Setting'),
         'backtrack'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Backtrack Setting'),
@@ -170,11 +172,31 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
             ) {
             $update_args['earlybird_plus_fee'] = $class['earlybird_plus_fee'] + $args['earlybird_plus_fee_update'];
         }
-        
+
         //
         // Set the flags
         //
         $flags = $class['flags'];
+
+        //
+        // Update the instrument
+        //
+        if( isset($args['instrument']) && $args['instrument'] == 'yes' ) {
+            $flags |= 0x04;
+        } elseif( isset($args['instrument']) && $args['instrument'] == 'no' ) {
+            $flags = $flags&0xFFFFFFFB;
+        }
+        
+        //
+        // Update Accompanist
+        //
+        if( isset($args['accompanist']) && strtolower($args['accompanist']) == 'none' && ($class['flags']&0x3000) > 0 ) {
+            $flags = ($flags&0xFFFFCFFF);
+        } elseif( isset($args['accompanist']) && strtolower($args['accompanist']) == 'required' && ($class['flags']&0x1000) == 0 ) {
+            $flags = ($flags&0xFFFFCFFF) | 0x1000;
+        } elseif( isset($args['accompanist']) && strtolower($args['accompanist']) == 'optional' && ($class['flags']&0x2000) == 0 ) {
+            $flags = ($flags&0xFFFFCFFF) | 0x2000;
+        }
 
         //
         // Update movements

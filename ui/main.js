@@ -515,6 +515,31 @@ function ciniki_musicfestivals_main() {
                     'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x10) == 0x10 && M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'fees' ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.festival.updateFees(M.ciniki_musicfestivals_main.festival.section_id, "plus", "plus_fee");',
                     },
+                'instrumentyes':{
+                    'label':'Set Instrument to Required',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'competitors' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.updateInstrument(M.ciniki_musicfestivals_main.festival.section_id, "yes");',
+                    },
+                'instrumentno':{
+                    'label':'Set Instrument to Hidden',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'competitors' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.updateInstrument(M.ciniki_musicfestivals_main.festival.section_id, "no");',
+                    },
+                'accompanistnone':{
+                    'label':'Set Accompanist to None',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'competitors' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setAccompanist(M.ciniki_musicfestivals_main.festival.section_id, "None");',
+                    },
+                'accompanistrequired':{
+                    'label':'Set Accompanist to Required',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'competitors' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setAccompanist(M.ciniki_musicfestivals_main.festival.section_id, "Required");',
+                    },
+                'accompanistoptions':{
+                    'label':'Set Accompanist to Optional',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'competitors' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setAccompanist(M.ciniki_musicfestivals_main.festival.section_id, "Optional");',
+                    },
                 'multiregyes':{
                     'label':'Allow Multiple Registrations per Class',
                     'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'competitors' ? 'yes' : 'no'; },
@@ -2335,6 +2360,50 @@ function ciniki_musicfestivals_main() {
             }
         });
     }
+    this.festival.updateInstrument = function(sid, yesno) {
+        var msg = "Are you sure you remove the instrument field for these classes?";
+        if( yesno == 'yes' ) {
+            msg = "Are you sure you enable the instrument field for these classes?";
+        }
+        M.confirm(msg, "Confirm", function(rsp) {
+            var args = {
+                'tnid':M.curTenantID, 
+                'section_id':sid,
+                'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
+                'instrument':yesno,
+                }; 
+            if( M.ciniki_musicfestivals_main.festival.sections.syllabus_tabs.selected == 'categories' ) {
+                args['category_id'] = M.ciniki_musicfestivals_main.festival.category_id;
+            }
+            M.api.getJSONCb('ciniki.musicfestivals.sectionClassesUpdate', args, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_musicfestivals_main.festival.open();
+                });
+            });
+    }
+    this.festival.setAccompanist = function(sid, label) {
+        M.confirm("Are you sure you want to update Accompanist to " + label + "?", "Confirm", function(rsp) {
+            var args = {
+                'tnid':M.curTenantID, 
+                'section_id':sid,
+                'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
+                'accompanist':label,
+                }; 
+            if( M.ciniki_musicfestivals_main.festival.sections.syllabus_tabs.selected == 'categories' ) {
+                args['category_id'] = M.ciniki_musicfestivals_main.festival.category_id;
+            }
+            M.api.getJSONCb('ciniki.musicfestivals.sectionClassesUpdate', args, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_musicfestivals_main.festival.open();
+                });
+            });
+    }
     this.festival.updateMultireg = function(sid, yesno) {
         var msg = "Are you sure you do NOT want to allow competitors to register multiple times for these classes?";
         if( yesno == 'yes' ) {
@@ -2378,7 +2447,6 @@ function ciniki_musicfestivals_main() {
                 M.ciniki_musicfestivals_main.festival.open();
                 });
             });
-        
     }
     this.festival.setComposer = function(sid, label) {
         M.confirm("Are you sure you want to update Composer to " + label + "?", "Confirm", function(rsp) {
@@ -2755,11 +2823,23 @@ function ciniki_musicfestivals_main() {
             }
         }
         else if( this.sections._stabs.selected == 'competitors' ) {
-            this.sections.classes.headerValues = ['Category', 'Code', 'Class', '#', 'Competitors', 'Instrument', 'Accompanist', 'Multi'];
-            this.sections.classes.cellClasses = ['', '', '', 'alignright', '', '', '', ''];
-            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'num_competitors', 'competitor_type', 'instrument', 'accompanist', 'multireg'];
-            this.sections.classes.sortTypes = ['text', 'text', 'text', 'number', 'text', 'text', 'text', 'text'];
-            this.sections.classes.num_cols = 8;
+            this.sections.classes.headerValues = ['Category', 'Code', 'Class', '#', 'Competitors', 'Instrument'];
+            this.sections.classes.cellClasses = ['', '', '', 'alignright', '', 'aligncenter'];
+            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'num_competitors', 'competitor_type', 'instrument'];
+            this.sections.classes.sortTypes = ['text', 'text', 'text', 'number', 'text', 'text'];
+            this.sections.classes.num_cols = 6;
+            if( M.modFlagOn('ciniki.musicfestivals', 0x8000) ) {
+                this.sections.classes.headerValues[this.sections.classes.num_cols] = 'Accompanist';
+                this.sections.classes.cellClasses[this.sections.classes.num_cols] = 'aligncenter';
+                this.sections.classes.dataMaps[this.sections.classes.num_cols] = 'accompanist';
+                this.sections.classes.sortTypes[this.sections.classes.num_cols] = 'text';
+                this.sections.classes.num_cols++; 
+            }
+            this.sections.classes.headerValues[this.sections.classes.num_cols] = 'Multi';
+            this.sections.classes.cellClasses[this.sections.classes.num_cols] = 'aligncenter';
+            this.sections.classes.dataMaps[this.sections.classes.num_cols] = 'multireg';
+            this.sections.classes.sortTypes[this.sections.classes.num_cols] = 'text';
+            this.sections.classes.num_cols++; 
         }
         else if( this.sections._stabs.selected == 'titles' ) {
             this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Titles', 'Movements', 'Composer', 'Backtrack'];
