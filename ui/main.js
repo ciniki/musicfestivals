@@ -527,17 +527,17 @@ function ciniki_musicfestivals_main() {
                     },
                 'accompanistnone':{
                     'label':'Set Accompanist to None',
-                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'competitors' ? 'yes' : 'no'; },
+                    'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x8000) && M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'competitors' ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.festival.setAccompanist(M.ciniki_musicfestivals_main.festival.section_id, "None");',
                     },
                 'accompanistrequired':{
                     'label':'Set Accompanist to Required',
-                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'competitors' ? 'yes' : 'no'; },
+                    'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x8000) && M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'competitors' ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.festival.setAccompanist(M.ciniki_musicfestivals_main.festival.section_id, "Required");',
                     },
                 'accompanistoptions':{
                     'label':'Set Accompanist to Optional',
-                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'competitors' ? 'yes' : 'no'; },
+                    'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x8000) && M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'competitors' ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.festival.setAccompanist(M.ciniki_musicfestivals_main.festival.section_id, "Optional");',
                     },
                 'multiregyes':{
@@ -3410,7 +3410,9 @@ function ciniki_musicfestivals_main() {
             'live_date':{'label':'Live Deadline', 'type':'datetime'},
             'virtual_date':{'label':'Virtual Deadline', 'type':'datetime', 'visible':'no'},
             'titles_end_dt':{'label':'Edit Titles Deadline', 'type':'datetime'},
-            'accompanist_end_dt':{'label':'Accompanist Deadline', 'type':'datetime'},
+            'accompanist_end_dt':{'label':'Accompanist Deadline', 'type':'datetime',
+                'visible':function() { return M.modFlagSet('ciniki.muscifestivals', 0x8000); },
+                },
             'upload_end_dt':{'label':'Upload Deadline', 'type':'datetime', 'visible':'no'},
             }},
 //        '_settings':{'label':'', 'aside':'yes', 'fields':{
