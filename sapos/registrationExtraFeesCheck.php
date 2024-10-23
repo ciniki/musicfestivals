@@ -62,38 +62,6 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
     }
     $festival = $rc['festival'];
 
-/*        //
-        // Get the music festival for the registration
-        //
-        $strsql = "SELECT id, "
-            . "name, "
-            . "flags, "
-            . "earlybird_date, "
-            . "live_date, "
-            . "virtual_date "
-            . "FROM ciniki_musicfestivals "
-            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
-            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "ORDER BY start_date DESC "
-            . "LIMIT 1 "
-            . "";
-        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.427', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
-        }
-        if( !isset($rc['festival']) ) {
-            // No festivals published, no items to return
-            return array('stat'=>'ok');
-        }
-        $festival = $rc['festival'];
-        $now = new DateTime('now', new DateTimezone('UTC'));
-        $earlybird_dt = new DateTime($festival['earlybird_date'], new DateTimezone('UTC'));
-        $live_dt = new DateTime($festival['live_date'], new DateTimezone('UTC'));
-        $virtual_dt = new DateTime($festival['virtual_date'], new DateTimezone('UTC'));
-        $festival['earlybird'] = (($festival['flags']&0x01) == 0x01 && $earlybird_dt > $now ? 'yes' : 'no');
-        $festival['live'] = (($festival['flags']&0x01) == 0x01 && $live_dt > $now ? 'yes' : 'no');
-        $festival['virtual'] = (($festival['flags']&0x03) == 0x03 && $virtual_dt > $now ? 'yes' : 'no');
-*/
     //
     // Check for section registration end dates and if still available
     //
