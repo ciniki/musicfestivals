@@ -95,21 +95,56 @@ function ciniki_musicfestivals_sectionUpdate(&$ciniki) {
     $section = $rc['section'];
 
     //
+    // Get the list of categories
+    //
+    $strsql = "SELECT categories.id, "
+        . "categories.description "
+        . "FROM ciniki_musicfestival_categories AS categories "
+        . "WHERE categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'categories', 'fname'=>'id', 'fields'=>array('id', 'description')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $categories = isset($rc['categories']) ? $rc['categories'] : array();
+
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
     $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.musicfestivals');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
 
     //
+    // Check if any updates to category descriptions
+    //
+    foreach($categories as $cid => $cat) {
+        if( isset($ciniki['request']['args']["category_{$cid}"])
+            && $ciniki['request']['args']["category_{$cid}"] != $cat['description']
+            ) {
+            $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.category', $cid, [
+                'description' => $ciniki['request']['args']["category_{$cid}"],
+                ], 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+                return $rc;
+            }
+        }
+    }
+
+    //
     // Update the Section in the database
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
     $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.section', $args['section_id'], $args, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');

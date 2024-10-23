@@ -174,7 +174,8 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
                 . "ciniki_musicfestival_categories.groupname, "
                 . "ciniki_musicfestival_categories.name, "
                 . "ciniki_musicfestival_categories.permalink, "
-                . "ciniki_musicfestival_categories.sequence "
+                . "ciniki_musicfestival_categories.sequence, "
+                . "ciniki_musicfestival_categories.description "
                 . "FROM ciniki_musicfestival_categories "
                 . "WHERE ciniki_musicfestival_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "AND ciniki_musicfestival_categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
@@ -183,7 +184,7 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'categories', 'fname'=>'id', 
-                    'fields'=>array('id', 'festival_id', 'section_id', 'groupname', 'name', 'permalink', 'sequence')),
+                    'fields'=>array('id', 'festival_id', 'section_id', 'groupname', 'name', 'permalink', 'sequence', 'description')),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
