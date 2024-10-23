@@ -1227,7 +1227,6 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     $nplists['registrations'] = array();
                 }
             }
-
         }
 
         //
