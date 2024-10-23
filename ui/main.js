@@ -436,7 +436,7 @@ function ciniki_musicfestivals_main() {
                 },
             'menu':{
                 'add':{
-                    'label':'Add Class',
+                    'label':'Add Category',
                     'visible':function() { return M.ciniki_musicfestivals_main.festival.section_id > 0 ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.category.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.section_id,M.ciniki_musicfestivals_main.festival.festival_id,null);',
                     },
