@@ -836,35 +836,36 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     $competitor_ids[] = $registration["competitor{$i}_id"];
                 }
             }
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
-            $strsql = "SELECT COUNT(*) AS num_registrations "
-                . "FROM ciniki_musicfestival_registrations AS registrations "
-                . "WHERE festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
-                . "AND class_id = '" . ciniki_core_dbQuote($ciniki, $selected_class['id']) . "' "
-                . "AND ("
-                    . "registrations.competitor1_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
-                    . "OR registrations.competitor2_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
-                    . "OR registrations.competitor3_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
-                    . "OR registrations.competitor4_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
-                    . "OR registrations.competitor5_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
-                    . ") "
-                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . "";
-            if( isset($registration['registration_id']) && $registration['registration_id'] > 0 ) {
-                $strsql .= "AND registrations.id <> '" . ciniki_core_dbQuote($ciniki, $registration['registration_id']) . "' ";
+            if( count($competitor_ids) > 0 ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
+                $strsql = "SELECT COUNT(*) AS num_registrations "
+                    . "FROM ciniki_musicfestival_registrations AS registrations "
+                    . "WHERE festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+                    . "AND class_id = '" . ciniki_core_dbQuote($ciniki, $selected_class['id']) . "' "
+                    . "AND ("
+                        . "registrations.competitor1_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
+                        . "OR registrations.competitor2_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
+                        . "OR registrations.competitor3_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
+                        . "OR registrations.competitor4_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
+                        . "OR registrations.competitor5_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
+                        . ") "
+                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . "";
+                if( isset($registration['registration_id']) && $registration['registration_id'] > 0 ) {
+                    $strsql .= "AND registrations.id <> '" . ciniki_core_dbQuote($ciniki, $registration['registration_id']) . "' ";
+                }
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+                $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.329', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+                }
+                $num_items = isset($rc['num']) ? $rc['num'] : '';
+                if( $num_items > 0 ) {  
+                    $errors[] = array(
+                        'msg' => 'You have already registered for this class.',
+                        );
+                } 
             }
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
-            $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
-            if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.329', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
-            }
-            $num_items = isset($rc['num']) ? $rc['num'] : '';
-            if( $num_items > 0 ) {  
-                $errors[] = array(
-                    'msg' => 'You have already registered for this class.',
-                    );
-            } 
-
         }
 
         //
