@@ -489,6 +489,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 $plus_live_column = 'no';
                 $live_label = $festival['earlybird'] == 'yes' ? 'Earlybird' : 'Fee';
                 foreach($category['classes'] as $cid => $class) {
+                    // Duplicated in apiClassSearch
                     if( ($class['feeflags']&0x03) > 0 ) {
                         $live_column = 'yes';
                     }

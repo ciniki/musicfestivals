@@ -71,6 +71,7 @@ function ciniki_musicfestivals_wng_apiClassSearch(&$ciniki, $tnid, $request) {
             . "classes.permalink, "
             . "classes.sequence, "
             . "classes.flags, "
+            . "classes.feeflags, "
             . "classes.keywords, "
             . "earlybird_fee, "
             . "fee, "
@@ -93,9 +94,9 @@ function ciniki_musicfestivals_wng_apiClassSearch(&$ciniki, $tnid, $request) {
             . "WHERE classes.festival_id = '" . ciniki_core_dbQuote($ciniki, $request['args']['festival-id']) . "' "
             . "AND classes.keywords LIKE '% " . ciniki_core_dbQuote($ciniki, $keywords) . "%' ";
         if( isset($request['args']['lv']) && $request['args']['lv'] == 'live' ) {
-            $strsql .= "AND classes.fee > 0 ";
+            $strsql .= "AND (classes.feeflags&0x03) > 0 ";
         } elseif( isset($request['args']['lv']) && $request['args']['lv'] == 'virtual' ) {
-            $strsql .= "AND classes.virtual_fee > 0 ";
+            $strsql .= "AND (classes.feeflags&0x08) = 0x08 ";
         }
         $strsql .= "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "ORDER BY sections.sequence, sections.name, categories.sequence, categories.name, classes.sequence, classes.name "
@@ -107,7 +108,7 @@ function ciniki_musicfestivals_wng_apiClassSearch(&$ciniki, $tnid, $request) {
                 'fields'=>array('id', 'section_name', 'section_permalink', 
                     'groupname', 'category_name', 'category_permalink',
                     'code', 'name', 'synopsis', 'keywords',
-                    'permalink', 'sequence', 'flags', 
+                    'permalink', 'sequence', 'flags', 'feeflags', 
                     'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
                     )),
             ));
@@ -123,6 +124,9 @@ function ciniki_musicfestivals_wng_apiClassSearch(&$ciniki, $tnid, $request) {
         //
         // Process the classes to determine which fee to show
         //
+        $live_column = 'no';
+        $virtual_column = 'no';
+        $plus_live_column = 'no';
         $live_label = $festival['earlybird'] == 'yes' ? 'Earlybird' : 'Fee';
         $count = 0;
         foreach($classes as $cid => $class) {
@@ -131,7 +135,7 @@ function ciniki_musicfestivals_wng_apiClassSearch(&$ciniki, $tnid, $request) {
                 unset($classes[$cid]);
                 continue;
             }
-            if( $festival['earlybird'] == 'yes' || $festival['live'] == 'yes' ) {
+/*            if( $festival['earlybird'] == 'yes' || $festival['live'] == 'yes' ) {
                 if( isset($festival['earlybird']) && $festival['earlybird'] == 'yes' && $class['earlybird_fee'] > 0 ) {
                     $classes[$cid]['live_fee'] = '$' . number_format($class['earlybird_fee'], 2);
                 } elseif( isset($festival['live']) && $festival['live'] == 'yes' && $class['fee'] > 0 ) {
@@ -165,6 +169,47 @@ function ciniki_musicfestivals_wng_apiClassSearch(&$ciniki, $tnid, $request) {
                 } else {
                     $classes[$cid]['plus_live_fee'] = 'closed';
                 }
+            } */
+            // Duplicated in syllabusSectionProcess
+            if( ($class['feeflags']&0x03) > 0 ) {
+                $live_column = 'yes';
+            }
+            if( ($class['feeflags']&0x08) == 0x08 ) {
+                $virtual_column = 'yes';
+            }
+            if( ($class['feeflags']&0x30) > 0 ) {
+                $plus_live_column = 'yes';
+            }
+            if( ($class['feeflags']&0x02) == 0x02 ) {
+                if( isset($festival['earlybird']) && $festival['earlybird'] == 'yes' && ($class['feeflags']&0x01) == 0x01 ) {
+                    $classes[$cid]['live_fee'] = '$' . number_format($class['earlybird_fee'], 2);
+                } else {
+                    $classes[$cid]['live_fee'] = '$' . number_format($class['fee'], 2);
+                }
+            } else {
+                $classes[$cid]['live_fee'] = 'n/a';
+            }
+            if( ($festival['flags']&0x04) == 0x04 ) {
+                $live_label = $festival['earlybird'] == 'yes' ? 'Earlybird Live' : 'Live';
+                if( ($class['feeflags']&0x08) == 0x08 ) {
+                    $classes[$cid]['virtual_fee'] = '$' . number_format($class['virtual_fee'], 2);
+                } else {
+                    $classes[$cid]['virtual_fee'] = 'n/a';
+                }
+            }
+            if( ($festival['flags']&0x10) == 0x10 && isset($festival['plus_live']) ) {
+                $live_label = 'Regular Fee';
+                if( ($class['feeflags']&0x20) == 0x20 ) {
+                    if( isset($festival['earlybird']) && $festival['earlybird'] == 'yes' 
+                        && ($class['feeflags']&0x10) == 0x10 
+                        ) {
+                        $classes[$cid]['plus_live_fee'] = '$' . number_format($class['earlybird_plus_fee'], 2);
+                    } else {
+                        $classes[$cid]['plus_live_fee'] = '$' . number_format($class['plus_fee'], 2);
+                    }
+                } else {
+                    $classes[$cid]['plus_live_fee'] = 'n/a';
+                }
             }
             if( ($festival['flags']&0x0100) == 0x0100 ) {
                 $classes[$cid]['fullname'] = $class['code'] . ' - ' . $class['section_name'] . ' - ' . $class['category_name'] . ' - ' . $class['name'];
@@ -188,7 +233,44 @@ function ciniki_musicfestivals_wng_apiClassSearch(&$ciniki, $tnid, $request) {
         //
         // Check if online registrations enabled, and online registrations enabled for this class
         //
-        if( ($festival['flags']&0x06) == 0x06 ) {   // Virtual option & Virtual Pricing
+        $block = array(
+            'type' => 'table', 
+            'section' => 'classes', 
+            'title' => 'Search Results',
+            'headers' => 'yes',
+            'class' => 'fold-at-40 musicfestival-classes musicfestival-syllabus-section',
+            'columns' => array(
+                array('label'=>'Class', 'fold-label'=>'Class:', 'field'=>'fullname', 'info-field'=>'synopsis', 'class'=>''),
+                ),
+            'rows' => $classes,
+            );
+        if( $live_column == 'yes' ) {
+            $block['columns'][] = array(
+                'label' => $live_label, 
+                'fold-label' => $live_label . ':', 
+                'field' => 'live_fee', 
+                'class' => 'aligncenter fold-alignleft fee live-fee',
+                );
+        }
+        if( $virtual_column == 'yes' ) {
+            $block['headers'] = 'yes';
+            $block['columns'][] = array(
+                'label' => 'Virtual',
+                'fold-label' => 'Virtual:', 
+                'field' => 'virtual_fee', 
+                'class' => 'aligncenter fold-alignleft fee virtual-fee',
+                );
+        }
+        if( isset($festival['plus_live']) && $plus_live_column == 'yes' ) {
+            $block['headers'] = 'yes';
+            $block['columns'][] = array('label'=>'Adjudication Plus Fee', 'fold-label'=>'Adjudication Plus Fee:', 'field'=>'plus_live_fee', 'class'=>'aligncenter fold-alignleft fee plus-fee');
+            
+        }
+        if( isset($section['tableheader']) && $section['tableheader'] == 'multiprices' && count($block['columns']) < 3 ) {
+            $block['headers'] = 'no';
+        }
+        $block['columns'][] = array('label'=>'', 'field'=>'link', 'class'=>'alignright buttons'); 
+/*        if( ($festival['flags']&0x06) == 0x06 ) {   // Virtual option & Virtual Pricing
             $block = array(
                 'type' => 'table', 
                 'section' => 'classes', 
@@ -223,7 +305,8 @@ function ciniki_musicfestivals_wng_apiClassSearch(&$ciniki, $tnid, $request) {
             $block['columns'][] = array('label'=>'Adjudication Plus Fee', 'fold-label'=>'Adjudication Plus Fee:', 'field'=>'plus_live_fee', 'class'=>'aligncenter fold-alignleft');
             
         }
-        $block['columns'][] = array('label'=>'', 'field'=>'link', 'class'=>'alignright buttons');
+        $block['columns'][] = array('label'=>'', 'field'=>'link', 'class'=>'alignright buttons'); 
+        */
         $blocks[] = $block;
         if( $count > $limit ) {
             $blocks[] = [
