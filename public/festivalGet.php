@@ -3253,6 +3253,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "FROM ciniki_musicfestivals_members AS members "
                 . "LEFT JOIN ciniki_musicfestival_recommendations AS recommendations ON ("
                     . "members.id = recommendations.member_id "
+                    . "AND recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                     . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "LEFT JOIN ciniki_musicfestival_recommendation_entries AS entries ON ("
