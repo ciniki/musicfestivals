@@ -1725,7 +1725,7 @@ function ciniki_musicfestivals_main() {
     this.festival.cellValue = function(s, i, j, d) {
         if( s == 'sections' ) {
             switch(j) {
-                case 0: return d.name;
+                case 0: return d.name + ((d.flags&0x01) == 0x01 ? ' <span class="subdue">(hidden)</span>' : '');
                 case 1: return (d.num_registrations!=0 ? d.num_registrations : '');
             }
         }
@@ -3139,7 +3139,6 @@ function ciniki_musicfestivals_main() {
             }
             var p = M.ciniki_musicfestivals_main.festival;
             p.data = rsp.festival;
-            console.log(rsp.festival);
             p.title = rsp.festival.name;
             p.sections.syllabus_sections.fields.section_id.options = [];
             for(var i in rsp.festival.sections) {

@@ -381,11 +381,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 if( isset($args['syllabus']) ) {
                     $strsql .= "AND sections.syllabus = '" . ciniki_core_dbQuote($ciniki, $args['syllabus']) . "' ";
                 }
-                $strsql .= "ORDER BY sections.sequence, sections.name "
+                $strsql .= "ORDER BY (sections.flags&0x01), sections.sequence, sections.name "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-                    array('container'=>'sections', 'fname'=>'id', 'fields'=>array('id', 'festival_id', 'syllabus', 'name', 'permalink', 'sequence')),
+                    array('container'=>'sections', 'fname'=>'id', 
+                        'fields'=>array('id', 'festival_id', 'syllabus', 'name', 'permalink', 'sequence', 'flags')),
                     ));
             }
             if( $rc['stat'] != 'ok' ) {
