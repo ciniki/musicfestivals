@@ -85,6 +85,7 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
             . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE registrations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member']['id']) . "' "
+        . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival']['id']) . "' "
         . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY classes.name, registrations.display_name "
         . "";
@@ -127,18 +128,24 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
         }
     }
 
+    $blocks[] = array(
+        'type' => 'title',
+        'level' => 2,
+        'title' => $args['member']['name'] . ' - ' . $args['festival']['name'] . ' - Registrations',
+        );
+
     if( count($registrations) > 0 ) {
         $blocks[] = array(
             'type' => 'buttons',
             'class' => 'aligncenter',
             'items' => array(   
-                array('text' => 'Download Excel', 'target' => '_blank', 'url' => $base_url . '/' . $request['uri_split'][2] . '/registrations/registrations.xls'),
-                array('text' => 'Download PDF', 'target' => '_blank', 'url' => $base_url . '/' . $request['uri_split'][2] . '/registrations/registrations.pdf'),
+                array('text' => 'Download Excel', 'target' => '_blank', 'url' => "{$base_url}/registrations/{$request['uri_split'][3]}/{$request['uri_split'][4]}/registrations.xls"),
+                array('text' => 'Download PDF', 'target' => '_blank', 'url' => "{$base_url}/registrations/{$request['uri_split'][3]}/{$request['uri_split'][4]}/registrations.pdf"),
                 ),
             );
     }
 
-    if( isset($request['uri_split'][4]) && $request['uri_split'][4] == 'registrations.xls' ) {
+    if( isset($request['uri_split'][5]) && $request['uri_split'][5] == 'registrations.xls' ) {
         //
         // Generate XLS of registrations
         //
@@ -160,7 +167,7 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
         //
         // Output the excel file
         //
-        $filename = $args['member']['name'] . ' - Registrations';
+        $filename = "{$args['member']['name']} - {$args['festival']['name']} - Registrations";
         header('Content-Type: application/vnd.ms-excel');
         header('Content-Disposition: attachment;filename="' . $filename . '.xls"');
         header('Cache-Control: max-age=0');
@@ -170,7 +177,7 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
 
         return array('stat'=>'exit');
     }
-    elseif( isset($request['uri_split'][4]) && $request['uri_split'][4] == 'registrations.pdf' ) {
+    elseif( isset($request['uri_split'][5]) && $request['uri_split'][5] == 'registrations.pdf' ) {
         //
         // Generate PDF of registrations
         //
@@ -178,7 +185,7 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
         $rc = ciniki_musicfestivals_templates_memberRegistrationsPDF($ciniki, $tnid, [
             'festival_id' => $args['festival']['id'],
             'title' => $args['member']['name'],
-            'subtitle' => 'Registrations',
+            'subtitle' => $args['festival']['name'] . ' - Registrations',
             'registrations' => $registrations,
             ]);
         if( $rc['stat'] != 'ok' ) {
@@ -194,7 +201,7 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
         //
         // Output the excel file
         //
-        $filename = $args['member']['name'] . ' - Registrations';
+        $filename = "{$args['member']['name']} - {$args['festival']['name']} - Registrations";
         header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
         header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
         header('Cache-Control: no-cache, must-revalidate');

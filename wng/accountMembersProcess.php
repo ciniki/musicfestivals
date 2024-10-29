@@ -28,26 +28,22 @@ function ciniki_musicfestivals_wng_accountMembersProcess(&$ciniki, $tnid, &$requ
     }
 
     //
-    // Load current festival
-    //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
-    $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid);
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.798', 'msg'=>'', 'err'=>$rc['err']));
-    }
-    $festival = $rc['festival'];
-
-    //
-    // Load the member festivals
+    // Get the list of members and the provincial festivals they are attached to
     //
     $strsql = "SELECT members.id, "
         . "members.permalink, "
-        . "members.name "
+        . "members.name, "
+        . "festivals.id AS festival_id, "
+        . "festivals.name AS festival_name, "
+        . "festivals.permalink AS festival_permalink "
         . "FROM ciniki_musicfestival_member_customers AS mc "
         . "INNER JOIN ciniki_musicfestival_members AS fm ON ("
             . "mc.member_id = fm.member_id "
-            . "AND fm.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
             . "AND fm.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestivals AS festivals ON ("
+            . "fm.festival_id = festivals.id "
+            . "AND festivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "INNER JOIN ciniki_musicfestivals_members AS members ON ("
             . "mc.member_id = members.id "
@@ -55,19 +51,30 @@ function ciniki_musicfestivals_wng_accountMembersProcess(&$ciniki, $tnid, &$requ
             . ") "
         . "WHERE mc.customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
         . "AND mc.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "ORDER BY members.name, festivals.start_date DESC "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'members', 'fname'=>'id', 'fields'=>array('id', 'permalink', 'name')),
+        array('container'=>'members', 'fname'=>'id', 
+            'fields'=>array('id', 'permalink', 'name'),
+            ),
+        array('container'=>'festivals', 'fname'=>'festival_id', 
+            'fields'=>array('id'=>'festival_id', 'permalink'=>'festival_permalink', 'name'=>'festival_name'),
+            ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.750', 'msg'=>'Unable to load members', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.136', 'msg'=>'Unable to load festivals', 'err'=>$rc['err']));
     }
     $members = isset($rc['members']) ? $rc['members'] : array();
 
     //
-    // Check if no members for this festival
+    // Build member_ids
     //
+    $member_ids = [];
+    foreach($members as $member) {
+        $member_ids[] = $member['id'];
+    }
+
     if( count($members) == 0 ) {
         return array('stat'=>'ok', 'blocks'=>array(
             array(
@@ -77,86 +84,108 @@ function ciniki_musicfestivals_wng_accountMembersProcess(&$ciniki, $tnid, &$requ
                 ),
             ));
     }
-    $member_ids = array_keys($members);
-
-    if( isset($request['uri_split'][3]) ) {
-        foreach($members as $member) {
-            if( $member['permalink'] == $request['uri_split'][2] ) {
-                $args['member'] = $member;
-                $args['festival'] = $festival;
-                if( $request['uri_split'][3] == 'recommendations' ) {
-                    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountMemberRecommendationsProcess');
-                    return ciniki_musicfestivals_wng_accountMemberRecommendationsProcess($ciniki, $tnid, $request, $args);
-                } elseif( $request['uri_split'][3] == 'registrations' ) {
-                    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountMemberRegistrationsProcess');
-                    return ciniki_musicfestivals_wng_accountMemberRegistrationsProcess($ciniki, $tnid, $request, $args);
-                }
-            }
-        }
-        $blocks[] = array(
-            'type' => 'msg',
-            'level' => 'error',
-            'content' => 'No local festival found',
-            );
-    }
 
     //
     // Get the number of recommendations
     //
-    $strsql = "SELECT recommendations.member_id, COUNT(entries.id) "
+    $strsql = "SELECT recommendations.member_id, recommendations.festival_id, COUNT(entries.id) AS num_items "
         . "FROM ciniki_musicfestival_recommendations AS recommendations "
         . "INNER JOIN ciniki_musicfestival_recommendation_entries AS entries ON ("
             . "recommendations.id = entries.recommendation_id "
             . "AND entries.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE recommendations.member_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $member_ids) . ") "
-        . "AND recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
         . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "GROUP BY recommendations.member_id "
+        . "GROUP BY recommendations.member_id, recommendations.festival_id "
+        . "ORDER BY recommendations.member_id, recommendations.festival_id "
         . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
-    $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.musicfestivals', 'recommendations');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'members', 'fname'=>'member_id', 'fields'=>array()),
+        array('container'=>'recommendations', 'fname'=>'festival_id', 
+            'fields'=>array('num_items'),
+            ),
+        ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.751', 'msg'=>'Unable to load get the number of recommendations', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.396', 'msg'=>'Unable to load recommendations', 'err'=>$rc['err']));
     }
-    $recommendations = isset($rc['recommendations']) ? $rc['recommendations'] : array();
+    $recommendations = isset($rc['members']) ? $rc['members'] : array();
 
     //
     // Get the number of registrations
     //
-    $strsql = "SELECT member_id, COUNT(member_id) "
-        . "FROM ciniki_musicfestival_registrations "
-        . "WHERE member_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $member_ids) . ") "
-        . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
-        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "GROUP BY member_id "
+    $strsql = "SELECT registrations.member_id, registrations.festival_id, COUNT(registrations.member_id) AS num_items "
+        . "FROM ciniki_musicfestival_registrations AS registrations "
+        . "WHERE registrations.member_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $member_ids) . ") "
+        . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "GROUP BY registrations.member_id, registrations.festival_id "
+        . "ORDER BY registrations.member_id, registrations.festival_id "
         . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
-    $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.musicfestivals', 'registrations');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'members', 'fname'=>'member_id', 'fields'=>array()),
+        array('container'=>'registrations', 'fname'=>'festival_id', 
+            'fields'=>array('num_items'),
+            ),
+        ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.752', 'msg'=>'Unable to load get the number of registrations', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.422', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
     }
-    $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
+    $registrations = isset($rc['members']) ? $rc['members'] : array();
 
     //
-    // Setup the buttons for each festival
+    // Add recommendations and registrations to festivals array
     //
     foreach($members as $mid => $member) {
-        $blocks[] = array(
-            'type' => 'buttons',
+
+        foreach($member['festivals'] as $fid => $festival) {
+       
+            $members[$mid]['festivals'][$fid]['links'] = '';
+            $members[$mid]['festivals'][$fid]['num_recommendations'] = '';
+            if( isset($recommendations[$mid]['recommendations'][$fid]['num_items']) ) {
+                $members[$mid]['festivals'][$fid]['num_recommendations'] = $recommendations[$mid]['recommendations'][$fid]['num_items'];
+                $members[$mid]['festivals'][$fid]['links'] .= "<a class='button' href='{$base_url}/recommendations/{$member['permalink']}/{$festival['permalink']}'>Recommendations</a>";
+                if( isset($request['uri_split'][4]) 
+                    && $request['uri_split'][2] == 'recommendations'
+                    && $request['uri_split'][3] == $member['permalink']
+                    && $request['uri_split'][4] == $festival['permalink']
+                    ) {
+                    $args['member'] = $member;
+                    $args['festival'] = $festival;
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountMemberRecommendationsProcess');
+                    return ciniki_musicfestivals_wng_accountMemberRecommendationsProcess($ciniki, $tnid, $request, $args);
+                }
+            }
+            $members[$mid]['festivals'][$fid]['num_registrations'] = '';
+            if( isset($registrations[$mid]['registrations'][$fid]['num_items']) ) {
+                $members[$mid]['festivals'][$fid]['num_registrations'] = $registrations[$mid]['registrations'][$fid]['num_items'];
+                $members[$mid]['festivals'][$fid]['links'] .= "<a class='button' href='{$base_url}/registrations/{$member['permalink']}/{$festival['permalink']}'>Registrations</a>";
+                if( isset($request['uri_split'][4]) 
+                    && $request['uri_split'][2] == 'registrations'
+                    && $request['uri_split'][3] == $member['permalink']
+                    && $request['uri_split'][4] == $festival['permalink']
+                    ) {
+                    $args['member'] = $member;
+                    $args['festival'] = $festival;
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountMemberRegistrationsProcess');
+                    return ciniki_musicfestivals_wng_accountMemberRegistrationsProcess($ciniki, $tnid, $request, $args);
+                }
+            }
+
+        }
+
+        $blocks[] = [
+            'type' => 'table', 
             'title' => $member['name'],
-            'level' => 2,
-            'class' => 'aligncenter',
-            'items' => array(
-//                array(
-//                    'text' => (isset($recommendations[$mid]) ? $recommendations[$mid] : '0') . ' Recommendations',
-//                    'url' => $base_url . '/' . $member['permalink'] . '/recommendations',
-//                ),
-                array(
-                    'text' => 'View Your ' . (isset($registrations[$mid]) ? $registrations[$mid] : '0') . ' Registrations',
-                    'url' => $base_url . '/' . $member['permalink'] . '/registrations',
-                ),
-            ));
+            'headers' => 'yes',
+            'columns' => [
+                ['label' => 'Provincials', 'field' => 'name'],
+                ['label' => 'Recommendations', 'field' => 'num_recommendations', 'class' => 'aligncenter' ],
+                ['label' => 'Registrations', 'field' => 'num_registrations', 'class' => 'aligncenter' ],
+                ['label' => '', 'field' => 'links', 'class' => 'alignright buttons' ],
+                ],
+            'rows' => $members[$mid]['festivals'],
+            ];
     }
 
     return array('stat'=>'ok', 'blocks'=>$blocks);

@@ -63,6 +63,7 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE recommendations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member']['id']) . "' "
+        . "AND recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival']['id']) . "' "
         . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY classes.name, entries.position, entries.name "
         . "";
@@ -77,6 +78,12 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.755', 'msg'=>'Unable to load recommendations', 'err'=>$rc['err']));
     }
     $recommendations = isset($rc['recommendations']) ? $rc['recommendations'] : array();
+
+    $blocks[] = array(
+        'type' => 'title',
+        'level' => 2,
+        'title' => $args['member']['name'] . ' - ' . $args['festival']['name'] . ' - Recommendations',
+        );
 
     $blocks[] = array(
         'type' => 'table',
