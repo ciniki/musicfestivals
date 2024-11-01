@@ -5181,9 +5181,14 @@ function ciniki_musicfestivals_main() {
             },
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.class.save();'},
+            'duplicate':{'label':'Duplicate', 
+                'visible':function() {return M.ciniki_musicfestivals_main.class.class_id > 0 ? 'yes' : 'no'; },
+                'fn':'M.ciniki_musicfestivals_main.class.save("M.ciniki_musicfestivals_main.class.duplicate();");',
+                },
             'delete':{'label':'Delete', 
                 'visible':function() {return M.ciniki_musicfestivals_main.class.class_id > 0 ? 'yes' : 'no'; },
-                'fn':'M.ciniki_musicfestivals_main.class.remove();'},
+                'fn':'M.ciniki_musicfestivals_main.class.remove();',
+                },
             }},
         };
     this.class.fieldValue = function(s, i, d) { return this.data[i]; }
@@ -5409,6 +5414,13 @@ function ciniki_musicfestivals_main() {
                 eval(cb);
             });
         }
+    }
+    this.class.duplicate = function() {
+        this.class_id = 0;
+        this.data.code += ' copy';
+        this.data.name += ' copy';
+        this.refreshFormField('general', 'code');
+        this.refreshFormField('general', 'name');
     }
     this.class.remove = function() {
         M.confirm('Are you sure you want to remove class?',null,function() {
