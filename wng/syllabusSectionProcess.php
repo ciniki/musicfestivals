@@ -284,14 +284,14 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         if( isset($s['title']) && $s['title'] != '' && isset($s['content']) && $s['content'] != '' ) {
             $blocks[] = array(
                 'type' => 'text',
-                'level' => $section['sequence'] == 1 ? 1 : 2,
+                'title_sequence' => $section['sequence'] == 1 ? 1 : 2,
                 'title' => $s['title'],
                 'content' => $s['content'],
                 );
         } elseif( isset($s['title']) && $s['title'] != '' ) {
             $blocks[] = array(
                 'type' => 'title',
-                'level' => $section['sequence'] == 1 ? 1 : 2,
+                'title_sequence' => $section['sequence'] == 1 ? 1 : 2,
                 'title' => $s['title'],
                 );
         }
@@ -299,7 +299,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         if( isset($syllabus_section['description']) && $syllabus_section['description'] != '' ) {
             $blocks[] = array(
                 'type' => 'text',
-                'level' => 1,
+                'title_sequence' => 1,
                 'class' => 'musicfestival-syllabus-section',
                 'title' => (isset($s['title']) ? $s['title'] . ($s['title'] != '' ? ' - ' : '') : 'Syllabus - ') . $syllabus_section['name'],
 //                        . (isset($groupname) && $groupname != '' ? ' - ' . $groupname : ''),
@@ -308,7 +308,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         } else {
             $blocks[] = array(
                 'type' => 'title', 
-                'level' => 1,
+                'title_sequence' => 1,
                 'class' => 'musicfestival-syllabus-section',
                 'title' => (isset($s['title']) ? $s['title'] . ($s['title'] != '' ? ' - ' : ''): 'Syllabus - ') . $syllabus_section['name'],
 //                        . (isset($groupname) && $groupname != '' ? ' - ' . $groupname : ''),

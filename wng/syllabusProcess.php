@@ -214,14 +214,14 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     if( isset($s['content']) && $s['content'] != '' ) {
         $blocks[] = array(
             'type' => 'text', 
-            'level' => (isset($section['title_sequence']) && $section['title_sequence'] == 1 ? 1 : 2),
+            'title_sequence' => (isset($section['title_sequence']) && $section['title_sequence'] == 1 ? 1 : 2),
             'title' => isset($s['title']) ? $s['title'] : 'Syllabus',
             'content' => $s['content'],
             );
     } else {
         $blocks[] = array(
             'type' => 'title', 
-            'level' => (isset($section['title_sequence']) && $section['title_sequence'] == 1 ? 1 : 2),
+            'title_sequence' => (isset($section['title_sequence']) && $section['title_sequence'] == 1 ? 1 : 2),
             'title' => isset($s['title']) ? $s['title'] : 'Syllabus',
             );
     }
