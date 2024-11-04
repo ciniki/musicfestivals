@@ -774,7 +774,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         //
         // Check if selected class should hide participation
         //
-        if( isset($selected_class['feeflags']) && ($selected_class['feeflags']&0x0a) != 0x0a ) {
+        if( isset($selected_class['feeflags']) && ($selected_class['feeflags']&0x0a) == 0 ) {
             $fields['line-participation']['class'] = 'hidden';
             $fields['participation']['class'] = 'hidden';
         }
