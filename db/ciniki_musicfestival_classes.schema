@@ -52,7 +52,7 @@
 #                           0x80000000 - 
 #
 # feeflags:             The options for the fees
-
+#
 #                           0x01 - Earlybird Live Fee
 #                           0x02 - Live Fee
 #                           0x04 - Earlybird Virtual Fee **future**

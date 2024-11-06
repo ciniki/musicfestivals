@@ -618,11 +618,18 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     'msg' => 'You must specify the competitor ' . $field['label'] . '.',
                     );
             }
-            elseif( isset($field['id']) && $field['id'] == 'email' 
+            elseif( isset($field['id']) && $field['id'] == 'email'
                 && !preg_match("/^[^@ ]+@[A-Za-z0-9\.\-]+\.[a-zA-Z]+$/", $field['value']) 
                 ) {
                 $errors[] = array(
                     'msg' => 'Invalid email address format.',
+                    );
+            }
+            elseif( isset($field['id']) && $field['id'] == 'etransfer_email'
+                && !preg_match("/^[^@ ]+@[A-Za-z0-9\.\-]+\.[a-zA-Z]+$/", $field['value']) 
+                ) {
+                $errors[] = array(
+                    'msg' => 'Invalid etransfer email address format.',
                     );
             }
         }
@@ -711,6 +718,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     'age' => isset($fields['age']['value']) ? $fields['age']['value'] : '',
                     'study_level' => isset($fields['study_level']['value']) ? $fields['study_level']['value'] : '',
                     'instrument' => isset($fields['instrument']['value']) ? $fields['instrument']['value'] : '',
+                    'etransfer_email' => isset($fields['etransfer_email']['value']) ? $fields['etransfer_email']['value'] : '',
                     'notes' => $fields['comp_notes']['value'],
                     );
                 if( isset($fields['terms']['value']) && $fields['terms']['value'] == 'on' ) {
