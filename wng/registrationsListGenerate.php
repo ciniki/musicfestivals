@@ -301,7 +301,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
         $blocks[] = array(
             'type' => 'msg',
             'level' => 'error',
-            'content' => $form_errors,
+            'content' => $args['form_errors'],
             );
     }
     if( ($festival['flags']&0x01) == 0x01 && ($festival['live'] != 'no' || $festival['virtual'] != 'no') ) {
