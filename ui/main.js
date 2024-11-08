@@ -6018,7 +6018,7 @@ function ciniki_musicfestivals_main() {
         return this.selected_class != null && (this.selected_class.flags&0x04) == 0x04 ? 'yes' : 'no';
     }
     this.registration.titleVisible = function(i) {
-        return this.sections._tabs.selected == 'titles' && this.selected_class != null && this.selected_class.max_titles >= i ? 'yes' : 'hidden';
+        return this.sections._tabs.selected == 'titles' && this.selected_class != null && (this.selected_class.max_titles >= i || this.data['title'+i] != '') ? 'yes' : 'hidden';
     }
     this.registration.movementsVisible = function(i) {
         return (this.selected_class != null && this.selected_class.flags&0x0C000000) > 0 ? 'yes' : 'no';
