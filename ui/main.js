@@ -792,14 +792,14 @@ function ciniki_musicfestivals_main() {
             'visible':function() {return M.ciniki_musicfestivals_main.festival.menutabs.selected=='registrations'?'yes':'no';},
             'hint':'Search',
             'noData':'No registrations found',
-            'headerValues':['Class', 'Registrant', 'Teacher', 'Fee', 'Status', 'Virtual'],
+            'headerValues':['Class', 'Registrant', 'Teacher', 'Invoice', 'Status', 'Virtual'],
             'cellClasses':['', 'multiline', '', 'multiline', '', 'alignright'],
             },
         'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'registrations' && M.ciniki_musicfestivals_main.festival.section_id > -1 ? 'yes' : 'no'; },
-            'headerValues':['Class', 'Registrant', 'Teacher', 'Fee', 'Status', 'Virtual'],
+            'headerValues':['Class', 'Registrant', 'Teacher', 'Invoice', 'Status', 'Virtual'],
             'sortable':'yes',
-            'sortTypes':['text', 'text', 'text', 'altnumber', 'altnumber', 'text'],
+            'sortTypes':['text', 'text', 'text', 'text', 'altnumber', 'text'],
             'cellClasses':['', 'multiline', '', 'multiline', 'multiline', 'alignright'],
             },
         'registrations_emailbutton':{'label':'', 
@@ -1786,7 +1786,7 @@ function ciniki_musicfestivals_main() {
             if( j == 5 && (this.data.flags&0x10) == 0x10 ) {
                 return (d.participation == 2 ? 'Plus' : '');
             } else if( j == 5 && (this.data.flags&0x02) == 0x02 ) {
-                return (d.participation == 1 ? 'Virtual' : 'In Person');
+                return (d.participation == 1 ? 'Virtual' : 'Live');
             }
         }
         if( s == 'registration_sections' || s == 'emails_sections' ) {
@@ -3183,17 +3183,17 @@ function ciniki_musicfestivals_main() {
             // Registration lists
             p.sections.registration_search.livesearchcols = 5;
             p.sections.registrations.num_cols = 5;
-            p.sections.registration_search.headerValues = ['Class', 'Registrant', 'Teacher', 'Fee', 'Status'];
+            p.sections.registration_search.headerValues = ['Class', 'Registrant', 'Teacher', 'Invoice', 'Status'];
             if( (rsp.festival.flags&0x10) == 0x10 ) {
                 p.sections.registration_search.livesearchcols = 6;
                 p.sections.registrations.num_cols = 6;
-                p.sections.registration_search.headerValues = ['Class', 'Registrant', 'Teacher', 'Fee', 'Status', 'Plus'];
-                p.sections.registrations.headerValues = ['Class', 'Registrant', 'Teacher', 'Fee', 'Status', 'Plus'];
+                p.sections.registration_search.headerValues = ['Class', 'Registrant', 'Teacher', 'Invoice', 'Status', 'Plus'];
+                p.sections.registrations.headerValues = ['Class', 'Registrant', 'Teacher', 'Invoice', 'Status', 'Plus'];
             } else if( (rsp.festival.flags&0x02) == 0x02 ) {
                 p.sections.registration_search.livesearchcols = 6;
                 p.sections.registrations.num_cols = 6;
-                p.sections.registration_search.headerValues = ['Class', 'Registrant', 'Teacher', 'Fee', 'Status', 'Virtual'];
-                p.sections.registrations.headerValues = ['Class', 'Registrant', 'Teacher', 'Fee', 'Status', 'Virtual'];
+                p.sections.registration_search.headerValues = ['Class', 'Registrant', 'Teacher', 'Invoice', 'Status', 'Virtual'];
+                p.sections.registrations.headerValues = ['Class', 'Registrant', 'Teacher', 'Invoice', 'Status', 'Virtual'];
             }
             p.sections.schedule_results.num_cols = 4;
             p.sections.schedule_provincials.num_cols = 4;
@@ -8665,7 +8665,7 @@ function ciniki_musicfestivals_main() {
                 case 1: return d.display_name;
                 case 2: return d.title1;
                 case 3: return d.perf_time1;
-                case 4: return (d.participation == 1 ? 'Virtual' : 'In Person');
+                case 4: return (d.participation == 1 ? 'Virtual' : 'Live');
             }
         }
     }
