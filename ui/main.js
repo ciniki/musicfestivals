@@ -800,7 +800,7 @@ function ciniki_musicfestivals_main() {
             'headerValues':['Class', 'Registrant', 'Teacher', 'Fee', 'Status', 'Virtual'],
             'sortable':'yes',
             'sortTypes':['text', 'text', 'text', 'altnumber', 'altnumber', 'text'],
-            'cellClasses':['', 'multiline', '', '', 'multiline', 'alignright'],
+            'cellClasses':['', 'multiline', '', 'multiline', 'multiline', 'alignright'],
             },
         'registrations_emailbutton':{'label':'', 
             'visible':function() {return M.ciniki_musicfestivals_main.festival.menutabs.selected=='registrations' && M.ciniki_musicfestivals_main.festival.teacher_customer_id > 0 ?'yes':'no';},
@@ -1780,7 +1780,7 @@ function ciniki_musicfestivals_main() {
                 case 0: return d.class_code;
                 case 1: return '<span class="maintext">' + d.display_name + '</span><span class="subtext">' + d.titles + '</span>';
                 case 2: return d.teacher_name;
-                case 3: return '$' + d.fee;
+                case 3: return M.multiline(d.invoice_status_text, '$' + d.fee);
                 case 4: return M.multiline(d.status_text, d.invoice_date);
             }
             if( j == 5 && (this.data.flags&0x10) == 0x10 ) {

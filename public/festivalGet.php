@@ -722,6 +722,16 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         //
         if( isset($args['registrations']) && $args['registrations'] == 'yes' ) {
             //
+            // Load maps
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'private', 'maps');
+            $rc = ciniki_sapos_maps($ciniki);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $sapos_maps = $rc['maps'];
+
+            //
             // Get the list of classes and how many registrations in each
             //
             if( isset($args['registrations_list']) && $args['registrations_list'] == 'classes' ) {
@@ -1094,7 +1104,11 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "registrations.music_orgfilename8, "
                     . "FORMAT(registrations.fee, 2) AS fee, "
                     . "registrations.participation, "
+                    . "invoices.invoice_type, "
+                    . "invoices.status AS invoice_status, "
+                    . "invoices.payment_status AS payment_status_text, "
                     . "DATE_FORMAT(invoices.invoice_date, '%b %e') AS invoice_date "
+
                     . "FROM ciniki_musicfestival_registrations AS registrations USE INDEX(festival_id_2) ";
                 if( isset($args['registration_tag']) && $args['registration_tag'] != '' ) {
                     $strsql .= "INNER JOIN ciniki_musicfestival_registration_tags AS tags ON ("
@@ -1171,7 +1185,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'registrations', 'fname'=>'id', 
                         'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 
-                            'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 'invoice_date', 
+                            'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
+                            'invoice_type', 'invoice_status', 'payment_status_text', 'invoice_date', 
                             'class_id', 'class_code', 'class_name', 'class_flags', 'min_titles', 'max_titles',
                             'fee', 'participation', 'flags',
                             'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
@@ -1186,6 +1201,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         'maps'=>array(
                             'rtype_text'=>$maps['registration']['rtype'],
                             'status_text'=>$maps['registration']['status'],
+                            'payment_status_text'=>$sapos_maps['invoice']['payment_status'],
                             ),
                         ),
                     ));
@@ -1220,6 +1236,15 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                                 unset($festival['registrations'][$rid]["video_url{$i}"]);
                             }
                         } 
+
+                        //
+                        // Setup invoice status
+                        //
+                        if( $registration['invoice_type'] == 20 ) {
+                            $festival['registrations'][$rid]['invoice_status_text'] = 'Unpaid Cart';
+                        } else {
+                            $festival['registrations'][$rid]['invoice_status_text'] = $registration['payment_status_text'];
+                        }
     //                    $festival['registrations_copy'] .= '<tr><td>' . $registration['class_code'] . '</td><td>' . $registration['title1'] . '</td><td>' . $registration['perf_time1'] . "</td></tr>\n";
                     }
     //                $festival['registrations_copy'] .= "</table>";
