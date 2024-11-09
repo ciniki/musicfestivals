@@ -51,6 +51,16 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
     $maps = $rc['maps'];
 
     //
+    // Load maps
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'private', 'maps');
+    $rc = ciniki_sapos_maps($ciniki);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $sapos_maps = $rc['maps'];
+
+    //
     // Search for registrations
     //
     $strsql = "SELECT registrations.id, "
@@ -109,7 +119,10 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         . "registrations.music_orgfilename5, "
         . "registrations.music_orgfilename6, "
         . "registrations.music_orgfilename7, "
-        . "registrations.music_orgfilename8 "
+        . "registrations.music_orgfilename8, "
+        . "invoices.invoice_type, "
+        . "invoices.status AS invoice_status, "
+        . "invoices.payment_status AS payment_status_text "
         . "FROM ciniki_musicfestival_competitors AS competitors "
         . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "(competitors.id = registrations.competitor1_id "
@@ -120,6 +133,10 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
             . ") "
             . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
+            . "registrations.invoice_id = invoices.id "
+            . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_customers AS teachers ON ("
             . "registrations.teacher_customer_id = teachers.id "
@@ -172,10 +189,12 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
                 'title6', 'composer6', 'movements6', 'video_url6', 'music_orgfilename6',
                 'title7', 'composer7', 'movements7', 'video_url7', 'music_orgfilename7',
                 'title8', 'composer8', 'movements8', 'video_url8', 'music_orgfilename8',
+                'invoice_type', 'invoice_status', 'payment_status_text',
                 ),
             'maps'=>array(
                 'rtype_text'=>$maps['registration']['rtype'],
                 'status_text'=>$maps['registration']['status'],
+                'payment_status_text'=>$sapos_maps['invoice']['payment_status'],
                 ),
             ),
         ));
@@ -198,7 +217,14 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
                     }
                 }
             }
-
+            //
+            // Setup invoice status
+            //
+            if( $registration['invoice_type'] == 20 ) {
+                $registrations[$rid]['invoice_status_text'] = 'Unpaid Cart';
+            } else {
+                $registrations[$rid]['invoice_status_text'] = $registration['payment_status_text'];
+            }
         }
     } else {
         $registrations = array();
