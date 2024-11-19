@@ -33,8 +33,8 @@
 # flags:                The options for the competitor.
 #
 #                           0x01 - Waiver signed
-#                           0x02 - Name waiver signed
-#                           0x04 - Photo waiver signed
+#                           0x02 - Photo waiver signed
+#                           0x04 - Name waiver signed
 #                           0x08 - 
 #
 # conductor:            The conductor for a group or ensemble, not used for individual.

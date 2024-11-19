@@ -146,6 +146,17 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.77', 'msg'=>'Unable to find Competitor'));
         }
         $competitor = $rc['competitors'][0];
+
+        //
+        // Load the festival
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+        $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $competitor['festival_id']);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $festival = $rc['festival'];
+
         $competitor['age'] = $competitor['_age'];
         if( $competitor['public_name'] == '' ) {
             $competitor['public_name'] = preg_replace("/^(.).*\s([^\s]+)$/", '$1. $2', $competitor['name']); 
@@ -154,7 +165,18 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
             $competitor['num_people'] = '';
         }
         $details = array();
-        $details[] = array('label'=>'Name', 'value'=>$competitor['name']);
+        $name = $competitor['name'];
+        if( isset($festival['waiver-name-status']) && $festival['waiver-name-status'] != 'off' 
+            && ($competitor['flags']&0x04) == 0
+            ) {
+            $name .= '<br/><b>NAME WITHHELD</b>';
+        }
+        if( isset($festival['waiver-photo-status']) && $festival['waiver-photo-status'] != 'off' 
+            && ($competitor['flags']&0x02) == 0
+            ) {
+            $name .= '<br/><b>NO PHOTOS</b>';
+        }
+        $details[] = array('label'=>'Name', 'value'=>$name);
         if( $competitor['ctype'] == 10 && ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
             $details[] = array('label'=>'Pronoun', 'value'=>$competitor['pronoun']);
         }

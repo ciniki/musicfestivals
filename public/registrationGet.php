@@ -334,6 +334,16 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         }
         $registration = $rc['registrations'][0];
 
+        //
+        // Load the festival
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+        $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $registration['festival_id']);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $festival = $rc['festival'];
+
         $registration['scheduled'] = '';
         $registration['scheduled_sd'] = '';
         if( $registration['division_date'] != '' ) {
@@ -450,7 +460,18 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                 $competitor = $rc['competitors'][0];
                 $competitor['age'] = $competitor['_age'];
                 $details = array();
-                $details[] = array('label'=>'Name', 'value'=>$competitor['name']);
+                $name = $competitor['name'];
+                if( isset($festival['waiver-name-status']) && $festival['waiver-name-status'] != 'off' 
+                    && ($competitor['flags']&0x04) == 0
+                    ) {
+                    $name .= '<br/><b>NAME WITHHELD</b>';
+                }
+                if( isset($festival['waiver-photo-status']) && $festival['waiver-photo-status'] != 'off' 
+                    && ($competitor['flags']&0x02) == 0
+                    ) {
+                    $name .= '<br/><b>NO PHOTOS</b>';
+                }
+                $details[] = array('label'=>'Name', 'value'=>$name);
                 if( $competitor['ctype'] == 10 && ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
                     $details[] = array('label'=>'Pronoun', 'value'=>$competitor['pronoun']);
                 }
