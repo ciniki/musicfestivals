@@ -8390,7 +8390,7 @@ function ciniki_musicfestivals_main() {
     }
     this.adjudicator.prevButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.adjudicator_id) > 0 ) {
-            return 'M.ciniki_musicfestivals_main.adjudicator.save(\'M.ciniki_musicfestivals_main.adjudicator_id.open(null,' + this.nplist[this.nplist.indexOf('' + this.adjudicator_id) - 1] + ');\');';
+            return 'M.ciniki_musicfestivals_main.adjudicator.save(\'M.ciniki_musicfestivals_main.adjudicator.open(null,' + this.nplist[this.nplist.indexOf('' + this.adjudicator_id) - 1] + ');\');';
         }
         return null;
     }
