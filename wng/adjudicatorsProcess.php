@@ -159,6 +159,7 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
                 $adjudicators[$aid]['button-class'] = isset($s['button-class']) && $s['button-class'] != '' ? $s['button-class'] : 'button';
                 $adjudicators[$aid]['button-1-text'] = 'Read Bio';
                 $adjudicators[$aid]['button-1-url'] = $request['page']['path'] . '/' . $adjudicator['permalink'];
+                $adjudicators[$aid]['url'] = $request['page']['path'] . '/' . $adjudicator['permalink'];
             }
             $blocks[] = array(
                 'type' => 'tradingcards',
