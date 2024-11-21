@@ -8273,6 +8273,9 @@ function ciniki_musicfestivals_main() {
                 'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x020000); },   // Split live/virtual festivals
                 'flags':{'0':{'name':'Both'}, '1':{'name':'Live'}, '2':{'name':'Virtual'}},
                 },
+            'flags3':{'label':'Websites', 'type':'flagspiece', 'mask':0x04, 'field':'flags', 'join':'yes', 'toggle':'yes', 'none':'yes',
+                'flags':{'3':{'name':'Include Customer Profile Links'}},
+                },
             }},
         '_sig_image_id':{'label':'Adjudicator Signature', 'aside':'yes', 'type':'imageform', 'fields':{
             'sig_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'size':'small', 'controls':'all', 'history':'no',

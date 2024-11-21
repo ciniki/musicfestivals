@@ -40,7 +40,11 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
         . "customers.display_name, "
         . "customers.sort_name, "
         . "customers.permalink, "
+        . "links.id AS link_id, "
+        . "links.name AS link_name, "
+        . "links.url AS link_url, "
         . "adjudicators.image_id, "
+        . "adjudicators.flags, "
         . "adjudicators.description, "
         . "adjudicators.discipline "
 //        . "sections.name AS section "
@@ -48,6 +52,10 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
         . "INNER JOIN ciniki_customers AS customers ON ("
             . "adjudicators.customer_id = customers.id "
             . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_customer_links AS links ON ("
+            . "customers.id = links.customer_id "
+            . "AND links.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
 //        . "LEFT JOIN ciniki_musicfestival_schedule_sections AS sections ON ("
 //            . "("
@@ -69,7 +77,11 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'adjudicators', 'fname'=>'permalink', 
-            'fields'=>array('id', 'customer_id', 'display_name', 'discipline', 'image-id'=>'image_id', 'description', 'sort_name', 'permalink'),
+            'fields'=>array('id', 'customer_id', 'display_name', 'flags', 'discipline', 
+                'image-id'=>'image_id', 'description', 'sort_name', 'permalink',
+                )),
+        array('container'=>'links', 'fname'=>'link_id', 
+            'fields'=>array('id', 'name'=>'link_name', 'url'=>'link_url'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -92,7 +104,7 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
         if( isset($request['uri_split'][($request['cur_uri_pos']+1)]) ) {
             if( isset($adjudicators[$request['uri_split'][($request['cur_uri_pos']+1)]]) ) {
                 $adjudicator = $adjudicators[$request['uri_split'][($request['cur_uri_pos']+1)]];
-                $blocks[] = array(
+                $block = array(
                     'type' => 'contentphoto',
                     'title' => $adjudicator['display_name'],
                     'subtitle' => $adjudicator['discipline'],
@@ -101,6 +113,21 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
                     'image-position' => (isset($s['image-position']) && $s['image-position'] != '' ? $s['image-position'] : ''),
                     'image-size' => (isset($s['image-size']) && $s['image-size'] != '' ? $s['image-size'] : ''),
                     );
+                if( ($adjudicator['flags']&0x04) == 0x04 && isset($adjudicator['links']) ) {
+                    $btn = 1;
+                    foreach($adjudicator['links'] as $link) {
+                        if( trim($link['url']) == '' ) {
+                            continue;
+                        }
+                        $block["button-{$btn}-target"] = '_blank';
+                        $block["button-{$btn}-page"] = 0;
+                        $block["button-{$btn}-url"] = $link['url'];
+                        $block["button-{$btn}-text"] = $link['name'] != '' ? $link['name'] : $link['url'];
+                        $btn++;
+                    }
+                }
+
+                $blocks[] = $block;
                 return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
             } else {
                 $blocks[] = array(
