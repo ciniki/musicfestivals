@@ -332,6 +332,9 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
 
     if( $display == 'timeslot' ) {
         $sections = array();
+        $js_fields = '';
+        $reg_ids = '[';
+        $db_values = [];
         foreach($timeslot['registrations'] as $registration) {
             $class_name = $registration['class_name'];
             if( isset($festival['comments-class-format']) 
@@ -416,10 +419,12 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 'ftype' => 'textarea',
                 'class' => 'field-comments',
                 'label' => 'Comments',
-                'onkeyup' => 'fieldUpdated()',
+                'onkeyup' => "fieldUpdated()",
                 'size' => 'large',
                 'value' => $registration['comments'],
                 );
+            $db_values["f-{$registration['id']}-comments"] = $registration['comments'];
+            $js_fields .= ($js_fields != '' ? ', ' : '[') . "'f-{$registration['id']}-comments'";
             if( isset($festival['comments-mark-adjudicator']) && $festival['comments-mark-adjudicator'] == 'yes' 
                 && ($registration['class_flags']&0x0100) == 0x0100
                 ) {
@@ -436,6 +441,8 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                     'label' => $label,
                     'value' => $registration['mark'],
                     );
+                $db_values["f-{$registration['id']}-mark"] = $registration['mark'];
+                $js_fields .= ",'f-{$registration['id']}-mark'";
             }
             if( isset($festival['comments-placement-adjudicator']) && $festival['comments-placement-adjudicator'] == 'yes' 
                 && ($registration['class_flags']&0x0200) == 0x0200
@@ -470,6 +477,8 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                         'value' => $registration['placement'],
                         );
                 }
+                $db_values["f-{$registration['id']}-placement"] = $registration['placement'];
+                $js_fields .= ",'f-{$registration['id']}-placement'";
             }
             if( isset($festival['comments-level-adjudicator']) && $festival['comments-level-adjudicator'] == 'yes' 
                 && ($registration['class_flags']&0x0400) == 0x0400
@@ -487,9 +496,26 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                     'label' => $label,
                     'value' => $registration['level'],
                     );
+                $db_values["f-{$registration['id']}-level"] = $registration['level'];
+                $js_fields .= ",'f-{$registration['id']}-level'";
             }
+            //
+            // Add hidden field for showing saved time
+            //
+            $reg_ids .= ($reg_ids != '[' ? ',' : '') . $registration['id'];
+            $section['fields']["{$registration['id']}-status"] = array(
+                'id' => "{$registration['id']}-status",
+                'ftype' => 'content',
+                'class' => 'field-registration-status field-hidden',
+                'size' => 'medium',
+                'editable' => 'no',
+                'label' => 'Last Saved',
+                'description' => '&nbsp;',
+                );
             $sections[$registration['id']] = $section;
         }
+        $reg_ids .= "]";
+        $js_fields .= "]";
         $sections['submit'] = array(
             'id' => 'submit',
             'class' => 'buttons',
@@ -519,15 +545,60 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             );
         $js = ""
             . "var fSaveTimer=null;"
-            . "function fieldUpdated(){"
+            . "var lSaved='';"
+            . "var sendAll=0;"      // Used as flag if all data should be sent, used after a fail.
+            . "var regIds={$reg_ids};"
+            . "var fFields={$js_fields};"
+            . "var dbvalues=" . json_encode($db_values) .";"
+            . "function fieldUpdated(f){"
                 . "if(fSaveTimer==null){"
-                    . "fSaveTimer=setTimeout(fSave, 30000);"
+                    . "fSaveTimer=setTimeout(fSave, 15000);"
+//                    . "fSaveTimer=setTimeout(fSave, 5000);"
                 . "}"
             . "}"
             . "function fSave(){"
                 . "clearTimeout(fSaveTimer);"
                 . "fSaveTimer=null;"
-                . "C.form.qSave();"
+                . "var fD = new FormData;"
+                . "fD.append('last_saved', lSaved);"
+                . "fD.append('f-timeslot_id', {$timeslot['id']});"
+                . "fD.append('f-customer_id', {$request['session']['customer']['id']});"
+                . "for(var i in fFields) {"
+                    . "var e = C.gE(fFields[i]);"
+                    . "if(sendAll==1||(e!=null&&dbvalues[fFields[i]]!=e.value)){"
+                        . "fD.append(fFields[i], e.value);"
+                    . "}"
+                . "}"
+                . "C.postFDBg('{$request['api_url']}/ciniki/musicfestivals/adjudicationsSave', '', fD, fSaved);"
+            . "}"
+            . "function fSaved(rsp){"
+                . "if(rsp.stat=='ok'){"
+                    . "if(sendAll==1){console.log('updateall');rsp.updated_ids=regIds;}"
+                    . "sendAll=0;"
+                    . "lSaved=rsp.last_saved_utc;"
+                    . "for(var i in rsp.updates){"
+                        . "if(dbvalues[i]!=null){"
+                            . "dbvalues[i]=rsp.updates[i];"
+                        . "}"
+                    . "}"
+                    . "for(var i in rsp.updated_ids){"
+                        . "var e=C.gE('f-'+rsp.updated_ids[i]+'-status');"
+                        . "e.parentNode.classList.remove('field-hidden');"
+                        . "e.parentNode.children[0].innerHTML = 'Last Saved:';"
+                        . "e.parentNode.children[1].innerHTML = '<p>' + rsp.last_saved + '</p>';"
+                    . "}"
+                . "}else{"
+                    . "if(sendAll==0){"
+                        . "fSaveTimer=setTimeout(fSave, 10000);"
+                    . "}"
+                    . "sendAll=1;"
+                    . "for(var i in regIds){"
+                        . "var e=C.gE('f-'+regIds[i]+'-status');"
+                        . "e.parentNode.classList.remove('field-hidden');"
+                        . "e.parentNode.children[0].innerHTML = 'Save Failed';"
+                        . "e.parentNode.children[1].innerHTML = '<p>Error: ' + rsp.err.msg + ' (' + rsp.err.code + ')</p>';"
+                    . "}"
+                . "}"
             . "}"
             . "";
         if( isset($festival['comments-placement-autofills']) && count($festival['comments-placement-autofills']) > 0 

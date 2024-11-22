@@ -53,6 +53,7 @@ function ciniki_musicfestivals_wng_apiAdjudicationsSave(&$ciniki, $tnid, $reques
     }
     $intl_timezone = $rc['settings']['intl-default-timezone'];
     $dt = new DateTime('now', new DateTimezone($intl_timezone));
+    $dt_utc = new DateTime('now', new DateTimezone('UTC'));
 
     //
     // Load current festival
@@ -155,9 +156,9 @@ function ciniki_musicfestivals_wng_apiAdjudicationsSave(&$ciniki, $tnid, $reques
         'autosave' => 'yes',
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.452', 'msg'=>'Unable to update comments', 'err'=>$rc['err']));
+        return $rc;
     }
 
-    return array('stat'=>'ok', 'last_saved'=>$dt->format('M j, Y g:i A'));
+    return array('stat'=>'ok', 'updates'=>$rc['updates'], 'updated_ids'=>$rc['updated_ids'], 'last_saved'=>$dt->format('M j, Y g:i:s A'), 'last_saved_utc'=>$dt_utc->format('Y-m-d H:i:s'));
 }
 ?>

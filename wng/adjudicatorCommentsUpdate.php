@@ -27,31 +27,81 @@ function ciniki_musicfestivals_wng_adjudicatorCommentsUpdate(&$ciniki, $tnid, &$
         $tmsupdate = 0x04 | 0x08;
     }
 
+    if( isset($_POST['last_saved']) && $_POST['last_saved'] != '' ) {
+        $last_saved_utc = new DateTime($_POST['last_saved'], new DateTimezone('UTC'));
+    }
     //
     // Go through the registrations and check for updates to comments or mark
     //
+    $updates = [];
+    $updated_ids = [];
     foreach($args['registrations'] as $reg) {
+        $strsql = "SELECT table_field, MAX(log_date) "
+            . "FROM ciniki_musicfestivals_history "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND table_name = 'ciniki_musicfestival_registrations' "
+            . "AND table_key = '" . ciniki_core_dbQuote($ciniki, $reg['id']) . "' "
+            . "AND table_field IN ('comments','mark','placement','level') "
+            . "GROUP BY table_field "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
+        $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'last_updates');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.443', 'msg'=>'Unable to load the list of ', 'err'=>$rc['err']));
+        }
+        $last_updates = isset($rc['last_updates']) ? $rc['last_updates'] : [];
+
         $update_args = array();
-//        $reg_update_args = array();
         if( isset($_POST["f-{$reg['id']}-comments"])
             && $_POST["f-{$reg['id']}-comments"] != $reg['comments']
             ) {
-            $update_args['comments'] = $_POST["f-{$reg['id']}-comments"];
+            //
+            // Get the last time the comments was changed
+            //
+            if( isset($last_updates['comments']) && $last_updates['comments'] != '' ) {
+                $last_updated_utc = new DateTime($last_updates['comments'], new DateTimezone('UTC'));
+            }
+            if( !isset($last_saved_utc) || !isset($last_updated_utc) 
+                || $last_saved_utc >= $last_updated_utc 
+                ) {
+                $update_args['comments'] = $_POST["f-{$reg['id']}-comments"];
+            }
         }
         if( isset($_POST["f-{$reg['id']}-mark"])
             && $_POST["f-{$reg['id']}-mark"] != $reg['mark']
             ) {
-            $update_args['mark'] = $_POST["f-{$reg['id']}-mark"];
+            if( isset($last_updates['mark']) && $last_updates['mark'] != '' ) {
+                $last_updated_utc = new DateTime($last_updates['mark'], new DateTimezone('UTC'));
+            }
+            if( !isset($last_saved_utc) || !isset($last_updated_utc) 
+                || $last_saved_utc >= $last_updated_utc 
+                ) {
+                $update_args['mark'] = $_POST["f-{$reg['id']}-mark"];
+            }
         }
         if( isset($_POST["f-{$reg['id']}-placement"])
             && $_POST["f-{$reg['id']}-placement"] != $reg['placement']
             ) {
-            $update_args['placement'] = $_POST["f-{$reg['id']}-placement"];
+            if( isset($last_updates['placement']) && $last_updates['placement'] != '' ) {
+                $last_updated_utc = new DateTime($last_updates['placement'], new DateTimezone('UTC'));
+            }
+            if( !isset($last_saved_utc) || !isset($last_updated_utc) 
+                || $last_saved_utc >= $last_updated_utc 
+                ) {
+                $update_args['placement'] = $_POST["f-{$reg['id']}-placement"];
+            }
         } 
         if( isset($_POST["f-{$reg['id']}-level"])
             && $_POST["f-{$reg['id']}-level"] != $reg['level']
             ) {
-            $update_args['level'] = $_POST["f-{$reg['id']}-level"];
+            if( isset($last_updates['level']) && $last_updates['level'] != '' ) {
+                $last_updated_utc = new DateTime($last_updates['level'], new DateTimezone('UTC'));
+            }
+            if( !isset($last_saved_utc) || !isset($last_updated_utc) 
+                || $last_saved_utc >= $last_updated_utc 
+                ) {
+                $update_args['level'] = $_POST["f-{$reg['id']}-level"];
+            }
         } 
         if( count($update_args) > 0 ) {
             if( $reg['id'] > 0 ) {
@@ -60,37 +110,14 @@ function ciniki_musicfestivals_wng_adjudicatorCommentsUpdate(&$ciniki, $tnid, &$
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.441', 'msg'=>'Unable to update the comment', 'err'=>$rc['err']));
                 }
-                //
-                // Clear autosave history
-                //
-                if( !isset($args['autosave']) || $args['autosave'] != 'yes' ) {
-                    // Unable to clear history because last autosave could be current value
-/*                    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbClearAutoSaveHistory');
-                    $rc = ciniki_core_objectClearAutoSaveHistory($ciniki, $tnid, 'ciniki.musicfestivals.comment', $reg['comment_id']);
-                    if( $rc['stat'] != 'ok' ) {
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.443', 'msg'=>'Unable to clear autosave history', 'err'=>$rc['err']));
-                    } */
+                $updated_ids[] = $reg['id'];
+                foreach($update_args as $k => $v) {
+                    $updates["f-{$reg['id']}-{$k}"] = str_replace("\r", '', $v);
                 }
-                
-/*            } else {
-                $update_args['registration_id'] = $reg['id'];
-                $update_args['adjudicator_id'] = $args['adjudicator_id'];
-                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.comment', $update_args, 0x04);
-                if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.440', 'msg'=>'Unable to add the comment', 'err'=>$rc['err']));
-                } */
             }
         }
-/*        if( count($reg_update_args) > 0 ) {
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $reg['id'], $reg_update_args, $tmsupdate);
-            if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.453', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
-            }
-        } */
     }
 
-    return array('stat'=>'ok');
+    return array('stat'=>'ok', 'updates'=>$updates, 'updated_ids'=>$updated_ids);
 }
 ?>
