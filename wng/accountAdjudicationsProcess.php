@@ -571,6 +571,9 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 . "}"
                 . "C.postFDBg('{$request['api_url']}/ciniki/musicfestivals/adjudicationsSave', '', fD, fSaved);"
             . "}"
+            // FIXME: Add ability to save unsaved changed to browser local storage, so they can refresh screen 
+            // and it will let them know they have unsaved changes, and do they want to apply them?
+            // Might be good to give them the option to review and apply/discard
             . "function fSaved(rsp){"
                 . "if(rsp.stat=='ok'){"
                     . "if(sendAll==1){console.log('updateall');rsp.updated_ids=regIds;}"
