@@ -235,7 +235,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
                 'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
-                    'phone_home', 'phone_cell', 'email', 'age'=>'cage', 'study_level', 'instrument', 'notes'),
+                    'phone_home', 'phone_cell', 'email', 'cage', 'study_level', 'instrument', 'notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -306,7 +306,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
                 'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
-                    'phone_home', 'phone_cell', 'email', 'age'=>'cage', 'study_level', 'instrument', 'notes'),
+                    'phone_home', 'phone_cell', 'email', 'cage', 'study_level', 'instrument', 'notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -393,7 +393,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
                 'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
-                    'phone_home', 'phone_cell', 'email', 'age'=>'cage', 'study_level', 'instrument', 'notes'),
+                    'phone_home', 'phone_cell', 'email', 'cage', 'study_level', 'instrument', 'notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -483,7 +483,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
                 'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
-                    'phone_home', 'phone_cell', 'email', 'age'=>'cage', 'study_level', 'instrument', 'notes'),
+                    'phone_home', 'phone_cell', 'email', 'cage', 'study_level', 'instrument', 'notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -576,7 +576,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
                 'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
-                    'phone_home', 'phone_cell', 'email', 'age'=>'cage', 'study_level', 'instrument', 'notes'),
+                    'phone_home', 'phone_cell', 'email', 'cage', 'study_level', 'instrument', 'notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
