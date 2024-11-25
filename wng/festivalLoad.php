@@ -46,7 +46,7 @@ function ciniki_musicfestivals_wng_festivalLoad(&$ciniki, $tnid, $festival_id) {
     // Determine which dates are still open for the festival
     //
     $now = new DateTime('now', new DateTimezone('UTC'));
-    $live_dt = new DateTime($festival['live_date'], new DateTimezone('UTC'));
+    $festival['live_end_dt'] = new DateTime($festival['live_date'], new DateTimezone('UTC'));
     $titles_end_dt = new DateTime($festival['titles_end_dt'], new DateTimezone('UTC'));
     $accompanist_end_dt = new DateTime($festival['accompanist_end_dt'], new DateTimezone('UTC'));
     $upload_end_dt = new DateTime($festival['upload_end_dt'], new DateTimezone('UTC'));
@@ -56,10 +56,10 @@ function ciniki_musicfestivals_wng_festivalLoad(&$ciniki, $tnid, $festival_id) {
     } else {
         $festival['earlybird'] = 'no';
     }
-    $festival['live'] = (($festival['flags']&0x01) == 0x01 && $live_dt > $now ? 'yes' : 'no');
+    $festival['live'] = (($festival['flags']&0x01) == 0x01 && $festival['live_end_dt'] > $now ? 'yes' : 'no');
     if( ($festival['flags']&0x02) == 0x02 ) {
-        $virtual_dt = new DateTime($festival['virtual_date'], new DateTimezone('UTC'));
-        $festival['virtual'] = (($festival['flags']&0x02) == 0x02 && $virtual_dt > $now ? 'yes' : 'no');
+        $festival['virtual_end_dt'] = new DateTime($festival['virtual_date'], new DateTimezone('UTC'));
+        $festival['virtual'] = (($festival['flags']&0x02) == 0x02 && $festival['virtual_end_dt'] > $now ? 'yes' : 'no');
     } else {
         $festival['virtual'] = 'no';
     }

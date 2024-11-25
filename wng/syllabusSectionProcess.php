@@ -95,8 +95,12 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             . "sections.festival_id, "
             . "sections.permalink, "
             . "sections.name, "
+            . "sections.flags, "
             . "sections.primary_image_id, "
-            . "sections.synopsis, ";
+            . "sections.synopsis, "
+            . "sections.latefees_start_amount, "
+            . "sections.latefees_daily_increase, "
+            . "sections.latefees_days, ";
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x020000) 
             && isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'live'
             ) {
@@ -153,8 +157,12 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         $strsql = "SELECT sections.id, "
             . "sections.permalink, "
             . "sections.name, "
+            . "sections.flags, "
             . "sections.primary_image_id, "
-            . "sections.synopsis, ";
+            . "sections.synopsis, "
+            . "sections.latefees_start_amount, "
+            . "sections.latefees_daily_increase, "
+            . "sections.latefees_days, ";
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x020000) 
             && isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'live'
             ) {
@@ -189,17 +197,49 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     // Check if section has other deadlines
     //
     $dt = new DateTime('now', new DateTimezone('UTC'));
-    if( $syllabus_section['live_end_dt'] != '' && $syllabus_section['live_end_dt'] != '0000-00-00 00:00:00' ) {
+    if( ($festival['flags']&0x08) == 0x08 && $syllabus_section['live_end_dt'] != '' && $syllabus_section['live_end_dt'] != '0000-00-00 00:00:00' ) {
         $live_dt = new DateTime($syllabus_section['live_end_dt'], new DateTimezone('UTC'));
         $festival['live'] = ($live_dt > $dt ? 'yes' : 'no');
         if( ($festival['flags']&0x10) == 0x10 ) {   // Adjudication Plus
             $festival['plus_live'] = $festival['live'];
         }
     }
+    if( $festival['live'] == 'no' && ($syllabus_section['flags']&0x30) > 0 && $syllabus_section['latefees_days'] > 0 ) {
+        if( ($festival['flags']&0x08) == 0x08 && $syllabus_section['live_end_dt'] != '0000-00-00 00:00:00' ) {
+            $section_live_dt = new DateTime($syllabus_section['live_end_dt'], new DateTimezone('UTC'));
+        } else {
+            $section_live_dt = clone $festival['live_end_dt'];
+        }
+        $interval = $section_live_dt->diff($dt);
+        $section_live_dt->add(new DateInterval("P{$syllabus_section['latefees_days']}D"));
+        if( $section_live_dt > $dt ) {      // is within latefees_days
+            $festival['live'] = 'yes';
+            $syllabus_section['live_days_past'] = $interval->format('%d');
+            $syllabus_section['live_latefees'] = $syllabus_section['latefees_start_amount']
+                + ($syllabus_section['latefees_daily_increase'] * $syllabus_section['live_days_past']);
+        }
+    }
+
     if( $syllabus_section['virtual_end_dt'] != '' && $syllabus_section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
         $virtual_dt = new DateTime($syllabus_section['virtual_end_dt'], new DateTimezone('UTC'));
         $festival['virtual'] = ($virtual_dt > $dt ? 'yes' : 'no');
     }
+    if( $festival['virtual'] == 'no' && ($syllabus_section['flags']&0x30) > 0 && $syllabus_section['latefees_days'] > 0 ) {
+        if( ($festival['flags']&0x08) == 0x08 && $syllabus_section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
+            $section_virtual_dt = new DateTime($syllabus_section['virtual_end_dt'], new DateTimezone('UTC'));
+        } else {
+            $section_virtual_dt = clone $festival['virtual_end_dt'];
+        }
+        $interval = $section_virtual_dt->diff($dt);
+        $section_virtual_dt->add(new DateInterval("P{$syllabus_section['latefees_days']}D"));
+        if( $section_virtual_dt > $dt ) {      // is within latefees_days
+            $festival['virtual'] = 'yes';
+            $syllabus_section['virtual_days_past'] = $interval->format('%d');
+            $syllabus_section['virtual_latefees'] = $syllabus_section['latefees_start_amount']
+                + ($syllabus_section['latefees_daily_increase'] * $syllabus_section['virtual_days_past']);
+        }
+    }
+
   
     if( isset($groupname) ) {
         $download_url = $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $syllabus_section['permalink'] . '/' . ciniki_core_makePermalink($ciniki, $groupname) . '/download.pdf';
@@ -257,7 +297,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     //
     // Check for section end dates
     //
-    if( ($festival['flags']&0x08) == 0x08 ) {
+/*    if( ($festival['flags']&0x08) == 0x08 ) {
         if( $syllabus_section['live_end_dt'] != '0000-00-00 00:00:00' ) {
             $section_live_dt = new DateTime($syllabus_section['live_end_dt'], new DateTimezone('UTC'));
             if( $section_live_dt < $dt ) {
@@ -274,7 +314,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             $festival['plus_live'] = $festival['live'];
         }
     }
-
+*/
     //
     // Don't show titles or intros when displaying a pricelist
     //

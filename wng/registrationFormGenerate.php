@@ -205,7 +205,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         // Check for latefees applying to section
         //
         if( $section_live == 'no' && ($section['flags']&0x30) > 0  && $section['latefees_days'] > 0 ) {
-            if( $section['live_end_dt'] != '0000-00-00 00:00:00' ) {
+            if( ($festival['flags']&0x08) == 0x08 && $section['live_end_dt'] != '0000-00-00 00:00:00' ) {
                 $section_live_dt = new DateTime($section['live_end_dt'], new DateTimezone('UTC'));
             } else {
                 $section_live_dt = clone $festival['live_end_dt'];
@@ -220,7 +220,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             }
         }
         if( $section_virtual == 'no' && ($section['flags']&0x30) > 0  && $section['latefees_days'] > 0 ) {
-            if( $section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
+            if( ($festival['flags']&0x08) == 0x08 && $section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
                 $section_virtual_dt = new DateTime($section['virtual_end_dt'], new DateTimezone('UTC'));
             } else {
                 $section_virtual_dt = clone $festival['virtual_end_dt'];
