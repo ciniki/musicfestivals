@@ -224,7 +224,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         $virtual_dt = new DateTime($syllabus_section['virtual_end_dt'], new DateTimezone('UTC'));
         $festival['virtual'] = ($virtual_dt > $dt ? 'yes' : 'no');
     }
-    if( $festival['virtual'] == 'no' && ($syllabus_section['flags']&0x30) > 0 && $syllabus_section['latefees_days'] > 0 ) {
+    if( ($festival['flags']&0x06) > 0 && $festival['virtual'] == 'no' && ($syllabus_section['flags']&0x30) > 0 && $syllabus_section['latefees_days'] > 0 ) {
         if( ($festival['flags']&0x08) == 0x08 && $syllabus_section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
             $section_virtual_dt = new DateTime($syllabus_section['virtual_end_dt'], new DateTimezone('UTC'));
         } else {
