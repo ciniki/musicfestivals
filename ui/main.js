@@ -3790,6 +3790,10 @@ function ciniki_musicfestivals_main() {
                 'registration-status-52-colour':{'label':'Approved #3 Colour', 'type':'colour'},
                 'registration-status-53-label':{'label':'Approved #4 Label', 'type':'text'},
                 'registration-status-53-colour':{'label':'Approved #4 Colour', 'type':'colour'},
+                'registration-status-54-label':{'label':'Approved #5 Label', 'type':'text'},
+                'registration-status-54-colour':{'label':'Approved #5 Colour', 'type':'colour'},
+                'registration-status-55-label':{'label':'Approved #6 Label', 'type':'text'},
+                'registration-status-55-colour':{'label':'Approved #6 Colour', 'type':'colour'},
                 'registration-status-70-colour':{'label':'Disqualified Colour', 'type':'colour', 'separator':'yes'},
                 'registration-status-80-colour':{'label':'Cancelled Colour', 'type':'colour'},
             },
@@ -3963,6 +3967,8 @@ function ciniki_musicfestivals_main() {
         M.gE(this.panelUID + '_registration-status-51-colour').style.background = '#ddffdd'; // green 
         M.gE(this.panelUID + '_registration-status-52-colour').style.background = '#ddffdd'; // green 
         M.gE(this.panelUID + '_registration-status-53-colour').style.background = '#ddffdd'; // green 
+        M.gE(this.panelUID + '_registration-status-54-colour').style.background = '#ddffdd'; // green 
+        M.gE(this.panelUID + '_registration-status-55-colour').style.background = '#ddffdd'; // green 
         M.gE(this.panelUID + '_registration-status-70-colour').style.background = '#e0e0e0';
         M.gE(this.panelUID + '_registration-status-80-colour').style.background = '#e0e0e0';
     }
