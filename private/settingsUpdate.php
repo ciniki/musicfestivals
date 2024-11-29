@@ -157,6 +157,8 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'registration-status-55-colour',
         'registration-status-70-colour',
         'registration-status-80-colour',
+        'competitor-label-singular',
+        'competitor-label-plural',
         'competitor-parent-msg',
         'competitor-teacher-msg',
         'competitor-adult-msg',

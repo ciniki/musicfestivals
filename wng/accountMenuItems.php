@@ -18,22 +18,12 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
     $base_url = isset($args['base_url']) ? $args['base_url'] : '';
 
     //
-    // Get the music festival with the most recent date and status published
+    // Load current festival
     //
-    $strsql = "SELECT id, name "
-        . "FROM ciniki_musicfestivals "
-        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND status = 30 "        // Current
-        . "ORDER BY start_date DESC "
-        . "LIMIT 1 "
-        . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
+    $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.253', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
-    }
-    if( !isset($rc['festival']) ) {
-        // No festivals published, no items to return
-        return array('stat'=>'ok');
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.424', 'msg'=>'', 'err'=>$rc['err']));
     }
     $festival = $rc['festival'];
 
@@ -143,7 +133,7 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
             'url' => $base_url . '/musicfestivalregistrations',
             );
         $items[] = array(
-            'title' => 'Competitors', 
+            'title' => $festival['competitor-label-plural'], 
             'priority' => 3748, 
             'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivalcompetitors' ? 'yes' : 'no',
             'ref' => 'ciniki.musicfestivals.competitors',

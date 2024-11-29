@@ -1804,6 +1804,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     $fields[$fid]['value'] = $rc['class']['code'] . ' - ' . $rc['class']['name'];
                 }
             }
+                error_log(print_r($field,true));
             if( isset($field['label']) && preg_match("/Competitor /", $field['label']) 
                 && isset($field['class']) && $field['class'] == '' 
                 ) {

@@ -39,7 +39,7 @@
 # earlybird_date:       The UTC Date and Time when earlybird pricing ends.
 # live_date:            The UTC Date and Time when live pricing ends.
 # virtual_date:         The UTC Date and Time when virtual pricing ends.
-# titles_end_dt:        The UTC Date and Time deadline for editing titles and times.    FIXME: Should change field to titles_end_dt
+# titles_end_dt:        The UTC Date and Time deadline for editing titles and times.
 # upload_end_dt:        The UTC Date and Time deadline for upload videos and music.
 # accompanist_end_dt:   The UTC Date and Time deadline for specifing an accompanist.
 # 

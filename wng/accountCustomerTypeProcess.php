@@ -17,6 +17,16 @@ function ciniki_musicfestivals_wng_accountCustomerTypeProcess(&$ciniki, $tnid, &
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
 
     //
+    // Load current festival
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
+    $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.424', 'msg'=>'', 'err'=>$rc['err']));
+    }
+    $festival = $rc['festival'];
+
+    //
     // Get the type of customer
     //
     $strsql = "SELECT id, ctype "
@@ -131,13 +141,13 @@ function ciniki_musicfestivals_wng_accountCustomerTypeProcess(&$ciniki, $tnid, &
         $rsp['switch_block'] = array(
             'type' => 'text',
             'class' => 'limit-width limit-width-60 aligncenter',
-            'content' => "<br/>You are a parent/guardian registering competitors.<br/><br/><a class='button' href='{$args['base_url']}?changetype'>Change Registration Type</a>"
+            'content' => "<br/>You are a parent/guardian registering " . strtolower($festival['competitor-label-plural']) . ".<br/><br/><a class='button' href='{$args['base_url']}?changetype'>Change Registration Type</a>"
             );
     } elseif( $customer_type == 20 ) {
         $rsp['switch_block'] = array(
             'type' => 'text',
             'class' => 'limit-width limit-width-60 aligncenter',
-            'content' => "<br/>You are a teacher registering competitors.<br/><br/><a class='button' href='{$args['base_url']}?changetype'>Change Registration Type</a>"
+            'content' => "<br/>You are a teacher registering " . strtolower($festival['competitor-label-plural']) . ".<br/><br/><a class='button' href='{$args['base_url']}?changetype'>Change Registration Type</a>"
             );
     } elseif( $customer_type == 30 ) {
         $rsp['switch_block'] = array(

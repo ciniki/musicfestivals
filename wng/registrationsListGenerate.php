@@ -324,7 +324,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
                 'class' => 'musicfestival-registrations limit-width limit-width-90 fold-at-50',
                 'headers' => 'yes',
                 'columns' => array(
-                    array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
+                    array('label' => $festival['competitor-label-singular'], 'field' => 'display_name', 'class' => 'alignleft'),
                     array('label' => 'Class', 'fold-label'=>'Class:', 'field' => 'codename', 'class' => 'alignleft'),
                     array('label' => 'Title(s)', 'fold-label'=>'Title:', 'field' => 'titles', 'class' => 'alignleft'),
                     array('label' => 'Fee', 'fold-label'=>'Fee:', 'field' => 'fee', 'class' => 'alignright fold-alignleft'),
@@ -387,7 +387,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
             'class' => 'musicfestival-registrations limit-width limit-width-90 fold-at-50',
             'headers' => 'yes',
             'columns' => array(
-                array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
+                array('label' => $festival['competitor-label-singular'], 'field' => 'display_name', 'class' => 'alignleft'),
                 array('label' => 'Class', 'fold-label'=>'Class:', 'field' => 'codename', 'class' => 'alignleft'),
                 array('label' => 'Title(s)', 'fold-label'=>'Title:', 'field' => 'titles', 'class' => 'alignleft'),
                 array('label' => 'Fee', 'fold-label'=>'Fee:', 'field' => 'fee', 'class' => 'alignright fold-alignleft'),
@@ -427,7 +427,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
             'class' => 'musicfestival-registrations limit-width limit-width-90 fold-at-50',
             'headers' => 'yes',
             'columns' => array(
-                array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
+                array('label' => $festival['competitor-label-singular'], 'field' => 'display_name', 'class' => 'alignleft'),
                 array('label' => 'Class', 'fold-label'=>'Class:', 'field' => 'codename', 'class' => 'alignleft'),
                 array('label' => 'Title(s)', 'fold-label'=>'Title:', 'field' => 'titles', 'class' => 'alignleft'),
                 array('label' => 'Fee', 'fold-label'=>'Fee:', 'field' => 'fee', 'class' => 'alignright fold-alignleft'),
@@ -466,7 +466,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
             'class' => 'musicfestival-registrations limit-width limit-width-90 fold-at-50',
             'headers' => 'yes',
             'columns' => array(
-                array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
+                array('label' => $festival['competitor-label-singular'], 'field' => 'display_name', 'class' => 'alignleft'),
                 array('label' => 'Class', 'fold-label'=>'Class:', 'field' => 'codename', 'class' => 'alignleft'),
                 array('label' => 'Title(s)', 'fold-label'=>'Title:', 'field' => 'titles', 'class' => 'alignleft'),
                 array('label' => 'Scheduled', 'fold-label'=>'Scheduled:', 'field' => 'scheduled', 'class' => 'alignleft'),
@@ -519,7 +519,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
             'class' => 'musicfestival-registrations limit-width limit-width-90 fold-at-50',
             'headers' => 'yes',
             'columns' => array(
-                array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
+                array('label' => $festival['competitor-label-singular'], 'field' => 'display_name', 'class' => 'alignleft'),
                 array('label' => 'Class', 'fold-label'=>'Class:', 'field' => 'codename', 'class' => 'alignleft'),
                 array('label' => 'Title(s)', 'fold-label'=>'Title:', 'field' => 'titles', 'class' => 'alignleft'),
                 array('label' => 'Scheduled', 'fold-label'=>'Scheduled:', 'field' => 'scheduled', 'class' => 'alignleft'),
@@ -568,7 +568,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
             'class' => 'musicfestival-registrations limit-width limit-width-90',
             'headers' => 'yes',
             'columns' => array(
-                array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
+                array('label' => $festival['competitor-label-singular'], 'field' => 'display_name', 'class' => 'alignleft'),
                 array('label' => 'Class', 'fold-label'=>'Class:', 'field' => 'codename', 'class' => 'alignleft'),
                 array('label' => 'Title(s)', 'fold-label'=>'Title:', 'field' => 'titles', 'class' => 'alignleft'),
                 array('label' => 'Scheduled', 'fold-label'=>'Scheduled:', 'field' => 'scheduled', 'class' => 'alignleft'),
@@ -584,7 +584,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
             'class' => 'musicfestival-registrations limit-width limit-width-90',
             'headers' => 'yes',
             'columns' => array(
-                array('label' => 'Competitor', 'field' => 'display_name', 'class' => 'alignleft'),
+                array('label' => $festival['competitor-label-singular'], 'field' => 'display_name', 'class' => 'alignleft'),
                 array('label' => 'Class', 'fold-label'=>'Class:', 'field' => 'codename', 'class' => 'alignleft'),
                 array('label' => 'Title(s)', 'fold-label'=>'Title:', 'field' => 'titles', 'class' => 'alignleft'),
                 ),

@@ -3804,6 +3804,12 @@ function ciniki_musicfestivals_main() {
                     },
                 },
             },
+        '_competitor_general':{'label':'Competitors', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'competitors' ? 'yes' : 'hidden'; },
+            'fields':{
+                'competitor-label-singular':{'label':'Label Singular', 'type':'text'},
+                'competitor-label-plural':{'label':'Label Plural', 'type':'text'},
+                }},
         '_competitor_parent_msg':{'label':'Individual Competitor Form', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'competitors' ? 'yes' : 'hidden'; },
             'fields':{
@@ -3932,6 +3938,7 @@ function ciniki_musicfestivals_main() {
         this.showHideSection('_registration_statuses');
         this.showHideSection('_registration_teacher_msg');
         this.showHideSection('_registration_adult_msg');
+        this.showHideSection('_competitor_general');
         this.showHideSection('_competitor_parent_msg');
         this.showHideSection('_competitor_teacher_msg');
         this.showHideSection('_competitor_adult_msg');

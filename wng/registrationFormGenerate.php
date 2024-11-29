@@ -562,9 +562,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             $prefix = '4th ';
         }
         if( isset($selected_class) ) {
-            $label = $prefix . (($selected_class['flags']&0x8000) == 0x8000 ? 'Group/Ensemble' : 'Competitor');
+            $label = $prefix . (($selected_class['flags']&0x8000) == 0x8000 ? 'Group/Ensemble' : $festival['competitor-label-singular']);
         } else {
-            $label = 'Competitor';
+            $label = $festival['competitor-label-singular'];
         }
         $comp_id = isset($_POST["f-competitor{$i}_id"]) && ($_POST["f-competitor{$i}_id"] == '' || $_POST["f-competitor{$i}_id"] > -1) ? $_POST["f-competitor{$i}_id"] : (isset($registration["competitor{$i}_id"]) ? $registration["competitor{$i}_id"] : 0);
         $fields["competitor{$i}_id"] = array(
@@ -581,7 +581,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         $fields["competitor{$i}_id"]['options']['addindividual'] = array(
             'id' => '-1',
             'class' => (isset($selected_class['flags']) && ($selected_class['flags']&0xC000) == 0x8000 ? 'hidden' : ''),
-            'name' => 'Add Individual Competitor',
+            'name' => 'Add Individual ' . $festival['competitor-label-singular'],
             );
         $fields["competitor{$i}_id"]['options']['addgroup'] = array(
             'id' => '-2',
@@ -599,7 +599,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'ftype' => 'button',
             'size' => 'tiny',
             'class' => ($comp_id > 0 ? '' : $class),
-            'value' => 'Edit Competitor',
+            'value' => "Edit {$festival['competitor-label-singular']}",
             'href' => "javascript: competitorEdit({$i});",
             ); */
     }
@@ -1235,12 +1235,12 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     . "}"
                 . "}else{"
                     . "if(classes[c].mac>1){"
-                        . "C.gE('f-competitor1_id').parentNode.firstChild.innerHTML = '1st Competitor';"
-                        . "C.gE('f-competitor2_id').parentNode.firstChild.innerHTML = '2nd Competitor';"
-                        . "C.gE('f-competitor3_id').parentNode.firstChild.innerHTML = '3rd Competitor';"
-                        . "C.gE('f-competitor4_id').parentNode.firstChild.innerHTML = '4th Competitor';"
+                        . "C.gE('f-competitor1_id').parentNode.firstChild.innerHTML = '1st {$festival['competitor-label-singular']}';"
+                        . "C.gE('f-competitor2_id').parentNode.firstChild.innerHTML = '2nd {$festival['competitor-label-singular']}';"
+                        . "C.gE('f-competitor3_id').parentNode.firstChild.innerHTML = '3rd {$festival['competitor-label-singular']}';"
+                        . "C.gE('f-competitor4_id').parentNode.firstChild.innerHTML = '4th {$festival['competitor-label-singular']}';"
                     . "}else{"
-                        . "C.gE('f-competitor1_id').parentNode.firstChild.innerHTML = 'Competitor';"
+                        . "C.gE('f-competitor1_id').parentNode.firstChild.innerHTML = '{$festival['competitor-label-singular']}';"
                     . "}" 
                 . "}" 
                 . "if((classes[c].f&0x04)==0x04){"

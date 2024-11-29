@@ -488,7 +488,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     }
     $fields['comp_notes'] = array(
         'id' => 'comp_notes',
-        'label' => 'Competitor Notes',
+        'label' => "{$festival['competitor-label-singular']} Notes",
         'ftype' => 'textarea',
         'size' => 'tiny',
         'class' => '',
@@ -538,7 +538,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             'description' => $festival['waiver-photo-msg'],
             'value' => '',
             'option-2' => isset($festival['waiver-photo-option-yes']) && $festival['waiver-photo-option-yes'] != '' ? $festival['waiver-photo-option-yes'] : 'Yes, I Agree',
-            'option-3' => isset($festival['waiver-photo-option-no']) && $festival['waiver-photo-option-no'] != '' ? $festival['waiver-photo-option-no'] : 'No, Do Not Publish Competitor Photos',
+            'option-3' => isset($festival['waiver-photo-option-no']) && $festival['waiver-photo-option-no'] != '' ? $festival['waiver-photo-option-no'] : "No, Do Not Publish {$festival['competitor-label-singular']} Photos",
             );
         if( isset($competitor['flags']) ) {
             $fields['photowaiver']['value'] = ($competitor['flags']&0x02) == 0x02 ? $fields['photowaiver']['option-2'] : $fields['photowaiver']['option-3'];
@@ -566,7 +566,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             'description' => $festival['waiver-name-msg'],
             'value' => '',
             'option-2' => isset($festival['waiver-name-option-yes']) && $festival['waiver-name-option-yes'] != '' ? $festival['waiver-name-option-yes'] : 'Yes, I Agree',
-            'option-3' => isset($festival['waiver-name-option-no']) && $festival['waiver-name-option-no'] != '' ? $festival['waiver-name-option-no'] : 'No, Do Not Publish Competitor Name',
+            'option-3' => isset($festival['waiver-name-option-no']) && $festival['waiver-name-option-no'] != '' ? $festival['waiver-name-option-no'] : "No, Do Not Publish {$festival['competitor-label-singular']} Name",
             );
         if( isset($competitor['flags']) ) {
             $fields['namewaiver']['value'] = ($competitor['flags']&0x04) == 0x04 ? $fields['namewaiver']['option-2'] : $fields['namewaiver']['option-3'];
@@ -914,7 +914,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                 'content' => "There are still {$num_items} registration" . ($num_items > 1 ? 's' : '') . " for {$competitor['name']}, they cannot be removed.",
                 );
             $display = 'list';
-        } elseif( isset($_POST['submit']) && $_POST['submit'] == 'Remove Competitor'
+        } elseif( isset($_POST['submit']) && $_POST['submit'] == "Remove {$festival['competitor-label-singular']}"
             && isset($_POST['f-action']) && $_POST['f-action'] == 'confirmdelete'
             ) {
             $display = 'list';
@@ -1034,7 +1034,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         $blocks[] = array(
             'type' => 'form',
             'guidelines' => $guidelines,
-            'title' => ($competitor_id > 0 ? 'Update' : 'Add') . ($ctype == 50 ? ' Group/Ensemble' : ' Individual Competitor'),
+            'title' => ($competitor_id > 0 ? 'Update' : 'Add') . ($ctype == 50 ? ' Group/Ensemble' : " Individual {$festival['competitor-label-singular']}"),
             'class' => 'limit-width limit-width-60',
             'problem-list' => $form_errors,
             'cancel-label' => 'Cancel',
@@ -1048,10 +1048,10 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     elseif( $display == 'delete' ) {
         $blocks[] = array(
             'type' => 'form',
-            'title' => 'Remove Competitor',
+            'title' => "Remove {$festival['competitor-label-singular']}",
             'class' => 'limit-width limit-width-50',
             'cancel-label' => 'Cancel',
-            'submit-label' => 'Remove Competitor',
+            'submit-label' => "Remove {$festival['competitor-label-singular']}",
             'fields' => array(
                 'competitor_id' => array(
                     'id' => 'competitor_id',
@@ -1116,7 +1116,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
 
             $blocks[] = array(
                 'type' => 'table',
-                'title' => $festival['name'] . ' Competitors',
+                'title' => "{$festival['name']} {$festival['competitor-label-plural']}",
                 'class' => 'musicfestival-competitors limit-width limit-width-60 fold-at-40',
                 'headers' => 'yes',
                 'columns' => $columns,
@@ -1127,14 +1127,14 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             $blocks[] = array(
                 'type' => 'text',
                 'class' => 'limit-width limit-width-40',
-                'title' => $festival['name'] . ' Competitors',
+                'title' => "{$festival['name']} {$festival['competitor-label-plural']}",
                 'content' => 'Registrations closed',
                 );
         } else {
             $blocks[] = array(
                 'type' => 'text',
                 'class' => 'limit-width limit-width-40',
-                'title' => $festival['name'] . ' Competitors',
+                'title' => "{$festival['name']} {$festival['competitor-label-plural']}",
                 'content' => 'No competitors',
                 );
         }
