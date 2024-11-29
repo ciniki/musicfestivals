@@ -219,7 +219,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     + ($section['latefees_daily_increase'] * $sections[$sid]['live_days_past']);
             }
         }
-        if( $section_virtual == 'no' && ($section['flags']&0x30) > 0  && $section['latefees_days'] > 0 ) {
+        if( $section_virtual == 'no' && ($festival['flags']&0x06) > 0 && ($section['flags']&0x30) > 0  && $section['latefees_days'] > 0 ) {
             if( ($festival['flags']&0x08) == 0x08 && $section['virtual_end_dt'] != '0000-00-00 00:00:00' ) {
                 $section_virtual_dt = new DateTime($section['virtual_end_dt'], new DateTimezone('UTC'));
             } else {
