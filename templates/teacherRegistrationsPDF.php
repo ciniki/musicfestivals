@@ -638,7 +638,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
                 $pdf->SetFont('helvetica', 'B', 12);
                 $pdf->SetFillColor(224);
                 $border = 1;
-                $pdf->Cell($r[0], $lh-3, 'Competitor', $border, 0, 'L', 1);
+                $pdf->Cell($r[0], $lh-3, $festival['competitor-label-singular'], $border, 0, 'L', 1);
                 $pdf->Cell($r[1], $lh-3, 'Class', $border, 0, 'L', 1);
                 $pdf->Cell($r[2], $lh-3, 'Scheduled', $border, 0, 'L', 1);
                 $pdf->Cell($r[3], $lh-3, 'Fee', $border, 0, 'R', 1);

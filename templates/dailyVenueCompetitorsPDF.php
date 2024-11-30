@@ -40,52 +40,14 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
     $intl_timezone = $rc['settings']['intl-default-timezone'];
 
     //
-    // Load the festival
+    // Load the festival settings
     //
-    $strsql = "SELECT ciniki_musicfestivals.id, "
-        . "ciniki_musicfestivals.name, "
-        . "ciniki_musicfestivals.permalink, "
-        . "ciniki_musicfestivals.start_date, "
-        . "ciniki_musicfestivals.end_date, "
-        . "ciniki_musicfestivals.primary_image_id, "
-        . "ciniki_musicfestivals.description, "
-        . "ciniki_musicfestivals.document_logo_id, "
-        . "ciniki_musicfestivals.document_header_msg, "
-        . "ciniki_musicfestivals.document_footer_msg "
-        . "FROM ciniki_musicfestivals "
-        . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND ciniki_musicfestivals.id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'festivals', 'fname'=>'id', 
-            'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'primary_image_id', 'description', 
-                'document_logo_id', 'document_header_msg', 'document_footer_msg')),
-        ));
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $tnid, $args['festival_id']);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.113', 'msg'=>'Festival not found', 'err'=>$rc['err']));
+        return $rc;
     }
-    if( !isset($rc['festivals'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.114', 'msg'=>'Unable to find Festival'));
-    }
-    $festival = $rc['festivals'][0];
-
-    //
-    // Load the settings for the festival
-    //
-    $strsql = "SELECT detail_key, detail_value "
-        . "FROM ciniki_musicfestival_settings "
-        . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
-    $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.742', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
-    }
-    foreach($rc['settings'] as $k => $v) {
-        $festival[$k] = $v;
-    }
+    $festival = $rc['festival'];
 
     //
     // Load the schedule sections, divisions, timeslots, classes, registrations
@@ -123,38 +85,6 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
         . "competitors.first AS competitor_first, "
         . "competitors.last AS competitor_last, "
         . "competitors.name AS competitor_name, "
-/*        . "registrations.title1, "
-        . "registrations.title2, "
-        . "registrations.title3, "
-        . "registrations.title4, "
-        . "registrations.title5, "
-        . "registrations.title6, "
-        . "registrations.title7, "
-        . "registrations.title8, "
-        . "registrations.composer1, "
-        . "registrations.composer2, "
-        . "registrations.composer3, "
-        . "registrations.composer4, "
-        . "registrations.composer5, "
-        . "registrations.composer6, "
-        . "registrations.composer7, "
-        . "registrations.composer8, "
-        . "registrations.movements1, "
-        . "registrations.movements2, "
-        . "registrations.movements3, "
-        . "registrations.movements4, "
-        . "registrations.movements5, "
-        . "registrations.movements6, "
-        . "registrations.movements7, "
-        . "registrations.movements8, "
-        . "registrations.perf_time1, "
-        . "registrations.perf_time2, "
-        . "registrations.perf_time3, "
-        . "registrations.perf_time4, "
-        . "registrations.perf_time5, "
-        . "registrations.perf_time6, "
-        . "registrations.perf_time7, "
-        . "registrations.perf_time8, " */
         . "registrations.participation, "
         . "registrations.notes, "
         . "registrations.internal_notes, "
@@ -224,10 +154,6 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
                 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id',
                 'notes', 'internal_notes',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
-//                'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
-//                'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
-//                'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
-//                'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
                 ),
             ),
         ));
@@ -320,34 +246,10 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
 
         public function DivisionHeader($args, $location, $continued) {
             $fields = array();
-/*            if( isset($args['division_header_format']) && $args['division_header_format'] != 'default' ) {
-                $fields = explode('-', $args['division_header_format']);
-                if( $continued == 'yes' ) {
-                    $division[$fields[0]] .= ' (continued...)';
-                }
-                if( isset($args['division_header_labels']) && $args['division_header_labels'] == 'yes' ) {
-                    foreach($fields as $fid => $field) {
-                        if( $fid == 0 ) {
-                            continue;   // No label on first field
-                        }
-                        if( $field == 'date' ) {
-                            $division[$field] = 'Date: ' . $division[$field];
-                        } elseif( $field == 'name' ) {
-                            $division[$field] = 'Section: ' . $division[$field];
-                        } elseif( $field == 'adjudicator' ) {
-                            $division[$field] = 'Adjudicator: ' . $division[$field];
-                        } elseif( $field == 'address' ) {
-                            $division[$field] = 'Location: ' . $division[$field];
-                        }
-                    }
-                } 
-            } else { */
-                // Default layout
-                $fields = array('date');
-                if( $continued == 'yes' ) {
-                    $location['date'] .= ' (continued...)';
-                } 
-//            }
+            $fields = array('date');
+            if( $continued == 'yes' ) {
+                $location['date'] .= ' (continued...)';
+            } 
             // Figure out how much room the location header needs
             $h = 0;
             $this->SetFont('', 'B', '16');
@@ -373,7 +275,6 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
                 $this->SetCellPaddings(3, 1, 3, 3);
             }
             $this->SetFillColor(246);
-//            $this->Ln(4);
         }
     }
 
@@ -429,7 +330,7 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
     //
     $pdf->SetCreator('Ciniki');
     $pdf->SetAuthor($tenant_details['name']);
-    $pdf->SetTitle($festival['name'] . ' - Schedule Competitors');
+    $pdf->SetTitle($festival['name'] . ' - Schedule ' . $festival['competitor-label-plural']);
     $pdf->SetSubject('');
     $pdf->SetKeywords('');
 
@@ -448,7 +349,7 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
     $pdf->SetDrawColor(200);
     $pdf->SetLineWidth(0.1);
 
-    $filename = 'Schedule Competitors';
+    $filename = 'Schedule ' . $festival['competitor-label-plural'];
 
     //
     // Go through the sections, divisions and classes
@@ -466,7 +367,7 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
         //
         // Start a new section
         //
-        $pdf->header_title = 'Schedule Competitors';
+        $pdf->header_title = 'Schedule ' . $festival['competitor-label-plural'];
         $pdf->header_sub_title = $location['address'];
         $pdf->AddPage();
         //
