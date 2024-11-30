@@ -1804,7 +1804,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     $fields[$fid]['value'] = $rc['class']['code'] . ' - ' . $rc['class']['name'];
                 }
             }
-            if( isset($field['label']) && preg_match("/Competitor /", $field['label']) 
+            // Check if competitor address should be added for view registration
+            if( isset($field['label']) && preg_match("/^{$festival['competitor-label-singular']}/", $field['label']) 
                 && isset($field['class']) && $field['class'] == '' 
                 ) {
                 //
@@ -1851,8 +1852,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     . ($competitor['phone_home'] != '' ? "\nHome Phone: " . $competitor['phone_home'] : '')
                     . "\nEmail: " . $competitor['email']
                     . "\nAge: " . $competitor['age']
-                    . "\nLevel: " . $competitor['study_level']
-                    . "\nInstrument</b>: " . $competitor['instrument']
+                    . (isset($competitor['study_level']) && $competitor['study_level'] != '' ? "\nLevel: " . $competitor['study_level'] : '')
+                    . (isset($competitor['instrument']) && $competitor['instrument'] != '' ? "\nInstrument: " . $competitor['instrument'] : '')
                     . (isset($competitor['notes']) && $competitor['notes'] != '' ? "\nNotes: " . $competitor['notes'] : '')
                     . "";
                 $fields[$fid]['ftype'] = 'textarea';
