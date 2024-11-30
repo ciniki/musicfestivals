@@ -243,38 +243,14 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
     }
 
     //
-    // Load the festival
+    // Load the festival settings
     //
-    $strsql = "SELECT ciniki_musicfestivals.id, "
-        . "ciniki_musicfestivals.name, "
-        . "ciniki_musicfestivals.permalink, "
-        . "ciniki_musicfestivals.flags, "
-        . "ciniki_musicfestivals.start_date, "
-        . "ciniki_musicfestivals.end_date, "
-        . "ciniki_musicfestivals.primary_image_id, "
-        . "ciniki_musicfestivals.description, "
-        . "ciniki_musicfestivals.document_logo_id, "
-        . "ciniki_musicfestivals.document_header_msg, "
-        . "ciniki_musicfestivals.document_footer_msg "
-        . "FROM ciniki_musicfestivals "
-        . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND ciniki_musicfestivals.id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'festivals', 'fname'=>'id', 
-            'fields'=>array('name', 'permalink', 'flags', 
-                'start_date', 'end_date', 'primary_image_id', 'description', 
-                'document_logo_id', 'document_header_msg', 'document_footer_msg',
-                )),
-        ));
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $tnid, $args['festival_id']);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.107', 'msg'=>'Festival not found', 'err'=>$rc['err']));
+        return $rc;
     }
-    if( !isset($rc['festivals'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.187', 'msg'=>'Unable to find Festival'));
-    }
-    $festival = $rc['festivals'][0];
+    $festival = $rc['festival'];
 
     //
     // Load TCPDF library
@@ -456,7 +432,7 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
     $pdf->SetFillColor(224);
     $border = 1;
     $pdf->Cell($w[0], 0, 'Date/Time', $border, 0, 'L', 1);
-    $pdf->Cell($w[1], 0, 'Competitor', $border, 0, 'L', 1);
+    $pdf->Cell($w[1], 0, $festival['competitor-label-singular'], $border, 0, 'L', 1);
     $pdf->Cell($w[2], 0, 'Class', $border, 1, 'L', 1);
     $pdf->SetFont('helvetica', '', 12);
     $pdf->SetFillColor(242);
@@ -511,7 +487,7 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
             $pdf->SetFillColor(224);
             $border = 1;
             $pdf->Cell($w[0], 0, 'Date/Time', $border, 0, 'L', 1);
-            $pdf->Cell($w[1], 0, 'Competitor', $border, 0, 'L', 1);
+            $pdf->Cell($w[1], 0, $festival['competitor-label-singular'], $border, 0, 'L', 1);
             $pdf->Cell($w[2], 0, 'Class', $border, 1, 'L', 1);
             $pdf->SetFont('helvetica', '', 12);
             $pdf->SetFillColor(242);

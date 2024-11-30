@@ -370,10 +370,10 @@ function ciniki_musicfestivals_templates_registrationsPDF(&$ciniki, $tnid, $args
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.68', 'msg'=>'Competitor not found', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.68', 'msg'=>"{$festival['competitor-label-singular']} not found", 'err'=>$rc['err']));
                 }
                 if( !isset($rc['competitors'][0]) ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.69', 'msg'=>'Unable to find Competitor'));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.69', 'msg'=>"Unable to find {$festival['competitor-label-singular']}"));
                 }
                 $competitor = $rc['competitors'][0];
                 $competitor['age'] = $competitor['_age'];
@@ -634,7 +634,7 @@ function ciniki_musicfestivals_templates_registrationsPDF(&$ciniki, $tnid, $args
         if( $pdf->getStringHeight($w[2], $reg['accompanist_name']) > $lh ) {
             $lh = $pdf->getStringHeight($w[2], $reg['accompanist_name']);
         }
-        $pdf->MultiCell($w[0], 8, "Competitor(s)", 1, 'L', 1, 0);
+        $pdf->MultiCell($w[0], 8, $festival['competitor-label-singular'], 1, 'L', 1, 0);
         $pdf->MultiCell($w[1], 8, "Teacher", 1, 'L', 1, 0);
         $pdf->MultiCell($w[2], 8, "Accompanist", 1, 'L', 1, 1);
         $pdf->MultiCell($w[0], $lh, $competitor_name, 1, 'L', 0, 0);
