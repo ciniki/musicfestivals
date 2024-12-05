@@ -3052,7 +3052,7 @@ function ciniki_musicfestivals_main() {
                 args['accompanist_customer_id'] = this.accompanist_customer_id;
             }
             this.sections.schedule_divisions.num_cols = 2;
-            if( M.modFlagOn('ciniki.musicfestivals', 0x010000) ) {
+            if( M.modFlagOn('ciniki.musicfestivals', 0x0800) ) {
                 this.sections.schedule_divisions.num_cols = 3;
             }
         } else if( this.menutabs.selected == 'competitors' ) {
