@@ -72,8 +72,6 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
             'name'=>'',
             'sequence'=>$seq,
             'adjudicator1_id'=>0,
-            'adjudicator2_id'=>0,
-            'adjudicator3_id'=>0,
             'flags'=>0,
             'top_sponsors_title'=>'',
             'top_sponsor_ids'=>0,
@@ -94,8 +92,6 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
             . "ciniki_musicfestival_schedule_sections.name, "
             . "ciniki_musicfestival_schedule_sections.sequence, "
             . "ciniki_musicfestival_schedule_sections.adjudicator1_id, "
-            . "ciniki_musicfestival_schedule_sections.adjudicator2_id, "
-            . "ciniki_musicfestival_schedule_sections.adjudicator3_id, "
             . "ciniki_musicfestival_schedule_sections.flags, "
             . "ciniki_musicfestival_schedule_sections.sponsor_settings, "
             . "ciniki_musicfestival_schedule_sections.provincial_settings "
@@ -106,7 +102,7 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'schedulesections', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'name', 'sequence', 'adjudicator1_id', 'adjudicator2_id', 'adjudicator3_id', 'flags',
+                'fields'=>array('festival_id', 'name', 'sequence', 'adjudicator1_id', 'flags',
                     'sponsor_settings', 'provincial_settings',
                     ),
                 'unserialize'=>array('sponsor_settings', 'provincial_settings'),

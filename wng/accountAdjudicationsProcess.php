@@ -84,8 +84,6 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     $strsql = "SELECT ssections.id AS section_id, "
         . "ssections.name AS section_name, "
         . "ssections.adjudicator1_id, "
-        . "ssections.adjudicator2_id, "
-        . "ssections.adjudicator3_id, "
         . "divisions.id AS division_id, "
         . "divisions.uuid AS division_uuid, "
         . "divisions.name AS division_name, "
@@ -179,7 +177,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             . ") "
         . "WHERE ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ssections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' ";
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0800) ) {
         $strsql .= "AND divisions.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' ";
     } else {
         $strsql .= "AND ssections.adjudicator1_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' ";

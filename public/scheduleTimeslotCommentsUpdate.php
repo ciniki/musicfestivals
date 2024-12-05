@@ -54,7 +54,7 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsUpdate($ciniki) {
     //
     // Get the adjudicators for the timeslot
     //
-    $strsql = "SELECT adjudicators.id, adjudicators.customer_id "
+/*    $strsql = "SELECT adjudicators.id, adjudicators.customer_id "
         . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
         . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
             . "timeslots.sdivision_id = divisions.id "
@@ -65,9 +65,9 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsUpdate($ciniki) {
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
-            . "(sections.adjudicator1_id = adjudicators.id "
-                . "OR sections.adjudicator2_id = adjudicators.id "
-                . "OR sections.adjudicator3_id = adjudicators.id "
+            . "("
+                . "sections.adjudicator1_id = adjudicators.id "
+                . "OR divisions.adjudicator_id = adjudicators.id "
                 . ") "
             . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
@@ -84,6 +84,7 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsUpdate($ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.166', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
     }
     $adjudicators = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
+*/
 
     //
     // Get the registrations for the timeslot
@@ -166,7 +167,7 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsUpdate($ciniki) {
             }
             if( count($update_args) > 0 ) {
                 //
-                // Update the comments for the adjudicator
+                // Update the comments for the registration
                 //
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
                 $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.registration', $registration['id'], $update_args, 0x04);

@@ -117,7 +117,7 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
         . "IFNULL(classes.name, '') AS class_name, "
         . "IFNULL(categories.name, '') AS category_name, "
         . "IFNULL(sections.name, '') AS syllabus_section_name, ";
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0800) ) {
         $strsql .= "divisions.adjudicator_id, ";
     } else {
         $strsql .= "ssections.adjudicator1_id AS adjudicator_id, ";

@@ -47,7 +47,6 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
         . "adjudicators.flags, "
         . "adjudicators.description, "
         . "adjudicators.discipline "
-//        . "sections.name AS section "
         . "FROM ciniki_musicfestival_adjudicators AS adjudicators "
         . "INNER JOIN ciniki_customers AS customers ON ("
             . "adjudicators.customer_id = customers.id "
@@ -57,14 +56,6 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
             . "customers.id = links.customer_id "
             . "AND links.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-//        . "LEFT JOIN ciniki_musicfestival_schedule_sections AS sections ON ("
-//            . "("
-//                . "adjudicators.id = sections.adjudicator1_id "
-//                . "OR adjudicators.id = sections.adjudicator2_id "
-//                . "OR adjudicators.id = sections.adjudicator3_id "
-//                . ") "
-//            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-//            . ") "
         . "WHERE adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' ";
     if( isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'live' ) {
         $strsql .= "AND ((adjudicators.flags&0x01) = 0x01 OR (adjudicators.flags&0x03) = 0) ";

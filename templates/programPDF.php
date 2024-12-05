@@ -97,8 +97,6 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
     $strsql = "SELECT ssections.id AS section_id, "
         . "ssections.name AS section_name, "
         . "ssections.adjudicator1_id, "
-        . "ssections.adjudicator2_id, "
-        . "ssections.adjudicator3_id, "
         . "divisions.id AS division_id, "
         . "divisions.name AS division_name, "
         . "divisions.address, "
@@ -186,7 +184,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'section_id', 
-            'fields'=>array('id'=>'section_id', 'name'=>'section_name', 'adjudicator1_id', 'adjudicator2_id', 'adjudicator3_id',
+            'fields'=>array('id'=>'section_id', 'name'=>'section_name', 'adjudicator1_id', 
             )),
         array('container'=>'divisions', 'fname'=>'division_id', 
             'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'address',

@@ -134,13 +134,11 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
     //
     $strsql = "SELECT ssections.id AS section_id, "
         . "ssections.name AS section_name, ";
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0800) ) {
         $strsql .= "divisions.adjudicator_id, ";
     } else {
         $strsql .= "ssections.adjudicator1_id AS adjudicator_id, ";
     }
-//        . "ssections.adjudicator2_id, "
-//        . "ssections.adjudicator3_id, "
     $strsql .= "divisions.id AS division_id, "
         . "divisions.name AS division_name, "
         . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, "

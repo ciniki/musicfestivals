@@ -388,8 +388,6 @@ function ciniki_musicfestivals_objects($ciniki) {
             'name'=>array('name'=>'Name'),
             'sequence'=>array('name'=>'Order', 'default'=>'1'),
             'adjudicator1_id'=>array('name'=>'First Adjudicator', 'id'=>'ciniki.musicfestivals.adjudicator', 'default'=>'0'),
-            'adjudicator2_id'=>array('name'=>'Second Adjudicator', 'id'=>'ciniki.musicfestivals.adjudicator', 'default'=>'0'),
-            'adjudicator3_id'=>array('name'=>'Third Adjudicator', 'id'=>'ciniki.musicfestivals.adjudicator', 'default'=>'0'),
             'flags'=>array('name'=>'Options', 'default'=>'0'),
             'sponsor_settings'=>array('name'=>'Sponsor Settings', 'sfields'=>array(
                 'top_sponsors_title'=>array('name'=>'Top Sponsors Title'),

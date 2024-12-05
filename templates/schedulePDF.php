@@ -127,6 +127,9 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
         $strsql .= "divisions.adjudicator_id AS adjudicator_id, ";
         $strsql .= "members.name AS member_name, ";
+    } elseif( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0800) ) {
+        $strsql .= "divisions.adjudicator_id AS adjudicator_id, ";
+        $strsql .= "'' AS member_name, ";
     } else {
         $strsql .= "ssections.adjudicator1_id AS adjudicator_id, ";
         $strsql .= "'' AS member_name, ";
@@ -200,7 +203,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_adjudicators AS adjudicators ON (";
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0800) ) {
         $strsql .= "divisions.adjudicator_id = adjudicators.id ";
     } else {
         $strsql .= "ssections.adjudicator1_id = adjudicators.id ";
