@@ -297,9 +297,10 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
     //
     // Get the list of divisions if section is specified
     //
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
-        && isset($args['section_id']) && $args['section_id'] > 0 
-        ) {
+//    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
+//        && isset($args['section_id']) && $args['section_id'] > 0 
+//        ) {
+    if( isset($args['section_id']) && $args['section_id'] > 0 ) {
         $strsql = "SELECT classes.id, "
             . "CONCAT_WS('', classes.code, ' - ', classes.name, ' (', COUNT(registrations.id), ')') AS name, "
             . "COUNT(registrations.id) AS num_registrations "
@@ -343,7 +344,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             array_unshift($rsp['classes'], array('id'=>0, 'name'=>'Select Class'));
         }
 
-    } elseif( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
+/*    } elseif( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
         && isset($args['section_id']) && $args['section_id'] > 0 
         ) {
         $strsql = "SELECT categories.id, "
@@ -387,7 +388,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                 );
         } else {
             array_unshift($rsp['categories'], array('id'=>0, 'name'=>'Select Category'));
-        }
+        } */
     } else {
         $rsp['categories'] = array(
             array('id' => 0, 'name' => 'Select Section'),

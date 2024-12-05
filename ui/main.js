@@ -7109,16 +7109,17 @@ function ciniki_musicfestivals_main() {
                 'onchange':'M.ciniki_musicfestivals_main.scheduletimeslot.updateRegistrations',
                 },
             }},
-        '_category':{'label':'', 
+/*        '_category':{'label':'', 
             'visible':function() {return !M.modFlagOn('ciniki.musicfestivals', 0x010000) && M.ciniki_musicfestivals_main.scheduletimeslot.section_id > 0 ? 'yes' : 'hidden';},
             'fields':{
                 'category_id':{'label':'', 'hidelabel':'yes', 'type':'select', 
                     'complex_options':{'value':'id', 'name':'name'}, 'options':{},
                     'onchange':'M.ciniki_musicfestivals_main.scheduletimeslot.updateRegistrations'
                     }
-                }},
-        '_class':{'label':'', 
-            'visible':function() {return M.modFlagOn('ciniki.musicfestivals', 0x010000) && M.ciniki_musicfestivals_main.scheduletimeslot.section_id > 0 ? 'yes' : 'hidden';},
+                }}, */
+        '_class':{'label':'Class', 
+//            'visible':function() {return M.modFlagOn('ciniki.musicfestivals', 0x010000) && M.ciniki_musicfestivals_main.scheduletimeslot.section_id > 0 ? 'yes' : 'hidden';},
+            'visible':function() {return M.ciniki_musicfestivals_main.scheduletimeslot.section_id > 0 ? 'yes' : 'hidden';},
             'fields':{
                 'class_id':{'label':'', 'hidelabel':'yes', 'type':'select', 
                     'complex_options':{'value':'id', 'name':'name'}, 'options':{},
@@ -7288,17 +7289,17 @@ function ciniki_musicfestivals_main() {
             this.section_id = sid;
             this.category_id = 0;
             this.class_id = 0;
-        } else if( M.modFlagOn('ciniki.musicfestivals', 0x010000) ) {
+        }
+//        } else if( M.modFlagOn('ciniki.musicfestivals', 0x010000) ) {
             var cid = this.formValue('class_id');
             if( cid != this.class_id ) {
                 this.class_id = cid;
             }
-        } else {
-            var cid = this.formValue('category_id');
-            if( cid != this.category_id ) {
-                this.category_id = cid;
-            }
-        }
+//        } else {
+//            var cid = this.formValue('category_id');
+//            if( cid != this.category_id ) {
+//                this.category_id = cid;
+//            }
         M.api.getJSONCb('ciniki.musicfestivals.scheduleTimeslotGet', 
             {'tnid':M.curTenantID, 'scheduletimeslot_id':this.scheduletimeslot_id, 'festival_id':this.festival_id, 'section_id':this.section_id, 'category_id':this.category_id, 'class_id':this.class_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
@@ -7308,7 +7309,7 @@ function ciniki_musicfestivals_main() {
                 var p = M.ciniki_musicfestivals_main.scheduletimeslot;
                 p.data.registrations = rsp.scheduletimeslot.registrations;
                 p.sections._section.fields.section_id.options = rsp.sections;
-                p.sections._category.fields.category_id.options = rsp.categories;
+//                p.sections._category.fields.category_id.options = rsp.categories;
                 p.sections._class.fields.class_id.options = rsp.classes;
                 p.unscheduled_registrations = rsp.unscheduled_registrations;
                 p.refreshSections(['registrations', '_section', '_category', '_class', 'unscheduled_registrations']);
@@ -7371,7 +7372,7 @@ function ciniki_musicfestivals_main() {
                 p.data = rsp.scheduletimeslot;
                 p.sections.general.fields.sdivision_id.options = rsp.scheduledivisions;
                 p.sections._section.fields.section_id.options = rsp.sections;
-                p.sections._category.fields.category_id.options = rsp.categories;
+//                p.sections._category.fields.category_id.options = rsp.categories;
                 p.unscheduled_registrations = rsp.unscheduled_registrations;
                 if( (M.ciniki_musicfestivals_main.festival.data.flags&0x16) > 0 ) {
                     p.sections.registrations.num_cols = 5;
