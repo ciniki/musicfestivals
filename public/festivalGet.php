@@ -1918,6 +1918,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "IFNULL(classes.id, 0) AS class_id, "
                     . "classes.code AS class_code, "
                     . "classes.name AS class_name, "
+                    . "classes.flags AS class_flags, "
+                    . "classes.schedule_seconds AS schedule_seconds, "
                     . "";
                 if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
                     $strsql .= "registrations.pn_display_name AS display_name ";
@@ -1953,7 +1955,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
                         'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
                         'reg_time_text', 'reg_finals_time_text', 'reg_finals_sort_time',
-                        'class_code',
+                        'class_code', 'class_flags', 'schedule_seconds',
                         )),
                     ));
                 if( $rc['stat'] != 'ok' ) {
@@ -1991,8 +1993,19 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                                     for($i = 1; $i <= 8; $i++) {
                                         if( $reg["perf_time{$i}"] != '' && $reg["perf_time{$i}"] > 0 ) {
                                             $ptime += $reg["perf_time{$i}"];
+                                            if( isset($festival['syllabus-schedule-time']) && $festival['syllabus-schedule-time'] == 'adjudication' 
+                                                && isset($reg['schedule_seconds']) && $reg['schedule_seconds'] > 0
+                                                ) {
+                                                $ptime += $reg['schedule_seconds'];
+                                            }
                                         }
                                     }
+                                    // schedule time is total time
+                                    if( isset($festival['syllabus-schedule-time']) && $festival['syllabus-schedule-time'] == 'total' 
+                                        && isset($reg['schedule_seconds']) && $reg['schedule_seconds'] > 0
+                                        ) {
+                                        $ptime = $reg['schedule_seconds'];
+                                    } 
                                     $perf_time += $ptime;
                                     $ptime_text = ' [?]';
                                     if( $ptime > 0 ) {
@@ -2015,7 +2028,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         }
                         if( $perf_time != '' && $perf_time > 0 ) {
                             if( $perf_time > 3600 ) {
-                                $festival['schedule_timeslots'][$iid]['perf_time_text'] = '[' . intval($perf_time/3660) . 'h ' . intval(($perf_time%3600)/60) . 'm]';
+                                $festival['schedule_timeslots'][$iid]['perf_time_text'] = '[' . intval($perf_time/3600) . 'h ' . intval(($perf_time%3600)/60) . 'm]';
                             } else {
                                 $festival['schedule_timeslots'][$iid]['perf_time_text'] = '[' . intval($perf_time/60) . ':' . str_pad(($perf_time%60), 2, '0', STR_PAD_LEFT) . ']';
                             }

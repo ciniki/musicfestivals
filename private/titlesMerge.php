@@ -23,8 +23,18 @@ function ciniki_musicfestivals_titlesMerge(&$ciniki, $tnid, $registration, $args
         $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $registration, $i);
         if( isset($rc['title']) && $rc['title'] != '' ) {
             $title = $rc['title'];
-            if( isset($registration["perf_time{$i}"]) && is_numeric($registration["perf_time{$i}"]) ) {
+            if( isset($args['schedule_time']) && $args['schedule_time'] == 'total' 
+                && isset($args['schedule_seconds']) && $args['schedule_seconds'] > 0
+                ) {
+                $perf_time = $registration['schedule_seconds'];
+            } 
+            elseif( isset($registration["perf_time{$i}"]) && is_numeric($registration["perf_time{$i}"]) ) {
                 $perf_time += $registration["perf_time{$i}"];
+                if( isset($args['schedule_time']) && $args['schedule_time'] == 'adjudication' 
+                    && isset($args['schedule_seconds']) && $args['schedule_seconds'] > 0
+                    ) {
+                    $perf_time += $registration['schedule_seconds'];
+                }
             }
             
             if( isset($args['times']) && $args['times'] == 'beginning' ) {
@@ -54,6 +64,6 @@ function ciniki_musicfestivals_titlesMerge(&$ciniki, $tnid, $registration, $args
         $titles = '[' . $perf_time_str . '] ' . $titles;
     }
 
-    return array('stat'=>'ok', 'titles'=>$titles, 'perf_time'=>$perf_time_str);
+    return array('stat'=>'ok', 'titles'=>$titles, 'perf_time'=>$perf_time_str, 'perf_time_seconds'=>$perf_time);
 }
 ?>

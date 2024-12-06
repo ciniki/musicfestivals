@@ -540,7 +540,6 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                 // If the number is not where it's suppose to be, change
                 //
                 if( $cur_number != $seq['number'] ) {
-                    error_log('update number: ' . $seq['id']);
                     $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.registration', $seq['id'], array('timeslot_sequence'=>$cur_number), 0x04);
                     if( $rc['stat'] != 'ok' ) {
                         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
@@ -620,7 +619,6 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                 // If the number is not where it's suppose to be, change
                 //
                 if( $cur_number != $seq['number'] ) {
-                    error_log('update number: ' . $seq['id']);
                     $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.registration', $seq['id'], array('finals_timeslot_sequence'=>$cur_number), 0x04);
                     if( $rc['stat'] != 'ok' ) {
                         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');

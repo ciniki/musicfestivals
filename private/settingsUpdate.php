@@ -177,6 +177,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'competitor-group-etransfer-email',
         'provincial-festival-id',
         'syllabus-schedule-time', 
+        'scheduling-age-show',
         );
     foreach($valid_settings as $field) {
         if( isset($args[$field]) ) {
