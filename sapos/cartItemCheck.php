@@ -38,6 +38,7 @@ function ciniki_musicfestivals_sapos_cartItemCheck($ciniki, $tnid, $customer, $a
             . "FROM ciniki_musicfestival_registrations AS registrations "
             . "INNER JOIN ciniki_musicfestival_members AS members ON ("
                 . "registrations.member_id = members.member_id "
+                . "AND registrations.festival_id = members.festival_id "
                 . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
@@ -54,8 +55,6 @@ function ciniki_musicfestivals_sapos_cartItemCheck($ciniki, $tnid, $customer, $a
                 . ") "
             . "WHERE registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "ORDER BY members.id DESC "
-            . "LIMIT 1 "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'registration');
         if( $rc['stat'] != 'ok' ) {
