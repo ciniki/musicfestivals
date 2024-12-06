@@ -2028,7 +2028,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         }
                         if( $perf_time != '' && $perf_time > 0 ) {
                             if( $perf_time > 3600 ) {
-                                $festival['schedule_timeslots'][$iid]['perf_time_text'] = '[' . intval($perf_time/3600) . 'h ' . intval(($perf_time%3600)/60) . 'm]';
+                                $festival['schedule_timeslots'][$iid]['perf_time_text'] = '[' . intval($perf_time/3600) . 'h ' . ceil(($perf_time%3600)/60) . 'm]';
                             } else {
                                 $festival['schedule_timeslots'][$iid]['perf_time_text'] = '[' . intval($perf_time/60) . ':' . str_pad(($perf_time%60), 2, '0', STR_PAD_LEFT) . ']';
                             }

@@ -305,7 +305,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
 
         if( $total_time > 0 ) {
             if( $total_time > 3600 ) {
-                $scheduletimeslot['total_perf_time'] = intval($total_time/3600) . 'h ' . intval(($total_time%3600)/60) . 'm';
+                $scheduletimeslot['total_perf_time'] = intval($total_time/3600) . 'h ' . ceil(($total_time%3600)/60) . 'm';
             } else {
                 $scheduletimeslot['total_perf_time'] =  intval($total_time/60) . ':' . str_pad(($total_time%60), 2, '0', STR_PAD_LEFT);
             }
