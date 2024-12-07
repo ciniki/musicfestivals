@@ -1872,7 +1872,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 }
                 // Note: This is a hack to stop editing at end of registrations
                 $fields[$fid]['editable'] = 'no';
-                $editable = 'no';
+//                $editable = 'no';
                 $fields[$fid]['required'] = 'no';
                 $fields[$fid]['ftype'] = 'viewtext'; 
                 if( preg_match("/perf_time/", $fid) ) {
@@ -1942,6 +1942,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         } elseif( $editable == 'yes' ) {
             $fields['action']['value'] = 'update';
         }
+        error_log($editable);
         if( $registration['timeslot_id'] > 0 ) {
             //
             // Get the timeslot->division->section flags to know if comments have been released
