@@ -3442,7 +3442,7 @@ function ciniki_musicfestivals_main() {
             'virtual_date':{'label':'Virtual Deadline', 'type':'datetime', 'visible':'no'},
             'titles_end_dt':{'label':'Edit Titles Deadline', 'type':'datetime'},
             'accompanist_end_dt':{'label':'Accompanist Deadline', 'type':'datetime',
-                'visible':function() { return M.modFlagSet('ciniki.muscifestivals', 0x8000); },
+                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x8000); },
                 },
             'upload_end_dt':{'label':'Upload Deadline', 'type':'datetime', 'visible':'no'},
             }},
