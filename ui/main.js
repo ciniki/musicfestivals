@@ -996,6 +996,7 @@ function ciniki_musicfestivals_main() {
                 'resultsexcel':{'label':'Results Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadResultsExcel(0);'},
                 'recommendations':{'label':'Provincial Recommendations', 'fn':'M.ciniki_musicfestivals_main.festival.downloadProvincialRecommendations(0);'},
                 'backtracks':{'label':'All Backtracks', 'fn':'M.ciniki_musicfestivals_main.festival.downloadBacktracks(0);'},
+                'artwork':{'label':'All Artwork', 'fn':'M.ciniki_musicfestivals_main.festival.downloadArtwork(0);'},
             }},
         'sbuttons2':{'label':'Current Section Downloads', 'aside':'no',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.schedulesection_id > 0 && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'downloads') == 'yes' ? 'yes' : 'no'; },
@@ -1007,6 +1008,7 @@ function ciniki_musicfestivals_main() {
                 'runsheets':{'label':'Run Sheets', 'fn':'M.ciniki_musicfestivals_main.festival.downloadRunSheetsPDF();'},
                 'resultsexcel':{'label':'Results Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadResultsExcel();'},
                 'backtracks':{'label':'Backtracks', 'fn':'M.ciniki_musicfestivals_main.festival.downloadBacktracks();'},
+                'artwork':{'label':'Artwork', 'fn':'M.ciniki_musicfestivals_main.festival.downloadArtwork();'},
             }},
         'scheduleoptions':{'label':'Schedule Options', 'aside':'no',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'downloads'); },
@@ -1689,6 +1691,13 @@ function ciniki_musicfestivals_main() {
             'schedulesection_id':(s==null ? this.schedulesection_id : s),
             };
         M.api.openFile('ciniki.musicfestivals.backtracksZip',args);
+    }
+    this.festival.downloadArtwork = function(s) {
+        var args = {'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'schedulesection_id':(s==null ? this.schedulesection_id : s),
+            };
+        M.api.openFile('ciniki.musicfestivals.artworkZip',args);
     }
     this.festival.downloadAccompanistSchedulePDF = function() {
         var args = {'tnid':M.curTenantID,

@@ -1963,6 +1963,14 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $fields[$fid]['editable'] = 'yes';
                 $editable = 'yes';
             } 
+            elseif( preg_match("/(title|composer|movements)/", $fid)
+                && $festival['upload'] == 'yes' 
+                && ($selected_class['titleflags']&0x0300) > 0   // Artwork Class
+                && $registration['billing_customer_id'] == $request['session']['customer']['id']
+                ) {
+                $fields[$fid]['editable'] = 'yes';
+                $editable = 'yes';
+            }
             elseif( preg_match("/artwork/", $fid) 
                 && $festival['upload'] == 'yes' 
                 && $registration['billing_customer_id'] == $request['session']['customer']['id']
