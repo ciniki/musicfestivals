@@ -68,7 +68,15 @@ function ciniki_musicfestivals_festivalFilesDelete(&$ciniki) {
         . "registrations.backtrack5, "
         . "registrations.backtrack6, "
         . "registrations.backtrack7, "
-        . "registrations.backtrack8 "
+        . "registrations.backtrack8, "
+        . "registrations.artwork1, "
+        . "registrations.artwork2, "
+        . "registrations.artwork3, "
+        . "registrations.artwork4, "
+        . "registrations.artwork5, "
+        . "registrations.artwork6, "
+        . "registrations.artwork7, "
+        . "registrations.artwork8 "
         . "FROM ciniki_musicfestival_registrations AS registrations "
         . "WHERE festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -78,8 +86,12 @@ function ciniki_musicfestivals_festivalFilesDelete(&$ciniki) {
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'uuid', 'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3', 
                 'music_orgfilename4', 'music_orgfilename5', 'music_orgfilename6', 'music_orgfilename7', 
-                'music_orgfilename8', 'backtrack1', 'backtrack2', 'backtrack3', 'backtrack4', 'backtrack5', 
-                'backtrack6', 'backtrack7', 'backtrack8'),
+                'music_orgfilename8', 
+                'backtrack1', 'backtrack2', 'backtrack3', 'backtrack4', 
+                'backtrack5', 'backtrack6', 'backtrack7', 'backtrack8',
+                'artwork1', 'artwork2', 'artwork3', 'artwork4', 
+                'artwork5', 'artwork6', 'artwork7', 'artwork8',
+                ),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -120,6 +132,13 @@ function ciniki_musicfestivals_festivalFilesDelete(&$ciniki) {
                     unlink($filename);
                 }
                 $update_args["backtrack{$i}"] = '';
+            }
+            if( $reg["artwork{$i}"] != '' ) {
+                $filename = "{$tenant_storage_dir}/ciniki.musicfestivals/files/{$reg['uuid'][0]}/{$reg['uuid']}_artwork{$i}";
+                if( file_exists($filename) ) {
+                    unlink($filename);
+                }
+                $update_args["artwork{$i}"] = '';
             }
         }
         if( count($update_args) > 0 ) {

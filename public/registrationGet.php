@@ -133,6 +133,14 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'backtrack6'=>'',
             'backtrack7'=>'',
             'backtrack8'=>'',
+            'artwork1'=>'',
+            'artwork2'=>'',
+            'artwork3'=>'',
+            'artwork4'=>'',
+            'artwork5'=>'',
+            'artwork6'=>'',
+            'artwork7'=>'',
+            'artwork8'=>'',
             'instrument' => '',
             'mark' => '',
             'placement' => '',
@@ -244,6 +252,14 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "registrations.backtrack6, "
             . "registrations.backtrack7, "
             . "registrations.backtrack8, "
+            . "registrations.artwork1, "
+            . "registrations.artwork2, "
+            . "registrations.artwork3, "
+            . "registrations.artwork4, "
+            . "registrations.artwork5, "
+            . "registrations.artwork6, "
+            . "registrations.artwork7, "
+            . "registrations.artwork8, "
             . "registrations.instrument, "
             . "registrations.mark, "
             . "registrations.placement, "
@@ -318,6 +334,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     'music_orgfilename5', 'music_orgfilename6',  'music_orgfilename7', 'music_orgfilename8',  
                     'backtrack1', 'backtrack2', 'backtrack3',  'backtrack4', 
                     'backtrack5', 'backtrack6',  'backtrack7', 'backtrack8',  
+                    'artwork1', 'artwork2', 'artwork3',  'artwork4', 
+                    'artwork5', 'artwork6',  'artwork7', 'artwork8',  
                     'timeslot_id', 'finals_timeslot_id', 
                     'instrument', 'mark', 'placement', 'level', 'comments', 'provincials_status', 'provincials_position',
                     'finals_mark', 'finals_placement', 'finals_level',

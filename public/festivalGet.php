@@ -486,6 +486,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "classes.sequence, "
                 . "classes.flags, "
                 . "classes.feeflags, "
+                . "classes.titleflags, "
                 . "classes.earlybird_fee, "
                 . "classes.fee, "
                 . "classes.virtual_fee, "
@@ -558,7 +559,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'classes', 'fname'=>'id', 
                     'fields'=>array('id', 'festival_id', 'category_id', 'section_name', 'groupname', 'category_name', 
-                        'code', 'name', 'permalink', 'sequence', 'flags', 'feeflags', 
+                        'code', 'name', 'permalink', 'sequence', 'flags', 'feeflags', 'titleflags',
                         'earlybird_fee', 'fee', 'virtual_fee', 'plus_fee', 'earlybird_plus_fee',
                         'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 
                         'synopsis', 'schedule_seconds', 'levels', 'trophies',
@@ -626,6 +627,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     } elseif( ($class['flags']&0x02000000) == 0x02000000 ) {
                         $festival['classes'][$iid]['backtrack'] = 'Optional';
                     }
+                    $festival['classes'][$iid]['artwork'] = '';
+                    if( ($class['titleflags']&0x0100) == 0x0100) {
+                        $festival['classes'][$iid]['artwork'] = 'Required';
+                    } elseif( ($class['titleflags']&0x0200) == 0x0200) {
+                        $festival['classes'][$iid]['artwork'] = 'Optional';
+                    }
                     $festival['classes'][$iid]['instrument'] = '';
                     if( ($class['flags']&0x04) == 0x04 ) {
                         $festival['classes'][$iid]['instrument'] = 'Yes';
@@ -637,7 +644,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         $festival['classes'][$iid]['accompanist'] = 'Optional';
                     }
                     $festival['classes'][$iid]['video'] = 'Optional';
-                    if( ($class['flags']&0x010000) == 0x020000 ) {
+                    if( ($class['flags']&0x010000) == 0x010000 ) {
                         $festival['classes'][$iid]['video'] = 'Required';
                     } elseif( ($class['flags']&0x020000) == 0x020000 ) {
                         $festival['classes'][$iid]['video'] = '';
@@ -659,6 +666,11 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         $festival['classes'][$iid]['composer'] = 'Required';
                     } elseif( ($class['flags']&0x20000000) == 0x20000000 ) {
                         $festival['classes'][$iid]['composer'] = 'Optional';
+                    }
+                    if( ($class['flags']&0x040000) == 0x040000 ) {
+                        $festival['classes'][$iid]['schedule_type'] = 'Performance&nbsp;+';
+                    } elseif( ($class['flags']&0x080000) == 0x080000 ) {
+                        $festival['classes'][$iid]['schedule_type'] = 'Total Time';
                     }
                     $festival['classes'][$iid]['schedule_time'] = '';
                     if( $class['schedule_seconds'] > 0 ) {
@@ -1993,7 +2005,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                                     for($i = 1; $i <= 8; $i++) {
                                         if( $reg["perf_time{$i}"] != '' && $reg["perf_time{$i}"] > 0 ) {
                                             $ptime += $reg["perf_time{$i}"];
-                                            if( isset($festival['syllabus-schedule-time']) && $festival['syllabus-schedule-time'] == 'adjudication' 
+//                                            if( isset($festival['syllabus-schedule-time']) && $festival['syllabus-schedule-time'] == 'adjudication' 
+                                            if( ($reg['class_flags']&0x040000) == 0x040000 
                                                 && isset($reg['schedule_seconds']) && $reg['schedule_seconds'] > 0
                                                 ) {
                                                 $ptime += $reg['schedule_seconds'];
@@ -2001,7 +2014,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                                         }
                                     }
                                     // schedule time is total time
-                                    if( isset($festival['syllabus-schedule-time']) && $festival['syllabus-schedule-time'] == 'total' 
+//                                    if( isset($festival['syllabus-schedule-time']) && $festival['syllabus-schedule-time'] == 'total' 
+                                    if( ($reg['class_flags']&0x080000) == 0x080000 
                                         && isset($reg['schedule_seconds']) && $reg['schedule_seconds'] > 0
                                         ) {
                                         $ptime = $reg['schedule_seconds'];

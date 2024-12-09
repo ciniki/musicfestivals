@@ -22,8 +22,8 @@
 #                           0x02 - Multireg - Allow for same student to register multiple times. **Not currently implemented**
 #                           0x04 - Instrument required on registration
 #                           0x08 - Instrument optional **future placeholder, not implemented**
-#                           0x10 - Fixed title(s)
-#                           0x20 - 
+#                           0x10 - Fixed title(s) **to be deprecated**
+#                           0x20 - Virtual Only (Only applicable when festival flags 0x06 = 0x02 - no virtual pricing)
 #                           0x40 - Teacher Required
 #                           0x80 - Teacher Optional
 #                           0x0100 - Mark
@@ -34,20 +34,20 @@
 #                           0x2000 - Accompanist Optional
 #                           0x4000 - Individual Registration
 #                           0x8000 - Group/Ensemble Registration
-#                           0x010000 - Virtual Entry Youtube URL Required
-#                           0x020000 - Virtual Entry Youtube URL Hidden
-#                           0x040000 - 
-#                           0x080000 - 
-#                           0x100000 - Virtual Entry Music PDF Required
-#                           0x200000 - Virtual Entry Music PDF Hidden
-#                           0x400000 - Live Entry Music PDF Required **future**
-#                           0x800000 - Live Entry Music PDF Optional **future**
-#                           0x01000000 - Backtrack Required
-#                           0x02000000 - Backtrack Optional
-#                           0x04000000 - Movements/Musical Required
-#                           0x08000000 - Movements/Musical Optional
-#                           0x10000000 - Composer Required
-#                           0x20000000 - Composer Optional
+#                           0x010000 - Virtual Entry Youtube URL Required **to be deprecated**
+#                           0x020000 - Virtual Entry Youtube URL Hidden **to be deprecated**
+#                           0x040000 - Schedule Time is added to perf_time
+#                           0x080000 - Schedule Time is total time
+#                           0x100000 - Virtual Entry Music PDF Required **to be deprecated**
+#                           0x200000 - Virtual Entry Music PDF Hidden **to be deprecated**
+#                           0x400000 - 
+#                           0x800000 - 
+#                           0x01000000 - Backtrack Required **to be deprecated**
+#                           0x02000000 - Backtrack Optional **to be deprecated**
+#                           0x04000000 - Movements/Musical Required **to be deprecated**
+#                           0x08000000 - Movements/Musical Optional **to be deprecated**
+#                           0x10000000 - Composer Required **to be deprecated**
+#                           0x20000000 - Composer Optional **to be deprecated**
 #                           0x40000000 - 
 #                           0x80000000 - 
 #
@@ -61,6 +61,42 @@
 #                           0x20 - Plus Live Fee
 #                           0x40 -      ** saved for possible future fee type **
 #                           0x80 -      ** saved for possible future fee type **
+#
+# titleflags:           The options for titles. Several of the flags will be moved from flags
+#                       field in the future.
+#
+#                           0x01 - 
+#                           0x02 - 
+#                           0x04 - 
+#                           0x08 - 
+#                           0x10 - Fixed title(s) **Future move from flags**
+#                           0x20 - 
+#                           0x40 - 
+#                           0x80 - 
+#                           0x0100 - Artwork Required
+#                           0x0200 - Artwork Optional
+#                           0x0400 - 
+#                           0x0800 - 
+#                           0x1000 - Time Required **future**
+#                           0x2000 - Time Optional **future**
+#                           0x4000 - 
+#                           0x8000 - 
+#                           0x010000 - Virtual Entry Youtube URL Required  **FUTURE move from flags**
+#                           0x020000 - Virtual Entry Youtube URL Hidden **Future move from flags**
+#                           0x040000 - 
+#                           0x080000 - 
+#                           0x100000 - Virtual Entry Music PDF Required **Future move from flags**
+#                           0x200000 - Virtual Entry Music PDF Hidden **Future move from flags**
+#                           0x400000 - Live Entry Music PDF Required **future** **Future move from flags**
+#                           0x800000 - Live Entry Music PDF Optional **future** **Future move from flags**
+#                           0x01000000 - Backtrack Required **Future move from flags**
+#                           0x02000000 - Backtrack Optional **Future move from flags**
+#                           0x04000000 - Movements/Musical Required **Future move from flags**
+#                           0x08000000 - Movements/Musical Optional **Future move from flags**
+#                           0x10000000 - Composer Required **Future move from flags**
+#                           0x20000000 - Composer Optional **Future move from flags**
+#                           0x40000000 - 
+#                           0x80000000 - 
 #
 # earlybird_fee:        The earlybird fee for the class.
 # fee:                  The fee for the class.
@@ -99,6 +135,7 @@ create table ciniki_musicfestival_classes (
     sequence tinyint unsigned not null,
     flags int unsigned not null,
     feeflags int unsigned not null,
+    titleflags int unsigned not null,
     earlybird_fee decimal(19,6) not null,
     fee decimal(19,6) not null,
     virtual_fee decimal(19,6) not null,
@@ -122,4 +159,4 @@ create table ciniki_musicfestival_classes (
     index (festival_id, category_id, tnid),
     index keywords (keywords),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.14';
+) ENGINE='InnoDB', COMMENT='v1.15';

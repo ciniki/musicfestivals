@@ -112,6 +112,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
             'sequence' => $seq,
             'flags' => 0x4001,
             'feeflags' => 0,
+            'titleflags' => 0,
             'earlybird_fee' => '',
             'fee' => '',
             'virtual_fee' => '',
@@ -163,6 +164,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
             . "ciniki_musicfestival_classes.sequence, "
             . "ciniki_musicfestival_classes.flags, "
             . "ciniki_musicfestival_classes.feeflags, "
+            . "ciniki_musicfestival_classes.titleflags, "
             . "ciniki_musicfestival_classes.earlybird_fee, "
             . "ciniki_musicfestival_classes.fee, "
             . "ciniki_musicfestival_classes.virtual_fee, "
@@ -187,7 +189,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'classes', 'fname'=>'id', 
                 'fields'=>array('festival_id', 'category_id', 'section_id', 'code', 'name', 'permalink', 
-                    'sequence', 'flags', 'feeflags', 
+                    'sequence', 'flags', 'feeflags', 'titleflags',
                     'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 
                     'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 'provincials_code', 'synopsis',
                     'schedule_seconds', 'options',

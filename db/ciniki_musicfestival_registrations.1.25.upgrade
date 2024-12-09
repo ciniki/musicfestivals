@@ -1,0 +1,9 @@
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN artwork1 varchar(250) not null AFTER backtrack8;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN artwork2 varchar(250) not null AFTER artwork1;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN artwork3 varchar(250) not null AFTER artwork2;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN artwork4 varchar(250) not null AFTER artwork3;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN artwork5 varchar(250) not null AFTER artwork4;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN artwork6 varchar(250) not null AFTER artwork5;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN artwork7 varchar(250) not null AFTER artwork6;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN artwork8 varchar(250) not null AFTER artwork7;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.25';

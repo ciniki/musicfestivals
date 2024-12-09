@@ -34,6 +34,9 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         'movements'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Movements Setting'),
         'composer'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Composer Setting'),
         'backtrack'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Backtrack Setting'),
+        'artwork'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Artwork Setting'),
+        'video'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Setting'),
+        'music'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music Setting'),
         'marking'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Marking Flags Setting'),
         'multireg'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Multi Registration Option'),
         ));
@@ -68,38 +71,22 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
     $datetime_format = ciniki_users_datetimeFormat($ciniki, 'php');
 
     //
-    // Load the festival details
+    // Load the festival settings
     //
-    $strsql = "SELECT ciniki_musicfestivals.id, "
-        . "ciniki_musicfestivals.name, "
-        . "ciniki_musicfestivals.permalink, "
-        . "ciniki_musicfestivals.start_date, "
-        . "ciniki_musicfestivals.end_date, "
-        . "ciniki_musicfestivals.status, "
-        . "ciniki_musicfestivals.flags, "
-        . "ciniki_musicfestivals.earlybird_date, "
-        . "ciniki_musicfestivals.live_date, "
-        . "ciniki_musicfestivals.virtual_date, "
-        . "ciniki_musicfestivals.titles_end_dt, "
-        . "ciniki_musicfestivals.upload_end_dt "
-        . "FROM ciniki_musicfestivals "
-        . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND ciniki_musicfestivals.id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $args['festival_id']);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.795', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
-    }
-    if( !isset($rc['festival']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.796', 'msg'=>'Unable to find requested festival'));
+        return $rc;
     }
     $festival = $rc['festival'];
-   
+
     //
     // Get the list of classes in the section
     //
     $strsql = "SELECT classes.id, "
         . "classes.flags, "
+        . "classes.feeflags, "
+        . "classes.titleflags, "
         . "classes.earlybird_fee, "
         . "classes.fee, "
         . "classes.virtual_fee, "
@@ -125,8 +112,9 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'classes', 'fname'=>'id', 
-            'fields'=>array('id', 'flags', 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee'),
-            ),
+            'fields'=>array('id', 'flags', 'feeflags', 'titleflags', 
+                'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
+                )),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.797', 'msg'=>'Unable to load classes', 'err'=>$rc['err']));
@@ -177,6 +165,8 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         // Set the flags
         //
         $flags = $class['flags'];
+        $feeflags = $class['feeflags'];
+        $titleflags = $class['titleflags'];
 
         //
         // Update the instrument
@@ -232,6 +222,39 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         }
 
         //
+        // Update artwork
+        //
+        if( isset($args['artwork']) && strtolower($args['artwork']) == 'none' && ($class['titleflags']&0x0300) > 0 ) {
+            $titleflags = ($titleflags&0xFFFFFCFF);
+        } elseif( isset($args['artwork']) && strtolower($args['artwork']) == 'required' && ($class['titleflags']&0x0100) == 0 ) {
+            $titleflags = ($titleflags&0xFFFFFCFF) | 0x0100;
+        } elseif( isset($args['artwork']) && strtolower($args['artwork']) == 'optional' && ($class['titleflags']&0x0200) == 0 ) {
+            $titleflags = ($titleflags&0xFFFFFCFF) | 0x0200;
+        }
+
+        //
+        // Update video
+        //
+        if( isset($args['video']) && strtolower($args['video']) == 'optional' && ($class['flags']&0x030000) > 0 ) {
+            $flags = ($flags&0xFFFCFFFF);
+        } elseif( isset($args['video']) && strtolower($args['video']) == 'required' && ($class['flags']&0x010000) == 0 ) {
+            $flags = ($flags&0xFFFCFFFF) | 0x010000;
+        } elseif( isset($args['video']) && strtolower($args['video']) == 'none' && ($class['flags']&0x020000) == 0 ) {
+            $flags = ($flags&0xFFFCFFFF) | 0x020000;
+        }
+
+        //
+        // Update music
+        //
+        if( isset($args['music']) && strtolower($args['music']) == 'optional' && ($class['flags']&0x300000) > 0 ) {
+            $flags = ($flags&0xFFCFFFFF);
+        } elseif( isset($args['music']) && strtolower($args['music']) == 'required' && ($class['flags']&0x100000) == 0 ) {
+            $flags = ($flags&0xFFCFFFFF) | 0x100000;
+        } elseif( isset($args['music']) && strtolower($args['music']) == 'none' && ($class['flags']&0x200000) == 0 ) {
+            $flags = ($flags&0xFFCFFFFF) | 0x200000;
+        }
+
+        //
         // Update the marking
         //
         if( isset($args['marking']) && $args['marking'] != '' && is_numeric($args['marking']) ) {
@@ -252,6 +275,12 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         //
         if( $flags != $class['flags'] ) {
             $update_args['flags'] = $flags;
+        }
+        if( $feeflags != $class['feeflags'] ) {
+            $update_args['feeflags'] = $feeflags;
+        }
+        if( $titleflags != $class['titleflags'] ) {
+            $update_args['titleflags'] = $titleflags;
         }
 
         if( count($update_args) > 0 ) {

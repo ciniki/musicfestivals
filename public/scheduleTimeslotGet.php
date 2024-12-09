@@ -699,8 +699,8 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, [
                 'times' => 'startsum', 
                 'numbers' => 'yes',
-                'schedule_time' => isset($festival['syllabus-schedule-time']) ? $festival['syllabus-schedule-time'] : '',
-                'schedule_seconds' => $reg['schedule_seconds'],
+//                'schedule_time' => isset($festival['syllabus-schedule-time']) ? $festival['syllabus-schedule-time'] : '',
+//                'schedule_seconds' => $reg['schedule_seconds'],
                 ]);
             $rsp['unscheduled_registrations'][$rid]['titles'] = $rc['titles'];
             if( isset($ages) ) {

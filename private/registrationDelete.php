@@ -44,7 +44,15 @@ function ciniki_musicfestivals_registrationDelete(&$ciniki, $tnid, $reg_id) {
         . "registrations.backtrack5, "
         . "registrations.backtrack6, "
         . "registrations.backtrack7, "
-        . "registrations.backtrack8 "
+        . "registrations.backtrack8, "
+        . "registrations.artwork1, "
+        . "registrations.artwork2, "
+        . "registrations.artwork3, "
+        . "registrations.artwork4, "
+        . "registrations.artwork5, "
+        . "registrations.artwork6, "
+        . "registrations.artwork7, "
+        . "registrations.artwork8 "
         . "FROM ciniki_musicfestival_registrations AS registrations "
         . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $reg_id) . "' "
         . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -70,6 +78,12 @@ function ciniki_musicfestivals_registrationDelete(&$ciniki, $tnid, $reg_id) {
         }
         if( $reg["backtrack{$i}"] != '' ) {
             $filename = "{$tenant_storage_dir}/ciniki.musicfestivals/files/{$reg['uuid'][0]}/{$reg['uuid']}_backtrack{$i}";
+            if( file_exists($filename) ) {
+                unlink($filename);
+            }
+        }
+        if( $reg["artwork{$i}"] != '' ) {
+            $filename = "{$tenant_storage_dir}/ciniki.musicfestivals/files/{$reg['uuid'][0]}/{$reg['uuid']}_artwork{$i}";
             if( file_exists($filename) ) {
                 unlink($filename);
             }

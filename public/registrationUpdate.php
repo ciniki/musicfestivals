@@ -230,6 +230,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                     . "registrations.perf_time6, "
                     . "registrations.perf_time7, "
                     . "registrations.perf_time8, "
+                    . "IFNULL(classes.flags, 0) AS class_flags, "
                     . "IFNULL(classes.schedule_seconds, 0) AS schedule_seconds "
                     . "FROM ciniki_musicfestival_registrations AS registrations "
                     . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
@@ -263,10 +264,11 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                 //
                 // Check if there is a schedule time and if it should be total time or in adjudication time added to perf times
                 //
-                if( isset($festival['syllabus-schedule-time']) && $lastreg['schedule_seconds'] > 0 ) {
+                if( isset($lastreg['class_flags']) && ($lastreg['class_flags']&0x0C0000) > 0 && $lastreg['schedule_seconds'] > 0 ) {
                     if( $festival['syllabus-schedule-time'] == 'total' ) {
+                    if( ($lastreg['class_flags']&0x0C0000) == 0x080000 ) {
                         $total_time = $lastreg['schedule_seconds'];
-                    } elseif( $festival['syllabus-schedule-time'] == 'adjudication' ) {
+                    } elseif( ($lastreg['class_flags']&0x0C0000) == 0x040000 ) {
                         $total_time += $lastreg['schedule_seconds'];
                     }
                 }
@@ -401,6 +403,9 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
             } elseif( preg_match("/backtrack([1-8])/", $field_name, $m) ) {
                 $file_num = $m[1];
                 $file_prefix = 'backtrack';
+            } elseif( preg_match("/artwork([1-8])/", $field_name, $m) ) {
+                $file_num = $m[1];
+                $file_prefix = 'artwork';
             } else {
                 error_log('UNKNOWN FILE: ' . $field_name);
                 continue;
@@ -428,6 +433,9 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
             if( $file_prefix == 'backtrack' ) {
                 $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/files/' 
                     . $registration['uuid'][0] . '/' . $registration['uuid'] . '_backtrack' . $file_num;
+            } elseif( $file_prefix == 'artwork' ) {
+                $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/files/' 
+                    . $registration['uuid'][0] . '/' . $registration['uuid'] . '_artwork' . $file_num;
             } else {
                 $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/files/' 
                     . $registration['uuid'][0] . '/' . $registration['uuid'] . '_music' . $file_num;
