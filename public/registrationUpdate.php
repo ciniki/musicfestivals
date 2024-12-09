@@ -265,7 +265,6 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                 // Check if there is a schedule time and if it should be total time or in adjudication time added to perf times
                 //
                 if( isset($lastreg['class_flags']) && ($lastreg['class_flags']&0x0C0000) > 0 && $lastreg['schedule_seconds'] > 0 ) {
-                    if( $festival['syllabus-schedule-time'] == 'total' ) {
                     if( ($lastreg['class_flags']&0x0C0000) == 0x080000 ) {
                         $total_time = $lastreg['schedule_seconds'];
                     } elseif( ($lastreg['class_flags']&0x0C0000) == 0x040000 ) {
