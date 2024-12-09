@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_categories MODIFY COLUMN description text not null;
+ALTER TABLE ciniki_musicfestival_categories COMMENT='v1.03';
