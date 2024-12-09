@@ -269,4 +269,4 @@ create table ciniki_musicfestival_registrations (
     index competitors (festival_id, competitor1_id, competitor2_id, competitor3_id, competitor4_id, competitor5_id),
     index (festival_id, class_id, tnid),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.24';
+) ENGINE='InnoDB', COMMENT='v1.25';
