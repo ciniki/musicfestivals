@@ -6234,7 +6234,7 @@ function ciniki_musicfestivals_main() {
         return (this.selected_class != null && this.selected_class.flags&0x03000000) > 0 ? 'yes' : 'no';
     }
     this.registration.artworkVisible = function(i) {
-        return (this.selected_class != null && this.selected_class.flags&0x0300) > 0 ? 'yes' : 'no';
+        return (this.selected_class != null && this.selected_class.titleflags&0x0300) > 0 ? 'yes' : 'no';
     }
     this.registration.fieldValue = function(s, i, d) { 
         return this.data[i]; 

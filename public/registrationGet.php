@@ -698,6 +698,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         $strsql .= "CONCAT_WS(' - ', classes.code, classes.name) AS name, ";
     }
     $strsql .= "classes.flags, "
+        . "classes.feeflags, "
+        . "classes.titleflags, "
         . "classes.min_titles, "
         . "classes.max_titles, "
         . "FORMAT(classes.earlybird_fee, 2) AS earlybird_fee, "
@@ -720,7 +722,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         . "";
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'classes', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'flags', 'min_titles', 'max_titles', 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee')),
+            'fields'=>array('id', 'name', 'flags', 'feeflags', 'titleflags', 'min_titles', 'max_titles', 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee')),
         ));
     if( $rc['stat'] != 'ok' ) { 
         return $rc;
