@@ -1437,12 +1437,12 @@ function ciniki_musicfestivals_main() {
                     'fn':'M.ciniki_musicfestivals_main.festival.switchStatsTab("members");',
                     },
             }},
-        'stats_cities':{'label':'', 'type':'simplegrid', 'num_cols':2,
+        'stats_cities':{'label':'', 'type':'simplegrid', 'num_cols':3,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'statistics') == 'yes' && M.ciniki_musicfestivals_main.festival.sections.stats_tabs.selected == 'cities' ? 'yes' : 'no'; },
             'cellClasses':['flexlabel', 'alignleft'],
-            'headerValues':['City, Province', 'Number of Competitors'],
+            'headerValues':['City, Province', 'Number of Competitors', 'Num of Registrations'],
             'sortable':'yes',
-            'sortTypes':['text', 'number'],
+            'sortTypes':['text', 'number', 'number'],
             'noData':'No Statistics yet',
         },
         'stats_members':{'label':'', 'type':'simplegrid', 'num_cols':2,
@@ -2120,10 +2120,17 @@ function ciniki_musicfestivals_main() {
         if( s == 'sponsors-old' && j == 0 ) {
             return '<span class="maintext">' + d.sponsor.title + '</span>';
         }
-        if( s == 'statistics' || s == 'stats_cities' || s == 'stats_placements' ) {
+        if( s == 'statistics' || s == 'stats_placements' ) {
             switch(j) {
                 case 0: return d.label;
                 case 1: return d.value;
+            }
+        }
+        if( s == 'stats_cities' ) {
+            switch(j) {
+                case 0: return d.label;
+                case 1: return d.num_competitors;
+                case 2: return d.num_registrations;
             }
         }
         if( s == 'stats_members' ) {

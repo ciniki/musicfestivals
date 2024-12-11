@@ -3519,8 +3519,20 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             // Get the number of city, province stats
             //
             if( $args['statistics'] == 'cities' ) {
-                $strsql = "SELECT CONCAT_WS(', ', city, province) AS cityprov, COUNT(*) AS num "
+                $strsql = "SELECT CONCAT_WS(', ', city, province) AS cityprov, COUNT(DISTINCT competitors.id) AS num_competitors, "
+                    . "COUNT(DISTINCT registrations.id) AS num_registrations "
                     . "FROM ciniki_musicfestival_competitors AS competitors "
+                    . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                        . "registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                        . "AND ( "
+                            . "competitors.id = registrations.competitor1_id "
+                            . "OR competitors.id = registrations.competitor2_id "
+                            . "OR competitors.id = registrations.competitor3_id "
+                            . "OR competitors.id = registrations.competitor4_id "
+                            . "OR competitors.id = registrations.competitor5_id "
+                            . ") "
+                            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
                     . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                     . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "GROUP BY cityprov "
@@ -3529,7 +3541,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'cityprovincestats', 'fname'=>'cityprov', 
-                        'fields'=>array('label'=>'cityprov', 'value'=>'num'),
+                        'fields'=>array('label'=>'cityprov', 'num_competitors', 'num_registrations'),
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
