@@ -1440,7 +1440,7 @@ function ciniki_musicfestivals_main() {
         'stats_cities':{'label':'', 'type':'simplegrid', 'num_cols':2,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'statistics') == 'yes' && M.ciniki_musicfestivals_main.festival.sections.stats_tabs.selected == 'cities' ? 'yes' : 'no'; },
             'cellClasses':['flexlabel', 'alignleft'],
-            'headerValues':['City, Province', 'Number of Registrations'],
+            'headerValues':['City, Province', 'Number of Competitors'],
             'sortable':'yes',
             'sortTypes':['text', 'number'],
             'noData':'No Statistics yet',
