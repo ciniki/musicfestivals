@@ -1180,9 +1180,17 @@ function ciniki_musicfestivals_main() {
                 return '';
                 },
             },
+        'competitors_tabs':{'label':'', 'type':'paneltabs', 'selected':'classes',
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'competitors' ? 'yes' : 'no'; },
+            'tabs':{
+                'classes':{'label':'Classes', 'fn':'M.ciniki_musicfestivals_main.festival.switchCompsTab("classes");'},
+                'notes':{'label':'Notes', 'fn':'M.ciniki_musicfestivals_main.festival.switchCompsTab("notes");'},
+            }}, 
         'competitors':{'label':'', 'type':'simplegrid', 'num_cols':3,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'competitors' ? 'yes' : 'no'; },
             'headerValues':['Name', 'Classes', 'Waiver'],
+            'sortable':'yes',
+            'sortTypes':['text', 'text', 'text'],
             },
         'lists':{'label':'Lists', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'lists'); },
@@ -1993,11 +2001,19 @@ function ciniki_musicfestivals_main() {
             return M.textCount(d.name, d.num_competitors);
         }
         if( s == 'competitors' ) {
-            switch(j) {
+            if( this.sections[s].dataMaps[j] == 'name' ) {
+                return d.name + M.subdue(' (',d.pronoun,')');
+            }
+            else if( this.sections[s].dataMaps[j] == 'notes' ) {
+                return d.notes;
+//                return d.notes.replace('\n', '<br/>');
+            }
+            return d[this.sections[s].dataMaps[j]];
+/*            switch(j) {
                 case 0: return d.name + M.subdue(' (',d.pronoun,')');
                 case 1: return d.classcodes;
                 case 2: return d.waiver_signed;
-            }
+            } */
         }
         if( s == 'invoice_statuses' ) {
             return M.textCount(d.status_text, d.num_invoices);
@@ -2709,6 +2725,10 @@ function ciniki_musicfestivals_main() {
         this.sections.competitor_tabs.selected = t;
         this.open();
     }
+    this.festival.switchCompsTab = function(t) {
+        this.sections.competitors_tabs.selected = t;
+        this.open();
+    }
     this.festival.switchLVTab = function(t) {
         this.sections.ipv_tabs.selected = t;
         this.open();
@@ -3074,6 +3094,59 @@ function ciniki_musicfestivals_main() {
         this.sections.syllabus_search.headerClasses = this.sections.syllabus_search.cellClasses;
         this.sections.syllabus_search.livesearchcols = this.sections.syllabus_search.dataMaps.length;
     }
+    this.festival.updateCompetitors = function() {
+/*        'competitors':{'label':'', 'type':'simplegrid', 'num_cols':3,
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'competitors' ? 'yes' : 'no'; },
+            'headerValues':['Name', 'Classes', 'Waiver'],
+            },
+                case 0: return d.name + M.subdue(' (',d.pronoun,')');
+                case 1: return d.classcodes;
+                case 2: return d.waiver_signed; */
+        // Syllabus class lists
+        this.sections.competitors.cellClasses = [''];
+        this.sections.competitors.dataMaps = ['name'];
+        this.sections.competitors.sortTypes = ['text'];
+        this.sections.competitors.num_cols = 1;
+        this.sections.competitors.headerValues = ['Name'];
+        if( this.sections.competitors_tabs.selected == 'classes' ) {
+            this.sections.competitors.headerValues.push('Classes');
+            this.sections.competitors.cellClasses.push('');
+            this.sections.competitors.dataMaps.push('classcodes');
+            this.sections.competitors.sortTypes.push('text');
+            this.sections.competitors.num_cols++;
+        } else if( this.sections.competitors_tabs.selected == 'notes' ) {
+            this.sections.competitors.headerValues.push('Waiver');
+            this.sections.competitors.cellClasses.push('');
+            this.sections.competitors.dataMaps.push('waiver_signed');
+            this.sections.competitors.sortTypes.push('text');
+            this.sections.competitors.num_cols++;
+
+            if( this.data['waiver-photo-status'] != null 
+                && (this.data['waiver-photo-status'] == 'internal' || this.data['waiver-photo-status'] == 'on')
+                ) {
+                this.sections.competitors.headerValues.push('Photos');
+                this.sections.competitors.cellClasses.push('');
+                this.sections.competitors.dataMaps.push('photos');
+                this.sections.competitors.sortTypes.push('text');
+                this.sections.competitors.num_cols++;
+            }
+            if( this.data['waiver-name-status'] != null 
+                && (this.data['waiver-name-status'] == 'internal' || this.data['waiver-name-status'] == 'on')
+                ) {
+                this.sections.competitors.headerValues.push('Name');
+                this.sections.competitors.cellClasses.push('');
+                this.sections.competitors.dataMaps.push('name_published');
+                this.sections.competitors.sortTypes.push('text');
+                this.sections.competitors.num_cols++;
+            }
+            this.sections.competitors.headerValues.push('Notes');
+            this.sections.competitors.cellClasses.push('');
+            this.sections.competitors.dataMaps.push('notes');
+            this.sections.competitors.sortTypes.push('text');
+            this.sections.competitors.num_cols++;
+        }
+        this.sections.competitors.headerClasses = this.sections.competitors.cellClasses;
+    }
     this.festival.reopen = function(cb,fid,list) {
         if( this.menutabs.selected == 'syllabus' ) {
             if( M.gE(this.panelUID + '_syllabus_search').value != '' ) {
@@ -3284,6 +3357,7 @@ function ciniki_musicfestivals_main() {
             }
             p.data.syllabus_categories.unshift({'id':0, 'name':'All'});
             p.updateClasses();
+            p.updateCompetitors();
             // Syllabus tabs
             if( (rsp.festival.flags&0x0800) == 0x0800 ) {
                 p.sections.syllabi_tabs.tabs = {};

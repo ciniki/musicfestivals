@@ -2331,41 +2331,29 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
 
             $strsql = "SELECT competitors.id, "
                 . "competitors.festival_id, "
-                . "competitors.name, ";
+                . "competitors.name, "
+                . "competitors.ctype, ";
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
                 $strsql .= "competitors.pronoun, ";
             } else {
                 $strsql .= "'' AS pronoun, ";
             }
             $strsql .= "IF((competitors.flags&0x01) = 0x01, 'Signed', '') AS waiver_signed, "
+                . "IF((competitors.flags&0x02) = 0x02, 'Yes', 'NO PHOTOS') AS photos, "
+                . "IF((competitors.flags&0x04) = 0x04, 'Yes', 'Name Withheld') AS name_published, "
                 . "competitors.city, "
-                . "competitors.province "
-//                . "IFNULL(classes.code, '') AS classcodes "
+                . "competitors.province, "
+                . "competitors.notes "
                 . "FROM ciniki_musicfestival_competitors AS competitors "
-//                . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
-//                    . "registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-//                    . "AND ("
-//                        . "registrations.competitor1_id = competitors.id "
-//                        . "OR registrations.competitor2_id = competitors.id "
-//                        . "OR registrations.competitor3_id = competitors.id "
-//                        . "OR registrations.competitor4_id = competitors.id "
-//                        . "OR registrations.competitor5_id = competitors.id "
-//                        . ") "
-//                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-//                    . ") "
-//                . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
-//                    . "registrations.class_id = classes.id "
-//                    . "AND classes.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-//                    . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-//                    . ") "
                 . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "ORDER BY competitors.name ";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'competitors', 'fname'=>'id', 
-                    'fields'=>array('id', 'festival_id', 'name', 'pronoun', 'waiver_signed', 
-                        'city', 'province', //'classcodes',
+                    'fields'=>array('id', 'festival_id', 'name', 'ctype', 'pronoun', 
+                        'waiver_signed', 'photos', 'name_published',
+                        'city', 'province', 'notes',
                         ),
 //                    'dlists'=>array('classcodes'=>', '),
                     ),
