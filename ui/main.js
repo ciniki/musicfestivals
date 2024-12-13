@@ -2005,8 +2005,7 @@ function ciniki_musicfestivals_main() {
                 return d.name + M.subdue(' (',d.pronoun,')');
             }
             else if( this.sections[s].dataMaps[j] == 'notes' ) {
-                return d.notes;
-//                return d.notes.replace('\n', '<br/>');
+                return d.notes.replace(/\n/g, '<br/>');
             }
             return d[this.sections[s].dataMaps[j]];
 /*            switch(j) {
