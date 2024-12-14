@@ -97,12 +97,10 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
             );
     }
 
-
     //
     // Processing
     //
     $display = 'sectionlist';
-
 
     if( isset($request['uri_split'][($request['cur_uri_pos']+1)])
         && isset($sections[$request['uri_split'][($request['cur_uri_pos']+1)]])
@@ -663,7 +661,6 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                 );
             unset($request['session']['ciniki.musicfestivals']['recommendation-submit-msg']);
         }
-
 
         $groups = array();
         foreach($sections as $sid => $section) {

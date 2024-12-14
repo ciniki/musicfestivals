@@ -91,11 +91,11 @@ function ciniki_musicfestivals_templates_recommendationsExcel(&$ciniki, $tnid, $
         . "INNER JOIN ciniki_musicfestival_recommendations AS recommendations ON ("
             . "entries.recommendation_id = recommendations.id "
             . "AND recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-            . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestivals_members AS members ON ("
             . "recommendations.member_id = members.id "
-            . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
             . "entries.class_id = classes.id "
@@ -109,7 +109,7 @@ function ciniki_musicfestivals_templates_recommendationsExcel(&$ciniki, $tnid, $
             . "categories.section_id = sections.id "
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "WHERE entries.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND entries.position < 100 "
         . "";
     if( isset($args['recommendation_id']) && $args['recommendation_id'] > 0 ) {
@@ -175,6 +175,7 @@ function ciniki_musicfestivals_templates_recommendationsExcel(&$ciniki, $tnid, $
                     case 1: $entry['position_text'] = '1st Recommendation'; break;
                     case 2: $entry['position_text'] = '2nd Recommendation'; break;
                     case 3: $entry['position_text'] = '3rd Recommendation'; break;
+                    case 4: $entry['position_text'] = '4th Recommendation'; break;
                     case 101: $entry['position_text'] = '1st Alternate'; break;
                     case 102: $entry['position_text'] = '2nd Alternate'; break;
                     case 103: $entry['position_text'] = '3rd Alternate'; break;

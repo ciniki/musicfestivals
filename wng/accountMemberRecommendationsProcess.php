@@ -85,6 +85,86 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
         'title' => $args['member']['name'] . ' - ' . $args['festival']['name'] . ' - Recommendations',
         );
 
+    if( count($recommendations) > 0 ) {
+        $blocks[] = array(
+            'type' => 'buttons',
+            'class' => 'aligncenter',
+            'items' => array(   
+                array('text' => 'Download Excel', 'target' => '_blank', 'url' => "{$base_url}/recommendations/{$request['uri_split'][3]}/{$request['uri_split'][4]}/recommendations.xls"),
+//                array('text' => 'Download PDF', 'target' => '_blank', 'url' => "{$base_url}/recommendations/{$request['uri_split'][3]}/{$request['uri_split'][4]}/recommendations.pdf"),
+                ),
+            );
+    }
+
+    if( isset($request['uri_split'][5]) && $request['uri_split'][5] == 'recommendations.xls' ) {
+        //
+        // Generate XLS of recommendations
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'memberRecommendationsExcel');
+        $rc = ciniki_musicfestivals_templates_memberRecommendationsExcel($ciniki, $tnid, [
+            'festival_id' => $args['festival']['id'],
+            'member_id' => $args['member']['id'],
+            'recommendations' => $recommendations,
+            ]);
+        if( $rc['stat'] != 'ok' ) {
+            error_log('ERR: Unable to generate local festival recommendations excel');
+            $blocks[] = array(
+                'type' => 'msg', 
+                'level' => 'error',
+                'content' => 'Unable to create Excel file, please contact us for help.',
+                );
+            return array('stat'=>'ok', 'blocks'=>$blocks);
+        }
+
+        //
+        // Output the excel file
+        //
+        $filename = "{$args['member']['name']} - {$args['festival']['name']} - Recommendations";
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="' . $filename . '.xls"');
+        header('Cache-Control: max-age=0');
+        
+        $objWriter = PHPExcel_IOFactory::createWriter($rc['excel'], 'Excel5');
+        $objWriter->save('php://output');
+
+        return array('stat'=>'exit');
+    }
+    elseif( isset($request['uri_split'][5]) && $request['uri_split'][5] == 'recommendations.pdf' ) {
+        //
+        // Generate PDF of recommendations
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'memberRecommendationsPDF');
+        $rc = ciniki_musicfestivals_templates_memberRecommendationsPDF($ciniki, $tnid, [
+            'festival_id' => $args['festival']['id'],
+            'title' => $args['member']['name'],
+            'subtitle' => $args['festival']['name'] . ' - Recommendations',
+            'recommendations' => $recommendations,
+            ]);
+        if( $rc['stat'] != 'ok' ) {
+            error_log('ERR: Unable to generate local festival recommendations excel');
+            $blocks[] = array(
+                'type' => 'msg', 
+                'level' => 'error',
+                'content' => 'Unable to create PDF file, please contact us for help.',
+                );
+            return array('stat'=>'ok', 'blocks'=>$blocks);
+        }
+
+        //
+        // Output the excel file
+        //
+        $filename = "{$args['member']['name']} - {$args['festival']['name']} - Recommendations";
+        header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+        header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+        header('Cache-Control: no-cache, must-revalidate');
+        header('Pragma: no-cache');
+        header('Content-Type: application/pdf');
+        header('Cache-Control: max-age=0');
+
+        $rc['pdf']->Output($filename . '.pdf', 'I');
+        return array('stat'=>'exit');
+    }
+
     $blocks[] = array(
         'type' => 'table',
         'headers' => 'yes',
