@@ -91,7 +91,7 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
             'class' => 'aligncenter',
             'items' => array(   
                 array('text' => 'Download Excel', 'target' => '_blank', 'url' => "{$base_url}/recommendations/{$request['uri_split'][3]}/{$request['uri_split'][4]}/recommendations.xls"),
-//                array('text' => 'Download PDF', 'target' => '_blank', 'url' => "{$base_url}/recommendations/{$request['uri_split'][3]}/{$request['uri_split'][4]}/recommendations.pdf"),
+                array('text' => 'Download PDF', 'target' => '_blank', 'url' => "{$base_url}/recommendations/{$request['uri_split'][3]}/{$request['uri_split'][4]}/recommendations.pdf"),
                 ),
             );
     }

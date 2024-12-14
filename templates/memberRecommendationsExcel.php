@@ -2,7 +2,7 @@
 //
 // Description
 // -----------
-// This function will generate an excel file of the registration results.
+// This function will generate an excel file of the recommendations results.
 // 
 // Arguments
 // ---------
