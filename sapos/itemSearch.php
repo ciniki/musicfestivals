@@ -33,6 +33,18 @@ function ciniki_musicfestivals_sapos_itemSearch($ciniki, $tnid, $args) {
     $festival = $rc['festival'];
 
     //
+    // Create the keywords string
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'classKeywordsMake');
+    $rc = ciniki_musicfestivals_classKeywordsMake($ciniki, $tnid, [
+        'keywords' => $args['start_needle'],
+        ]);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'ok');
+    }
+    $keywords = str_replace(' ', '% ', trim($rc['keywords']));
+
+    //
     // Search classes by code or name
     //
     $strsql = "SELECT classes.id, "
@@ -53,11 +65,16 @@ function ciniki_musicfestivals_sapos_itemSearch($ciniki, $tnid, $args) {
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE classes.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
-        . "AND (classes.code LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+        . "AND classes.keywords LIKE '% " . ciniki_core_dbQuote($ciniki, $keywords) . "%' "
+/*        . "AND (classes.code LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR classes.code LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR classes.name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR classes.name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-            . ") "
+            . "OR categories.name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR categories.name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR sections.name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "OR sections.name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . ") " */
         . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
