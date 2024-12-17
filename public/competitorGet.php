@@ -22,6 +22,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
+        'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'competitor_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Competitor'),
         'emails'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitor Emails'),
         'registrations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitor Registrations'),
@@ -95,6 +96,16 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
             'notes'=>'',
         );
         $details = array();
+
+        //
+        // Load the festival
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+        $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $args['festival_id']);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $festival = $rc['festival'];
     }
 
     //
@@ -462,6 +473,6 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
         $competitor['registrations'] = isset($rc['registrations']) ? $rc['registrations'] : array();
     }
 
-    return array('stat'=>'ok', 'competitor'=>$competitor, 'details'=>$details);
+    return array('stat'=>'ok', 'competitor'=>$competitor, 'details'=>$details, 'festival'=>$festival);
 }
 ?>

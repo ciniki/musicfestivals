@@ -6743,9 +6743,11 @@ function ciniki_musicfestivals_main() {
                 'etransfer_email':{'label':'etransfer Email', 'type':'text',
                     'visible':function() { 
                         if( (M.ciniki_musicfestivals_main.festival.data['competitor-individual-etransfer-email'] != null
-                            && M.ciniki_musicfestivals_main.festival.data['competitor-individual-etransfer-email'] != 'hidden')
+                            && M.ciniki_musicfestivals_main.festival.data['competitor-individual-etransfer-email'] != 'hidden'
+                            && M.ciniki_musicfestivals_main.festival.data['competitor-individual-etransfer-email'] != '')
                             || (M.ciniki_musicfestivals_main.festival.data['competitor-group-etransfer-email'] != null
-                            && M.ciniki_musicfestivals_main.festival.data['competitor-group-etransfer-email'] != 'hidden')
+                            && M.ciniki_musicfestivals_main.festival.data['competitor-group-etransfer-email'] != 'hidden'
+                            && M.ciniki_musicfestivals_main.festival.data['competitor-group-etransfer-email'] != '')
                             ) {
                             return 'yes';
                         }
@@ -6912,34 +6914,6 @@ function ciniki_musicfestivals_main() {
         if( fid != null ) { this.festival_id = fid; }
         if( list != null ) { this.nplist = list; }
         if( bci != null ) { this.billing_customer_id = bci; }
-        if( M.ciniki_musicfestivals_main.festival.data['waiver-photo-option-yes'] != null
-            && M.ciniki_musicfestivals_main.festival.data['waiver-photo-option-yes'] != ''
-            ) {
-            this.sections._other.fields.flags2.on = M.ciniki_musicfestivals_main.festival.data['waiver-photo-option-yes'];
-        } else {
-            this.sections._other.fields.flags2.on = 'Publish';
-        }
-        if( M.ciniki_musicfestivals_main.festival.data['waiver-photo-option-no'] != null
-            && M.ciniki_musicfestivals_main.festival.data['waiver-photo-option-no'] != ''
-            ) {
-            this.sections._other.fields.flags2.off = M.ciniki_musicfestivals_main.festival.data['waiver-photo-option-no'];
-        } else {
-            this.sections._other.fields.flags2.off = 'No Photos';
-        }
-        if( M.ciniki_musicfestivals_main.festival.data['waiver-name-option-yes'] != null
-            && M.ciniki_musicfestivals_main.festival.data['waiver-name-option-yes'] != ''
-            ) {
-            this.sections._other.fields.flags3.on = M.ciniki_musicfestivals_main.festival.data['waiver-name-option-yes'];
-        } else {
-            this.sections._other.fields.flags3.on = 'Publish';
-        }
-        if( M.ciniki_musicfestivals_main.festival.data['waiver-name-option-no'] != null
-            && M.ciniki_musicfestivals_main.festival.data['waiver-name-option-no'] != ''
-            ) {
-            this.sections._other.fields.flags3.off = M.ciniki_musicfestivals_main.festival.data['waiver-name-option-no'];
-        } else {
-            this.sections._other.fields.flags3.off = 'Hide Name';
-        }
         M.api.getJSONCb('ciniki.musicfestivals.competitorGet', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'competitor_id':this.competitor_id, 'emails':'yes', 'registrations':'yes'}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
@@ -6947,6 +6921,7 @@ function ciniki_musicfestivals_main() {
             }
             var p = M.ciniki_musicfestivals_main.competitor;
             p.data = rsp.competitor;
+            p.festival = rsp.festival;
             if( p.competitor_id == 0 ) {
                 p.sections._tabs.selected = 'contact';
                 p.sections._tabs.visible = 'no';
@@ -6954,6 +6929,34 @@ function ciniki_musicfestivals_main() {
                 p.sections._tabs.visible = 'yes';
             }
             p.sections._ctype.selected = rsp.competitor.ctype;
+            if( p.festival['waiver-photo-option-yes'] != null
+                && p.festival['waiver-photo-option-yes'] != ''
+                ) {
+                p.sections._other.fields.flags2.on = p.festival['waiver-photo-option-yes'];
+            } else {
+                p.sections._other.fields.flags2.on = 'Publish';
+            }
+            if( p.festival['waiver-photo-option-no'] != null
+                && p.festival['waiver-photo-option-no'] != ''
+                ) {
+                p.sections._other.fields.flags2.off = p.festival['waiver-photo-option-no'];
+            } else {
+                p.sections._other.fields.flags2.off = 'No Photos';
+            }
+            if( p.festival['waiver-name-option-yes'] != null
+                && p.festival['waiver-name-option-yes'] != ''
+                ) {
+                p.sections._other.fields.flags3.on = p.festival['waiver-name-option-yes'];
+            } else {
+                p.sections._other.fields.flags3.on = 'Publish';
+            }
+            if( p.festival['waiver-name-option-no'] != null
+                && p.festival['waiver-name-option-no'] != ''
+                ) {
+                p.sections._other.fields.flags3.off = p.festival['waiver-name-option-no'];
+            } else {
+                p.sections._other.fields.flags3.off = 'Hide Name';
+            }
             p.refresh();
             p.show(cb);
             p.switchType(p.sections._ctype.selected);
