@@ -20,6 +20,7 @@ function ciniki_musicfestivals_classList($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
+        'festival_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Festival'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -49,8 +50,10 @@ function ciniki_musicfestivals_classList($ciniki) {
         . "ciniki_musicfestival_classes.earlybird_fee, "
         . "ciniki_musicfestival_classes.fee "
         . "FROM ciniki_musicfestival_classes "
-        . "WHERE ciniki_musicfestival_classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "";
+        . "WHERE ciniki_musicfestival_classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
+    if( isset($args['festival_id']) && $args['festival_id'] != '' ) {
+        $strsql .= "AND ciniki_musicfestival_classes.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
+    }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'classes', 'fname'=>'id', 
