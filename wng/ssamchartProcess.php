@@ -112,7 +112,7 @@ function ciniki_musicfestivals_wng_ssamchartProcess(&$ciniki, $tnid, &$request, 
                     foreach($category['items'] as $item) {
                         $content .= "<div class='musicfestival-ssam-chart-title'><span class='musicfestival-ssam-chart-title'>" . $item['name'] . "</span>";
                         $songs = '';
-                        for($i = 1; $i <= 4; $i++) {
+                        for($i = 1; $i <= 9; $i++) {
                             if( isset($item["song{$i}"]) && $item["song{$i}"] != '' ) {
                                 $songs .= "<li class='musicfestival-ssam-chart-song'>" . $item["song{$i}"] . "</li>";
                             }
