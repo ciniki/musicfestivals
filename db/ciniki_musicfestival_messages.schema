@@ -21,9 +21,9 @@
 #
 # flags:            The options for the message.
 #
-#                       0x01 - No Competitors
-#                       0x02 - No Teachers
-#                       0x04 
+#                       0x01 - Include Competitors
+#                       0x02 - Include Teachers
+#                       0x04 - Include Accompanists 
 #                       0x08 
 #
 # content:          The content of the message.

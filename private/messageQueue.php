@@ -34,15 +34,17 @@ function ciniki_musicfestivals_messageQueue(&$ciniki, $tnid, $args) {
         //
         // Load the files
         //
-        foreach($args['message']['files'] as $file) {
-            $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/messages/' 
-                . $args['message']['uuid'][0] . '/' 
-                . $args['message']['uuid'] . '_' . $file['filename'];
-            if( is_file($storage_filename) ) {
-                $attachments[] = array(
-                    'filename' => $file['filename'],
-                    'content' => file_get_contents($storage_filename),
-                    );
+        if( isset($args['message']['files']) && is_array($args['message']['files']) ) {
+            foreach($args['message']['files'] as $file) {
+                $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/messages/' 
+                    . $args['message']['uuid'][0] . '/' 
+                    . $args['message']['uuid'] . '_' . $file['filename'];
+                if( is_file($storage_filename) ) {
+                    $attachments[] = array(
+                        'filename' => $file['filename'],
+                        'content' => file_get_contents($storage_filename),
+                        );
+                }
             }
         }
     }
@@ -65,6 +67,20 @@ function ciniki_musicfestivals_messageQueue(&$ciniki, $tnid, $args) {
                     'customer_id'=>$teacher['id'],
                     'customer_email'=>$teacher['email'],
                     'customer_name'=>$teacher['name'],
+                    'subject'=>$args['message']['subject'],
+                    'text_content'=>$content,
+                    );
+            }
+        }
+        foreach($args['message']['accompanists'] as $accompanist) {
+            if( !isset($emails[$accompanist['email']]) ) {
+                $content = $args['message']['content'];
+                $content = str_replace('{_first_}', $accompanist['first'], $content);
+                $content = str_replace('{_name_}', $accompanist['name'], $content);
+                $emails[$accompanist['email']] = array(
+                    'customer_id'=>$accompanist['id'],
+                    'customer_email'=>$accompanist['email'],
+                    'customer_name'=>$accompanist['name'],
                     'subject'=>$args['message']['subject'],
                     'text_content'=>$content,
                     );

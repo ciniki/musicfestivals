@@ -44,6 +44,10 @@ function ciniki_musicfestivals_messageAdd(&$ciniki) {
         return $rc;
     }
 
+    if( !isset($args['flags']) ) {
+        $args['flags'] = 0x07;
+    }
+
     //
     // Start transaction
     //
