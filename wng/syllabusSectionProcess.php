@@ -528,6 +528,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 $virtual_column = 'no';
                 $plus_live_column = 'no';
                 $live_label = $festival['earlybird'] == 'yes' ? 'Earlybird' : 'Fee';
+                $ap_live_label = $festival['earlybird'] == 'yes' ? 'Earlybird Adjudication Plus' : 'Adjudication Plus';
                 foreach($category['classes'] as $cid => $class) {
                     // Duplicated in apiClassSearch
                     if( ($class['feeflags']&0x03) > 0 ) {
@@ -558,10 +559,13 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                     }
                     if( ($festival['flags']&0x10) == 0x10 && isset($festival['plus_live']) ) {
                         $live_label = 'Regular Fee';
+                        $ap_live_label = 'Adjudication Plus';
                         if( ($class['feeflags']&0x20) == 0x20 ) {
                             if( isset($festival['earlybird']) && $festival['earlybird'] == 'yes' 
                                 && ($class['feeflags']&0x10) == 0x10 
                                 ) {
+                                $live_label = 'Earlybird Fee';
+                                $ap_live_label = 'Earlybird Adjudication Plus';
                                 $category['classes'][$cid]['plus_live_fee'] = '$' . number_format($class['earlybird_plus_fee'], 2);
                             } else {
                                 $category['classes'][$cid]['plus_live_fee'] = '$' . number_format($class['plus_fee'], 2);
@@ -614,7 +618,12 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
 
                 if( isset($festival['plus_live']) && $plus_live_column == 'yes' ) {
                     $block['headers'] = 'yes';
-                    $block['columns'][] = array('label'=>'Adjudication Plus Fee', 'fold-label'=>'Adjudication Plus Fee:', 'field'=>'plus_live_fee', 'class'=>'aligncenter fold-alignleft fee plus-fee');
+                    $block['columns'][] = array(
+                        'label' => $ap_live_label, 
+                        'fold-label' => $ap_live_label . ':', 
+                        'field'=>'plus_live_fee', 
+                        'class'=>'aligncenter fold-alignleft fee plus-fee',
+                        );
                     
                 }
                 if( isset($section['tableheader']) && $section['tableheader'] == 'multiprices' && count($block['columns']) < 3 ) {
