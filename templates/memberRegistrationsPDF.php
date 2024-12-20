@@ -262,7 +262,7 @@ function ciniki_musicfestivals_templates_memberRegistrationsPDF(&$ciniki, $tnid,
     //
     // Go through the sections, divisions and classes
     //
-    $w = array(80, 100);
+    $w = array(70, 70, 40);
     $pdf->AddPage();
 
     $pdf->SetFont('helvetica', '', 12);
@@ -279,6 +279,9 @@ function ciniki_musicfestivals_templates_memberRegistrationsPDF(&$ciniki, $tnid,
         $registration['lh'] = $pdf->getStringHeight($w[0], $registration['display_name']);
         if( $pdf->getStringHeight($w[1], $registration['scheduled']) > $registration['lh'] ) {
             $registration['lh'] = $pdf->getStringHeight($w[1], $registration['scheduled']);
+        }
+        if( $pdf->getStringHeight($w[2], $registration['invoice_status']) > $registration['lh'] ) {
+            $registration['lh'] = $pdf->getStringHeight($w[2], $registration['invoice_status']);
         }
 
         if( !isset($classes[$registration['class']]) ) {
@@ -313,7 +316,8 @@ function ciniki_musicfestivals_templates_memberRegistrationsPDF(&$ciniki, $tnid,
         $pdf->SetFont('', '');
         foreach($class['registrations'] as $registration) {
             $pdf->MultiCell($w[0], $registration['lh'], $registration['display_name'], 1, 'L', $fill, 0);
-            $pdf->MultiCell($w[1], $registration['lh'], $registration['scheduled'], 1, 'L', $fill, 1);
+            $pdf->MultiCell($w[1], $registration['lh'], $registration['scheduled'], 1, 'L', $fill, 0);
+            $pdf->MultiCell($w[2], $registration['lh'], $registration['invoice_status'], 1, 'L', $fill, 1);
             $fill = !$fill;
         }
 

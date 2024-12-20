@@ -233,7 +233,7 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
         'columns' => array(
             array('label'=>'Class', 'fold-label'=>'Class: ', 'field'=>'class'),
             array('label'=>'Competitor', 'field'=>'display_name'),
-            array('label'=>'Invoice', 'field'=>'invoice_status'),
+            array('label'=>'Status', 'field'=>'invoice_status'),
             array('label'=>'Scheduled/Results', 'fold-label'=>'Scheduled/Results: ', 'field'=>'scheduled'),
             ),
         'rows' => $registrations,

@@ -113,6 +113,7 @@ function ciniki_musicfestivals_templates_memberRegistrationsExcel(&$ciniki, $tni
 
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Class', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor', false);
+    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Status', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Scheduled/Results', false);
     $objPHPExcelWorksheet->getStyle('A1:C1')->getFont()->setBold(true);
     $row++;
@@ -121,6 +122,7 @@ function ciniki_musicfestivals_templates_memberRegistrationsExcel(&$ciniki, $tni
         $col = 0;
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $reg['class'], false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $reg['display_name'], false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $reg['invoice_status'], false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, preg_replace("/<br\/>/", ", ", $reg['scheduled']), false);
         $row++;
     }
