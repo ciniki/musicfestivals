@@ -25,6 +25,13 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
     }
     $maps = $rc['maps'];
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'private', 'maps');
+    $rc = ciniki_sapos_maps($ciniki);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $sapos_maps = $rc['maps'];
+
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
@@ -62,7 +69,8 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
         . "IFNULL(DATE_FORMAT(divisions.division_date, '%b %D'), '') AS timeslot_date, "
         . "IFNULL(locations.name, '') AS location_name, "
         . "divisions.flags AS division_flags, "
-        . "ssections.flags AS section_flags "
+        . "ssections.flags AS section_flags, "
+        . "IFNULL(CONCAT_WS('.', invoices.invoice_type, invoices.status), 0) AS invoice_status "
         . "FROM ciniki_musicfestival_registrations AS registrations "
         . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
             . "registrations.class_id = classes.id "
@@ -84,6 +92,10 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
             . "divisions.ssection_id = ssections.id "
             . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
+        . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
+            . "registrations.invoice_id = invoices.id "
+            . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
         . "WHERE registrations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member']['id']) . "' "
         . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival']['id']) . "' "
         . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -94,8 +106,9 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array( 'id', 'display_name', 'participation', 'class', 'class_name', 'timeslot_flags',
                 'timeslot_time', 'timeslot_date', 'location_name', 'division_flags', 'section_flags', 
-                'placement', 'finals_placement',
+                'placement', 'finals_placement', 'invoice_status',
                 ),
+            'maps'=>array('invoice_status'=>$sapos_maps['invoice']['typestatus']),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -220,6 +233,7 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
         'columns' => array(
             array('label'=>'Class', 'fold-label'=>'Class: ', 'field'=>'class'),
             array('label'=>'Competitor', 'field'=>'display_name'),
+            array('label'=>'Invoice', 'field'=>'invoice_status'),
             array('label'=>'Scheduled/Results', 'fold-label'=>'Scheduled/Results: ', 'field'=>'scheduled'),
             ),
         'rows' => $registrations,
