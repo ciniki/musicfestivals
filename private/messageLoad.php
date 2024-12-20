@@ -1196,7 +1196,6 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             }
         }
 
-        error_log(print_r($rsp['message']['objects'],true));
         //
         // Check the objects for teacher and competitor direct adds
         //
