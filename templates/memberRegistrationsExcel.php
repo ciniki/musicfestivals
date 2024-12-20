@@ -115,7 +115,7 @@ function ciniki_musicfestivals_templates_memberRegistrationsExcel(&$ciniki, $tni
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Status', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Scheduled/Results', false);
-    $objPHPExcelWorksheet->getStyle('A1:C1')->getFont()->setBold(true);
+    $objPHPExcelWorksheet->getStyle('A1:D1')->getFont()->setBold(true);
     $row++;
 
     foreach($args['registrations'] as $reg) {
