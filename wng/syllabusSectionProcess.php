@@ -558,13 +558,13 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                         }
                     }
                     if( ($festival['flags']&0x10) == 0x10 && isset($festival['plus_live']) ) {
-                        $live_label = 'Regular Fee';
+                        $live_label = 'Regular';
                         $ap_live_label = 'Adjudication Plus';
                         if( ($class['feeflags']&0x20) == 0x20 ) {
                             if( isset($festival['earlybird']) && $festival['earlybird'] == 'yes' 
                                 && ($class['feeflags']&0x10) == 0x10 
                                 ) {
-                                $live_label = 'Earlybird Fee';
+                                $live_label = 'Earlybird Regular';
                                 $ap_live_label = 'Earlybird Adjudication Plus';
                                 $category['classes'][$cid]['plus_live_fee'] = '$' . number_format($class['earlybird_plus_fee'], 2);
                             } else {
