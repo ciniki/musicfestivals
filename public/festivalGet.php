@@ -1119,8 +1119,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "invoices.invoice_type, "
                     . "invoices.status AS invoice_status, "
                     . "invoices.payment_status AS payment_status_text, "
-                    . "DATE_FORMAT(invoices.invoice_date, '%b %e') AS invoice_date "
-
+//                    . "DATE_FORMAT(invoices.invoice_date, '%b %e') AS invoice_date "
+                    . "invoices.invoice_date "
                     . "FROM ciniki_musicfestival_registrations AS registrations USE INDEX(festival_id_2) ";
                 if( isset($args['registration_tag']) && $args['registration_tag'] != '' ) {
                     $strsql .= "INNER JOIN ciniki_musicfestival_registration_tags AS tags ON ("
@@ -1209,6 +1209,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                             'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                             'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
+                            ),
+                        'utctotz'=>array(
+                            'invoice_date'=>array('timezone'=>$intl_timezone, 'format'=>'M j'),
                             ),
                         'maps'=>array(
                             'rtype_text'=>$maps['registration']['rtype'],
