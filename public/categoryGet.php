@@ -161,7 +161,7 @@ function ciniki_musicfestivals_categoryGet($ciniki) {
 //                    $category['classes'][$iid]['earlybird_fee'] = number_format($class['earlybird_fee'], 2);
 //                    $category['classes'][$iid]['fee'] = number_format($class['fee'], 2);
 //                    $category['classes'][$iid]['virtual_fee'] = number_format($class['virtual_fee'], 2);
-                    if( ($class['feeflags']&0x02) == 0x01 ) {
+                    if( ($class['feeflags']&0x01) == 0x01 ) {
                         $category['classes'][$iid]['earlybird_fee'] = '$' . number_format($class['earlybird_fee'], 2);
                     } else {
                         $category['classes'][$iid]['earlybird_fee'] = 'n/a';
