@@ -6294,7 +6294,6 @@ function ciniki_musicfestivals_main() {
         return 'hidden';
     }
     this.registration.competitorVisible = function(i) {
-        console.log(this.selected_class);
         if( (this.selected_class != null && i <= this.selected_class.max_competitors) || this.data['cometitor'+i+'_id'] > 0 ) {
 //        if( (this.selected_class != null && (this.selected_class.flags&0x10) == 0x10) || this.data.competitor2_id > 0 ) {
             return 'yes';
