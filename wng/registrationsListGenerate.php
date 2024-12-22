@@ -13,71 +13,22 @@
 function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$request, $args) {
 
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
-        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.341', 'msg'=>"I'm sorry, the page you requested does not exist."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.453', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
 
     //
     // Make sure a festival was specified
     //
     if( !isset($args['festival']['id']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.342', 'msg'=>"No festival specified"));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.521', 'msg'=>"No festival specified"));
     }
     $festival = $args['festival'];
 
-/*
-    //
-    // Make sure competitors where passed in arguments
-    //
-    if( !isset($args['competitors']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.344', 'msg'=>"No competitors specified"));
-    }
-    $competitors = $args['competitors'];
-
-    //
-    // Make sure teachers where passed in arguments
-    //
-    if( !isset($args['teachers']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.345', 'msg'=>"No teachers specified"));
-    }
-    $teachers = $args['teachers'];
-
-    //
-    // Make sure teachers where passed in arguments
-    //
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) ) {
-        if( !isset($args['accompanists']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.591', 'msg'=>"No accompanists specified"));
-        }
-        $accompanists = $args['accompanists'];
-    }
-
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
-        if( !isset($args['members']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.658', 'msg'=>"No accompanists specified"));
-        }
-        $members = $args['members'];
-    }
-
-    //
-    // Make sure registration where passed in arguments
-    //
-    if( !isset($args['registration']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.349', 'msg'=>"No registration specified"));
-    }
-    $registration = $args['registration'];
-
-    //
-    // Make sure customer specified
-    //
-    if( !isset($args['customer_id']) || $args['customer_id'] == '' || $args['customer_id'] < 1 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.347', 'msg'=>"No customer specified"));
-    }
-*/
     //
     // Make sure customer type is passed
     //
     if( !isset($args['customer_type']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.350', 'msg'=>"No customer type specified"));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.522', 'msg'=>"No customer type specified"));
     }
     $customer_type = $args['customer_type'];
 
@@ -85,7 +36,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
     // Make sure base_url is passed
     //
     if( !isset($args['base_url']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.350', 'msg'=>"No location specified"));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.723', 'msg'=>"No location specified"));
     }
     $base_url = $args['base_url'];
 

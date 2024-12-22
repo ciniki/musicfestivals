@@ -19,14 +19,14 @@ function ciniki_musicfestivals_templates_memberRegistrationsPDF(&$ciniki, $tnid,
     // Make sure festival_id was passed in
     //
     if( !isset($args['festival_id']) || $args['festival_id'] <= 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.764', 'msg'=>'No festival specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.790', 'msg'=>'No festival specified'));
     }
 
     //
     // Make sure registrations are passed
     //
     if( !isset($args['registrations']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.765', 'msg'=>'No registrations specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.795', 'msg'=>'No registrations specified'));
     }
 
     //

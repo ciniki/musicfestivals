@@ -370,10 +370,10 @@ function ciniki_musicfestivals_templates_registrationsPDF(&$ciniki, $tnid, $args
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.68', 'msg'=>"{$festival['competitor-label-singular']} not found", 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.440', 'msg'=>"{$festival['competitor-label-singular']} not found", 'err'=>$rc['err']));
                 }
                 if( !isset($rc['competitors'][0]) ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.69', 'msg'=>"Unable to find {$festival['competitor-label-singular']}"));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.452', 'msg'=>"Unable to find {$festival['competitor-label-singular']}"));
                 }
                 $competitor = $rc['competitors'][0];
                 $competitor['age'] = $competitor['_age'];
