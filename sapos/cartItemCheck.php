@@ -110,6 +110,7 @@ function ciniki_musicfestivals_sapos_cartItemCheck($ciniki, $tnid, $customer, $a
         return ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, [
             'registration_id' => $args['object_id'],
             'invoice_id' => $args['invoice_id'],
+            'invoice_item_id' => $args['id'],
             ]);
     }
 

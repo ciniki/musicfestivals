@@ -10,6 +10,7 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
     if( !isset($args['registration_id']) || $args['registration_id'] == '' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.875', 'msg'=>'No registration specified.'));
     }
+    $fees_msg = '';
 
     //
     // Get the registration and festival details
@@ -22,6 +23,12 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
         . "registrations.participation, "
         . "IFNULL(sections.live_end_dt, '0000-00-00 00:00:00') AS live_end_dt, "
         . "IFNULL(sections.virtual_end_dt, '0000-00-00 00:00:00') AS virtual_end_dt, "
+        . "IFNULL(classes.feeflags, 0) AS feeflags, "
+        . "IFNULL(classes.earlybird_fee, 0) AS earlybird_fee, "
+        . "IFNULL(classes.fee, 0) AS live_fee, "
+        . "IFNULL(classes.virtual_fee, 0) AS virtual_fee, "
+        . "IFNULL(classes.plus_fee, 0) AS plus_fee, "
+        . "IFNULL(classes.earlybird_plus_fee, 0) AS earlybird_plus_fee, "
         . "IFNULL(sections.flags, 0) AS section_flags, "
         . "IFNULL(sections.latefees_start_amount, 0) AS latefees_start_amount, "
         . "IFNULL(sections.latefees_daily_increase, 0) AS latefees_daily_increase, "
@@ -123,6 +130,59 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
     }
 
     //
+    // Check if earlybird is ending
+    //
+    if( $registration['participation'] == 0 
+        && $registration['fee'] == $registration['earlybird_fee']
+        && $festival['earlybird'] == 'no'
+        && $festival['live'] == 'yes'
+        ) {
+        $fees_msg .= "Earlybird fees have ended, registration fees have been update."; 
+        // Update registration
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration['id'], [
+            'fee' => $registration['live_fee'],
+            ], 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.106', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
+        } 
+
+        // Update invoice
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemUpdate');
+        $rc = ciniki_sapos_hooks_invoiceItemUpdate($ciniki, $tnid, [
+            'item_id' => $args['invoice_item_id'],
+            'unit_amount' => $registration['live_fee'],
+            ]);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.113', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
+        } 
+    }
+    elseif( $registration['participation'] == 2 
+        && $registration['fee'] == $registration['earlybird_plus_fee']
+        && $festival['earlybird'] == 'no'
+        && $festival['live'] == 'yes'
+        ) {
+        $fees_msg .= "Earlybird fees have ended, registration fees have been update."; 
+        // Update registration
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration['id'], [
+            'fee' => $registration['plus_fee'],
+            ], 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.114', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
+        }
+        // Update invoice
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemUpdate');
+        $rc = ciniki_sapos_hooks_invoiceItemUpdate($ciniki, $tnid, [
+            'item_id' => $args['invoice_item_id'],
+            'unit_amount' => $registration['plus_fee'],
+            ]);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.140', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
+        } 
+    }
+
+    //
     // Check for any late fees
     // Registrations still need to be open in festival, but past end date
     //
@@ -162,7 +222,6 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
     //
     // Add admin fee
     //
-    $fees_msg = '';
     if( isset($adminfee) && $adminfee > 0 ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'invoiceAdminFeeUpdate');
         $rc = ciniki_musicfestivals_invoiceAdminFeeUpdate($ciniki, $tnid, $args['invoice_id'], $adminfee);
