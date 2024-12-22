@@ -136,6 +136,7 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
         && $registration['fee'] == $registration['earlybird_fee']
         && $festival['earlybird'] == 'no'
         && $festival['live'] == 'yes'
+        && isset($args['invoice_item_id'])  // This is only passed when called from cartItemCheck, updating in UI should NOT change fee
         ) {
         $fees_msg .= "Earlybird fees have ended, registration fees have been update."; 
         // Update registration
@@ -161,6 +162,7 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
         && $registration['fee'] == $registration['earlybird_plus_fee']
         && $festival['earlybird'] == 'no'
         && $festival['live'] == 'yes'
+        && isset($args['invoice_item_id'])  // This is only passed when called from cartItemCheck, updating in UI should NOT change fee
         ) {
         $fees_msg .= "Earlybird fees have ended, registration fees have been update."; 
         // Update registration
