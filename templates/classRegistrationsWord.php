@@ -270,6 +270,7 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
                 $other_classes = preg_replace("/{$class['code']}/", '', $other_classes);
                 $other_classes = preg_replace("/,,/", ',', $other_classes);
                 $other_classes = preg_replace("/^,/", '', $other_classes);
+                $other_classes = preg_replace("/,$/", '', $other_classes);
                 if( $other_classes != '' ) {
                     $other_classes = ' (' . $other_classes . ')';
                 }

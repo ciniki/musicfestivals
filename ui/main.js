@@ -746,7 +746,7 @@ function ciniki_musicfestivals_main() {
                 'inperson':{'label':'Live', 'fn':'M.ciniki_musicfestivals_main.festival.switchLVTab("inperson");'},
                 'virtual':{'label':'Virtual', 'fn':'M.ciniki_musicfestivals_main.festival.switchLVTab("virtual");'},
             }}, 
-        'registration_sections':{'label':'', 'aside':'yes', 'type':'simplegrid', 'num_cols':1,
+        'registration_sections':{'label':'Sections', 'aside':'yes', 'type':'simplegrid', 'num_cols':1,
             'visible':function() { return ['registrations','videos'].indexOf(M.ciniki_musicfestivals_main.festival.menutabs.selected) >= 0 && M.ciniki_musicfestivals_main.festival.sections.registration_tabs.selected == 'sections' ? 'yes' : 'no'; },
             'noData':'No syllabus',
             'mailFn':function(s, i, d) {
@@ -754,6 +754,23 @@ function ciniki_musicfestivals_main() {
                     return 'M.ciniki_musicfestivals_main.message.addnew(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.festival_id,\'ciniki.musicfestivals.section\',\'' + d.id + '\');';
                 } 
                 return '';
+                },
+            'menu':{
+                'excel':{'label':'Export to Excel', 
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadExcel(M.ciniki_musicfestivals_main.festival.festival_id);',
+                    },
+                'pdf':{'label':'Registrations PDF ', 
+                    'visible':function() {return M.ciniki_musicfestivals_main.festival.sections.registration_tabs.selected=='sections'?'yes':'no';},
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadPDF(M.ciniki_musicfestivals_main.festival.festival_id);',
+                    },
+                'word':{'label':'Registrations Word ', 
+                    'visible':function() {return M.modFlagOn('ciniki.musicfestivals', 0x4000) && M.ciniki_musicfestivals_main.festival.sections.registration_tabs.selected=='sections'?'yes':'no';},
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadWord(M.ciniki_musicfestivals_main.festival.festival_id);',
+                    },
+                'trophiespdf':{'label':'Trophy Registrations PDF ', 
+                    'visible':function() {return M.ciniki_musicfestivals_main.festival.sections.registration_tabs.selected=='sections' && M.modFlagOn('ciniki.musicfestivals', 0x40) ?'yes':'no';},
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadTrophiesPDF(M.ciniki_musicfestivals_main.festival.festival_id);',
+                    },
                 },
             },
         'class_sections':{'label':'Section', 'aside':'yes', 'type':'select',
@@ -825,7 +842,7 @@ function ciniki_musicfestivals_main() {
 //            'visible':function() { return ['registrations','videos'].indexOf(M.ciniki_musicfestivals_main.festival.menutabs.selected) >= 0 && M.ciniki_musicfestivals_main.festival.sections.registration_tabs.selected == 'colours' ? 'yes' : 'no'; },
 //            'noData':'No colours',
 //            },
-        'registration_buttons':{'label':'', 'aside':'yes', 
+/*        'registration_buttons':{'label':'', 'aside':'yes', 
             'visible':function() {return M.ciniki_musicfestivals_main.festival.menutabs.selected=='registrations'?'yes':'no';},
             'buttons':{
                 'excel':{'label':'Export to Excel', 
@@ -843,7 +860,7 @@ function ciniki_musicfestivals_main() {
                     'visible':function() {return M.ciniki_musicfestivals_main.festival.sections.registration_tabs.selected=='sections' && M.modFlagOn('ciniki.musicfestivals', 0x40) ?'yes':'no';},
                     'fn':'M.ciniki_musicfestivals_main.festival.downloadTrophiesPDF(M.ciniki_musicfestivals_main.festival.festival_id);',
                     },
-            }},
+            }}, */
         'registration_search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':5,
             'visible':function() {return M.ciniki_musicfestivals_main.festival.menutabs.selected=='registrations'?'yes':'no';},
             'hint':'Search',
