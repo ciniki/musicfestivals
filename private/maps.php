@@ -51,6 +51,12 @@ function ciniki_musicfestivals_maps($ciniki) {
             '2' => 'Plus',
             '3' => 'Virtual Plus',
         ),
+        'participationinitials'=>array(
+            '0' => 'L',
+            '1' => 'V',
+            '2' => 'P',
+            '3' => 'VP',
+        ),
         'provincials_status'=>array(
             '0' => '',
             '30' => 'Recommended',

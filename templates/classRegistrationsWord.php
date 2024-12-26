@@ -283,7 +283,7 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
 //                $section->addTextBreak(1);
             }
         }
-        $section->addTextBreak(1);
+        $section->addTextBreak();
     }
 
     return array('stat'=>'ok', 'word'=>$PHPWord, 'filename'=>'Registrations');
