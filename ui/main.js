@@ -4143,6 +4143,18 @@ function ciniki_musicfestivals_main() {
                         'no':'No',
                         'yes':'Yes',
                     }},
+                'advanced-scheduler-num-divisions':{'label':'Number of Divisions', 'type':'toggle', 'default':'2', 
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x4000); },
+                    'toggles':{
+                        '2':'2',
+                        '3':'3',
+                        '4':'4',
+                        '5':'5',
+                        '6':'6',
+                        '7':'7',
+                        '8':'8',
+                        '9':'9',
+                    }},
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.edit.save();'},
@@ -7951,6 +7963,10 @@ function ciniki_musicfestivals_main() {
                 M.ciniki_musicfestivals_main.scheduledivisions.updateRegistrations();
             });
     }
+    this.scheduledivisions.divisionAddOpen = function(i) {    
+        this.division_ids[i] = M.ciniki_musicfestivals_main.festival.scheduledivision_id;
+        this.open();
+    }
     this.scheduledivisions.reopen = function() {    
         for(var i = 1; i <= this.num_divisions; i++) {
             this.division_ids[i] = this.formValue('division'+i+'_id');
@@ -7959,6 +7975,12 @@ function ciniki_musicfestivals_main() {
     }
     this.scheduledivisions.open = function(cb, fid) {
         if( fid != null ) { this.festival_id = fid; }
+        if( M.ciniki_musicfestivals_main.festival.data['advanced-scheduler-num-divisions'] != null ) {
+            this.num_divisions = parseInt(M.ciniki_musicfestivals_main.festival.data['advanced-scheduler-num-divisions']);
+            if( this.num_divisions < 2 || this.num_divisions > 9 ) {
+                this.num_divisions = 3;
+            }
+        }
         var args = {
             'tnid':M.curTenantID, 
             'festival_id':this.festival_id, 
@@ -7984,6 +8006,17 @@ function ciniki_musicfestivals_main() {
                 p.sections['division'+i] = {
                     'label':'Division ' + i, 'flexcolumn':i, 'flexBasis':'10%', 'type':'select',
                     'fields':{},
+                    'menu':{    
+                        'add':{
+                            'label':'Add Division',
+                            'fn':'M.ciniki_musicfestivals_main.scheduledivisions.divisionAdd('+i+');',
+                            },
+                        'edit':{
+                            'label':'Edit Division',
+                            'visible':(p.division_ids[i] != null && p.division_ids[i] > 0 ? 'yes' : 'no'),
+                            'fn':'M.ciniki_musicfestivals_main.scheduledivisions.divisionEdit('+i+');',
+                            },
+                        },
                     };
                 p.sections['division'+i]['fields']['division'+i+'_id'] = {
                     'label': '', 'hidelabel':'yes', 'type':'select',
@@ -8057,8 +8090,14 @@ function ciniki_musicfestivals_main() {
         M.ciniki_musicfestivals_main.scheduletimeslot.open("M.ciniki_musicfestivals_main.scheduledivisions.open();", t, this.division_ids[i], this.festival_id);
     }
     this.scheduledivisions.divisionAdd = function(i) {
-        M.ciniki_musicfestivals_main.scheduledivision.open("M.ciniki_musicfestivals_main.scheduledivisions.open();", 0);
+        M.ciniki_musicfestivals_main.scheduledivision.open("M.ciniki_musicfestivals_main.scheduledivisions.divisionAddOpen("+i+");", 0, 0, this.festival_id);
     }
+    this.scheduledivisions.divisionEdit = function(i) {
+        M.ciniki_musicfestivals_main.scheduledivision.open("M.ciniki_musicfestivals_main.scheduledivisions.open();", this.division_ids[i], 0, this.festival_id);
+    }
+    this.scheduledivisions.editVisible = function(i) {
+        return (this.division_ids[i] != null && this.division_ids[i] > 0 ? 'yes' : 'no');
+    };
     this.scheduledivisions.toggleTitles = function() {
         if( this.showtitles == 'yes' ) {
             this.showtitles = 'no';
