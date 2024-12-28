@@ -110,7 +110,7 @@ function ciniki_musicfestivals_sysadminStatus($ciniki) {
         array('container'=>'sapos', 'fname'=>'tnid', 'fields'=>array('flags')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.751', 'msg'=>'Unable to load mail', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.899', 'msg'=>'Unable to load mail', 'err'=>$rc['err']));
     }
     $saposflags = isset($rc['sapos']) ? $rc['sapos'] : array();
 

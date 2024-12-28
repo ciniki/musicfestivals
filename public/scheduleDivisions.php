@@ -291,7 +291,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
         array('container'=>'sections', 'fname'=>'id', 'fields'=>array('id', 'name')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.711', 'msg'=>'Unable to load sections', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.896', 'msg'=>'Unable to load sections', 'err'=>$rc['err']));
     }
     $rsp['sections'] = isset($rc['sections']) ? $rc['sections'] : array();
     array_unshift($rsp['sections'], array('id'=>0, 'name'=>'Select Section'));
@@ -328,7 +328,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
             array('container'=>'classes', 'fname'=>'id', 'fields'=>array('id', 'name', 'num_registrations')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.712', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.897', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
         }
         $rsp['classes'] = isset($rc['classes']) ? $rc['classes'] : array();
         if( count($rsp['classes']) == 0 ) {
@@ -455,7 +455,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.713', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.898', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
         }
         $rsp['unscheduled_registrations'] = isset($rc['registrations']) ? $rc['registrations'] : array();
         foreach($rsp['unscheduled_registrations'] as $rid => $reg) {

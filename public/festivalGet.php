@@ -3656,7 +3656,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     'fields'=>array('id', 'name')),
                 ));
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.853', 'msg'=>'Unable to load festivals', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.904', 'msg'=>'Unable to load festivals', 'err'=>$rc['err']));
             }
             $festival['provincial_festivals'] = isset($rc['festivals']) ? $rc['festivals'] : array();
         }

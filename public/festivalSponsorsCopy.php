@@ -51,7 +51,7 @@ function ciniki_musicfestivals_festivalSponsorsCopy($ciniki) {
             return $rc;
         }
         if( !isset($rc['festival']['id']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.535', 'msg'=>'No previous festival found'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.888', 'msg'=>'No previous festival found'));
         }
         $args['old_festival_id'] = $rc['festival']['id'];
     }
@@ -113,7 +113,7 @@ function ciniki_musicfestivals_festivalSponsorsCopy($ciniki) {
         $sponsor['festival_id'] = $args['festival_id'];
         $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.sponsor', $sponsor, 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.841', 'msg'=>'Unable to add the sponsor', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.889', 'msg'=>'Unable to add the sponsor', 'err'=>$rc['err']));
         }
         $sponsor_id = $rc['id'];
         if( isset($sponsor['tags']) ) {
@@ -141,4 +141,3 @@ function ciniki_musicfestivals_festivalSponsorsCopy($ciniki) {
     return array('stat'=>'ok');
 }
 ?>
-

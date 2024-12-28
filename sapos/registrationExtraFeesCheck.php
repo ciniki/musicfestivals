@@ -8,7 +8,7 @@
 function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, $args) {
 
     if( !isset($args['registration_id']) || $args['registration_id'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.875', 'msg'=>'No registration specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.887', 'msg'=>'No registration specified.'));
     }
     $fees_msg = '';
 

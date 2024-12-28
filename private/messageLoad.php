@@ -82,7 +82,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
     $rc = ciniki_musicfestivals_festivalLoad($ciniki, $tnid, $rsp['message']['festival_id']);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.856', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.892', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
     }
     $festival = $rc['festival'];
 
@@ -379,7 +379,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.671', 'msg'=>'Unable to load accompanist', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.890', 'msg'=>'Unable to load accompanist', 'err'=>$rc['err']));
             }
             $label = (isset($rc['item']['name']) ? $rc['item']['name'] : 'Unknown Accompanist');
             $accompanist_ids[] = $ref['object_id'];
@@ -756,7 +756,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.672', 'msg'=>'Unable to load accompanists', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.891', 'msg'=>'Unable to load accompanists', 'err'=>$rc['err']));
         }
         $rsp['accompanists'] = isset($rc['accompanists']) ? $rc['accompanists'] : array();
         foreach($rsp['accompanists'] as $aid => $accompanist) {
@@ -1367,7 +1367,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.474', 'msg'=>'Unable to load accompanists', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.886', 'msg'=>'Unable to load accompanists', 'err'=>$rc['err']));
             }
             if( isset($rc['rows']) ) {
                 foreach($rc['rows'] as $row) {

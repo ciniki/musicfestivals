@@ -1164,6 +1164,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
 
             //
             // Check for music uploads
+            // FIXME: Combine next 3 foreach into single foreach
             //
             foreach(['music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3', 'music_orgfilename4', 'music_orgfilename5', 'music_orgfilename6', 'music_orgfilename7', 'music_orgfilename8'] as $fid) {
                 $field = $fields[$fid];
@@ -1231,7 +1232,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                             ));
                         if( $rc['stat'] != 'ok' ) {
                             error_log('unable to store file');
-                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.429', 'msg'=>'Unable to store uploaded file', 'err'=>$rc['err']));
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.885', 'msg'=>'Unable to store uploaded file', 'err'=>$rc['err']));
                         }
 //                        $registration[$field['id']] = $field['value'];
                         $registration[$field['id']] = $_FILES["file-{$field['id']}"]['name'];

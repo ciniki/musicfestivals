@@ -114,7 +114,7 @@ function ciniki_musicfestivals_trophyList($ciniki) {
         array('container'=>'types', 'fname'=>'typename', 'fields'=>array('name'=>'typename')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.855', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.902', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
     }
     $types = isset($rc['types']) ? $rc['types'] : array();
     array_unshift($types, ['name'=>'All']);
@@ -135,7 +135,7 @@ function ciniki_musicfestivals_trophyList($ciniki) {
         array('container'=>'categories', 'fname'=>'category', 'fields'=>array('name'=>'category')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.855', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.903', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
     }
     $categories = isset($rc['categories']) ? $rc['categories'] : array();
     array_unshift($categories, ['name'=>'All']);

@@ -31,7 +31,7 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $args) {
         $festival = $rc['festival'];
     }
     if( !isset($festival) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.855', 'msg'=>'No festival specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.905', 'msg'=>'No festival specified'));
     }
 
     $strsql = "SELECT registrations.id, "

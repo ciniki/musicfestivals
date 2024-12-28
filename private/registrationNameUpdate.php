@@ -26,7 +26,7 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $tnid, $args) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
         $rc = ciniki_musicfestivals_festivalLoad($ciniki, $tnid, $args['festival_id']);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.856', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.895', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
         }
         $festival = $rc['festival'];
     }

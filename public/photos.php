@@ -117,7 +117,7 @@ function ciniki_musicfestivals_photos($ciniki) {
                 array('container'=>'competitors', 'fname'=>'comp_id', 'fields'=>array('id'=>'comp_id', 'name', 'flags')),
                 ));
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.857', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.901', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
             }
             $nophoto_timeslots = isset($rc['timeslots']) ? $rc['timeslots'] : array();
         }
