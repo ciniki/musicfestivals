@@ -265,7 +265,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                         if( isset($reg['competitors']) ) {
                             foreach($reg['competitors'] as $competitor) {
                                 if( $competitor['notes'] != '' ) {
-                                    $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['notes'] .= ($rsp["timeslot{$i}"][$tid]["registrations"][$rid]['notes'] != '' ? ' ' : '') . $competitor['notes'];
+                                    $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['notes'] .= ($rsp["timeslots{$i}"][$tid]["registrations"][$rid]['notes'] != '' ? ' ' : '') . $competitor['notes'];
                                 }
                             }
                             unset($rsp["timeslots{$i}"][$tid]["registrations"][$rid]['competitors']);
