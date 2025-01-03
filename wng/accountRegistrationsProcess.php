@@ -1129,15 +1129,23 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $registration['rtype'] = 50;
             }
             // Virtual pricing
-            if( $festival['earlybird'] == 'yes' && $selected_class['earlybird_fee'] > 0 ) {
+            if( $festival['earlybird'] == 'yes' 
+                && ($selected_class['feeflags']&0x01) == 0x01 
+                && $selected_class['earlybird_fee'] > 0 
+                ) {
                 $registration['fee'] = $selected_class['earlybird_fee'];
             } else {
                 $registration['fee'] = $selected_class['fee'];
             }
-            if( ($festival['flags']&0x10) == 0x10 && $fields['participation']['value'] == 2 && $selected_class['plus_fee'] > 0 ) {
+            if( ($festival['flags']&0x10) == 0x10 && $fields['participation']['value'] == 2 
+                && ($selected_class['feeflags']&0x20) == 0x20     
+                && $selected_class['plus_fee'] > 0 
+                ) {
                 $registration['fee'] = $selected_class['plus_fee'];
             }
-            elseif( ($festival['flags']&0x04) == 0x04 && $fields['participation']['value'] == 1 && $selected_class['virtual_fee'] > 0 ) {
+            elseif( ($festival['flags']&0x04) == 0x04 && $fields['participation']['value'] == 1 
+                && $selected_class['virtual_fee'] > 0 
+                ) {
                 $registration['fee'] = $selected_class['virtual_fee'];
             }
 
@@ -1359,12 +1367,18 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             }
             // Virtual pricing
             if( $display != 'view' ) {
-                if( isset($selected_class['earlybird_fee']) && $festival['earlybird'] == 'yes' && $selected_class['earlybird_fee'] > 0 ) {
+                if( isset($selected_class['earlybird_fee']) && $festival['earlybird'] == 'yes' 
+                    && ($selected_class['feeflags']&0x01) == 0x01 
+                    && $selected_class['earlybird_fee'] > 0 
+                    ) {
                     $new_fee = $selected_class['earlybird_fee'];
                 } else {
                     $new_fee = $selected_class['fee'];
                 }
-                if( ($festival['flags']&0x10) == 0x10 && $fields['participation']['value'] == 2 && $selected_class['plus_fee'] > 0 ) {
+                if( ($festival['flags']&0x10) == 0x10 && $fields['participation']['value'] == 2 
+                    && ($selected_class['feeflags']&0x20) == 0x20 
+                    && $selected_class['plus_fee'] > 0 
+                    ) {
                     $new_fee = $selected_class['plus_fee'];
                 } 
                 elseif( ($festival['flags']&0x04) == 0x04 
