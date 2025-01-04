@@ -119,6 +119,8 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
         . "registrations.notes, "
         . "registrations.internal_notes, "
         . "competitors.id AS competitor_id, "
+        . "competitors.city AS competitor_city, "
+        . "competitors.province AS competitor_province, "
         . "competitors.notes AS competitor_notes "
         . "FROM ciniki_musicfestival_classes AS classes "
         . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
@@ -169,7 +171,7 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
                 'participation', 'teacher_customer_id',
             )),
         array('container'=>'competitors', 'fname'=>'competitor_id', 
-            'fields'=>array('id'=>'competitor_id', 'notes'=>'competitor_notes'),
+            'fields'=>array('id'=>'competitor_id', 'city'=>'competitor_city', 'competitor_province', 'notes'=>'competitor_notes'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -260,10 +262,16 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
         if( isset($class['registrations']) ) {
             foreach($class['registrations'] as $reg) {
                 $other_classes = '';
+                $cities = [];
                 if( isset($reg['competitors']) ) {
                     foreach($reg['competitors'] as $competitor) {
                         if( isset($competitor_classes[$competitor['id']]) ) {
                             $other_classes = implode(',', $competitor_classes[$competitor['id']]);
+                        }
+                        if( $competitor['city'] != '' 
+                            && !in_array($competitor['city'], $cities) 
+                            ) {
+                            $cities[] = $competitor['city'];
                         }
                     }
                 }
@@ -274,7 +282,11 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
                 if( $other_classes != '' ) {
                     $other_classes = ' (' . $other_classes . ')';
                 }
-                $line = "{$reg['name']}{$other_classes}\t{$reg['teacher_name']}\t{$reg['perf_time']}\t{$reg['titles']}\n";
+                $city_list = '';
+                if( count($cities) > 0 ) {
+                    $city_list = ' [' . implode(', ', $cities) . ']';
+                }
+                $line = "{$reg['name']}{$city_list}{$other_classes}\t{$reg['teacher_name']}\t{$reg['perf_time']}\t{$reg['titles']}\n";
                 $section->addText(htmlspecialchars($line), null, 'pReg');
 //                $section->addText(htmlspecialchars($reg['titles']), null, 'pTitles');
                 if( isset($reg['notes']) && $reg['notes'] != '' ) {
