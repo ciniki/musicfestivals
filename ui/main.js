@@ -4143,6 +4143,21 @@ function ciniki_musicfestivals_main() {
                         'no':'No',
                         'yes':'Yes',
                     }},
+                'scheduling-draft-show':{'label':'Show Draft', 'type':'toggle', 'default':'no', 
+                    'toggles':{
+                        'no':'No',
+                        'yes':'Yes',
+                    }},
+                'scheduling-disqualified-show':{'label':'Show Disqualified', 'type':'toggle', 'default':'no', 
+                    'toggles':{
+                        'no':'No',
+                        'yes':'Yes',
+                    }},
+                'scheduling-cancelled-show':{'label':'Show Cancelled', 'type':'toggle', 'default':'no', 
+                    'toggles':{
+                        'no':'No',
+                        'yes':'Yes',
+                    }},
                 'advanced-scheduler-num-divisions':{'label':'Number of Divisions', 'type':'toggle', 'default':'2', 
                     'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x4000); },
                     'toggles':{

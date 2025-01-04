@@ -178,6 +178,9 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'provincial-festival-id',
         'syllabus-schedule-time', 
         'scheduling-age-show',
+        'scheduling-draft-show',
+        'scheduling-disqualified-show',
+        'scheduling-cancelled-show',
         'advanced-scheduler-num-divisions',
         );
     foreach($valid_settings as $field) {

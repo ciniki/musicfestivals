@@ -380,6 +380,19 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         } else {
             $strsql .= "AND registrations.timeslot_id = 0 ";
         }
+        // Defaults to only load those registrations which are not draft or disqualified or cancelled
+        $strsql .= "AND ("
+                    . "(registrations.status > 5 AND registrations.status < 70) ";
+        if( isset($festival['scheduling-draft-show']) && $festival['scheduling-draft-show'] == 'yes' ) {
+            $strsql .= "OR registrations.status = 5 ";
+        }
+        if( isset($festival['scheduling-disqualified-show']) && $festival['scheduling-disqualified-show'] == 'yes' ) {
+            $strsql .= "OR registrations.status = 70 ";
+        }
+        if( isset($festival['scheduling-cancelled-show']) && $festival['scheduling-cancelled-show'] == 'yes' ) {
+            $strsql .= "OR registrations.status = 80 ";
+        }
+        $strsql .= ") ";
         $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
@@ -532,6 +545,19 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         } else {
             $strsql .= "AND registrations.timeslot_id = 0 ";
         }
+        // Defaults to only load those registrations which are not draft or disqualified or cancelled
+        $strsql .= "AND ("
+                    . "(registrations.status > 5 AND registrations.status < 70) ";
+        if( isset($festival['scheduling-draft-show']) && $festival['scheduling-draft-show'] == 'yes' ) {
+            $strsql .= "OR registrations.status = 5 ";
+        }
+        if( isset($festival['scheduling-disqualified-show']) && $festival['scheduling-disqualified-show'] == 'yes' ) {
+            $strsql .= "OR registrations.status = 70 ";
+        }
+        if( isset($festival['scheduling-cancelled-show']) && $festival['scheduling-cancelled-show'] == 'yes' ) {
+            $strsql .= "OR registrations.status = 80 ";
+        }
+        $strsql .= ") ";
         $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("

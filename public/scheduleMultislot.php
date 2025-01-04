@@ -50,6 +50,16 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
     }
 
     //
+    // Load the festival settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $args['festival_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $festival = $rc['festival'];
+
+    //
     // Load tenant settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
@@ -271,7 +281,20 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
                 . ") "
             . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
                 . "classes.id = registrations.class_id "
-                . "AND registrations.timeslot_id = 0 "
+                . "AND registrations.timeslot_id = 0 ";
+        // Defaults to only load those registrations which are not draft or disqualified or cancelled
+        $strsql .= "AND ("
+                    . "(registrations.status > 5 AND registrations.status < 70) ";
+        if( isset($festival['scheduling-draft-show']) && $festival['scheduling-draft-show'] == 'yes' ) {
+            $strsql .= "OR registrations.status = 5 ";
+        }
+        if( isset($festival['scheduling-disqualified-show']) && $festival['scheduling-disqualified-show'] == 'yes' ) {
+            $strsql .= "OR registrations.status = 70 ";
+        }
+        if( isset($festival['scheduling-cancelled-show']) && $festival['scheduling-cancelled-show'] == 'yes' ) {
+            $strsql .= "OR registrations.status = 80 ";
+        }
+        $strsql .= ") "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
@@ -362,7 +385,20 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
                 . ") "
             . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
                 . "classes.id = registrations.class_id "
-                . "AND registrations.timeslot_id = 0 "
+                . "AND registrations.timeslot_id = 0 ";
+        // Defaults to only load those registrations which are not draft or disqualified or cancelled
+        $strsql .= "AND ("
+                    . "(registrations.status > 5 AND registrations.status < 70) ";
+        if( isset($festival['scheduling-draft-show']) && $festival['scheduling-draft-show'] == 'yes' ) {
+            $strsql .= "OR registrations.status = 5 ";
+        }
+        if( isset($festival['scheduling-disqualified-show']) && $festival['scheduling-disqualified-show'] == 'yes' ) {
+            $strsql .= "OR registrations.status = 70 ";
+        }
+        if( isset($festival['scheduling-cancelled-show']) && $festival['scheduling-cancelled-show'] == 'yes' ) {
+            $strsql .= "OR registrations.status = 80 ";
+        }
+        $strsql .= ") "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ("
