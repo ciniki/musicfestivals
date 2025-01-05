@@ -36,6 +36,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
         'division9_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Division 9'),
         'section_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus Section'),
         'class_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus Class'),
+        'participation'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Participation'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -311,6 +312,12 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
             . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
                 . "classes.id = registrations.class_id "
                 . "AND registrations.timeslot_id = 0 ";
+        if( isset($args['participation']) && $args['participation'] == 'live' ) {
+            $strsql .= "AND registrations.participation = 0 ";
+        }
+        elseif( isset($args['participation']) && $args['participation'] == 'virtual' ) {
+            $strsql .= "AND registrations.participation = 1 ";
+        }
         // Defaults to only load those registrations which are not draft or disqualified or cancelled
         $strsql .= "AND ("
                     . "(registrations.status > 5 AND registrations.status < 70) ";
@@ -415,6 +422,12 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
             . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
                 . "classes.id = registrations.class_id "
                 . "AND registrations.timeslot_id = 0 ";
+        if( isset($args['participation']) && $args['participation'] == 'live' ) {
+            $strsql .= "AND registrations.participation = 0 ";
+        }
+        elseif( isset($args['participation']) && $args['participation'] == 'virtual' ) {
+            $strsql .= "AND registrations.participation = 1 ";
+        }
         // Defaults to only load those registrations which are not draft or disqualified or cancelled
         $strsql .= "AND ("
                     . "(registrations.status > 5 AND registrations.status < 70) ";
