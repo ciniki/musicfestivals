@@ -258,7 +258,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
         $strsql .= "AND registrations.participation = 1 ";
     }
-    $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, registrations.timeslot_sequence, class_code, registrations.display_name "
+    $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, divisions.name, divisions.id, slot_time, registrations.timeslot_sequence, class_code, registrations.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -320,12 +320,12 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     $height = $this->header_image->getImageHeight();
                     $width = $this->header_image->getImageWidth();
                     $image_ratio = $width/$height;
-                    $img_width = 60;
+                    $img_width = 50;
                     $available_ratio = $img_width/$this->header_height;
                     // Check if the ratio of the image will make it too large for the height,
                     // and scaled based on either height or width.
                     if( $available_ratio < $image_ratio ) {
-                        $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, $img_width, 0, 'JPEG', '', 'L', 2, '150');
+                        $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, $img_width, 0, 'JPEG', '', 'L', 2, '150', '', false, false, 0);
                     } else {
                         $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-8, 'JPEG', '', 'L', 2, '150');
                     }
