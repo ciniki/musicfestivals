@@ -353,10 +353,21 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
         //
         // FIXME: add check to see if timeslot assigned and show
         //
-       
+
         //
-        // FIXME: Add button to download PDF list of registrations
+        // Add button to download PDF list of registrations
         //
+        if( $customer_type == 20 ) {
+            $blocks[] = array(
+                'type' => 'buttons',
+                'class' => 'limit-width limit-width-90 aligncenter',
+                'list' => array(array(
+                    'text' => 'Download Registrations PDF',
+                    'target' => '_blank',
+                    'url' => "/account/musicfestivalregistrations?pdf=yes",
+                    )),
+                );
+        }
     }
     if( count($paymentrequired_registrations) > 0 ) {
         //

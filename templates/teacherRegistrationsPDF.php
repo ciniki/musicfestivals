@@ -522,9 +522,9 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
     // Go through the sections, divisions and classes
     //
     $c = array(35, 55, 35, 55);
-    $r = array(40, 85, 40, 15, 0);
+    $r = array(40, 80, 40, 20, 0);
     if( ($festival['flags']&0x10) == 0x10 ) {
-        $r = array(40, 70, 40, 15, 15);
+        $r = array(40, 60, 40, 20, 20);
     }
     $nw = array(20, 160);
     $lh = 6;
@@ -668,8 +668,8 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
             $pdf->SetFillColor(224);
             $lh = $pdf->getStringHeight($r[1], 'Total');
             $pdf->SetFont('helvetica', 'B', 12);
-            $pdf->MultiCell($r[0]+$r[1], $lh, 'Total', $border, 'R', 1, 0);
-            $pdf->MultiCell($r[2], $lh, '$' . number_format($total, 2), $border, 'R', 1, 1);
+            $pdf->MultiCell($r[0]+$r[1]+$r[2], $lh, 'Total', $border, 'R', 1, 0);
+            $pdf->MultiCell($r[3], $lh, '$' . number_format($total, 2), $border, 'R', 1, 1);
         }
     }
 
