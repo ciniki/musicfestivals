@@ -6377,10 +6377,10 @@ function ciniki_musicfestivals_main() {
         return this.sections._tabs.selected == 'titles' && this.selected_class != null && (this.selected_class.max_titles >= i || this.data['title'+i] != '') ? 'yes' : 'hidden';
     }
     this.registration.movementsVisible = function(i) {
-        return (this.selected_class != null && this.selected_class.flags&0x0C000000) > 0 ? 'yes' : 'no';
+        return (this.selected_class != null && (this.selected_class.flags&0x0C000000) > 0 || this.data['movements'+i] != '') ? 'yes' : 'no';
     }
     this.registration.composerVisible = function(i) {
-        return (this.selected_class != null && this.selected_class.flags&0x30000000) > 0 ? 'yes' : 'no';
+        return (this.selected_class != null && (this.selected_class.flags&0x30000000) > 0 || this.data['composer'+i] != '') ? 'yes' : 'no';
     }
     this.registration.videoVisible = function(i) {
         return this.formValue('participation') == 1 ? 'yes' : 'no';
