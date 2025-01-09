@@ -137,29 +137,22 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
             . "registrations.invoice_id = invoices.id "
             . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") ";
-//            . "WHERE ("
-//                . "registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
-//                . "OR registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
-//                . ") "
-    if( $customer_type == 20 ) {
+    if( $customer_type == 10 ) {
         $strsql .= "WHERE ("
             . "registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
-//                . " OR ("
-                . "OR registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
-//                    . "AND (registrations.flags&0x01) = 0x01 "
-//                    . ") "
-//                . " OR ("
+                . "OR registrations.parent_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
                 . "OR registrations.accompanist_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
-//                    . "AND (registrations.flags&0x02) = 0x02 "
-//                    . ") "
+            . ") ";
+    } elseif( $customer_type == 20 ) {
+        $strsql .= "WHERE ("
+            . "registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+                . "OR registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+                . "OR registrations.accompanist_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
             . ") ";
     } else {
         $strsql .= "WHERE ("
             . "registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
-//                . " OR ("
                 . "OR registrations.accompanist_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
-//                    . "AND (registrations.flags&0x02) = 0x02 "
-//                    . ") "
             . ") ";
     }
     $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
