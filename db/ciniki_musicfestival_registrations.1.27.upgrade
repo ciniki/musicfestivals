@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN teacher2_customer_id int not null AFTER teacher_customer_id;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.27';

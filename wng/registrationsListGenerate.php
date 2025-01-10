@@ -51,6 +51,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
         . "registrations.invoice_id, "
         . "registrations.billing_customer_id, "
         . "registrations.teacher_customer_id, "
+        . "registrations.teacher2_customer_id, "
         . "registrations.accompanist_customer_id, "
         . "registrations.member_id, "
         . "registrations.participation, ";
@@ -147,6 +148,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
         $strsql .= "WHERE ("
             . "registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
                 . "OR registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+                . "OR registrations.teacher2_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
                 . "OR registrations.accompanist_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
             . ") ";
     } else {
@@ -163,7 +165,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'status', 'payment_status', 'invoice_status', 'invoice_id', 
-                'billing_customer_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 'display_name', 
+                'billing_customer_id', 'teacher_customer_id', 'teacher2_customer_id', 'accompanist_customer_id', 'member_id', 'display_name', 
                 'class_code', 'class_name', 'section_name', 'category_name', 'codename', 
                 'fee', 'participation', 
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
@@ -205,7 +207,9 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
         } elseif( $reg['participation'] == 2 ) {
             $reg['codename'] .= ' (Adjudication Plus)';
         }
-        if( $reg['teacher_customer_id'] == $request['session']['customer']['id']
+        if( ($reg['teacher_customer_id'] == $request['session']['customer']['id']
+            || $reg['teacher2_customer_id'] == $request['session']['customer']['id']
+            )
             && $reg['billing_customer_id'] != $request['session']['customer']['id']
             ) {
             // Registration was created by parent/student and shared with teacher

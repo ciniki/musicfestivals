@@ -60,6 +60,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         $registration = array('id'=>0,
             'festival_id'=>$args['festival_id'],
             'teacher_customer_id'=>'0',
+            'teacher2_customer_id'=>'0',
             'billing_customer_id'=>'0',
             'parent_customer_id'=>'0',
             'accompanist_customer_id'=>'0',
@@ -164,6 +165,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         $strsql = "SELECT registrations.id, "
             . "registrations.festival_id, "
             . "registrations.teacher_customer_id, "
+            . "registrations.teacher2_customer_id, "
             . "registrations.billing_customer_id, "
             . "registrations.parent_customer_id, "
             . "registrations.accompanist_customer_id, "
@@ -313,7 +315,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'billing_customer_id', 'parent_customer_id',
+                'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher2_customer_id',
+                    'billing_customer_id', 'parent_customer_id',
                     'accompanist_customer_id', 'member_id',
                     'slot_time', 'division_date', 'division_name', 'location_name', 'section_name',
                     'finals_slot_time', 'finals_division_date', 'finals_division_name', 'finals_location_name', 'finals_section_name',
@@ -395,6 +398,21 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             $registration['teacher_details'] = $rc['details'];
         } else {
             $registration['teacher_details'] = array();
+        }
+
+        //
+        // Get the teacher 2 details
+        //
+        if( isset($registration['teacher2_customer_id']) && $registration['teacher2_customer_id'] > 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
+            $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], 
+                array('customer_id'=>$registration['teacher2_customer_id'], 'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $registration['teacher2_details'] = $rc['details'];
+        } else {
+            $registration['teacher2_details'] = array();
         }
 
         //

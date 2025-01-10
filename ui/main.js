@@ -5882,6 +5882,13 @@ function ciniki_musicfestivals_main() {
             'cellClasses':['label', ''],
             'noData':'No Teacher',
             },
+        'teacher2_details':{'label':'2nd Teacher', 'type':'customer', 'num_cols':2, 'aside':'yes',
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.data.teacher_customer_id > 0 ? 'yes' :'no';},
+            'customer_id':0,
+            'customer_field':'teacher2_customer_id',
+            'cellClasses':['label', ''],
+            'noData':'No 2nd Teacher',
+            },
         'parent_details':{'label':'Parent', 'type':'customer', 'num_cols':2, 'aside':'yes',
             'visible':function() { 
                 // Parent can be linked if teacher did registration
@@ -6413,7 +6420,7 @@ function ciniki_musicfestivals_main() {
                     return d.value;
             }
         }
-        if( s == 'teacher_details' || s == 'parent_details' || s == 'accompanist_details' ) {
+        if( s == 'teacher_details' || s == 'teacher2_details' || s == 'parent_details' || s == 'accompanist_details' ) {
             switch(j) {
                 case 0: return d.label;
                 case 1:
@@ -6657,6 +6664,7 @@ function ciniki_musicfestivals_main() {
             }
             p.sections._class.fields.class_id.options.unshift({'id':0, 'name':''});
             p.sections.teacher_details.customer_id = parseInt(rsp.registration.teacher_customer_id);
+            p.sections.teacher2_details.customer_id = parseInt(rsp.registration.teacher2_customer_id);
             p.sections.accompanist_details.customer_id = parseInt(rsp.registration.accompanist_customer_id);
             p.sections.parent_details.customer_id = parseInt(rsp.registration.parent_customer_id);
             for(var i = 1; i<= 4; i++) {
