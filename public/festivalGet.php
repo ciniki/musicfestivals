@@ -1986,6 +1986,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     $nplists['schedule_timeslots'] = array();
                     foreach($festival['schedule_timeslots'] as $iid => $scheduletimeslot) {
                         $perf_time = '';
+                        $schedule_at_seconds = 0;
+                        $schedule_ata_seconds = 0;
+                        $num_reg = 0;
+
                         //
                         // Check if class is set, then use class name
                         //
@@ -2009,6 +2013,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                                         });
                                 }
                                 foreach($scheduletimeslot['registrations'] as $reg) {
+                                    $num_reg++;
+                                    if( isset($reg['schedule_at_seconds']) > $schedule_at_seconds ) {
+                                        $schedule_at_seconds = $reg['schedule_at_seconds'];
+                                    }
+                                    if( isset($reg['schedule_ata_seconds']) > $schedule_ata_seconds ) {
+                                        $schedule_ata_seconds = $reg['schedule_ata_seconds'];
+                                    }
                                     $ptime = 0;
                                     for($i = 1; $i <= 8; $i++) {
                                         if( $reg["perf_time{$i}"] != '' && $reg["perf_time{$i}"] > 0 ) {
@@ -2046,6 +2057,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                                 }
                                 unset($festival['schedule_timeslots'][$iid]['registrations']);
                             }
+                        }
+                        if( $schedule_at_seconds > 0 ) {
+                            $perf_time += $schedule_at_seconds;
+                        }
+                        if( $schedule_ata_seconds > 0 && $num_reg > 1 ) {
+                            $perf_time += ($schedule_ata_seconds * ($num_reg-1));
                         }
                         if( $perf_time != '' && $perf_time > 0 ) {
                             if( $perf_time > 3600 ) {

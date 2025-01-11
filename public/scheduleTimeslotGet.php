@@ -283,18 +283,21 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         }
         $scheduletimeslot['registrations'] = isset($rc['registrations']) ? $rc['registrations'] : array();
         $total_time = 0;
+        $schedule_at_seconds = 0;
+        $schedule_ata_seconds = 0;
         foreach($scheduletimeslot['registrations'] as $rid => $reg) {
             $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, [
                 'times' => 'startsum', 
                 'numbers' => 'yes',
-//                'schedule_time' => isset($festival['syllabus-schedule-time']) ? $festival['syllabus-schedule-time'] : '',
-//                'schedule_seconds' => $reg['schedule_seconds'],
-//                'schedule_at_seconds' => $reg['schedule_at_seconds'],
-//                'schedule_ata_seconds' => $reg['schedule_ata_seconds'],
                 ]);
-                error_log(print_r($rc,true));
             $scheduletimeslot['registrations'][$rid]['titles'] = $rc['titles'];
             $total_time += $rc['perf_time_seconds'];
+            if( isset($reg['schedule_at_seconds']) > $schedule_at_seconds ) {
+                $schedule_at_seconds = $reg['schedule_at_seconds'];
+            }
+            if( isset($reg['schedule_ata_seconds']) > $schedule_ata_seconds ) {
+                $schedule_ata_seconds = $reg['schedule_ata_seconds'];
+            }
             if( isset($ages) ) {
                 $ra= '';
                 for($i = 1; $i<=5; $i++) {
@@ -309,6 +312,12 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             }
         }
 
+        if( $schedule_at_seconds > 0 ) {
+            $total_time += $schedule_at_seconds;
+        }
+        if( $schedule_ata_seconds > 0 && count($scheduletimeslot['registrations']) > 1 ) {
+            $total_time += ($schedule_ata_seconds * (count($scheduletimeslot['registrations'])-1));
+        }
         if( $total_time > 0 ) {
             if( $total_time > 3600 ) {
                 $scheduletimeslot['total_perf_time'] = intval($total_time/3600) . 'h ' . ceil(($total_time%3600)/60) . 'm';
