@@ -318,7 +318,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
         elseif( isset($args['participation']) && $args['participation'] == 'virtual' ) {
             $strsql .= "AND registrations.participation = 1 ";
         }
-        // Defaults to only load those registrations which are not draft or disqualified or cancelled
+        // Defaults to only load those registrations which are not draft or disqualified or withdrawn or cancelled
         $strsql .= "AND ("
                     . "(registrations.status > 5 AND registrations.status < 70) ";
         if( isset($festival['scheduling-draft-show']) && $festival['scheduling-draft-show'] == 'yes' ) {
@@ -326,6 +326,9 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
         }
         if( isset($festival['scheduling-disqualified-show']) && $festival['scheduling-disqualified-show'] == 'yes' ) {
             $strsql .= "OR registrations.status = 70 ";
+        }
+        if( isset($festival['scheduling-withdrawn-show']) && $festival['scheduling-withdrawn-show'] == 'yes' ) {
+            $strsql .= "OR registrations.status = 75 ";
         }
         if( isset($festival['scheduling-cancelled-show']) && $festival['scheduling-cancelled-show'] == 'yes' ) {
             $strsql .= "OR registrations.status = 80 ";
@@ -428,7 +431,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
         elseif( isset($args['participation']) && $args['participation'] == 'virtual' ) {
             $strsql .= "AND registrations.participation = 1 ";
         }
-        // Defaults to only load those registrations which are not draft or disqualified or cancelled
+        // Defaults to only load those registrations which are not draft or disqualified or withdrawn or cancelled
         $strsql .= "AND ("
                     . "(registrations.status > 5 AND registrations.status < 70) ";
         if( isset($festival['scheduling-draft-show']) && $festival['scheduling-draft-show'] == 'yes' ) {
@@ -436,6 +439,9 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
         }
         if( isset($festival['scheduling-disqualified-show']) && $festival['scheduling-disqualified-show'] == 'yes' ) {
             $strsql .= "OR registrations.status = 70 ";
+        }
+        if( isset($festival['scheduling-withdrawn-show']) && $festival['scheduling-withdrawn-show'] == 'yes' ) {
+            $strsql .= "OR registrations.status = 75 ";
         }
         if( isset($festival['scheduling-cancelled-show']) && $festival['scheduling-cancelled-show'] == 'yes' ) {
             $strsql .= "OR registrations.status = 80 ";

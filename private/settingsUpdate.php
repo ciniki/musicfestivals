@@ -156,6 +156,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'registration-status-54-colour',
         'registration-status-55-colour',
         'registration-status-70-colour',
+        'registration-status-75-colour',
         'registration-status-80-colour',
         'competitor-label-singular',
         'competitor-label-plural',
@@ -180,6 +181,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'scheduling-age-show',
         'scheduling-draft-show',
         'scheduling-disqualified-show',
+        'scheduling-withdrawn-show',
         'scheduling-cancelled-show',
         'advanced-scheduler-num-divisions',
         );

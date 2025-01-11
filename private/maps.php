@@ -43,6 +43,7 @@ function ciniki_musicfestivals_maps($ciniki) {
             '54'=>'Approved',
             '55'=>'Approved',
             '70'=>'Disqualified',
+            '75'=>'Withdrawn',
             '80'=>'Cancelled',
         ),
         'participation'=>array(

@@ -4028,6 +4028,7 @@ function ciniki_musicfestivals_main() {
                 'registration-status-55-label':{'label':'Approved #6 Label', 'type':'text'},
                 'registration-status-55-colour':{'label':'Approved #6 Colour', 'type':'colour'},
                 'registration-status-70-colour':{'label':'Disqualified Colour', 'type':'colour', 'separator':'yes'},
+                'registration-status-75-colour':{'label':'Withdrawn Colour', 'type':'colour'},
                 'registration-status-80-colour':{'label':'Cancelled Colour', 'type':'colour'},
             },
             'menu':{
@@ -4149,6 +4150,11 @@ function ciniki_musicfestivals_main() {
                         'yes':'Yes',
                     }},
                 'scheduling-disqualified-show':{'label':'Show Disqualified', 'type':'toggle', 'default':'no', 
+                    'toggles':{
+                        'no':'No',
+                        'yes':'Yes',
+                    }},
+                'scheduling-withdrawn-show':{'label':'Show Withdrawn', 'type':'toggle', 'default':'no', 
                     'toggles':{
                         'no':'No',
                         'yes':'Yes',
@@ -6648,6 +6654,7 @@ function ciniki_musicfestivals_main() {
                 }
             }
             p.sections._class.fields.status.options[70] = 'Disqualified';
+            p.sections._class.fields.status.options[75] = 'Withdrawn';
             p.sections._class.fields.status.options[80] = 'Cancelled';
 
             p.sections._class.fields.member_id.options = [];
