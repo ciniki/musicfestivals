@@ -193,6 +193,10 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                 . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
                 . "classes.code AS class_code, "
                 . "classes.name AS class_name, "
+                . "classes.flags AS class_flags, "
+                . "classes.schedule_seconds, "
+                . "classes.schedule_at_seconds, "
+                . "classes.schedule_ata_seconds, "
                 . "categories.name AS category_name, "
                 . "sections.name AS section_name "
                 . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
@@ -244,6 +248,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                         'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
                         'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
                         'class_code', 'class_name', 'category_name', 'section_name', 
+                        'class_flags', 'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds',
                         'participation', 'notes', 
                         ),
                     'maps'=>array(

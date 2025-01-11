@@ -4164,6 +4164,11 @@ function ciniki_musicfestivals_main() {
                         'no':'No',
                         'yes':'Yes',
                     }},
+                'scheduling-at-times':{'label':'Adjudicator Talk Time', 'type':'toggle', 'default':'no', 
+                    'toggles':{
+                        'no':'No',
+                        'yes':'Yes',
+                    }},
                 'advanced-scheduler-num-divisions':{'label':'Number of Divisions', 'type':'toggle', 'default':'2', 
                     'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x4000); },
                     'toggles':{
@@ -5401,7 +5406,9 @@ function ciniki_musicfestivals_main() {
                 'flags':{'0':{'name':'None'}, '19':{'name':'Perf+Adj'}, '20':{'name':'Total'}},
                 'onchange':'M.ciniki_musicfestivals_main.class.updateForm();',
                 },
-            'schedule_seconds':{'label':'Schedule Time', 'type':'minsec', 'visible':'no'},
+            'schedule_seconds':{'label':'Schedule Time/Registration', 'type':'minsec', 'visible':'no'},
+            'schedule_at_seconds':{'label':'Talk Time/Class', 'type':'minsec', 'visible':'no'},
+            'schedule_ata_seconds':{'label':'Additional Talk Time/Reg', 'type':'minsec', 'visible':'no'},
             }},
         '_fixed_title1':{'label':'Fixed Title #1', 
             'visible':'hidden',
@@ -5641,14 +5648,26 @@ function ciniki_musicfestivals_main() {
         var f = this.formValue('flags19');
         if( (f&0x0C0000) == 0x040000 ) {
             this.sections.scheduling.fields.schedule_seconds.visible = 'yes';
-            this.sections.scheduling.fields.schedule_seconds.label = 'Adjudication Time';
+            this.sections.scheduling.fields.schedule_seconds.label = 'Adjudication Time/Reg';
         } else if( (f&0x0C0000) == 0x080000 ) {
             this.sections.scheduling.fields.schedule_seconds.visible = 'yes';
-            this.sections.scheduling.fields.schedule_seconds.label = 'Total Time';
+            this.sections.scheduling.fields.schedule_seconds.label = 'Total Time/Reg';
         } else {
             this.sections.scheduling.fields.schedule_seconds.visible = 'no';
         }
+        if( (f&0x0C0000) > 0 
+            && M.ciniki_musicfestivals_main.festival.data['scheduling-at-times'] != null
+            && M.ciniki_musicfestivals_main.festival.data['scheduling-at-times'] == 'yes'
+            ) {
+            this.sections.scheduling.fields.schedule_at_seconds.visible = 'yes';
+            this.sections.scheduling.fields.schedule_ata_seconds.visible = 'yes';
+        } else {
+            this.sections.scheduling.fields.schedule_at_seconds.visible = 'no';
+            this.sections.scheduling.fields.schedule_ata_seconds.visible = 'no';
+        }
         this.showHideFormField('scheduling', 'schedule_seconds');
+        this.showHideFormField('scheduling', 'schedule_at_seconds');
+        this.showHideFormField('scheduling', 'schedule_ata_seconds');
             
 /*        if( (f&0xC000) == 0x8000 ) {
             this.sections.registration.fields.flags5.visible = 'no';

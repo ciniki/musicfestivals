@@ -42,6 +42,8 @@ function ciniki_musicfestivals_classAdd(&$ciniki) {
         'levels'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Level Tags'),
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
         'schedule_seconds'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Seconds'),
+        'schedule_at_seconds'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Talk Time/Class Seconds'),
+        'schedule_ata_seconds'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Additional Talk Time/Registration Seconds'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

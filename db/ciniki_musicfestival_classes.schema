@@ -114,7 +114,10 @@
 #
 # synopsis:             The synopsis/short description of the class.
 #
-# schedule_seconds:     The seconds alotted for each registration in this class. 
+# schedule_seconds:     The seconds alotted for each registration in this class. **FIXME: change to schedule_reg_sec
+#
+# schedule_at_seconds:  The seconds alloted for the adjudication talk for the first registration at the end of a class.
+# schedule_ata_seconds: The seconds alloted for each additional registration after the first registration.
 #
 # keywords:             The search keywords to be used for live search.
 #
@@ -148,6 +151,8 @@ create table ciniki_musicfestival_classes (
     provincials_code varchar(20) not null,
     synopsis varchar(2000) not null,
     schedule_seconds int not null,
+    schedule_at_seconds int not null,
+    schedule_ata_seconds int not null,
     keywords varchar(5000) not null,
     options text not null,
     date_added datetime not null,
@@ -159,4 +164,4 @@ create table ciniki_musicfestival_classes (
     index (festival_id, category_id, tnid),
     index keywords (keywords),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.15';
+) ENGINE='InnoDB', COMMENT='v1.16';

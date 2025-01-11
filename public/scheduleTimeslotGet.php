@@ -216,7 +216,9 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
             . "classes.flags AS class_flags, "
-            . "classes.schedule_seconds AS schedule_seconds, "
+            . "classes.schedule_seconds, "
+            . "classes.schedule_at_seconds, "
+            . "classes.schedule_ata_seconds, "
             . "categories.name AS category_name, "
             . "sections.name AS section_name "
             . "FROM ciniki_musicfestival_registrations AS registrations "
@@ -265,7 +267,8 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
                     'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
-                    'class_code', 'class_name', 'class_flags', 'schedule_seconds', 'category_name', 'section_name', 
+                    'class_code', 'class_name', 'class_flags', 'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds',
+                    'category_name', 'section_name', 
                     'participation', 'invoice_status_text', 
                     ),
                 'maps'=>array(
@@ -284,9 +287,12 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, [
                 'times' => 'startsum', 
                 'numbers' => 'yes',
-                'schedule_time' => isset($festival['syllabus-schedule-time']) ? $festival['syllabus-schedule-time'] : '',
-                'schedule_seconds' => $reg['schedule_seconds'],
+//                'schedule_time' => isset($festival['syllabus-schedule-time']) ? $festival['syllabus-schedule-time'] : '',
+//                'schedule_seconds' => $reg['schedule_seconds'],
+//                'schedule_at_seconds' => $reg['schedule_at_seconds'],
+//                'schedule_ata_seconds' => $reg['schedule_ata_seconds'],
                 ]);
+                error_log(print_r($rc,true));
             $scheduletimeslot['registrations'][$rid]['titles'] = $rc['titles'];
             $total_time += $rc['perf_time_seconds'];
             if( isset($ages) ) {
@@ -533,7 +539,9 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
             . "classes.flags AS class_flags, "
-            . "classes.schedule_seconds AS schedule_seconds, "
+            . "classes.schedule_seconds, "
+            . "classes.schedule_at_seconds, "
+            . "classes.schedule_ata_seconds, "
             . "categories.name AS category_name, "
             . "sections.name AS section_name "
             . "FROM ciniki_musicfestival_classes AS classes "
@@ -600,7 +608,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
                     'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
-                    'class_code', 'class_name', 'class_flags', 'schedule_seconds',
+                    'class_code', 'class_name', 'class_flags', 'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds',
                     'category_name', 'section_name', 'participation', 'invoice_status_text',
                     ),
                 'maps'=>array(
@@ -664,7 +672,9 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
             . "classes.flags AS class_flags, "
-            . "classes.schedule_seconds AS schedule_seconds, "
+            . "classes.schedule_seconds, "
+            . "classes.schedule_at_seconds, "
+            . "classes.schedule_ata_seconds, "
             . "categories.name AS category_name, "
             . "sections.name AS section_name "
             . "FROM ciniki_musicfestival_categories AS categories "
@@ -711,7 +721,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
                     'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
-                    'class_code', 'class_name', 'class_flags', 'schedule_seconds',
+                    'class_code', 'class_name', 'class_flags', 'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds',
                     'category_name', 'section_name', 'participation', 'invoice_status_text',
                     ),
                 'maps'=>array(
