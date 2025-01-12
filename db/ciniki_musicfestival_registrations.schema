@@ -274,5 +274,7 @@ create table ciniki_musicfestival_registrations (
     index (festival_id, teacher_customer_id, billing_customer_id, accompanist_customer_id, member_id),
     index competitors (festival_id, competitor1_id, competitor2_id, competitor3_id, competitor4_id, competitor5_id),
     index (festival_id, class_id, tnid),
+    index (class_id),
+    index (timeslot_id),
     index tenant_uuid (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.27';
