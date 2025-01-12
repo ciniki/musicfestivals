@@ -638,7 +638,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             . "FROM ciniki_musicfestival_competitors AS competitors "
             . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
             . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND competitors.id IN ("
+/*            . "AND competitors.id IN ("
                 . "SELECT DISTINCT competitor1_id FROM ciniki_musicfestival_registrations "
                     . "WHERE festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
                     . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -654,7 +654,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 . "UNION SELECT DISTINCT competitor5_id FROM ciniki_musicfestival_registrations "
                     . "WHERE festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
                     . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") " 
+                . ") "  */
             . "ORDER BY competitors.name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
@@ -927,9 +927,30 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                                     }
                                 }
                             }
+                            //
+                            // Update all competitors who are registered in a class
+                            //
+                            if( isset($class['registrations']) ) {
+                                foreach($class['registrations'] AS $rid => $reg) {
+                                    for($i = 1; $i <= 5; $i++) {
+                                        if( isset($rsp['competitors'][$reg["competitor{$i}_id"]]) ) {
+                                            $rsp['competitors'][$reg["competitor{$i}_id"]]['registered'] = 'yes';
+                                        }
+                                    }
+                                }
+                            }
                         }
                     }
                 }
+            }
+        }
+
+        //
+        // Filter out competitors who have not registered
+        //
+        foreach($rsp['competitors'] as $cid => $competitor) {
+            if( !isset($competitor['registered']) ) {
+                unset($competitor[$cid]);
             }
         }
         
