@@ -51,6 +51,19 @@ function ciniki_musicfestivals_syllabusSearch($ciniki) {
     $intl_timezone = $rc['settings']['intl-default-timezone'];
 
     //
+    // Create the keywords string
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'classKeywordsMake');
+    $rc = ciniki_musicfestivals_classKeywordsMake($ciniki, $tnid, [
+        'keywords' => $args['start_needle'],
+        ]);
+    if( $rc['stat'] != 'ok' ) {
+        error_log('Unable to create keywords: ' . $args['start_needle']);
+        return array('stat'=>'ok');
+    }
+    $keywords = str_replace(' ', '% ', trim($rc['keywords']));
+
+    //
     // Get the list of classes
     //
     $strsql = "SELECT classes.id, "
@@ -90,11 +103,13 @@ function ciniki_musicfestivals_syllabusSearch($ciniki) {
 //            . ") "
         . "WHERE classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND classes.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "AND ("
+        . "AND classes.keywords LIKE '% " . ciniki_core_dbQuote($ciniki, $keywords) . "%' "
+/*        . "AND ("
             . "classes.name LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR classes.name LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR classes.code LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
-        . ") "
+            . "OR classes.keywords LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+        . ") " */
 //        . "GROUP BY classes.id "
         . "ORDER BY sections.sequence, sections.name, "
             . "categories.sequence, categories.name, "
