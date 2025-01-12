@@ -346,6 +346,28 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
             );
     }
 
+    //
+    // Check if class search is to be used
+    //
+    if( isset($s['live-search']) && $s['live-search'] == 'top' ) {
+        $api_args = [
+            'festival-id' => $festival['id'],
+            'layout' => $s['layout'],
+            'baseurl' => $request['ssl_domain_base_url'] . $request['page']['path'],
+            ];
+        if( isset($section['syllabus']) ) {
+            $api_args['syllabus'] = $section['syllabus'];
+        }
+        $blocks[] = [
+            'type' => 'livesearch',
+            'label' => 'Search Class or Name',
+            'id' => $section['sequence'],
+            'api-search-url' => $request['api_url'] . '/ciniki/musicfestivals/scheduleSearch',
+            'api-args' => $api_args,
+            ];
+    }
+
+
     if( isset($selected_section) && isset($selected_division) ) {
         $section['settings']['section-id'] = $selected_section['id'];
         $section['settings']['division-id'] = $selected_division['id'];

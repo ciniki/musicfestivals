@@ -11936,7 +11936,7 @@ function ciniki_musicfestivals_main() {
         'general':{'label':'New Late Fees', 'fields':{
             'flags5':{'label':'Late Fees', 'type':'flagspiece', 'mask':0x30, 'field':'flags', 'join':'yes', 'none':'yes', 'toggle':'yes',
                 'onchange':'M.ciniki_musicfestivals_main.latefees.updateForm',
-                'flags':{'0':{'name':'None'}, '5':{'name':'per Cart'}},// **future**, '6':{'name':'per Registration'}},
+                'flags':{'0':{'name':'None'}, '5':{'name':'per Cart'}, '6':{'name':'per Registration'}},
                 },
             'latefees_start_amount':{'label':'First Day Amount', 'type':'text', 'size':'small', 'visible':'no'},
             'latefees_daily_increase':{'label':'Daily Increase', 'type':'text', 'size':'small', 'visible':'no'},
@@ -11949,6 +11949,7 @@ function ciniki_musicfestivals_main() {
             }},
     }
     this.latefees.open = function(cb, syllabus) {
+        console.log(this.sections);
         this.syllabus = syllabus;
         this.refresh();
         this.show(cb);

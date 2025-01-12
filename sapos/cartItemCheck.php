@@ -90,11 +90,13 @@ function ciniki_musicfestivals_sapos_cartItemCheck($ciniki, $tnid, $customer, $a
 
         return array('stat'=>'ok');
     }
-    elseif( $args['object'] == 'ciniki.musicfestivals.memberlatefee' 
+    //
+    // The following have been moved to cartCheck
+    //
+/*    elseif( $args['object'] == 'ciniki.musicfestivals.memberlatefee' 
         || $args['object'] == 'ciniki.musicfestivals.adminfee' 
         || $args['object'] == 'ciniki.musicfestivals.latefee' 
         ) {
-//        error_log('Check member late fee');
         //
         // Run the check on the entire invoice
         //
@@ -105,15 +107,14 @@ function ciniki_musicfestivals_sapos_cartItemCheck($ciniki, $tnid, $customer, $a
     }
     elseif( $args['object'] == 'ciniki.musicfestivals.registration' && isset($args['object_id']) && $args['object_id'] > 0 ) {
 
-//        error_log('cart check item');
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'sapos', 'registrationExtraFeesCheck');
         return ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, [
             'registration_id' => $args['object_id'],
             'invoice_id' => $args['invoice_id'],
             'invoice_item_id' => $args['id'],
             ]);
-    }
+    } */
 
-    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.380', 'msg'=>'No registration specified.'));
+    return array('stat'=>'ok');
 }
 ?>

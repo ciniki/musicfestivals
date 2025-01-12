@@ -190,28 +190,40 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
     //
     if( ($registration['participation'] == 0 || $registration['participation'] == 2)    // Regular Live or Plus Live
         && $festival['live'] == 'no'        // registrations are closed for live
-        && ($registration['section_flags']&0x10) == 0x10
+        && ($registration['section_flags']&0x30) > 0     // Per cart or per reg late fees
         && isset($registration['live_days_past'])
         && isset($registration['latefees_days'])
         && $registration['live_days_past'] < $registration['latefees_days']
         ) {
-        $latefee = $registration['latefees_start_amount'] 
-            + ($registration['latefees_daily_increase'] * $registration['live_days_past']);
+        if( ($registration['section_flags']&0x10) == 0x10 ) { // Per cart
+            $latefee = $registration['latefees_start_amount'] 
+                + ($registration['latefees_daily_increase'] * $registration['live_days_past']);
+        } elseif( ($registration['section_flags']&0x20) == 0x20 ) {
+            // Per invoice late fees will be caught by cartCheck
+            $cart_latefee = $registration['latefees_start_amount'] 
+                + ($registration['latefees_daily_increase'] * $registration['live_days_past']);
+        }
     } elseif( ($registration['participation'] == 1 || $registration['participation'] == 3) // Virtual or Virtual Plus
         && $festival['virtual'] == 'no'     // registrations are closed for virtual
-        && ($registration['section_flags']&0x10) == 0x10
+        && ($registration['section_flags']&0x30) > 0     // Per cart or per reg late fees
         && isset($registration['virtual_days_past'])
         && isset($registration['latefees_days'])
         && $registration['virtual_days_past'] < $registration['latefees_days']
         ) {
-        $latefee = $registration['latefees_start_amount'] 
-            + ($registration['latefees_daily_increase'] * $registration['virtual_days_past']);
+        if( ($registration['section_flags']&0x10) == 0x10 ) { // Per cart
+            $latefee = $registration['latefees_start_amount'] 
+                + ($registration['latefees_daily_increase'] * $registration['virtual_days_past']);
+        } elseif( ($registration['section_flags']&0x20) == 0x20 ) {
+            // Per invoice late fees will be caught by cartCheck
+            $cart_latefee = $registration['latefees_start_amount'] 
+                + ($registration['latefees_daily_increase'] * $registration['virtual_days_past']);
+        }
     }
 
     //
     // Registrations are closed and no late fees
     //
-    if( !isset($latefee) 
+    if( !isset($latefee) && !isset($cart_latefee)
         && (!isset($args['closed']) || $args['closed'] != 'ignore')
         && (
             ($festival['flags']&0x01) == 0      // Registrations are closed
@@ -252,6 +264,9 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
 
     if( isset($latefee) ) {
         return array('stat'=>'ok', 'latefee'=>$latefee);
+    }
+    if( isset($cart_latefee) ) {
+        return array('stat'=>'ok', 'cart_latefee'=>$cart_latefee);
     }
 
     return array('stat'=>'ok');

@@ -30,10 +30,8 @@ function ciniki_musicfestivals_sapos_cartItemAdd($ciniki, $tnid, $invoice_id, $a
     }
     elseif( $args['object'] == 'ciniki.musicfestivals.registration' && isset($args['object_id']) && $args['object_id'] > 0 ) {
 
-//        error_log('cart check item');
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'sapos', 'registrationExtraFeesCheck');
-        $rc = ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, [
-            'registration_id' => $args['object_id'],
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'sapos', 'invoiceExtraFeesCheck');
+        $rc = ciniki_musicfestivals_sapos_invoiceExtraFeesCheck($ciniki, $tnid, [
             'invoice_id' => $invoice_id,
             ]);
         if( $rc['stat'] != 'ok' && $rc['stat'] != 'updated' ) {
