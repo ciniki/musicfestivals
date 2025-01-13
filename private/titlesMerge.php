@@ -23,7 +23,7 @@ function ciniki_musicfestivals_titlesMerge(&$ciniki, $tnid, $registration, $args
         $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $registration, $i);
         if( isset($rc['title']) && $rc['title'] != '' ) {
             $title = $rc['title'];
-            if( isset($registration["perf_time{$i}"]) ) {
+            if( isset($registration["perf_time{$i}"]) && $registration["perf_time{$i}"] != '' ) {
                 $perf_time += $registration["perf_time{$i}"];
             }
             
