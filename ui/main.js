@@ -987,7 +987,7 @@ function ciniki_musicfestivals_main() {
             'menu':{
                 'add':{
                     'label':'Add Division',
-                    'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['locations']) == 'no' && M.ciniki_musicfestivals_main.festival.schedulesection_id > 0 ? 'yes' : 'no'; },
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['timeslots']) == 'yes' && M.ciniki_musicfestivals_main.festival.schedulesection_id > 0 ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.scheduledivision.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.schedulesection_id,M.ciniki_musicfestivals_main.festival.festival_id,null);',
                     },
                 },
