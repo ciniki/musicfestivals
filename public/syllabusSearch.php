@@ -54,7 +54,7 @@ function ciniki_musicfestivals_syllabusSearch($ciniki) {
     // Create the keywords string
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'classKeywordsMake');
-    $rc = ciniki_musicfestivals_classKeywordsMake($ciniki, $tnid, [
+    $rc = ciniki_musicfestivals_classKeywordsMake($ciniki, $args['tnid'], [
         'keywords' => $args['start_needle'],
         ]);
     if( $rc['stat'] != 'ok' ) {
