@@ -1945,9 +1945,9 @@ function ciniki_musicfestivals_main() {
                 case 0: return M.multiline(d.name, d.options);
                 case 1: 
                     if( M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'locations') == 'yes' ) {
-                        return M.multiline(d.division_date_text, d.first_timeslot + ' - ' + d.last_timeslot);
+                        return M.multiline(d.division_date_text, d.first_timeslot != null ? (d.first_timeslot + ' - ' + d.last_timeslot) : '');
                     }
-                    return M.multiline(d.division_date_text + times, d.location_name);
+                    return M.multiline(d.division_date_text, d.location_name);
                 case 2: return d.adjudicator_name;
             }
         }
