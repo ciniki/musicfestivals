@@ -985,6 +985,7 @@ function ciniki_musicfestivals_main() {
             'headerValues':['Division', 'Date', 'Adjudicator'],
             'cellClasses':['multiline', 'multiline', ''],
             'menu':{
+                'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['timeslots']) == 'yes' && M.ciniki_musicfestivals_main.festival.schedulesection_id > 0 ? 'yes' : 'no'; },
                 'add':{
                     'label':'Add Division',
                     'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['timeslots']) == 'yes' && M.ciniki_musicfestivals_main.festival.schedulesection_id > 0 ? 'yes' : 'no'; },
