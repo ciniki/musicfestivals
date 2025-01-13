@@ -42,6 +42,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'registration_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registration Status'),
 //        'colour'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registration Colour'),
         'schedule'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule'),
+        'locations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Locations'),
+        'location_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Location'),
         'adjudicator_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicator'),
         'ssection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Section'),
         'sdivision_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Division'),
@@ -1321,6 +1323,42 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             }
 
             //
+            // Get the list of schedule locations
+            //
+            if( isset($args['locations']) && $args['locations'] == 'yes' ) {
+                $strsql = "SELECT locations.id, "
+                    . "locations.festival_id, "
+                    . "locations.name "
+                    . "FROM ciniki_musicfestival_locations AS locations "
+                    . "WHERE locations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "ORDER BY locations.name "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'schedulelocations', 'fname'=>'id', 
+                        'fields'=>array('id', 'festival_id', 'name'),
+                        ),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                if( isset($rc['schedulelocations']) ) {
+                    $festival['schedule_locations'] = $rc['schedulelocations'];
+                    $nplists['schedule_locations'] = array();
+                    foreach($festival['schedule_locations'] as $iid => $location) {
+                        $nplists['schedule_locations'][] = $location['id'];
+                        if( isset($args['location_id']) && $args['location_id'] == $location['id'] ) {
+                            $requested_location = $schedulelocation;
+                        }
+                    }
+                } else {
+                    $festival['schedule_locations'] = array();
+                    $nplists['schedule_locations'] = array();
+                }
+            }
+
+            //
             // Get the list of schedule section divisions
             //
             if( isset($args['ssection_id']) && $args['ssection_id'] == 'unscheduled' ) {
@@ -1428,6 +1466,64 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         . ") "
                     . "WHERE divisions.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                     . "AND divisions.ssection_id = '" . ciniki_core_dbQuote($ciniki, $args['ssection_id']) . "' "
+                    . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "GROUP BY divisions.id "
+                    . "ORDER BY divisions.division_date, divisions.name, first_timeslot "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'scheduledivisions', 'fname'=>'id', 
+                        'fields'=>array('id', 'festival_id', 'ssection_id', 'name', 'flags', 'options', 
+                            'division_date_text', 'location_name', 'adjudicator_name', 
+                            ),
+                        'flags' => array('options'=>$maps['schedulesection']['flags']),
+                        ),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                if( isset($rc['scheduledivisions']) ) {
+                    $festival['schedule_divisions'] = $rc['scheduledivisions'];
+                    $nplists['schedule_divisions'] = array();
+                    foreach($festival['schedule_divisions'] as $iid => $scheduledivision) {
+                        $nplists['schedule_divisions'][] = $scheduledivision['id'];
+                    }
+                } else {
+                    $festival['schedule_divisions'] = array();
+                    $nplists['schedule_divisions'] = array();
+                }
+            }
+            elseif( isset($args['location_id']) && $args['location_id'] > 0 ) {
+                $strsql = "SELECT divisions.id, "
+                    . "divisions.festival_id, "
+                    . "divisions.ssection_id, "
+                    . "divisions.flags, "
+                    . "divisions.flags AS options, "
+                    . "divisions.name, "
+                    . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, "
+//                    . "divisions.address, "
+                    . "IFNULL(locations.name, '') AS location_name, "
+                    . "customers.display_name AS adjudicator_name, "
+                    . "MIN(timeslots.slot_time) AS first_timeslot "
+                    . "FROM ciniki_musicfestival_schedule_divisions AS divisions "
+                    . "LEFT JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
+                        . "divisions.adjudicator_id = adjudicators.id "
+                        . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_customers AS customers ON ("
+                        . "adjudicators.customer_id = customers.id "
+                        . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
+                        . "divisions.location_id = locations.id "
+                        . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+                        . "divisions.id = timeslots.sdivision_id "
+                        . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE divisions.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "AND divisions.location_id = '" . ciniki_core_dbQuote($ciniki, $args['location_id']) . "' "
                     . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "GROUP BY divisions.id "
                     . "ORDER BY divisions.division_date, divisions.name, first_timeslot "
