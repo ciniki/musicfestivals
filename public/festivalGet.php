@@ -1497,6 +1497,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $strsql = "SELECT divisions.id, "
                     . "divisions.festival_id, "
                     . "divisions.ssection_id, "
+                    . "sections.name AS section_name, "
                     . "divisions.flags, "
                     . "divisions.flags AS options, "
                     . "divisions.name, "
@@ -1506,6 +1507,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "customers.display_name AS adjudicator_name, "
                     . "MIN(timeslots.slot_time) AS first_timeslot "
                     . "FROM ciniki_musicfestival_schedule_divisions AS divisions "
+                    . "LEFT JOIN ciniki_musicfestival_schedule_sections AS sections ON ("
+                        . "divisions.ssection_id = sections.id "
+                        . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
                     . "LEFT JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
                         . "divisions.adjudicator_id = adjudicators.id "
                         . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -1531,7 +1536,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'scheduledivisions', 'fname'=>'id', 
-                        'fields'=>array('id', 'festival_id', 'ssection_id', 'name', 'flags', 'options', 
+                        'fields'=>array('id', 'festival_id', 'ssection_id', 'section_name', 'name', 'flags', 'options', 
                             'division_date_text', 'location_name', 'adjudicator_name', 
                             ),
                         'flags' => array('options'=>$maps['schedulesection']['flags']),
@@ -1545,6 +1550,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     $nplists['schedule_divisions'] = array();
                     foreach($festival['schedule_divisions'] as $iid => $scheduledivision) {
                         $nplists['schedule_divisions'][] = $scheduledivision['id'];
+                        $festival['schedule_divisions'][$iid]['name'] = $scheduledivision['section_name'] . ' - ' . $scheduledivision['name'];
                     }
                 } else {
                     $festival['schedule_divisions'] = array();
