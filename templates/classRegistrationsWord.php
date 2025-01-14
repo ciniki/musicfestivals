@@ -119,8 +119,10 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
         . "registrations.notes, "
         . "registrations.internal_notes, "
         . "competitors.id AS competitor_id, "
+        . "competitors.ctype, "
         . "competitors.city AS competitor_city, "
         . "competitors.province AS competitor_province, "
+        . "competitors.num_people, "
         . "competitors.notes AS competitor_notes "
         . "FROM ciniki_musicfestival_classes AS classes "
         . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
@@ -171,7 +173,9 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
                 'participation', 'teacher_customer_id',
             )),
         array('container'=>'competitors', 'fname'=>'competitor_id', 
-            'fields'=>array('id'=>'competitor_id', 'city'=>'competitor_city', 'competitor_province', 'notes'=>'competitor_notes'),
+            'fields'=>array('id'=>'competitor_id', 'ctype', 'num_people',
+                'city'=>'competitor_city', 'competitor_province', 'notes'=>'competitor_notes',
+                ),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -182,12 +186,18 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
     $competitor_classes = [];   // List of competitors and other classes they are part of
     foreach($classes as $cid => $class) {
         $classes[$cid]['num_reg'] = count($class['registrations']);
+        $perf_time = 0;
         if( isset($class['registrations']) ) {
             foreach($class['registrations'] AS $rid => $reg) {
                 if( isset($reg['internal_notes']) && $reg['internal_notes'] != '' ) {
                     $classes[$cid]['registrations'][$rid]['notes'] .= ($classes[$cid]['registrations'][$rid]['notes'] != '' ? "\n" : '') . $reg['internal_notes'];
                 }
                 $classes[$cid]['registrations'][$rid]['teacher_name'] = isset($teachers[$reg['teacher_customer_id']]) ? $teachers[$reg['teacher_customer_id']] : '';
+                if( isset($reg['teacher2_customer_id']) && isset($teachers[$reg['teacher2_customer_id']]) ) {
+                    $classes[$cid]['registrations'][$rid]['teacher_name'] .= ', ' . isset($teachers[$reg['teacher_customer_id']]) ? $teachers[$reg['teacher_customer_id']] : '';
+                }
+                $classes[$cid]['registrations'][$rid]['num_people'] = '';
+
                 if( isset($reg['competitors']) ) {
                     foreach($reg['competitors'] as $competitor) {
                         if( !isset($competitor_classes[$competitor['id']]) ) {
@@ -198,6 +208,9 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
                         if( isset($competitor['notes']) && $competitor['notes'] != '' ) {
                             $classes[$cid]['registrations'][$rid]['notes'] .= ($classes[$cid]['registrations'][$rid]['notes'] != '' ? "\n" : '') . $competitor['notes'];
                         }
+                        if( $competitor['num_people'] > 0 && $competitor['ctype'] == 50 ) {
+                            $classes[$cid]['registrations'][$rid]['num_people'] = $competitor['num_people'];
+                        }
                     }
                 }
                 // FIXME: Merge Titles
@@ -207,7 +220,13 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
                     ]);
                 $classes[$cid]['registrations'][$rid]['titles'] = $rc['titles'];
                 $classes[$cid]['registrations'][$rid]['perf_time'] = $rc['perf_time'];
+                $perf_time += $rc['perf_time_seconds'];
             }
+        }
+        if( $perf_time > 3600 ) {
+            $classes[$cid]['perf_time_str'] = intval($perf_time/3600) . 'h ' . ceil(($perf_time%3600)/60) . 'm';
+        } else {
+            $classes[$cid]['perf_time_str'] = intval($perf_time/60) . ':' . str_pad(($perf_time%60), 2, '0', STR_PAD_LEFT);
         }
     }
 
@@ -258,7 +277,7 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
         if( isset($args['section_id']) && $class['section_id'] != $args['section_id'] ) {
             continue;
         }
-        $section->addTitle(htmlspecialchars("{$class['code']} - {$class['name']} ({$class['num_reg']})"), 1);
+        $section->addTitle(htmlspecialchars("{$class['code']} - {$class['name']} ({$class['num_reg']}) [{$class['perf_time_str']}]"), 1);
         if( isset($class['registrations']) ) {
             foreach($class['registrations'] as $reg) {
                 $other_classes = '';
@@ -286,7 +305,11 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
                 if( count($cities) > 0 ) {
                     $city_list = ' [' . implode(', ', $cities) . ']';
                 }
-                $line = "{$reg['name']}{$city_list}{$other_classes}\t{$reg['teacher_name']}\t{$reg['perf_time']}\t{$reg['titles']}\n";
+                $num_people = '';
+                if( $reg['num_people'] != '' && $reg['num_people'] > 0 ) {
+                    $num_people = ' (' . $reg['num_people'] . ')';
+                }
+                $line = "{$reg['name']}{$num_people}{$city_list}{$other_classes}\t{$reg['teacher_name']}\t{$reg['perf_time']}\t{$reg['titles']}\n";
                 $section->addText(htmlspecialchars($line), null, 'pReg');
 //                $section->addText(htmlspecialchars($reg['titles']), null, 'pTitles');
                 if( isset($reg['notes']) && $reg['notes'] != '' ) {
