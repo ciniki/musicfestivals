@@ -442,6 +442,11 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                     'rows' => $groups,
                     );
             } else {
+                if( $s['layout'] == 'division-buttons-name' ) {
+                    uasort($section['divisions'], function($a, $b) {
+                        return strnatcmp($a['name'], $b['name']);
+                        });
+                }
                 $blocks[] = array(
                     'type' => 'buttons',
                     'class' => 'schedule-buttons',
