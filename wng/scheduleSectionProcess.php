@@ -717,7 +717,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 $blocks[] = array(
                     'type' => 'schedule',
                     'title' => $division['name'] . (isset($s['division-dates']) && $s['division-dates'] == 'yes' ? ' - ' . $division['date'] : ''),
-                    'subtitle' => $division['address'],
+                    'subtitle' => $division['location_name'],
                     'content' => $division['results_notes'],
                     'sequence' => $section['sequence'],
                     'video-url' => $division['results_video_url'],
@@ -858,7 +858,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 $blocks[] = array(
                     'type' => 'schedule',
                     'title' => $division['name'] . (isset($s['division-dates']) && $s['division-dates'] == 'yes' ? ' - ' . $division['date'] : ''),
-                    'subtitle' => $division['address'],
+                    'subtitle' => $division['location_name'],
                     'class' => 'musicfestival-timeslots limit-width limit-width-80',
                     'items' => $division['timeslots'],
                     'details-headers' => 'no',
