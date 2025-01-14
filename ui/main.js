@@ -1893,7 +1893,7 @@ function ciniki_musicfestivals_main() {
             switch (j) {
                 case 0: return d.class_code;
                 case 1: return '<span class="maintext">' + d.display_name + '</span><span class="subtext">' + d.titles + '</span>';
-                case 2: return d.teacher_name;
+                case 2: return d.teacher_name + (d.teacher2_name != null && d.teacher2_name != '' ? ', ' + d.teacher2_name : '');
                 case 3: return M.multiline(d.invoice_status_text, '$' + d.fee);
                 case 4: return M.multiline(d.status_text, d.invoice_date);
             }

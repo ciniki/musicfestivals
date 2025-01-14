@@ -1051,7 +1051,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "registrations.festival_id, "
                     . "sections.id AS section_id, "
                     . "registrations.teacher_customer_id, "
-                    . "teachers.display_name AS teacher_name, "
+                    . "IFNULL(teachers.display_name, '') AS teacher_name, "
+                    . "IFNULL(teachers2.display_name, '') AS teacher2_name, "
                     . "registrations.accompanist_customer_id, "
                     . "accompanists.display_name AS accompanist_name, "
                     . "classes.flags AS class_flags, "
@@ -1138,6 +1139,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         . "registrations.teacher_customer_id = teachers.id "
                         . "AND teachers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                         . ") "
+                        . "LEFT JOIN ciniki_customers AS teachers2 ON ("
+                        . "registrations.teacher2_customer_id = teachers2.id "
+                        . "AND teachers2.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
                     . "LEFT JOIN ciniki_customers AS accompanists ON ("
                         . "registrations.accompanist_customer_id = accompanists.id "
                         . "AND accompanists.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -1201,7 +1206,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'registrations', 'fname'=>'id', 
-                        'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 
+                        'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'teacher2_name', 
+                            'billing_customer_id', 
                             'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
                             'invoice_type', 'invoice_status', 'payment_status_text', 'invoice_date', 
                             'class_id', 'class_code', 'class_name', 'class_flags', 'min_titles', 'max_titles',
