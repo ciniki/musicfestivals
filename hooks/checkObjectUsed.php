@@ -44,6 +44,8 @@ function ciniki_musicfestivals_hooks_checkObjectUsed($ciniki, $tnid, $args) {
             . "WHERE ("
                 . "billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
                 . "OR teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
+                . "OR teacher2_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
+                . "OR parent_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
                 . "OR accompanist_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' "
                 . ") "
             . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
