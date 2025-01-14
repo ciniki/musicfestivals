@@ -146,7 +146,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
     //
     // Load the schedules
     //
-    if( isset($s['layout']) && ($s['layout'] == 'section-grouped-buttons' || $s['layout'] == 'division-buttons' || $s['layout'] == 'division-grouped-buttons') ) {
+    if( isset($s['layout']) && ($s['layout'] == 'section-grouped-buttons' || $s['layout'] == 'division-buttons' || $s['layout'] == 'division-grouped-buttons' || $s['layout'] == 'division-buttons-name') ) {
         $strsql = "SELECT sections.id, "
             . "sections.name, "
             . "divisions.id AS division_id, "
@@ -165,8 +165,11 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
         } else {
             $strsql .= "AND (sections.flags&0x10) = 0x10 "; // Schedule published on website
         }
-        $strsql .= "ORDER BY sections.sequence, sections.name, divisions.division_date, divisions.name "
-            . "";
+        if( $s['layout'] == 'division-buttons-name' ) {
+            $strsql .= "ORDER BY sections.sequence, sections.name, divisions.name, divisions.division_date ";
+        } else {
+            $strsql .= "ORDER BY sections.sequence, sections.name, divisions.division_date, divisions.name ";
+        }
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'sections', 'fname'=>'id', 
@@ -391,7 +394,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
     //
     // Display the buttons for the list of schedules
     //
-    elseif( isset($s['layout']) && ($s['layout'] == 'division-buttons' || $s['layout'] == 'division-grouped-buttons') ) {
+    elseif( isset($s['layout']) && ($s['layout'] == 'division-buttons' || $s['layout'] == 'division-grouped-buttons' || $s['layout'] == 'division-buttons-name') ) {
         if( isset($division_permalink) && $division_permalink != '' ) {
             $blocks[] = array(
                 'type' => 'msg',
