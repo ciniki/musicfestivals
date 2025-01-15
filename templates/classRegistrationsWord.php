@@ -75,8 +75,10 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
     $strsql = "SELECT classes.id AS class_id, "
         . "classes.sequence AS cla_seq, "
         . "categories.sequence AS cat_seq, "
+        . "categories.name AS category_name, "
         . "sections.id AS section_id, "
         . "sections.sequence AS sec_seq, "
+        . "sections.name AS section_name, "
         . "classes.code AS class_code, "
         . "classes.name AS class_name, "
         . "registrations.id AS reg_id, "
@@ -157,7 +159,10 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'classes', 'fname'=>'class_id', 
-            'fields'=>array('id'=>'class_id', 'section_id', 'cat_seq', 'sec_seq', 'code'=>'class_code', 'name'=>'class_name'),
+            'fields'=>array('id'=>'class_id', 'section_id', 
+                'cat_seq', 'category_name', 
+                'sec_seq', 'section_name',
+                'code'=>'class_code', 'name'=>'class_name'),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 
@@ -277,7 +282,7 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
         if( isset($args['section_id']) && $class['section_id'] != $args['section_id'] ) {
             continue;
         }
-        $section->addTitle(htmlspecialchars("{$class['code']} - {$class['name']} ({$class['num_reg']}) [{$class['perf_time_str']}]"), 1);
+        $section->addTitle(htmlspecialchars("{$class['code']} - {$class['section_name']} - {$class['category_name']} - {$class['name']} ({$class['num_reg']}) [{$class['perf_time_str']}]"), 1);
         if( isset($class['registrations']) ) {
             foreach($class['registrations'] as $reg) {
                 $other_classes = '';
