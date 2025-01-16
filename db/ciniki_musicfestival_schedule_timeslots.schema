@@ -10,6 +10,7 @@
 # tnid:                 The tenant the time slot is attached to.
 #
 # festival_id:          The festival the time slot is for.
+# ssection_id:          The schedule_section the time slot is for, used for unscheduled timeslots.
 # sdivision_id:         The schedule_division the time slot is for.
 #
 # slot_time:            The time for the slot on the division date.
@@ -22,6 +23,7 @@
 #                           0x08 - 
 #
 # name:                 The name for the category.
+# groupname:            The group name if a split class. This will be automatically added to class name when separate classes is enabled.
 # description:          The longer text description of the category.
 #
 # results_notes:        If there is notes or video links can be added here to be displayed on results pages.
@@ -36,10 +38,12 @@ create table ciniki_musicfestival_schedule_timeslots (
     uuid char(36) not null,
     tnid int not null,
     festival_id int not null,
+    ssection_id int not null,
     sdivision_id int not null,
     slot_time time not null,
     flags tinyint unsigned not null,
     name varchar(150) not null,
+    groupname varchar(150) not null,
     description varchar(2000) not null,
     runsheet_notes text not null,
     results_notes text not null,
@@ -50,4 +54,4 @@ create table ciniki_musicfestival_schedule_timeslots (
     unique index (uuid),
     index (festival_id, sdivision_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.07';
+) ENGINE='InnoDB', COMMENT='v1.08';

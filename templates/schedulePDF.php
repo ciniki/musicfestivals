@@ -146,6 +146,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     }
     $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
         . "timeslots.name AS timeslot_name, "
+        . "timeslots.groupname AS timeslot_groupname, "
         . "timeslots.description, "
         . "registrations.id AS reg_id, ";
     if( isset($festival['schedule-include-pronouns']) && $festival['schedule-include-pronouns'] == 'yes' ) {
@@ -270,7 +271,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'location', 'adjudicator_id', 'adjudicator'),
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
-            'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 
+            'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'groupname'=>'timeslot_groupname', 'time'=>'slot_time_text', 
                 'description', 'class_code', 'class_name', 'category_name', 'syllabus_section_name',
                 ),
             ),
@@ -824,6 +825,9 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     } else {
                         $name = $timeslot['class_code'] . ' - ' . $timeslot['class_name']; 
                     }
+                }
+                if( $timeslot['groupname'] != '' ) {
+                    $name .= ' - ' . $timeslot['groupname'];
                 }
                 $time = $timeslot['time'];
                 if( $prev_time == $time ) {

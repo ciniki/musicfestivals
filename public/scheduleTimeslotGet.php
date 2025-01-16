@@ -113,9 +113,11 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
     if( $args['scheduletimeslot_id'] == 0 ) {
         $scheduletimeslot = array('id'=>0,
             'festival_id'=>'',
+            'ssection_id'=>(isset($args['ssection_id']) ? $args['ssection_id'] : 0),
             'sdivision_id'=>(isset($args['sdivision_id']) ? $args['sdivision_id'] : 0),
             'slot_time'=>'',
             'name'=>'',
+            'groupname'=>'',
             'flags' => 0,
             'description'=>'',
             'runsheet_notes'=>'',
@@ -130,10 +132,12 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
     else {
         $strsql = "SELECT timeslots.id, "
             . "timeslots.festival_id, "
+            . "timeslots.ssection_id, "
             . "timeslots.sdivision_id, "
             . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time, "
             . "timeslots.flags, "
             . "timeslots.name, "
+            . "timeslots.groupname, "
             . "timeslots.description, "
             . "timeslots.runsheet_notes, "
             . "timeslots.results_notes, "
@@ -144,8 +148,8 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'scheduletimeslot', 'fname'=>'id', 
-                'fields'=>array('id', 'festival_id', 'sdivision_id', 'slot_time', 
-                    'flags', 'name', 'description', 'runsheet_notes', 'results_notes', 'results_video_url',
+                'fields'=>array('id', 'festival_id', 'ssection_id', 'sdivision_id', 'slot_time', 
+                    'flags', 'name', 'group_name', 'description', 'runsheet_notes', 'results_notes', 'results_video_url',
                     ),
                 ),
             ));
@@ -334,17 +338,20 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
     //
     // Get the list of divisions
     //
-    $strsql = "SELECT divisions.id, CONCAT_WS(' - ', sections.name, divisions.name) AS name "
-        . "FROM ciniki_musicfestival_schedule_sections AS sections, ciniki_musicfestival_schedule_divisions AS divisions "
+    $strsql = "SELECT divisions.id, "
+        . "CONCAT_WS(' - ', sections.name, divisions.name) AS name "
+        . "FROM ciniki_musicfestival_schedule_sections AS sections "
+        . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+            . "sections.id = divisions.ssection_id "
+            . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND divisions.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . ") "
         . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "AND sections.id = divisions.ssection_id "
-        . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND divisions.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "ORDER BY sections.name, divisions.name "
         . "";
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'divisions', 'fname'=>'id', 'fields'=>array('id', 'name')),
+        array('container'=>'divisions', 'fname'=>'id', 'fields'=>array('id', 'name', 'groupname')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.118', 'msg'=>'Schedule Division not found', 'err'=>$rc['err']));

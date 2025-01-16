@@ -1954,7 +1954,7 @@ function ciniki_musicfestivals_main() {
         if( s == 'schedule_timeslots' ) {
             switch(j) {
                 case 0: return M.multiline(d.slot_time_text, d.perf_time_text);
-                case 1: return '<span class="maintext">' + d.name + '</span><span class="subtext">' + d.description.replace(/\n/g, '<br/>') + '</span>';
+                case 1: return '<span class="maintext">' + d.name + (d.groupname != '' ? ' - ' + d.groupname : '') + '</span><span class="subtext">' + d.description.replace(/\n/g, '<br/>') + '</span>';
             }
         }
         if( s == 'schedule_competitors' ) {
@@ -7487,6 +7487,7 @@ function ciniki_musicfestivals_main() {
             'sdivision_id':{'label':'Division', 'required':'yes', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}},
             'slot_time':{'label':'Time', 'required':'yes', 'type':'text', 'size':'small'},
             'name':{'label':'Name', 'type':'text'},
+            'groupname':{'label':'Group Name', 'type':'text'},
             'flags2':{'label':'Type', 'type':'flagspiece', 'mask':0x02, 'field':'flags', 'join':'yes', 'toggle':'yes', 
                 'flags':{'0':{'name':'Regular Timeslot'}, '2':{'name':'Finals/Playoff Timeslot'}},
                 'onchange':'M.ciniki_musicfestivals_main.scheduletimeslot.switchType',
