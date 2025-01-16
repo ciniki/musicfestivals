@@ -86,6 +86,22 @@ function ciniki_musicfestivals_messageQueue(&$ciniki, $tnid, $args) {
                     );
             }
         }
+        if( isset($args['message']['customers']) ) {
+            foreach($args['message']['customers'] as $customer) {
+                if( !isset($emails[$customer['email']]) ) {
+                    $content = $args['message']['content'];
+                    $content = str_replace('{_first_}', $customer['first'], $content);
+                    $content = str_replace('{_name_}', $customer['name'], $content);
+                    $emails[$customer['email']] = array(
+                        'customer_id'=>$customer['id'],
+                        'customer_email'=>$customer['email'],
+                        'customer_name'=>$customer['name'],
+                        'subject'=>$args['message']['subject'],
+                        'text_content'=>$content,
+                        );
+                }
+            }
+        }
         foreach($args['message']['competitors'] as $competitor) {
             if( !isset($emails[$competitor['email']]) ) {
                 $content = $args['message']['content'];

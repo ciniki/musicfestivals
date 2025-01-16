@@ -546,7 +546,9 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
         }
         elseif( $object == 'ciniki.musicfestivals.students' ) {
             $reg_strsql .= "FROM ciniki_musicfestival_registrations AS registrations "
-                . "WHERE registrations.teacher_customer_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
+                . "WHERE (registrations.teacher_customer_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
+                    . "OR registrations.teacher2_customer_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
+                    . ") "
                 . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . "";
@@ -583,6 +585,8 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
         if( $reg_strsql != '' ) {
             $strsql = "SELECT registrations.id, "
                 . "registrations.teacher_customer_id, "
+                . "registrations.teacher2_customer_id, "
+                . "registrations.parent_customer_id, "
                 . "registrations.accompanist_customer_id, "
                 . "registrations.competitor1_id, "
                 . "registrations.competitor2_id, "
@@ -599,6 +603,9 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             foreach($registrations as $reg) {
                 if( ($rsp['message']['flags']&0x02) == 0x02 && $reg['teacher_customer_id'] > 0 ) {
                     $teacher_ids[] = $reg['teacher_customer_id'];
+                }
+                if( ($rsp['message']['flags']&0x02) == 0x02 && $reg['teacher2_customer_id'] > 0 ) {
+                    $teacher_ids[] = $reg['teacher2_customer_id'];
                 }
                 if( ($rsp['message']['flags']&0x04) == 0x04 && $reg['accompanist_customer_id'] > 0 ) {
                     $accompanist_ids[] = $reg['accompanist_customer_id'];
@@ -680,7 +687,10 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             . "registrations.competitor5_id "
             . "FROM ciniki_musicfestival_registrations AS registrations "
             . "INNER JOIN ciniki_customers AS customers ON ("
-                . "registrations.teacher_customer_id = customers.id "
+                . "("
+                    . "registrations.teacher_customer_id = customers.id "
+                    . "OR registrations.teacher2_customer_id = customers.id "
+                    . ") "
                 . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
@@ -709,10 +719,13 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             if( in_array($tid, $ref_ids['students']) ) {
                 if( isset($teacher['registrations']) ) {
                     foreach($teacher['registrations'] AS $rid => $reg) {
-                        if( ($rsp['message']['flags']&0x02) == 0x02
-                            && isset($rsp['teachers'][$reg['teacher_customer_id']]) 
-                            ) {
-                            $rsp['teachers'][$reg['teacher_customer_id']]['students'] = 'yes';
+                        if( ($rsp['message']['flags']&0x02) == 0x02 ) {
+                            if( $reg['teacher_customer_id'] > 0 && isset($rsp['teachers'][$reg['teacher_customer_id']]) ) {
+                                $rsp['teachers'][$reg['teacher_customer_id']]['students'] = 'yes';
+                            }
+                            if( $reg['teacher2_customer_id'] > 0 && isset($rsp['teachers'][$reg['teacher2_customer_id']]) ) {
+                                $rsp['teachers'][$reg['teacher2_customer_id']]['students'] = 'yes';
+                            }
                         }
 //                        if( ($rsp['message']['flags']&0x04) == 0x04
 //                            && isset($rsp['accompanists'][$reg['accompanist_customer_id']]) 
@@ -807,7 +820,9 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             . "classes.name AS class_name, "
             . "registrations.id AS reg_id, "
             . "registrations.teacher_customer_id, "
+            . "registrations.teacher2_customer_id, "
             . "registrations.accompanist_customer_id, "
+            . "registrations.parent_customer_id, "
             . "registrations.competitor1_id, "
             . "registrations.competitor2_id, "
             . "registrations.competitor3_id, "
@@ -848,7 +863,8 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 'fields'=>array('id'=>'class_id', 'name'=>'class_name'),
                 ),
             array('container'=>'registrations', 'fname'=>'reg_id', 
-                'fields'=>array('id'=>'reg_id', 'teacher_customer_id', 'accompanist_customer_id',
+                'fields'=>array('id'=>'reg_id', 'teacher_customer_id', 'teacher2_customer_id', 
+                    'accompanist_customer_id', 'parent_customer_id',
                     'competitor1_id', 'competitor2_id', 'competitor3_id', 
                     'competitor4_id', 'competitor5_id',
                     ),
@@ -911,10 +927,13 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                             }
                             if( $include_reg == 'yes' && isset($class['registrations']) ) {
                                 foreach($class['registrations'] AS $rid => $reg) {
-                                    if( ($rsp['message']['flags']&0x02) == 0x02
-                                        && isset($rsp['teachers'][$reg['teacher_customer_id']]) 
-                                        ) {
-                                        $rsp['teachers'][$reg['teacher_customer_id']]['included'] = 'yes';
+                                    if( ($rsp['message']['flags']&0x02) == 0x02 ) {
+                                        if( $reg['teacher_customer_id'] > 0 && isset($rsp['teachers'][$reg['teacher_customer_id']]) ) {
+                                            $rsp['teachers'][$reg['teacher_customer_id']]['included'] = 'yes';
+                                        }
+                                        if( $reg['teacher2_customer_id'] > 0 && isset($rsp['teachers'][$reg['teacher2_customer_id']]) ) {
+                                            $rsp['teachers'][$reg['teacher2_customer_id']]['included'] = 'yes';
+                                        }
                                     }
                                     if( ($rsp['message']['flags']&0x04) == 0x04 
                                         && isset($rsp['accompanists'][$reg['accompanist_customer_id']]) 
@@ -969,7 +988,9 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             . "timeslots.name AS timeslot_name, "
             . "registrations.id AS reg_id, "
             . "registrations.teacher_customer_id, "
+            . "registrations.teacher2_customer_id, "
             . "registrations.accompanist_customer_id, "
+            . "registrations.parent_customer_id, "
             . "registrations.competitor1_id, "
             . "registrations.competitor2_id, "
             . "registrations.competitor3_id, "
@@ -1011,7 +1032,8 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name'),
                 ),
             array('container'=>'registrations', 'fname'=>'reg_id', 
-                'fields'=>array('id'=>'reg_id', 'teacher_customer_id', 'accompanist_customer_id',
+                'fields'=>array('id'=>'reg_id', 'teacher_customer_id', 'teacher2_customer_id', 
+                    'parent_customer_id', 'accompanist_customer_id',
                     'competitor1_id', 'competitor2_id', 'competitor3_id', 
                     'competitor4_id', 'competitor5_id',
                     ),
@@ -1073,10 +1095,13 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                             }
                             if( $include_reg == 'yes' && isset($timeslot['registrations']) ) {
                                 foreach($timeslot['registrations'] AS $rid => $reg) {
-                                    if( ($rsp['message']['flags']&0x02) == 0x02
-                                        && isset($rsp['teachers'][$reg['teacher_customer_id']]) 
-                                        ) {
-                                        $rsp['teachers'][$reg['teacher_customer_id']]['included'] = 'yes';
+                                    if( ($rsp['message']['flags']&0x02) == 0x02 ) {
+                                        if( $reg['teacher_customer_id'] > 0 && isset($rsp['teachers'][$reg['teacher_customer_id']]) ) {
+                                            $rsp['teachers'][$reg['teacher_customer_id']]['included'] = 'yes';
+                                        }
+                                        if( $reg['teacher2_customer_id'] > 0 && isset($rsp['teachers'][$reg['teacher2_customer_id']]) ) {
+                                            $rsp['teachers'][$reg['teacher2_customer_id']]['included'] = 'yes';
+                                        }
                                     }
                                     if( ($rsp['message']['flags']&0x04) == 0x04
                                         && isset($rsp['accompanists'][$reg['accompanist_customer_id']]) 
@@ -1104,6 +1129,8 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
         $strsql = "SELECT tags.tag_name AS name, "
             . "registrations.id AS reg_id, "
             . "registrations.teacher_customer_id, "
+            . "registrations.teacher2_customer_id, "
+            . "registrations.parent_customer_id, "
             . "registrations.accompanist_customer_id, "
             . "registrations.competitor1_id, "
             . "registrations.competitor2_id, "
@@ -1123,7 +1150,8 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'tags', 'fname'=>'name', 'fields'=>array('id'=>'name', 'name')),
             array('container'=>'registrations', 'fname'=>'reg_id', 
-                'fields'=>array('id'=>'reg_id', 'teacher_customer_id', 'accompanist_customer_id',
+                'fields'=>array('id'=>'reg_id', 'teacher_customer_id', 'teacher2_customer_id',
+                    'parent_customer_id', 'accompanist_customer_id',
                     'competitor1_id', 'competitor2_id', 'competitor3_id', 
                     'competitor4_id', 'competitor5_id',
                     ),
@@ -1142,10 +1170,13 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 $rsp['tags'][$tid]['added'] = 'yes';
                 if( isset($tag['registrations']) ) {
                     foreach($tag['registrations'] AS $rid => $reg) {
-                        if( ($rsp['message']['flags']&0x02) == 0x02
-                            && isset($rsp['teachers'][$reg['teacher_customer_id']]) 
-                            ) {
-                            $rsp['teachers'][$reg['teacher_customer_id']]['included'] = 'yes';
+                        if( ($rsp['message']['flags']&0x02) == 0x02 ) {
+                            if( $reg['teacher_customer_id'] > 0 && isset($rsp['teachers'][$reg['teacher_customer_id']]) ) {
+                                $rsp['teachers'][$reg['teacher_customer_id']]['included'] = 'yes';
+                            }
+                            if( $reg['teacher2_customer_id'] > 0 && isset($rsp['teachers'][$reg['teacher2_customer_id']]) ) {
+                                $rsp['teachers'][$reg['teacher2_customer_id']]['included'] = 'yes';
+                            }
                         }
                         if( ($rsp['message']['flags']&0x04) == 0x04
                             && isset($rsp['accompanists'][$reg['accompanist_customer_id']]) 
@@ -1171,6 +1202,8 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             . "registrations.status AS name, "
             . "registrations.id AS reg_id, "
             . "registrations.teacher_customer_id, "
+            . "registrations.teacher2_customer_id, "
+            . "registrations.parent_customer_id, "
             . "registrations.accompanist_customer_id, "
             . "registrations.competitor1_id, "
             . "registrations.competitor2_id, "
@@ -1189,7 +1222,8 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 'maps'=>array('name'=>$maps['registration']['status']),
                 ),
             array('container'=>'registrations', 'fname'=>'reg_id', 
-                'fields'=>array('id'=>'reg_id', 'teacher_customer_id', 'accompanist_customer_id',
+                'fields'=>array('id'=>'reg_id', 'teacher_customer_id', 'teacher2_customer_id', 
+                    'parent_customer_id', 'accompanist_customer_id',
                     'competitor1_id', 'competitor2_id', 'competitor3_id', 
                     'competitor4_id', 'competitor5_id',
                     ),
@@ -1208,10 +1242,13 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 $rsp['statuses'][$sid]['added'] = 'yes';
                 if( isset($status['registrations']) ) {
                     foreach($status['registrations'] AS $rid => $reg) {
-                        if( ($rsp['message']['flags']&0x02) == 0x02
-                            && isset($rsp['teachers'][$reg['teacher_customer_id']]) 
-                            ) {
-                            $rsp['teachers'][$reg['teacher_customer_id']]['included'] = 'yes';
+                        if( ($rsp['message']['flags']&0x02) == 0x02 ) {
+                            if( $reg['teacher_customer_id'] > 0 && isset($rsp['teachers'][$reg['teacher_customer_id']]) ) {
+                                $rsp['teachers'][$reg['teacher_customer_id']]['included'] = 'yes';
+                            }
+                            if( $reg['teacher2_customer_id'] > 0 && isset($rsp['teachers'][$reg['teacher2_customer_id']]) ) {
+                                $rsp['teachers'][$reg['teacher2_customer_id']]['included'] = 'yes';
+                            }
                         }
                         if( ($rsp['message']['flags']&0x04) == 0x04
                             && isset($rsp['accompanists'][$reg['accompanist_customer_id']]) 
@@ -1309,9 +1346,11 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
         // Load 100 competitors at a time so we don't overload SQL limits
         //
         $rsp['message']['emails'] = array();
+        $rsp['message']['customers'] = array();
         $rsp['message']['competitors'] = array();
         if( count($competitor_ids) > 0 ) {
             for($i = 0; $i < count($competitor_ids); $i+=100) {
+                $ids = array_splice($competitor_ids, $i, 100);
                 $strsql = "SELECT competitors.id, "
                     . "competitors.name, "
                     . "IF(competitors.ctype=50,competitors.name,competitors.first) AS first, "
@@ -1319,7 +1358,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                     . "FROM ciniki_musicfestival_competitors AS competitors "
                     . "WHERE competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                     . "AND competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
-                    . "AND competitors.id IN (" . ciniki_core_dbQuoteIDs($ciniki, array_splice($competitor_ids, $i, 100)) . ") "
+                    . "AND competitors.id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
                     . "ORDER BY competitors.name "
                     . "";
                 $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
@@ -1330,6 +1369,102 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                     foreach($rc['rows'] as $row) {
                         $rsp['message']['competitors'][$row['id']] = $row;
                         if( isset($args['emaillist']) && $args['emaillist'] == 'yes' ) {
+                            $row['email'] = strtolower($row['email']);
+                            if( !isset($rsp['message']['emails'][$row['email']]) ) {
+                                $rsp['message']['emails'][$row['email']] = array(
+                                    'name' => $row['name'],
+                                    'email' => $row['email'],
+                                    );
+                            }
+                        }
+                    }
+                }
+                //
+                // Get the billing_customer_id 
+                //
+                $strsql = "SELECT customers.id, "
+                    . "customers.display_name AS name, "
+                    . "customers.first, "
+                    . "emails.email "
+                    . "FROM ciniki_musicfestival_registrations AS registrations " 
+                    . "INNER JOIN ciniki_customers AS customers ON ("
+                        . "registrations.billing_customer_id = customers.id "
+                        . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                        . ") "
+                    . "INNER JOIN ciniki_customer_emails AS emails ON ("
+                        . "customers.id = emails.customer_id "
+                        . "AND emails.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                        . ") "
+                    . "WHERE registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                        . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
+                        . "AND registrations.billing_customer_id > 0 "
+                        . "AND ("
+                            . "registrations.competitor1_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
+                            . "OR registrations.competitor2_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
+                            . "OR registrations.competitor3_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
+                            . "OR registrations.competitor4_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
+                            . "OR registrations.competitor5_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
+                        . ") "
+                    . "ORDER BY customers.display_name "
+                    . "";
+                $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.137', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+                }
+                if( isset($rc['rows']) ) {
+                    foreach($rc['rows'] as $row) {
+                        $rsp['message']['customers'][$row['id']] = $row;
+                        if( isset($args['emaillist']) && $args['emaillist'] == 'yes' ) {
+                            $row['email'] = strtolower($row['email']);
+                            if( !isset($rsp['message']['emails'][$row['email']]) ) {
+                                $rsp['message']['emails'][$row['email']] = array(
+                                    'name' => $row['name'],
+                                    'email' => $row['email'],
+                                    );
+                            }
+                        }
+                    }
+                }
+
+                // 
+                // Get any parent emails linked via registrations.parent_customer_id
+                //
+                $strsql = "SELECT customers.id, "
+                    . "customers.display_name AS name, "
+                    . "customers.first, "
+                    . "emails.email "
+                    . "FROM ciniki_musicfestival_registrations AS registrations " 
+                    . "INNER JOIN ciniki_customers AS customers ON ("
+                        . "registrations.parent_customer_id = customers.id "
+                        . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                        . ") "
+                    . "INNER JOIN ciniki_customer_emails AS emails ON ("
+                        . "customers.id = emails.customer_id "
+                        . "AND emails.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                        . ") "
+                    . "WHERE registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                        . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
+                        . "AND registrations.parent_customer_id > 0 "
+                        . "AND ("
+                            . "registrations.competitor1_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
+                            . "OR registrations.competitor2_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
+                            . "OR registrations.competitor3_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
+                            . "OR registrations.competitor4_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
+                            . "OR registrations.competitor5_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
+                        . ") "
+                    . "ORDER BY customers.display_name "
+                    . "";
+                $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.137', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+                }
+                if( isset($rc['rows']) ) {
+                    foreach($rc['rows'] as $row) {
+                        if( !isset($rsp['message']['customers'][$row['id']]) ) {
+                            $rsp['message']['customers'][$row['id']] = $row;
+                        }
+                        if( isset($args['emaillist']) && $args['emaillist'] == 'yes' ) {
+                            $row['email'] = strtolower($row['email']);
                             if( !isset($rsp['message']['emails'][$row['email']]) ) {
                                 $rsp['message']['emails'][$row['email']] = array(
                                     'name' => $row['name'],
@@ -1420,7 +1555,12 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
 
         if( isset($args['emaillist']) && $args['emaillist'] == 'yes' ) {
             uasort($rsp['message']['emails'], function($a, $b) {
-                return strcmp(explode('@', $a['email'])[1], explode('@', $b['email'])[1]);
+                $x = explode('@', $a['email']);
+                $adomain = isset($x[1]) ? $x[1] : '';
+                $y = explode('@', $b['email']);
+                $bdomain = isset($y[1]) ? $y[1] : '';
+                
+                return strcmp($adomain, $bdomain);
                 });
         }
 
