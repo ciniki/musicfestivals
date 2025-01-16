@@ -8130,7 +8130,9 @@ function ciniki_musicfestivals_main() {
                     };
                 if( rsp['timeslots'+i] != null && rsp['timeslots'+i].length > 0 ) {
                     for(var j in rsp['timeslots'+i]) {
-                        
+                        if( rsp['timeslots'+i][j].groupname != '' ) {
+                            rsp['timeslots'+i][j].name += ' - ' + rsp['timeslots'+i][j].groupname;
+                        }
                         p.sections['timeslot_'+i+'_'+j] = {
                             'label':rsp['timeslots'+i][j].name, 'flexcolumn':i, 'type':'simplegrid', 'num_cols':2,
                             'headerValues':[],

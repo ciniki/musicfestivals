@@ -149,7 +149,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'scheduletimeslot', 'fname'=>'id', 
                 'fields'=>array('id', 'festival_id', 'ssection_id', 'sdivision_id', 'slot_time', 
-                    'flags', 'name', 'group_name', 'description', 'runsheet_notes', 'results_notes', 'results_video_url',
+                    'flags', 'name', 'groupname', 'description', 'runsheet_notes', 'results_notes', 'results_video_url',
                     ),
                 ),
             ));
@@ -351,7 +351,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         . "ORDER BY sections.name, divisions.name "
         . "";
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'divisions', 'fname'=>'id', 'fields'=>array('id', 'name', 'groupname')),
+        array('container'=>'divisions', 'fname'=>'id', 'fields'=>array('id', 'name')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.118', 'msg'=>'Schedule Division not found', 'err'=>$rc['err']));
