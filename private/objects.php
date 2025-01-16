@@ -431,7 +431,7 @@ function ciniki_musicfestivals_objects($ciniki) {
         'table'=>'ciniki_musicfestival_schedule_timeslots',
         'fields'=>array(
             'festival_id'=>array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
-            'ssection_id'=>array('name'=>'Section', 'ref'=>'ciniki.musicfestivals.schedulesection'),
+            'ssection_id'=>array('name'=>'Section', 'ref'=>'ciniki.musicfestivals.schedulesection', 'default'=>'0'),
             'sdivision_id'=>array('name'=>'Division', 'ref'=>'ciniki.musicfestivals.scheduledivision'),
             'slot_time'=>array('name'=>'Time'),
 //            'class1_id'=>array('name'=>'Class 1', 'ref'=>'ciniki.musicfestivals.class', 'default'=>'0'),
