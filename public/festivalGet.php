@@ -677,11 +677,30 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         $festival['classes'][$iid]['schedule_type'] = 'Total Time';
                     }
                     $festival['classes'][$iid]['schedule_time'] = '';
-                    // FIXME: This is not correct for calc seconds
                     if( $class['schedule_seconds'] > 0 ) {
-                        $festival['classes'][$iid]['schedule_time'] = floor($class['schedule_seconds']/60) . '&nbsp;min';
+                        $festival['classes'][$iid]['schedule_time'] = floor($class['schedule_seconds']/60);
                         if( ($class['schedule_seconds']%60) > 0 ) {
-                            $festival['classes'][$iid]['schedule_time'] .= ' ' . ($class['schedule_seconds']%60) . '&nbsp;sec';
+                            $festival['classes'][$iid]['schedule_time'] .= ':' . ($class['schedule_seconds']%60) . '/reg';
+                        } else {
+                            $festival['classes'][$iid]['schedule_time'] .= ':00/reg';
+                        }
+                    }
+                    $festival['classes'][$iid]['talk_time'] = '';
+                    if( $class['schedule_at_seconds'] > 0 ) {
+                        $festival['classes'][$iid]['talk_time'] .= floor($class['schedule_at_seconds']/60);
+                        if( ($class['schedule_at_seconds']%60) > 0 ) {
+                            $festival['classes'][$iid]['talk_time'] .= ':' . ($class['schedule_at_seconds']%60) . '';
+                        } else {
+                            $festival['classes'][$iid]['talk_time'] .= ':00';
+                        }
+                    }
+                        
+                    if( $class['schedule_ata_seconds'] > 0 ) {
+                        $festival['classes'][$iid]['talk_time'] .= '+' . floor($class['schedule_ata_seconds']/60);
+                        if( ($class['schedule_ata_seconds']%60) > 0 ) {
+                            $festival['classes'][$iid]['talk_time'] .= ':' . ($class['schedule_ata_seconds']%60) . '/reg';
+                        } else {
+                            $festival['classes'][$iid]['talk_time'] .= ':00/reg';
                         }
                     }
                     $festival['classes'][$iid]['mark'] = '';
@@ -1627,7 +1646,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         . ") "
                     . "WHERE timeslots.sdivision_id = '" . ciniki_core_dbQuote($ciniki, $args['sdivision_id']) . "' "
                         . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . "ORDER BY slot_time, registrations.display_name, ssections.adjudicator1_id "
+                    . "ORDER BY slot_time, timeslots.name, timeslots.id, registrations.display_name, ssections.adjudicator1_id "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -1725,7 +1744,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "WHERE timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "AND timeslots.sdivision_id = '" . ciniki_core_dbQuote($ciniki, $args['sdivision_id']) . "' "
                     . "AND timeslots.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-                    . "ORDER BY slot_time, images.sequence "
+                    . "ORDER BY slot_time, timeslots.name, timeslots.id, images.sequence "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -1859,7 +1878,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "WHERE timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "AND timeslots.sdivision_id = '" . ciniki_core_dbQuote($ciniki, $args['sdivision_id']) . "' "
                     . "AND timeslots.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-                    . "ORDER BY timeslots.slot_time, registrations.timeslot_sequence "
+                    . "ORDER BY timeslots.slot_time, timeslots.name, timeslots.id, registrations.timeslot_sequence "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -2080,7 +2099,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "WHERE timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "AND timeslots.sdivision_id = '" . ciniki_core_dbQuote($ciniki, $args['sdivision_id']) . "' "
                     . "AND timeslots.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-                    . "ORDER BY slot_time, registrations.timeslot_sequence, registrations.display_name "
+                    . "ORDER BY slot_time, timeslots.name, timeslots.id, registrations.timeslot_sequence, registrations.display_name "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(

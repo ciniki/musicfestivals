@@ -236,7 +236,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                     . ") "
                 . "WHERE timeslots.sdivision_id = '" . ciniki_core_dbQuote($ciniki, $args["division{$i}_id"]) . "' "
                 . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "ORDER BY timeslots.slot_time, registrations.timeslot_sequence, registrations.display_name "
+                . "ORDER BY timeslots.slot_time, timeslots.name, timeslots.id, registrations.timeslot_sequence, registrations.display_name "
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
