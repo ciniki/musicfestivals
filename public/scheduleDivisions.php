@@ -141,9 +141,13 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
             //
             // Get the list of registrations
             //
-            $strsql = "SELECT timeslots.id, "
-                . "TIME_FORMAT(slot_time, '%l:%i %p') AS slot_time, "
-                . "timeslots.name, "
+            $strsql = "SELECT timeslots.id, ";
+            if( isset($festival['scheduling-seconds-show']) && $festival['scheduling-seconds-show'] == 'yes' ) {
+                $strsql .= "TIME_FORMAT(slot_time, '%l:%i:%s %p') AS slot_time, ";
+            } else {
+                $strsql .= "TIME_FORMAT(slot_time, '%l:%i %p') AS slot_time, ";
+            }
+            $strsql .= "timeslots.name, "
                 . "timeslots.groupname, "
 //                . "IF(timeslots.name='', TIME_FORMAT(slot_time, '%l:%i %p'), timeslots.name) AS name, "
                 . "registrations.id AS reg_id, "

@@ -4241,6 +4241,12 @@ function ciniki_musicfestivals_main() {
                         '8':'8',
                         '9':'9',
                     }},
+                'scheduling-seconds-show':{'label':'Timeslot Seconds', 'type':'toggle', 'default':'no', 
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x4000); },
+                    'toggles':{
+                        'no':'No',
+                        'yes':'Yes',
+                    }},
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.edit.save();'},

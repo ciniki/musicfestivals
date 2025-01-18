@@ -2030,9 +2030,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $strsql = "SELECT timeslots.id, "
                     . "timeslots.festival_id, "
                     . "timeslots.sdivision_id, "
-                    . "timeslots.flags, "
-                    . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
-                    . "timeslots.name, "
+                    . "timeslots.flags, ";
+                if( isset($festival['scheduling-seconds-show']) && $festival['scheduling-seconds-show'] == 'yes' ) {
+                    $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i:%s %p') AS slot_time_text, ";
+                } else {
+                    $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, ";
+                }
+                $strsql .= "timeslots.name, "
                     . "timeslots.groupname, "
                     . "timeslots.description, "
                     . "registrations.id AS reg_id, "
