@@ -113,7 +113,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
     // Get the list of available divisions
     //
     $strsql = "SELECT divisions.id, "
-        . "CONCAT_WS(' - ', sections.name, divisions.name) AS name "
+        . "CONCAT_WS(' - ', sections.name, divisions.name, DATE_FORMAT(divisions.division_date, '%b %e')) AS name "
         . "FROM ciniki_musicfestival_schedule_sections AS sections "
         . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
             . "sections.id = divisions.ssection_id "

@@ -1114,6 +1114,10 @@ function ciniki_musicfestivals_main() {
                     'label':'Import Unscheduled Section Classes',
                     'fn':'M.ciniki_musicfestivals_main.scheduledivisionimport.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.scheduledivision_id,M.ciniki_musicfestivals_main.festival.festival_id);',
                     },
+                'timingsreport':{
+                    'label':'Timings PDF',
+                    'fn':'M.ciniki_musicfestivals_main.scheduledivisionimport.timingsPDF();',
+                    },
                 },
             },
         'schedule_competitors':{'label':'Competitor Schedules', 'type':'simplegrid', 'num_cols':13, 'aside':'yes',
@@ -1767,6 +1771,14 @@ function ciniki_musicfestivals_main() {
             'customer_id':this.accompanist_customer_id,
             };
         M.api.openPDF('ciniki.musicfestivals.accompanistSchedulePDF',args);
+    }
+    this.festival.timingsPDF = function() {
+        var args = {'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'ssection_id':this.schedulesection_id,
+            'sdivision_id':this.scheduledivision_id,
+            };
+        M.api.openPDF('ciniki.musicfestivals.timingsPDF',args);
     }
     this.festival.listLabel = function(s, i, d) { 
         if( s == 'details' ) {
