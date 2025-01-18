@@ -357,6 +357,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'comments'=>array('name'=>'Comments', 'default'=>''),
             'notes'=>array('name'=>'Notes', 'default'=>''),
             'internal_notes'=>array('name'=>'Interal Notes', 'default'=>''),
+            'runsheet_notes'=>array('name'=>'Runsheet Notes', 'default'=>''),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );

@@ -163,6 +163,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         . "registrations.participation, "
         . "registrations.notes, "
         . "registrations.internal_notes, "
+        . "registrations.runsheet_notes AS runnote, "
         . "";
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x40) ) {
         $strsql .= "trophies.id AS trophy_id, "
@@ -263,7 +264,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'participation', 'reg_time_text',
                 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id',
-                'notes', 'internal_notes',
+                'notes', 'internal_notes', 'runsheet_notes'=>'runnote',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
@@ -695,6 +696,11 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                         // Setup the notes for the registration
                         //
                         $notes = '';
+                        if( isset($festival['runsheets-registration-runnotes']) && $festival['runsheets-registration-runnotes'] == 'yes'
+                            && $reg['runsheet_notes'] != ''
+                            ) {
+                            $notes .= ($notes != '' ? "\n" : '') . $reg['runsheet_notes'];
+                        }
                         if( isset($festival['runsheets-internal-notes']) && $festival['runsheets-internal-notes'] == 'yes'
                             && $reg['internal_notes'] != ''
                             ) {
@@ -730,6 +736,12 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                             && $competitors[$reg['competitor4_id']]['notes'] != '' 
                             ) {
                             $notes .= ($notes != '' ? "\n" : '') . $competitors[$reg['competitor4_id']]['notes'];
+                        }
+                        if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes'
+                            && isset($competitors[$reg['competitor5_id']]['notes']) 
+                            && $competitors[$reg['competitor5_id']]['notes'] != '' 
+                            ) {
+                            $notes .= ($notes != '' ? "\n" : '') . $competitors[$reg['competitor5_id']]['notes'];
                         }
                         $timeslot['registrations'][$rid]['combined_notes'] = $notes;
                         if( $notes != '' ) {

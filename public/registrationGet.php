@@ -155,6 +155,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'comments' => '',
             'notes'=>'',
             'internal_notes'=>'',
+            'runsheet_notes'=>'',
         );
     }
 
@@ -275,7 +276,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "registrations.provincials_position, "
             . "registrations.comments, "
             . "registrations.notes, "
-            . "registrations.internal_notes "
+            . "registrations.internal_notes, "
+            . "registrations.runsheet_notes "
             . "FROM ciniki_musicfestival_registrations AS registrations "
             . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
                 . "registrations.timeslot_id = timeslots.id "
@@ -344,7 +346,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     'timeslot_id', 'finals_timeslot_id', 
                     'instrument', 'mark', 'placement', 'level', 'comments', 'provincials_status', 'provincials_position',
                     'finals_mark', 'finals_placement', 'finals_level',
-                    'notes', 'internal_notes',
+                    'notes', 'internal_notes', 'runsheet_notes',
                     ),
                 'naprices' => array('fee'),
                 ),

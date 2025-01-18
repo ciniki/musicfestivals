@@ -106,6 +106,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         'comments'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Comments'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         'internal_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Interal Notes'),
+        'runsheet_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Runsheet Notes'),
         'tags'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Registration Tags'),
         ));
     if( $rc['stat'] != 'ok' ) {

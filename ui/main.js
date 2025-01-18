@@ -1114,10 +1114,10 @@ function ciniki_musicfestivals_main() {
                     'label':'Import Unscheduled Section Classes',
                     'fn':'M.ciniki_musicfestivals_main.scheduledivisionimport.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.scheduledivision_id,M.ciniki_musicfestivals_main.festival.festival_id);',
                     },
-                'timingsreport':{
-                    'label':'Timings PDF',
-                    'fn':'M.ciniki_musicfestivals_main.scheduledivisionimport.timingsPDF();',
-                    },
+//                'timingsreport':{
+//                    'label':'Timings PDF',
+//                    'fn':'M.ciniki_musicfestivals_main.scheduledivisionimport.timingsPDF();',
+//                    },
                 },
             },
         'schedule_competitors':{'label':'Competitor Schedules', 'type':'simplegrid', 'num_cols':13, 'aside':'yes',
@@ -3977,6 +3977,7 @@ function ciniki_musicfestivals_main() {
                 'runsheets-mark':{'label':'Include Mark', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'runsheets-advance-to':{'label':'Include Advance To', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'runsheets-internal-notes':{'label':'Include Internal Admin Notes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'runsheets-registration-runnotes':{'label':'Include Runsheet Notes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'runsheets-registration-notes':{'label':'Include Registration Notes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'runsheets-competitor-notes':{'label':'Include Competitor Notes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'runsheets-competitor-age':{'label':'Include Competitor Age', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
@@ -6432,6 +6433,11 @@ function ciniki_musicfestivals_main() {
             'fields':{
                 'internal_notes':{'label':'', 'hidelabel':'yes', 'type':'textarea'},
             }},
+        '_runsheet_notes':{'label':'Runsheet Notes', 
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'notes' ? 'yes' : 'hidden'; },
+            'fields':{
+                'runsheet_notes':{'label':'', 'hidelabel':'yes', 'type':'textarea'},
+            }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.registration.save();'},
 //            'printcert':{'label':'Download Certificate PDF', 
@@ -6448,7 +6454,7 @@ function ciniki_musicfestivals_main() {
     this.registration.switchTab = function(t) {
         this.sections._tabs.selected = t;
         this.refreshSection('_tabs');
-        this.showHideSections(['_results', 'provincials', '_comments', 'invoice_details', '_fee', '_notes', '_internal_notes']);
+        this.showHideSections(['_results', 'provincials', '_comments', 'invoice_details', '_fee', '_notes', '_internal_notes', '_runsheet_notes']);
         for(var i = 1; i <= 8; i++) {
             this.showHideFormField('_title'+i, 'movements'+i);
             this.showHideFormField('_title'+i, 'composer'+i);

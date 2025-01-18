@@ -83,6 +83,7 @@ function ciniki_musicfestivals_registrationAdd(&$ciniki) {
         'level'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Level'),
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         'internal_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Interal Notes'),
+        'runsheet_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Runsheet Notes'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
