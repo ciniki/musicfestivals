@@ -49,8 +49,12 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
         . "members.category, "
         . "members.status, "
         . "members.synopsis, "
-        . "members.customer_id "
+        . "customers.customer_id "
         . "FROM ciniki_musicfestivals_members AS members "
+        . "LEFT JOIN ciniki_musicfestival_member_customers AS customers ON ("
+            . "members.id = customers.member_id "
+            . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
         . "WHERE members.status = 10 " // Active
         . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY members.name "
@@ -58,8 +62,9 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'members', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'permalink', 'category', 'status', 'synopsis', 'customer_id'),
+            'fields'=>array('id', 'name', 'permalink', 'category', 'status', 'synopsis'),
             ),
+        array('container'=>'customers', 'fname'=>'customer_id', 'fields'=>array('id'=>'customer_id')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.594', 'msg'=>'Unable to load members', 'err'=>$rc['err']));
@@ -567,33 +572,35 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                 //
                 // Check for the member email address
                 //
-                if( isset($member) && $member['customer_id'] > 0 ) {
-                    //
-                    // Lookup customer record
-                    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
-                    $rc = ciniki_customers_hooks_customerDetails2($ciniki, $tnid, 
-                        array('customer_id'=>$member['customer_id'], 'phones'=>'no', 'emails'=>'yes', 'addresses'=>'no', 'subscriptions'=>'no'));
-                    if( $rc['stat'] != 'ok' ) {
-                        return $rc;
-                    }
-                    if( isset($rc['customer']['emails'][0]['address']) ) {
-                        $customer = $rc['customer'];
-                        $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
-                            'object' => 'ciniki.musicfestivals.recommendation',
-                            'object_id' => $recommendation_id,
-                            'subject' => "We have received adjudicator recommendations for " . $member['name'], // [{$customer['emails'][0]['email']['address']}]",
-                            'html_content' => $email_content,
-                            'customer_id' => $member['customer_id'],
-                            'customer_name' => $customer['display_name'],
-                            'customer_email' => $customer['emails'][0]['address'],
-                            ));
+                if( isset($member) && $member['customers'] && is_array($member['customers']) ) {
+                    foreach($member['customers'] as $customer_id => $customer) {
+                        //
+                        // Lookup customer record
+                        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
+                        $rc = ciniki_customers_hooks_customerDetails2($ciniki, $tnid, 
+                            array('customer_id'=>$customer_id, 'phones'=>'no', 'emails'=>'yes', 'addresses'=>'no', 'subscriptions'=>'no'));
                         if( $rc['stat'] != 'ok' ) {
-                            error_log("Unable to email member contact for recommendation: " . $recommedation_id);
-                        } else {
-                            $ciniki['emailqueue'][] = array('mail_id' => $rc['id'], 'tnid'=>$tnid);
+                            return $rc;
                         }
-                    } else {
-                        error_log("No member contact info found for recommendation: " . $recommendation_id);
+                        if( isset($rc['customer']['emails'][0]['address']) ) {
+                            $customer = $rc['customer'];
+                            $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
+                                'object' => 'ciniki.musicfestivals.recommendation',
+                                'object_id' => $recommendation_id,
+                                'subject' => "We have received adjudicator recommendations for " . $member['name'], // [{$customer['emails'][0]['email']['address']}]",
+                                'html_content' => $email_content,
+                                'customer_id' => $customer_id,
+                                'customer_name' => $customer['display_name'],
+                                'customer_email' => $customer['emails'][0]['address'],
+                                ));
+                            if( $rc['stat'] != 'ok' ) {
+                                error_log("Unable to email member contact for recommendation: " . $recommedation_id);
+                            } else {
+                                $ciniki['emailqueue'][] = array('mail_id' => $rc['id'], 'tnid'=>$tnid);
+                            }
+                        } else {
+                            error_log("No member contact info found for recommendation: " . $recommendation_id);
+                        }
                     }
                 }
 
