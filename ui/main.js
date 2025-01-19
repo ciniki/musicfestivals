@@ -2017,7 +2017,13 @@ function ciniki_musicfestivals_main() {
         if( s == 'schedule_results' ) {
             switch(j) {
                 case 0: return d.slot_time_text;
-                case 1: return d.timeslot_sequence;
+                case 1: 
+                    if( M.ciniki_musicfestivals_main.festival.data['scheduling-timeslot-startnum'] != null 
+                        && M.ciniki_musicfestivals_main.festival.data['scheduling-timeslot-startnum'] == 'yes'
+                        ) {
+                        return d.timeslot_number;
+                    }
+                    return d.timeslot_sequence;
                 case 2: return d.display_name + ((d.flags&0x10) == 0x10 ? '<br/><b>Best In Class</b>' : '');
                 case 3: return M.multiline(d.class_code + ' - ' + d.class_name + (d.groupname != '' ? ' - ' + d.groupname : ''), d.titles);
             }
@@ -8922,7 +8928,13 @@ function ciniki_musicfestivals_main() {
         if( s == 'registrations' ) {
             switch(j) {
                 case 0: return d.slot_time_text;
-                case 1: return d.timeslot_sequence;
+                case 1: 
+                    if( M.ciniki_musicfestivals_main.festival.data['scheduling-timeslot-startnum'] != null 
+                        && M.ciniki_musicfestivals_main.festival.data['scheduling-timeslot-startnum'] == 'yes'
+                        ) {
+                        return d.timeslot_number;
+                    }
+                    return d.timeslot_sequence;
                 case 2: return d.display_name;
                 case 3: return M.multiline(d.class_name, d.titles);
             }

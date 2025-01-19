@@ -1811,7 +1811,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 && isset($requested_section)
                 ) {
                 $strsql = "SELECT timeslots.id AS timeslot_id, "
-                    . "timeslots.groupname, ";
+                    . "timeslots.groupname, "
+                    . "timeslots.start_num, ";
                     
                 if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
                     $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS slot_time_text, ";
@@ -1883,7 +1884,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'results', 'fname'=>'id', 
-                        'fields'=>array('id', 'timeslot_id', 'groupname', 'display_name', 'slot_time_text', 'timeslot_sequence', 'flags',
+                        'fields'=>array('id', 'timeslot_id', 'groupname', 'start_num', 
+                            'display_name', 'slot_time_text', 'timeslot_sequence', 'flags',
                             'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
                             'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
                             'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
@@ -1897,6 +1899,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 }
                 $festival['schedule_results'] = isset($rc['results']) ? $rc['results'] : array();
                 foreach($festival['schedule_results'] as $sid => $result) {
+                    $festival['schedule_results'][$sid]['timeslot_number'] = $result['timeslot_sequence'];
+                    if( $result['start_num'] > 1 ) {
+                        $festival['schedule_results'][$sid]['timeslot_number'] += ($result['start_num'] - 1);
+                    }
                     $titles = '';
                     for($i = 1; $i <= 8; $i++) {
                         if( $result["title{$i}"] != '' ) {
