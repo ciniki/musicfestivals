@@ -26,6 +26,8 @@
 #
 # name:                 The name for the category.
 # groupname:            The group name if a split class. This will be automatically added to class name when separate classes is enabled.
+# start_num:            The number to start with for the first registration.
+#
 # description:          The longer text description of the category.
 #
 # results_notes:        If there is notes or video links can be added here to be displayed on results pages.
@@ -47,6 +49,7 @@ create table ciniki_musicfestival_schedule_timeslots (
     flags tinyint unsigned not null,
     name varchar(150) not null,
     groupname varchar(150) not null,
+    start_num int not null,
     description varchar(2000) not null,
     runsheet_notes text not null,
     results_notes text not null,
@@ -57,4 +60,4 @@ create table ciniki_musicfestival_schedule_timeslots (
     unique index (uuid),
     index (festival_id, sdivision_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.09';
+) ENGINE='InnoDB', COMMENT='v1.10';

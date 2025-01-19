@@ -444,6 +444,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'flags'=>array('name'=>'Options', 'default'=>'0'),
             'name'=>array('name'=>'Name'),
             'groupname'=>array('name'=>'Group Name', 'default'=>''),
+            'start_num'=>array('name'=>'Starting Number', 'default'=>'1'),
             'description'=>array('name'=>'Description', 'default'=>''),
             'runsheet_notes'=>array('name'=>'Runsheet Notes', 'default'=>''),
             'results_notes'=>array('name'=>'Results Notes', 'default'=>''),

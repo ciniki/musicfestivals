@@ -119,6 +119,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             'slot_seconds' => '',
             'name'=>'',
             'groupname'=>'',
+            'start_num' => '',
             'flags' => 0,
             'description'=>'',
             'runsheet_notes'=>'',
@@ -145,6 +146,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "timeslots.flags, "
             . "timeslots.name, "
             . "timeslots.groupname, "
+            . "timeslots.start_num, "
             . "timeslots.description, "
             . "timeslots.runsheet_notes, "
             . "timeslots.results_notes, "
@@ -156,7 +158,8 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'scheduletimeslot', 'fname'=>'id', 
                 'fields'=>array('id', 'festival_id', 'ssection_id', 'sdivision_id', 'slot_time', 'slot_seconds',
-                    'flags', 'name', 'groupname', 'description', 'runsheet_notes', 'results_notes', 'results_video_url',
+                    'flags', 'name', 'groupname', 'start_num',
+                    'description', 'runsheet_notes', 'results_notes', 'results_video_url',
                     ),
                 ),
             ));
@@ -169,6 +172,9 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         $scheduletimeslot = $rc['scheduletimeslot'][0];
         if( $scheduletimeslot['slot_seconds'] == 0 ) {
             $scheduletimeslot['slot_seconds'] = '';
+        }
+        if( $scheduletimeslot['start_num'] < 1 ) {
+            $scheduletimeslot['start_num'] = '';
         }
 
         //

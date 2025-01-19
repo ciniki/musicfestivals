@@ -110,6 +110,8 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
     $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
         . "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS reg_time_text, "
         . "timeslots.name AS timeslot_name, "
+        . "timeslots.groupname, "
+        . "timeslots.start_num, "
         . "timeslots.description, "
         . "timeslots.runsheet_notes, "
         . "registrations.id AS reg_id, ";
@@ -256,7 +258,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                 ),
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
-            'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 
+            'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 'groupname', 'start_num',
                 'description', 'runsheet_notes', 
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name',
                 ),
@@ -631,6 +633,13 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                 }
 
                 //
+                // Check if groupname should be added
+                //
+                if( isset($timeslot['groupname']) && $timeslot['groupname'] != '' ) {
+                    $name .= ' - ' . $timeslot['groupname'];
+                }
+
+                //
                 // Check height required
                 //
                 $pdf->SetFont('', 'B', '14');
@@ -839,6 +848,9 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
 
                     $pdf->SetFont('', '', '12');
                     $num = 1;
+                    if( isset($timeslot['start_num']) && is_numeric($timeslot['start_num']) && $timeslot['start_num'] > 1 ) {
+                        $num = $timeslot['start_num'];
+                    }
                     foreach($timeslot['registrations'] as $reg) {
                         //
                         // Check height and see if we need new page

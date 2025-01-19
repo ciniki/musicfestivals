@@ -188,6 +188,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'advanced-scheduler-num-divisions',
         'scheduling-seconds-show',
         'scheduling-timeslot-length',
+        'scheduling-timeslot-startnum',
         );
     foreach($valid_settings as $field) {
         if( isset($args[$field]) ) {

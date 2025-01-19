@@ -4254,6 +4254,11 @@ function ciniki_musicfestivals_main() {
                         'no':'No',
                         'yes':'Yes',
                     }},
+                'scheduling-timeslot-startnum':{'label':'Timeslot Starting Number', 'type':'toggle', 'default':'no', 
+                    'toggles':{
+                        'no':'No',
+                        'yes':'Yes',
+                    }},
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.edit.save();'},
@@ -7584,6 +7589,10 @@ function ciniki_musicfestivals_main() {
             'slot_seconds':{'label':'Length', 'type':'hourmin', 'max_hours':8, 'minute_interval':5,
                 'visible':function() { return M.ciniki_musicfestivals_main.festival.data['scheduling-timeslot-length'] != null
                     && M.ciniki_musicfestivals_main.festival.data['scheduling-timeslot-length'] == 'yes' ? 'yes' : 'no';
+                    }},
+            'start_num':{'label':'Starting at', 'type':'text', 'size':'small',
+                'visible':function() { return M.ciniki_musicfestivals_main.festival.data['scheduling-timeslot-startnum'] != null
+                    && M.ciniki_musicfestivals_main.festival.data['scheduling-timeslot-startnum'] == 'yes' ? 'yes' : 'no';
                     }},
             },
             'menu':{
