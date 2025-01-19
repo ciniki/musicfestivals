@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_schedule_timeslots ADD COLUMN start_num int not null AFTER groupname;
+ALTER TABLE ciniki_musicfestival_schedule_timeslots COMMENT='v1.10';
