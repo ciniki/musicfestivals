@@ -1914,6 +1914,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 ) {
                 $strsql = "SELECT timeslots.id AS timeslot_id, "
                     . "timeslots.groupname, "
+                    . "timeslots.start_num, "
                     . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
                     . "registrations.id, "
                     . "registrations.display_name, "
@@ -1985,7 +1986,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'provincials', 'fname'=>'id', 
-                        'fields'=>array('id', 'timeslot_id', 'groupname', 'display_name', 
+                        'fields'=>array('id', 'timeslot_id', 'groupname', 'start_num', 'display_name', 
                             'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
                             'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
                             'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
@@ -2039,6 +2040,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $strsql .= "timeslots.slot_seconds, "
                     . "timeslots.name, "
                     . "timeslots.groupname, "
+                    . "timeslots.start_num, "
                     . "timeslots.description, "
                     . "registrations.id AS reg_id, "
                     . "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS reg_time_text, "
@@ -2110,7 +2112,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'scheduletimeslots', 'fname'=>'id', 
                         'fields'=>array('id', 'festival_id', 'sdivision_id', 'flags', 
-                            'slot_time_text', 'slot_seconds', 'name', 'groupname', 'description', 
+                            'slot_time_text', 'slot_seconds', 'name', 'groupname', 'start_num', 'description', 
                             'class_id', 'class_name', 
                             )),
                     array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name',
@@ -2156,6 +2158,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                                         return ($a['reg_finals_sort_time'] < $b['reg_finals_sort_time']) ? -1 : 1;
                                         });
                                 }
+                                $num = ($scheduletimeslot['start_num'] && $scheduletimeslot['start_num'] > 1 ? $scheduletimeslot['start_num'] : 1);
                                 foreach($scheduletimeslot['registrations'] as $reg) {
                                     $num_reg++;
                                     if( isset($reg['schedule_at_seconds']) > $schedule_at_seconds ) {
@@ -2188,6 +2191,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                                         $ptime_text = ' [' . intval($ptime/60) . ':' . str_pad(($ptime%60), 2, '0', STR_PAD_LEFT) . ']';
                                     }
                                     $individual_time_text = '';
+                                    if( isset($festival['scheduling-timeslot-startnum']) 
+                                        && $festival['scheduling-timeslot-startnum'] == 'yes' 
+                                        ) {
+                                        $individual_time_text = $num . '. ';
+                                        $num++;
+                                    }
                                     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) 
                                         && $reg['reg_time_text'] != ''
                                         ) {
