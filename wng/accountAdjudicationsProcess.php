@@ -139,11 +139,21 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         . "registrations.music_orgfilename6, "
         . "registrations.music_orgfilename7, "
         . "registrations.music_orgfilename8, "
+        . "registrations.artwork1, "
+        . "registrations.artwork2, "
+        . "registrations.artwork3, "
+        . "registrations.artwork4, "
+        . "registrations.artwork5, "
+        . "registrations.artwork6, "
+        . "registrations.artwork7, "
+        . "registrations.artwork8, "
         . "registrations.mark, "
         . "registrations.placement, "
         . "registrations.level, "
         . "registrations.comments, "
         . "classes.flags AS class_flags, "
+        . "classes.feeflags, "
+        . "classes.titleflags, "
         . "classes.min_titles, "
         . "classes.max_titles, "
         . "classes.code AS class_code, "
@@ -182,7 +192,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     } else {
         $strsql .= "AND ssections.adjudicator1_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' ";
     }
-    $strsql .= "ORDER BY section_name, divisions.division_date, division_id, slot_time, registrations.timeslot_sequence, registrations.display_name "
+    $strsql .= "ORDER BY section_name, divisions.division_date, division_id, slot_time, timeslots.id, registrations.timeslot_sequence, registrations.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -202,7 +212,9 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
                 'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3', 'music_orgfilename4', 
                 'music_orgfilename5', 'music_orgfilename6', 'music_orgfilename7', 'music_orgfilename8',
-                'class_flags', 'min_titles', 'max_titles', 'class_name',
+                'artwork1', 'artwork2', 'artwork3', 'artwork4', 
+                'artwork5', 'artwork6', 'artwork7', 'artwork8',
+                'class_flags', 'feeflags', 'titleflags', 'min_titles', 'max_titles', 'class_name',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name',
                 'mark', 'placement', 'level', 'comments',
                 )),
@@ -246,7 +258,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         //
         if( isset($request['uri_split'][($request['cur_uri_pos']+5)]) 
             && isset($timeslot['registrations'][$request['uri_split'][($request['cur_uri_pos']+4)]])
-            && in_array($request['uri_split'][($request['cur_uri_pos']+5)], ['music1.pdf','music2.pdf','music3.pdf'])
+            && in_array($request['uri_split'][($request['cur_uri_pos']+5)], ['music1.pdf','music2.pdf','music3.pdf','music4.pdf','music5.pdf','music6.pdf','music7.pdf','music8.pdf'])
             ) {
             $registration = $timeslot['registrations'][$request['uri_split'][($request['cur_uri_pos']+4)]];
 
@@ -281,7 +293,58 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             }
             // Open file in browser
             header('Content-Disposition: inline;filename="' 
-                . $registration[preg_replace("/music([1-3])\.pdf/", 'music_orgfilename$1', $request['uri_split'][($request['cur_uri_pos']+5)])]
+                . $registration[preg_replace("/music([1-8])\.pdf/", 'music_orgfilename$1', $request['uri_split'][($request['cur_uri_pos']+5)])]
+                . '"');
+            // Download file to filesystem
+            header('Content-Length: ' . filesize($storage_filename));
+            header('Cache-Control: max-age=0');
+
+            $fp = fopen($storage_filename, 'rb');
+            fpassthru($fp);
+
+            return array('stat'=>'exit');
+        }
+        //
+        // Check for artwork download
+        //
+        if( isset($request['uri_split'][($request['cur_uri_pos']+5)]) 
+            && isset($timeslot['registrations'][$request['uri_split'][($request['cur_uri_pos']+4)]])
+            && in_array($request['uri_split'][($request['cur_uri_pos']+5)], ['artwork1','artwork2','artwork3','artwork4','artwork5','artwork6','artwork7','artwork8'])
+            ) {
+            $registration = $timeslot['registrations'][$request['uri_split'][($request['cur_uri_pos']+4)]];
+
+            //
+            // Get the tenant storage directory
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+            $rc = ciniki_tenants_hooks_storageDir($ciniki, $tnid, array());
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $storage_filename = $rc['storage_dir'] . '/ciniki.musicfestivals/files/' 
+                . $registration['uuid'][0] . '/' . $registration['uuid'] . '_' 
+                . preg_replace("/\.pdf/", "", $request['uri_split'][($request['cur_uri_pos']+5)]);
+            if( !file_exists($storage_filename) ) {
+                $blocks[] = array(
+                    'type' => 'msg',
+                    'level' => 'error',
+                    'content' => 'File not found',
+                    );
+                return array('stat'=>'ok', 'blocks'=>$blocks);
+            }
+
+            header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 
+            header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT"); 
+            header('Cache-Control: no-cache, must-revalidate');
+            header('Pragma: no-cache');
+            // Set mime header
+            $finfo = finfo_open(FILEINFO_MIME);
+            if( $finfo ) { 
+                header('Content-Type: ' . finfo_file($finfo, $storage_filename)); 
+            }
+            // Open file in browser
+            header('Content-Disposition: inline;filename="' 
+                . $registration[preg_replace("/artwork([1-8])\.pdf/", 'artwork$1', $request['uri_split'][($request['cur_uri_pos']+5)])]
                 . '"');
             // Download file to filesystem
             header('Content-Length: ' . filesize($storage_filename));
@@ -376,30 +439,59 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                         'size' => 'medium',
                         'description' => $registration["title{$i}"],
                         );
-                    if( $registration["music_orgfilename{$i}"] != '' ) {
-                        $download_url = "{$request['ssl_domain_base_url']}/account/musicfestivaladjudications"
-                            . '/' . $request['uri_split'][($request['cur_uri_pos']+2)]
-                            . '/' . $request['uri_split'][($request['cur_uri_pos']+3)]
-                            . '/' . $registration['uuid']
-                            . '/music' . $i . '.pdf'
-                            . "";
-                        $section['fields']["music_orgfilename{$i}"] = array(
-                            'id' => "music_orgfilename{$i}",
-                            'ftype' => 'button',
-                            'label' => 'Music',
-                            'size' => 'medium',
-                            'target' => '_blank',
-                            'href' => $download_url,
-                            'value' => $registration["music_orgfilename{$i}"],
-                            );
-                    } else {
-                        $section['fields']["music_orgfilename{$i}"] = array(
-                            'id' => "music_orgfilename{$i}",
-                            'ftype' => 'content',
-                            'label' => 'Music PDF',
-                            'size' => 'medium',
-                            'description' => "No music file provided",
-                            );
+                    if( ($registration['class_flags']&0x300000) != 0x200000 ) {
+                        if( $registration["music_orgfilename{$i}"] != '' ) {
+                            $download_url = "{$request['ssl_domain_base_url']}/account/musicfestivaladjudications"
+                                . '/' . $request['uri_split'][($request['cur_uri_pos']+2)]
+                                . '/' . $request['uri_split'][($request['cur_uri_pos']+3)]
+                                . '/' . $registration['uuid']
+                                . '/music' . $i . '.pdf'
+                                . "";
+                            $section['fields']["music_orgfilename{$i}"] = array(
+                                'id' => "music_orgfilename{$i}",
+                                'ftype' => 'button',
+                                'label' => 'Music',
+                                'size' => 'medium',
+                                'target' => '_blank',
+                                'href' => $download_url,
+                                'value' => $registration["music_orgfilename{$i}"],
+                                );
+                        } else {
+                            $section['fields']["music_orgfilename{$i}"] = array(
+                                'id' => "music_orgfilename{$i}",
+                                'ftype' => 'content',
+                                'label' => 'Music PDF',
+                                'size' => 'medium',
+                                'description' => "No music file provided",
+                                );
+                        }
+                    }
+                    if( ($registration['titleflags']&0x0300) > 0 ) {
+                        if( $registration["artwork{$i}"] != '' ) {
+                            $download_url = "{$request['ssl_domain_base_url']}/account/musicfestivaladjudications"
+                                . '/' . $request['uri_split'][($request['cur_uri_pos']+2)]
+                                . '/' . $request['uri_split'][($request['cur_uri_pos']+3)]
+                                . '/' . $registration['uuid']
+                                . '/artwork' . $i
+                                . "";
+                            $section['fields']["artwork{$i}"] = array(
+                                'id' => "artwork{$i}",
+                                'ftype' => 'button',
+                                'label' => 'Artwork',
+                                'size' => 'medium',
+                                'target' => '_blank',
+                                'href' => $download_url,
+                                'value' => 'Open File', // $registration["artwork{$i}"],
+                                );
+                        } else {
+                            $section['fields']["artwork{$i}"] = array(
+                                'id' => "artwork{$i}",
+                                'ftype' => 'content',
+                                'label' => 'Artwork',
+                                'size' => 'medium',
+                                'description' => "No artwork file provided",
+                                );
+                        }
                     }
                     if( isset($registration["video_url{$i}"]) && $registration["video_url{$i}"] != '' ) {
                         $section['fields']["reg{$registration['id']}-video{$i}"] = array(   
