@@ -2036,7 +2036,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 } else {
                     $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, ";
                 }
-                $strsql .= "timeslots.name, "
+                $strsql .= "timeslots.slot_seconds, "
+                    . "timeslots.name, "
                     . "timeslots.groupname, "
                     . "timeslots.description, "
                     . "registrations.id AS reg_id, "
@@ -2109,7 +2110,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'scheduletimeslots', 'fname'=>'id', 
                         'fields'=>array('id', 'festival_id', 'sdivision_id', 'flags', 
-                            'slot_time_text', 'name', 'groupname', 'description', 
+                            'slot_time_text', 'slot_seconds', 'name', 'groupname', 'description', 
                             'class_id', 'class_name', 
                             )),
                     array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name',
@@ -2207,7 +2208,32 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         if( $schedule_ata_seconds > 0 && $num_reg > 1 ) {
                             $perf_time += ($schedule_ata_seconds * ($num_reg-1));
                         }
+                        $slot_length = '';
+                        if( $scheduletimeslot['slot_seconds'] > 0 ) {
+                            if( $scheduletimeslot['slot_seconds'] > 3600 ) {
+                                $slot_length = intval($scheduletimeslot['slot_seconds']/3600) . 'h ' . ceil(($scheduletimeslot['slot_seconds']%3600)/60) . 'm';
+                            } else {
+                                $slot_length = '' . intval($scheduletimeslot['slot_seconds']/60) . ':' . str_pad(($scheduletimeslot['slot_seconds']%60), 2, '0', STR_PAD_LEFT) . '';
+                            }
+                        }
+                        $perf_time_str = '';
                         if( $perf_time != '' && $perf_time > 0 ) {
+                            if( $perf_time > 3600 ) {
+                                $perf_time_str = intval($perf_time/3600) . 'h ' . ceil(($perf_time%3600)/60) . 'm';
+                            } else {
+                                $perf_time_str = '' . intval($perf_time/60) . ':' . str_pad(($perf_time%60), 2, '0', STR_PAD_LEFT) . '';
+                            }
+                            if( $slot_length != '' ) {
+                                $perf_time_str = '<strike>' . $perf_time_str . '</strike> ' . $slot_length;
+                            }
+                        } elseif( $perf_time != '' && $perf_time == 0 ) {
+                            $pref_time_str = '?';
+                            if( $slot_length != '' ) {
+                                $perf_time_str = $slot_length;
+                            }
+                        }
+                        $festival['schedule_timeslots'][$iid]['perf_time_text'] = '[' . $perf_time_str . ']';
+/*                        if( $perf_time != '' && $perf_time > 0 ) {
                             if( $perf_time > 3600 ) {
                                 $festival['schedule_timeslots'][$iid]['perf_time_text'] = '[' . intval($perf_time/3600) . 'h ' . ceil(($perf_time%3600)/60) . 'm]';
                             } else {
@@ -2215,7 +2241,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             }
                         } elseif( $perf_time != '' && $perf_time == 0 ) {
                             $festival['schedule_timeslots'][$iid]['perf_time_text'] = '[?]';
-                        }
+                        } */
                         $nplists['schedule_timeslots'][] = $scheduletimeslot['id'];
                     }
                 } else {

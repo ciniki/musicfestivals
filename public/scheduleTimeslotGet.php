@@ -116,6 +116,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             'ssection_id'=>(isset($args['ssection_id']) ? $args['ssection_id'] : 0),
             'sdivision_id'=>(isset($args['sdivision_id']) ? $args['sdivision_id'] : 0),
             'slot_time'=>'',
+            'slot_seconds' => '',
             'name'=>'',
             'groupname'=>'',
             'flags' => 0,
@@ -140,7 +141,8 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time, ";
         }
 //        . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time, "
-        $strsql .= "timeslots.flags, "
+        $strsql .= "timeslots.slot_seconds, "
+            . "timeslots.flags, "
             . "timeslots.name, "
             . "timeslots.groupname, "
             . "timeslots.description, "
@@ -153,7 +155,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'scheduletimeslot', 'fname'=>'id', 
-                'fields'=>array('id', 'festival_id', 'ssection_id', 'sdivision_id', 'slot_time', 
+                'fields'=>array('id', 'festival_id', 'ssection_id', 'sdivision_id', 'slot_time', 'slot_seconds',
                     'flags', 'name', 'groupname', 'description', 'runsheet_notes', 'results_notes', 'results_video_url',
                     ),
                 ),
@@ -165,6 +167,9 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.99', 'msg'=>'Unable to find Schedule Time Slot'));
         }
         $scheduletimeslot = $rc['scheduletimeslot'][0];
+        if( $scheduletimeslot['slot_seconds'] == 0 ) {
+            $scheduletimeslot['slot_seconds'] = '';
+        }
 
         //
         // Get the list of registrations
@@ -407,7 +412,22 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         } else {
             $strsql .= "AND registrations.timeslot_id = 0 ";
         }
-        $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
+        $strsql .= "AND ("
+                    . "(registrations.status > 5 AND registrations.status < 70) ";
+        if( isset($festival['scheduling-draft-show']) && $festival['scheduling-draft-show'] == 'yes' ) {
+            $strsql .= "OR registrations.status = 5 ";
+        }
+        if( isset($festival['scheduling-disqualified-show']) && $festival['scheduling-disqualified-show'] == 'yes' ) {
+            $strsql .= "OR registrations.status = 70 ";
+        }
+        if( isset($festival['scheduling-withdrawn-show']) && $festival['scheduling-withdrawn-show'] == 'yes' ) {
+            $strsql .= "OR registrations.status = 75 ";
+        }
+        if( isset($festival['scheduling-cancelled-show']) && $festival['scheduling-cancelled-show'] == 'yes' ) {
+            $strsql .= "OR registrations.status = 80 ";
+        }
+        $strsql .= ") "
                 . ") "
             . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
                 . "registrations.invoice_id = invoices.id "

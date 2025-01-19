@@ -149,6 +149,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
             }
             $strsql .= "timeslots.name, "
                 . "timeslots.groupname, "
+                . "timeslots.slot_seconds, "
 //                . "IF(timeslots.name='', TIME_FORMAT(slot_time, '%l:%i %p'), timeslots.name) AS name, "
                 . "registrations.id AS reg_id, "
                 . "registrations.display_name, "
@@ -244,7 +245,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-                array('container'=>'timeslots', 'fname'=>'id', 'fields'=>array('id', 'slot_time', 'name', 'groupname')),
+                array('container'=>'timeslots', 'fname'=>'id', 'fields'=>array('id', 'slot_time', 'slot_seconds', 'name', 'groupname')),
                 array('container'=>'registrations', 'fname'=>'reg_id', 
                     'fields'=>array('id'=>'reg_id', 'display_name', 'timeslot_id', 'timeslot_time', 'timeslot_sequence', 
                         'flags', 'status', 'accompanist_name', 'teacher_name', 
@@ -268,11 +269,15 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
             $rsp["timeslots{$i}"] = isset($rc['timeslots']) ? $rc['timeslots'] : array();
             foreach($rsp["timeslots{$i}"] as $tid => $timeslot) {
                 $rsp["timeslots{$i}"][$tid]['name'] = $timeslot['slot_time'] . ($timeslot['name'] != '' ? ' - ' . $timeslot['name'] : '');
+                $perf_time = 0;
+                $schedule_at_seconds = 0;
+                $schedule_ata_seconds = 0;
                 if( isset($timeslot['registrations']) ) {
                     foreach($timeslot["registrations"] as $rid => $reg) {
                         $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, array('times'=>'startsum', 'numbers'=>'yes'));
                         $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['titles'] = $rc['titles'];
                         $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['perf_time'] = $rc['perf_time'];
+                        $perf_time += $rc['perf_time_seconds'];
                         if( isset($reg['competitors']) ) {
                             foreach($reg['competitors'] as $competitor) {
                                 if( $competitor['notes'] != '' ) {
@@ -281,8 +286,45 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                             }
                             unset($rsp["timeslots{$i}"][$tid]["registrations"][$rid]['competitors']);
                         }
+                        if( $reg['schedule_at_seconds'] > $schedule_at_seconds ) {
+                            $reg['schedule_at_seconds'] = $schedule_at_seconds;
+                        }
+                        if( $reg['schedule_ata_seconds'] > $schedule_ata_seconds ) {
+                            $reg['schedule_ata_seconds'] = $schedule_ata_seconds;
+                        }
                     }
                 }
+                if( $schedule_at_seconds > 0 ) {
+                    $perf_time += $schedule_at_seconds;
+                }
+                if( $schedule_ata_seconds > 0 && $num_reg > 1 ) {
+                    $perf_time += ($schedule_ata_seconds * ($num_reg-1));
+                }
+                $slot_length = '';
+                if( $timeslot['slot_seconds'] > 0 ) {
+                    if( $timeslot['slot_seconds'] > 3600 ) {
+                        $slot_length = intval($timeslot['slot_seconds']/3600) . 'h ' . ceil(($timeslot['slot_seconds']%3600)/60) . 'm';
+                    } else {
+                        $slot_length = '' . intval($timeslot['slot_seconds']/60) . ':' . str_pad(($timeslot['slot_seconds']%60), 2, '0', STR_PAD_LEFT) . '';
+                    }
+                }
+                $perf_time_str = '';
+                if( $perf_time != '' && $perf_time > 0 ) {
+                    if( $perf_time > 3600 ) {
+                        $perf_time_str = intval($perf_time/3600) . 'h ' . ceil(($perf_time%3600)/60) . 'm';
+                    } else {
+                        $perf_time_str = '' . intval($perf_time/60) . ':' . str_pad(($perf_time%60), 2, '0', STR_PAD_LEFT) . '';
+                    }
+                    if( $slot_length != '' ) {
+                        $perf_time_str = '<strike>' . $perf_time_str . '</strike> ' . $slot_length;
+                    }
+                } elseif( $perf_time != '' && $perf_time == 0 ) {
+                    $pref_time_str = '?';
+                    if( $slot_length != '' ) {
+                        $perf_time_str = $slot_length;
+                    }
+                }
+                $rsp["timeslots{$i}"][$tid]['perf_time_text'] = '[' . $perf_time_str . ']';
             }
         }
     }

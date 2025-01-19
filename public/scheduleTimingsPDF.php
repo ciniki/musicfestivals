@@ -56,7 +56,7 @@ function ciniki_musicfestivals_scheduleTimingsPDF($ciniki) {
     $args['ipv'] = 'inperson';
     $args['paidonly'] = 'yes';
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'registrationsSchedulePDF');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'scheduleTimingsPDF');
     $rc = ciniki_musicfestivals_templates_scheduleTimingsPDF($ciniki, $args['tnid'], $args);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
