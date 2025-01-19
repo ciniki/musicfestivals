@@ -8076,7 +8076,13 @@ function ciniki_musicfestivals_main() {
         if( s.match(/^timeslot_/) ) {
             switch(j) {
 //                case 0: return M.multiline(d.timeslot_sequence, d.timeslot_time);
-                case 0: return d.timeslot_sequence;
+                case 0: 
+                    if( M.ciniki_musicfestivals_main.festival.data['scheduling-timeslot-startnum'] != null 
+                        && M.ciniki_musicfestivals_main.festival.data['scheduling-timeslot-startnum'] == 'yes'
+                        ) {
+                        return d.timeslot_number;
+                    }
+                    return d.timeslot_sequence;
                 case 1: return M.multiline((this.showtitles == 'no' ? '<span class="subdue">[' + d.perf_time + ']</span> ': '') 
                     + d.class_code + ' - ' 
                     + (d.participation != '' ? '[' + d.participation + '] ' : '')

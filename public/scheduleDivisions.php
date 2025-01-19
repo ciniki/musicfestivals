@@ -150,6 +150,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
             $strsql .= "timeslots.name, "
                 . "timeslots.groupname, "
                 . "timeslots.slot_seconds, "
+                . "timeslots.start_num, "
 //                . "IF(timeslots.name='', TIME_FORMAT(slot_time, '%l:%i %p'), timeslots.name) AS name, "
                 . "registrations.id AS reg_id, "
                 . "registrations.display_name, "
@@ -245,7 +246,9 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-                array('container'=>'timeslots', 'fname'=>'id', 'fields'=>array('id', 'slot_time', 'slot_seconds', 'name', 'groupname')),
+                array('container'=>'timeslots', 'fname'=>'id', 
+                    'fields'=>array('id', 'slot_time', 'slot_seconds', 'name', 'groupname', 'start_num'),
+                    ),
                 array('container'=>'registrations', 'fname'=>'reg_id', 
                     'fields'=>array('id'=>'reg_id', 'display_name', 'timeslot_id', 'timeslot_time', 'timeslot_sequence', 
                         'flags', 'status', 'accompanist_name', 'teacher_name', 
@@ -272,8 +275,10 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                 $perf_time = 0;
                 $schedule_at_seconds = 0;
                 $schedule_ata_seconds = 0;
+                $num = ($timeslot['start_num'] > 1 ? $timeslot['start_num'] : 1);
                 if( isset($timeslot['registrations']) ) {
                     foreach($timeslot["registrations"] as $rid => $reg) {
+                        $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['timeslot_number'] = $num;
                         $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, array('times'=>'startsum', 'numbers'=>'yes'));
                         $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['titles'] = $rc['titles'];
                         $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['perf_time'] = $rc['perf_time'];
@@ -292,6 +297,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                         if( $reg['schedule_ata_seconds'] > $schedule_ata_seconds ) {
                             $reg['schedule_ata_seconds'] = $schedule_ata_seconds;
                         }
+                        $num++;
                     }
                 }
                 if( $schedule_at_seconds > 0 ) {
