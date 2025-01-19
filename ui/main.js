@@ -7593,7 +7593,9 @@ function ciniki_musicfestivals_main() {
             'start_num':{'label':'Starting at', 'type':'text', 'size':'small',
                 'visible':function() { return M.ciniki_musicfestivals_main.festival.data['scheduling-timeslot-startnum'] != null
                     && M.ciniki_musicfestivals_main.festival.data['scheduling-timeslot-startnum'] == 'yes' ? 'yes' : 'no';
-                    }},
+                    },
+                'onkeyupFn':'M.ciniki_musicfestivals_main.scheduletimeslot.updateStartnum',
+                },
             },
             'menu':{
                 'split':{
@@ -7716,6 +7718,11 @@ function ciniki_musicfestivals_main() {
                     if( M.modFlagOn('ciniki.musicfestivals', 0x080000) ) {
                         return M.multiline(d.timeslot_sequence, d.timeslot_time);
                     }
+                    if( M.ciniki_musicfestivals_main.festival.data['scheduling-timeslot-startnum'] != null 
+                        && M.ciniki_musicfestivals_main.festival.data['scheduling-timeslot-startnum'] == 'yes'
+                        ) {
+                        return d.timeslot_number;
+                    }
                     return d.timeslot_sequence;
                 case 1: return M.multiline(d.class_code + ' - ' + d.class_name, d.category_name);
                 case 2: return M.multiline(d.display_name + (d.accompanist_name != '' ? ' <b>[' + d.accompanist_name + ']</b>':''), d.titles.replace(/\n/g, '<br/>'));
@@ -7821,6 +7828,16 @@ function ciniki_musicfestivals_main() {
                 });
             });
         }
+    }
+    this.scheduletimeslot.updateStartnum = function() {
+        var n = parseInt(this.formValue('start_num'));
+        if( isNaN(n) || n == null || n < 1 ) {
+            n = 1;
+        }
+        for(var i in this.data.registrations) {
+            this.data.registrations[i].timeslot_number = n++;
+        }
+        this.refreshSection('registrations');
     }
     this.scheduletimeslot.updateRegistrations = function() {
         var sid = this.formValue('section_id');

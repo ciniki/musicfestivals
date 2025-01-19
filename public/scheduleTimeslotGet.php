@@ -305,7 +305,12 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         $total_time = 0;
         $schedule_at_seconds = 0;
         $schedule_ata_seconds = 0;
+        $num = 1;
+        if( $scheduletimeslot['start_num'] > 1 ) {
+            $num = $scheduletimeslot['start_num'];
+        }
         foreach($scheduletimeslot['registrations'] as $rid => $reg) {
+            $scheduletimeslot['registrations'][$rid]['timeslot_number'] = $num;
             $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, [
                 'times' => 'startsum', 
                 'numbers' => 'yes',
@@ -330,6 +335,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                     $scheduletimeslot['registrations'][$rid]['ages'] = $ra;
                 }
             }
+            $num++;
         }
 
         if( $schedule_at_seconds > 0 ) {
