@@ -82,9 +82,10 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
         . "divisions.name AS division_name, "
         . "timeslots.id AS timeslot_id, "
         . "timeslots.name AS timeslot_name, "
-        . "timeslots.groupname AS timeslot_groupname, "
+        . "timeslots.groupname, "
         . "timeslots.slot_time, "
-        . "timeslots.slot_seconds, ";
+        . "timeslots.slot_seconds, "
+        . "timeslots.start_num, ";
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
             $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS slot_time_text, ";
         } else {
@@ -124,6 +125,7 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
         . "registrations.composer8, "
         . "registrations.movements8, "
         . "registrations.perf_time8, "
+        . "registrations.timeslot_sequence, "
         . "registrations.participation, "
         . "registrations.notes, "
         . "registrations.runsheet_notes, "
@@ -213,11 +215,12 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
             'fields'=>array('id'=>'division_id', 'name'=>'division_name'),
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
-            'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'slot_time_text', 'slot_seconds'),
+            'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'groupname', 'slot_time_text', 'slot_seconds', 'start_num'),
             ),
         array('container'=>'registrations', 'fname'=>'title1', 
-            'fields'=>array('id'=>'reg_id', 'display_name',
+            'fields'=>array('id'=>'reg_id', 'display_name', 
                 'accompanist_name', 'teacher_name', 'teacher2_name',
+                'timeslot_sequence', 
                 'title1', 'composer1', 'movements1', 'perf_time1', 
                 'title2', 'composer2', 'movements2', 'perf_time2', 
                 'title3', 'composer3', 'movements3', 'perf_time3', 
@@ -374,10 +377,9 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
     //
     // Go through the sections, divisions and classes
     //
-    $rw = array(50, 100, 30);
-    $nw = array(10, 170);
+    $rw = array(8, 50, 107, 15);
+    $nw = array(8, 10, 162);
     $border = '';
-
     
     foreach($sections as $section) {
         $pdf->AddPage();
@@ -392,11 +394,14 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
                 //
                 $pdf->SetFont('helvetica', 'B', 12);
                 if( $timeslot['slot_time_text'] == '12:00 AM' ) {
-                    $w = array(0, 150, 30);
+                    $w = array(0, 145, 35);
                     $name = $timeslot['name'];
                 } else {
-                    $w = array(20, 130, 30);
+                    $w = array(20, 125, 35);
                     $name = $timeslot['slot_time_text'] . ' - ' . $timeslot['name'];
+                }
+                if( $timeslot['groupname'] != '' ) {
+                    $name .= ' - ' . $timeslot['groupname'];
                 }
 
                 $name_lh = $pdf->getStringHeight($w[1], $name);
@@ -433,8 +438,8 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
                         $timeslot['registrations'][$rid]['display_name'] = $reg['display_name'];
                         $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, array('basicnumbers'=>'yes'));
                         $timeslot["registrations"][$rid]['titles'] = $rc['titles'];
-                        $timeslot['registrations'][$rid]['name_lh'] = $pdf->getStringHeight($rw[0], $reg['display_name']);
-                        $timeslot['registrations'][$rid]['titles_lh'] = $pdf->getStringHeight($rw[1], $rc['titles']);
+                        $timeslot['registrations'][$rid]['name_lh'] = $pdf->getStringHeight($rw[1], $reg['display_name']);
+                        $timeslot['registrations'][$rid]['titles_lh'] = $pdf->getStringHeight($rw[2], $rc['titles']);
                         $timeslot['registrations'][$rid]['notes_lh'] = 0;
                         $timeslot["registrations"][$rid]['perf_time'] = $rc['perf_time'];
                         $perf_time += $rc['perf_time_seconds'];
@@ -454,7 +459,7 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
                             $timeslot['registrations'][$rid]['lh'] = $timeslot['registrations'][$rid]['name_lh'];
                         }
                         if( $timeslot['registrations'][$rid]['notes'] != '' ) {
-                            $timeslot['registrations'][$rid]['notes_lh'] = $pdf->getStringHeight($nw[1], $timeslot['registrations'][$rid]['notes']);
+                            $timeslot['registrations'][$rid]['notes_lh'] = $pdf->getStringHeight($nw[2], $timeslot['registrations'][$rid]['notes']);
                             $total_lh += $timeslot['registrations'][$rid]['notes_lh'];
                         }
                         if( $reg['schedule_at_seconds'] > $schedule_at_seconds ) {
@@ -508,6 +513,10 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
 
                 $pdf->SetFont('helvetica', '', 12);
                 if( isset($timeslot['registrations']) ) {
+                    $num = 1;
+                    if( $timeslot['start_num'] > 1 ) {
+                        $num = $timeslot['start_num'];
+                    }
                     foreach($timeslot["registrations"] as $rid => $reg) {
                         if( $pdf->getY() > $pdf->getPageHeight() - 30 - $reg['lh'] - $reg['notes_lh'] ) {
                             $pdf->AddPage(); 
@@ -517,15 +526,22 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
                             $pdf->MultiCell(180, $name_lh, $name . ' (continued...)', 0, 'L', 0, 1);
                             $pdf->SetFont('helvetica', '', 12);
                         }
-                        $pdf->MultiCell($rw[0], $reg['lh'], $reg['display_name'], 1, 'L', 0, 0);
-                        $pdf->MultiCell($rw[1], $reg['lh'], $reg['titles'], 1, 'L', 0, 0);
-                        $pdf->MultiCell($rw[2], $reg['lh'], $reg['perf_time'], 1, 'R', 0, 1);
+                        if( $reg['notes'] != '' ) {
+                            $pdf->MultiCell($rw[0], $reg['lh'], $num, 'LTR', 'C', 0, 0);
+                        } else {
+                            $pdf->MultiCell($rw[0], $reg['lh'], $num, 1, 'C', 0, 0);
+                        }
+                        $pdf->MultiCell($rw[1], $reg['lh'], $reg['display_name'], 1, 'L', 0, 0);
+                        $pdf->MultiCell($rw[2], $reg['lh'], $reg['titles'], 1, 'L', 0, 0);
+                        $pdf->MultiCell($rw[3], $reg['lh'], $reg['perf_time'], 1, 'R', 0, 1);
                         if( $reg['notes'] != '' ) {
                             $pdf->SetFont('helvetica', 'I', 12);
-                            $pdf->MultiCell($nw[0], $reg['notes_lh'], '', 'LB', 'L', 0, 0);
-                            $pdf->MultiCell($nw[1], $reg['notes_lh'], $reg['notes'], 'BR', 'L', 0, 1);
+                            $pdf->MultiCell($nw[0], $reg['notes_lh'], '', 'LBR', 'L', 0, 0);
+                            $pdf->MultiCell($nw[1], $reg['notes_lh'], '', 'LB', 'L', 0, 0);
+                            $pdf->MultiCell($nw[2], $reg['notes_lh'], $reg['notes'], 'BR', 'L', 0, 1);
                             $pdf->SetFont('helvetica', '', 12);
                         }
+                        $num++;
                     }
                 }
                 $pdf->Ln(5);

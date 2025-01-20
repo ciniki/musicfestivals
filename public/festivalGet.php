@@ -712,7 +712,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     }
                         
                     if( $class['schedule_ata_seconds'] > 0 ) {
-                        $total_seconds += $class['schedule_at_seconds'] * ($class['num_registrations'] - 1);
+                        $total_seconds += $class['schedule_ata_seconds'] * ($class['num_registrations'] - 1);
                         $festival['classes'][$iid]['talk_time'] .= '+' . floor($class['schedule_ata_seconds']/60);
                         if( ($class['schedule_ata_seconds']%60) > 0 ) {
                             $festival['classes'][$iid]['talk_time'] .= ':' . ($class['schedule_ata_seconds']%60) . '/reg';
@@ -730,7 +730,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     elseif( $total_seconds > 0 ) {
                         $festival['classes'][$iid]['total_time'] = floor($total_seconds/60) . 'm';
                         if( ($total_seconds%60) > 0 ) {
-                            $festival['classes'][$iid]['total_time'] .= ' ' . floor($total_seconds%60) . 'm';
+                            $festival['classes'][$iid]['total_time'] .= ' ' . floor($total_seconds%60) . 's';
                         }
                     }
                     $festival['classes'][$iid]['mark'] = '';
