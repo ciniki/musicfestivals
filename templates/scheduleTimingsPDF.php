@@ -418,10 +418,10 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
                             $total_lh += $timeslot['registrations'][$rid]['notes_lh'];
                         }
                         if( $reg['schedule_at_seconds'] > $schedule_at_seconds ) {
-                            $reg['schedule_at_seconds'] = $schedule_at_seconds;
+                            $schedule_at_seconds = $reg['schedule_at_seconds'];
                         }
                         if( $reg['schedule_ata_seconds'] > $schedule_ata_seconds ) {
-                            $reg['schedule_ata_seconds'] = $schedule_ata_seconds;
+                            $schedule_ata_seconds = $reg['schedule_ata_seconds'];
                         }
                     }
                 }
