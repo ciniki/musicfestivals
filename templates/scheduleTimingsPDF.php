@@ -411,6 +411,7 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
                 $schedule_ata_seconds = 0;
                 $total_lh = 0;
                 $pdf->SetFont('helvetica', '', 12);
+                $num_reg = 0;
                 if( isset($timeslot['registrations']) ) {
                     foreach($timeslot["registrations"] as $rid => $reg) {
                         if( ($reg['class_flags']&0x8000) == 0x8000 && $reg['num_people'] > 0 ) {
@@ -468,6 +469,7 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
                         if( $reg['schedule_ata_seconds'] > $schedule_ata_seconds ) {
                             $schedule_ata_seconds = $reg['schedule_ata_seconds'];
                         }
+                        $num_reg++;
                     }
                 }
                 if( $schedule_at_seconds > 0 ) {
