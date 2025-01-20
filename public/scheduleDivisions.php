@@ -157,7 +157,6 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                 . "registrations.flags, "
                 . "registrations.status, "
                 . "registrations.participation, "
-                . "IFNULL(teachers.display_name, '') AS teacher_name, "
                 . "registrations.title1, "
                 . "registrations.title2, "
                 . "registrations.title3, "
@@ -198,6 +197,8 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                 . "IFNULL(competitors.notes, '') AS competitor_notes, "
 //                . "GROUP_CONCAT(' ', competitors.notes) AS competitor_notes, "
                 . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
+                . "IFNULL(teachers.display_name, '') AS teacher_name, "
+                . "IFNULL(teachers2.display_name, '') AS teacher2_name, "
                 . "classes.code AS class_code, "
                 . "classes.name AS class_name, "
                 . "classes.flags AS class_flags, "
@@ -240,6 +241,10 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                     . "registrations.teacher_customer_id = teachers.id "
                     . "AND teachers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
+                . "LEFT JOIN ciniki_customers AS teachers2 ON ("
+                    . "registrations.teacher2_customer_id = teachers2.id "
+                    . "AND teachers2.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
                 . "WHERE timeslots.sdivision_id = '" . ciniki_core_dbQuote($ciniki, $args["division{$i}_id"]) . "' "
                 . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "ORDER BY timeslots.slot_time, timeslots.name, timeslots.id, registrations.timeslot_sequence, registrations.display_name "
@@ -251,7 +256,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                     ),
                 array('container'=>'registrations', 'fname'=>'reg_id', 
                     'fields'=>array('id'=>'reg_id', 'display_name', 'timeslot_id', 'timeslot_time', 'timeslot_sequence', 
-                        'flags', 'status', 'accompanist_name', 'teacher_name', 
+                        'flags', 'status', 'accompanist_name', 'teacher_name', 'teacher2_name',
                         'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                         'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                         'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
@@ -471,6 +476,8 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
 //            . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS status_text, "
             . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
             . "IFNULL(teachers.display_name, '') AS teacher_name, "
+            . "IFNULL(teachers2.display_name, '') AS teacher2_name, "
+            . "IFNULL(teachers.display_name, '') AS teacher_name, "
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
             . "categories.name AS category_name, "
@@ -531,6 +538,10 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
             . "LEFT JOIN ciniki_customers AS teachers ON ("
                 . "registrations.teacher_customer_id = teachers.id "
                 . "AND teachers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_customers AS teachers2 ON ("
+                . "registrations.teacher2_customer_id = teachers2.id "
+                . "AND teachers2.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") ";
         if( isset($args['class_id']) && $args['class_id'] > 0 ) {
             $strsql .= "WHERE classes.id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' ";
@@ -545,7 +556,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
-                'fields'=>array('id', 'display_name', 'flags', 'status', 'accompanist_name', 'teacher_name', 
+                'fields'=>array('id', 'display_name', 'flags', 'status', 'accompanist_name', 'teacher_name', 'teacher2_name',
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
