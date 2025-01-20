@@ -512,6 +512,14 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $strsql .= "'' AS trophies, "
                     . "'' AS levels ";
             }
+            $strsql .= ", (SELECT COUNT(*) "
+                . "FROM ciniki_musicfestival_registrations AS registrations "
+                . "WHERE classes.id = registrations.class_id "
+                . ") AS num_registrations ";
+            $strsql .= ", (SELECT SUM(perf_time1) + SUM(perf_time2) + SUM(perf_time3) "
+                . "FROM ciniki_musicfestival_registrations AS registrations "
+                . "WHERE classes.id = registrations.class_id "
+                . ") AS perf_time ";
 //                . "COUNT(registrations.id) AS num_registrations "
             $strsql .= "FROM ciniki_musicfestival_sections AS sections "
                 . "INNER JOIN ciniki_musicfestival_categories AS categories USE INDEX (festival_id_2) ON ("
@@ -567,6 +575,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         'earlybird_fee', 'fee', 'virtual_fee', 'plus_fee', 'earlybird_plus_fee',
                         'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 
                         'synopsis', 'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds', 'levels', 'trophies',
+                        'num_registrations', 'perf_time',
                         ),
                     'dlists'=>array('levels'=>', ', 'trophies'=>', '),
                     ),
@@ -676,8 +685,14 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     } elseif( ($class['flags']&0x080000) == 0x080000 ) {
                         $festival['classes'][$iid]['schedule_type'] = 'Total Time';
                     }
+                    $total_seconds = 0;
                     $festival['classes'][$iid]['schedule_time'] = '';
                     if( $class['schedule_seconds'] > 0 ) {
+                        if( ($class['flags']&0x040000) == 0x040000 ) {
+                            $total_seconds += ($class['schedule_seconds'] * $class['num_registrations']) + $class['perf_time'];
+                        } elseif( ($class['flags']&0x080000) == 0x080000 ) {
+                            $total_seconds += ($class['schedule_seconds'] * $class['num_registrations']);
+                        }
                         $festival['classes'][$iid]['schedule_time'] = floor($class['schedule_seconds']/60);
                         if( ($class['schedule_seconds']%60) > 0 ) {
                             $festival['classes'][$iid]['schedule_time'] .= ':' . ($class['schedule_seconds']%60) . '/reg';
@@ -687,6 +702,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     }
                     $festival['classes'][$iid]['talk_time'] = '';
                     if( $class['schedule_at_seconds'] > 0 ) {
+                        $total_seconds += $class['schedule_at_seconds'];
                         $festival['classes'][$iid]['talk_time'] .= floor($class['schedule_at_seconds']/60);
                         if( ($class['schedule_at_seconds']%60) > 0 ) {
                             $festival['classes'][$iid]['talk_time'] .= ':' . ($class['schedule_at_seconds']%60) . '';
@@ -696,11 +712,25 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     }
                         
                     if( $class['schedule_ata_seconds'] > 0 ) {
+                        $total_seconds += $class['schedule_at_seconds'] * ($class['num_registrations'] - 1);
                         $festival['classes'][$iid]['talk_time'] .= '+' . floor($class['schedule_ata_seconds']/60);
                         if( ($class['schedule_ata_seconds']%60) > 0 ) {
                             $festival['classes'][$iid]['talk_time'] .= ':' . ($class['schedule_ata_seconds']%60) . '/reg';
                         } else {
                             $festival['classes'][$iid]['talk_time'] .= ':00/reg';
+                        }
+                    }
+                    $festival['classes'][$iid]['total_time'] = '';
+                    if( $total_seconds > 3600 ) {
+                        $festival['classes'][$iid]['total_time'] = floor($total_seconds/3600) . 'h';
+                        if( ($total_seconds%3600) > 0 ) {
+                            $festival['classes'][$iid]['total_time'] .= ' ' . floor(($total_seconds%3600)/60) . 'm';
+                        }
+                    }
+                    elseif( $total_seconds > 0 ) {
+                        $festival['classes'][$iid]['total_time'] = floor($total_seconds/60) . 'm';
+                        if( ($total_seconds%60) > 0 ) {
+                            $festival['classes'][$iid]['total_time'] .= ' ' . floor($total_seconds%60) . 'm';
                         }
                     }
                     $festival['classes'][$iid]['mark'] = '';

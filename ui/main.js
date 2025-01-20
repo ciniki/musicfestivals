@@ -3155,13 +3155,13 @@ function ciniki_musicfestivals_main() {
             this.sections.classes.num_cols = 4;
         }
         else if( this.sections._stabs.selected == 'scheduling' ) {
-            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Scheduling', 'Time', 'Talk'];
-            this.sections.classes.cellClasses = ['', '', '', '', '', ''];
-            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'schedule_type', 'schedule_time', 'talk_time'];
-            this.sections.classes.sortTypes = ['text', 'text', 'text', 'text', 'text', 'text'];
+            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Scheduling', 'Time', 'Talk', 'Total', '# Reg'];
+            this.sections.classes.cellClasses = ['', '', '', '', '', '', '', 'aligncenter'];
+            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'schedule_type', 'schedule_time', 'talk_time', 'total_time', 'num_registrations'];
+            this.sections.classes.sortTypes = ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'number'];
             this.sections.classes.num_cols = 5;
             if( this.data['scheduling-at-times'] != null && this.data['scheduling-at-times'] == 'yes' ) {
-                this.sections.classes.num_cols++;
+                this.sections.classes.num_cols+=3;
             }
         } 
         else if( this.sections._stabs.selected == 'synopsis' ) {
