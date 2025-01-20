@@ -212,7 +212,7 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
                 'title8', 'composer8', 'movements8', 'perf_time8', 
                 'class_code', 'class_name', 'category_name', 'section_name',
                 'class_flags', 'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds',
-                'notes', 'runsheet_notes', 'participation',
+                'notes', 'runsheet_notes', 'participation', 'num_people',
             )),
         array('container'=>'competitors', 'fname'=>'competitor_id', 
             'fields'=>array('id'=>'competitor_id', 'notes'=>'competitor_notes', 'city'=>'competitor_city', 'num_people'),
@@ -392,6 +392,10 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
                 $pdf->SetFont('helvetica', '', 12);
                 if( isset($timeslot['registrations']) ) {
                     foreach($timeslot["registrations"] as $rid => $reg) {
+                        if( ($reg['class_flags']&0x8000) == 0x8000 && $reg['num_people'] > 0 ) {
+                            $timeslot['registrations'][$rid]['display_name'] .= ' (' . $reg['num_people'] . ')';
+                            $reg['display_name'] .= ' (' . $reg['num_people'] . ')';
+                        }
                         $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, array('basicnumbers'=>'yes'));
                         $timeslot["registrations"][$rid]['titles'] = $rc['titles'];
                         $timeslot['registrations'][$rid]['name_lh'] = $pdf->getStringHeight($rw[0], $reg['display_name']);
