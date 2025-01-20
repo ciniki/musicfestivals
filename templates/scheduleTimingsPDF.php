@@ -268,7 +268,7 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
             // be displayed as well.  Otherwise, image is scaled to be 100% page width
             // but only to a maximum height of the header_height (set far below).
             //
-            $img_width = 0;
+/*            $img_width = 0;
             if( $this->header_image != null ) {
                 $height = $this->header_image->getImageHeight();
                 $width = $this->header_image->getImageWidth();
@@ -301,7 +301,7 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
             $this->SetFont('helvetica', 'B', 12);
             $this->setX($this->left_margin + $img_width);
             $this->Cell(180-$img_width, 10, $this->header_msg, 0, false, 'R', 0, '', 0, false, 'M', 'M');
-            $this->Ln(6);
+            $this->Ln(6); */
         }
 
         // Page footer
@@ -333,7 +333,7 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
     // Set the minimum header height
     //
     if( $pdf->header_height < 30 ) {
-        $pdf->header_height = 30;
+//        $pdf->header_height = 30;
     }
 
     //
@@ -385,7 +385,7 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
         $pdf->AddPage();
         foreach($section['divisions'] as $did => $division) {
             $pdf->SetFont('helvetica', 'B', 16);
-            $pdf->MultiCell(180, '', $section['name'] . ' - ' . $division['name'], 0, 'L', 0, 1);
+            $pdf->MultiCell(180, '', $section['name'] . ' - ' . $division['name'], 0, 'C', 0, 1);
     
             foreach($division['timeslots'] as $tid => $timeslot) {
                 
@@ -504,7 +504,7 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
                 if( $pdf->getY() > $pdf->getPageHeight() - 30 - $name_lh - $total_lh ) {
                     $pdf->AddPage(); 
                     $pdf->SetFont('helvetica', 'B', 16);
-                    $pdf->MultiCell(180, '', $section['name'] . ' - ' . $division['name'] . ' (continued...)', 0, 'L', 0, 1);
+                    $pdf->MultiCell(180, '', $section['name'] . ' - ' . $division['name'] . ' (continued...)', 0, 'C', 0, 1);
                 }
         
                 $pdf->SetFont('helvetica', 'B', 12);
