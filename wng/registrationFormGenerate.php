@@ -786,7 +786,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         if( ($festival['flags']&0x06) == 0x06 ) {
             if( isset($festival['live']) && $festival['live'] != 'no' 
                 && isset($selected_class['feeflags']) && ($selected_class['feeflags']&0x02) == 0x02
-//                && isset($selected_class['live_fee']) && $selected_class['live_fee'] > 0 
+                && isset($selected_class['live_fee']) 
+//                && $selected_class['live_fee'] > 0 
                 ) {
                 $fields['participation']['options'][0] .= ' - $' . number_format($selected_class['live_fee'], 2);
                 if( isset($selected_member['latefee']) ) {
@@ -799,7 +800,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             }
             if( isset($festival['virtual']) && $festival['virtual'] != 'no' 
                 && isset($selected_class['feeflags']) && ($selected_class['feeflags']&0x08) == 0x08
-//                && isset($selected_class['virtual_fee']) && $selected_class['virtual_fee'] > 0 
+                && isset($selected_class['virtual_fee']) 
+//                && $selected_class['virtual_fee'] > 0 
                 ) {
                 $fields['participation']['options'][1] .= ' - $' . number_format($selected_class['virtual_fee'], 2);
                 if( isset($selected_member['latefee']) ) {
