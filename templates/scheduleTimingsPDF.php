@@ -372,7 +372,7 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
     $pdf->SetDrawColor(200);
     $pdf->SetLineWidth(0.15);
 
-    $filename = 'registrations';
+    $filename = 'Schedule Timings';
 
     //
     // Go through the sections, divisions and classes
@@ -382,6 +382,9 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
     $border = '';
     
     foreach($sections as $section) {
+        if( isset($args['ssection_id']) && $args['ssection_id'] == $section['id'] ) {
+            $filename .= ' - ' . $section['name'];
+        }
         $pdf->AddPage();
         foreach($section['divisions'] as $did => $division) {
             $pdf->SetFont('helvetica', 'B', 16);
