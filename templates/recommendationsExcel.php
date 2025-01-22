@@ -199,7 +199,8 @@ function ciniki_musicfestivals_templates_recommendationsExcel(&$ciniki, $tnid, $
                 } elseif( $entry['status'] == 70 ) {
                     $color = 'FFDDDD';
                 } elseif( $entry['status'] == 90 ) {
-                    $color = 'EEEEEE';
+//                    $color = 'EEEEEE';
+                    $color = 'FFDDDD';
                 }
                 if( $color != '' ) {
                     $objPHPExcelWorksheet->getStyle("A{$row}:G{$row}")->applyFromArray(
