@@ -11952,7 +11952,7 @@ function ciniki_musicfestivals_main() {
                 case '30': return 'statusorange';
                 case '50': return 'statusgreen';
                 case '70': return 'statusred';
-                case '90': return 'statusgrey';
+                case '90': return 'statusred';
             }
         }
     }
