@@ -3162,8 +3162,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 foreach($festival['members'] as $k => $v) {
                     $festival['members_ids'][] = $v['id'];
                     $festival['members'][$k]['num_registrations'] = '';
-                    if( isset($reg_counts[$k]) ) {
-                        $festival['members'][$k]['num_registrations'] = $reg_counts[$k];
+                    if( isset($reg_counts[$v['id']]) ) {
+                        $festival['members'][$k]['num_registrations'] = $reg_counts[$v['id']];
                     }
                     $festival['members'][$k]['admins'] = '';
                     if( isset($v['customers']) ) {
