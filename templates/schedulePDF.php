@@ -148,6 +148,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         . "timeslots.name AS timeslot_name, "
         . "timeslots.groupname AS timeslot_groupname, "
         . "timeslots.description, "
+        . "timeslots.start_num, "
         . "registrations.id AS reg_id, ";
     if( isset($festival['schedule-include-pronouns']) && $festival['schedule-include-pronouns'] == 'yes' ) {
         $strsql .= "registrations.pn_display_name AS display_name, "
@@ -272,7 +273,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
             'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'groupname'=>'timeslot_groupname', 'time'=>'slot_time_text', 
-                'description', 'class_code', 'class_name', 'category_name', 'syllabus_section_name',
+                'description', 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 'start_num',
                 ),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
@@ -843,12 +844,19 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 if( isset($timeslot['registrations']) && count($timeslot['registrations']) > 0 ) {
                     $pdf->SetFont('', '', '12');
                     $pdf->SetCellPadding(0);
+                    $num = 1;
+                    if( isset($timeslot['start_num']) && $timeslot['start_num'] > 1 ) {
+                        $num = $timeslot['start_num'];
+                    }
                     foreach($timeslot['registrations'] as $rid => $reg) {
                         $row = array();
                         if( !isset($args['names']) ||  $args['names'] == 'private' ) {
                             $row['name'] = $reg['name'];
                         } else {
                             $row['name'] = $reg['public_name'];
+                        }
+                        if( isset($args['competitor_numbering']) && $args['competitor_numbering'] == 'yes' ) {
+                            $row['name'] = $num . '. ' . $row['name'];
                         }
                         $row['timeslot_time'] = $reg['timeslot_time'];
                         $row['participation'] = $reg['participation'];
@@ -892,6 +900,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                         }
                         $reg_list[] = $row;
                         $reg_list_height += $row['height'];
+                        $num++;
                     }
                     $pdf->SetCellPadding(1);
                     $pdf->SetCellPaddings(1,2,1,1);

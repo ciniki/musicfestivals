@@ -369,6 +369,9 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'no' => 'No',
                     'yes' => 'Yes',
                     )),
+            'competitor-numbering' => array('label'=>'Competitor Numbering', 'type'=>'toggle', 'default'=>'no', 
+                'toggles'=>array('no'=>'No', 'yes'=>'Yes'),
+                ), 
             'names' => array('label'=>'Full Names', 'type'=>'toggle', 'default'=>'public',
                 'toggles'=>array(
                     'public' => 'No',

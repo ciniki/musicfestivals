@@ -155,6 +155,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             'section_page_break' => isset($s['section_page_break']) ? $s['section_page_break'] : '',
             'provincials_info' => 'yes',
             'top_sponsors' => 'yes',
+            'competitor_numbering' => isset($s['competitor-numbering']) ? $s['competitor-numbering'] : '',
             'bottom_sponsors' => 'yes',
             'section_page_break' => isset($s['section_page_break']) ? $s['section_page_break'] : '',
             ));
@@ -199,6 +200,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             'video_urls' => isset($s['video_urls']) ? $s['video_urls'] : '',
             'section_page_break' => isset($s['section_page_break']) ? $s['section_page_break'] : '',
             'provincials_info' => 'yes',
+            'competitor_numbering' => isset($s['competitor-numbering']) ? $s['competitor-numbering'] : '',
             'top_sponsors' => 'yes',
             'bottom_sponsors' => 'yes',
             'section_page_break' => isset($s['section_page_break']) ? $s['section_page_break'] : '',
@@ -295,6 +297,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "timeslots.name AS timeslot_name, "
         . "timeslots.groupname AS timeslot_groupname, "
         . "timeslots.flags AS timeslot_flags, "
+        . "timeslots.start_num, "
         . "timeslots.description, "
         . "timeslots.results_notes AS timeslot_results_notes, "
         . "timeslots.results_video_url AS timeslot_results_video_url, "
@@ -420,7 +423,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 ),
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
-            'fields'=>array('id'=>'timeslot_id', 'flags'=>'timeslot_flags', 'title'=>'timeslot_name', 'groupname'=>'timeslot_groupname', 'time'=>'slot_time_text', 'synopsis'=>'description', 
+            'fields'=>array('id'=>'timeslot_id', 'flags'=>'timeslot_flags', 'title'=>'timeslot_name', 'groupname'=>'timeslot_groupname', 'time'=>'slot_time_text', 'synopsis'=>'description', 'start_num', 
                 'class_code', 'class_name', 'category_name', 'section_name',
                 'results_notes'=>'timeslot_results_notes', 'results_video_url'=>'timeslot_results_video_url',
                 ),
@@ -571,7 +574,13 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                             return ($a['reg_finals_sort_time'] < $b['reg_finals_sort_time']) ? -1 : 1;
                             });
                     }
-                    foreach($timeslot['registrations'] as $registration) {
+                    $num = 1;
+                    if( isset($timeslot['start_num']) && $timeslot['start_num'] > 1 ) {
+                        $num = $timeslot['start_num'];
+                    }
+                    foreach($timeslot['registrations'] as $rid => $registration) {
+                        $registration['competitor_number'] = $num;
+                        $division['timeslots'][$tid]['registrations'][$rid]['competitor_number'] = $num++;
                         //
                         // Setup name
                         //
@@ -617,6 +626,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                                     'name' => $name,
                                     'titles' => $titles,
                                     'videos' => $video_links,
+                                    'competitor_number' => "{$registration['competitor_number']}.",
                                     'timeslot_time' => $registration['finals_timeslot_time'],
                                     'member_name' => $registration['member_name'],
                                     'mark' => $registration['finals_mark'],
@@ -629,6 +639,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                                     'name' => $name,
                                     'titles' => $titles,
                                     'videos' => $video_links,
+                                    'competitor_number' => "{$registration['competitor_number']}.",
                                     'timeslot_time' => $registration['timeslot_time'],
                                     'member_name' => $registration['member_name'],
                                     'mark' => $registration['mark'],
@@ -643,6 +654,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                                 $division['timeslots'][$tid]['items'][] = array(
                                     'name' => $name,
                                     'timeslot_time' => $registration['finals_timeslot_time'],
+                                    'competitor_number' => "{$registration['competitor_number']}.",
                                     'member_name' => $registration['member_name'],
                                     'mark' => $registration['finals_mark'],
                                     'placement' => $registration['finals_placement']
@@ -652,6 +664,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                             } else {
                                 $division['timeslots'][$tid]['items'][] = array(
                                     'name' => $name,
+                                    'competitor_number' => "{$registration['competitor_number']}.",
                                     'timeslot_time' => $registration['timeslot_time'],
                                     'member_name' => $registration['member_name'],
                                     'mark' => $registration['mark'],
@@ -699,15 +712,12 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             }
 
             if( isset($s['results-only']) && $s['results-only'] == 'yes' ) {
+                $columns = array();
                 if( isset($s['placement']) && $s['placement'] == 'yes' ) {
-                    $columns = array(
-                        array('label'=>'Placement', 'field'=>'placement', 'class'=>''),
-                        array('label'=>'Name', 'field'=>'name', 'class'=>''),
-                        );
+                    $columns[] = array('label'=>'Placement', 'field'=>'placement', 'class'=>'');
+                    $columns[] = array('label'=>'Name', 'field'=>'name', 'class'=>'');
                 } else {
-                    $columns = array(
-                        array('label'=>'Name', 'field'=>'name', 'class'=>''),
-                        );
+                    $columns[] = array('label'=>'Name', 'field'=>'name', 'class'=>'');
                 }
                 if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
                     $columns[] = array('label'=>'Home Festival', 'field'=>'member_name', 'fold-label'=>'Home Festival:', 'class'=>'');
@@ -732,10 +742,12 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     'details-columns' => $columns,
                     );  
             } elseif( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
-                $columns = array(
-                    array('label'=>'Time', 'fold-label'=>'Time:', 'field'=>'timeslot_time', 'class'=>'aligntop'),
-                    array('label'=>'Name', 'fold-label'=>'Name:', 'field'=>'name', 'class'=>'aligntop'),
-                    );
+                $columns = array();
+                if( isset($s['competitor-numbering']) && $s['competitor-numbering'] == 'yes' ) {
+                    $columns[] = array('label'=>'#', 'field'=>'competitor_number', 'class'=>'');
+                }
+                $columns[] = array('label'=>'Time', 'fold-label'=>'Time:', 'field'=>'timeslot_time', 'class'=>'aligntop');
+                $columns[] = array('label'=>'Name', 'fold-label'=>'Name:', 'field'=>'name', 'class'=>'aligntop');
                 if( isset($s['titles']) && $s['titles'] == 'yes' ) {
                     $columns[] = array('label'=>'Titles', 'fold-label'=>'Titles:', 'field'=>'titles', 'class'=>'aligntop');
                 }
@@ -850,9 +862,11 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     }
                 }
             } else {
-                $columns = array(
-                    array('label'=>'Name', 'field'=>'name', 'class'=>''),
-                    );
+                $columns = array();
+                if( isset($s['competitor-numbering']) && $s['competitor-numbering'] == 'yes' ) {
+                    $columns[] = array('label'=>'#', 'field'=>'competitor_number', 'class'=>'');
+                }
+                $columns[] = array('label'=>'Name', 'field'=>'name', 'class'=>'');
                 if( isset($s['titles']) && $s['titles'] == 'yes' ) {
                     $columns[] = array('label'=>'Titles', 'field'=>'titles', 'class'=>'');
                 }
