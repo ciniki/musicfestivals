@@ -94,6 +94,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         . "timeslots.name AS timeslot_name, "
 //        . "IF(timeslots.name='', IFNULL(class1.name, ''), timeslots.name) AS timeslot_name, "
         . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
+        . "timeslots.groupname, "
         . "timeslots.description, "
         . "registrations.id AS reg_id, "
         . "registrations.uuid AS reg_uuid, "
@@ -202,7 +203,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 )),
         array('container'=>'timeslots', 'fname'=>'timeslot_uuid', 
             'fields'=>array('id'=>'timeslot_id', 'permalink'=>'timeslot_uuid', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 
-                'description', 
+                'description', 'groupname',
                 )),
         array('container'=>'registrations', 'fname'=>'reg_uuid', 
             'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name', 
@@ -417,7 +418,9 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             } else {
                 $class_name = $registration['class_name']; 
             }
-            
+            if( isset($timeslot['groupname']) && $timeslot['groupname'] != '' ) {
+                $class_name .= ' - ' . $timeslot['groupname']; 
+            }
 
             $section = array(    
                 'id' => 'section-' . $registration['id'],
@@ -760,7 +763,26 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                     if( isset($timeslot['registrations']) ) {
                         foreach($timeslot['registrations'] as $rid => $registration) {
                             if( (!isset($division['timeslots'][$tid]['name']) || $division['timeslots'][$tid]['name'] == '') ) {
-                                $division['timeslots'][$tid]['name'] = $division['date'] . ' - ' . $timeslot['time'];
+                                if( isset($festival['comments-class-format']) 
+                                    && $festival['comments-class-format'] == 'code-section-category-class' 
+                                    ) {
+                                    $division['timeslots'][$tid]['name'] = $registration['class_code'] . ' - ' . $registration['syllabus_section_name'] . ' - ' . $registration['category_name'] . ' - ' . $registration['class_name']; 
+                                } elseif( isset($festival['comments-class-format']) 
+                                    && $festival['comments-class-format'] == 'section-category-class' 
+                                    ) {
+                                    $division['timeslots'][$tid]['name'] = $registration['syllabus_section_name'] . ' - ' . $registration['category_name'] . ' - ' . $registration['class_name']; 
+                                } elseif( isset($festival['comments-class-format']) 
+                                    && $festival['comments-class-format'] == 'code-category-class' 
+                                    ) {
+                                    $division['timeslots'][$tid]['name'] = $registration['class_code'] . ' - ' . $registration['category_name'] . ' - ' . $registration['class_name']; 
+                                } elseif( isset($festival['comments-class-format']) 
+                                    && $festival['comments-class-format'] == 'category-class' 
+                                    ) {
+                                    $division['timeslots'][$tid]['name'] = $registration['category_name'] . ' - ' . $registration['class_name']; 
+                                } else {
+                                    $division['timeslots'][$tid]['name'] = $registration['class_name']; 
+                                }
+//                                $division['timeslots'][$tid]['name'] = $division['date'] . ' - ' . $timeslot['time'];
                             }
                             if( isset($festival['comments-mark-adjudicator']) 
                                 && $festival['comments-mark-adjudicator'] == 'yes' 
@@ -778,13 +800,16 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                     } else {
                         $timeslot['registrations'] = array();
                     }
+                    if( isset($timeslot['groupname']) && $timeslot['groupname'] != '' ) {
+                        $division['timeslots'][$tid]['name'] .= ' - ' . $timeslot['groupname']; 
+                    }
                     $division['timeslots'][$tid]['status'] = $num_completed . ' of ' . count($timeslot['registrations']);
                     $division['timeslots'][$tid]['actions'] = "<a class='button' href='{$base_url}/{$division['uuid']}/{$timeslot['permalink']}'>Open</a>";
                 }
                 if( $division['section_name'] != '' 
                     && strncmp($division['section_name'], $division['name'], strlen($division['section_name']) != 0 )
                     ) {
-                    $division['name'] = $division['category_name'] . ' - ' . $division['name'];
+//                    $division['name'] = $division['category_name'] . ' - ' . $division['name'];
                 }
                 
                 $blocks[] = array(
