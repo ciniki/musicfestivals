@@ -3578,6 +3578,13 @@ function ciniki_musicfestivals_main() {
                     }
                 }
             }
+            if( rsp.festival.schedule_divisions != null ) {
+                for(var i in rsp.festival.schedule_divisions) {
+                    if( rsp.festival.schedule_divisions[i].id == p.scheduledivision_id ) {
+                        p.sections.schedule_timeslots.label = rsp.festival.schedule_divisions[i].name;
+                    }
+                }
+            }
             if( rsp.festival.stats_members_headerValues != null ) {
                 p.sections.stats_members.num_cols = rsp.festival.stats_members_headerValues.length;
                 p.sections.stats_members.headerValues = rsp.festival.stats_members_headerValues;
