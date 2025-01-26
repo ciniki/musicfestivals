@@ -2355,6 +2355,97 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         }
         
         //
+        // Get the list of teachers, and the number of registrations they are teaching
+        //
+        if( isset($args['schedule']) && $args['schedule'] == 'teachers' ) {
+            $strsql = "SELECT customers.id, "
+                . "customers.display_name AS name, "
+                . "COUNT(registrations.id) AS num_registrations "
+                . "FROM ciniki_musicfestival_registrations AS registrations "
+                . "INNER JOIN ciniki_customers AS customers ON ("
+                    . "("
+                        . "registrations.teacher_customer_id = customers.id "
+                        . "OR registrations.teacher2_customer_id = customers.id "
+                        . ") "
+                    . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND registrations.teacher_customer_id > 0 "  
+                . "AND registrations.timeslot_id > 0 "  // Scheduled registrations only
+                . "AND registrations.participation <> 1 "   // Live only
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "GROUP BY customers.id "
+                . "ORDER BY name "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'teachers', 'fname'=>'id', 'fields'=>array('id', 'name', 'num_registrations')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.915', 'msg'=>'Unable to load teachers', 'err'=>$rc['err']));
+            }
+            $festival['schedule_teachers'] = isset($rc['teachers']) ? $rc['teachers'] : array();
+
+            //
+            // if an teacher is specified
+            //
+            if( isset($args['teacher_customer_id']) && $args['teacher_customer_id'] > 0 ) {
+                $strsql = "SELECT registrations.id, "
+                    . "registrations.display_name, "
+                    . "classes.code AS class_code, "
+                    . "classes.name AS class_name, ";
+                if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+                    $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS slot_time_text, "
+                        . "registrations.timeslot_time AS slot_sort_time, ";
+                } else {
+                    $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
+                        . "timeslots.slot_time AS slot_sort_time, ";
+                }
+                $strsql .= "DATE_FORMAT(divisions.division_date, '%b %e') AS division_date_text, "
+                    . "IFNULL(locations.name, '') AS location_name "
+                    . "FROM ciniki_musicfestival_registrations AS registrations "
+                    . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+                        . "registrations.timeslot_id = timeslots.id "
+                        . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+                        . "timeslots.sdivision_id = divisions.id "
+                        . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
+                        . "divisions.location_id = locations.id "
+                        . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+                        . "registrations.class_id = classes.id "
+                        . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "AND ("
+                        . "registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' "
+                        . "OR registrations.teacher2_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' "
+                        . ") "
+                    . "AND registrations.timeslot_id > 0 "  // Scheduled registrations only
+                    . "AND registrations.participation <> 1 "   // Live only
+                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "ORDER BY divisions.division_date, slot_sort_time, locations.name, registrations.display_name "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'registrations', 'fname'=>'id', 
+                        'fields'=>array('id', 'display_name', 'slot_time_text', 'division_date_text', 'location_name',
+                            'class_code', 'class_name'
+                            ),
+                        ),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.916', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+                }
+                $festival['teacher_schedule'] = isset($rc['registrations']) ? $rc['registrations'] : array();
+            }
+        }
+
+        //
         // Get the list of accompanists, and the number of registrations they are accompanying
         //
         if( isset($args['schedule']) && $args['schedule'] == 'accompanists' ) {
