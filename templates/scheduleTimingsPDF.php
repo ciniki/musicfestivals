@@ -217,7 +217,7 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
             'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'groupname', 'slot_time_text', 'slot_seconds', 'start_num'),
             ),
-        array('container'=>'registrations', 'fname'=>'title1', 
+        array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'display_name', 
                 'accompanist_name', 'teacher_name', 'teacher2_name',
                 'timeslot_sequence', 
@@ -406,7 +406,6 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
                 if( $timeslot['groupname'] != '' ) {
                     $name .= ' - ' . $timeslot['groupname'];
                 }
-
                 $name_lh = $pdf->getStringHeight($w[1], $name);
 
                 $perf_time = 0;
