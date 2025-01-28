@@ -499,6 +499,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "classes.min_titles, "
                 . "classes.max_titles, "
                 . "classes.synopsis, "
+                . "classes.provincials_code, "
                 . "classes.schedule_seconds, "
                 . "classes.schedule_at_seconds, "
                 . "classes.schedule_ata_seconds, ";
@@ -574,7 +575,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         'code', 'name', 'permalink', 'sequence', 'flags', 'feeflags', 'titleflags',
                         'earlybird_fee', 'fee', 'virtual_fee', 'plus_fee', 'earlybird_plus_fee',
                         'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 
-                        'synopsis', 'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds', 'levels', 'trophies',
+                        'synopsis', 'provincials_code',
+                        'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds', 'levels', 'trophies',
                         'num_registrations', 'perf_time',
                         ),
                     'dlists'=>array('levels'=>', ', 'trophies'=>', '),

@@ -3189,11 +3189,11 @@ function ciniki_musicfestivals_main() {
             this.sections.classes.num_cols = 4;
         }
         else if( this.sections._stabs.selected == 'marking' ) {
-            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Mark', 'Placement', 'Level'];
-            this.sections.classes.cellClasses = ['', '', '', '', '', ''];
-            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'mark', 'placement', 'level'];
-            this.sections.classes.sortTypes = ['text', 'text', 'text', 'text', 'text', 'text'];
-            this.sections.classes.num_cols = 6;
+            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Mark', 'Placement', 'Level', 'Provincials'];
+            this.sections.classes.cellClasses = ['', '', '', '', '', '', ''];
+            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'mark', 'placement', 'level', 'provincials_code'];
+            this.sections.classes.sortTypes = ['text', 'text', 'text', 'text', 'text', 'text', 'text'];
+            this.sections.classes.num_cols = 7;
         }
         else if( this.sections._stabs.selected == 'trophies' ) {
             this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Trophies & Awards'];
@@ -5554,6 +5554,7 @@ function ciniki_musicfestivals_main() {
             'flags9':{'label':'Marking', 'type':'flagspiece', 'mask':0x0700, 'field':'flags', 'join':'yes', 'none':'yes',
                 'flags':{'9':{'name':'Mark'}, '10':{'name':'Placement'}, '11':{'name':'Level'}},
                 },
+            'provincials_code':{'label':'Provincials Code', 'type':'text'},
             }},
         'scheduling':{'label':'Scheduling Options', 'aside':'yes', 'fields':{
             'flags19':{'label':'Schedule Time', 'type':'flagspiece', 'mask':0x0C0000, 'field':'flags', 'join':'yes', 'toggle':'yes',
