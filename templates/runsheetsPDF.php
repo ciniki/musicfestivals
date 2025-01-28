@@ -603,7 +603,18 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     //$name = $timeslot['class_code'] . ' - ' . $timeslot['class_name'] . ' - ' . $timeslot['name'];
                 } elseif( $timeslot['name'] == '' ) {
                     // FIXME: Add check for joined section/category/class
-                    $name = $timeslot['class_code'] . ' - ' . $timeslot['class_name'];
+                    if( isset($festival['runsheets-class-format']) 
+                        && $festival['runsheets-class-format'] == 'code-section-category-class' 
+                        ) {
+                        $name = $timeslot['class_code'] . ' - ' . $timeslot['syllabus_section_name'] . ' - ' . $timeslot['category_name'] . ' - ' . $timeslot['class_name']; 
+                    } elseif( isset($festival['runsheets-class-format']) 
+                        && $festival['runsheets-class-format'] == 'code-category-class' 
+                        ) {
+                        $name = $timeslot['class_code'] . ' - ' . $timeslot['category_name'] . ' - ' . $timeslot['class_name']; 
+                    } else {
+                        $name = $timeslot['class_code'] . ' - ' . $timeslot['class_name']; 
+                    }
+                    // $name = $timeslot['class_code'] . ' - ' . $timeslot['class_name'];
                 } elseif( !isset($timeslot['registrations']) || count($timeslot['registrations']) == 0 ) {
                     $name = $division['name'] . ' - ' . $timeslot['name'];
                 } else {

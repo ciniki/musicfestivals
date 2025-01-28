@@ -809,11 +809,11 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             $prev_time = '';
             foreach($division['timeslots'] as $timeslot) {
                 $name = $timeslot['name'];
-                if( $name == '' && $timeslot['class_name'] != '' ) {
-                    $name = $timeslot['class_name'];
-                }
-                if( isset($festival['schedule-separate-classes']) && $festival['schedule-separate-classes'] == 'yes' 
-                    && $timeslot['class_code'] != '' 
+//                if( $name == '' && $timeslot['class_name'] != '' ) {
+//                    $name = $timeslot['class_name'];
+//                }
+                if( $name == '' 
+                    || (isset($festival['schedule-separate-classes']) && $festival['schedule-separate-classes'] == 'yes' && $timeslot['class_code'] != '' )
                     ) {
                     if( isset($festival['schedule-class-format']) 
                         && $festival['schedule-class-format'] == 'code-section-category-class' 
