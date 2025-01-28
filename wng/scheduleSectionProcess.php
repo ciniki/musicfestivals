@@ -528,7 +528,18 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 if( $name == '' && $timeslot['class_name'] != '' 
                     && !ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) 
                     ) {
-                    $name = $timeslot['class_name'];
+//                    $name = $timeslot['class_name'];
+                    if( isset($s['class-format']) && $s['class-format'] == 'code-section-category-class' ) {
+                        $name = $timeslot['class_code'] . ' - ' . $timeslot['section_name'] . ' - ' . $timeslot['category_name'] . ' - ' . $timeslot['class_name']; 
+                    } elseif( isset($s['class-format']) && $s['class-format'] == 'section-category-class' ) {
+                        $name = $timeslot['section_name'] . ' - ' . $timeslot['category_name'] . ' - ' . $timeslot['class_name']; 
+                    } elseif( isset($s['class-format']) && $s['class-format'] == 'category-class' ) {
+                        $name = $timeslot['category_name'] . ' - ' . $timeslot['class_name']; 
+                    } elseif( isset($s['class-format']) && $s['class-format'] == 'code-category-class' ) {
+                        $name = $timeslot['class_code'] . ' - ' . $timeslot['category_name'] . ' - ' . $timeslot['class_name']; 
+                    } else {
+                        $name = $timeslot['class_code'] . ' - ' . $timeslot['class_name']; 
+                    }
                 }
                 if( isset($s['separate-classes']) && $s['separate-classes'] == 'yes' && $timeslot['class_code'] != '' ) {
                     if( isset($s['class-format']) && $s['class-format'] == 'code-section-category-class' ) {
