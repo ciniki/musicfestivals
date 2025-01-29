@@ -38,35 +38,14 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
     $intl_timezone = $rc['settings']['intl-default-timezone'];
 
     //
-    // Load the festival
+    // Load the festival settings
     //
-    $strsql = "SELECT ciniki_musicfestivals.id, "
-        . "ciniki_musicfestivals.name, "
-        . "ciniki_musicfestivals.permalink, "
-        . "ciniki_musicfestivals.start_date, "
-        . "ciniki_musicfestivals.end_date, "
-        . "ciniki_musicfestivals.primary_image_id, "
-        . "ciniki_musicfestivals.description, "
-        . "ciniki_musicfestivals.document_logo_id, "
-        . "ciniki_musicfestivals.document_header_msg, "
-        . "ciniki_musicfestivals.document_footer_msg "
-        . "FROM ciniki_musicfestivals "
-        . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND ciniki_musicfestivals.id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'festivals', 'fname'=>'id', 
-            'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'primary_image_id', 'description', 
-                'document_logo_id', 'document_header_msg', 'document_footer_msg')),
-        ));
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $tnid, $args['festival_id']);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.186', 'msg'=>'Festival not found', 'err'=>$rc['err']));
+        return $rc;
     }
-    if( !isset($rc['festivals'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.108', 'msg'=>'Unable to find Festival'));
-    }
-    $festival = $rc['festivals'][0];
+    $festival = $rc['festival'];
 
     if( !isset($args['trophies']) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.690', 'msg'=>'No trophies specified'));
@@ -210,13 +189,12 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
 
     $prev_category = '';
     foreach($trophies as $trophy) {
-       
         if( $prev_category != $trophy['category'] && $trophy['category'] != '' ) {
             $pdf->SetCellPadding(4);
             $pdf->SetFont('helvetica', 'B', 16);
             $lh = $pdf->getStringHeight(180, $trophy['category']);
             $prev_category = $trophy['category'];
-            if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 35 ) ) {
+            if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 55 ) ) {
                 $pdf->AddPage();
             }
             $pdf->MultiCell(180, 0, $trophy['category'], 0, 'C', 1, 1);
@@ -231,11 +209,57 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
             $pdf->AddPage();
         }
 
-        $pdf->SetFont('helvetica', 'B', 12);
-        $pdf->MultiCell(180, 0, $trophy['name'], 0, 'L', 0, 1);
+        $pdf->SetFont('helvetica', 'B', 14);
+        $pdf->MultiCell(180, 0, $trophy['name'], 'B', 'L', 0, 1);
         $pdf->SetFont('helvetica', '', 12);
-        $pdf->MultiCell(180, 0, $trophy['criteria'], 0, 'L', 0, 1);
-        $pdf->Ln(5);
+        if( $trophy['criteria'] != '' ) {
+            $pdf->MultiCell(180, 0, $trophy['criteria'], 0, 'L', 0, 1);
+        }
+        $pdf->Ln(3);
+
+        //
+        // Output the classes
+        //
+        if( isset($trophy['classes']) ) {
+            foreach($trophy['classes'] as $class) {
+                if( isset($festival['runsheets-class-format']) 
+                    && $festival['runsheets-class-format'] == 'code-section-category-class' 
+                    ) {
+                    $name = "{$class['code']} - {$class['section_name']} - {$class['category_name']} - {$class['name']}";
+                } elseif( isset($festival['runsheets-class-format']) 
+                    && $festival['runsheets-class-format'] == 'code-category-class' 
+                    ) {
+                    $name = "{$class['code']} - {$class['category_name']} - {$class['name']}";
+                } else {
+                    $name = "{$class['code']} - {$class['name']}";
+                }
+                $pdf->SetFont('helvetica', 'B', 12);
+                $pdf->MultiCell(180, 0, $name, 0, 'L', 0, 1);
+                $pdf->SetFont('helvetica', '', 12);
+
+                if( isset($class['registrations']) ) {
+                    $w = [70,55,55];
+                    foreach($class['registrations'] as $reg) {
+                        $lh = $pdf->getStringHeight($w[0], $reg['display_name']);
+                        $date_time = '';
+                        if( $reg['division_date_text'] != '' && $reg['slot_time_text'] != '' ) {
+                            $date_time = $reg['division_date_text'] . ' @ ' . $reg['slot_time_text'];
+                        }
+                        if( $pdf->getStringHeight($w[1], $date_time) > $lh ) {
+                            $lh = $pdf->getStringHeight($w[1], $date_time);
+                        }
+                        if( $pdf->getStringHeight($w[2], $reg['location_name']) > $lh ) {
+                            $lh = $pdf->getStringHeight($w[2], $reg['location_name']);
+                        }
+
+                        $pdf->MultiCell($w[0], $lh, $reg['display_name'], 1, 'L', 0, 0);
+                        $pdf->MultiCell($w[1], $lh, $date_time, 1, 'L', 0, 0);
+                        $pdf->MultiCell($w[2], $lh, $reg['location_name'], 1, 'L', 0, 1);
+                        $pdf->Ln(3);
+                    }
+                }
+            }
+        }
     }
 
     return array('stat'=>'ok', 'pdf'=>$pdf, 'filename'=>$filename . '.pdf');

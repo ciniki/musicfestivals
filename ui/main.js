@@ -3062,7 +3062,7 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.festival.downloadTrophiesPDF = function(fid) {
-        M.api.openFile('ciniki.musicfestivals.trophyRegistrations', {'tnid':M.curTenantID, 'festival_id':fid, 'output':'pdf'});
+        M.api.openFile('ciniki.musicfestivals.trophyRegistrationsPDF', {'tnid':M.curTenantID, 'festival_id':fid});
     }
     this.festival.openInvoiceStatus = function(s) {
         this.lastY = 0;
