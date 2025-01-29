@@ -28,7 +28,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
     //
     // Check if schedule is displaying just live or just virtual
     //
-    $ipv_sql;
+    $ipv_sql = '';
     if( isset($s['ipv']) && $s['ipv'] == 'inperson' ) {
         $lv_word = 'Live ';
         $ipv_sql = "AND (registrations.participation = 0 OR registrations.participation = 2) ";
