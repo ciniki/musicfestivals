@@ -40,55 +40,14 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
     $intl_timezone = $rc['settings']['intl-default-timezone'];
 
     //
-    // Load the festival
+    // Load the festival settings
     //
-    $strsql = "SELECT ciniki_musicfestivals.id, "
-        . "ciniki_musicfestivals.name, "
-        . "ciniki_musicfestivals.permalink, "
-        . "ciniki_musicfestivals.start_date, "
-        . "ciniki_musicfestivals.end_date, "
-        . "ciniki_musicfestivals.flags, "
-        . "ciniki_musicfestivals.primary_image_id, "
-        . "ciniki_musicfestivals.description, "
-        . "ciniki_musicfestivals.document_logo_id, "
-        . "ciniki_musicfestivals.document_header_msg, "
-        . "ciniki_musicfestivals.document_footer_msg, "
-        . "ciniki_musicfestivals.comments_grade_label, "
-        . "ciniki_musicfestivals.comments_footer_msg "
-        . "FROM ciniki_musicfestivals "
-        . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND ciniki_musicfestivals.id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'festivals', 'fname'=>'id', 
-            'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'flags', 'primary_image_id', 'description', 
-                'document_logo_id', 'document_header_msg', 'document_footer_msg',
-                'comments_grade_label', 'comments_footer_msg',
-                )),
-        ));
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $tnid, $args['festival_id']);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.109', 'msg'=>'Festival not found', 'err'=>$rc['err']));
+        return $rc;
     }
-    if( !isset($rc['festivals'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.110', 'msg'=>'Unable to find Festival'));
-    }
-    $festival = $rc['festivals'][0];
-
-    //
-    // Load the settings for the festival
-    //
-    $strsql = "SELECT detail_key, detail_value "
-        . "FROM ciniki_musicfestival_settings "
-        . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
-    $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
-    if( $rc['stat'] != 'ok' ) { return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.743', 'msg'=>'Unable to load settings', 'err'=>$rc['err'])); }
-    foreach($rc['settings'] as $k => $v) {
-        $festival[$k] = $v;
-    }
+    $festival = $rc['festival'];
 
     //
     // Load adjudicators
@@ -164,6 +123,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "registrations.movements7, "
             . "registrations.movements8, "
             . "registrations.participation, "
+            . "IFNULL(timeslots.groupname, '') AS timeslot_groupname, "
             . "IFNULL(TIME_FORMAT(timeslots.slot_time, '%l:%i %p'), '') AS timeslot_time, "
             . "IFNULL(DATE_FORMAT(divisions.division_date, '%b %D, %Y'), '') AS timeslot_date, "
             . "IFNULL(classes.code, '') AS class_code, "
@@ -222,6 +182,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "divisions.name AS division_name, "
             . "timeslots.id AS timeslot_id, "
             . "timeslots.name AS timeslot_name, "
+            . "timeslots.groupname AS timeslot_groupname, "
             . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS timeslot_time, "
             . "DATE_FORMAT(divisions.division_date, '%b %D, %Y') AS timeslot_date, "
             . "timeslots.name AS timeslot_name, "
@@ -323,6 +284,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
         array('container'=>'divisions', 'fname'=>'division_id', 'fields'=>array('id'=>'division_id', 'name'=>'division_name')),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
             'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'class_name', 'description', 
+                'groupname'=>'timeslot_groupname',
             )),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 
@@ -562,6 +524,9 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         $class_name = $reg['category_name'] . ' - ' . $reg['class_name']; 
                     } else {
                         $class_name = $reg['class_name']; 
+                    }
+                    if( $timeslot['groupname'] != '' ) {
+                        $class_name .= ' - ' . $timeslot['groupname'];
                     }
                     $pdf->SetFont('helvetica', '', 12);
                     $lh = $pdf->getStringHeight($w[1], $class_name);
