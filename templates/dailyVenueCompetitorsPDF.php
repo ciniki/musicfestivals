@@ -55,8 +55,8 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
     $strsql = "SELECT ssections.id AS section_id, "
         . "ssections.name AS section_name, "
         . "divisions.id AS division_id, "
-        . "divisions.location_id, "
-//        . "CONCAT_WS('-', divisions.address, divisions.division_date) AS location_id, "
+//        . "divisions.location_id, "
+        . "CONCAT_WS('-', divisions.location_id, divisions.division_date) AS location_id, "
         . "locations.name AS location_name, " 
         . "divisions.name AS division_name, "
         . "divisions.address, "
@@ -144,7 +144,7 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
     if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
         $strsql .= "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
     }
-    $strsql .= "ORDER BY divisions.location_id, locations.name, competitors.last, competitors.first, competitors.name, registrations.display_name, timeslots.slot_time "
+    $strsql .= "ORDER BY locations.name, divisions.division_date, competitors.last, competitors.first, competitors.name, registrations.display_name, timeslots.slot_time "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -214,19 +214,22 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
                     }
                 }
 
-                $this->Ln(8);
+                $this->Ln(5);
                 $this->SetFont('helvetica', 'B', 14);
                 if( $img_width > 0 ) {
                     $this->Cell($img_width, 10, '', 0);
                 }
                 $this->setX($this->left_margin + $img_width);
-                $this->Cell(180-$img_width, 12, $this->header_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
-                $this->Ln(7);
+//                $this->Cell(180-$img_width, 10, $this->header_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
+                $this->MultiCell(180-$img_width, 0, $this->header_title, 0, 'R', 0, 1);
+//                $this->Ln(7);
 
                 $this->SetFont('helvetica', '', 14);
                 $this->setX($this->left_margin + $img_width);
-                $this->Cell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
-                $this->Ln(7);
+                //$this->Cell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
+                $this->MultiCell(180-$img_width, 0, $this->header_sub_title, 0, 'R', 0, 1);
+//                $this->MultiCell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
+//                $this->Ln(7);
 
                 $this->SetFont('helvetica', '', 12);
                 $this->setX($this->left_margin + $img_width);
