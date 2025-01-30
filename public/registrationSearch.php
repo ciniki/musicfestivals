@@ -168,6 +168,7 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
 //            . "OR teachers.last LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
 //            . "OR teachers.last LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
         . ") "
+        . "ORDER BY classes.code, registrations.display_name, registrations.id "
         . "";
     if( isset($args['limit']) && is_numeric($args['limit']) && $args['limit'] > 0 ) {
         $strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";

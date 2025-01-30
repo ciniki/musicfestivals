@@ -95,20 +95,22 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
         . "categories.name AS category_name, "
         . "sections.name AS syllabus_section_name "
         . "FROM ciniki_musicfestival_schedule_sections AS ssections "
-        . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+        . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
             . "ssections.id = divisions.ssection_id " 
             . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
-            . "divisions.location_id = locations.id "
-            . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+        . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
             . "divisions.id = timeslots.sdivision_id " 
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
-            . "timeslots.id = registrations.timeslot_id "
+        . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+            . "timeslots.id = registrations.timeslot_id ";
+    if( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
+        $strsql .= "AND registrations.participation = 1 ";
+    } else {    // default to live only
+        $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";
+    }
+    $strsql .= "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
@@ -122,6 +124,10 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
         . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
             . "categories.section_id = sections.id " 
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
+            . "divisions.location_id = locations.id "
+            . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ("
             . "( "
@@ -137,11 +143,6 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
         . "";
     if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
         $strsql .= "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
-    }
-    if( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
-        $strsql .= "AND registrations.participation = 1 ";
-    } else {    // default to live only
-        $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";
     }
     $strsql .= "ORDER BY divisions.location_id, locations.name, competitors.last, competitors.first, competitors.name, registrations.display_name, timeslots.slot_time "
         . "";
