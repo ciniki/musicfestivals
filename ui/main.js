@@ -4063,6 +4063,10 @@ function ciniki_musicfestivals_main() {
                     'code-section-category-class':'Code - Section - Category - Class',
                     'code-category-class':'Code - Category - Class',
                     }},
+                'certificates-use-group-numpeople':{'label':'Print for Each Group Member', 'type':'toggle', 'default':'yes', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
             }},
         '_syllabus':{'label':'Syllabus Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },

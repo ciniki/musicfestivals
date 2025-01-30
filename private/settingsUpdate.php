@@ -98,6 +98,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'comments-footer-msg',
         'certificates-include-pronouns',
         'certificates-class-format',
+        'certificates-use-group-numpeople',
         'age-restriction-msg',
         'waiver-general-title',
         'waiver-general-msg',
