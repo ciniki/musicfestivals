@@ -3971,6 +3971,10 @@ function ciniki_musicfestivals_main() {
                     'schedule':'Schedule',
                     'byclass':'By Class',
                     }},
+                'comments-live-adjudication-online':{'label':'Live Online Adjudications', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
             }},
         '_schedule_pdf':{'label':'Schedule PDF Default Options', 
             // These options can be changed on the download screen
