@@ -42,52 +42,14 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     $intl_timezone = $rc['settings']['intl-default-timezone'];
 
     //
-    // Load the festival
+    // Load the festival settings
     //
-    $strsql = "SELECT ciniki_musicfestivals.id, "
-        . "ciniki_musicfestivals.name, "
-        . "ciniki_musicfestivals.permalink, "
-        . "ciniki_musicfestivals.start_date, "
-        . "ciniki_musicfestivals.end_date, "
-        . "ciniki_musicfestivals.primary_image_id, "
-        . "ciniki_musicfestivals.description, "
-        . "ciniki_musicfestivals.document_logo_id, "
-        . "ciniki_musicfestivals.document_header_msg, "
-        . "ciniki_musicfestivals.document_footer_msg "
-        . "FROM ciniki_musicfestivals "
-        . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND ciniki_musicfestivals.id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'festivals', 'fname'=>'id', 
-            'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'primary_image_id', 'description', 
-                'document_logo_id', 'document_header_msg', 'document_footer_msg')),
-        ));
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $tnid, $args['festival_id']);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.718', 'msg'=>'Festival not found', 'err'=>$rc['err']));
+        return $rc;
     }
-    if( !isset($rc['festivals'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.719', 'msg'=>'Unable to find Festival'));
-    }
-    $festival = $rc['festivals'][0];
-
-    //
-    // Load the settings for the festival
-    //
-    $strsql = "SELECT detail_key, detail_value "
-        . "FROM ciniki_musicfestival_settings "
-        . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
-    $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.720', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
-    }
-    foreach($rc['settings'] as $k => $v) {
-        $festival[$k] = $v;
-    }
+    $festival = $rc['festival'];
 
     //
     // Load the adjudicators
@@ -266,7 +228,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'section_id', 
             'fields'=>array('id'=>'section_id', 'name'=>'section_name', 'sponsor_settings', 'provincial_settings', 'adjudicator_id'),
-            'unserialize'=>array('sponsor_settings', 'provincial_settings'),
+            'json'=>array('sponsor_settings', 'provincial_settings'),
             ),
         array('container'=>'divisions', 'fname'=>'division_id', 
             'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'location', 'adjudicator_id', 'adjudicator'),
@@ -301,11 +263,14 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         public $top_margin = 15;
         public $header_visible = 'yes';
         public $header_image = null;
+        public $header_sponsor_image = null;
         public $header_title = '';
         public $header_sub_title = '';
         public $header_msg = '';
         public $header_height = 0;      // The height of the image and address
         public $footer_visible = 'yes';
+        public $footer_image = null;
+        public $footer_image_height = 0;
         public $footer_msg = '';
         public $tenant_details = array();
 
@@ -318,40 +283,60 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 // but only to a maximum height of the header_height (set far below).
                 //
                 $img_width = 0;
-                if( $this->header_image != null ) {
-                    $height = $this->header_image->getImageHeight();
-                    $width = $this->header_image->getImageWidth();
-                    $image_ratio = $width/$height;
-                    $img_width = 50;
-                    $available_ratio = $img_width/$this->header_height;
-                    // Check if the ratio of the image will make it too large for the height,
-                    // and scaled based on either height or width.
-                    if( $available_ratio < $image_ratio ) {
-//                        $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, $img_width, 0, 'JPEG', '', 'L', 2, '150', '', false, false, 0);
-                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, $this->header_height-8, 'JPEG', '', 'L', 2, '150', '', false, false, 0, true);
-                    } else {
-                        $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-8, 'JPEG', '', 'L', 2, '150');
+                if( $this->header_image != null && $this->header_sponsor_image != null ) {
+                    $img_width = ($this->header_height-8)*2;
+                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, $this->header_height-8, 'JPEG', '', 'L', 0, '150', '', false, false, 0, true);
+                    $offset = $img_width - (($this->header_sponsor_image->getImageWidth()*($this->header_height-8))/$this->header_sponsor_image->getImageHeight());
+                    $this->Image('@'.$this->header_sponsor_image->getImageBlob(), $this->left_margin + $img_width + (180-($img_width*2)) + $offset, 10, $img_width, $this->header_height-8, 'JPEG', '', 'R', 0, '150', '', false, false, 0, true);
+                    $this->SetY(10);
+                    $this->SetX($this->left_margin + $img_width);
+                    $this->SetFont('helvetica', 'B', 20);
+                    $this->MultiCell(180-($img_width*2), 0, $this->header_title, 0, 'C', 0, 1);
+
+                    $this->SetFont('helvetica', 'B', 14);
+                    $this->setX($this->left_margin + $img_width);
+                    $this->MultiCell(180-($img_width*2), 0, $this->header_sub_title, 0, 'C', 0, 1);
+
+                    $this->SetFont('helvetica', 'B', 12);
+                    $this->setX($this->left_margin + $img_width);
+                    $this->MultiCell(180-($img_width*2), 0, $this->header_msg, 0, 'C', 0, 1);
+            
+                } else {
+                    if( $this->header_image != null ) {
+                        $height = $this->header_image->getImageHeight();
+                        $width = $this->header_image->getImageWidth();
+                        $image_ratio = $width/$height;
+                        $img_width = 50;
+                        $available_ratio = $img_width/$this->header_height;
+                        // Check if the ratio of the image will make it too large for the height,
+                        // and scaled based on either height or width.
+                        if( $available_ratio < $image_ratio ) {
+    //                        $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, $img_width, 0, 'JPEG', '', 'L', 2, '150', '', false, false, 0);
+                            $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, $this->header_height-8, 'JPEG', '', 'L', 2, '150', '', false, false, 0, true);
+                        } else {
+                            $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-8, 'JPEG', '', 'L', 2, '150');
+                        }
                     }
+
+                    $this->Ln(8);
+                    $this->SetFont('helvetica', 'B', 20);
+                    if( $img_width > 0 ) {
+                        $this->Cell($img_width, 10, '', 0);
+                    }
+                    $this->setX($this->left_margin + $img_width);
+                    $this->Cell(180-$img_width, 12, $this->header_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
+                    $this->Ln(7);
+
+                    $this->SetFont('helvetica', 'B', 14);
+                    $this->setX($this->left_margin + $img_width);
+                    $this->Cell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
+                    $this->Ln(6);
+
+                    $this->SetFont('helvetica', 'B', 12);
+                    $this->setX($this->left_margin + $img_width);
+                    $this->Cell(180-$img_width, 10, $this->header_msg, 0, false, 'R', 0, '', 0, false, 'M', 'M');
+                    $this->Ln(6);
                 }
-
-                $this->Ln(8);
-                $this->SetFont('helvetica', 'B', 20);
-                if( $img_width > 0 ) {
-                    $this->Cell($img_width, 10, '', 0);
-                }
-                $this->setX($this->left_margin + $img_width);
-                $this->Cell(180-$img_width, 12, $this->header_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
-                $this->Ln(7);
-
-                $this->SetFont('helvetica', 'B', 14);
-                $this->setX($this->left_margin + $img_width);
-                $this->Cell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
-                $this->Ln(6);
-
-                $this->SetFont('helvetica', 'B', 12);
-                $this->setX($this->left_margin + $img_width);
-                $this->Cell(180-$img_width, 10, $this->header_msg, 0, false, 'R', 0, '', 0, false, 'M', 'M');
-                $this->Ln(6);
             } else {
                 // No header
             }
@@ -362,7 +347,13 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         public function Footer() {
             // Position at 15 mm from bottom
             if( $this->footer_visible == 'yes' ) {
-                $this->SetY(-15);
+                if( $this->footer_image != null ) {
+                    $this->SetY(-(15+$this->footer_image_height));
+                    $this->Image('@'.$this->footer_image->getImageBlob(), $this->left_margin, '', 180, '', 'JPEG', '', 'L', 2, '150', '', false, false, 0, true);
+                    $this->Ln($this->footer_image_height);
+                } else {
+                    $this->SetY(-15);
+                }
                 $this->SetFont('helvetica', '', 10);
                 $this->Cell(90, 10, $this->footer_msg, 0, false, 'L', 0, '', 0, false, 'T', 'M');
                 $this->SetFont('helvetica', '', 10);
@@ -437,7 +428,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 $this->SetFont('', '', '13');
             }
             // Check if enough room for division header and at least 1 timeslot
-            if( $this->getY() > $this->getPageHeight() - $h - 80) {
+            if( $this->getY() > ($this->getPageHeight() - $h - 80 - $this->footer_image_height)) {
                 $this->AddPage();
             } elseif( $this->getY() > 80 ) {
                 $this->Ln(5); 
@@ -592,6 +583,45 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         }
         if( !isset($section['top_sponsors_title']) ) {
             $section['top_sponsors_title'] = '';
+        }
+
+        $pdf->header_sponsor_image = null;
+        if( isset($section['pdfheader_sponsor_id']) && $section['pdfheader_sponsor_id'] > 0 ) {
+            //
+            // Get the sponsor image
+            //
+            $strsql = "SELECT id, name, url, image_id "
+                . "FROM ciniki_musicfestival_sponsors "
+                . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $section["pdfheader_sponsor_id"]) . "' "
+                . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+            $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'sponsors', 'fname'=>'id', 'fields'=>array('url', 'image_id')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.740', 'msg'=>'Unable to load sponsors', 'err'=>$rc['err']));
+            }
+            if( isset($rc['sponsors'][$section['pdfheader_sponsor_id']]['image_id']) 
+                && $rc['sponsors'][$section['pdfheader_sponsor_id']]['image_id'] > 0 
+                ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
+                $rc = ciniki_images_loadImage($ciniki, $tnid, $rc['sponsors'][$section['pdfheader_sponsor_id']]['image_id'], 'original');
+                if( $rc['stat'] == 'ok' ) {
+                    $pdf->header_sponsor_image = $rc['image'];
+                }
+            }
+        }
+        $pdf->footer_image = null;
+        $pdf->footer_image_height = 0;
+        if( isset($section['pdffooter_image_id']) && $section['pdffooter_image_id'] > 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
+            $rc = ciniki_images_loadImage($ciniki, $tnid, $section['pdffooter_image_id'], 'original');
+            if( $rc['stat'] == 'ok' ) {
+                $pdf->footer_image = $rc['image'];
+                $pdf->footer_image_height = (($pdf->footer_image->getImageHeight()*180)/$pdf->footer_image->getImageWidth());
+                $pdf->SetFooterMargin(PDF_MARGIN_FOOTER + $pdf->footer_image_height);
+            }
         }
 
         //
@@ -909,8 +939,8 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     $pdf->SetCellPadding(1);
                     $pdf->SetCellPaddings(1,2,1,1);
                 }
-                if( ($reg_list_height > 0 && $pdf->getY() > 70 && $pdf->getY() > ($pdf->getPageHeight() - 37 - $reg_list_height)) 
-                    || ($reg_list_height == 0 && $pdf->getY() > ($pdf->getPageHeight() - 40)) 
+                if( ($reg_list_height > 0 && $pdf->getY() > 70 && $pdf->getY() > ($pdf->getPageHeight() - 37 - $reg_list_height - $pdf->footer_image_height)) 
+                    || ($reg_list_height == 0 && $pdf->getY() > ($pdf->getPageHeight() - 40 - $pdf->footer_image_height)) 
                     ) {
                     /*
                     $pdf->setCellPadding(0);
@@ -1032,7 +1062,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             if( $image_id > 0 && $h < 40 ) {
                 $h = 40;
             }
-            if( $pdf->getY() > $pdf->getPageHeight() - $h - 30) {
+            if( $pdf->getY() > $pdf->getPageHeight() - $h - 30 - $pdf->footer_image_height) {
                 $pdf->AddPage();
             }
             $y = $pdf->GetY();
@@ -1107,7 +1137,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 $h2 += 3;
             }
             $h = $h1 + $h2 + 40;
-            if( $pdf->getY() > $pdf->getPageHeight() - $h - 18 ) {
+            if( $pdf->getY() > $pdf->getPageHeight() - $h - 18  - $pdf->footer_image_height) {
                 $pdf->AddPage();
             }
             $pdf->SetFont('', 'B', '13');

@@ -7342,7 +7342,51 @@ function ciniki_musicfestivals_main() {
             'flags3':{'label':'Release Certificates to Competitors', 'type':'flagtoggle', 'bit':0x04, 'field':'flags'},
             'flags6':{'label':'Publish Results on Website', 'type':'flagtoggle', 'bit':0x20, 'field':'flags'},
             }},
-        'top_sponsors':{'label':'Top Sponsor', 'aside':'no', 'fields':{
+/*        '_tabs':{'label':'', 'type':'paneltabs', 'selected':'sponsors', 'visible':'yes',
+            'tabs':{
+                'Sponsors':{'label':'Sponsors', 'fn':'M.ciniki_musicfestivals_main.schedulesection.switchTab("sponsors");'},
+                'provincials':{'label':'Provincials', 'fn':'M.ciniki_musicfestivals_main.schedulesection.switchTab("provincials");'},
+            }}, */
+        'website_sponsors':{'label':'Website Sponsors', 'aside':'no', 'fields':{
+            'webheader_sponsor_ids':{'label':'Intro Sponsors', 'type':'idlist', 'list':{}},
+            'webheader_sponsors_title':{'label':'Intro Title', 'type':'text'},
+//            'webheader_sponsors_content':{'label':'Intro Content', 'type':'textarea', 'size':'small'},
+/*            'top_sponsors_image_ratio':{'label':'Image Ratio', 'type':'select', 'default':'1-1', 'options':{
+                '2-1':'Panoramic',
+                '16-9':'Letterbox',
+                '6-4':'Wider',
+                '4-3':'Wide',
+                '1-1':'Square',
+                '3-4':'Tall',
+                '4-6':'Taller',
+                }}, */
+            }},
+        'pdf_sponsors':{'label':'Print Sponsors', 'aside':'no', 'fields':{
+            'pdfheader_sponsor_id':{'label':'Header Sponsor', 'type':'select', 'options':{}, 'complex_options':{'value':'id', 'name':'name'}},
+            'pdffooter_title':{'label':'Footer Heading', 'type':'text'},
+            'pdffooter_image_id':{'label':'Footer Image', 'type':'image_id', 'controls':'all', 'history':'no',
+                'addDropImage':function(iid) {
+                    M.ciniki_musicfestivals_main.schedulesection.setFieldValue('pdffooter_image_id', iid);
+                    return true;
+                    },
+                'addDropImageRefresh':'',
+                'deleteImage':function(fid) {
+                    M.ciniki_musicfestivals_main.schedulesection.setFieldValue(fid,0);
+                    return true;
+                 },
+             },
+//            'top_sponsor2_id':{'label':'Sponsor 2', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
+/*            'top_sponsors_image_ratio':{'label':'Image Ratio', 'type':'select', 'default':'1-1', 'options':{
+                '2-1':'Panoramic',
+                '16-9':'Letterbox',
+                '6-4':'Wider',
+                '4-3':'Wide',
+                '1-1':'Square',
+                '3-4':'Tall',
+                '4-6':'Taller',
+                }}, */
+            }},
+/*        'top_sponsors':{'label':'Top Sponsor', 'aside':'no', 'fields':{
             'top_sponsors_title':{'label':'Title', 'type':'text',},
             'top_sponsor_ids':{'label':'Sponsors', 'type':'idlist', 'list':{}},
 //            'top_sponsor2_id':{'label':'Sponsor 2', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
@@ -7371,8 +7415,8 @@ function ciniki_musicfestivals_main() {
                 }},
 //            'bottom_sponsor1_id':{'label':'Sponsor 1', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
 //            'bottom_sponsor2_id':{'label':'Sponsor 2', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
-            }},
-        'provincials':{'label':'Provincials Information', 
+            }}, */
+/*        'provincials':{'label':'Provincials Information', 
             'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x010000) ? 'no' : 'yes'; },
             'fields':{
                 'provincials_image_id':{'label':'Image/Logo', 'type':'image_id', 'controls':'all', 'history':'no',
@@ -7388,7 +7432,7 @@ function ciniki_musicfestivals_main() {
                  },
                 'provincials_title':{'label':'Title', 'type':'text'},
                 'provincials_content':{'label':'Content', 'type':'textarea'},
-            }},
+            }}, */
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.schedulesection.save();'},
             'delete':{'label':'Delete', 
@@ -7417,8 +7461,15 @@ function ciniki_musicfestivals_main() {
                 p.data = rsp.schedulesection;
                 rsp.adjudicators.unshift({'id':'0', 'name':'None'});
                 p.sections.general.fields.adjudicator1_id.options = rsp.adjudicators;
-                p.sections.top_sponsors.fields.top_sponsor_ids.list = rsp.sponsors;
-                p.sections.bottom_sponsors.fields.bottom_sponsor_ids.list = rsp.sponsors;
+                p.sections.website_sponsors.fields.webheader_sponsor_ids.list = rsp.sponsors;
+//                p.sections.pdf_sponsors.fields.pdffooter_sponsor_ids.list = rsp.sponsors;
+                p.sections.pdf_sponsors.fields.pdfheader_sponsor_id.options = [{'id':0, 'name':'None'}];
+                for(var i in rsp.sponsors) {
+                    p.sections.pdf_sponsors.fields.pdfheader_sponsor_id.options.push({'id':rsp.sponsors[i].id, 'name':rsp.sponsors[i].name});
+                    
+                }
+//                p.sections.top_sponsors.fields.top_sponsor_ids.list = rsp.sponsors;
+//                p.sections.bottom_sponsors.fields.bottom_sponsor_ids.list = rsp.sponsors;
 //                p.sections.top_sponsors.fields.top_sponsor2_id.options = rsp.sponsors;
 //                p.sections.bottom_sponsors.fields.bottom_sponsor1_id.options = rsp.sponsors;
 //                p.sections.bottom_sponsors.fields.bottom_sponsor2_id.options = rsp.sponsors;

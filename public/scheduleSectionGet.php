@@ -105,7 +105,7 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
                 'fields'=>array('festival_id', 'name', 'sequence', 'adjudicator1_id', 'flags',
                     'sponsor_settings', 'provincial_settings',
                     ),
-                'unserialize'=>array('sponsor_settings', 'provincial_settings'),
+                'json'=>array('sponsor_settings', 'provincial_settings'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
