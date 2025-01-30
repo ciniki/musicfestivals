@@ -3967,6 +3967,10 @@ function ciniki_musicfestivals_main() {
                     }},
                 'comments-footer-msg':{'label':'PDF Footer Message', 'type':'text'},
                 'comments_footer_msg':{'label':'OLD Footer Message', 'type':'text', 'editable':'no'},
+                'comments-sorting':{'label':'Sorting', 'type':'toggle', 'default':'schedule', 'toggles':{
+                    'schedule':'Schedule',
+                    'byclass':'By Class',
+                    }},
             }},
         '_schedule_pdf':{'label':'Schedule PDF Default Options', 
             // These options can be changed on the download screen
@@ -4066,6 +4070,10 @@ function ciniki_musicfestivals_main() {
                 'certificates-use-group-numpeople':{'label':'Print for Each Group Member', 'type':'toggle', 'default':'yes', 'toggles':{
                     'no':'No',
                     'yes':'Yes',
+                    }},
+                'certificates-sorting':{'label':'Sorting', 'type':'toggle', 'default':'schedule', 'toggles':{
+                    'schedule':'Schedule',
+                    'byclass':'By Class',
                     }},
             }},
         '_syllabus':{'label':'Syllabus Options', 
