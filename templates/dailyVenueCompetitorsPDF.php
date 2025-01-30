@@ -55,7 +55,9 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
     $strsql = "SELECT ssections.id AS section_id, "
         . "ssections.name AS section_name, "
         . "divisions.id AS division_id, "
-        . "CONCAT_WS('-', divisions.address, divisions.division_date) AS location_id, "
+        . "divisions.location_id, "
+//        . "CONCAT_WS('-', divisions.address, divisions.division_date) AS location_id, "
+        . "locations.name AS location_name, " 
         . "divisions.name AS division_name, "
         . "divisions.address, "
         . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, ";
@@ -97,6 +99,10 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
             . "ssections.id = divisions.ssection_id " 
             . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
+        . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
+            . "divisions.location_id = locations.id "
+            . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
         . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
             . "divisions.id = timeslots.sdivision_id " 
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -137,12 +143,12 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
     } else {    // default to live only
         $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";
     }
-    $strsql .= "ORDER BY divisions.address, divisions.division_date, competitors.last, competitors.first, competitors.name, registrations.display_name, timeslots.slot_time "
+    $strsql .= "ORDER BY divisions.location_id, locations.name, competitors.last, competitors.first, competitors.name, registrations.display_name, timeslots.slot_time "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'locations', 'fname'=>'location_id', 
-            'fields'=>array('date'=>'division_date_text', 'address'),
+            'fields'=>array('date'=>'division_date_text', 'name'=>'location_name'),
             ),
         array('container'=>'competitors', 'fname'=>'competitor_id', 
             'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'ctype',
@@ -357,7 +363,7 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
     $w = array(30, 5, 145);
     foreach($locations as $location) {
         if( count($locations) == 1 ) {
-            $filename .= ' - ' . $location['address'];
+            $filename .= ' - ' . $location['name'];
         }
 
         if( !isset($location['competitors']) ) {
@@ -368,7 +374,7 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
         // Start a new section
         //
         $pdf->header_title = 'Schedule ' . $festival['competitor-label-plural'];
-        $pdf->header_sub_title = $location['address'];
+        $pdf->header_sub_title = $location['name'];
         $pdf->AddPage();
         //
         // Setup the division header

@@ -145,6 +145,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
         . "IFNULL(DATE_FORMAT(divisions.division_date, '%M %D, %Y'), '') AS timeslot_date_text, "
         . "timeslots.id AS timeslot_id, "
         . "timeslots.name AS timeslot_name, "
+        . "timeslots.groupname AS timeslot_groupname, "
         . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
         . "timeslots.name AS timeslot_name, "
         . "timeslots.description, "
@@ -222,7 +223,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
             'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'adjudicator_id',
                 )),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
-            'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 
+            'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 'groupname'=>'timeslot_groupname',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 'description', 
                 )),
         array('container'=>'registrations', 'fname'=>'reg_id', 
@@ -405,9 +406,12 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                                 } else {
                                     $class_name = $reg['class_name']; 
                                 }
-                                if( $field['field'] == 'class-group' && preg_match("/(Group\s+[0-9A-Z])/", $timeslot['name'], $m) ) {
-                                    $class_name .= ' - ' . $m[1];
+                                if( $field['field'] == 'class-group' && $timeslot['groupname'] != '' ) {
+                                    $class_name .= ' - ' . $timeslot['groupname'];
                                 }
+//                                if( $field['field'] == 'class-group' && preg_match("/(Group\s+[0-9A-Z])/", $timeslot['name'], $m) ) {
+//                                    $class_name .= ' - ' . $m[1];
+//                                }
                                 $certificate['fields'][$fid]['text'] = $class_name;
                             }
                             elseif( $field['field'] == 'title' ) {
