@@ -210,10 +210,12 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'ssections', 'fname'=>'section_id', 
-            'fields'=>array('id'=>'section_id', 'name'=>'section_name', 'adjudicator_name'),
+            'fields'=>array('id'=>'section_id', 'name'=>'section_name'),
             ),
         array('container'=>'divisions', 'fname'=>'division_id', 
-            'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'location_name'),
+            'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 
+                'location_name', 'adjudicator_name',
+                ),
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
             'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'groupname'=>'timeslot_groupname', 
@@ -274,11 +276,12 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
         public $orientation = 'portrait';
         public $left_margin = 15;
         public $right_margin = 15;
-        public $top_margin = 10;
+        public $top_margin = 12;
         public $header_visible = 'yes';
         public $header_image = null;
         public $header_title = '';
-        public $header_sub_title = '';
+        public $header_adjudicator = '';
+        public $header_location = '';
         public $header_msg = '';
         public $header_height = 0;      // The height of the image and address
         public $footer_visible = 'yes';
@@ -294,13 +297,12 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                 // but only to a maximum height of the header_height (set far below).
                 //
                 if( $this->orientation == 'landscape' ) {
+                    $this->Ln(2);
                     $this->SetFont('helvetica', '', 12);
                     $width = 249;
-                    $this->Ln(8);
-                    $this->Cell($width, 12, $this->header_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
-                    $this->Ln(7);
-                    $this->Cell($width, 10, $this->header_sub_title, '', false, 'R', 0, '', 0, false, 'M', 'M');
-                    $this->Ln(1);
+                    $this->MultiCell(149, 0, $this->header_title, 0, 'L', 0, 0);
+                    $this->MultiCell(100, 0, $this->header_adjudicator, 0, 'R', 0, 1);
+                    $this->MultiCell($width, 0, $this->header_location, 0, 'R', 0, 1);
 
                 } else {
                     $img_width = 0;
@@ -453,7 +455,7 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
         $pdf->header_height = 30;
     }
     if( $orientation == 'landscape' ) { 
-        $pdf->header_height = 22;
+        $pdf->header_height = 18;
     }
 
     //
@@ -487,7 +489,7 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
     $pdf->SetKeywords('');
 
     // set margins
-    $pdf->SetMargins($pdf->left_margin, $pdf->header_height+5, $pdf->right_margin);
+    $pdf->SetMargins($pdf->left_margin, $pdf->header_height+3, $pdf->right_margin);
     $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
@@ -556,8 +558,8 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
             // Start a new section
             //
             $pdf->header_title = $section['name'] . ' - ' . $division['date'];
-            $pdf->header_sub_title = 'Adjudicator: ' . $section['adjudicator_name'];
-            $pdf->header_msg = 'Location: ' . $division['location_name'];
+            $pdf->header_adjudicator = 'Adjudicator: ' . $division['adjudicator_name'];
+            $pdf->header_location = 'Location: ' . $division['location_name'];
             $pdf->AddPage();
 
             //
@@ -895,7 +897,13 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                             $pdf->SetFont('', 'B', $class_font_size);
                             $pdf->SetCellPaddings(0, 1, 0, 0);
                             if( $orientation == 'landscape' ) {
-                                $pdf->MultiCell($cw[0] + $cw[1] + $cw[2], 0, $time . ' - ' . $name . ' (continued...)', 1, 'L', 1, 1);
+                                $pdf->SetCellPadding($cell_padding);
+                                if( $time == '' ) {
+                                    $pdf->MultiCell($cw[0], 0, ' ', 0, 'L', 0, 0);
+                                    $pdf->MultiCell($cw[1] + $cw[2], 0, $time . ' - ' . $name . ' (continued...)', 1, 'L', 1, 1);
+                                } else {
+                                    $pdf->MultiCell($cw[0] + $cw[1] + $cw[2], 0, $time . ' - ' . $name . ' (continued...)', 1, 'L', 1, 1);
+                                }
                             } else {
                                 $pdf->MultiCell($cw[0], 0, $time, 0, 'L', 0, 0);
                                 $pdf->MultiCell($cw[1], 0, $name . ' (continued...)', 0, 'L', 0, 1);
