@@ -390,7 +390,9 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
-            . "divisions.adjudicator_id = adjudicators.id "
+            . "(ssections.adjudicator1_id = adjudicators.id "
+                . "OR divisions.adjudicator_id = adjudicators.id "
+                . ") "
             . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_customers AS customers ON ("
@@ -888,6 +890,20 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     }
                 }
             } else {
+                $adjudicator_name = '';
+                if( isset($s['adjudicators-name']) && $s['adjudicators-name'] == 'yes' ) {
+                    $adjudicator_name = $division['adjudicator_name'];
+                    if( $division['adjudicator_permalink'] != '' && $division['adjudicator_name'] != '' && isset($s['adjudicators-page']) ) {
+                        ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'urlProcess');
+                        $rc = ciniki_wng_urlProcess($ciniki, $tnid, $request, $s['adjudicators-page'], '');
+                        if( isset($rc['url']) ) {
+                            $adjudicator_name = "<a class='link' href='" . $rc['url'] . '/' . $division['adjudicator_permalink'] . "'>{$division['adjudicator_name']}</a>";
+                        }
+                    }
+                    if( isset($s['adjudicators-label']) && $s['adjudicators-label'] == 'yes' && $adjudicator_name != '' ) {
+                        $adjudicator_name = 'Adjudicator: ' . $adjudicator_name;
+                    }
+                }
                 $columns = array();
                 if( isset($s['competitor-numbering']) && $s['competitor-numbering'] == 'yes' ) {
                     $columns[] = array('label'=>'#', 'field'=>'competitor_number', 'class'=>'');
@@ -903,6 +919,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     'type' => 'schedule',
                     'title' => $division['name'] . (isset($s['division-dates']) && $s['division-dates'] == 'yes' ? ' - ' . $division['date'] : ''),
                     'subtitle' => $division['location_name'],
+                    'subtitle2' => $adjudicator_name,
                     'class' => 'musicfestival-timeslots limit-width limit-width-80',
                     'items' => $division['timeslots'],
                     'details-headers' => 'no',

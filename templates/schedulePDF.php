@@ -100,6 +100,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         . "divisions.id AS division_id, "
         . "divisions.name AS division_name, "
         . "locations.name AS location, "
+        . "CONCAT_WS(' ', divisions.division_date, timeslots.slot_time) AS division_sort_key, "
         . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, ";
     if( isset($festival['schedule-separate-classes']) && $festival['schedule-separate-classes'] == 'yes' ) {
         $strsql .= "CONCAT_WS('-', timeslots.id, classes.id) AS timeslot_id, ";
@@ -231,7 +232,10 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             'json'=>array('sponsor_settings', 'provincial_settings'),
             ),
         array('container'=>'divisions', 'fname'=>'division_id', 
-            'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'location', 'adjudicator_id', 'adjudicator'),
+            'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 
+                'location', 'adjudicator_id', 'adjudicator',
+                'sort_key' => 'division_sort_key',
+                ),
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
             'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'groupname'=>'timeslot_groupname', 'time'=>'slot_time_text', 
@@ -806,6 +810,13 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             }
 */
         }
+
+        //
+        // Sort the divisions
+        //
+        uasort($section['divisions'], function($a, $b) {
+            return $a['sort_key'] < $b['sort_key'] ? -1 : 1;
+            });
 
         //
         // Output the divisions
