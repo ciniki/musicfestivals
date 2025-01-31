@@ -21,6 +21,7 @@ function ciniki_musicfestivals_trophyRegistrationsPDF($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Festival'),
+        'marks'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Marks'),
         'output'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Output'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -58,6 +59,7 @@ function ciniki_musicfestivals_trophyRegistrationsPDF($ciniki) {
         . "sections.name AS section_name, "
         . "registrations.id AS registration_id, "
         . "registrations.display_name, "
+        . "registrations.mark, "
         . "IFNULL(timeslots.id, 0) AS timeslot_id, "
         . "IFNULL(timeslots.name, '') AS timeslot_name, "
         . "IFNULL(timeslots.groupname, '') AS timeslot_groupname, "
@@ -65,7 +67,7 @@ function ciniki_musicfestivals_trophyRegistrationsPDF($ciniki) {
         . "IFNULL(divisions.name, '') AS division_name, "
         . "IFNULL(ssections.id, 0) AS ssection_id, "
         . "IFNULL(ssections.name, '') AS ssection_name, "
-        . "DATE_FORMAT(IFNULL(divisions.division_date, ''), '%b %d, %Y') AS division_date_text, "
+        . "DATE_FORMAT(IFNULL(divisions.division_date, ''), '%b %d') AS division_date_text, "
         . "TIME_FORMAT(IFNULL(timeslots.slot_time, ''), '%l:%i %p') AS slot_time_text, "
         . "TIME_FORMAT(IFNULL(registrations.timeslot_time, ''), '%l:%i %p') AS reg_time_text, "
         . "IFNULL(locations.name, '') AS location_name "
@@ -85,9 +87,13 @@ function ciniki_musicfestivals_trophyRegistrationsPDF($ciniki) {
         . "INNER JOIN ciniki_musicfestival_sections AS sections ON ("
             . "categories.section_id = sections.id "
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . ") " 
-        . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
-            . "tc.class_id = registrations.class_id "
+            . ") ";
+    if( isset($args['marks']) && $args['marks'] == 'yes' ) {
+        $strsql .= "INNER JOIN ciniki_musicfestival_registrations AS registrations ON (";
+    } else {
+        $strsql .= "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON (";
+    }
+    $strsql .= "tc.class_id = registrations.class_id "
             . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
@@ -110,7 +116,7 @@ function ciniki_musicfestivals_trophyRegistrationsPDF($ciniki) {
             . ") "
         . "WHERE trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
 //        . "GROUP BY trophies.id "
-        . "ORDER BY trophies.category, trophies.name, trophies.id, classes.sequence, classes.code, registrations.timeslot_sequence "
+        . "ORDER BY trophies.category, trophies.name, trophies.id, classes.sequence, classes.code, registrations.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -122,7 +128,7 @@ function ciniki_musicfestivals_trophyRegistrationsPDF($ciniki) {
             'fields'=>array('id'=>'class_id', 'code'=>'class_code', 'name'=>'class_name', 'category_name', 'section_name'),
             ),
         array('container'=>'registrations', 'fname'=>'registration_id', 
-            'fields'=>array('id'=>'class_id', 'display_name',
+            'fields'=>array('id'=>'class_id', 'display_name', 'mark',
                 'class_code', 'class_name', 'category_name', 'section_name',
                 'timeslot_name', 'timeslot_groupname', 'division_name', 'ssection_name',
                 'division_date_text', 'slot_time_text', 'reg_time_text', 'location_name',
@@ -138,6 +144,7 @@ function ciniki_musicfestivals_trophyRegistrationsPDF($ciniki) {
     $rc = ciniki_musicfestivals_templates_trophyRegistrationsPDF($ciniki, $args['tnid'], array(
         'trophies' => $trophies,
         'festival_id' => $args['festival_id'],
+        'marks' => isset($args['marks']) ? $args['marks'] : 'no',
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.744', 'msg'=>'Unable to generate PDF', 'err'=>$rc['err']));
