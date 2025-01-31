@@ -99,18 +99,18 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
                 $this->Cell($img_width, 10, '', 0);
             }
             $this->setX($this->left_margin + $img_width);
-            $this->Cell(180-$img_width, 12, $this->header_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
+            $this->Cell(245-$img_width, 12, $this->header_title, 0, false, 'C', 0, '', 0, false, 'M', 'M');
             $this->Ln(7);
 
-            $this->SetFont('times', 'B', 14);
+/*            $this->SetFont('times', 'B', 14);
             $this->setX($this->left_margin + $img_width);
-            $this->Cell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
+            $this->Cell(245-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
             $this->Ln(6);
 
             $this->SetFont('times', 'B', 12);
             $this->setX($this->left_margin + $img_width);
-            $this->Cell(180-$img_width, 10, $this->header_msg, 0, false, 'R', 0, '', 0, false, 'M', 'M');
-            $this->Ln(6);
+            $this->Cell(245-$img_width, 10, $this->header_msg, 0, false, 'R', 0, '', 0, false, 'M', 'M');
+            $this->Ln(6); */
         }
 
         // Page footer
@@ -118,23 +118,23 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
             // Position at 15 mm from bottom
             $this->SetY(-15);
             $this->SetFont('helvetica', '', 10);
-            $this->Cell(90, 10, $this->footer_msg, 0, false, 'L', 0, '', 0, false, 'T', 'M');
+            $this->Cell(120, 10, $this->footer_msg, 0, false, 'L', 0, '', 0, false, 'T', 'M');
             $this->SetFont('helvetica', '', 10);
-            $this->Cell(90, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+            $this->Cell(125, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
         }
     }
 
     //
     // Start a new document
     //
-    $pdf = new MYPDF('P', PDF_UNIT, 'LETTER', true, 'UTF-8', false);
+    $pdf = new MYPDF('L', PDF_UNIT, 'LETTER', true, 'UTF-8', false);
 
     //
     // Figure out the header tenant name and address information
     //
     $pdf->header_height = 0;
-    $pdf->header_title = $festival['name'];
-    $pdf->header_sub_title = 'Trophies';
+    $pdf->header_title = $festival['name'] . ' - Trophies';
+    $pdf->header_sub_title = '';
     $pdf->header_msg = '';
     $pdf->footer_msg = '';
 
@@ -142,19 +142,19 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
     // Set the minimum header height
     //
     if( $pdf->header_height < 30 ) {
-        $pdf->header_height = 30;
+        $pdf->header_height = 15;
     }
 
     //
     // Load the header image
     //
-    if( isset($festival['document_logo_id']) && $festival['document_logo_id'] > 0 ) {
+/*    if( isset($festival['document_logo_id']) && $festival['document_logo_id'] > 0 ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
         $rc = ciniki_images_loadImage($ciniki, $tnid, $festival['document_logo_id'], 'original');
         if( $rc['stat'] == 'ok' ) {
             $pdf->header_image = $rc['image'];
         }
-    }
+    } */
 
     //
     // Setup the PDF basics
@@ -191,41 +191,44 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
     // Check if marks are to be included
     //
     if( isset($args['marks']) && $args['marks'] == 'yes' ) {
-        $w = [70,36,59,15];
+        $w = [30,80,40,80,15];
     } else {
-        $w = [78,36,66];
+        $w = [30,90,40,85];
     }
 
     $prev_category = '';
     foreach($trophies as $trophy) {
+        if( $pdf->GetY() > $pdf->getPageHeight() - PDF_MARGIN_FOOTER - 70) {
+            $pdf->AddPage();
+        }
         if( $prev_category != $trophy['category'] && $trophy['category'] != '' ) {
             $pdf->SetCellPadding(4);
             $pdf->SetFont('helvetica', 'B', 16);
-            $lh = $pdf->getStringHeight(180, $trophy['category']);
+            $lh = $pdf->getStringHeight(245, $trophy['category']);
             $prev_category = $trophy['category'];
             if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 55 ) ) {
                 $pdf->AddPage();
             }
-            $pdf->MultiCell(180, 0, $trophy['category'], 0, 'C', 1, 1);
+            $pdf->MultiCell(245, 0, $trophy['category'], 0, 'C', 1, 1);
             $pdf->SetCellPadding(1.5);
         }
         if( isset($args['marks']) && $args['marks'] == 'yes' ) {
-            $pdf->SetCellPadding(2);
+            $pdf->SetCellPaddings(2,1.5,2,1.5);
         }
 
         $pdf->SetFont('helvetica', 'B', 12);
-        $lh = $pdf->getStringHeight(180, $trophy['name']);
+        $lh = $pdf->getStringHeight(245, $trophy['name']);
         $pdf->SetFont('helvetica', '', 12);
-        $lh += $pdf->getStringHeight(180, $trophy['criteria']);
+        $lh += $pdf->getStringHeight(245, $trophy['criteria']);
         if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 20 ) ) {
             $pdf->AddPage();
         }
 
         $pdf->SetFont('helvetica', 'B', 14);
-        $pdf->MultiCell(180, 0, $trophy['name'], 'B', 'L', 0, 1);
+        $pdf->MultiCell(245, 0, $trophy['name'], 'B', 'L', 0, 1);
         $pdf->SetFont('helvetica', '', 12);
         if( $trophy['criteria'] != '' ) {
-            $pdf->MultiCell(180, 0, $trophy['criteria'], 0, 'L', 0, 1);
+            $pdf->MultiCell(245, 0, $trophy['criteria'], 0, 'L', 0, 1);
         }
         $pdf->Ln(3);
 
@@ -233,8 +236,20 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
         // Output the classes
         //
         if( isset($trophy['classes']) ) {
+            if( $pdf->GetY() > $pdf->getPageHeight() - PDF_MARGIN_FOOTER - 50) {
+                $pdf->AddPage();
+            }
+            if( isset($args['marks']) && $args['marks'] == 'yes' ) {
+                $pdf->SetFont('helvetica', 'B', 12);
+                $pdf->MultiCell($w[0], 0, 'Class', 1, 'L', 0, 0);
+                $pdf->MultiCell($w[1], 0, 'Competitor', 1, 'L', 0, 0);
+                $pdf->MultiCell($w[2], 0, 'Date/Time', 1, 'L', 0, 0);
+                $pdf->MultiCell($w[3], 0, 'Location', 1, 'L', 0, 0);
+                $pdf->MultiCell($w[4], 0, 'Mark', 1, 'C', 0, 1);
+                $pdf->SetFont('helvetica', '', 12);
+            }
             foreach($trophy['classes'] as $class) {
-                if( isset($festival['runsheets-class-format']) 
+/*                if( isset($festival['runsheets-class-format']) 
                     && $festival['runsheets-class-format'] == 'code-section-category-class' 
                     ) {
                     $name = "{$class['code']} - {$class['section_name']} - {$class['category_name']} - {$class['name']}";
@@ -244,46 +259,53 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
                     $name = "{$class['code']} - {$class['category_name']} - {$class['name']}";
                 } else {
                     $name = "{$class['code']} - {$class['name']}";
-                }
-                $pdf->SetFont('helvetica', 'B', 12);
-                $pdf->MultiCell(180, 0, $name, 0, 'L', 0, 1);
-                $pdf->SetFont('helvetica', '', 12);
+                } */
+//                $pdf->SetFont('helvetica', 'B', 12);
+//                $pdf->MultiCell(245, 0, $name, 0, 'L', 0, 1);
+//                $pdf->SetFont('helvetica', '', 12);
 
                 if( isset($class['registrations']) ) {
-                    $pdf->Ln(1);
-                    if( isset($args['marks']) && $args['marks'] == 'yes' ) {
-                        $pdf->SetFont('helvetica', 'B', 12);
-                        $pdf->MultiCell($w[0], 0, 'Competitor', 1, 'L', 0, 0);
-                        $pdf->MultiCell($w[1], 0, 'Date/Time', 1, 'L', 0, 0);
-                        $pdf->MultiCell($w[2], 0, 'Location', 1, 'L', 0, 0);
-                        $pdf->MultiCell($w[3], 0, 'Mark', 1, 'C', 0, 1);
-                        $pdf->SetFont('helvetica', '', 12);
-                    }
                     foreach($class['registrations'] as $reg) {
-                        $lh = $pdf->getStringHeight($w[0], $reg['display_name']);
+                        $lh = $pdf->getStringHeight($w[1], $reg['display_name']);
                         $date_time = '';
                         if( $reg['division_date_text'] != '' && $reg['slot_time_text'] != '' ) {
                             $date_time = $reg['division_date_text'] . '/' . $reg['slot_time_text'];
                         }
-                        if( $pdf->getStringHeight($w[1], $date_time) > $lh ) {
-                            $lh = $pdf->getStringHeight($w[1], $date_time);
+                        if( $pdf->getStringHeight($w[2], $date_time) > $lh ) {
+                            $lh = $pdf->getStringHeight($w[2], $date_time);
                         }
-                        if( $pdf->getStringHeight($w[2], $reg['location_name']) > $lh ) {
-                            $lh = $pdf->getStringHeight($w[2], $reg['location_name']);
+                        if( $pdf->getStringHeight($w[3], $reg['location_name']) > $lh ) {
+                            $lh = $pdf->getStringHeight($w[3], $reg['location_name']);
                         }
 
-                        $pdf->MultiCell($w[0], $lh, $reg['display_name'], 1, 'L', 0, 0);
-                        $pdf->MultiCell($w[1], $lh, $date_time, 1, 'L', 0, 0);
-                        if( isset($args['marks']) && $args['marks'] == 'yes' ) {
-                            $pdf->MultiCell($w[2], $lh, $reg['location_name'], 1, 'L', 0, 0);
-                            $pdf->MultiCell($w[3], $lh, $reg['mark'], 1, 'L', 0, 1);
-                        } else {
-                            $pdf->MultiCell($w[2], $lh, $reg['location_name'], 1, 'L', 0, 1);
+                        if( $pdf->GetY() > $pdf->getPageHeight() - PDF_MARGIN_FOOTER - $lh - 10) {
+                            $pdf->AddPage();
+                            $pdf->SetFont('helvetica', 'B', 14);
+                            $pdf->MultiCell(245, 0, $trophy['name'] . ' (continued...)', 'B', 'L', 0, 1);
+                            if( isset($args['marks']) && $args['marks'] == 'yes' ) {
+                                $pdf->SetFont('helvetica', 'B', 12);
+                                $pdf->MultiCell($w[0], 0, 'Class', 1, 'L', 0, 0);
+                                $pdf->MultiCell($w[1], 0, 'Competitor', 1, 'L', 0, 0);
+                                $pdf->MultiCell($w[2], 0, 'Date/Time', 1, 'L', 0, 0);
+                                $pdf->MultiCell($w[3], 0, 'Location', 1, 'L', 0, 0);
+                                $pdf->MultiCell($w[4], 0, 'Mark', 1, 'C', 0, 1);
+                                $pdf->SetFont('helvetica', '', 12);
+                            }
                         }
-                        $pdf->Ln(3);
+
+                        $pdf->MultiCell($w[0], $lh, $class['code'], 1, 'L', 0, 0);
+                        $pdf->MultiCell($w[1], $lh, $reg['display_name'], 1, 'L', 0, 0);
+                        $pdf->MultiCell($w[2], $lh, $date_time, 1, 'L', 0, 0);
+                        if( isset($args['marks']) && $args['marks'] == 'yes' ) {
+                            $pdf->MultiCell($w[3], $lh, $reg['location_name'], 1, 'L', 0, 0);
+                            $pdf->MultiCell($w[4], $lh, $reg['mark'], 1, 'L', 0, 1);
+                        } else {
+                            $pdf->MultiCell($w[3], $lh, $reg['location_name'], 1, 'L', 0, 1);
+                        }
                     }
                 }
             }
+            $pdf->Ln(3);
         }
     }
 
