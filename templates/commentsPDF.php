@@ -307,6 +307,26 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
         $sections = array();
     }
 
+    if( isset($args['schedulesection_id']) && $args['schedulesection_id'] == 'blank' ) {
+        $sections = [
+            ['id' => 0, 'name' => '', 'divisions' => [  
+                ['id' => 0, 'name' => '', 'timeslots' => [
+                    ['id' => 0, 'name' => '', 'class_name' => '', 'description' => '', 'groupname' => '', 'registrations' => [
+                        ['id' => 0, 'name' => '', 
+                            'title1' => ' ', 'movements1' => '', 'composer1' => '', 
+                            'class_code' => '', 'class_name' => '', 'category_name' => '', 'syllabus_section_name' => '',
+                            'class_flags' => 0x0700, 
+                            'timeslot_date' => ' ', 'timeslot_time' => ' ', 
+                            'adjudicator_id' => 0, 'participation' => 0,
+                            'competitor2_id' => 0, 'comments' => '', 'flags' => 0,
+                            'mark' => '', 'placement' => '', 'level' => '',
+                            ],
+                        ]]
+                    ]],
+                ]],
+            ];
+    }
+        
     //
     // Load TCPDF library
     //
@@ -504,7 +524,11 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         $pdf->SetFont('helvetica', 'B', 12);
                         $pdf->MultiCell($w[0], $lh, 'Date: ', $border, 'R', 0, 0, '', '');
                         $pdf->SetFont('helvetica', '', 12);
-                        $pdf->MultiCell($w[1], $lh, $reg['timeslot_date'] . ' - ' . $reg['timeslot_time'], $border, 'L', 0, 1, '', '');
+                        if( !isset($args['schedulesection_id']) || $args['schedulesection_id'] == 'blank' ) {
+                            $pdf->MultiCell($w[1], $lh, '', $border, 'L', 0, 1, '', '');
+                        } else {
+                            $pdf->MultiCell($w[1], $lh, $reg['timeslot_date'] . ' - ' . $reg['timeslot_time'], $border, 'L', 0, 1, '', '');
+                        }
                         $border = '';
                         $pdf->SetCellPaddings(1, 1, 1, 1);
                     }
@@ -552,7 +576,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
 
                 
                     for($i = 1; $i <= 8; $i++) {
-                        if( $reg["title{$i}"] != '' ) {
+                        if( isset($reg["title{$i}"]) && $reg["title{$i}"] != '' ) {
                             $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
                             if( isset($rc['title']) ) {
                                 $reg["title{$i}"] = $rc['title'];
