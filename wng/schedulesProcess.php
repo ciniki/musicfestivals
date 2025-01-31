@@ -47,6 +47,11 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
     }
     $festival = $rc['festival'];
 
+    $division_date_format = '%W, %M %D, %Y';
+    if( isset($festival['schedule-date-format']) && $festival['schedule-date-format'] != '' ) {
+        $division_date_format = $festival['schedule-date-format'];
+    }
+
     //
     // Check if download of syllabus requested
     //
@@ -151,7 +156,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
             . "sections.name, "
             . "divisions.id AS division_id, "
             . "divisions.name AS division_name, "
-            . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text "
+            . "DATE_FORMAT(divisions.division_date, '" . ciniki_core_dbQuote($ciniki, $division_date_format) . "') AS division_date_text "
             . "FROM ciniki_musicfestival_schedule_sections AS sections "
             . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
                 . "sections.id = divisions.ssection_id "
@@ -218,7 +223,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
             . "divisions.id AS division_id, "
             . "divisions.name AS division_name, "
             . "CONCAT_WS(' - ', sections.name, divisions.name) AS text, "
-            . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text "
+            . "DATE_FORMAT(divisions.division_date, '" . ciniki_core_dbQuote($ciniki, $division_date_format) . "') AS division_date_text "
             . "FROM ciniki_musicfestival_schedule_sections AS sections "
             . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
                 . "sections.id = divisions.ssection_id "

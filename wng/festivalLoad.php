@@ -43,6 +43,24 @@ function ciniki_musicfestivals_wng_festivalLoad(&$ciniki, $tnid, $festival_id) {
     $festival = $rc['festival'];
 
     //
+    // Load the settings for the festival
+    //
+    $strsql = "SELECT detail_key, detail_value "
+        . "FROM ciniki_musicfestival_settings "
+        . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival_id) . "' "
+        . "AND ciniki_musicfestival_settings.detail_key NOT LIKE 'content-%' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
+    $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.733', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+    }
+    foreach($rc['settings'] as $k => $v) {
+        $festival[$k] = $v;
+    }
+
+    //
     // Determine which dates are still open for the festival
     //
     $now = new DateTime('now', new DateTimezone('UTC'));

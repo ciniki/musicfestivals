@@ -3978,7 +3978,7 @@ function ciniki_musicfestivals_main() {
                     'yes':'Yes',
                     }},
             }},
-        '_schedule_pdf':{'label':'Schedule PDF Default Options', 
+        '_schedule_pdf':{'label':'Schedule Default Options', 
             // These options can be changed on the download screen
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
             'fields':{
@@ -3995,6 +3995,13 @@ function ciniki_musicfestivals_main() {
 //                    'default':'name - date<br/>address', 
 //                    'name-date-adjudicator-address':'Name<br/>Date: date<br/>Adjudicator: adjudicator<br/>Address: address', 
 //                    }},
+                'schedule-date-format':{'label':'Date Format', 'type':'select', 'default':'default', 
+                    'options':{
+                        '%W, %M %D, %Y':'Monday, January 1st, 2025',
+                        '%W, %M %e, %Y':'Monday, January 1, 2025',
+                        '%a, %b %e, %Y':'Mon, Jan 1, 2025',
+                        '%b %e, %Y':'Jan 1, 2025',
+                    }},
                 'schedule-section-adjudicator-bios':{'label':'Section Adjudicator Bios', 'type':'toggle', 'default':'no', 'toggles':{
                     'no':'No',
                     'yes':'Yes',

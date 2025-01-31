@@ -71,6 +71,11 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         $psorts[''] = 'ZZ';
     }
 
+    $division_date_format = '%W, %M %D, %Y';
+    if( isset($festival['schedule-date-format']) && $festival['schedule-date-format'] != '' ) {
+        $division_date_format = $festival['schedule-date-format'];
+    }
+
     //
     // Load the schedules
     //
@@ -289,7 +294,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "IFNULL(customers.permalink, '') AS adjudicator_permalink, "
         . "IFNULL(adjudicators.image_id, 0) AS adjudicator_image_id, "
         . "IFNULL(adjudicators.description, 0) AS adjudicator_description, "
-        . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, ";
+        . "DATE_FORMAT(divisions.division_date, '" . ciniki_core_dbQuote($ciniki, $division_date_format) . "') AS division_date_text, ";
     if( isset($s['separate-classes']) && $s['separate-classes'] == 'yes' ) {
         $strsql .= "CONCAT_WS('-', timeslots.id, classes.id) AS timeslot_id, ";
     } else {
