@@ -404,7 +404,11 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
     //
     // Start a new document
     //
-    $pdf = new MYPDF('P', PDF_UNIT, 'LETTER', true, 'UTF-8', false);
+    if( isset($festival['comments-paper-size']) && $festival['comments-paper-size'] == 'legal' ) {
+        $pdf = new MYPDF('P', PDF_UNIT, 'LEGAL', true, 'UTF-8', false);
+    } else {
+        $pdf = new MYPDF('P', PDF_UNIT, 'LETTER', true, 'UTF-8', false);
+    }
 
     //
     // Figure out the header tenant name and address information

@@ -3968,7 +3968,11 @@ function ciniki_musicfestivals_main() {
                     'always':'Always',
                     }},
                 'comments-footer-msg':{'label':'PDF Footer Message', 'type':'text'},
-                'comments_footer_msg':{'label':'OLD Footer Message', 'type':'text', 'editable':'no'},
+                'comments-paper-size':{'label':'Paper Size', 'type':'toggle', 'default':'letter', 'toggles':{
+                    'letter':'Letter',
+                    'legal':'Legal',
+                    }},
+//                'comments_footer_msg':{'label':'OLD Footer Message', 'type':'text', 'editable':'no'},
                 'comments-sorting':{'label':'Sorting', 'type':'toggle', 'default':'schedule', 'toggles':{
                     'schedule':'Schedule',
                     'byclass':'By Class',
