@@ -59,6 +59,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'schedule-footerdate',
         'schedule-section-page-break',
         'schedule-date-format',
+        'schedule-continued-label',
         'runsheets-page-orientation',
         'runsheets-include-pronouns',
         'runsheets-separate-classes',

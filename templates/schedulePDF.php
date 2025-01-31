@@ -282,6 +282,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         public $footer_image_height = 0;
         public $footer_msg = '';
         public $tenant_details = array();
+        public $continued_str = ' (continued...)';
 
         public function Header() {
             if( $this->header_visible == 'yes' ) {
@@ -392,7 +393,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     }
                 }
                 if( $continued == 'yes' ) {
-                    $division[$fields[0]] .= ' (continued...)';
+                    $division[$fields[0]] .= $this->continued_str;
                 }
                 if( isset($args['division_header_labels']) && $args['division_header_labels'] == 'yes' ) {
                     foreach($fields as $fid => $field) {
@@ -415,7 +416,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 $fields = array('date-name', 'location');
                 $division['date-name'] = $division['date'] . ' - ' . $division['name'];
                 if( $continued == 'yes' ) {
-                    $division['date-name'] .= ' (continued...)';
+                    $division['date-name'] .= $this->continued_str; //' (continued...)';
                 }
             }
             // Check if sponsors need space
@@ -525,6 +526,11 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         $dt = new DateTime('now', new DateTimezone($intl_timezone));
         $pdf->footer_msg = $dt->format("M j, Y");
     }
+
+    if( isset($festival['schedule-continued-label']) && $festival['schedule-continued-label'] == 'no' ) {
+        $pdf->continued_str = '';
+    }
+
 
     //
     // Set the minimum header height

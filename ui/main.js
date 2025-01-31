@@ -4025,6 +4025,11 @@ function ciniki_musicfestivals_main() {
                 'schedule-header':{'label':'Document Header', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'schedule-footer':{'label':'Document Footer', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'schedule-footerdate':{'label':'Footer Date', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'schedule-continued-label':{'label':'Show (continued...)', 'type':'toggle', 'default':'yes', 
+                    'toggles':{
+                        'no':'No', 
+                        'yes':'Yes',
+                    }},
                 'schedule-section-page-break':{'label':'Section Page Break', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
             }},
         '_program_pdf':{'label':'Program PDF Default Options', 
