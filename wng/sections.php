@@ -408,10 +408,10 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             'division_header_format' => array('label'=>'PDF Division Header Format', 'type'=>'select', 'default'=>'default', 
                 'options'=>array(
                     'default' => 'Date-Division, Address', 
-                    'name-adjudicator-address' => 'Division, Adjudicator, Address',
+                    'name-adjudicator-location' => 'Division, Adjudicator, Location',
                     'date-adjudicator-location' => 'Date, Adjudicator, Location',
-                    'date-name-adjudicator-address' => 'Date, Division, Adjudicator, Address',
-                    'name-date-adjudicator-address' => 'Division, Date, Adjudicator, Address',
+                    'date-name-adjudicator-location' => 'Date, Division, Adjudicator, Location',
+                    'name-date-adjudicator-location' => 'Division, Date, Adjudicator, Location',
                     )),
             'division_header_labels' => array('label'=>'PDF Division Header Labels', 'type'=>'toggle', 'default'=>'no', 
                 'toggles'=>array(
