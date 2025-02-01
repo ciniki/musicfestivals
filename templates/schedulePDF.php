@@ -1038,8 +1038,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                             }
                         }
                         if( $row['name_height'] > $row['titles_height'] ) {    
-                            
-                           // $pdf->Ln($row['name_height'] - $row['titles_height']);
+                           $pdf->Ln($row['name_height'] - $row['titles_height']);
                         }
                     } else {
                         $pdf->MultiCell($w[2], $row['height'], $row['name'], 0, 'L', 0, 1);
