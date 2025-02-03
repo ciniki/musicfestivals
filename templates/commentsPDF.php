@@ -13,6 +13,7 @@
 //
 function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
 
+    ini_set('memory_limit', '1024M');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
 
     //
