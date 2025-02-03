@@ -458,9 +458,12 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
 
     // add a page
     $pdf->SetFillColor(246);
+    $pdf->SetFillColor(220);
     $pdf->SetTextColor(0);
     $pdf->SetDrawColor(232);
+    $pdf->SetDrawColor(128);
     $pdf->SetLineWidth(0.1);
+    $pdf->SetLineWidth(0.25);
     $pdf->SetAutoPageBreak(true, PDF_MARGIN_FOOTER);
 
     $filename = 'Comments';
@@ -513,7 +516,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         $pdf->header_subsub_title = '';
                     }
                     $pdf->AddPage();
-                    $pdf->SetDrawColor(232);
+                    $pdf->SetDrawColor(128);
                     $border = 'T';
                     $lh = $pdf->getStringHeight($w[1], $reg['timeslot_date']);
                     $pdf->SetCellPaddings(1, 2, 1, 1);

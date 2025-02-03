@@ -76,6 +76,7 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
     $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
         . "timeslots.name AS timeslot_name, "
         . "timeslots.groupname AS timeslot_groupname, "
+        . "timeslots.start_num, "
         . "timeslots.description, "
         . "timeslots.runsheet_notes, "
         . "registrations.id AS reg_id, ";
@@ -219,7 +220,7 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
             'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'groupname'=>'timeslot_groupname', 
-                'time'=>'slot_time_text', 
+                'time'=>'slot_time_text', 'start_num',
                 'description', 'runsheet_notes', 
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name',
                 ),
@@ -499,9 +500,10 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
 
     // add a page
     $pdf->SetFillColor(246);
+    $pdf->SetFillColor(220);
     $pdf->SetTextColor(0);
-    $pdf->SetDrawColor(200);
-    $pdf->SetLineWidth(0.1);
+    $pdf->SetDrawColor(128);
+    $pdf->SetLineWidth(0.25);
 
     $filename = 'Run Sheets';
 
@@ -817,6 +819,9 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
 
                     $pdf->SetFont('', '', $font_size);
                     $num = 1;
+                    if( isset($timeslot['start_num']) && is_numeric($timeslot['start_num']) && $timeslot['start_num'] > 1 ) {
+                        $num = $timeslot['start_num'];
+                    }
                     foreach($timeslot['registrations'] as $rid => $reg) {
                         $extra_info = '';
                         for($i = 1; $i <= 4; $i++) {
