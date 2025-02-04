@@ -185,7 +185,7 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
 
     $filename = preg_replace("/[^a-zA-Z0-9\-]/", '', $festival['name'] . ' - Trophies');
 
-    $pdf->AddPage();
+//    $pdf->AddPage();
 
     //
     // Check if marks are to be included
@@ -198,15 +198,19 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
 
     $prev_category = '';
     foreach($trophies as $trophy) {
+        $newpage = 'no';
         if( $pdf->GetY() > $pdf->getPageHeight() - PDF_MARGIN_FOOTER - 70) {
             $pdf->AddPage();
+            $newpage = 'yes';
         }
         if( $prev_category != $trophy['category'] && $trophy['category'] != '' ) {
             $pdf->SetCellPadding(4);
             $pdf->SetFont('helvetica', 'B', 16);
             $lh = $pdf->getStringHeight(245, $trophy['category']);
             $prev_category = $trophy['category'];
-            if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 55 ) ) {
+//            if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 55 ) ) {
+//            }
+            if( $newpage == 'no' ) {
                 $pdf->AddPage();
             }
             $pdf->MultiCell(245, 0, $trophy['category'], 0, 'C', 1, 1);
