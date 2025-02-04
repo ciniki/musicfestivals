@@ -160,6 +160,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         . "registrations.placement, "
         . "registrations.level, "
         . "registrations.comments, "
+        . "registrations.runsheet_notes, "
         . "classes.flags AS class_flags, "
         . "classes.feeflags, "
         . "classes.titleflags, "
@@ -230,7 +231,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 'artwork5', 'artwork6', 'artwork7', 'artwork8',
                 'class_flags', 'feeflags', 'titleflags', 'min_titles', 'max_titles', 'class_name',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name',
-                'mark', 'placement', 'level', 'comments',
+                'mark', 'placement', 'level', 'comments', 'runsheet_notes',
                 )),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -529,6 +530,17 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 'size' => 'large',
                 'value' => $registration['comments'],
                 );
+            if( isset($registration['runsheet_notes']) && $registration['runsheet_notes'] != '' ) {
+                $section['fields']["{$registration['id']}-notes"] = array(
+                    'id' => "{$registration['id']}-notes",
+                    'ftype' => 'content',
+                    'class' => 'field-notes',
+                    'editable' => 'no',
+                    'label' => 'Notes',
+                    'size' => 'large',
+                    'description' => $registration['runsheet_notes'],
+                    );
+            }
             $db_values["f-{$registration['id']}-comments"] = $registration['comments'];
             $js_fields .= ($js_fields != '' ? ', ' : '[') . "'f-{$registration['id']}-comments'";
             if( isset($festival['comments-mark-adjudicator']) && $festival['comments-mark-adjudicator'] == 'yes' 
