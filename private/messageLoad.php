@@ -680,6 +680,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             . "customers.display_name AS name, "
             . "registrations.id AS reg_id, "
             . "registrations.teacher_customer_id, "
+            . "registrations.teacher2_customer_id, "
             . "registrations.competitor1_id, "
             . "registrations.competitor2_id, "
             . "registrations.competitor3_id, "
@@ -701,7 +702,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'teachers', 'fname'=>'id', 'fields'=>array('id', 'name')),
             array('container'=>'registrations', 'fname'=>'reg_id', 
-                'fields'=>array('id'=>'reg_id', 'teacher_customer_id', 
+                'fields'=>array('id'=>'reg_id', 'teacher_customer_id', 'teacher2_customer_id',
                     'competitor1_id', 'competitor2_id', 'competitor3_id', 
                     'competitor4_id', 'competitor5_id',
                     ),
