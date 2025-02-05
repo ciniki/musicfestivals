@@ -218,6 +218,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                         . "OR registrations.competitor2_id = competitors.id "
                         . "OR registrations.competitor3_id = competitors.id "
                         . "OR registrations.competitor4_id = competitors.id "
+                        . "OR registrations.competitor5_id = competitors.id "
                         . ") "
                     . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "

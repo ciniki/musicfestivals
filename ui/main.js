@@ -907,6 +907,11 @@ function ciniki_musicfestivals_main() {
                     'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x4000) && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'timeslots') == 'yes' ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.scheduledivisions.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.festival_id);',
                     },
+                'importunscheduled':{
+                    'label':'Import Unscheduled Registrations', 
+                    'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x4000) && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'timeslots') == 'yes' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.unscheduledimport.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.festival_id);',
+                    },
                 'scheduler':{
                     'label':'Open Class Scheduler', 
                     'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x010000) && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'timeslots') == 'yes' ? 'yes' : 'no'; },
@@ -7745,6 +7750,46 @@ function ciniki_musicfestivals_main() {
     this.scheduledivisionimport.addClose('Cancel');
 
     //
+    // The panel to display the list of section to import unschedule classes from
+    //
+    this.unscheduledimport = new M.panel('Import Unscheduled Registrations', 'ciniki_musicfestivals_main', 'unscheduledimport', 'mc', 'medium', 'sectioned', 'ciniki.musicfestivals.main.unscheduledimport');
+    this.unscheduledimport.festival_id = 0;
+    this.unscheduledimport.sections = {
+        'options':{'label':'Options', 'fields':{
+            'division_date':{'label':'Unschedule Date', 'type':'date'},
+            }},
+        'statuses':{'label':'Include Registrations Status', 'fields':{
+            'status_5':{'label':'Draft', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+            'status_70':{'label':'Disqualified', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+            'status_75':{'label':'Withdrawn', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+            'status_80':{'label':'Cancelled', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+            }},
+        '_buttons':{'label':'', 'buttons':{
+            'import':{'label':'Import Unscheduled Registrations', 'fn':'M.ciniki_musicfestivals_main.unscheduledimport.importclasses();'},
+            }},
+        }
+    this.unscheduledimport.importclasses = function() {
+        var sid = this.formFieldValue('section', 'section_id');
+        var c = this.serializeForm('yes');
+        M.api.postJSONCb('ciniki.musicfestivals.unscheduledImport', {'tnid':M.curTenantID, 'festival_id':this.festival_id}, c, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+//            M.ciniki_musicfestivals_main.unscheduledimport.close();
+        });
+    }
+    this.unscheduledimport.open = function(cb, fid) {
+        this.festival_id = fid;
+        this.data = {
+            'division_date':'',
+            };
+        this.refresh();
+        this.show(cb);
+    }
+    this.unscheduledimport.addClose('Cancel');
+
+    //
     // The panel to edit Schedule Time Slot
     //
     this.scheduletimeslot = new M.panel('Schedule Time Slot', 'ciniki_musicfestivals_main', 'scheduletimeslot', 'mc', 'fiftyfifty', 'sectioned', 'ciniki.musicfestivals.main.scheduletimeslot');
@@ -7946,7 +7991,9 @@ function ciniki_musicfestivals_main() {
                             teacher2 = (accompanist != '' || teacher != '' ? ', <b>' : ' <b>') + d.teacher2_name + '</b>';
                         }
                     }
-                    return M.multiline(d.display_name + accompanist + teacher + teacher2, d.titles.replace(/\n/g, '<br/>'));
+                    return M.multiline(d.display_name + accompanist + teacher + teacher2, d.titles.replace(/\n/g, '<br/>')
+                        + (d.notes != '' ? '<br><b>' + d.notes + '</b>' : '')
+                        );
 //                case 3: return d.accompanist_name;
                 case 3: 
                     if( (M.ciniki_musicfestivals_main.festival.data.flags&0x16) > 0 && d.member_name != null && d.member_name != '' ) {
@@ -8006,7 +8053,9 @@ function ciniki_musicfestivals_main() {
                             teacher2 = (accompanist != '' || teacher != '' ? ', <b>' : ' <b>') + d.teacher2_name + '</b>';
                         }
                     }
-                    return M.multiline(d.display_name + accompanist + teacher + teacher2, d.titles.replace(/\n/g, '<br/>'));
+                    return M.multiline(d.display_name + accompanist + teacher + teacher2, d.titles.replace(/\n/g, '<br/>')
+                        + (d.notes != '' ? '<br><b>' + d.notes + '</b>' : '')
+                        );
 //                case 3: return d.accompanist_name;
                 case 3: 
                     // Add the type of festival if virtual or plus is enabled
