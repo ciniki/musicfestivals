@@ -3008,7 +3008,7 @@ function ciniki_musicfestivals_main() {
     this.festival.openScheduleDivision = function(i, n) {
         this.lastY = 0;
         this.scheduledivision_id = i;
-        this.sections.schedule_timeslots.label = M.dU(n);
+        this.sections.schedule_timeslots.label = M.dU(n) + ' Time Slots';
         this.open();
     }
     this.festival.openScheduleTeacher = function(i, n) {
@@ -3658,7 +3658,7 @@ function ciniki_musicfestivals_main() {
             if( rsp.festival.schedule_divisions != null ) {
                 for(var i in rsp.festival.schedule_divisions) {
                     if( rsp.festival.schedule_divisions[i].id == p.scheduledivision_id ) {
-                        p.sections.schedule_timeslots.label = rsp.festival.schedule_divisions[i].name;
+                        p.sections.schedule_timeslots.label = rsp.festival.schedule_divisions[i].name + ' Time Slots';
                     }
                 }
             }
