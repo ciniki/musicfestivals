@@ -532,7 +532,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         $pdf->SetFont('helvetica', 'B', 12);
                         $pdf->MultiCell($w[0], $lh, 'Date: ', $border, 'R', 0, 0, '', '');
                         $pdf->SetFont('helvetica', '', 12);
-                        if( !isset($args['schedulesection_id']) || $args['schedulesection_id'] == 'blank' ) {
+                        if( isset($args['schedulesection_id']) && $args['schedulesection_id'] == 'blank' ) {
                             $pdf->MultiCell($w[1], $lh, '', $border, 'L', 0, 1, '', '');
                         } else {
                             $pdf->MultiCell($w[1], $lh, $reg['timeslot_date'] . ' - ' . $reg['timeslot_time'], $border, 'L', 0, 1, '', '');
