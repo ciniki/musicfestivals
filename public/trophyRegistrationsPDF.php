@@ -60,6 +60,30 @@ function ciniki_musicfestivals_trophyRegistrationsPDF($ciniki) {
         . "registrations.id AS registration_id, "
         . "registrations.display_name, "
         . "registrations.mark, "
+        . "registrations.title1, "
+        . "registrations.title2, "
+        . "registrations.title3, "
+        . "registrations.title4, "
+        . "registrations.title5, "
+        . "registrations.title6, "
+        . "registrations.title7, "
+        . "registrations.title8, "
+        . "registrations.composer1, "
+        . "registrations.composer2, "
+        . "registrations.composer3, "
+        . "registrations.composer4, "
+        . "registrations.composer5, "
+        . "registrations.composer6, "
+        . "registrations.composer7, "
+        . "registrations.composer8, "
+        . "registrations.movements1, "
+        . "registrations.movements2, "
+        . "registrations.movements3, "
+        . "registrations.movements4, "
+        . "registrations.movements5, "
+        . "registrations.movements6, "
+        . "registrations.movements7, "
+        . "registrations.movements8, "
         . "IFNULL(timeslots.id, 0) AS timeslot_id, "
         . "IFNULL(timeslots.name, '') AS timeslot_name, "
         . "IFNULL(timeslots.groupname, '') AS timeslot_groupname, "
@@ -132,6 +156,9 @@ function ciniki_musicfestivals_trophyRegistrationsPDF($ciniki) {
                 'class_code', 'class_name', 'category_name', 'section_name',
                 'timeslot_name', 'timeslot_groupname', 'division_name', 'ssection_name',
                 'division_date_text', 'slot_time_text', 'reg_time_text', 'location_name',
+                'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
+                'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
+                'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
                 ),
             ),
         ));
