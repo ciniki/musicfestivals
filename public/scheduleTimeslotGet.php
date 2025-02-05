@@ -698,7 +698,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
                     'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
                     'class_code', 'class_name', 'class_flags', 'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds',
-                    'category_name', 'section_name', 'participation', 'invoice_status_text',
+                    'category_name', 'section_name', 'participation', 'invoice_status_text', 'notes', 'competitor_notes',
                     ),
                 'maps'=>array(
                     'participation'=>$maps['registration']['participation'],
@@ -886,7 +886,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                     $rsp['unscheduled_registrations'][$rid]['ages'] = $ra;
                 }
             }
-            if( $reg['competitor_notes'] != '' ) {
+            if( isset($reg['competitor_notes']) && $reg['competitor_notes'] != '' ) {
                 $rsp['unscheduled_registrations'][$rid]['notes'] .= ($reg['notes'] != '' ? ' ' : '') . $reg['competitor_notes'];
             }
         }
