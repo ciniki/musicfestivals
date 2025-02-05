@@ -195,7 +195,10 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
     $avail_certs = isset($rc['certificates']) ? $rc['certificates'] : array();
 
     $default_cert = null;
-    foreach($avail_certs as $cert) {
+    foreach($avail_certs as $cid => $cert) {
+        if( isset($args['background']) && $args['background'] == 'no' ) {
+            $cert['image_id'] = 0;
+        }
         $default_cert = $cert;
         if( $cert['participation'] == 40 ) {
             $virtual_plus_cert = $cert;

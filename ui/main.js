@@ -6295,6 +6295,10 @@ function ciniki_musicfestivals_main() {
                     'label':'Download Certificate PDF',
                     'fn':'M.ciniki_musicfestivals_main.registration.printCert();',
                     },
+                'nobackgroundcert':{
+                    'label':'Download Certificate PDF (no background)',
+                    'fn':'M.ciniki_musicfestivals_main.registration.printBackgroundlessCert();',
+                    },
                 'pdf':{
                     'label':'Download Registration PDF',
                     'fn':'M.ciniki_musicfestivals_main.registration.printRegistration();',
@@ -6804,6 +6808,10 @@ function ciniki_musicfestivals_main() {
     this.registration.printCert = function() {
         this.popupMenuClose('_class');
         M.api.openFile('ciniki.musicfestivals.registrationCertificatesPDF', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'registration_id':this.registration_id});
+    }
+    this.registration.printBackgroundlessCert = function() {
+        this.popupMenuClose('_class');
+        M.api.openFile('ciniki.musicfestivals.registrationCertificatesPDF', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'registration_id':this.registration_id, 'background':'no'});
     }
     this.registration.printComments = function() {
         this.popupMenuClose('_class');

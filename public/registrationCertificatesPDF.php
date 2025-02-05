@@ -23,6 +23,7 @@ function ciniki_musicfestivals_registrationCertificatesPDF($ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'registration_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Registrations'),
+        'background'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Background Option'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -46,6 +47,7 @@ function ciniki_musicfestivals_registrationCertificatesPDF($ciniki) {
     $rc = ciniki_musicfestivals_registrationCertsPDF($ciniki, $args['tnid'], array(
         'festival_id' => $args['festival_id'],
         'registration_id' => $args['registration_id'],
+        'background' => isset($args['background']) ? $args['background'] : 'yes',
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
