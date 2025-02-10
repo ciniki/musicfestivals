@@ -56,7 +56,9 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
             . "customers.id = links.customer_id "
             . "AND links.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' ";
+        . "WHERE adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
+        . "AND (adjudicators.flags&0x08) = 0 " // Visible
+        . "";
     if( isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'live' ) {
         $strsql .= "AND ((adjudicators.flags&0x01) = 0x01 OR (adjudicators.flags&0x03) = 0) ";
     } elseif( isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'virtual' ) {

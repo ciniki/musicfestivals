@@ -9577,6 +9577,9 @@ function ciniki_musicfestivals_main() {
             'flags3':{'label':'Websites', 'type':'flagspiece', 'mask':0x04, 'field':'flags', 'join':'yes', 'toggle':'yes', 'none':'yes',
                 'flags':{'3':{'name':'Include Customer Profile Links'}},
                 },
+            'flags4':{'label':'Visible', 'type':'flagspiece', 'mask':0x08, 'field':'flags', 'join':'yes', 'toggle':'yes', 'none':'yes',
+                'flags':{'0':{'name':'Yes'}, '4':{'name':'Hide on website'}},
+                },
             }},
         '_sig_image_id':{'label':'Adjudicator Signature', 'aside':'yes', 'type':'imageform', 'fields':{
             'sig_image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'size':'small', 'controls':'all', 'history':'no',

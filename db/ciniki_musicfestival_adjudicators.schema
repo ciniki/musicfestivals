@@ -18,7 +18,7 @@
 #                           0x01 - Live Festival
 #                           0x02 - Virtual Festival
 #                           0x04 - Include customer profile links
-#                           0x08 - 
+#                           0x08 - Hidden on website
 #
 # image_id:             The ID of the image for the adjudicator.
 #
