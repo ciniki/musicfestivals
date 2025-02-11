@@ -350,6 +350,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "registrations.participation, "
         . "registrations.mark, "
         . "registrations.placement, "
+        . "registrations.level, "
         . "registrations.finals_mark, "
         . "registrations.finals_placement, "
         . "classes.code AS class_code, "
@@ -444,7 +445,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                 'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
                 'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
-                'participation', 'class_name', 'mark', 'placement', 'finals_mark', 'finals_placement', 'member_name'),
+                'participation', 'class_name', 'mark', 'placement', 'level', 'finals_mark', 'finals_placement', 'member_name'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -678,6 +679,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                                     'mark' => $registration['mark'],
                                     'placement' => $registration['placement'] 
                                         . (($registration['flags']&0x10) == 0x10 ? '<br/><span class="best-in-class">Best In Class</span>' : ''),
+                                    'level' => $registration['level'],
                                     'psort' => isset($psorts[$registration['placement']]) ? $psorts[$registration['placement']] : $registration['placement'],
                                     );
                             }
@@ -703,6 +705,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                                     'mark' => $registration['mark'],
                                     'placement' => $registration['placement']
                                         . (($registration['flags']&0x10) == 0x10 ? '<br/><span class="best-in-class">Best In Class</span>' : ''),
+                                    'level' => $registration['level'],
                                     'psort' => isset($psorts[$registration['placement']]) ? $psorts[$registration['placement']] : $registration['placement'],
                                     );
                             }
@@ -760,6 +763,9 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 }
                 if( isset($s['mark']) && $s['mark'] == 'yes' ) {
                     $columns[] = array('label'=>'Mark', 'field'=>'mark', 'fold-label'=>'Mark:', 'class'=>'');
+                }
+                if( isset($s['level']) && $s['level'] == 'yes' ) {
+                    $columns[] = array('label'=>'Level', 'field'=>'level', 'fold-label'=>'Level:', 'class'=>'');
                 }
                 $blocks[] = array(
                     'type' => 'schedule',
