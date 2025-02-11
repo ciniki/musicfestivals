@@ -386,8 +386,27 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                             elseif( $field['field'] == 'timeslotdate' ) {
                                 $certificate['fields'][$fid]['text'] = $reg['timeslot_date_text'];
                             }
+                            elseif( $field['field'] == 'mark' ) {
+                                $certificate['fields'][$fid]['text'] = $reg['mark'];
+                            }
                             elseif( $field['field'] == 'placement' ) {
                                 $certificate['fields'][$fid]['text'] = $reg['placement'];
+                            }
+                            elseif( $field['field'] == 'level' ) {
+                                $certificate['fields'][$fid]['text'] = $reg['level'];
+                            }
+                            elseif( $field['field'] == 'mark-placement-level' ) {
+                                $field_text = '';
+                                if( $reg['mark'] != '' ) { 
+                                    $field_text .= ($field_text != '' ? ' - ' : '') . 'Mark: ' . $reg['mark'];
+                                }
+                                if( $reg['placement'] != '' ) { 
+                                    $field_text .= ($field_text != '' ? ' - ' : '') . 'Placement: ' . $reg['placement'];
+                                }
+                                if( $reg['level'] != '' ) { 
+                                    $field_text .= ($field_text != '' ? ' - ' : '') . 'Level: ' . $reg['level'];
+                                }
+                                $certificate['fields'][$fid]['text'] = $field_text;
                             }
                             elseif( $field['field'] == 'adjudicator' && isset($adjudicators[$division['adjudicator_id']]['name']) ) {
                                 $certificate['fields'][$fid]['text'] = $adjudicators[$division['adjudicator_id']]['name'];
@@ -405,7 +424,6 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                                 }
                             }
                             elseif( $field['field'] == 'text' ) {
-                                $certificate['fields'][$fid]['text'] = str_replace('{_placement_}', $reg['placement'], $certificate['fields'][$fid]['text']);
                                 $certificate['fields'][$fid]['text'] = str_replace('{_participant_}', $reg['name'], $certificate['fields'][$fid]['text']);
                                 $certificate['fields'][$fid]['text'] = str_replace('{_title_}', $reg['title1'], $certificate['fields'][$fid]['text']);
                                 $certificate['fields'][$fid]['text'] = str_replace('{_mark_}', $reg['mark'], $certificate['fields'][$fid]['text']);
