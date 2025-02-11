@@ -395,6 +395,19 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                             elseif( $field['field'] == 'level' ) {
                                 $certificate['fields'][$fid]['text'] = $reg['level'];
                             }
+                            elseif( $field['field'] == 'mark placement level' ) {
+                                $field_text = '';
+                                if( $reg['mark'] != '' ) { 
+                                    $field_text .= ($field_text != '' ? '      ' : '') . 'Mark: ' . $reg['mark'];
+                                }
+                                if( $reg['placement'] != '' ) { 
+                                    $field_text .= ($field_text != '' ? '      ' : '') . 'Placement: ' . $reg['placement'];
+                                }
+                                if( $reg['level'] != '' ) { 
+                                    $field_text .= ($field_text != '' ? '      ' : '') . 'Level: ' . $reg['level'];
+                                }
+                                $certificate['fields'][$fid]['text'] = $field_text;
+                            }
                             elseif( $field['field'] == 'mark-placement-level' ) {
                                 $field_text = '';
                                 if( $reg['mark'] != '' ) { 

@@ -10693,6 +10693,7 @@ function ciniki_musicfestivals_main() {
                 'mark':'Mark',
                 'placement':'Placement',
                 'level':'Level',
+                'mark placement level':'Mark: xx    Placement: xx    Level: xx',
                 'mark-placement-level':'Mark: xx - Placement: xx - Level: xx',
                 'text':'Text',
                 }},
