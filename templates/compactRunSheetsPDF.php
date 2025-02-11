@@ -659,7 +659,7 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                                 $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
                                 if( isset($rc['title']) ) {
                                     $timeslot['registrations'][$rid]["title{$i}"] = "- [{$perf_time}] " . $rc['title'];
-                                    $titles = ($titles != '' ? "\n" : '') . "[{$perf_time}] " . $rc['title'];
+                                    $titles .= ($titles != '' ? "\n" : '') . "[{$perf_time}] " . $rc['title'];
                                 }
                                 if( $orientation == 'landscape' ) {
                                     $ht += $pdf->getStringHeight($w[3], $timeslot['registrations'][$rid]["title{$i}"]);
