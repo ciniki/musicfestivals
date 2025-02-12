@@ -296,10 +296,10 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
                                 $pdf->MultiCell($w[2], 0, 'Date/Time', 1, 'L', 0, 0);
                                 $pdf->MultiCell($w[3], 0, 'Titles', 1, 'L', 0, 0);
                                 $pdf->MultiCell($w[4], 0, 'Mark', 1, 'C', 0, 1);
-                                $pdf->SetFont('helvetica', '', 12);
                             }
                         }
 
+                        $pdf->SetFont('helvetica', '', 12);
                         $pdf->MultiCell($w[0], $lh, $class['code'], 1, 'L', 0, 0);
                         $pdf->MultiCell($w[1], $lh, $reg['display_name'], 1, 'L', 0, 0);
                         $pdf->MultiCell($w[2], $lh, $date_time, 1, 'L', 0, 0);
