@@ -4101,6 +4101,7 @@ function ciniki_musicfestivals_main() {
                     'code-category-class':'Code - Category - Class',
                     }},
                 'runsheets-timeslot-singlepage':{'label':'Single Timeslot/Page', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'runsheets-perftime-show':{'label':'Show Performance Time', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'runsheets-mark':{'label':'Include Mark', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'runsheets-advance-to':{'label':'Include Advance To', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'runsheets-internal-notes':{'label':'Include Internal Admin Notes', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},

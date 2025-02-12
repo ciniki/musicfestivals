@@ -673,7 +673,13 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                                 }
                                 $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
                                 if( isset($rc['title']) ) {
-                                    $timeslot['registrations'][$rid]["title{$i}"] = "- [{$perf_time}] " . $rc['title'];
+                                    if( !isset($festival['runsheets-perftime-show']) 
+                                        || $festival['runsheets-perftime-show'] == 'yes'
+                                        ) {
+                                        $timeslot['registrations'][$rid]["title{$i}"] = "- [{$perf_time}] " . $rc['title'];
+                                    } else {
+                                        $timeslot['registrations'][$rid]["title{$i}"] = $rc['title'];
+                                    }
                                 }
                                 $h += $pdf->getStringHeight($tw[1], $timeslot['registrations'][$rid]["title{$i}"]);
                             }
