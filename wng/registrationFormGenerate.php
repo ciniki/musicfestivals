@@ -297,13 +297,17 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                         if( $festival['earlybird'] == 'yes' && $section_live == 'yes' && $section_class['earlybird_fee'] > 0 ) {
                             $live_prices[$cid] = '$' . number_format($section_class['earlybird_fee'], 2);
                             $sections[$sid]['classes'][$cid]['live_fee'] = $section_class['earlybird_fee'];
-                            $plus_prices[$cid] = '$' . number_format($section_class['earlybird_plus_fee'], 2);
-                            $sections[$sid]['classes'][$cid]['plus_fee'] = $section_class['earlybird_plus_fee'];
+                            if( ($section_class['feeflags']&0x10) == 0x10 ) { 
+                                $plus_prices[$cid] = '$' . number_format($section_class['earlybird_plus_fee'], 2);
+                                $sections[$sid]['classes'][$cid]['plus_fee'] = $section_class['earlybird_plus_fee'];
+                            }
                         } elseif( $festival['live'] == 'yes' && $section_live == 'yes' && $section_class['fee'] > 0 ) {
                             $live_prices[$cid] = '$' . number_format($section_class['fee'], 2);
                             $sections[$sid]['classes'][$cid]['live_fee'] = $section_class['fee'];
-                            $plus_prices[$cid] = '$' . number_format($section_class['plus_fee'], 2);
-                            $sections[$sid]['classes'][$cid]['plus_fee'] = $section_class['plus_fee'];
+                            if( ($section_class['feeflags']&0x20) == 0x20 ) { 
+                                $plus_prices[$cid] = '$' . number_format($section_class['plus_fee'], 2);
+                                $sections[$sid]['classes'][$cid]['plus_fee'] = $section_class['plus_fee'];
+                            }
                         }
                     }
                     // Virtual option(0x02) and virtual pricing(0x04) set for festival 
@@ -864,10 +868,16 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         //
         $fields['participation']['options'][0] .= ' - $' . number_format($selected_class['fee'], 2);
         $fields['participation']['options'][2] .= ' - $' . number_format($selected_class['plus_fee'], 2);
-        if( ($selected_class['feeflags']&0x22) != 0x22 ) {
-            $fields['line-participation']['class'] = 'hidden';
-            $fields['participation']['class'] = 'hidden';
+        if( ($selected_class['feeflags']&0x02) == 0 ) {
+            unset($fields['participation']['options'][0]);
         }
+        if( ($selected_class['feeflags']&0x20) == 0 ) {
+            unset($fields['participation']['options'][2]);
+        }
+//        if( ($selected_class['feeflags']&0x22) != 0x22 ) {
+//            $fields['line-participation']['class'] = 'hidden';
+//            $fields['participation']['class'] = 'hidden';
+//        }
     }
 
     //
