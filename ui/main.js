@@ -880,7 +880,7 @@ function ciniki_musicfestivals_main() {
             'headerValues':['Class', 'Registrant', 'Teacher', 'Invoice', 'Status', 'Virtual'],
             'sortable':'yes',
             'sortTypes':['text', 'text', 'text', 'text', 'altnumber', 'text'],
-            'cellClasses':['', 'multiline', '', 'multiline', 'multiline', 'alignright'],
+            'cellClasses':['multiline', 'multiline', '', 'multiline', 'multiline', 'alignright'],
             },
         'registrations_emailbutton':{'label':'', 
             'visible':function() {return M.ciniki_musicfestivals_main.festival.menutabs.selected=='registrations' && M.ciniki_musicfestivals_main.festival.teacher_customer_id > 0 ?'yes':'no';},
@@ -1950,7 +1950,18 @@ function ciniki_musicfestivals_main() {
         }
         if( s == 'registrations' || s == 'registration_search' ) {
             switch (j) {
-                case 0: return d.class_code;
+                case 0: 
+                    if( M.ciniki_musicfestivals_main.festival.data['ui-registrations-class-format'] != null 
+                        && M.ciniki_musicfestivals_main.festival.data['ui-registrations-class-format'] == 'code-category-name'
+                        ) {
+                        return M.multiline(d.class_code, d.category_name + ' - ' + d.class_name);
+                    }
+                    if( M.ciniki_musicfestivals_main.festival.data['ui-registrations-class-format'] != null 
+                        && M.ciniki_musicfestivals_main.festival.data['ui-registrations-class-format'] == 'code-name'
+                        ) {
+                        return M.multiline(d.class_code, d.class_name);
+                    }
+                    return M.multiline(d.class_code, '');
                 case 1: return '<span class="maintext">' + d.display_name + '</span><span class="subtext">' + d.titles + '</span>';
                 case 2: return d.teacher_name + (d.teacher2_name != null && d.teacher2_name != '' ? ', ' + d.teacher2_name : '');
                 case 3: return M.multiline(d.invoice_status_text, '$' + d.fee);
@@ -4223,6 +4234,15 @@ function ciniki_musicfestivals_main() {
                     },
                 },
             },
+        '_registration_lists':{'label':'Registration Lists', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
+            'fields':{
+                'ui-registrations-class-format':{'label':'Class Format', 'type':'select', 'options':{
+                    'code':'Code',
+                    'code-name':'Code, Name',
+                    'code-category-name':'Code, Category-Name',
+                    }},
+            }},
         '_competitor_general':{'label':'Competitors', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'competitors' ? 'yes' : 'hidden'; },
             'fields':{
@@ -4428,6 +4448,7 @@ function ciniki_musicfestivals_main() {
         this.showHideSection('_customer_types');
         this.showHideSection('_registration_form');
         this.showHideSection('_registration_statuses');
+        this.showHideSection('_registration_lists');
         this.showHideSection('_registration_teacher_msg');
         this.showHideSection('_registration_adult_msg');
         this.showHideSection('_competitor_general');

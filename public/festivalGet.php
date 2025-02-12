@@ -1123,6 +1123,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $strsql .= "registrations.class_id, "
                     . "classes.code AS class_code, "
                     . "classes.name AS class_name, "
+                    . "categories.name AS category_name, "
                     . "registrations.title1, "
                     . "registrations.composer1, "
                     . "registrations.movements1, "
@@ -1261,7 +1262,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             'billing_customer_id', 
                             'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
                             'invoice_type', 'invoice_status', 'payment_status_text', 'invoice_date', 
-                            'class_id', 'class_code', 'class_name', 'class_flags', 'min_titles', 'max_titles',
+                            'class_id', 'class_code', 'class_name', 'category_name',
+                            'class_flags', 'min_titles', 'max_titles',
                             'fee', 'participation', 'flags',
                             'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
                             'title2', 'composer2', 'movements2', 'perf_time2', 'video_url2', 'music_orgfilename2',
