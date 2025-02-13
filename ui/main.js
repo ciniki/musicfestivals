@@ -4723,7 +4723,7 @@ function ciniki_musicfestivals_main() {
                 },
             'name':{'label':'Name', 'type':'text', 'required':'yes'},
             'sequence':{'label':'Order', 'type':'text', 'required':'yes', 'size':'small'},
-            'flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'Hidden'}}},
+            'flags':{'label':'Options', 'type':'flags', 'flags':{'1':{'name':'Hidden'}, '3':{'name':'Hidden in Registration Form'}}},
             'live_end_dt':{'label':'Live Deadline', 'type':'datetime',
                 'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x08) == 0x08 ? 'yes' : 'no';},
                 },

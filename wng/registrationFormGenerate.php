@@ -391,6 +391,15 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     }
 
     //
+    // Remove any hidden from registration form classes
+    //
+    foreach($sections as $sid => $section) {
+        if( ($section['flags']&0x04) == 0x04 ) {
+            unset($sections[$sid]);
+        }
+    }
+
+    //
     // Check for different class submitted in form
     //
     if( isset($_POST['f-section']) && is_numeric($_POST['f-section']) && $_POST['f-section'] > 0 ) {
@@ -511,39 +520,55 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         }
     }
 
-    $fields['section'] = array(
-        'id' => 'section',
-        'ftype' => 'select',
-        'label' => 'Section',
-        'blank' => 'no',
-        'size' => 'small',
-        'required' => 'yes',
-        'flex-basis' => '10em',
-        'onchange' => 'sectionSelected()',
-        'options' => $sections,
-        'value' => (isset($selected_section) ? $selected_section['id'] : (isset($registration['section']) ? $registration['section'] : '')),
-        );
+    //
+    // Check if the selected class is from a section that should not be allowed to change class
+    //
+    if( isset($selected_section) && ($selected_section['flags']&0x04) == 0x04 && isset($selected_class)) {
+        $fields['section'] = array(
+            'id' => 'section',
+            'ftype' => 'hidden',
+            'value' => $selected_section['id'],
+            );
+        $fields["section-{$selected_section['id']}-classes"] = array(
+            'id' => "section-{$selected_section['id']}-class",
+            'ftype' => 'hidden',
+            'value' => $selected_class['id'],
+            );
+    } else {
+        $fields['section'] = array(
+            'id' => 'section',
+            'ftype' => 'select',
+            'label' => 'Section',
+            'blank' => 'no',
+            'size' => 'small',
+            'required' => 'yes',
+            'flex-basis' => '10em',
+            'onchange' => 'sectionSelected()',
+            'options' => $sections,
+            'value' => (isset($selected_section) ? $selected_section['id'] : (isset($registration['section']) ? $registration['section'] : '')),
+            );
 
-    //
-    // Add the classes for each section
-    //
-    foreach($sections as $sid => $section) {
-        if( isset($section['classes']) ) {
-            $fields["section-{$sid}-classes"] = array(
-                'id' => "section-{$sid}-class",
-                'ftype' => 'select',
-                'label' => 'Class',
-                'required' => 'yes',
-                'class' => isset($selected_section['id']) && $selected_section['id'] == $sid ? '' : 'hidden',
-                'blank' => 'no',
-                'size' => 'medium',
-                'flex-basis' => '32em',
-                'options' => $section['classes'],
-                'option-id-field' => 'id',
-                'option-value-field' => 'codename',
-                'onchange' => "classSelected({$sid})",
-                'value' => isset($selected_class['id']) ? $selected_class['id'] : '',
-                );
+        //
+        // Add the classes for each section
+        //
+        foreach($sections as $sid => $section) {
+            if( isset($section['classes']) ) {
+                $fields["section-{$sid}-classes"] = array(
+                    'id' => "section-{$sid}-class",
+                    'ftype' => 'select',
+                    'label' => 'Class',
+                    'required' => 'yes',
+                    'class' => isset($selected_section['id']) && $selected_section['id'] == $sid ? '' : 'hidden',
+                    'blank' => 'no',
+                    'size' => 'medium',
+                    'flex-basis' => '32em',
+                    'options' => $section['classes'],
+                    'option-id-field' => 'id',
+                    'option-value-field' => 'codename',
+                    'onchange' => "classSelected({$sid})",
+                    'value' => isset($selected_class['id']) ? $selected_class['id'] : '',
+                    );
+            }
         }
     }
 
