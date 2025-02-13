@@ -75,6 +75,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'runsheets-competitor-notes',
         'runsheets-competitor-age',
         'runsheets-competitor-city',
+        'runsheets-footer-msg',
         'comments-header-adjudicator',
         'comments-include-pronouns',
         'comments-class-format',

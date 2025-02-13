@@ -349,7 +349,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             // Position at 15 mm from bottom
             if( $this->footer_visible == 'yes' ) {
                 $this->SetY(-15);
-                $this->SetFont('helvetica', 'B', 10);
+                $this->SetFont('helvetica', '', 10);
                 $this->Cell(90, 10, $this->footer_msg, 0, false, 'L', 0, '', 0, false, 'T', 'M');
                 $this->SetFont('helvetica', '', 10);
                 $this->Cell(90, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
@@ -434,6 +434,9 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
     if( isset($args['footerdate']) && $args['footerdate'] == 'yes' ) {
         $dt = new DateTime('now', new DateTimezone($intl_timezone));
         $pdf->footer_msg = $dt->format("M j, Y");
+    }
+    if( isset($festival['runsheets-footer-msg']) && $festival['runsheets-footer-msg'] != '' ) {
+        $pdf->footer_msg .= ($pdf->footer_msg != '' ? ' - ' : '') . $festival['runsheets-footer-msg'];
     }
 
     //
