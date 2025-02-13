@@ -442,6 +442,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             }
             // Check if enough room for division header and at least 1 timeslot
             if( $this->getY() > ($this->getPageHeight() - $h - 80 - $this->footer_image_height)) {
+                $this->newpage = 'yes';
                 $this->AddPage();
             } elseif( $this->getY() > 80 ) {
                 $this->Ln(5); 
@@ -649,9 +650,9 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         if( isset($args['schedulesection_id']) ) {
             $filename = preg_replace('/[^a-zA-Z0-9_]/', '_', $section['name']) . '_schedule';
         }
-        $newpage = 'no';
+        $pdf->newpage = 'no';
         if( $pdf->PageNo() == 0 || !isset($args['section_page_break']) || $args['section_page_break'] == 'yes' ) {
-            $newpage = 'yes';
+            $pdf->newpage = 'yes';
             $pdf->AddPage();
         }
 
@@ -846,11 +847,10 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 continue;
             }
 
-            if( $newpage == 'no' && isset($args['division_page_break']) && $args['division_page_break'] == 'yes' ) {
-                $newpage = 'yes';
+            if( $pdf->newpage == 'no' && isset($args['division_page_break']) && $args['division_page_break'] == 'yes' ) {
+                $pdf->newpage = 'yes';
                 $pdf->AddPage();
             }
-            $newpage = 'no';
 
             //
             // Remove adjudicator when information division, no actual timeslots
@@ -1103,7 +1103,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 $h = 40;
             }
             if( $pdf->getY() > $pdf->getPageHeight() - $h - 30 - $pdf->footer_image_height) {
-                $newpage = 'no';
+                $pdf->newpage = 'no';
                 $pdf->AddPage();
             }
             $y = $pdf->GetY();
@@ -1179,7 +1179,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             }
             $h = $h1 + $h2 + 40;
             if( $pdf->getY() > $pdf->getPageHeight() - $h - 18  - $pdf->footer_image_height) {
-                $newpage = 'no';
+                $pdf->newpage = 'no';
                 $pdf->AddPage();
             }
             $pdf->SetFont('', 'B', '13');
