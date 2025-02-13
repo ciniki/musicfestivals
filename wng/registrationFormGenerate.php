@@ -391,15 +391,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     }
 
     //
-    // Remove any hidden from registration form classes
-    //
-    foreach($sections as $sid => $section) {
-        if( ($section['flags']&0x04) == 0x04 ) {
-            unset($sections[$sid]);
-        }
-    }
-
-    //
     // Check for different class submitted in form
     //
     if( isset($_POST['f-section']) && is_numeric($_POST['f-section']) && $_POST['f-section'] > 0 ) {
@@ -535,6 +526,15 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'value' => $selected_class['id'],
             );
     } else {
+        //
+        // Remove any hidden from registration form classes
+        //
+        foreach($sections as $sid => $section) {
+            if( ($section['flags']&0x04) == 0x04 ) {
+                unset($sections[$sid]);
+            }
+        }
+
         $fields['section'] = array(
             'id' => 'section',
             'ftype' => 'select',
@@ -787,6 +787,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     } elseif( isset($_POST['f-participation']) && $_POST['f-participation'] == 2 ) {
         $participation = 2;
     }
+    // FIXME: May need a Adjudication Plus and Virtual flag check first
     // Virtual
     if( ($festival['flags']&0x02) == 0x02 ) {
         $fields['line-participation'] = array(
@@ -817,7 +818,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 && isset($selected_class['live_fee']) 
 //                && $selected_class['live_fee'] > 0 
                 ) {
-                $fields['participation']['options'][0] .= ' - $' . number_format($selected_class['live_fee'], 2);
+                $fields['participation']['options'][0] .= ': $' . number_format($selected_class['live_fee'], 2);
                 if( isset($selected_member['latefee']) ) {
                     $fields['participation']['options'][0] .= ' + $' . $selected_member['latefee'] . ' late fee';
                 }
@@ -831,7 +832,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 && isset($selected_class['virtual_fee']) 
 //                && $selected_class['virtual_fee'] > 0 
                 ) {
-                $fields['participation']['options'][1] .= ' - $' . number_format($selected_class['virtual_fee'], 2);
+                $fields['participation']['options'][1] .= ': $' . number_format($selected_class['virtual_fee'], 2);
                 if( isset($selected_member['latefee']) ) {
                     $fields['participation']['options'][1] .= ' + $' . $selected_member['latefee'] . ' late fee';
                 }
@@ -891,18 +892,19 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         //
         // Setup pricing for virtual option with separate virtual pricing
         //
-        $fields['participation']['options'][0] .= ' - $' . number_format($selected_class['fee'], 2);
-        $fields['participation']['options'][2] .= ' - $' . number_format($selected_class['plus_fee'], 2);
-        if( ($selected_class['feeflags']&0x02) == 0 ) {
-            unset($fields['participation']['options'][0]);
+        $fields['participation']['options'][0] .= ': $' . number_format($selected_class['fee'], 2);
+        $fields['participation']['options'][2] .= ': $' . number_format($selected_class['plus_fee'], 2);
+        if( ($selected_class['feeflags']&0x22) != 0x22 ) {
+            unset($fields['participation']['options'][-2]);
+            $fields['line-participation']['class'] = 'hidden';
+            $fields['participation']['class'] = 'hidden';
+            if( ($selected_class['feeflags']&0x02) == 0 ) {
+                unset($fields['participation']['options'][0]);
+            }
+            if( ($selected_class['feeflags']&0x20) == 0 ) {
+                unset($fields['participation']['options'][2]);
+            }
         }
-        if( ($selected_class['feeflags']&0x20) == 0 ) {
-            unset($fields['participation']['options'][2]);
-        }
-//        if( ($selected_class['feeflags']&0x22) != 0x22 ) {
-//            $fields['line-participation']['class'] = 'hidden';
-//            $fields['participation']['class'] = 'hidden';
-//        }
     }
 
     //
