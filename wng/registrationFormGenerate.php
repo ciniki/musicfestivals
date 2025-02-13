@@ -525,6 +525,12 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'ftype' => 'hidden',
             'value' => $selected_class['id'],
             );
+        $fields['class_name'] = array(
+            'id' => 'class_name',
+            'ftype' => 'content',
+            'label' => 'Class',
+            'description' => $selected_section['name'] . ' - ' . $selected_class['name'],
+            );
     } else {
         //
         // Remove any hidden from registration form classes
