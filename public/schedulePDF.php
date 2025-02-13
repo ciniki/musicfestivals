@@ -34,6 +34,7 @@ function ciniki_musicfestivals_schedulePDF($ciniki) {
         'footer'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Show Footer'),
         'footerdate'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Footer Date'),
         'section_page_break'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Section Page Break'),
+        'division_page_break'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Division Page Break'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

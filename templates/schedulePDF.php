@@ -649,7 +649,9 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         if( isset($args['schedulesection_id']) ) {
             $filename = preg_replace('/[^a-zA-Z0-9_]/', '_', $section['name']) . '_schedule';
         }
+        $newpage = 'no';
         if( $pdf->PageNo() == 0 || !isset($args['section_page_break']) || $args['section_page_break'] == 'yes' ) {
+            $newpage = 'yes';
             $pdf->AddPage();
         }
 
@@ -843,6 +845,12 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             if( !isset($division['timeslots']) ) {
                 continue;
             }
+
+            if( $newpage == 'no' && isset($args['division_page_break']) && $args['division_page_break'] == 'yes' ) {
+                $newpage = 'yes';
+                $pdf->AddPage();
+            }
+            $newpage = 'no';
 
             //
             // Remove adjudicator when information division, no actual timeslots
@@ -1095,6 +1103,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 $h = 40;
             }
             if( $pdf->getY() > $pdf->getPageHeight() - $h - 30 - $pdf->footer_image_height) {
+                $newpage = 'no';
                 $pdf->AddPage();
             }
             $y = $pdf->GetY();
@@ -1170,6 +1179,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             }
             $h = $h1 + $h2 + 40;
             if( $pdf->getY() > $pdf->getPageHeight() - $h - 18  - $pdf->footer_image_height) {
+                $newpage = 'no';
                 $pdf->AddPage();
             }
             $pdf->SetFont('', 'B', '13');

@@ -1104,6 +1104,7 @@ function ciniki_musicfestivals_main() {
                 'schedule-footer':{'label':'Document Footer', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'schedule-footerdate':{'label':'Footer Date', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'schedule-section-page-break':{'label':'Section Page Break', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'schedule-division-page-break':{'label':'Division Page Break', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
             }},
         'schedule_buttons':{'label':'', 'aside':'no',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'downloads'); },
@@ -1683,6 +1684,7 @@ function ciniki_musicfestivals_main() {
             'header':this.formValue('schedule-header'),
             'footer':this.formValue('schedule-footer'),
             'section_page_break':this.formValue('schedule-section-page-break'),
+            'division_page_break':this.formValue('schedule-division-page-break'),
             'footerdate':this.formValue('schedule-footerdate'),
             };
         M.api.openPDF('ciniki.musicfestivals.schedulePDF',args);
@@ -4069,6 +4071,7 @@ function ciniki_musicfestivals_main() {
                         'yes':'Yes',
                     }},
                 'schedule-section-page-break':{'label':'Section Page Break', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'schedule-division-page-break':{'label':'Division Page Break', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
             }},
         '_program_pdf':{'label':'Program PDF Default Options', 
             // These options can be changed on the download screen
