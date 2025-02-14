@@ -336,7 +336,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                             && !isset($sections[$sid]['classes'][$cid]['virtual_fee'])
                             && $args['display'] != 'view' 
                             ) {
-                            unset($sections[$sid]['classes'][$cid]);
+//                            error_log('remove: ' . $sections[$sid]['classes'][$cid]['code']);
+//                            unset($sections[$sid]['classes'][$cid]);
                         }
                     }
                     //
