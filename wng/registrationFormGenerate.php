@@ -322,10 +322,10 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                             $live_prices[$cid] = '$' . number_format($section_class['fee'], 2);
                             $sections[$sid]['classes'][$cid]['live_fee'] = $section_class['fee'];
                         }
-                        if( $festival['virtual'] == 'yes' && $section_virtual == 'yes' && ($section_class['feeflags']&0x01) == 0x01 ) { //&& $section_class['vfee'] > 0 ) {
+                        if( $festival['virtual'] == 'yes' && $section_virtual == 'yes' && ($section_class['feeflags']&0x08) == 0x08 ) { //&& $section_class['vfee'] > 0 ) {
                             $virtual_prices[$cid] = '$' . number_format($section_class['vfee'], 2);
                             $sections[$sid]['classes'][$cid]['virtual_fee'] = $section_class['vfee'];
-                        } elseif( $festival['virtual'] == 'sections' && $section_virtual == 'yes' && ($section_class['feeflags']&0x01) == 0x01 ) { //&& $section_class['vfee'] > 0 ) {
+                        } elseif( $festival['virtual'] == 'sections' && $section_virtual == 'yes' && ($section_class['feeflags']&0x08) == 0x08 ) { //&& $section_class['vfee'] > 0 ) {
                             $virtual_prices[$cid] = '$' . number_format($section_class['vfee'], 2);
                             $sections[$sid]['classes'][$cid]['virtual_fee'] = $section_class['vfee'];
                         }
@@ -336,8 +336,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                             && !isset($sections[$sid]['classes'][$cid]['virtual_fee'])
                             && $args['display'] != 'view' 
                             ) {
-//                            error_log('remove: ' . $sections[$sid]['classes'][$cid]['code']);
-//                            unset($sections[$sid]['classes'][$cid]);
+                            unset($sections[$sid]['classes'][$cid]);
                         }
                     }
                     //
