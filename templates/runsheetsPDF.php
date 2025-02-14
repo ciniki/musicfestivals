@@ -759,7 +759,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                 }
 
                 $continued = 'no';
-                if( $pdf->GetY() > 70 && $pdf->GetY() > $pdf->getPageHeight() - $h - 32) {
+                if( $pdf->GetY() > 70 && $pdf->GetY() > $pdf->getPageHeight() - $h - 35) {
                     $pdf->SetFont('', 'B');
                     if( $time == '' ) {
                         $pdf->SetFont('', 'BI', '11');

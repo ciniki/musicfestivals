@@ -799,7 +799,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     $columns[] = array('label'=>'Video', 'fold-label'=>'Videos:', 'field'=>'videos', 'class'=>'alignright');
                 }
                 $adjudicator_name = $division['adjudicator_name'];
-                if( $division['adjudicator_permalink'] != '' && $division['adjudicator_name'] != '' && isset($s['adjudicators-page']) ) {
+                if( $division['adjudicator_permalink'] != '' && $division['adjudicator_name'] != '' && isset($s['adjudicators-page']) && $s['adjudicators-page'] != '' ) {
                     ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'urlProcess');
                     $rc = ciniki_wng_urlProcess($ciniki, $tnid, $request, $s['adjudicators-page'], '');
                     if( isset($rc['url']) ) {
@@ -904,7 +904,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 $adjudicator_name = '';
                 if( isset($s['adjudicators-name']) && $s['adjudicators-name'] == 'yes' ) {
                     $adjudicator_name = $division['adjudicator_name'];
-                    if( $division['adjudicator_permalink'] != '' && $division['adjudicator_name'] != '' && isset($s['adjudicators-page']) ) {
+                    if( $division['adjudicator_permalink'] != '' && $division['adjudicator_name'] != '' && isset($s['adjudicators-page']) && $s['adjudicators-page'] != '' ) {
                         ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'urlProcess');
                         $rc = ciniki_wng_urlProcess($ciniki, $tnid, $request, $s['adjudicators-page'], '');
                         if( isset($rc['url']) ) {
