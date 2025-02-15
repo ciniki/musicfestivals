@@ -134,8 +134,8 @@ function ciniki_musicfestivals_artworkZip(&$ciniki) {
                 $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/files/'
                     . $reg['uuid'][0] . '/' . $reg['uuid'] . '_artwork' . $i;
                 try {
-                    $zip->add_file_from_path($reg['section_name'] . '/' . $reg['division_name'] . '/' 
-                        . $reg_num . ' - ' . $reg['slot_time_text'] . ' - ' . $reg['display_name'] . ' - ' . $reg["title{$i}"] . ' - ' . $reg["artwork{$i}"], 
+                    $zip->add_file_from_path($reg['section_name'] . ' - ' . str_replace("/", '_', $reg['division_name']) . ' - ' 
+                        . $reg_num . ' - ' . $reg['display_name'] . ' - ' . $reg["title{$i}"] . ' - ' . $reg["artwork{$i}"], 
                         $storage_filename);
                     $files_found = 'yes';
                 } catch(Exception $e) {
