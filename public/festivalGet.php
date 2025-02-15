@@ -2312,7 +2312,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "DATE_FORMAT(divisions.division_date, '%b %D') AS date_text, "
                 . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS time_text, "
                 . "timeslots.groupname, "
-                . "ssections.name AS section_name "
+                . "ssections.name AS section_name, "
+                . "IFNULL(locations.name, '??') AS location_name "
                 . "FROM ciniki_musicfestival_registrations AS registrations "
                 . "INNER JOIN ciniki_musicfestival_competitors AS competitors ON ("
                     . "("
@@ -2336,24 +2337,51 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "divisions.ssection_id = ssections.id "
                     . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
+                . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
+                    . "divisions.location_id = locations.id "
+                    . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
                 . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "ORDER BY name, divisions.division_date, timeslots.slot_time "
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-                array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'name')),
+                array('container'=>'competitors', 'fname'=>'name', 'fields'=>array('id', 'name')),
                 array('container'=>'timeslots', 'fname'=>'timeslot_id', 
-                    'fields'=>array('id'=>'timeslot_id', 'section_name', 'date_text', 'time_text', 'groupname')),
+                    'fields'=>array('id'=>'timeslot_id', 'section_name', 'location_name', 'date_text', 'time_text', 'groupname')),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.445', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
             }
             $festival['schedule_competitors'] = isset($rc['competitors']) ? $rc['competitors'] : array();
             $festival['schedule_competitors_max_timeslots'] = 1;
-            foreach($festival['schedule_competitors'] AS $c) {
+            foreach($festival['schedule_competitors'] AS $cid => $c) {
                 if( isset($c['timeslots']) && count($c['timeslots']) > $festival['schedule_competitors_max_timeslots'] ) {
                     $festival['schedule_competitors_max_timeslots'] = count($c['timeslots']);
+                }
+                if( isset($c['timeslots']) ) {
+                    $prev_timeslot = null;
+                    $prev_tid = 0;
+                    foreach($c['timeslots'] as $tid => $timeslot) {
+                        if( $prev_timeslot != null 
+                            && $prev_timeslot['date_text'] == $timeslot['date_text']
+                            && $prev_timeslot['location_name'] != $timeslot['location_name']
+                            ) {
+                            $festival['schedule_competitors'][$cid]['conflict'] = 'yes';
+
+                            $festival['schedule_competitors'][$cid]['timeslots'][$tid]['conflict'] = 'yes';
+                            $festival['schedule_competitors'][$cid]['timeslots'][$prev_tid]['conflict'] = 'yes';
+                        }
+
+                        $prev_timeslot = $timeslot;
+                        $prev_tid = $tid;
+                    }
+                }
+                if( isset($args['competitors']) && $args['competitors'] == 'conflicts' 
+                    && !isset($festival['schedule_competitors'][$cid]['conflict'])
+                    ) {
+                    unset($festival['schedule_competitors'][$cid]);
                 }
             }
         }

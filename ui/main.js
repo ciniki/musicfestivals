@@ -1142,6 +1142,12 @@ function ciniki_musicfestivals_main() {
                     },
                 },
             },
+        'schedule_competitors_tabs':{'label':'', 'type':'paneltabs', 'selected':'all', 
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'competitors'); },
+            'tabs':{
+                'all':{'label':'All', 'fn':'M.ciniki_musicfestivals_main.festival.switchSCTab("all");'}, 
+                'conflicts':{'label':'Conflicts', 'fn':'M.ciniki_musicfestivals_main.festival.switchSCTab("conflicts");'}, 
+            }},
         'schedule_competitors':{'label':'Competitor Schedules', 'type':'simplegrid', 'num_cols':13, 'aside':'yes',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'competitors'); },
             'cellClasses':['', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline','multiline', 'multiline', 'multiline', 'multiline', 'multiline','multiline'],
@@ -2034,7 +2040,8 @@ function ciniki_musicfestivals_main() {
                 return d.name;
             }
             if( d.timeslots != null && d.timeslots[(j-1)] != null ) {
-                return M.multiline(d.timeslots[(j-1)].section_name, d.timeslots[(j-1)]['date_text'] + ' - ' + d.timeslots[(j-1)]['time_text']);
+                //return M.multiline(d.timeslots[(j-1)].section_name, d.timeslots[(j-1)]['date_text'] + ' - ' + d.timeslots[(j-1)]['time_text']);
+                return M.multiline(d.timeslots[(j-1)].location_name, d.timeslots[(j-1)]['date_text'] + ' - ' + d.timeslots[(j-1)]['time_text']);
             }
             return '';
         }
@@ -2340,6 +2347,17 @@ function ciniki_musicfestivals_main() {
         }
         return '';
     }
+    this.festival.cellClass = function(s, i, j, d) {
+        if( s == 'schedule_competitors' ) {
+            if( d.timeslots != null && d.timeslots[(j-1)] != null && d.timeslots[(j-1)].conflict != null ) {
+                return 'multiline statusred';
+            }
+        }
+        if( this.sections[s].cellClasses != null && this.sections[s].cellClasses[j] != null ) {
+            return this.sections[s].cellClasses[j];
+        }
+        return '';
+    }
     this.festival.rowFn = function(s, i, d) {
         switch(s) {
             case 'sections': return 'M.ciniki_musicfestivals_main.festival.switchSection(\'' + d.id + '\');'; 
@@ -2566,6 +2584,10 @@ function ciniki_musicfestivals_main() {
     }
     this.festival.switchSyllabus = function(s) {
         this.sections.syllabi_tabs.selected = s;
+        this.open();
+    }
+    this.festival.switchSCTab = function(t) {
+        this.sections.schedule_competitors_tabs.selected = t;
         this.open();
     }
     this.festival.switchSyllabusList = function(l) {
@@ -3429,6 +3451,7 @@ function ciniki_musicfestivals_main() {
             } else if( this.sections.schedule_tabs.selected == 'competitors' ) {
                 this.size = 'full';
                 args['schedule'] = 'competitors';
+                args['competitors'] = this.sections.schedule_competitors_tabs.selected;
             } else if( this.sections.schedule_tabs.selected == 'adjudicators' ) {
                 args['schedule'] = 'adjudicators';
                 args['ipv'] = this.sections.ipv_tabs.selected;
@@ -12896,6 +12919,7 @@ function ciniki_musicfestivals_main() {
         this.festival.typestatus = '';
         this.festival.menutabs.selected = 'syllabus';
         this.festival.sections.ipv_tabs.selected = 'all';
+        this.festival.sections.schedule_competitors_tabs.selected = 'all';
         this.festival.sections.syllabi_tabs.selected = null;
         this.festival.sections.syllabi_tabs.tabs = {};
         this.section.sections._tabs.selected = 'categories';
