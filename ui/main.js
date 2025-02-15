@@ -4138,6 +4138,11 @@ function ciniki_musicfestivals_main() {
                 'runsheets-competitor-city':{'label':'Include Competitor City', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'runsheets-footer-msg':{'label':'Footer Message', 'type':'text'},
             }},
+        '_trophies_pdf':{'label':'Trophies PDF Options', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
+            'fields':{
+                'trophies-footer-msg':{'label':'Footer Message', 'type':'text'},
+            }},
         '_certificates_pdf':{'label':'Certificates PDF Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
             'fields':{
@@ -4470,6 +4475,7 @@ function ciniki_musicfestivals_main() {
         this.showHideSection('_schedule_pdf');
         this.showHideSection('_program_pdf');
         this.showHideSection('_runsheets_pdf');
+        this.showHideSection('_trophies_pdf');
         this.showHideSection('_certificates_pdf');
         this.showHideSection('_syllabus');
 //        this.showHideSection('_syllabus_pdf');

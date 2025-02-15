@@ -172,7 +172,11 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
     $dt = new DateTime('now', new DateTimezone($intl_timezone));
-    $pdf->footer_msg = $dt->format("M j, Y");
+//    $pdf->footer_msg = $dt->format("M j, Y");
+
+    if( isset($festival['trophies-footer-msg']) && $festival['trophies-footer-msg'] != '' ) {
+        $pdf->footer_msg .= ($pdf->footer_msg != '' ? ' - ' : '') . $festival['trophies-footer-msg'];
+    }
 
     // set font
     $pdf->SetFont('helvetica', 'B', 12);
