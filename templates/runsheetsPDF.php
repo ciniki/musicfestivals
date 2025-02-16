@@ -493,7 +493,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
 
     $filename = 'Run Sheets';
 
-    $newpage = 'yes';
+    $newpage = 'no';
     //
     // Go through the sections, divisions and classes
     //
@@ -527,7 +527,10 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             $pdf->header_title = $division['date'];
             $pdf->header_sub_title = 'Adjudicator: ' . $division['adjudicator_name'];
             $pdf->header_msg = 'Location: ' . $division['location_name'];
-            $pdf->AddPage();
+            if( $newpage == 'no' ) {
+                $pdf->AddPage();
+            }
+            $newpage = 'no';
 
             //
             // Setup the division header
@@ -910,11 +913,15 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                         }
                         $pdf->SetCellPaddings(2,2,2,2);
                         $pdf->SetFont('', 'B', 12);
+                        $border = 'LTR';
+                        if( $reg["title1"] == '' ) {
+                            $border = 'BLTR';
+                        }
                         $h = $pdf->getStringHeight($w[1], $reg['name']);
                         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
-                            $pdf->MultiCell($w[0], $h, $reg['reg_time_text'], 'LTR', 'C', 0, 0);
+                            $pdf->MultiCell($w[0], $h, $reg['reg_time_text'], $border, 'C', 0, 0);
                         } else {
-                            $pdf->MultiCell($w[0], $h, $num, 'LTR', 'C', 0, 0);
+                            $pdf->MultiCell($w[0], $h, $num, $border, 'C', 0, 0);
                         }
                         $pdf->MultiCell($w[1], $h, $reg['name'], 'BLTR', 'L', 0, 0);
 /*                        if( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
@@ -975,9 +982,8 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
 
                         $num++;
                     }
-                } 
-                if( isset($festival['runsheets-timeslot-singlepage']) && $festival['runsheets-timeslot-singlepage'] == 'yes' ) {
                     $pdf->AddPage();
+                    $newpage = 'yes';
                 } else {
                     $pdf->Ln(5);
                 }
