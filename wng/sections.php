@@ -348,6 +348,10 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'top' => 'Yes',
                 // In future can add bottom/both as options if needed
                 )),
+            'today-divisions' => array('label'=>'Todays Schedule', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
+                'no' => 'No',
+                'yes' => 'Yes',
+                )),
             'ipv' => array('label'=>'Live/Virtual', 'type'=>'toggle', 'default'=>'all', 'separator'=>'yes',
                 'toggles'=>array(
                     'all' => 'All',
