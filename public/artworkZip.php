@@ -134,9 +134,10 @@ function ciniki_musicfestivals_artworkZip(&$ciniki) {
                 $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/files/'
                     . $reg['uuid'][0] . '/' . $reg['uuid'] . '_artwork' . $i;
                 try {
-                    $zip->add_file_from_path($reg['section_name'] . ' - ' . str_replace("/", '_', $reg['division_name']) . ' - ' 
-                        . $reg_num . ' - ' . $reg['display_name'] . ' - ' . $reg["title{$i}"] . ' - ' . $reg["artwork{$i}"], 
-                        $storage_filename);
+                    $zip_filename = $reg['section_name'] . ' - ' . str_replace("/", '_', $reg['division_name']) . ' - ' 
+                        . $reg_num . ' - ' . $reg['display_name'] . ' - ' . $reg["title{$i}"] . ' - ' . $reg["artwork{$i}"];
+                    $zip_filename = preg_replace("/[^0-9A-Za-z\-_\. ]/", '_', $zip_filename);
+                    $zip->add_file_from_path($zip_filename, $storage_filename);
                     $files_found = 'yes';
                 } catch(Exception $e) {
                     error_log('Zip Add File: ' . $e->getMessage());
