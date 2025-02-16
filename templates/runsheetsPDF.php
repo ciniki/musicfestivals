@@ -982,8 +982,12 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
 
                         $num++;
                     }
-                    $pdf->AddPage();
-                    $newpage = 'yes';
+                    if( isset($festival['runsheets-timeslot-singlepage']) && $festival['runsheets-timeslot-singlepage'] == 'yes' ) {
+                        $pdf->AddPage();
+                        $newpage = 'yes';
+                    } else {
+                        $pdf->Ln(5);
+                    }
                 } else {
                     $pdf->Ln(5);
                 }
