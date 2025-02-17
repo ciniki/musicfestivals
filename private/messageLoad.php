@@ -688,10 +688,10 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             . "registrations.competitor5_id "
             . "FROM ciniki_musicfestival_registrations AS registrations "
             . "INNER JOIN ciniki_customers AS customers ON ("
-                . "("
+//                . "("
                     . "registrations.teacher_customer_id = customers.id "
 //                    . "OR registrations.teacher2_customer_id = customers.id "
-                    . ") "
+//                    . ") "
                 . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
@@ -712,6 +712,53 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.514', 'msg'=>'Unable to load teachers', 'err'=>$rc['err']));
         }
         $rsp['teachers'] = isset($rc['teachers']) ? $rc['teachers'] : array();
+        //
+        // Load the teacher2 list and merge
+        // Note: This is faster than doing an OR in mysql query
+        //
+        $strsql = "SELECT customers.id, "
+            . "customers.display_name AS name, "
+            . "registrations.id AS reg_id, "
+            . "registrations.teacher_customer_id, "
+            . "registrations.teacher2_customer_id, "
+            . "registrations.competitor1_id, "
+            . "registrations.competitor2_id, "
+            . "registrations.competitor3_id, "
+            . "registrations.competitor4_id, "
+            . "registrations.competitor5_id "
+            . "FROM ciniki_musicfestival_registrations AS registrations "
+            . "INNER JOIN ciniki_customers AS customers ON ("
+                . "registrations.teacher2_customer_id = customers.id "
+                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
+            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "ORDER BY customers.display_name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'teachers', 'fname'=>'id', 'fields'=>array('id', 'name')),
+            array('container'=>'registrations', 'fname'=>'reg_id', 
+                'fields'=>array('id'=>'reg_id', 'teacher_customer_id', 'teacher2_customer_id',
+                    'competitor1_id', 'competitor2_id', 'competitor3_id', 
+                    'competitor4_id', 'competitor5_id',
+                    ),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.514', 'msg'=>'Unable to load teachers', 'err'=>$rc['err']));
+        }
+        // Merge teacher2 list
+        if( isset($rc['teachers']) ) {
+            foreach($rc['teachers'] as $tid => $teacher) {
+                if( !isset($rsp['teachers'][$tid]) ) {
+                    $rsp['teachers'][$tid] = $teacher;
+                }
+            }
+        }
+
+        //
+        // Process teacher list
         foreach($rsp['teachers'] as $tid => $teacher) {
             $rsp['teachers'][$tid]['object'] = 'ciniki.musicfestivals.teacher';
             //
