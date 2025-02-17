@@ -67,6 +67,7 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
         . "divisions.id AS division_id, "
         . "divisions.name AS division_name, "
         . "locations.name AS location_name, "
+        . "CONCAT_WS(' ', divisions.division_date, timeslots.slot_time) AS division_sort_key, "
         . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, ";
     if( isset($festival['runsheets-separate-classes']) && $festival['runsheets-separate-classes'] == 'yes' ) {
         $strsql .= "CONCAT_WS('-', timeslots.id, classes.id) AS timeslot_id, ";
@@ -215,7 +216,7 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
             ),
         array('container'=>'divisions', 'fname'=>'division_id', 
             'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 
-                'location_name', 'adjudicator_name',
+                'location_name', 'adjudicator_name', 'sort_key'=>'division_sort_key',
                 ),
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
@@ -541,6 +542,13 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
         if( !isset($section['divisions']) ) {
             continue;
         }
+
+        //
+        // Sort the divisions
+        //
+        uasort($section['divisions'], function($a, $b) {
+            return $a['sort_key'] < $b['sort_key'] ? -1 : 1;
+            });
 
         //
         // Output the divisions

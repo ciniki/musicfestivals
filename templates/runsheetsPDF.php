@@ -63,6 +63,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         . "divisions.id AS division_id, "
         . "divisions.name AS division_name, "
         . "locations.name AS location_name, "
+        . "CONCAT_WS(' ', divisions.division_date, timeslots.slot_time) AS division_sort_key, "
         . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, ";
     if( isset($festival['runsheets-separate-classes']) && $festival['runsheets-separate-classes'] == 'yes' ) {
         $strsql .= "CONCAT_WS('-', timeslots.id, classes.id) AS timeslot_id, ";
@@ -92,6 +93,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         . "registrations.competitor2_id, "
         . "registrations.competitor3_id, "
         . "registrations.competitor4_id, "
+        . "registrations.competitor5_id, "
         . "registrations.title1, "
         . "registrations.title2, "
         . "registrations.title3, "
@@ -219,7 +221,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             ),
         array('container'=>'divisions', 'fname'=>'division_id', 
             'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 
-                'location_name', 'adjudicator_name',
+                'location_name', 'adjudicator_name', 'sort_key'=>'division_sort_key',
                 ),
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
@@ -230,7 +232,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'participation', 'reg_time_text',
-                'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id',
+                'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
                 'notes', 'internal_notes', 'runsheet_notes'=>'runnote',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
@@ -506,6 +508,13 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         if( !isset($section['divisions']) ) {
             continue;
         }
+
+        //
+        // Sort the divisions
+        //
+        uasort($section['divisions'], function($a, $b) {
+            return $a['sort_key'] < $b['sort_key'] ? -1 : 1;
+            });
 
         //
         // Output the divisions

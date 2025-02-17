@@ -972,7 +972,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     $pdf->SetCellPadding(1);
                     $pdf->SetCellPaddings(1,2,1,1);
                 }
-                if( ($reg_list_height > 0 && $pdf->getY() > 70 && $pdf->getY() > ($pdf->getPageHeight() - 37 - $reg_list_height - $pdf->footer_image_height)) 
+                if( ($reg_list_height > 0 && $pdf->getY() > 70 && $pdf->getY() > ($pdf->getPageHeight() - 42 - $reg_list_height - $pdf->footer_image_height)) 
                     || ($reg_list_height == 0 && $pdf->getY() > ($pdf->getPageHeight() - 40 - $pdf->footer_image_height)) 
                     ) {
                     /*
