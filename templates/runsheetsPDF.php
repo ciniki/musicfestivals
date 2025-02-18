@@ -738,30 +738,6 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                                 $notes .= ($notes != '' ? "\n" : '') . $competitors[$reg["competitor{$i}_id"]]['notes'];
                             }
                         }
-                        if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes'
-                            && isset($competitors[$reg['competitor2_id']]['notes']) 
-                            && $competitors[$reg['competitor2_id']]['notes'] != '' 
-                            ) {
-                            $notes .= ($notes != '' ? "\n" : '') . $competitors[$reg['competitor2_id']]['notes'];
-                        }
-                        if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes'
-                            && isset($competitors[$reg['competitor3_id']]['notes']) 
-                            && $competitors[$reg['competitor3_id']]['notes'] != '' 
-                            ) {
-                            $notes .= ($notes != '' ? "\n" : '') . $competitors[$reg['competitor3_id']]['notes'];
-                        }
-                        if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes'
-                            && isset($competitors[$reg['competitor4_id']]['notes']) 
-                            && $competitors[$reg['competitor4_id']]['notes'] != '' 
-                            ) {
-                            $notes .= ($notes != '' ? "\n" : '') . $competitors[$reg['competitor4_id']]['notes'];
-                        }
-                        if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes'
-                            && isset($competitors[$reg['competitor5_id']]['notes']) 
-                            && $competitors[$reg['competitor5_id']]['notes'] != '' 
-                            ) {
-                            $notes .= ($notes != '' ? "\n" : '') . $competitors[$reg['competitor5_id']]['notes'];
-                        }
                         $timeslot['registrations'][$rid]['combined_notes'] = $notes;
                         if( $notes != '' ) {
                             $pdf->SetCellPaddings(2,2,2,2);
