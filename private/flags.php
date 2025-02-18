@@ -19,7 +19,7 @@ function ciniki_musicfestivals_flags(&$ciniki) {
 //        array('flag'=>array('bit'=>'1', 'name'=>'Earlybird **deprecated**')), // now festival flag
 //        array('flag'=>array('bit'=>'2', 'name'=>'Online Registrations **deprecated**')),
         array('flag'=>array('bit'=>'3', 'name'=>'Timeslot Photos')),
-        array('flag'=>array('bit'=>'4', 'name'=>'Schedule By Date')),   // Temp feature to be better integrated in future
+        array('flag'=>array('bit'=>'4', 'name'=>'Results By Date')),   // Temp feature to be better integrated in future
         // 0x10
         array('flag'=>array('bit'=>'5', 'name'=>'Sponsors')),
         array('flag'=>array('bit'=>'6', 'name'=>'Lists')),

@@ -1198,7 +1198,7 @@ function ciniki_musicfestivals_main() {
 //                'download':{'label':'Download Schedule', 'fn':'M.ciniki_musicfestivals_main.festival.downloadAccompanistSchedulePDF();'},
 //            }},
         'schedule_results':{'label':'Results', 'type':'simplegrid', 'num_cols':6,
-            'visible':function() { return M.ciniki_musicfestivals_main.festival.schedulesection_id>0 && M.ciniki_musicfestivals_main.festival.scheduledivision_id>0 && M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['dates', 'results']) == 'yes' ? 'yes' : 'no'; },
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.scheduledivision_id>0 && M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['dates', 'results']) == 'yes' ? 'yes' : 'no'; },
             'dataMaps':['', '', '', '', 'mark', 'placement', 'level'],
             'headerValues':['Time', '#', 'Name', 'Class/Titles', 'Mark', 'Place'],
             'cellClasses':['', '', '', 'multiline', '', ''],
