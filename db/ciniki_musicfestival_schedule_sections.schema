@@ -25,7 +25,7 @@
 #                           0x08 - 
 #                           0x10 - Publish schedule on website.
 #                           0x20 - Publish Results on website
-#                           0x40 - 
+#                           0x40 - No photos for this section, hide from photo picker
 #                           0x80 - 
 #
 # sponsor_settings:     The settings for the sponsors and how they will appear on the page.

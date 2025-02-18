@@ -7457,6 +7457,9 @@ function ciniki_musicfestivals_main() {
             'flags3':{'label':'Release Certificates to Competitors', 'type':'flagtoggle', 'bit':0x04, 'field':'flags'},
             'flags6':{'label':'Publish Results on Website', 'type':'flagtoggle', 'bit':0x20, 'field':'flags'},
             }},
+        '_photos':{'label':'Photos', 'aside':'yes', 'fields':{
+            'flags7':{'label':'Daily Photos', 'type':'flagtoggle', 'reverse':'yes', 'bit':0x40, 'field':'flags'},
+            }},
 /*        '_tabs':{'label':'', 'type':'paneltabs', 'selected':'sponsors', 'visible':'yes',
             'tabs':{
                 'Sponsors':{'label':'Sponsors', 'fn':'M.ciniki_musicfestivals_main.schedulesection.switchTab("sponsors");'},
