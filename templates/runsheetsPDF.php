@@ -215,7 +215,12 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
 //    if( isset($args['adjudicator_id']) && $args['adjudicator_id'] > 0 ) {
 //        $strsql .= "ORDER BY divisions.division_date, divisions.name, slot_time, registrations.timeslot_sequence, class_code, registrations.display_name ";
 //    } else {
+    if( isset($args['sortorder']) && $args['sortorder'] == 'date' ) {
+        $strsql .= "ORDER BY divisions.division_date, ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, registrations.timeslot_sequence, class_code, registrations.display_name ";
+    } else {
         $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, registrations.timeslot_sequence, class_code, registrations.display_name ";
+    }
+
 //    }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
