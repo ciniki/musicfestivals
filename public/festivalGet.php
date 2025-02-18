@@ -44,6 +44,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'schedule'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule'),
         'locations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Locations'),
         'location_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Location'),
+        'dates'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Dates'),
+        'date_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Date'),
         'adjudicator_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicator'),
         'ssection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Section'),
         'sdivision_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Division'),
@@ -1416,6 +1418,41 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     $nplists['schedule_locations'] = array();
                 }
             }
+            //
+            // Get the list of schedule dates
+            //
+            if( isset($args['dates']) && $args['dates'] == 'yes' ) {
+                $strsql = "SELECT DATE_FORMAT(divisions.division_date, '%Y-%m-%d') AS id, "
+                    . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS name "
+                    . "FROM ciniki_musicfestival_schedule_sections AS ssections "
+                    . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+                        . "ssections.id = divisions.ssection_id "
+                        . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE ssections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "ORDER BY divisions.division_date "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'scheduledates', 'fname'=>'id', 
+                        'fields'=>array('id', 'name'),
+                        ),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                if( isset($rc['scheduledates']) ) {
+                    $festival['schedule_dates'] = $rc['scheduledates'];
+                    $nplists['schedule_dates'] = array();
+                    foreach($festival['schedule_dates'] as $did => $date) {
+                        $nplists['schedule_dates'][] = $date['id'];
+                    }
+                } else {
+                    $festival['schedule_dates'] = array();
+                    $nplists['schedule_dates'] = array();
+                }
+            }
 
             //
             // Get the list of schedule section divisions
@@ -1592,6 +1629,73 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         . ") "
                     . "WHERE divisions.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                     . "AND divisions.location_id = '" . ciniki_core_dbQuote($ciniki, $args['location_id']) . "' "
+                    . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "GROUP BY divisions.id "
+                    . "ORDER BY divisions.division_date, sort_timeslot, divisions.name "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'scheduledivisions', 'fname'=>'id', 
+                        'fields'=>array('id', 'festival_id', 'ssection_id', 'section_name', 'name', 'flags', 'options', 
+                            'division_date_text', 'location_name', 'adjudicator_name', 'first_timeslot', 'last_timeslot',
+                            ),
+                        'flags' => array('options'=>$maps['schedulesection']['flags']),
+                        ),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                if( isset($rc['scheduledivisions']) ) {
+                    $festival['schedule_divisions'] = $rc['scheduledivisions'];
+                    $nplists['schedule_divisions'] = array();
+                    foreach($festival['schedule_divisions'] as $iid => $scheduledivision) {
+                        $nplists['schedule_divisions'][] = $scheduledivision['id'];
+                        $festival['schedule_divisions'][$iid]['name'] = $scheduledivision['section_name'] . ' - ' . $scheduledivision['name'];
+                    }
+                } else {
+                    $festival['schedule_divisions'] = array();
+                    $nplists['schedule_divisions'] = array();
+                }
+            }
+            elseif( isset($args['date_id']) && $args['date_id'] > 0 ) {
+                $strsql = "SELECT divisions.id, "
+                    . "divisions.festival_id, "
+                    . "divisions.ssection_id, "
+                    . "sections.name AS section_name, "
+                    . "divisions.flags, "
+                    . "divisions.flags AS options, "
+                    . "divisions.name, "
+//                    . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, "
+                    . "DATE_FORMAT(divisions.division_date, '%a, %b %e, %Y') AS division_date_text, "
+//                    . "divisions.address, "
+                    . "IFNULL(locations.name, '') AS location_name, "
+                    . "customers.display_name AS adjudicator_name, "
+                    . "TIME_FORMAT(MIN(timeslots.slot_time), '%H%i') AS sort_timeslot, "
+                    . "TIME_FORMAT(MIN(timeslots.slot_time), '%l:%i %p') AS first_timeslot, "
+                    . "TIME_FORMAT(MAX(timeslots.slot_time), '%l:%i %p') AS last_timeslot "
+                    . "FROM ciniki_musicfestival_schedule_divisions AS divisions "
+                    . "LEFT JOIN ciniki_musicfestival_schedule_sections AS sections ON ("
+                        . "divisions.ssection_id = sections.id "
+                        . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
+                        . "divisions.adjudicator_id = adjudicators.id "
+                        . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_customers AS customers ON ("
+                        . "adjudicators.customer_id = customers.id "
+                        . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
+                        . "divisions.location_id = locations.id "
+                        . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+                        . "divisions.id = timeslots.sdivision_id "
+                        . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE divisions.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "AND divisions.division_date = '" . ciniki_core_dbQuote($ciniki, $args['date_id']) . "' "
                     . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "GROUP BY divisions.id "
                     . "ORDER BY divisions.division_date, sort_timeslot, divisions.name "
@@ -1842,7 +1946,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             }   
             elseif( isset($args['sdivision_id']) && $args['sdivision_id'] > 0 
                 && isset($args['results']) && $args['results'] == 'yes'
-                && isset($requested_section)
+//                && isset($requested_section)
                 ) {
                 $strsql = "SELECT timeslots.id AS timeslot_id, "
                     . "timeslots.groupname, "
