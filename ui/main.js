@@ -903,6 +903,10 @@ function ciniki_musicfestivals_main() {
                     'label':'Unscheduled',
                     'fn':'M.ciniki_musicfestivals_main.festival.openScheduleSection(\'unscheduled\',"Unscheduled");',
                     },
+                'notes':{
+                    'label':'Notes',
+                    'fn':'M.ciniki_musicfestivals_main.festival.openScheduleSection(\'notes\',"Notes");',
+                    },
                 'add':{
                     'label':'Add Schedule',
                     'fn':'M.ciniki_musicfestivals_main.schedulesection.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.festival_id,null);',
@@ -1010,7 +1014,7 @@ function ciniki_musicfestivals_main() {
                 },
             },
         'schedule_divisions':{'label':'Divisions', 'type':'simplegrid', 'num_cols':2, 'aside':'no', 'panelcolumn':1,
-            'visible':function() { return M.ciniki_musicfestivals_main.festival.schedulesection_id != 'unscheduled' && M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['timeslots','locations','dates','comments','results','photos']) == 'yes' ? 'yes' : 'no'; },
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.schedulesection_id != 'unscheduled' && M.ciniki_musicfestivals_main.festival.schedulesection_id != 'notes' && M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['timeslots','locations','dates','comments','results','photos']) == 'yes' ? 'yes' : 'no'; },
             'headerValues':['Division', 'Date', 'Adjudicator'],
             'cellClasses':['multiline', 'multiline', ''],
             'menu':{
@@ -1251,6 +1255,13 @@ function ciniki_musicfestivals_main() {
         'unscheduled_registrations':{'label':'Unscheduled', 'type':'simplegrid', 'num_cols':3,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.schedulesection_id == 'unscheduled' && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'timeslots') == 'yes' ? 'yes' : 'no'; },
             'headerValues':['Class', 'Registrant', 'Status'],
+            'sortable':'yes',
+            'sortTypes':['text', 'text', 'text'],
+            'cellClasses':['', 'multiline', ''],
+            },
+        'registrations_notes':{'label':'Registration Notes', 'type':'simplegrid', 'num_cols':3,
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.schedulesection_id == 'notes' && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'timeslots') == 'yes' ? 'yes' : 'no'; },
+            'headerValues':['Class', 'Registrant', 'Notes'],
             'sortable':'yes',
             'sortTypes':['text', 'text', 'text'],
             'cellClasses':['', 'multiline', ''],
@@ -1979,6 +1990,13 @@ function ciniki_musicfestivals_main() {
                 case 2: return d.status_text;
             }
         }
+        if( s == 'registrations_notes' ) {
+            switch (j) {
+                case 0: return d.class_code;
+                case 1: return '<span class="maintext">' + d.display_name + '</span><span class="subtext">' + d.titles + '</span>';
+                case 2: return d.notes.replace(/\n/g, '<br/>');
+            }
+        }
         if( s == 'registrations' || s == 'registration_search' ) {
             switch (j) {
                 case 0: 
@@ -2392,6 +2410,7 @@ function ciniki_musicfestivals_main() {
             case 'categories': return 'M.ciniki_musicfestivals_main.category.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.id + '\',\'' + d.section_id + '\',M.ciniki_musicfestivals_main.festival.festival_id, M.ciniki_musicfestivals_main.festival.nplists.categories);';
             case 'classes': return 'M.ciniki_musicfestivals_main.class.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.id + '\',0,M.ciniki_musicfestivals_main.festival.festival_id, M.ciniki_musicfestivals_main.festival.nplists.classes);';
             case 'unscheduled_registrations': 
+            case 'registrations_notes': 
             case 'registrations': 
             case 'videos':
             case 'adjudicator_schedule':

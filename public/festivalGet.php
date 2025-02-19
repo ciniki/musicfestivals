@@ -1531,6 +1531,100 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     }
                 }
             }
+            elseif( isset($args['ssection_id']) && $args['ssection_id'] == 'notes' ) {
+                $strsql = "SELECT registrations.id, "
+                    . "registrations.flags, ";
+                if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
+                    $strsql .= "registrations.pn_display_name AS display_name, ";
+                } else {
+                    $strsql .= "registrations.display_name, ";
+                }
+                $strsql .= "registrations.title1, "
+                    . "registrations.title2, "
+                    . "registrations.title3, "
+                    . "registrations.title4, "
+                    . "registrations.title5, "
+                    . "registrations.title6, "
+                    . "registrations.title7, "
+                    . "registrations.title8, "
+                    . "registrations.composer1, "
+                    . "registrations.composer2, "
+                    . "registrations.composer3, "
+                    . "registrations.composer4, "
+                    . "registrations.composer5, "
+                    . "registrations.composer6, "
+                    . "registrations.composer7, "
+                    . "registrations.composer8, "
+                    . "registrations.movements1, "
+                    . "registrations.movements2, "
+                    . "registrations.movements3, "
+                    . "registrations.movements4, "
+                    . "registrations.movements5, "
+                    . "registrations.movements6, "
+                    . "registrations.movements7, "
+                    . "registrations.movements8, "
+                    . "registrations.notes, "
+                    . "GROUP_CONCAT(competitors.notes SEPARATOR ' ') AS competitor_notes, "
+                    . "registrations.status, "
+                    . "registrations.status AS status_text, "
+                    . "classes.code AS class_code, "
+                    . "registrations.timeslot_id "
+                    . "FROM ciniki_musicfestival_registrations AS registrations "
+                    . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+                        . "registrations.class_id = classes.id "
+                        . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ("
+                        . "("
+                            . "registrations.competitor1_id = competitors.id "
+                            . "OR registrations.competitor2_id = competitors.id "
+                            . "OR registrations.competitor3_id = competitors.id "
+                            . "OR registrations.competitor4_id = competitors.id "
+                            . "OR registrations.competitor5_id = competitors.id "
+                            . ") "
+                            . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "GROUP BY registrations.id "
+//                    . "HAVING ISNULL(timeslot_id) "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'registrations', 'fname'=>'id', 
+                        'fields'=>array('id', 'flags', 'display_name', 'class_code', 'status', 'status_text',
+                            'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
+                            'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
+                            'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
+                            'notes', 'competitor_notes',
+                            ),
+                        'maps'=>array('status_text'=>$maps['registration']['status']),
+                        ),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.172', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+                }
+                $festival['registrations_notes'] = isset($rc['registrations']) ? $rc['registrations'] : array();
+                foreach($festival['registrations_notes'] as $rid => $registration) {
+                    if( $registration['notes'] == '' && trim($registration['competitor_notes']) == '' ) {
+                        unset($festival['registrations_notes'][$rid]);
+                        continue;
+                    }
+                    $festival['registrations_notes'][$rid]['titles'] = '';
+                    for($i = 1; $i <= 8; $i++) {
+                        if( $registration["title{$i}"] != '' ) {
+                            $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
+                            if( $rc['stat'] == 'ok' ) {
+                                $festival['registrations_notes'][$rid]["title{$i}"] = $rc['title'];
+                                $festival['registrations_notes'][$rid]['titles'] .= ($festival['registrations_notes'][$rid]['titles'] != '' ? '<br/>' : '') . $rc['title'];
+                            }
+                        }
+                    }
+                    if( $registration['competitor_notes'] != '' ) {
+                        $festival['registrations_notes'][$rid]['notes'] .= ($registration['notes'] != '' ? "\n" : '') . $registration['competitor_notes'];
+                    }
+                }
+            }
             elseif( isset($args['ssection_id']) && $args['ssection_id'] > 0 ) {
                 $strsql = "SELECT divisions.id, "
                     . "divisions.festival_id, "
