@@ -263,7 +263,7 @@ function ciniki_musicfestivals_templates_adjudicatorGroupsPDF(&$ciniki, $tnid, $
     $pdf->SetDrawColor(232);
     $pdf->SetLineWidth(0.1);
 
-    $filename = 'adjudicator_groups';
+    $filename = 'Adjudicator Groups';
 
     //
     // Go through the sections, divisions and classes
