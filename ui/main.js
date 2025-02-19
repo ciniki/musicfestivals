@@ -878,7 +878,7 @@ function ciniki_musicfestivals_main() {
             'hint':'Search',
             'noData':'No registrations found',
             'headerValues':['Class', 'Registrant', 'Teacher', 'Invoice', 'Status', 'Virtual'],
-            'cellClasses':['', 'multiline', '', 'multiline', '', 'alignright'],
+            'cellClasses':['multiline', 'multiline', '', 'multiline', '', 'alignright'],
             },
         'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'registrations' && M.ciniki_musicfestivals_main.festival.section_id > -1 ? 'yes' : 'no'; },

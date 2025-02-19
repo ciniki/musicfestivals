@@ -78,6 +78,7 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         . "registrations.class_id, "
         . "classes.code AS class_code, "
         . "classes.name AS class_name, "
+        . "categories.name AS category_name, "
         . "FORMAT(registrations.fee, 2) AS fee, "
         . "registrations.participation, "
         . "registrations.title1, "
@@ -146,11 +147,11 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
             . "registrations.class_id = classes.id "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-/*        . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
+        . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
             . "classes.category_id = categories.id "
             . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+            . ") " 
+/*        . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
             . "categories.section_id = sections.id "
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") " */
@@ -180,7 +181,7 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 'rtype', 'rtype_text', 
                 'status', 'status_text', 'invoice_id', 'display_name', 
-                'class_id', 'class_code', 'class_name', 
+                'class_id', 'class_code', 'class_name', 'category_name', 
                 'fee', 'participation', 
                 'title1', 'composer1', 'movements1', 'video_url1', 'music_orgfilename1',
                 'title2', 'composer2', 'movements2', 'video_url2', 'music_orgfilename2',
