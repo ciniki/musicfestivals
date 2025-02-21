@@ -115,6 +115,7 @@ function ciniki_musicfestivals_scheduleDivisionResultsUpdate(&$ciniki) {
     $strsql = "SELECT timeslots.id AS timeslot_id, "
         . "timeslots.flags AS timeslot_flags, "
         . "registrations.id, "
+        . "registrations.status, "
         . "registrations.mark, "
         . "registrations.placement, "
         . "registrations.level, "
@@ -139,7 +140,7 @@ function ciniki_musicfestivals_scheduleDivisionResultsUpdate(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
-            'fields'=>array('id', 'timeslot_flags', 'mark', 'placement', 'level', 'provincials_status', 'provincials_position')),
+            'fields'=>array('id', 'timeslot_flags', 'status', 'mark', 'placement', 'level', 'provincials_status', 'provincials_position')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.697', 'msg'=>'Unable to load results', 'err'=>$rc['err']));
@@ -166,6 +167,31 @@ function ciniki_musicfestivals_scheduleDivisionResultsUpdate(&$ciniki) {
                 $update_args['finals_level'] = $ciniki['request']['args']["level_{$rid}"];
             } else {
                 $update_args['level'] = $ciniki['request']['args']["level_{$rid}"];
+            }
+        }
+        if( isset($ciniki['request']['args']["noshow_{$rid}"]) ) {
+            if( $ciniki['request']['args']["noshow_{$rid}"] == 'yes' && $result['status'] != 77 ) {
+                $update_args['status'] = 77;
+            } elseif( $ciniki['request']['args']["noshow_{$rid}"] == 'no' && $result['status'] == 77 ) {
+                // Get last status from history
+                $strsql = "SELECT new_value "
+                    . "FROM ciniki_musicfestivals_history "
+                    . "WHERE table_name = 'ciniki_musicfestival_registrations' "
+                    . "AND table_key = '" . ciniki_core_dbQuote($ciniki, $result['id']) . "' "
+                    . "AND table_field = 'status' "
+                    . "AND new_value != '77' "
+                    . "ORDER BY log_date DESC "
+                    . "LIMIT 1 "
+                    . "";
+                $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.315', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+                }
+                if( !isset($rc['item']) ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.316', 'msg'=>'Unable to find requested item'));
+                }
+                $item = $rc['item'];
+                $update_args['status'] = $item['new_value'];
             }
         }
         if( isset($ciniki['request']['args']["provincials_status_{$rid}"]) ) {
