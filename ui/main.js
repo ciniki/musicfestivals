@@ -904,14 +904,6 @@ function ciniki_musicfestivals_main() {
             'noData':'No schedule',
             'cellClasses':['multiline', 'multiline alignright'],
             'menu':{
-                'unscheduled':{
-                    'label':'Unscheduled',
-                    'fn':'M.ciniki_musicfestivals_main.festival.openScheduleSection(\'unscheduled\',"Unscheduled");',
-                    },
-                'notes':{
-                    'label':'Notes',
-                    'fn':'M.ciniki_musicfestivals_main.festival.openScheduleSection(\'notes\',"Notes");',
-                    },
                 'add':{
                     'label':'Add Schedule',
                     'fn':'M.ciniki_musicfestivals_main.schedulesection.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.festival_id,null);',
@@ -930,6 +922,18 @@ function ciniki_musicfestivals_main() {
                     'label':'Open Class Scheduler', 
                     'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x010000) && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'timeslots') == 'yes' ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.schedulemultislot.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.festival_id);',
+                    },
+                'resultsexcel':{
+                    'label':'Provincial Recommendations Excel',
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadProvincialsExcel();',
+                    },
+                'unscheduled':{
+                    'label':'Unscheduled',
+                    'fn':'M.ciniki_musicfestivals_main.festival.openScheduleSection(\'unscheduled\',"Unscheduled");',
+                    },
+                'notes':{
+                    'label':'Notes',
+                    'fn':'M.ciniki_musicfestivals_main.festival.openScheduleSection(\'notes\',"Notes");',
                     },
                 },
             'mailFn':function(s, i, d) {
@@ -978,7 +982,7 @@ function ciniki_musicfestivals_main() {
             'menu':{
                 'resultsexcel':{
                     'label':'Provincial Recommendations Excel',
-                    'fn':'M.ciniki_musicfestivals_main.festival.downloadProvincialsRecommendations();',
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadProvincialsExcel();',
                     },
                 },
             },
@@ -1080,6 +1084,7 @@ function ciniki_musicfestivals_main() {
                 'competitors':{'label':'All Daily Venue Competitors', 'fn':'M.ciniki_musicfestivals_main.festival.downloadDailyVenueCompetitorsPDF(0);'},
                 'trophies':{'label':'Trophy Registrations', 'fn':'M.ciniki_musicfestivals_main.festival.downloadTrophyMarksPDF();'},
                 'resultsexcel':{'label':'Results Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadResultsExcel(0);'},
+                'resultsexcel':{'label':'Provincial Recommendations Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadProvincialsExcel(0);'},
                 'recommendations':{'label':'Provincial Recommendations', 'fn':'M.ciniki_musicfestivals_main.festival.downloadProvincialRecommendations(0);'},
                 'adjudicatorgroups':{'label':'Adjudicator Class Groups', 'fn':'M.ciniki_musicfestivals_main.festival.adjudicatorGroupsPDF();'},
                 'backtracks':{'label':'All Backtracks', 'fn':'M.ciniki_musicfestivals_main.festival.downloadBacktracks(0);'},
@@ -1832,11 +1837,11 @@ function ciniki_musicfestivals_main() {
             };
         M.api.openPDF('ciniki.musicfestivals.scheduleResultsExcel',args);
     }
-    this.festival.downloadProvincialsRecommendations = function(s) {
+    this.festival.downloadProvincialsExcel = function(s) {
         var args = {'tnid':M.curTenantID,
             'festival_id':this.festival_id,
-            'schedulesection_id':(s==null ? this.schedulesection_id : s),
-            'ipv':this.formValue('ipv'),
+//            'schedulesection_id':(s==null ? this.schedulesection_id : s),
+//            'ipv':this.formValue('ipv'),
             'provincials_recommendations':'yes',
             };
         M.api.openPDF('ciniki.musicfestivals.scheduleResultsExcel',args);

@@ -55,50 +55,49 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
     //
     // Load the festival
     //
-    $strsql = "SELECT ciniki_musicfestivals.id, "
-        . "ciniki_musicfestivals.name, "
-        . "ciniki_musicfestivals.permalink, "
-        . "ciniki_musicfestivals.start_date, "
-        . "ciniki_musicfestivals.end_date, "
-        . "ciniki_musicfestivals.primary_image_id, "
-        . "ciniki_musicfestivals.description, "
-        . "ciniki_musicfestivals.document_logo_id, "
-        . "ciniki_musicfestivals.document_header_msg, "
-        . "ciniki_musicfestivals.document_footer_msg "
-        . "FROM ciniki_musicfestivals "
-        . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND ciniki_musicfestivals.id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'festivals', 'fname'=>'id', 
-            'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'primary_image_id', 'description', 
-                'document_logo_id', 'document_header_msg', 'document_footer_msg')),
-        ));
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $tnid, $args['festival_id']);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.457', 'msg'=>'Festival not found', 'err'=>$rc['err']));
+        return $rc;
     }
-    if( !isset($rc['festivals'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.458', 'msg'=>'Unable to find Festival'));
-    }
-    $festival = $rc['festivals'][0];
+    $festival = $rc['festival'];
 
     //
-    // Load the settings for the festival
+    // Get the list of teachers
     //
-    $strsql = "SELECT detail_key, detail_value "
-        . "FROM ciniki_musicfestival_settings "
-        . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+    $strsql = "SELECT customers.id, "
+        . "customers.display_name AS name, "
+        . "emails.id AS email_id, "
+        . "emails.email "
+        . "FROM ciniki_musicfestival_registrations AS registrations "
+        . "INNER JOIN ciniki_customers AS customers ON ("
+            . "("
+                . "registrations.teacher_customer_id = customers.id "
+                . "OR registrations.teacher2_customer_id = customers.id "
+                . ") "
+            . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_customer_emails AS emails ON ("
+            . "customers.id = emails.customer_id "
+            . "AND emails.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "AND registrations.teacher_customer_id > 0 "  
+        . "AND registrations.timeslot_id > 0 "  // Scheduled registrations only
+        . "AND registrations.participation <> 1 "   // Live only
+        . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "ORDER BY customers.id "
         . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
-    $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'teachers', 'fname'=>'id', 'fields'=>array('id', 'name')),
+        array('container'=>'emails', 'fname'=>'email_id', 'fields'=>array('email')),
+        ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.456', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.915', 'msg'=>'Unable to load teachers', 'err'=>$rc['err']));
     }
-    foreach($rc['settings'] as $k => $v) {
-        $festival[$k] = $v;
-    }
+    $teachers = isset($rc['teachers']) ? $rc['teachers'] : array();
+//    error_log(print_r($teachers,true));
 
     //
     // Get the list of registration
@@ -121,6 +120,8 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
         . "registrations.competitor2_id, "
         . "registrations.competitor3_id, "
         . "registrations.competitor4_id, "
+        . "registrations.teacher_customer_id, "
+        . "registrations.teacher2_customer_id, "
         . "registrations.title1, "
         . "registrations.title2, "
         . "registrations.title3, "
@@ -215,6 +216,7 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
         array('container'=>'registrations', 'fname'=>'registration_id', 
             'fields'=>array('id'=>'registration_id', 'display_name', 'participation',
                 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id',
+                'teacher_customer_id', 'teacher2_customer_id',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
                 'mark', 'placement', 'level', 'provincials_code', 'provincials_status_text', 'provincials_position_text',
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
@@ -242,7 +244,6 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
     $objPHPExcel = new PHPExcel();
     $objPHPExcelWorksheet = $objPHPExcel->setActiveSheetIndex(0);
     $objPHPExcelWorksheet->setTitle('Recommendations');
-    $teachers = array();
 
     $num = 0;
     $col = 0;
@@ -256,8 +257,10 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
         }
 
         if( $num == 0 || (!isset($args['provincials_recommendations']) || $args['provincials_recommendations'] != 'yes') ) {
-            $title = str_split($section['name'], 31);
-            $objPHPExcelWorksheet->setTitle(preg_replace("/[\/\:\?]/", "-", $title[0]));
+            if( !isset($args['provincials_recommendations']) || $args['provincials_recommendations'] != 'yes' ) {
+                $title = str_split($section['name'], 31);
+                $objPHPExcelWorksheet->setTitle(preg_replace("/[\/\:\?]/", "-", $title[0]));
+            }
             $col = 0;
             $row = 1;
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Name', false);
@@ -291,7 +294,10 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Status', false);
             }
 
-            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Titles', false);
+            if( !isset($args['provincials_recommendations']) || $args['provincials_recommendations'] != 'yes' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Titles', false);
+            }
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Teacher Emails', false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor Emails', false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor etransfer Emails', false);
 
@@ -303,11 +309,37 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
         // Add the registrations
         //
         foreach($section['registrations'] as $registration) {
+            $registration['teacher_emails'] = '';
             $registration['emails'] = '';
             $registration['etransfer_emails'] = '';
             foreach($registration['competitors'] as $competitor) {
-                $registration['emails'] .= ($registration['emails'] != '' ? ', ' : '') . $competitor['email'];
-                $registration['etransfer_emails'] .= ($registration['etransfer_emails'] != '' ? ', ' : '') . $competitor['etransfer_email'];
+                if( !str_contains($registration['emails'], $competitor['email']) ) {
+                    $registration['emails'] .= ($registration['emails'] != '' ? ', ' : '') . $competitor['email'];
+                }
+                if( !str_contains($registration['etransfer_emails'], $competitor['etransfer_email']) ) {
+                    $registration['etransfer_emails'] .= ($registration['etransfer_emails'] != '' ? ', ' : '') . $competitor['etransfer_email'];
+                }
+            }
+            if( $registration['teacher_customer_id'] > 0
+                && isset($teachers[$registration['teacher_customer_id']]['emails']) 
+                ) {
+                foreach($teachers[$registration['teacher_customer_id']]['emails'] as $email) {
+                    if( !str_contains($registration['teacher_emails'], $email['email']) ) {
+                        $registration['teacher_emails'] .= ($registration['teacher_emails'] != '' ? ',' : '') 
+                            . $email['email'];
+                    }
+                }
+            }
+            if( $registration['teacher2_customer_id'] > 0
+                && isset($teachers[$registration['teacher2_customer_id']]['emails']) 
+                && $teachers[$registration['teacher2_customer_id']]['emails'] != ''
+                ) {
+                foreach($teachers[$registration['teacher2_customer_id']]['emails'] as $email) {
+                    if( !str_contains($registration['teacher_emails'], $email['email']) ) {
+                        $registration['teacher_emails'] .= ($registration['teacher_emails'] != '' ? ',' : '') 
+                            . $email['email'];
+                    }
+                }
             }
             $col = 0;
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['display_name'], false);
@@ -329,9 +361,14 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['provincials_status_text'], false);
             }
             $rc = ciniki_musicfestivals_titlesMerge($ciniki, $tnid, $registration);
-            if( isset($rc['titles']) ) {
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $rc['titles'], false);
+            if( !isset($args['provincials_recommendations']) || $args['provincials_recommendations'] != 'yes' ) {
+                if( isset($rc['titles']) ) {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $rc['titles'], false);
+                } else {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+                }
             }
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['teacher_emails'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['emails'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['etransfer_emails'], false);
             $row++;
