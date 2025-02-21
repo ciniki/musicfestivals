@@ -171,6 +171,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         . "competitors.phone_home, "
         . "competitors.phone_cell, "
         . "competitors.email, "
+        . "competitors.etransfer_email, "
         . "competitors.age AS cage, "
         . "competitors.study_level, "
         . "competitors.instrument, "
@@ -235,7 +236,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
                 'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
-                    'phone_home', 'phone_cell', 'email', 'cage', 'study_level', 'instrument', 'notes'),
+                    'phone_home', 'phone_cell', 'email', 'etransfer_email', 'cage', 'study_level', 'instrument', 'notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -306,7 +307,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
                 'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
-                    'phone_home', 'phone_cell', 'email', 'cage', 'study_level', 'instrument', 'notes'),
+                    'phone_home', 'phone_cell', 'email', 'etransfer_email', 'cage', 'study_level', 'instrument', 'notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -393,7 +394,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
                 'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
-                    'phone_home', 'phone_cell', 'email', 'cage', 'study_level', 'instrument', 'notes'),
+                    'phone_home', 'phone_cell', 'email', 'etransfer_email', 'cage', 'study_level', 'instrument', 'notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -483,7 +484,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
                 'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
-                    'phone_home', 'phone_cell', 'email', 'cage', 'study_level', 'instrument', 'notes'),
+                    'phone_home', 'phone_cell', 'email', 'etransfer_email', 'cage', 'study_level', 'instrument', 'notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -576,7 +577,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
                 'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
-                    'phone_home', 'phone_cell', 'email', 'cage', 'study_level', 'instrument', 'notes'),
+                    'phone_home', 'phone_cell', 'email', 'etransfer_email', 'cage', 'study_level', 'instrument', 'notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -698,6 +699,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Home', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Cell', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Etransfer Email', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor 2', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Pronoun', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Parent', false);
@@ -706,6 +708,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Home', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Cell', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Etransfer Email', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor 3', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Pronoun', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Parent', false);
@@ -714,6 +717,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Home', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Cell', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Etransfer Email', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor 4', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Pronoun', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Parent', false);
@@ -722,6 +726,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Home', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Cell', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Etransfer Email', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor 5', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Pronoun', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Parent', false);
@@ -901,6 +906,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['phone_home'], false);
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['phone_cell'], false);
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['email'], false);
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['etransfer_email'], false);
                 }
             }
 
