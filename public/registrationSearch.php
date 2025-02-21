@@ -67,7 +67,7 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         . "registrations.festival_id, "
 //        . "sections.id AS section_id, "
         . "registrations.teacher_customer_id, "
-        . "teachers.display_name AS teacher_name, "
+        . "IFNULL(teachers.display_name, '') AS teacher_name, "
         . "registrations.billing_customer_id, "
         . "registrations.rtype, "
         . "registrations.rtype AS rtype_text, "
