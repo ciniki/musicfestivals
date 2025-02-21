@@ -12395,6 +12395,7 @@ function ciniki_musicfestivals_main() {
                 case '30': return 'statusorange';
                 case '50': return 'statusgreen';
                 case '70': return 'statusred';
+                case '80': return 'statusred';
                 case '90': return 'statusred';
             }
         }
@@ -12487,7 +12488,7 @@ function ciniki_musicfestivals_main() {
     //
     // The panel to edit Adjudicator Recommendation Entry
     //
-    this.recommendationentry = new M.panel('Adjudicator Entry', 'ciniki_musicfestivals_main', 'recommendationentry', 'mc', 'medium', 'sectioned', 'ciniki.musicfestivals.main.recommendationentry');
+    this.recommendationentry = new M.panel('Adjudicator Entry', 'ciniki_musicfestivals_main', 'recommendationentry', 'mc', 'large', 'sectioned', 'ciniki.musicfestivals.main.recommendationentry');
     this.recommendationentry.data = null;
     this.recommendationentry.entry_id = 0;
     this.recommendationentry.member_id = 0;
@@ -12501,6 +12502,7 @@ function ciniki_musicfestivals_main() {
                 '30':'Accepted',
                 '50':'Registered',
                 '70':'Turned Down',
+                '80':'Duplicate',
                 '90':'Expired',
                 }},
             'class_id':{'label':'Class', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
