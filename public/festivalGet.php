@@ -2082,8 +2082,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "IF((timeslots.flags&0x02)=0x02, registrations.finals_mark, registrations.mark) AS mark, "
                     . "IF((timeslots.flags&0x02)=0x02, registrations.finals_placement, registrations.placement) AS placement, "
                     . "IF((timeslots.flags&0x02)=0x02, registrations.finals_level, registrations.level) AS level, "
-//                    . "registrations.placement, "
-//                    . "registrations.level, "
+                    . "registrations.provincials_status, "
+                    . "registrations.provincials_position, "
                     . "classes.code AS class_code, "
                     . "classes.name AS class_name, "
                     . "categories.name AS category_name, "
@@ -2121,8 +2121,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
                             'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
                             'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
-                            'mark', 'placement', 'level',
+                            'mark', 'placement', 'level', 'provincials_status', 'provincials_position',
                             'class_code', 'class_name', 'category_name', 'section_name',
+                            ),
+                        'maps'=>array(
+                            'provincials_status' => $maps['registration']['provincials_status'],
+                            'provincials_position' => $maps['registration']['provincials_position'],
                             ),
                         ),
                     ));

@@ -120,7 +120,9 @@ function ciniki_musicfestivals_scheduleDivisionResultsUpdate(&$ciniki) {
         . "registrations.level, "
         . "registrations.finals_mark, "
         . "registrations.finals_placement, "
-        . "registrations.finals_level "
+        . "registrations.finals_level, "
+        . "registrations.provincials_status, "
+        . "registrations.provincials_position "
         . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
         . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "("
@@ -136,7 +138,8 @@ function ciniki_musicfestivals_scheduleDivisionResultsUpdate(&$ciniki) {
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'registrations', 'fname'=>'id', 'fields'=>array('id', 'timeslot_flags', 'mark', 'placement', 'level')),
+        array('container'=>'registrations', 'fname'=>'id', 
+            'fields'=>array('id', 'timeslot_flags', 'mark', 'placement', 'level', 'provincials_status', 'provincials_position')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.697', 'msg'=>'Unable to load results', 'err'=>$rc['err']));
@@ -164,6 +167,12 @@ function ciniki_musicfestivals_scheduleDivisionResultsUpdate(&$ciniki) {
             } else {
                 $update_args['level'] = $ciniki['request']['args']["level_{$rid}"];
             }
+        }
+        if( isset($ciniki['request']['args']["provincials_status_{$rid}"]) ) {
+            $update_args['provincials_status'] = $ciniki['request']['args']["provincials_status_{$rid}"];
+        }
+        if( isset($ciniki['request']['args']["provincials_position_{$rid}"]) ) {
+            $update_args['provincials_position'] = $ciniki['request']['args']["provincials_position_{$rid}"];
         }
         if( count($update_args) ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');

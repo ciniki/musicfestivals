@@ -32,7 +32,7 @@ function ciniki_musicfestivals_flags(&$ciniki) {
         array('flag'=>array('bit'=>'12', 'name'=>'Schedule Division Adjudicators')), 
         // 0x1000
         array('flag'=>array('bit'=>'13', 'name'=>'Class Levels')), // May be changed to tags in the future
-//        array('flag'=>array('bit'=>'14', 'name'=>'Reg Tags **deprecated**')), // Old registration flags, now enabled by default
+        array('flag'=>array('bit'=>'14', 'name'=>'Experimental')), // Experimental settings
         array('flag'=>array('bit'=>'15', 'name'=>'Advanced Scheduler')),  
         array('flag'=>array('bit'=>'16', 'name'=>'Accompanists')),
         // 0x010000

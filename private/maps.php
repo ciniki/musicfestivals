@@ -66,6 +66,7 @@ function ciniki_musicfestivals_maps($ciniki) {
             '90' => 'Declined',
         ),
         'provincials_position'=>array(
+            '0' => '',
             '1' => '1st Recommendation',
             '2' => '2nd Recommendation',
             '3' => '3rd Recommendation',
