@@ -1013,14 +1013,14 @@ function ciniki_musicfestivals_main() {
             'sortable':'yes',
             'sortTypes':['text', 'number'],
             },
-        'adjudicator_schedule':{'label':'Adjudicator Schedule', 'type':'simplegrid', 'num_cols':5, 
+        'adjudicator_schedule':{'label':'Adjudicator Schedule', 'type':'simplegrid', 'num_cols':6, 
             'visible':function() { return M.ciniki_musicfestivals_main.festival.adjudicator_id > 0 && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'adjudicators') == 'yes' ? 'yes' : 'no'; },
             'noData':'No assigned registrations',
-            'headerValues':['Section/Division', 'Date', 'Time', 'Registration', 'Placement'],
-            'headerClasses':['', '', '', '', ''],
-            'cellClasses':['', '', '', '', ''],
+            'headerValues':['Section/Division', 'Date', 'Time', 'Registration', 'Mark', 'Placement'],
+            'headerClasses':['', '', '', '', '', ''],
+            'cellClasses':['', '', '', '', '', ''],
             'sortable':'yes',
-            'sortTypes':['text', 'date', 'time', 'text', 'text'],
+            'sortTypes':['text', 'date', 'time', 'text', 'number', 'text'],
             'menu':{
                 'add':{
                     'label':'Runsheets PDF',
@@ -2165,7 +2165,8 @@ function ciniki_musicfestivals_main() {
                 case 2: return d.participation == 1 ? '' : d.time_text;
                 case 3: return d.display_name;
                 // FIXME: switch to check of which fields are used
-                case 4: return d.placement;
+                case 4: return d.mark;
+                case 5: return d.placement;
             }
         }
         if( s == 'schedule_results' ) {
