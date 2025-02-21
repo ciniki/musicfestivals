@@ -48,6 +48,7 @@
 #                           53 - Approved - User Defined 
 #                           70 - Disqualified
 #                           75 - Withdrawn
+#                           77 - No Show
 #                           80 - Cancelled
 #
 # flags:                The options for the registration.
