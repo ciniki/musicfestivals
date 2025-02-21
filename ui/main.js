@@ -2605,6 +2605,7 @@ function ciniki_musicfestivals_main() {
                 case '30': return 'statusorange';
                 case '50': return 'statusgreen';
                 case '70': return 'statusred';
+                case '80': return 'statuspurple';
                 case '90': return 'statusred';
             }
         }
@@ -9626,6 +9627,10 @@ function ciniki_musicfestivals_main() {
                 }
                 p.sections.registrations.num_cols++;
             }
+            p.sections.registrations.headerValues[p.sections.registrations.num_cols] = 'Status';
+            p.sections.registrations.dataMaps[p.sections.registrations.num_cols] = 'status';
+            p.sections.registrations.cellClasses[p.sections.registrations.num_cols] = 'select';
+            p.sections.registrations.num_cols++;
 //            p.sections.registrations.headerValues[p.sections.registrations.num_cols] = 'No Show';
 //            p.sections.registrations.dataMaps[p.sections.registrations.num_cols] = 'noshow';
 //            p.sections.registrations.cellClasses[p.sections.registrations.num_cols] = 'checkbox';
