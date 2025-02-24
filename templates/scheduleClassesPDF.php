@@ -338,14 +338,14 @@ function ciniki_musicfestivals_templates_scheduleClassesPDF(&$ciniki, $tnid, $ar
                 foreach($timeslot['registrations'] as $reg) {
                     $num_reg++;
                 }
-                if( $pdf->getY() > $pdf->getPageHeight() - $lh - 20 ) {
-                    $pdf->AddPage();
-                }
                 $txt = "{$class['category_name']} - {$class['name']} - "
                     . ($timeslot['groupname'] != '' ? "{$timeslot['groupname']} - " : '')
                     . "{$timeslot['location_name']} - {$timeslot['division_date_text']} - {$timeslot['slot_time_text']}";
 //                $txt .= " - {$num_reg}";
                 $lh = $pdf->getStringHeight($w[1], $txt);
+                if( $pdf->getY() > $pdf->getPageHeight() - $lh - 20 ) {
+                    $pdf->AddPage();
+                }
                 $pdf->MultiCell($w[0], $lh, $class['code'], 0, 'L', 0, 0);
                 $pdf->MultiCell($w[1], $lh, $txt, 0, 'L', 0, 1);
                 
