@@ -14,7 +14,7 @@
 // Returns
 // -------
 //
-function ciniki_musicfestivals_schedulePDF($ciniki) {
+function ciniki_musicfestivals_scheduleWord($ciniki) {
     //
     // Find all the required and optional arguments
     //
@@ -54,7 +54,7 @@ function ciniki_musicfestivals_schedulePDF($ciniki) {
     // check permission to run this function for this tenant
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.schedulePDF');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.scheduleWord');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -76,24 +76,29 @@ function ciniki_musicfestivals_schedulePDF($ciniki) {
     // Run the template
     //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'scheduleProvincialsPDF');
-        $rc = ciniki_musicfestivals_templates_scheduleProvincialsPDF($ciniki, $args['tnid'], $args);
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'scheduleProvincialsWord');
+        $rc = ciniki_musicfestivals_templates_scheduleProvincialsWord($ciniki, $args['tnid'], $args);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
     } else {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'schedulePDF');
-        $rc = ciniki_musicfestivals_templates_schedulePDF($ciniki, $args['tnid'], $args);
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'scheduleWord');
+        $rc = ciniki_musicfestivals_templates_scheduleWord($ciniki, $args['tnid'], $args);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
     }
 
     //
-    // Return the pdf
+    // Return the word doc
     //
-    if( isset($rc['pdf']) ) {
-        $rc['pdf']->Output($rc['filename'], 'I');
+    if( isset($rc['word']) ) {
+        header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
+        header('Content-Disposition: attachment;filename="' . preg_replace("/[^A-Za-z0-9]/", '', $rc['filename']) . '.docx');
+        header('Cache-Control: max-age=0');
+
+        $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($rc['word'], 'Word2007');
+        $objWriter->save('php://output');
     }
 
     return array('stat'=>'exit');

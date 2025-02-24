@@ -44,7 +44,6 @@ function ciniki_musicfestivals_registrationsWord($ciniki) {
     }
     
     if( isset($rc['word']) ) {
-
         header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
         header('Content-Disposition: attachment;filename="' . preg_replace("/[^A-Za-z0-9]/", '', $rc['filename']) . '.docx');
         header('Cache-Control: max-age=0');
