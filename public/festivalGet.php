@@ -2913,7 +2913,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "pcategories.name, "
                     . "pclasses.name) AS provincials_class_name ";
             } else {
-                $strsql .= "provincials_code AS provincials_class_name "; 
+                $strsql .= "registrations.provincials_code AS provincials_class_name "; 
             }
             $strsql .= "FROM ciniki_musicfestival_sections AS sections "
                 . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("

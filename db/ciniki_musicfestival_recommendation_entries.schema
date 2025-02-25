@@ -15,6 +15,7 @@
 #                               30 - Accepted 
 #                               50 - Registered 
 #                               70 - Turned Down 
+#                               80 - Duplicate
 #                               90 - Expired
 #
 # recommendation_id:        The ID of the recommendation submission the entries are for.

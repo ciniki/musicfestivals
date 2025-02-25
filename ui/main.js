@@ -12627,7 +12627,10 @@ function ciniki_musicfestivals_main() {
             switch(j) {
                 case 0: return d.class_code + ' - ' + d.class_name;
                 case 1: return d.name;
-                case 2: return d.position;
+                case 2: 
+                    if( d.status == 90 ) { return 'Expired'; }
+                    if( d.status == 80 ) { return 'Duplicate'; }
+                    return d.position;
                 case 3: return d.mark;
             }
         }
