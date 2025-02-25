@@ -162,6 +162,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'finals_mark' => '',
             'finals_placement' => '',
             'finals_level' => '',
+            'provincials_code' => '',
             'provincials_status' => 0,
             'provincials_position' => '',
             'provincials_invite_date' => '',
@@ -286,6 +287,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "registrations.finals_mark, "
             . "registrations.finals_placement, "
             . "registrations.finals_level, "
+            . "registrations.provincials_code, "
             . "registrations.provincials_status, "
             . "registrations.provincials_position, "
             . "DATE_FORMAT(registrations.provincials_invite_date, '%b %e, %Y') AS provincials_invite_date, "
@@ -361,7 +363,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     'artwork5', 'artwork6',  'artwork7', 'artwork8',  
                     'timeslot_id', 'finals_timeslot_id', 
                     'instrument', 'mark', 'placement', 'level', 'comments', 
-                    'provincials_status', 'provincials_position', 'provincials_invite_date', 'provincials_notes',
+                    'provincials_code', 'provincials_status', 'provincials_position', 'provincials_invite_date', 'provincials_notes',
                     'finals_mark', 'finals_placement', 'finals_level',
                     'notes', 'internal_notes', 'runsheet_notes',
                     ),
@@ -807,7 +809,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         . "FORMAT(classes.fee, 2) AS fee, "
         . "FORMAT(classes.virtual_fee, 2) AS virtual_fee, "
         . "FORMAT(classes.earlybird_plus_fee, 2) AS earlybird_plus_fee, "
-        . "FORMAT(classes.plus_fee, 2) AS plus_fee "
+        . "FORMAT(classes.plus_fee, 2) AS plus_fee, "
+        . "classes.provincials_code "
         . "FROM ciniki_musicfestival_sections AS sections "
         . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
             . "sections.id = categories.section_id "
@@ -826,6 +829,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'fields'=>array('id', 'name', 'flags', 'feeflags', 'titleflags', 'min_titles', 'max_titles', 
                 'min_competitors', 'max_competitors',
                 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
+                'provincials_code',
                 )),
         ));
     if( $rc['stat'] != 'ok' ) { 
@@ -833,6 +837,31 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
     }
     if( isset($rc['classes']) ) {
         $rsp['classes'] = $rc['classes'];
+    }
+
+    //
+    // Get the list of provincial classes
+    //
+    if( isset($festival['provincial-festival-id']) && $festival['provincial-festival-id'] > 0 ) {
+        $strsql = "SELECT classes.code, "
+            . "CONCAT_WS(' - ', classes.code, sections.name, categories.name, classes.name) AS name "
+            . "FROM ciniki_musicfestival_sections AS sections "
+            . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
+                . "sections.id = categories.section_id "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
+                . "categories.id = classes.category_id "
+                . ") "
+            . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['provincial-festival-id']) . "' "
+            . "ORDER BY sections.sequence, sections.name, categories.sequence, categories.name, classes.sequence, classes.name "
+            . "";
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'classes', 'fname'=>'code', 'fields'=>array('code', 'name')),
+            ));
+        if( $rc['stat'] != 'ok' ) { 
+            return $rc;
+        }
+        $rsp['provincial_classes'] = isset($rc['classes']) ? $rc['classes'] : array();
     }
 
     //

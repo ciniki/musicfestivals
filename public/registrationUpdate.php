@@ -101,6 +101,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         'finals_mark'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Finals Mark'),
         'finals_placement'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Finals Placement'),
         'finals_level'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Finals Level'),
+        'provincials_code'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Provincials Class Code'),
         'provincials_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Provincials Recommendation Status'),
         'provincials_position'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Provincials Recommendation Position'),
         'provincials_invite_date'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'date', 'name'=>'Provincials Invite Date'),
@@ -136,6 +137,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     $strsql = "SELECT registrations.id, "
         . "registrations.uuid, "
         . "registrations.festival_id, "
+        . "registrations.class_id, "
         . "registrations.timeslot_id, "
         . "registrations.timeslot_sequence, "
         . "registrations.finals_timeslot_id, "
@@ -650,6 +652,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     $strsql = "SELECT registrations.id, "
         . "registrations.uuid, "
         . "registrations.festival_id, "
+        . "registrations.class_id, "
         . "registrations.status, "
         . "registrations.invoice_id, "
         . "registrations.display_name, "
@@ -775,6 +778,32 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
             return $rc;
+        }
+    }
+
+    //
+    // Check if provincials code should be updated on syllabus
+    //
+    if( isset($args['provincials_code']) && $args['provincials_code'] != '' ) {
+        $strsql = "SELECT classes.id, "
+            . "classes.provincials_code "
+            . "FROM ciniki_musicfestival_classes AS classes "
+            . "WHERE classes.id = '" . ciniki_core_dbQuote($ciniki, $registration['class_id']) . "' "
+            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'class');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.322', 'msg'=>'Unable to load class', 'err'=>$rc['err']));
+        }
+        if( isset($rc['class']) && $rc['class']['provincials_code'] == '' ) {
+            $class = $rc['class'];
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+            $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.class', $class['id'], [
+                'provincials_code' => $args['provincials_code'],
+                ], 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.322', 'msg'=>'Unable to update the class', 'err'=>$rc['err']));
+            }
         }
     }
 
