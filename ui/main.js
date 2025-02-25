@@ -1532,6 +1532,8 @@ function ciniki_musicfestivals_main() {
             'headerValues':['Adjudicator', 'Section', 'Date Submitted', 'Entries'],
             'headerClasses':['', '', 'alignright', 'alignright'],
             'cellClasses':['', '', 'alignright', 'alignright'],
+            'sortable':'yes',
+            'sortTypes':['text', 'text', 'date', 'number'],
             }, 
         'recommendation_buttons2':{'label':'', 'aside':'no',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'submissions' && M.ciniki_musicfestivals_main.festival.member_id > 0 ? 'yes' : 'no'; },
