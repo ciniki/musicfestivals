@@ -50,119 +50,89 @@ function ciniki_musicfestivals_templates_recommendationsPDF(&$ciniki, $tnid, $ar
     $maps = $rc['maps'];
 
     //
-    // Load the festival
+    // Load the festival settings
     //
-    $strsql = "SELECT ciniki_musicfestivals.id, "
-        . "ciniki_musicfestivals.name, "
-        . "ciniki_musicfestivals.permalink, "
-        . "ciniki_musicfestivals.start_date, "
-        . "ciniki_musicfestivals.end_date, "
-        . "ciniki_musicfestivals.flags, "
-        . "ciniki_musicfestivals.primary_image_id, "
-        . "ciniki_musicfestivals.description, "
-        . "ciniki_musicfestivals.document_logo_id, "
-        . "ciniki_musicfestivals.document_header_msg, "
-        . "ciniki_musicfestivals.document_footer_msg, "
-        . "ciniki_musicfestivals.comments_grade_label, "
-        . "ciniki_musicfestivals.comments_footer_msg "
-        . "FROM ciniki_musicfestivals "
-        . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND ciniki_musicfestivals.id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $tnid, $args['festival_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $festival = $rc['festival'];
+
+    //
+    // Load the recommendations
+    //
+    $strsql = "SELECT sections.id, "
+        . "classes.code AS class_code, "
+        . "classes.name AS class_name, "
+        . "categories.name AS category_name, "
+        . "sections.name AS section_name, "
+        . "IF(registrations.provincials_code <> '',registrations.provincials_code, classes.provincials_code) AS provincials_code, "
+        . "registrations.id AS registration_id, "
+        . "registrations.display_name, "
+        . "registrations.provincials_position, "
+        . "registrations.mark, ";
+    if( isset($festival['provincial-festival-id']) && $festival['provincial-festival-id'] > 0 ) {
+        $strsql .= "CONCAT_WS(' - ', pclasses.code, "
+//            . "psections.name, "
+            . "pcategories.name, "
+            . "pclasses.name) AS provincials_class_name ";
+    } else {
+        $strsql .= "IF(registrations.provincials_code <> '',registrations.provincials_code, classes.provincials_code) AS provincials_class_name ";
+    }
+    $strsql .= "FROM ciniki_musicfestival_registrations AS registrations "
+        . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
+            . "registrations.class_id = classes.id "
+            . "AND classes.provincials_code <> '' "
+            . "AND classes.provincials_code <> 'na' "
+            . "AND classes.provincials_code <> 'NA' "
+            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
+            . "classes.category_id = categories.id "
+            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestival_sections AS sections ON ("
+            . "categories.section_id = sections.id "
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") ";
+        if( isset($festival['provincial-festival-id']) && $festival['provincial-festival-id'] > 0 ) {
+            $strsql .= "LEFT JOIN ciniki_musicfestival_classes AS pclasses ON ("
+                    . "registrations.provincials_code = pclasses.code "
+                    . "AND pclasses.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['provincial-festival-id']) . "' "
+                . ") "
+                . "LEFT JOIN ciniki_musicfestival_categories AS pcategories ON ("
+                    . "pclasses.category_id = pcategories.id "
+                    . "AND pcategories.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['provincial-festival-id']) . "' "
+                . ") "
+                . "LEFT JOIN ciniki_musicfestival_sections AS psections ON ("
+                    . "pcategories.section_id = psections.id "
+                    . "AND psections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['provincial-festival-id']) . "' "
+                . ") ";
+        }
+    $strsql .= "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND registrations.provincials_position > 0 "
+        . "AND registrations.provincials_status < 70 "
+        . "ORDER BY section_name, provincials_code, provincials_position "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'festivals', 'fname'=>'id', 
-            'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'flags', 'primary_image_id', 'description', 
-                'document_logo_id', 'document_header_msg', 'document_footer_msg',
-                'comments_grade_label', 'comments_footer_msg',
-                )),
+        array('container'=>'sections', 'fname'=>'id', 
+            'fields'=>array('id', 'class_code', 'class_name', 'category_name', 'name'=>'section_name'),
+            ),
+        array('container'=>'classes', 'fname'=>'provincials_code', 
+            'fields'=>array('id', 'provincials_code', 'name'=>'provincials_class_name'),
+            ),
+        array('container'=>'registrations', 'fname'=>'registration_id', 
+            'fields'=>array('id'=>'registration_id', 'provincials_code', 'display_name', 'provincials_position', 'mark'),
+            'maps'=>array('provincials_position'=>$maps['registration']['provincials_position']),
+            ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.717', 'msg'=>'Festival not found', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.80', 'msg'=>'Unable to load sections', 'err'=>$rc['err']));
     }
-    if( !isset($rc['festivals'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.721', 'msg'=>'Unable to find Festival'));
-    }
-    $festival = $rc['festivals'][0];
-
-    //
-    // FIXME: Check for provincial festival
-    //
-/*    $strsql = "SELECT festivals.id "
-        . "FROM ciniki_musicfestival_members AS members "
-        . "INNER JOIN ciniki_musicfestivals AS festivals ON ("
-            . "members.tnid = festivals.tnid "
-            . "AND festivals.status = 30 "
-            . ") "
-        . "WHERE members.member_tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "ORDER BY festivals.end_date DESC "
-        . "LIMIT 1"
-        . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.64', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
-    }
-    if( isset($rc['festival']['id']) ) {
-        $provincial_festival_id = $rc['festival']['id'];
-    }
- */   
-
-    //
-    // Load the recommendations for a festival
-    //
-    if( isset($provincial_festival_id) && $provincial_festival_id > 0 ) {
-
-    } else {
-        $strsql = "SELECT sections.id, "
-            . "classes.code AS class_code, "
-            . "classes.name AS class_name, "
-            . "categories.name AS category_name, "
-            . "sections.name AS section_name, "
-            . "if(registrations.provincials_code <> '',registrations.provincials_code, classes.provincials_code) AS provincials_code, "
-            . "registrations.id AS registration_id, "
-            . "registrations.display_name, "
-            . "registrations.provincials_position, "
-            . "registrations.mark "
-            . "FROM ciniki_musicfestival_registrations AS registrations "
-            . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
-                . "registrations.class_id = classes.id "
-                . "AND classes.provincials_code <> '' "
-                . "AND classes.provincials_code <> 'na' "
-                . "AND classes.provincials_code <> 'NA' "
-                . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
-                . "classes.category_id = categories.id "
-                . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "INNER JOIN ciniki_musicfestival_sections AS sections ON ("
-                . "categories.section_id = sections.id "
-                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND registrations.provincials_position > 0 "
-            . "AND registrations.provincials_status < 70 "
-            . "ORDER BY section_name, provincials_code, provincials_position "
-            . "";
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-            array('container'=>'sections', 'fname'=>'id', 
-                'fields'=>array('id', 'class_code', 'class_name', 'category_name', 'name'=>'section_name'),
-                ),
-            array('container'=>'classes', 'fname'=>'provincials_code', 
-                'fields'=>array('id', 'provincials_code'),
-                ),
-            array('container'=>'registrations', 'fname'=>'registration_id', 
-                'fields'=>array('id'=>'registration_id', 'provincials_code', 'display_name', 'provincials_position', 'mark'),
-                'maps'=>array('provincials_position'=>$maps['registration']['provincials_position']),
-                ),
-            ));
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.80', 'msg'=>'Unable to load sections', 'err'=>$rc['err']));
-        }
-        $sections = isset($rc['sections']) ? $rc['sections'] : array();
-    }
+    $sections = isset($rc['sections']) ? $rc['sections'] : array();
 
 
     //
@@ -201,7 +171,8 @@ function ciniki_musicfestivals_templates_recommendationsPDF(&$ciniki, $tnid, $ar
                 // Check if the ratio of the image will make it too large for the height,
                 // and scaled based on either height or width.
                 if( $available_ratio < $image_ratio ) {
-                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, 0, 'JPEG', '', 'L', 2, '150');
+//                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, 0, 'JPEG', '', 'L', 2, '150');
+                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, $this->header_height-8, 'JPEG', '', 'L', 2, '150', '', false, false, 0, true);
                 } else {
                     $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-8, 'JPEG', '', 'L', 2, '150');
                 }
@@ -316,7 +287,11 @@ function ciniki_musicfestivals_templates_recommendationsPDF(&$ciniki, $tnid, $ar
    
             $pdf->SetCellPaddings(0, 2, 2, 2);
             $pdf->SetFont('', 'B', 12);
-            $pdf->MultiCell(180, 0, $class['provincials_code'], 0, 'L', 0, 1, '', '');
+            if( $class['name'] != '' ) {
+                $pdf->MultiCell(180, 0, $class['name'], 0, 'L', 0, 1, '', '');
+            } else {
+                $pdf->MultiCell(180, 0, $class['provincials_code'], 0, 'L', 0, 1, '', '');
+            }
 
             $pdf->SetCellPaddings(2, 2, 2, 2);
             $pdf->SetFont('', '', 12);

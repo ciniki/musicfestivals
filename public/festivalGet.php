@@ -2909,7 +2909,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "registrations.provincials_notes, ";
             if( isset($festival['provincial-festival-id']) && $festival['provincial-festival-id'] > 0 ) {
                 $strsql .= "CONCAT_WS(' - ', " //pclasses.code, "
-                    . "psections.name, "
+//                    . "psections.name, "
                     . "pcategories.name, "
                     . "pclasses.name) AS provincials_class_name ";
             } else {

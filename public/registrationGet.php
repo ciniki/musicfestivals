@@ -844,7 +844,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
     //
     if( isset($festival['provincial-festival-id']) && $festival['provincial-festival-id'] > 0 ) {
         $strsql = "SELECT classes.code, "
-            . "CONCAT_WS(' - ', classes.code, sections.name, categories.name, classes.name) AS name "
+//            . "CONCAT_WS(' - ', classes.code, sections.name, categories.name, classes.name) AS name "
+            . "CONCAT_WS(' - ', classes.code, categories.name, classes.name) AS name "
             . "FROM ciniki_musicfestival_sections AS sections "
             . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
                 . "sections.id = categories.section_id "
