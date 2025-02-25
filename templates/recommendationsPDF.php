@@ -73,7 +73,9 @@ function ciniki_musicfestivals_templates_recommendationsPDF(&$ciniki, $tnid, $ar
         . "registrations.provincials_position, "
         . "registrations.mark, ";
     if( isset($festival['provincial-festival-id']) && $festival['provincial-festival-id'] > 0 ) {
-        $strsql .= "CONCAT_WS(' - ', pclasses.code, "
+        $strsql .= "IFNULL(psections.id, CONCAT('local-', sections.id)) AS psection_id, "
+            . "IFNULL(pclasses.id, CONCAT('local-', classes.id)) AS pclass_id, "
+            . "CONCAT_WS(' - ', pclasses.code, "
 //            . "psections.name, "
             . "pcategories.name, "
             . "pclasses.name) AS provincials_class_name ";
@@ -113,22 +115,40 @@ function ciniki_musicfestivals_templates_recommendationsPDF(&$ciniki, $tnid, $ar
     $strsql .= "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND registrations.provincials_position > 0 "
-        . "AND registrations.provincials_status < 70 "
-        . "ORDER BY section_name, provincials_code, provincials_position "
-        . "";
+        . "AND registrations.provincials_status < 70 ";
+    if( isset($festival['provincial-festival-id']) && $festival['provincial-festival-id'] > 0 ) {
+        $strsql .= "ORDER BY psections.sequence, psections.name, pcategories.sequence, pcategories.name, pclasses.sequence, provincials_code, provincials_position ";
+    } else {
+        $strsql .= "ORDER BY section_name, provincials_code, provincials_position ";
+    }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'sections', 'fname'=>'id', 
-            'fields'=>array('id', 'class_code', 'class_name', 'category_name', 'name'=>'section_name'),
-            ),
-        array('container'=>'classes', 'fname'=>'provincials_code', 
-            'fields'=>array('id', 'provincials_code', 'name'=>'provincials_class_name'),
-            ),
-        array('container'=>'registrations', 'fname'=>'registration_id', 
-            'fields'=>array('id'=>'registration_id', 'provincials_code', 'display_name', 'provincials_position', 'mark'),
-            'maps'=>array('provincials_position'=>$maps['registration']['provincials_position']),
-            ),
-        ));
+    if( isset($festival['provincial-festival-id']) && $festival['provincial-festival-id'] > 0 ) {
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'sections', 'fname'=>'psection_id', 
+                'fields'=>array('id', 'class_code', 'class_name', 'category_name', 'name'=>'section_name'),
+                ),
+            array('container'=>'classes', 'fname'=>'provincials_code', 
+                'fields'=>array('id', 'provincials_code', 'name'=>'provincials_class_name'),
+                ),
+            array('container'=>'registrations', 'fname'=>'registration_id', 
+                'fields'=>array('id'=>'registration_id', 'provincials_code', 'display_name', 'provincials_position', 'mark'),
+                'maps'=>array('provincials_position'=>$maps['registration']['provincials_position']),
+                ),
+            ));
+    } else {
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'sections', 'fname'=>'id', 
+                'fields'=>array('id', 'class_code', 'class_name', 'category_name', 'name'=>'section_name'),
+                ),
+            array('container'=>'classes', 'fname'=>'provincials_code', 
+                'fields'=>array('id', 'provincials_code', 'name'=>'provincials_class_name'),
+                ),
+            array('container'=>'registrations', 'fname'=>'registration_id', 
+                'fields'=>array('id'=>'registration_id', 'provincials_code', 'display_name', 'provincials_position', 'mark'),
+                'maps'=>array('provincials_position'=>$maps['registration']['provincials_position']),
+                ),
+            ));
+    }
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.80', 'msg'=>'Unable to load sections', 'err'=>$rc['err']));
     }
@@ -273,6 +293,7 @@ function ciniki_musicfestivals_templates_recommendationsPDF(&$ciniki, $tnid, $ar
     // Go through the sections, divisions and classes
     //
     $w = array(50, 110, 20);
+    $pdf->AddPage();
     foreach($sections as $section) {
         //
         // Start a new section
@@ -281,9 +302,11 @@ function ciniki_musicfestivals_templates_recommendationsPDF(&$ciniki, $tnid, $ar
         if( count($sections) == 1 ) {
             $filename .= '_' . $section['name'];
         }
-        $pdf->AddPage();
 
         foreach($section['classes'] as $class) {
+            if( $pdf->getY() > $pdf->getPageHeight() - 50) {
+                $pdf->AddPage();
+            }
    
             $pdf->SetCellPaddings(0, 2, 2, 2);
             $pdf->SetFont('', 'B', 12);
