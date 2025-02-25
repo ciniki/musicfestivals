@@ -41,6 +41,16 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
     }
 
     //
+    // Load maps
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'maps');
+    $rc = ciniki_musicfestivals_maps($ciniki);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $maps = $rc['maps'];
+
+    //
     // Load tenant settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
@@ -52,6 +62,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'datetimeFormat');
+    $datetime_format = ciniki_users_datetimeFormat($ciniki, 'php');
 
     //
     // Return default for new Registration
@@ -152,6 +164,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'finals_level' => '',
             'provincials_status' => 0,
             'provincials_position' => '',
+            'provincials_invite_date' => '',
+            'provincials_notes' => '',
             'comments' => '',
             'notes'=>'',
             'internal_notes'=>'',
@@ -274,6 +288,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "registrations.finals_level, "
             . "registrations.provincials_status, "
             . "registrations.provincials_position, "
+            . "DATE_FORMAT(registrations.provincials_invite_date, '%b %e, %Y') AS provincials_invite_date, "
+            . "registrations.provincials_notes, "
             . "registrations.comments, "
             . "registrations.notes, "
             . "registrations.internal_notes, "
@@ -344,7 +360,8 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     'artwork1', 'artwork2', 'artwork3',  'artwork4', 
                     'artwork5', 'artwork6',  'artwork7', 'artwork8',  
                     'timeslot_id', 'finals_timeslot_id', 
-                    'instrument', 'mark', 'placement', 'level', 'comments', 'provincials_status', 'provincials_position',
+                    'instrument', 'mark', 'placement', 'level', 'comments', 
+                    'provincials_status', 'provincials_position', 'provincials_invite_date', 'provincials_notes',
                     'finals_mark', 'finals_placement', 'finals_level',
                     'notes', 'internal_notes', 'runsheet_notes',
                     ),
@@ -560,6 +577,50 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         }
 
         //
+        // Load the message sent directly to this registration
+        //
+        $strsql = "SELECT messages.id, "
+            . "messages.subject, "
+            . "messages.status, "
+            . "messages.status AS status_text, "
+            . "messages.dt_scheduled, "
+            . "messages.dt_sent "
+            . "FROM ciniki_musicfestival_messagerefs AS refs "
+            . "INNER JOIN ciniki_musicfestival_messages AS messages ON ("
+                . "refs.message_id = messages.id "
+                . "AND messages.status > 10 "
+                . ") "
+            . "WHERE refs.object_id = '" . ciniki_core_dbQuote($ciniki, $registration['id']) . "' "
+            . "AND refs.object = 'ciniki.musicfestivals.registration' "
+            . "AND refs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY dt_sent DESC, dt_scheduled DESC "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'messages', 'fname'=>'id', 
+                'fields'=>array('id', 'subject', 'status', 'status_text', 'dt_scheduled', 'dt_sent'),
+                'maps'=>array(
+                    'status_text'=>$maps['message']['status'],
+                    ),
+                'utctotz'=>array(
+                    'dt_scheduled'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                    'dt_sent'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                    ),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.321', 'msg'=>'Unable to load messages', 'err'=>$rc['err']));
+        }
+        $registration['messages'] = isset($rc['messages']) ? $rc['messages'] : array();
+        foreach($registration['messages'] as $mid => $message) {
+            if( $message['status'] == 30 ) {
+                $registration['messages'][$mid]['date'] = $message['dt_scheduled'];
+            } else {
+                $registration['messages'][$mid]['date'] = $message['dt_sent'];
+            }
+        }
+
+        //
         // Load the invoice details
         //
         if( $registration['invoice_id'] > 0 ) {
@@ -654,6 +715,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         $rsp['competitors'] = $rc['competitors'];
     } */
 
+    // FIXME: Remove load festival, should have been loaded previously
     //
     // Get the festival details
     //

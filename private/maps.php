@@ -62,6 +62,7 @@ function ciniki_musicfestivals_maps($ciniki) {
         'provincials_status'=>array(
             '0' => '',
             '30' => 'Recommended',
+            '35' => 'Invited',
             '50' => 'Accepted',
             '70' => 'Ineligible',
             '90' => 'Declined',
@@ -72,9 +73,19 @@ function ciniki_musicfestivals_maps($ciniki) {
             '2' => '2nd Recommendation',
             '3' => '3rd Recommendation',
             '4' => '4th Recommendation',
-            '101' => '1st Alternative',
-            '102' => '2nd Alternative',
-            '103' => '3rd Alternative',
+            '101' => '1st Alternate',
+            '102' => '2nd Alternate',
+            '103' => '3rd Alternate',
+        ),
+        'provincials_position_short'=>array(
+            '0' => '',
+            '1' => '1st',
+            '2' => '2nd',
+            '3' => '3rd',
+            '4' => '4th',
+            '101' => 'Alt 1',
+            '102' => 'Alt 2',
+            '103' => 'Alt 3',
         ),
     );
     $maps['message'] = array(

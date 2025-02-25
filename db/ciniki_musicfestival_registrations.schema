@@ -141,6 +141,7 @@
 # provincials_status:   The current status of the provincials recommendation.
 #
 #                           30 - Recommended
+#                           35 - Invite Emailed
 #                           50 - Accepted
 #                           70 - Ineligible (declined by Provincials)
 #                           90 - Declined (Competitor declined)
@@ -150,10 +151,13 @@
 #                           1 - 1st Recommendation
 #                           2 - 2nd Recommendation
 #                           3 - 3rd Recommendation
+#                           4 - 4th Recommendation
 #                           101 - 1st Alternate
 #                           102 - 2nd Alternate
 #                           103 - 3rd Alternate
 #                       
+# provincials_invite_date:  The date the invite was sent.
+# provincials_notes:    Short notes for provincials recommendation
 #
 # notes:                Any notes for the registration.
 # internal_notes:       Any internal admin notes for the registration viewable only by admins.
@@ -261,8 +265,11 @@ create table ciniki_musicfestival_registrations (
     finals_mark varchar(50) not null,
     finals_placement varchar(50) not null,
     finals_level varchar(50) not null,
-    provincials_status tinying unsigned not null,
+    provincials_code varchar(20) not null,
+    provincials_status tinyint unsigned not null,
     provincials_position smallint unsigned not null,
+    provincials_invite_date date not null,
+    provincials_notes text not null,
     comments text not null,
     notes text not null,
     internal_notes text not null,
@@ -278,4 +285,4 @@ create table ciniki_musicfestival_registrations (
     index (class_id),
     index (timeslot_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.28';
+) ENGINE='InnoDB', COMMENT='v1.29';

@@ -1,0 +1,4 @@
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN provincials_code varchar(20) not null AFTER finals_level;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN provincials_invite_date date not null AFTER provincials_position;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN provincials_notes text not null AFTER provincials_invite_date;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.29';

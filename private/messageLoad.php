@@ -349,6 +349,27 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             );
             $ref_ids['statuses'][] = $ref['object_id'];
         }
+        elseif( $ref['object'] == 'ciniki.musicfestivals.registration' ) {
+            $strsql = "SELECT registrations.display_name AS name "
+                . "FROM ciniki_musicfestival_registrations AS registrations "
+                . "WHERE registrations.id = '" . ciniki_core_dbQuote($ciniki, $ref['object_id']) . "' " 
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.519', 'msg'=>'Unable to load registration', 'err'=>$rc['err']));
+            }
+            $label = (isset($rc['item']['name']) ? $rc['item']['name'] : 'Unknown Registration');
+            $rsp['message']['objects'][] = array(
+                'id' => $ref['id'],
+                'seq' => 76,
+                'object' => $ref['object'],
+                'object_id' => $ref['object_id'],
+                'type' => 'Registration',
+                'label' => $label,
+            );
+            $ref_ids['registrations'][] = $ref['object_id'];
+        }
         elseif( $ref['object'] == 'ciniki.musicfestivals.teacher' ) {
             $strsql = "SELECT customers.display_name AS name "
                 . "FROM ciniki_customers AS customers "
@@ -575,6 +596,18 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             $or = '';
             foreach($ids as $id) {
                 $reg_strsql .= $or . "registrations.status = '" . ciniki_core_dbQuote($ciniki, $id) . "' ";
+                $or = " OR ";
+            }
+            $reg_strsql .= ") "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "";
+        }
+        elseif( $object == 'ciniki.musicfestivals.registration' ) {
+            $reg_strsql .= "FROM ciniki_musicfestival_registrations AS registrations "
+                . "WHERE (";
+            $or = '';
+            foreach($ids as $id) {
+                $reg_strsql .= $or . "registrations.id = '" . ciniki_core_dbQuote($ciniki, $id) . "' ";
                 $or = " OR ";
             }
             $reg_strsql .= ") "

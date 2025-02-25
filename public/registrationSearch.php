@@ -65,7 +65,8 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
     //
     $strsql = "SELECT registrations.id, "
         . "registrations.festival_id, "
-//        . "sections.id AS section_id, "
+        . "sections.id AS section_id, "
+        . "sections.name AS section_name, "
         . "registrations.teacher_customer_id, "
         . "IFNULL(teachers.display_name, '') AS teacher_name, "
         . "registrations.billing_customer_id, "
@@ -121,6 +122,16 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         . "registrations.music_orgfilename6, "
         . "registrations.music_orgfilename7, "
         . "registrations.music_orgfilename8, "
+        . "registrations.mark, "
+        . "registrations.placement, "
+        . "registrations.level, "
+        . "registrations.provincials_code, "
+        . "registrations.provincials_status, "
+        . "registrations.provincials_status AS provincials_status_text, "
+        . "registrations.provincials_position, "
+        . "registrations.provincials_position AS provincials_position_text, "
+        . "DATE_FORMAT(registrations.provincials_invite_date, '%b %e, %Y') AS provincials_invite_date, "
+        . "registrations.provincials_notes, "
         . "invoices.invoice_type, "
         . "invoices.status AS invoice_status, "
         . "invoices.payment_status AS payment_status_text "
@@ -151,10 +162,10 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
             . "classes.category_id = categories.id "
             . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") " 
-/*        . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+        . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
             . "categories.section_id = sections.id "
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . ") " */
+            . ") "
         . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ("
@@ -181,7 +192,7 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 'rtype', 'rtype_text', 
                 'status', 'status_text', 'invoice_id', 'display_name', 
-                'class_id', 'class_code', 'class_name', 'category_name', 
+                'class_id', 'class_code', 'class_name', 'category_name', 'section_name',
                 'fee', 'participation', 
                 'title1', 'composer1', 'movements1', 'video_url1', 'music_orgfilename1',
                 'title2', 'composer2', 'movements2', 'video_url2', 'music_orgfilename2',
@@ -191,12 +202,17 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
                 'title6', 'composer6', 'movements6', 'video_url6', 'music_orgfilename6',
                 'title7', 'composer7', 'movements7', 'video_url7', 'music_orgfilename7',
                 'title8', 'composer8', 'movements8', 'video_url8', 'music_orgfilename8',
+                'mark', 'placement', 'level',
                 'invoice_type', 'invoice_status', 'payment_status_text',
+                'provincials_code', 'provincials_position', 'provincials_position_text', 
+                'provincials_status', 'provincials_status_text', 'provincials_invite_date', 'provincials_notes',
                 ),
             'maps'=>array(
                 'rtype_text'=>$maps['registration']['rtype'],
                 'status_text'=>$maps['registration']['status'],
                 'payment_status_text'=>$sapos_maps['invoice']['payment_status'],
+                'provincials_status_text'=>$maps['registration']['provincials_status'],
+                'provincials_position_text'=>$maps['registration']['provincials_position_short'],
                 ),
             ),
         ));
