@@ -1309,6 +1309,16 @@ function ciniki_musicfestivals_main() {
             'sortable':'yes',
             'sortTypes':['text', 'text', 'number', 'text', 'text', 'text', 'text', 'text', 'text', 'date', 'text'],
             'noData':'No recommendations',
+            'menu':{
+                'resultsexcel':{
+                    'label':'Provincial Recommendations Excel', 
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadProvincialsExcel(0);',
+                    },
+                'recommendations':{
+                    'label':'Provincial Recommendations', 
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadProvincialRecommendations(0);',
+                    },
+                },
             },
         'video_search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':5,
             'visible':function() {return M.ciniki_musicfestivals_main.festival.menutabs.selected=='videos'?'yes':'no';},
@@ -2295,7 +2305,7 @@ function ciniki_musicfestivals_main() {
                 case 2: return d.mark;
                 case 3: return d.placement;
                 case 4: return d.level;
-                case 5: return d.provincials_code;
+                case 5: return d.provincials_class_name != '' ? d.provincials_class_name : d.provincials_code;
                 case 6: return d.provincials_position_text;
                 case 7: return d.provincials_status_text;
                 case 8: return d.provincials_invite_date;

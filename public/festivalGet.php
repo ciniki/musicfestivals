@@ -2906,8 +2906,16 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "registrations.provincials_position, "
                 . "registrations.provincials_position AS provincials_position_text, "
                 . "DATE_FORMAT(registrations.provincials_invite_date, '%b %e, %Y') AS provincials_invite_date, "
-                . "registrations.provincials_notes "
-                . "FROM ciniki_musicfestival_sections AS sections "
+                . "registrations.provincials_notes, ";
+            if( isset($festival['provincial-festival-id']) && $festival['provincial-festival-id'] > 0 ) {
+                $strsql .= "CONCAT_WS(' - ', " //pclasses.code, "
+                    . "psections.name, "
+                    . "pcategories.name, "
+                    . "pclasses.name) AS provincials_class_name ";
+            } else {
+                $strsql .= "provincials_code AS provincials_class_name "; 
+            }
+            $strsql .= "FROM ciniki_musicfestival_sections AS sections "
                 . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
                     . "sections.id = categories.section_id "
                     . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -2920,8 +2928,22 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "classes.id = registrations.class_id "
                     . "AND provincials_position > 0 "
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") ";
+            if( isset($festival['provincial-festival-id']) && $festival['provincial-festival-id'] > 0 ) {
+                $strsql .= "LEFT JOIN ciniki_musicfestival_classes AS pclasses ON ("
+                        . "registrations.provincials_code = pclasses.code "
+                        . "AND pclasses.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['provincial-festival-id']) . "' "
                     . ") "
-                . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "LEFT JOIN ciniki_musicfestival_categories AS pcategories ON ("
+                        . "pclasses.category_id = pcategories.id "
+                        . "AND pcategories.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['provincial-festival-id']) . "' "
+                    . ") "
+                    . "LEFT JOIN ciniki_musicfestival_sections AS psections ON ("
+                        . "pcategories.section_id = psections.id "
+                        . "AND psections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['provincial-festival-id']) . "' "
+                    . ") ";
+            }
+            $strsql .= "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "ORDER BY sections.sequence, sections.name, categories.sequence, categories.name, classes.sequence, classes.code, classes.name, registrations.provincials_position "
                 . "";
@@ -2935,7 +2957,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
                         'mark', 'placement', 'level', 'provincials_code', 
                         'provincials_status', 'provincials_status_text', 'provincials_position', 'provincials_position_text', 
-                        'provincials_invite_date', 'provincials_notes',
+                        'provincials_invite_date', 'provincials_notes', 'provincials_class_name',
                         ),
                     'maps'=>array(
                         'provincials_status_text'=>$maps['registration']['provincials_status'],

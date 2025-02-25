@@ -118,7 +118,7 @@ function ciniki_musicfestivals_templates_recommendationsPDF(&$ciniki, $tnid, $ar
             . "classes.name AS class_name, "
             . "categories.name AS category_name, "
             . "sections.name AS section_name, "
-            . "classes.provincials_code, "
+            . "if(registrations.provincials_code <> '',registrations.provincials_code, classes.provincials_code) AS provincials_code, "
             . "registrations.id AS registration_id, "
             . "registrations.display_name, "
             . "registrations.provincials_position, "
