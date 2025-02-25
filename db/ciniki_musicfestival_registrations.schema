@@ -143,6 +143,7 @@
 #                           30 - Recommended
 #                           35 - Invite Emailed
 #                           50 - Accepted
+#                           55 - Accepted instructions Email Sent
 #                           70 - Ineligible (declined by Provincials)
 #                           90 - Declined (Competitor declined)
 #

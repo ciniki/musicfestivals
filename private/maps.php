@@ -64,6 +64,7 @@ function ciniki_musicfestivals_maps($ciniki) {
             '30' => 'Recommended',
             '35' => 'Invited',
             '50' => 'Accepted',
+            '55' => 'Instructions Sent',
             '70' => 'Ineligible',
             '90' => 'Declined',
         ),
