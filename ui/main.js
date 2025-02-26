@@ -7403,7 +7403,7 @@ function ciniki_musicfestivals_main() {
             }
             if( rsp.provincial_classes != null ) {
                 p.sections.provincials.fields.provincials_code.type = 'select';
-                rsp.provincial_classes.unshift({'id':0, 'name':'None Selected'});
+                rsp.provincial_classes.unshift({'code':'', 'name':'None Selected'});
                 p.sections.provincials.fields.provincials_code.options = rsp.provincial_classes;
             } else {
                 p.sections.provincials.fields.provincials_code.type = 'text';
