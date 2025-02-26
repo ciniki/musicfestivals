@@ -3917,7 +3917,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "recommendations.member_id, "
                     . "recommendations.section_id, "
                     . "recommendations.date_submitted, "
-                    . "members.name AS member_name, "
+                    . "members.shortname AS member_name, "
                     . "member.reg_end_dt AS end_date, "
 //                    . "DATE_FORMAT(member.reg_end_dt, '%b %d') AS end_date, "
                     . "member.latedays "
@@ -3980,7 +3980,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             //       are attached to the festival being requested
             //
             $strsql = "SELECT members.id, "
-                . "members.name, "
+                . "members.shortname AS name, "
                 . "COUNT(entries.id) AS num_entries "
                 . "FROM ciniki_musicfestivals_members AS members "
                 . "LEFT JOIN ciniki_musicfestival_recommendations AS recommendations ON ("
@@ -3995,7 +3995,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "WHERE members.status = 10 " // Active
                 . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "GROUP BY members.id "
-                . "ORDER BY members.name "
+                . "ORDER BY members.shortname "
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
