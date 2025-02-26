@@ -510,6 +510,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     . "ciniki_musicfestival_competitors.phone_cell, "
                     . "ciniki_musicfestival_competitors.email, "
                     . "ciniki_musicfestival_competitors.age AS _age, "
+                    . "ciniki_musicfestival_competitors.num_people, "
                     . "ciniki_musicfestival_competitors.study_level, "
                     . "ciniki_musicfestival_competitors.instrument, "
                     . "ciniki_musicfestival_competitors.notes "
@@ -522,7 +523,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     array('container'=>'competitors', 'fname'=>'id', 
                         'fields'=>array('festival_id', 'ctype', 'flags', 'name', 'pronoun', 'parent', 
                             'address', 'city', 'province', 'postal', 'phone_home', 'phone_cell', 
-                            'email', '_age', 'study_level', 'instrument', 'notes'),
+                            'email', '_age', 'num_people', 'study_level', 'instrument', 'notes'),
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
@@ -568,6 +569,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                 if( $competitor['phone_cell'] != '' ) { $details[] = array('label'=>'Cell', 'value'=>$competitor['phone_cell']); }
                 if( $competitor['email'] != '' ) { $details[] = array('label'=>'Email', 'value'=>$competitor['email']); }
                 if( $competitor['age'] != '' ) { $details[] = array('label'=>'Age', 'value'=>$competitor['_age']); }
+                if( $competitor['num_people'] != '' ) { $details[] = array('label'=>'# People', 'value'=>$competitor['num_people']); }
                 if( $competitor['study_level'] != '' ) { $details[] = array('label'=>'Study/Level', 'value'=>$competitor['study_level']); }
                 if( $competitor['instrument'] != '' ) { $details[] = array('label'=>'Instrument', 'value'=>$competitor['instrument']); }
                 if( ($competitor['flags']&0x01) == 0x01 ) { $details[] = array('label'=>'Waiver', 'value'=>'Signed'); }
