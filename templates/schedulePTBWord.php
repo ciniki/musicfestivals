@@ -233,12 +233,12 @@ function ciniki_musicfestivals_templates_schedulePTBWord(&$ciniki, $tnid, $args)
     $PHPWord->addTitleStyle(1, array('bold'=>true, 'size'=>20), array('spaceBefore'=>240, 'spaceAfter'=>120));
     $PHPWord->addTitleStyle(2, array('bold'=>true, 'size'=>16), array('spaceBefore'=>120, 'spaceAfter'=>120));
     $PHPWord->addTitleStyle(3, array('bold'=>false, 'size'=>16), array('spaceBefore'=>120, 'spaceAfter'=>120));
-    $PHPWord->addParagraphStyle('Dates', array('align' => 'left', 'spaceAfter' => 0, 'spaceBefore'=>120,
+    $PHPWord->addParagraphStyle('Dates', array('align' => 'left', 'spaceAfter' => 0, 'spaceBefore'=>150,
         'keepLines' => true,
         'keepNext' => true,
         'indentation' => [],
         ));
-    $PHPWord->addParagraphStyle('Divisions', array('align' => 'left', 'spaceAfter' => 0, 'spaceBefore'=>0,
+    $PHPWord->addParagraphStyle('Locations', array('align' => 'left', 'spaceAfter' => 0, 'spaceBefore'=>0,
         'keepLines' => true,
         'keepNext' => true,
         'indentation' => [],
@@ -248,16 +248,16 @@ function ciniki_musicfestivals_templates_schedulePTBWord(&$ciniki, $tnid, $args)
         'keepNext' => true,
         'indentation' => [],
         ));
-    $PHPWord->addParagraphStyle('Timeslots', array('align' => 'left', 'spaceAfter' => 150, 'spaceBefore'=>150,
+    $PHPWord->addParagraphStyle('Timeslots', array('align' => 'left', 'spaceAfter' => 120, 'spaceBefore'=>120,
         'keepLines' => true,
         'keepNext' => true,
         ));
-    $PHPWord->addParagraphStyle('Class Name', array('align' => 'left', 'spaceAfter' => 0, 'spaceBefore'=>150,
+    $PHPWord->addParagraphStyle('Class Name', array('align' => 'left', 'spaceAfter' => 0, 'spaceBefore'=>120,
         'keepLines' => true,
         'keepNext' => true,
         ));
-    $PHPWord->addParagraphStyle('Registrations 1', array('align' => 'left', 'spaceAfter' => 0, 'spaceBefore'=>150,
-        'indentation' => ['left' => 120, 'hanging' => 360],
+    $PHPWord->addParagraphStyle('Registrations 1', array('align' => 'left', 'spaceAfter' => 0, 'spaceBefore'=>120,
+        'indentation' => ['left' => 360, 'hanging' => 360],
         'keepLines' => true,
         'keepNext' => true,
         'tabs' => array(
@@ -266,7 +266,7 @@ function ciniki_musicfestivals_templates_schedulePTBWord(&$ciniki, $tnid, $args)
            ),
         ));
     $PHPWord->addParagraphStyle('Registrations', array('align' => 'left', 'spaceAfter' => 0, 'spaceBefore'=>0,
-        'indentation' => ['left' => 120, 'hanging' => 360],
+        'indentation' => ['left' => 360, 'hanging' => 360],
         'keepLines' => true,
         'keepNext' => true,
         'tabs' => array(
@@ -274,7 +274,7 @@ function ciniki_musicfestivals_templates_schedulePTBWord(&$ciniki, $tnid, $args)
            new \PhpOffice\PhpWord\Style\Tab('left', 480),
            ),
         ));
-    $PHPWord->addParagraphStyle('Registrations Break', array('align' => 'left', 'spaceAfter' => 120, 'spaceBefore'=>0,
+    $PHPWord->addParagraphStyle('Registrations Break', array('align' => 'left', 'spaceAfter' => 60, 'spaceBefore'=>0,
         'keepLines' => false,
         'keepNext' => false,
         ));
@@ -282,7 +282,7 @@ function ciniki_musicfestivals_templates_schedulePTBWord(&$ciniki, $tnid, $args)
     $PHPWord->addFontStyle('Location Font', ['size'=>14, 'bold'=>true]);
     $PHPWord->addFontStyle('Adjudicator Font', ['size'=>14, 'bold'=>true]);
     $PHPWord->addFontStyle('Timeslot Font', ['size'=>12, 'bold'=>true]);
-    $PHPWord->addFontStyle('Class Font', ['size'=>12, 'bold'=>false]);
+    $PHPWord->addFontStyle('Class Font', ['size'=>11, 'bold'=>false]);
 
     $sectionWord = $PHPWord->addSection([
         'marginTop' => 1000,
