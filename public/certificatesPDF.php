@@ -271,7 +271,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
         }
     }
 
-    $filename = 'certificates';
+    $filename = 'Certificates';
 
     //
     // Go through the sections, divisions and classes
@@ -282,7 +282,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
         //
         // Start a new section
         //
-        if( isset($args['schedulesection_id']) ) {
+        if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
             $filename = preg_replace('/[^a-zA-Z0-9_]/', '_', $section['name']) . '_certificates';
         }
 
