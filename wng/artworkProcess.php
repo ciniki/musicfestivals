@@ -27,6 +27,16 @@ function ciniki_musicfestivals_wng_artworkProcess(&$ciniki, $tnid, &$request, $s
     $intl_timezone = $rc['settings']['intl-default-timezone'];
     
     //
+    // Get the tenant storage directory
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+    $rc = ciniki_tenants_hooks_storageDir($ciniki, $tnid, array());
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $tenant_storage_dir = $rc['storage_dir'];
+
+    //
     // Make sure a valid section was passed
     //
     if( !isset($section['ref']) || !isset($section['settings']) ) {
@@ -128,6 +138,7 @@ function ciniki_musicfestivals_wng_artworkProcess(&$ciniki, $tnid, &$request, $s
         'type' => 'title',
         'title' => $s['title'],
         );
+    $images = array();
 
     foreach($sections as $sid => $sec) {
         foreach($sec['categories'] as $cid => $category) {
@@ -143,15 +154,74 @@ function ciniki_musicfestivals_wng_artworkProcess(&$ciniki, $tnid, &$request, $s
                 return ciniki_musicfestivals_wng_artworkCategoryProcess($ciniki, $tnid, $request, $section);
             }
 
-            $sec['categories'][$cid]['url'] = $request['page']['path'] . '/' . $sec['permalink'] . '/' . $category['permalink'];
-            $sec['categories'][$cid]['text'] = $category['name'];
+            $sections[$sid]['categories'][$cid]['url'] = $request['page']['path'] . '/' . $sec['permalink'] . '/' . $category['permalink'];
+            $sections[$sid]['categories'][$cid]['text'] = $category['name'];
+            foreach($category['registrations'] as $reg) {
+                for($i = 1; $i < 10; $i++) {
+                    if( isset($reg["artwork{$i}"]) && $reg["artwork{$i}"] != '' ) {
+                        $extension = preg_replace('/^.*\.([a-zA-Z0-9]+)$/', '$1', $reg["artwork{$i}"]);
+                        if( !in_array($extension, ['jpg', 'png', 'jpeg']) ) {
+                            continue;
+                        }
+                        $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/files/' . $reg['uuid'][0] . '/' . $reg['uuid'] . '_artwork' . $i;
+                        if( file_exists($storage_filename) ) {
+                            $filename = $reg['uuid'] . '.jpg';
+                            $images["{$reg['uuid']}-{$i}"] = array(
+                                'storage_filename' => $storage_filename,
+                                'cache_filename' => $request['site']['cache_dir'] . '/mf' . $s['festival-id'] . '/' . $filename,
+                                'image-url' => $request['site']['cache_url'] . '/mf' . $s['festival-id'] . '/' . $filename,
+                                'title' => $reg["title{$i}"] . ' by ' . $reg['display_name'],
+                                );
+                        }
+                    }
+                }
+            }
         }
+    }
+
+    // 
+    // Generate a carousel
+    //
+    if( count($images) > 0 ) {
+        shuffle($images);
+        foreach($images as $iid => $artwork) {
+            if( !file_exists($artwork['cache_filename']) ) {
+                //
+                // Open the image
+                //
+                try {
+                    $image = new Imagick($artwork['storage_filename']);
+                } catch (Exception $e) {
+                    error_log("Unable to open image for {$artwork['title']}");
+                    continue;
+                }
+                $image->scaleImage(1024, 0);
+                $image->setImageFormat('jpg');
+                $image->setImageCompressionQuality(75);
+            
+                $image->writeImage($artwork['cache_filename']);
+            }
+        }
+        $blocks[] = array(
+            'type' => 'carousel',
+            'class' => 'musicfestival-artwork',
+            'speed' => 'slow',
+            'titles' => 'yes',
+            'image-format' => 'padded',
+            'items' => $images,
+            );
+    }
+
+    //
+    // Output the buttons
+    //
+    foreach($sections as $sid => $sec) {
         $blocks[] = array(
             'type' => 'buttons',
             'title' => $sec['name'],
             'level' => 2,
             'class' => 'musicfestival-artwork',
-            'items' => $sec['categories'],
+            'items' => $sections[$sid]['categories'],
             );
     }
 
