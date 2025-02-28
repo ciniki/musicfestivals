@@ -343,6 +343,11 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'no' => 'No',
                     'yes' => 'Yes',
                     )),
+            'division-locations' => array('label'=>'Location Names', 'type'=>'toggle', 'default'=>'no',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
             'live-search' => array('label'=>'Search', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
                 'no' => 'No',
                 'top' => 'Yes',

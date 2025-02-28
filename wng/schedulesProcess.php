@@ -226,6 +226,9 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                 if( isset($s['division-dates']) && $s['division-dates'] == 'yes' ) {
                     $sections[$sid]['divisions'][$did]['text'] .= '<br/>' . $division['division_date_text'];
                 }
+                if( isset($s['division-locations']) && $s['division-locations'] == 'yes' ) {
+                    $sections[$sid]['divisions'][$did]['text'] .= '<br/>' . $division['location_name'];
+                }
                 if( isset($section_permalink) && $section_permalink == $sections[$sid]['permalink'] 
                     && isset($division_permalink) && $division_permalink == $sections[$sid]['divisions'][$did]['permalink'] 
                     ) {
