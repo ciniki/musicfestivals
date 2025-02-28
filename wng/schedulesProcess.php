@@ -196,9 +196,9 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
             $strsql .= "AND (sections.flags&0x10) = 0x10 "; // Schedule published on website
         }
         if( $s['layout'] == 'division-buttons-name' ) {
-            $strsql .= "ORDER BY sections.sequence, sections.name, divisions.name, divisions.division_date ";
+            $strsql .= "ORDER BY sections.sequence, sections.name, divisions.name, divisions.division_date, location_name ";
         } else {
-            $strsql .= "ORDER BY sections.sequence, sections.name, divisions.division_date, divisions.name ";
+            $strsql .= "ORDER BY sections.sequence, sections.name, divisions.division_date, divisions.name, location_name ";
         }
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -323,7 +323,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
         } else {
             $strsql .= "AND (sections.flags&0x10) = 0x10 "; // Schedule published on website
         }
-        $strsql .= "ORDER BY name "
+        $strsql .= "ORDER BY sections.sequence, name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
