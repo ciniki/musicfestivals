@@ -336,6 +336,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'section-buttons' => 'Section Buttons',
                     'division-buttons' => 'Section - Division Buttons By Date',
                     'division-buttons-name' => 'Section - Division Buttons By Name',
+//                    'division-grouped-buttons' => 'Section - Division Grouped Buttons',
                     'date-buttons' => 'Date - Division Buttons',
                     )),
             'division-dates' => array('label'=>'Division Dates', 'type'=>'toggle', 'default'=>'no',

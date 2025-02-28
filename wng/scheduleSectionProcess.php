@@ -283,6 +283,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "divisions.address, "
         . "divisions.results_notes, "
         . "divisions.results_video_url, "
+        . "CONCAT_WS(' ', divisions.division_date, IFNULL(locations.name, ''), timeslots.slot_time) AS division_sort_key, "
         . "IFNULL(locations.name, '') AS location_name, "
         . "IFNULL(locations.address1, '') AS location_address1, "
         . "IFNULL(locations.city, '') AS location_city, "
@@ -408,7 +409,9 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "WHERE divisions.ssection_id = '" . ciniki_core_dbQuote($ciniki, $s['section-id']) . "' "
         . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
-    if( isset($s['division-id']) && $s['division-id'] > 0 ) {
+    if( isset($s['division-ids']) && count($s['division-ids']) > 0 ) {
+        $strsql .= "AND divisions.id IN (" . ciniki_core_dbQuoteIDs($ciniki, $s['division-ids']) . ") ";
+    } elseif( isset($s['division-id']) && $s['division-id'] > 0 ) {
         $strsql .= "AND divisions.id = '" . ciniki_core_dbQuote($ciniki, $s['division-id']) . "' ";
     }
     if( isset($s['results-only']) && $s['results-only'] == 'yes' ) {
@@ -427,6 +430,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'divisions', 'fname'=>'division_id', 
             'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 
+                'sort_key'=>'division_sort_key',
                 'address', 'location_name', 'location_address1', 'location_city', 'location_province', 'location_postal', 
                 'latitude', 'longitude', 'adjudicator_name', 'adjudicator_permalink', 'results_notes', 'results_video_url',
                 'adjudicator_image_id', 'adjudicator_description',
@@ -452,6 +456,13 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         return $rc;
     }
     $divisions = isset($rc['divisions']) ? $rc['divisions'] : array();
+
+    
+    uasort($divisions, function($a, $b) {
+        return $a['sort_key'] < $b['sort_key'] ? -1 : 1;
+        });
+
+
     
     $s['title'] .= ($s['title'] != '' ? ' - ' : '') . $schedulesection['name'];
 

@@ -196,7 +196,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
             $strsql .= "AND (sections.flags&0x10) = 0x10 "; // Schedule published on website
         }
         if( $s['layout'] == 'division-buttons-name' ) {
-            $strsql .= "ORDER BY sections.sequence, sections.name, divisions.name, divisions.division_date, location_name ";
+            $strsql .= "ORDER BY sections.sequence, sections.name, divisions.name, divisions.division_date, divisions.id, location_name ";
         } else {
             $strsql .= "ORDER BY sections.sequence, sections.name, divisions.division_date, divisions.name, location_name ";
         }
@@ -233,6 +233,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                     && isset($division_permalink) && $division_permalink == $sections[$sid]['divisions'][$did]['permalink'] 
                     ) {
                     $selected_division = $sections[$sid]['divisions'][$did];
+                    $selected_division_ids[] = $sections[$sid]['divisions'][$did]['id'];
                 }
             }
         }
@@ -460,7 +461,11 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
 
     if( isset($selected_section) && isset($selected_division) ) {
         $section['settings']['section-id'] = $selected_section['id'];
-        $section['settings']['division-id'] = $selected_division['id'];
+        if( $s['layout'] == 'division-buttons-name' && isset($selected_division_ids) && count($selected_division_ids) > 1 ) {
+            $section['settings']['division-ids'] = $selected_division_ids;
+        } else {
+            $section['settings']['division-id'] = $selected_division['id'];
+        }
         $request['cur_uri_pos']++;
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'scheduleSectionProcess');
         return ciniki_musicfestivals_wng_scheduleSectionProcess($ciniki, $tnid, $request, $section);
@@ -536,6 +541,17 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                     uasort($section['divisions'], function($a, $b) {
                         return strnatcmp($a['name'], $b['name']);
                         });
+                    if( (!isset($s['division-dates']) || $s['division-dates'] != 'yes')
+                        && (!isset($s['division-locations']) || $s['division-locations'] != 'yes')
+                        ) {
+                        $prev_name = '';
+                        foreach($section['divisions'] as $did => $division) {
+                            if( $prev_name == $division['name'] ) {
+                                unset($section['divisions'][$did]);
+                            }
+                            $prev_name = $division['name'];
+                        }
+                    }
                 }
                 $blocks[] = array(
                     'type' => 'buttons',
