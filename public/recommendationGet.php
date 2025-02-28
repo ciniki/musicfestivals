@@ -167,7 +167,6 @@ function ciniki_musicfestivals_recommendationGet($ciniki) {
         }
     }
 
-    error_log(print_r($recommendation,true));
     return array('stat'=>'ok', 'recommendation'=>$recommendation);
 }
 ?>
