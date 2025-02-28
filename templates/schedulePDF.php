@@ -104,6 +104,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     $strsql .= "customers.display_name AS adjudicator, "
         . "divisions.id AS division_id, "
         . "divisions.name AS division_name, "
+        . "locations.id AS location_id, "
         . "locations.name AS location, "
         . "CONCAT_WS(' ', divisions.division_date, timeslots.slot_time) AS division_sort_key, "
         . "DATE_FORMAT(divisions.division_date, '" . ciniki_core_dbQuote($ciniki, $division_date_format) . "') AS division_date_text, ";
@@ -231,33 +232,60 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
         $strsql .= "AND registrations.participation = 1 ";
     }
-    $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, divisions.name, divisions.id, slot_time, timeslots.name, timeslots.id, registrations.timeslot_sequence, class_code, registrations.display_name "
-        . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'sections', 'fname'=>'section_id', 
-            'fields'=>array('id'=>'section_id', 'name'=>'section_name', 'sponsor_settings', 'provincial_settings', 'adjudicator_id'),
-            'json'=>array('sponsor_settings', 'provincial_settings'),
-            ),
-        array('container'=>'divisions', 'fname'=>'division_id', 
-            'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 
-                'location', 'adjudicator_id', 'adjudicator',
-                'sort_key' => 'division_sort_key',
+    if( isset($args['sorting']) && $args['sorting'] == 'location-division' ) {
+        $strsql .= "ORDER BY location, divisions.division_date, divisions.name, divisions.id, slot_time, timeslots.name, timeslots.id, registrations.timeslot_sequence, class_code, registrations.display_name ";
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'sections', 'fname'=>'location_id', 
+                'fields'=>array('id'=>'section_id', 'name'=>'location', 'sponsor_settings', 'provincial_settings', 'adjudicator_id'),
+                'json'=>array('sponsor_settings', 'provincial_settings'),
                 ),
-            ),
-        array('container'=>'timeslots', 'fname'=>'timeslot_id', 
-            'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'groupname'=>'timeslot_groupname', 'time'=>'slot_time_text', 
-                'description', 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 'start_num',
+            array('container'=>'divisions', 'fname'=>'division_id', 
+                'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 
+                    'location', 'adjudicator_id', 'adjudicator',
+                    'sort_key' => 'division_sort_key',
+                    ),
                 ),
-            ),
-        array('container'=>'registrations', 'fname'=>'reg_id', 
-            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'participation', 'timeslot_time', 'member_name',
-                'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
-                'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
-                'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
-                'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
-                )),
-        ));
+            array('container'=>'timeslots', 'fname'=>'timeslot_id', 
+                'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'groupname'=>'timeslot_groupname', 'time'=>'slot_time_text', 
+                    'description', 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 'start_num',
+                    ),
+                ),
+            array('container'=>'registrations', 'fname'=>'reg_id', 
+                'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'participation', 'timeslot_time', 'member_name',
+                    'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
+                    'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
+                    'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                    'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
+                    )),
+            ));
+    } else {
+        $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, divisions.name, divisions.id, slot_time, timeslots.name, timeslots.id, registrations.timeslot_sequence, class_code, registrations.display_name ";
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'sections', 'fname'=>'section_id', 
+                'fields'=>array('id'=>'section_id', 'name'=>'section_name', 'sponsor_settings', 'provincial_settings', 'adjudicator_id'),
+                'json'=>array('sponsor_settings', 'provincial_settings'),
+                ),
+            array('container'=>'divisions', 'fname'=>'division_id', 
+                'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 
+                    'location', 'adjudicator_id', 'adjudicator',
+                    'sort_key' => 'division_sort_key',
+                    ),
+                ),
+            array('container'=>'timeslots', 'fname'=>'timeslot_id', 
+                'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'groupname'=>'timeslot_groupname', 'time'=>'slot_time_text', 
+                    'description', 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 'start_num',
+                    ),
+                ),
+            array('container'=>'registrations', 'fname'=>'reg_id', 
+                'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'participation', 'timeslot_time', 'member_name',
+                    'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
+                    'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
+                    'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                    'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
+                    )),
+            ));
+    }
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -389,7 +417,11 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     if( $field == 'namedate' ) {
                         $division[$field] = $division['name'] . ' - ' . $division['date'];
                     } elseif( $field == 'adjudicatorlocation' ) {
-                        $division[$field] = $division['adjudicator'] . ' - ' . $division['location'];
+                        if( $division['adjudicator'] == '' ) {
+                            $division[$field] = $division['location'];
+                        } else {
+                            $division[$field] = $division['adjudicator'] . ' - ' . $division['location'];
+                        }
                     } elseif( $field == 'adjudicatoraddress' ) {
                         // This one is old and can be removed when nobody useing adjudicatoraddress anymore
                         $division[$field] = $division['adjudicator'] . ' - ' . $division['location'];
@@ -853,8 +885,12 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             }
 
             //
+            // FIXME: Need to calculate timeslot heights before printing out divisionheader to know if we need a new page first
+            //
+
+            //
             // Remove adjudicator when information division, no actual timeslots
-            ///
+            //
             if( count($division['timeslots']) == 1 
                 && isset($division['timeslots'][0]['id']) && $division['timeslots'][0]['id'] == '' 
                 ) {
@@ -874,7 +910,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             $fill = 0;
             $border = 'T';
             $prev_time = '';
-            foreach($division['timeslots'] as $timeslot) {
+            foreach($division['timeslots'] as $tid => $timeslot) {
                 $name = $timeslot['name'];
 //                if( $name == '' && $timeslot['class_name'] != '' ) {
 //                    $name = $timeslot['class_name'];
@@ -994,6 +1030,8 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                         $pdf->Ln(5);
                     } 
                     */
+                    $pdf->AddPage();
+                    $pdf->newpage = 'yes';
                     $pdf->DivisionHeader($args, $section, $division, 'yes', $section['top_sponsors_title'], $top_sponsors);
                     $pdf->SetFont('', '', '12');
                     $pdf->Ln(1);
