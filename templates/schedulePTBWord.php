@@ -134,6 +134,8 @@ function ciniki_musicfestivals_templates_schedulePTBWord(&$ciniki, $tnid, $args)
         . "registrations.participation, "
         . "classes.code AS class_code, "
         . "classes.name AS class_name, "
+        . "classes.flags AS class_flags, "
+        . "classes.titleflags, "
         . "categories.name AS category_name, "
         . "sections.name AS syllabus_section_name "
         . "FROM ciniki_musicfestival_schedule_sections AS ssections "
@@ -208,7 +210,7 @@ function ciniki_musicfestivals_templates_schedulePTBWord(&$ciniki, $tnid, $args)
                 ),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
-            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'participation', 
+            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'participation', 'titleflags', 'class_flags',
                 'description', 'class_code', 'class_name', 'category_name', 'section_name'=>'syllabus_section_name', 
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
@@ -322,6 +324,18 @@ function ciniki_musicfestivals_templates_schedulePTBWord(&$ciniki, $tnid, $args)
                 }
                 if( $prev_class_code != $reg['class_code'] ) {
                     $sectionWord->addText(htmlspecialchars("{$reg['class_code']} - {$reg['section_name']} - {$reg['category_name']} - {$reg['class_name']}"), 'Class Font', 'Category Name');
+                    // Check if fixed titles for this class
+                    if( ($reg['class_flags']&0x10) == 0x10 ) {
+                        for($i = 1; $i <= 8; $i++) {
+                            if( $reg['title1'] != '' ) {
+                                ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
+                                $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
+                                if( isset($rc['title']) && $rc['title'] != '' ) {
+                                    $sectionWord->addText(htmlspecialchars($rc['title']), 'Registration Font', 'Registrations 1');
+                                }
+                            }
+                        }
+                    }
                 }
                 if( $num == 1 ) {
                     $sectionWord->addText(htmlspecialchars("{$num}.\t{$reg['name']}"), 'Registration Font', 'Registrations 1');
