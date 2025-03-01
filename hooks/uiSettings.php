@@ -74,7 +74,7 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
 
     if( isset($festival['start_date']) && $festival['start_date'] != '' ) {
         $start_dt = new DateTime($festival['start_date'], new DateTimezone($intl_timezone));
-        $end_dt = new DateTime($festival['end_date'], new DateTimezone($intl_timezone));
+        $end_dt = new DateTime($festival['end_date'] . ' 11:59pm', new DateTimezone($intl_timezone));
         $now = new DateTime('now', new DateTimezone($intl_timezone));
 
         if( $start_dt < $now && $end_dt > $now ) {
