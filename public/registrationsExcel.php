@@ -698,6 +698,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'City', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Home', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Cell', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Age', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Etransfer Email', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor 2', false);
@@ -707,6 +708,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'City', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Home', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Cell', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Age', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Etransfer Email', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor 3', false);
@@ -716,6 +718,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'City', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Home', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Cell', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Age', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Etransfer Email', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor 4', false);
@@ -725,6 +728,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'City', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Home', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Cell', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Age', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Etransfer Email', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor 5', false);
@@ -733,6 +737,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Address', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Home', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Cell', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Age', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
 
         $objPHPExcelWorksheet->getStyle('A1:AG1')->getFont()->setBold(true);
@@ -905,6 +910,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['city'], false);
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['phone_home'], false);
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['phone_cell'], false);
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['cage'], false);
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['email'], false);
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['etransfer_email'], false);
                 }
