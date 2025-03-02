@@ -891,18 +891,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             //
             // Remove adjudicator when information division, no actual timeslots
             //
-            if( count($division['timeslots']) == 1 
-                && isset($division['timeslots'][0]['id']) && $division['timeslots'][0]['id'] == '' 
-                ) {
-                $division_header_format = $args['division_header_format'];
-                $args['division_header_format'] = preg_replace('/adjudicator-/', '', $args['division_header_format']);
-                $pdf->DivisionHeader($args, $section, $division, 'no', $section['top_sponsors_title'], $top_sponsors);
-                $args['division_header_format'] = $division_header_format;
-            } else {
-                $pdf->DivisionHeader($args, $section, $division, 'no', $section['top_sponsors_title'], $top_sponsors);
-            }
-            $pdf->Ln(1);
-            $pdf->SetFont('', '', '12');
+            $header_printed = 'no';
 
             //
             // Output the timeslots
@@ -1032,16 +1021,32 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     */
                     $pdf->AddPage();
                     $pdf->newpage = 'yes';
-                    $pdf->DivisionHeader($args, $section, $division, 'yes', $section['top_sponsors_title'], $top_sponsors);
+                    $pdf->DivisionHeader($args, $section, $division, $header_printed, $section['top_sponsors_title'], $top_sponsors);
+                    $header_printed = 'yes';
                     $pdf->SetFont('', '', '12');
                     $pdf->Ln(1);
                     $border = 'T';
                     $pdf->SetCellPaddings(1,2,1,1);
                 } else {
+                    if( $header_printed == 'no' ) {
+                        if( count($division['timeslots']) == 1 
+                            && isset($division['timeslots'][0]['id']) && $division['timeslots'][0]['id'] == '' 
+                            ) {
+                            $division_header_format = $args['division_header_format'];
+                            $args['division_header_format'] = preg_replace('/adjudicator-/', '', $args['division_header_format']);
+                            $pdf->DivisionHeader($args, $section, $division, 'no', $section['top_sponsors_title'], $top_sponsors);
+                            $args['division_header_format'] = $division_header_format;
+                        } else {
+                            $pdf->DivisionHeader($args, $section, $division, 'no', $section['top_sponsors_title'], $top_sponsors);
+                        }
+                        $pdf->Ln(1);
+                        $pdf->SetFont('', '', '12');
+                        $header_printed = 'yes';
+                    }
                     if( $time != '' ) {
                         $pdf->SetCellPaddings(1,3,1,1);
                     } else {
-                        $pdf->SetCellPaddings(1,0,1,1);
+                        $pdf->SetCellPaddings(1,2,1,1);
                     }
                 }
                 $pdf->Ln(2);
