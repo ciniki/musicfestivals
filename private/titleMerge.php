@@ -35,7 +35,11 @@ function ciniki_musicfestivals_titleMerge(&$ciniki, $tnid, $registration, $i) {
         ) {
         if( preg_match("/^\s*[Bb][Yy]\s+/", $registration["composer{$i}"]) ) {
             $line .= ' ' . $registration["composer{$i}"];
-        } elseif( preg_match("/^\s*[Aa][Rr][Rr]\s+/", $registration["composer{$i}"]) ) {
+        } elseif( preg_match("/^\s*[Aa][Rr][Rr]\s+/", $registration["composer{$i}"]) ) {    // arr. OR arranged
+            $line .= ' ' . $registration["composer{$i}"];
+        } elseif( preg_match("/^\s*[Aa][Tt][Tt][Rr]\s+/", $registration["composer{$i}"]) ) {    // Attr or attributed
+            $line .= ' ' . $registration["composer{$i}"];
+        } elseif( preg_match("/^\s*[Aa][Dd][Aa][Pp]\s+/", $registration["composer{$i}"]) ) {     // Adapted
             $line .= ' ' . $registration["composer{$i}"];
         } else {
             $line .= ' by ' . $registration["composer{$i}"];

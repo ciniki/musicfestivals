@@ -2929,7 +2929,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "classes.id = registrations.class_id "
                     . "AND provincials_position > 0 ";
             if( isset($args['provincials_status']) && $args['provincials_status'] != '' 
-                && $args['provincials_status'] != 'all' && is_numeric($args['provincials_status']) 
+                && $args['provincials_status'] != '0' && is_numeric($args['provincials_status']) 
                 ) {
                 $strsql .= "AND registrations.provincials_status = '" . ciniki_core_dbQuote($ciniki, $args['provincials_status']) . "' ";
             }
