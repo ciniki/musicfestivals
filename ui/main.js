@@ -1321,6 +1321,17 @@ function ciniki_musicfestivals_main() {
             'headerValues':['Local Class', 'Registrant', 'Mark', 'Placement', 'Level', 'Prov Class', 'Position', 'Status', 'Invite Date', 'Notes'],
             'cellClasses':['', '', '', '', '', '', '', '', '', ''],
             },
+        'provincials_status_tabs':{'label':'', 'type':'paneltabs', 'selected':'0', 
+            'visible':function() {return M.ciniki_musicfestivals_main.festival.menutabs.selected=='provincials'?'yes':'no';},
+            'tabs':{
+                '0':{'label':'All', 'fn':'M.ciniki_musicfestivals_main.festival.switchProvincialsStatusTab("0");'},
+                '30':{'label':'Recommended', 'fn':'M.ciniki_musicfestivals_main.festival.switchProvincialsStatusTab("30");'},
+                '35':{'label':'Invited', 'fn':'M.ciniki_musicfestivals_main.festival.switchProvincialsStatusTab("35");'},
+                '50':{'label':'Accepted', 'fn':'M.ciniki_musicfestivals_main.festival.switchProvincialsStatusTab("50");'},
+                '55':{'label':'Instructions Sent', 'fn':'M.ciniki_musicfestivals_main.festival.switchProvincialsStatusTab("55");'},
+                '70':{'label':'Ineligible', 'fn':'M.ciniki_musicfestivals_main.festival.switchProvincialsStatusTab("70");'},
+                '90':{'label':'Declined', 'fn':'M.ciniki_musicfestivals_main.festival.switchProvincialsStatusTab("90");'},
+            }},
         'provincial_recommendations':{'label':'Provincial Recommendations', 'type':'simplegrid', 'num_cols':10,
             'visible':function() {return M.ciniki_musicfestivals_main.festival.menutabs.selected=='provincials'?'yes':'no';},
             'headerValues':['Local Class', 'Registrant', 'Mark', 'Placement', 'Level', 'Prov Class', 'Position', 'Status', 'Invite Date', 'Notes'],
@@ -2846,6 +2857,10 @@ function ciniki_musicfestivals_main() {
         }
         this.open();
     }
+    this.festival.switchProvincialsStatusTab = function(t) {
+        this.sections.provincials_status_tabs.selected = t;
+        this.open();
+    }
     this.festival.switchSyllabusList = function(l) {
         this.sections.syllabus_tabs.selected = l;
         this.open();
@@ -3753,6 +3768,7 @@ function ciniki_musicfestivals_main() {
         } else if( this.menutabs.selected == 'provincials' ) {
             this.size = 'full';
             args['provincial_recommendations'] = 'yes';
+            args['provincials_status'] = M.ciniki_musicfestivals_main.festival.sections.provincials_status_tabs.selected;
             if( this.isSelected('provincials', 'all') == 'yes' ) {
                 this.section_id = 0;
             }

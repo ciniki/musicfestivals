@@ -54,6 +54,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'teacher_customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Teacher'),
         'accompanist_customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Accompanist'),
         'provincial_recommendations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Provincial Recommendations'),
+        'provincials_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Provincials Status'),
         'competitors'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitors'),
         'city_prov'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitors From City Province'),
         'province'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitors From Province'),
@@ -2926,8 +2927,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . ") "
                 . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
                     . "classes.id = registrations.class_id "
-                    . "AND provincials_position > 0 "
-                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "AND provincials_position > 0 ";
+            if( isset($args['provincials_status']) && $args['provincials_status'] != '' 
+                && $args['provincials_status'] != 'all' && is_numeric($args['provincials_status']) 
+                ) {
+                $strsql .= "AND registrations.provincials_status = '" . ciniki_core_dbQuote($ciniki, $args['provincials_status']) . "' ";
+            }
+                $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") ";
             if( isset($festival['provincial-festival-id']) && $festival['provincial-festival-id'] > 0 ) {
                 $strsql .= "LEFT JOIN ciniki_musicfestival_classes AS pclasses ON ("

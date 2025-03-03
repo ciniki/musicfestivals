@@ -141,7 +141,7 @@
 # provincials_status:   The current status of the provincials recommendation.
 #
 #                           30 - Recommended
-#                           35 - Invite Emailed
+#                           35 - Invited
 #                           50 - Accepted
 #                           55 - Accepted instructions Email Sent
 #                           70 - Ineligible (declined by Provincials)
