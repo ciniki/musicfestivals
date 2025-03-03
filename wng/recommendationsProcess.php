@@ -240,6 +240,11 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                 'label' => $class['code'] . ' - ' . $class['name'],
                 'fields' => array(),
                 );
+            if( in_array($class['code'], ['31012', '11007', '33009', '13007', '12007', '14007', '16007', '16031'])  ) {
+                $num_recommendations = 4;
+            } else {
+                $num_recommendations = 3;
+            }
             for($i = 1; $i <= $num_recommendations; $i++) {
                 $label = ($i == 1 ? '1st' : ($i == 2 ? '2nd' : ($i == 3 ? '3rd' : $i . 'th')));
 
@@ -434,6 +439,19 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
 //                        $class_args['recommendation_3rd'] = $_POST["f-recommendation_3_{$cid}"];
 //                        $class_args['recommendation_mark_3rd'] = $_POST["f-recommendation_mark_3_{$cid}"];
                         $class_email_content .= "3rd Recommendation: " . $_POST["f-recommendation_3_{$cid}"] . ", mark: " . $_POST["f-recommendation_mark_3_{$cid}"] . "<br/>";
+                    }
+                }
+                if( isset($_POST["f-recommendation_4_{$cid}"]) && trim($_POST["f-recommendation_4_{$cid}"]) != '' ) {
+                    if( !isset($_POST["f-recommendation_mark_4_{$cid}"]) || trim($_POST["f-recommendation_mark_4_{$cid}"]) == '' ) {
+                        $form_errors .= "You must specify a Mark for your 4th Recommendation in " . $class['name'] . ".<br/>";
+                    } else {
+                        $class_entries[] = array(
+                            'class_id' => $class['id'],
+                            'position' => 4,
+                            'name' => trim($_POST["f-recommendation_4_{$cid}"]),
+                            'mark' => trim($_POST["f-recommendation_mark_4_{$cid}"]),
+                            );
+                        $class_email_content .= "4th Recommendation: " . $_POST["f-recommendation_4_{$cid}"] . ", mark: " . $_POST["f-recommendation_mark_4_{$cid}"] . "<br/>";
                     }
                 }
                 if( isset($_POST["f-alternate_1_{$cid}"]) && trim($_POST["f-alternate_1_{$cid}"]) != '' ) {
