@@ -153,6 +153,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
         'accompanists' => array(),
         'tags' => array(),
         'statuses' => array(),
+        'provincials_statuses' => array(),
         );
     $object_ids = array();
     $competitor_ids = array();
@@ -349,6 +350,17 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             );
             $ref_ids['statuses'][] = $ref['object_id'];
         }
+        elseif( $ref['object'] == 'ciniki.musicfestivals.registrationprovincialsstatus' ) {
+            $rsp['message']['objects'][] = array(
+                'id' => $ref['id'],
+                'seq' => 76,
+                'object' => $ref['object'],
+                'object_id' => $ref['object_id'],
+                'type' => 'Status',
+                'label' => $maps['registration']['provincials_status'][$ref['object_id']],
+            );
+            $ref_ids['provincials_statuses'][] = $ref['object_id'];
+        }
         elseif( $ref['object'] == 'ciniki.musicfestivals.registration' ) {
             $strsql = "SELECT registrations.display_name AS name "
                 . "FROM ciniki_musicfestival_registrations AS registrations "
@@ -362,7 +374,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             $label = (isset($rc['item']['name']) ? $rc['item']['name'] : 'Unknown Registration');
             $rsp['message']['objects'][] = array(
                 'id' => $ref['id'],
-                'seq' => 76,
+                'seq' => 79,
                 'object' => $ref['object'],
                 'object_id' => $ref['object_id'],
                 'type' => 'Registration',
@@ -596,6 +608,18 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             $or = '';
             foreach($ids as $id) {
                 $reg_strsql .= $or . "registrations.status = '" . ciniki_core_dbQuote($ciniki, $id) . "' ";
+                $or = " OR ";
+            }
+            $reg_strsql .= ") "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "";
+        }
+        elseif( $object == 'ciniki.musicfestivals.registrationprovincialsstatus' ) {
+            $reg_strsql .= "FROM ciniki_musicfestival_registrations AS registrations "
+                . "WHERE (";
+            $or = '';
+            foreach($ids as $id) {
+                $reg_strsql .= $or . "registrations.provincials_status = '" . ciniki_core_dbQuote($ciniki, $id) . "' ";
                 $or = " OR ";
             }
             $reg_strsql .= ") "
@@ -1347,6 +1371,80 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 }
             }
         }
+
+        //
+        // Load the provincials statuses and registrations
+        //
+        $strsql = "SELECT registrations.provincials_status AS id, "
+            . "registrations.provincials_status AS name, "
+            . "registrations.id AS reg_id, "
+            . "registrations.teacher_customer_id, "
+            . "registrations.teacher2_customer_id, "
+            . "registrations.parent_customer_id, "
+            . "registrations.accompanist_customer_id, "
+            . "registrations.competitor1_id, "
+            . "registrations.competitor2_id, "
+            . "registrations.competitor3_id, "
+            . "registrations.competitor4_id, "
+            . "registrations.competitor5_id "
+            . "FROM ciniki_musicfestival_registrations AS registrations "
+            . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
+            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND registrations.provincials_status > 0 "
+            . "ORDER BY registrations.provincials_status, registrations.id "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'provincials_statuses', 'fname'=>'id', 
+                'fields'=>array('id', 'name'),
+                'maps'=>array('name'=>$maps['registration']['provincials_status']),
+                ),
+            array('container'=>'registrations', 'fname'=>'reg_id', 
+                'fields'=>array('id'=>'reg_id', 'teacher_customer_id', 'teacher2_customer_id', 
+                    'parent_customer_id', 'accompanist_customer_id',
+                    'competitor1_id', 'competitor2_id', 'competitor3_id', 
+                    'competitor4_id', 'competitor5_id',
+                    ),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.107', 'msg'=>'Unable to load registration status list', 'err'=>$rc['err']));
+        }
+        $rsp['provincials_statuses'] = isset($rc['provincials_statuses']) ? $rc['provincials_statuses'] : array();
+        foreach($rsp['provincials_statuses'] as $sid => $status) {
+            $rsp['provincials_statuses'][$sid]['object'] = 'ciniki.musicfestivals.registrationprovincialsstatus';
+            //
+            // Check if category is automatically included in section
+            //
+            if( in_array($sid, $ref_ids['provincials_statuses']) ) {
+                $rsp['provincials_statuses'][$sid]['added'] = 'yes';
+                if( isset($status['registrations']) ) {
+                    foreach($status['registrations'] AS $rid => $reg) {
+                        if( ($rsp['message']['flags']&0x02) == 0x02 ) {
+                            if( $reg['teacher_customer_id'] > 0 && isset($rsp['teachers'][$reg['teacher_customer_id']]) ) {
+                                $rsp['teachers'][$reg['teacher_customer_id']]['included'] = 'yes';
+                            }
+                            if( $reg['teacher2_customer_id'] > 0 && isset($rsp['teachers'][$reg['teacher2_customer_id']]) ) {
+                                $rsp['teachers'][$reg['teacher2_customer_id']]['included'] = 'yes';
+                            }
+                        }
+                        if( ($rsp['message']['flags']&0x04) == 0x04
+                            && isset($rsp['accompanists'][$reg['accompanist_customer_id']]) 
+                            ) {
+                            $rsp['accompanists'][$reg['accompanist_customer_id']]['included'] = 'yes';
+                        }
+                        if( ($rsp['message']['flags']&0x01) == 0x01 ) {
+                            for($i = 1; $i <= 5; $i++) {
+                                if( isset($rsp['competitors'][$reg["competitor{$i}_id"]]) ) {
+                                    $rsp['competitors'][$reg["competitor{$i}_id"]]['included'] = 'yes';
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
 
         //
         // Check the objects for teacher and competitor direct adds
