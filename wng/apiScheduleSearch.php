@@ -51,12 +51,36 @@ function ciniki_musicfestivals_wng_apiScheduleSearch(&$ciniki, $tnid, $request) 
     $limit = 50;
 
     //
+    // Get the settings for the schedule section
+    // FIXME: This just picks the first schedule section for this festival.
+    //
+    $strsql = "SELECT sections.id, "
+        . "sections.settings "
+        . "FROM ciniki_wng_sections AS sections "
+        . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND sections.ref = 'ciniki.musicfestivals.schedules' "
+        . "AND settings like '%\"festival-id\":\"" . ciniki_core_dbQuote($ciniki, $request['args']['festival-id']) . "\"%' "
+        . "LIMIT 1 "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'section');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.323', 'msg'=>'Unable to load section', 'err'=>$rc['err']));
+    }
+    if( isset($rc['section']['settings']) ) {
+        $s = json_decode($rc['section']['settings'], true);
+    }
+
+    //
     // search the classes
     //
     if( $keywords != '' ) {
-        $strsql = "SELECT registrations.id, " 
-            . "registrations.display_name, "
-            . "classes.code AS class_code, "
+        $strsql = "SELECT registrations.id, " ;
+        if( isset($s['names']) && $s['names'] == 'private' ) {
+            $strsql .= "registrations.display_name, ";
+        } else {
+            $strsql .= "registrations.public_name AS display_name, ";
+        }
+        $strsql .= "classes.code AS class_code, "
             . "classes.name AS class_name, "
             . "timeslots.id AS timeslot_id, "
             . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time,"
@@ -80,6 +104,7 @@ function ciniki_musicfestivals_wng_apiScheduleSearch(&$ciniki, $tnid, $request) 
                 . ") "
             . "INNER JOIN ciniki_musicfestival_schedule_sections AS sections ON ( "
                 . "divisions.ssection_id = sections.id "
+                . "AND (sections.flags&0x10) = 0x10 " // Schedule released
                 . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ( "
@@ -87,10 +112,15 @@ function ciniki_musicfestivals_wng_apiScheduleSearch(&$ciniki, $tnid, $request) 
                 . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $request['args']['festival-id']) . "' "
-                . "AND ("
-                    . "registrations.display_name like '" . ciniki_core_dbQuote($ciniki, $keywords) . "%' "
-                    . "OR registrations.display_name like '% " . ciniki_core_dbQuote($ciniki, $keywords) . "%' "
-                    . "OR classes.keywords LIKE '% " . ciniki_core_dbQuote($ciniki, $keywords) . "%' "
+                . "AND (";
+        if( isset($s['names']) && $s['names'] == 'private' ) {
+            $strsql .= "registrations.display_name like '" . ciniki_core_dbQuote($ciniki, $keywords) . "%' "
+                . "OR registrations.display_name like '% " . ciniki_core_dbQuote($ciniki, $keywords) . "%' ";
+        } else {
+            $strsql .= "registrations.public_name like '" . ciniki_core_dbQuote($ciniki, $keywords) . "%' "
+                . "OR registrations.public_name like '% " . ciniki_core_dbQuote($ciniki, $keywords) . "%' ";
+        }
+        $strsql .= "OR classes.keywords LIKE '% " . ciniki_core_dbQuote($ciniki, $keywords) . "%' "
                     . ") ";
         if( isset($request['args']['lv']) && $request['args']['lv'] == 'live' ) {
             $strsql .= "AND (classes.feeflags&0x03) > 0 ";
