@@ -42,6 +42,7 @@ function ciniki_musicfestivals_wng_locationsProcess(&$ciniki, $tnid, &$request, 
     $strsql = "SELECT locations.id, "
         . "locations.category, "
         . "locations.name, "
+        . "locations.permalink, "
         . "locations.address1, "
         . "locations.city, "
         . "locations.province, "
@@ -59,7 +60,7 @@ function ciniki_musicfestivals_wng_locationsProcess(&$ciniki, $tnid, &$request, 
             'fields'=>array('name'=>'category'),
             ),
         array('container'=>'locations', 'fname'=>'id', 
-            'fields'=>array('id', 'category', 'name', 'address1', 'city', 'province', 'postal', 
+            'fields'=>array('id', 'category', 'name', 'permalink', 'address1', 'city', 'province', 'postal', 
                 'latitude', 'longitude'),
             ),
         ));
@@ -94,6 +95,27 @@ function ciniki_musicfestivals_wng_locationsProcess(&$ciniki, $tnid, &$request, 
         foreach($cat['locations'] as $location) {
             $content = $location['address1']
                 . '<br/>' . $location['city'] . ', ' . $location['province'] . '  ' . $location['postal'];
+            if( isset($request['uri_split'][($request['cur_uri_pos']+1)])
+                && $request['uri_split'][($request['cur_uri_pos']+1)] == $location['permalink']
+                ) {
+                $blocks = [];
+                $blocks[] = [ 
+                    'type' => 'title',
+                    'title' => isset($location['name']) ? $location['name'] : '',
+                    ];
+                $blocks[] = [
+                    'type' => 'googlemap',
+                    'id' => "map-" . ($map_id+1),
+                    'sid' => $map_id,
+                    'class' => 'content-view',
+                    'map-position' => 'bottom-right',
+//                    'title' => $location['name'],
+                    'content' => $content,
+                    'latitude' => $location['latitude'],
+                    'longitude' => $location['longitude'],
+                    ];
+                return array('stat'=>'ok', 'blocks'=>$blocks);
+            }
             $blocks[] = array(
                 'type' => 'googlemap',
                 'id' => "map-" . ($map_id+1),
@@ -107,13 +129,7 @@ function ciniki_musicfestivals_wng_locationsProcess(&$ciniki, $tnid, &$request, 
                 );
             $map_id++;
         }
-
-        
-        
     }
-
-
-
 
     return array('stat'=>'ok', 'blocks'=>$blocks);
 }

@@ -13,7 +13,7 @@
 function ciniki_musicfestivals_wng_artworkCategoryProcess(&$ciniki, $tnid, &$request, $section) {
 
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
-        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.671', 'msg'=>"I'm sorry, the page you requested does not exist."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.743', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
 
     $s = $section['settings'];

@@ -1517,7 +1517,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.172', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.717', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
                 }
                 $festival['unscheduled_registrations'] = isset($rc['registrations']) ? $rc['registrations'] : array();
                 foreach($festival['unscheduled_registrations'] as $rid => $registration) {
@@ -2622,7 +2622,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 array('container'=>'teachers', 'fname'=>'id', 'fields'=>array('id', 'name', 'num_registrations')),
                 ));
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.915', 'msg'=>'Unable to load teachers', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.718', 'msg'=>'Unable to load teachers', 'err'=>$rc['err']));
             }
             $festival['schedule_teachers'] = isset($rc['teachers']) ? $rc['teachers'] : array();
 
@@ -2976,7 +2976,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     ),
                 ));
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.168', 'msg'=>'Unable to load results', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.540', 'msg'=>'Unable to load results', 'err'=>$rc['err']));
             }
             $festival['provincial_recommendations'] = isset($rc['registrations']) ? $rc['registrations'] : array();
             foreach($festival['provincial_recommendations'] as $rid => $reg) {
@@ -3698,7 +3698,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.316', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.721', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
                 }
                 $competitors = isset($rc['competitors']) ? $rc['competitors'] : array();
                 foreach($competitors as $competitor) {

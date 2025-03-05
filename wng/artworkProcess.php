@@ -13,7 +13,7 @@
 function ciniki_musicfestivals_wng_artworkProcess(&$ciniki, $tnid, &$request, $section) {
 
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
-        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.671', 'msg'=>"I'm sorry, the page you requested does not exist."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.734', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
 
     //
@@ -40,7 +40,7 @@ function ciniki_musicfestivals_wng_artworkProcess(&$ciniki, $tnid, &$request, $s
     // Make sure a valid section was passed
     //
     if( !isset($section['ref']) || !isset($section['settings']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.672', 'msg'=>"No festival specified"));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.735', 'msg'=>"No festival specified"));
     }
     $s = $section['settings'];
     $blocks = array();
@@ -49,7 +49,7 @@ function ciniki_musicfestivals_wng_artworkProcess(&$ciniki, $tnid, &$request, $s
     // Make sure a festival was specified
     //
     if( !isset($s['festival-id']) || $s['festival-id'] == '' || $s['festival-id'] == 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.673', 'msg'=>"No festival specified"));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.737', 'msg'=>"No festival specified"));
     }
 
     //

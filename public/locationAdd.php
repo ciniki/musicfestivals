@@ -45,6 +45,14 @@ function ciniki_musicfestivals_locationAdd(&$ciniki) {
     }
 
     //
+    // Setup permalink
+    //
+    if( !isset($args['permalink']) || $args['permalink'] == '' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+        $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['name']);
+    }
+
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');

@@ -793,7 +793,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'class');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.322', 'msg'=>'Unable to load class', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.720', 'msg'=>'Unable to load class', 'err'=>$rc['err']));
         }
         if( isset($rc['class']) && $rc['class']['provincials_code'] == '' ) {
             $class = $rc['class'];

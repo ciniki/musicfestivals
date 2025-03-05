@@ -86,7 +86,7 @@ function ciniki_musicfestivals_messageAdd(&$ciniki) {
             'object_id' => $args['object_id'],
             ), 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.489', 'msg'=>'Unable to add the messageref', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.719', 'msg'=>'Unable to add the messageref', 'err'=>$rc['err']));
         }
     }
 

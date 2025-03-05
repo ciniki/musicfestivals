@@ -392,6 +392,17 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'no' => 'No',
                     'yes' => 'Yes',
                     )),
+            'locations-name' => array('label'=>'Locations Name', 'type'=>'toggle', 'default'=>'yes', 
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                )),
+            'locations-label' => array('label'=>'Locations Label', 'type'=>'toggle', 'default'=>'no', 
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                )),
+            'locations-page' => array('label'=>'Locations Page', 'type'=>'select', 'pages'=>'yes'),
             'adjudicators-name' => array('label'=>'Adjudicators Name', 'type'=>'toggle', 'default'=>'no', 
                 'toggles'=>array(
                     'no' => 'No',

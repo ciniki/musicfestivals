@@ -369,7 +369,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.519', 'msg'=>'Unable to load registration', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.534', 'msg'=>'Unable to load registration', 'err'=>$rc['err']));
             }
             $label = (isset($rc['item']['name']) ? $rc['item']['name'] : 'Unknown Registration');
             $rsp['message']['objects'][] = array(
@@ -766,7 +766,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.514', 'msg'=>'Unable to load teachers', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.458', 'msg'=>'Unable to load teachers', 'err'=>$rc['err']));
         }
         $rsp['teachers'] = isset($rc['teachers']) ? $rc['teachers'] : array();
         //
@@ -1408,7 +1408,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.107', 'msg'=>'Unable to load registration status list', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.456', 'msg'=>'Unable to load registration status list', 'err'=>$rc['err']));
         }
         $rsp['provincials_statuses'] = isset($rc['provincials_statuses']) ? $rc['provincials_statuses'] : array();
         foreach($rsp['provincials_statuses'] as $sid => $status) {
@@ -1588,7 +1588,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                     . "";
                 $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.137', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.457', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
                 }
                 if( isset($rc['rows']) ) {
                     foreach($rc['rows'] as $row) {

@@ -1,0 +1,6 @@
+#
+# Added permalink column for locations
+#
+ALTER TABLE ciniki_musicfestival_locations ADD COLUMN permalink varchar(250) not null AFTER name;
+UPDATE ciniki_musicfestival_locations SET permalink = REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(LOWER(name), ' - ', '-'), ' ', '-'), "'", ''), ".", ''), "(", ''), ")", '');
+ALTER TABLE ciniki_musicfestival_locations COMMENT='v1.02';

@@ -285,6 +285,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "divisions.results_video_url, "
         . "CONCAT_WS(' ', divisions.division_date, IFNULL(locations.name, ''), timeslots.slot_time) AS division_sort_key, "
         . "IFNULL(locations.name, '') AS location_name, "
+        . "IFNULL(locations.permalink, '') AS location_permalink, "
         . "IFNULL(locations.address1, '') AS location_address1, "
         . "IFNULL(locations.city, '') AS location_city, "
         . "IFNULL(locations.province, '') AS location_province, "
@@ -431,7 +432,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         array('container'=>'divisions', 'fname'=>'division_id', 
             'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 
                 'sort_key'=>'division_sort_key',
-                'address', 'location_name', 'location_address1', 'location_city', 'location_province', 'location_postal', 
+                'address', 'location_name', 'location_permalink', 'location_address1', 'location_city', 'location_province', 'location_postal', 
                 'latitude', 'longitude', 'adjudicator_name', 'adjudicator_permalink', 'results_notes', 'results_video_url',
                 'adjudicator_image_id', 'adjudicator_description',
                 ),
@@ -926,6 +927,20 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                         $adjudicator_name = 'Adjudicator: ' . $adjudicator_name;
                     }
                 }
+                $location_name = '';
+                if( (!isset($s['locations-name']) || $s['locations-name'] == 'yes') && $division['location_name'] != '' ) {
+                    $location_name = $division['location_name'];
+                    if( $division['location_permalink'] != '' && $division['location_name'] != '' && isset($s['locations-page']) && $s['locations-page'] != '' ) {
+                        ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'urlProcess');
+                        $rc = ciniki_wng_urlProcess($ciniki, $tnid, $request, $s['locations-page'], '');
+                        if( isset($rc['url']) ) {
+                            $location_name = "<a class='link' href='" . $rc['url'] . '/' . $division['location_permalink'] . "'>{$division['location_name']}</a>";
+                        }
+                    }
+                    if( isset($s['locations-label']) && $s['locations-label'] == 'yes' && $location_name != '' ) {
+                        $location_name = 'Location: ' . $location_name;
+                    }
+                }
                 $columns = array();
                 if( isset($s['competitor-numbering']) && $s['competitor-numbering'] == 'yes' ) {
                     $columns[] = array('label'=>'#', 'field'=>'competitor_number', 'class'=>'');
@@ -940,7 +955,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 $blocks[] = array(
                     'type' => 'schedule',
                     'title' => $division['name'] . (isset($s['division-dates']) && $s['division-dates'] == 'yes' ? ' - ' . $division['date'] : ''),
-                    'subtitle' => $division['location_name'],
+                    'subtitle' => $location_name,
                     'subtitle2' => $adjudicator_name,
                     'class' => 'musicfestival-timeslots limit-width limit-width-80',
                     'items' => $division['timeslots'],

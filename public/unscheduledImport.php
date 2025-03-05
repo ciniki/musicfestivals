@@ -150,7 +150,7 @@ function ciniki_musicfestivals_unscheduledImport(&$ciniki) {
                 'sequence' => $section['sequence'],
                 ], 0x04);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.110', 'msg'=>'Unable to add the schedulesection', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.539', 'msg'=>'Unable to add the schedulesection', 'err'=>$rc['err']));
             }
             $ssection_id = $rc['id'];
         } else {
