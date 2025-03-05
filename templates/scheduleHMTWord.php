@@ -304,6 +304,7 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
             }
             foreach($timeslot['registrations'] as $reg) {
                 if( $prev_class_code != $reg['class_code'] ) {
+                    $num = 1;
                     if( $prev_time != $timeslot['time'] ) {
                         $time_text = $timeslot['time'];
                     } else {
