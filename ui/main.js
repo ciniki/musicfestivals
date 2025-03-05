@@ -766,7 +766,7 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return ['registrations','videos'].indexOf(M.ciniki_musicfestivals_main.festival.menutabs.selected) >= 0 && M.ciniki_musicfestivals_main.festival.sections.registration_tabs.selected == 'sections' ? 'yes' : 'no'; },
             'noData':'No syllabus',
             'mailFn':function(s, i, d) {
-                if( d != null ) {
+                if( d != null && d.id != 0 ) {
                     return 'M.ciniki_musicfestivals_main.message.addnew(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.festival_id,\'ciniki.musicfestivals.section\',\'' + d.id + '\');';
                 } 
                 return '';
