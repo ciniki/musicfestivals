@@ -724,6 +724,10 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'complex_options'=>array('value'=>'id', 'name'=>'name'),
                 'options'=>$festivals,
                 ),
+            'display-format' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
+                'category-name' => 'Category, Name, Disciplines',
+                'category-disciplines-name' => 'Category, Disciplines, Name',
+                )),
             ),
         );
 

@@ -38,17 +38,20 @@ function ciniki_musicfestivals_locationList($ciniki) {
     //
     // Get the list of locations
     //
-    $strsql = "SELECT ciniki_musicfestival_locations.id, "
-        . "ciniki_musicfestival_locations.festival_id, "
-        . "ciniki_musicfestival_locations.name, "
-        . "ciniki_musicfestival_locations.address1, "
-        . "ciniki_musicfestival_locations.city, "
-        . "ciniki_musicfestival_locations.province, "
-        . "ciniki_musicfestival_locations.postal, "
-        . "ciniki_musicfestival_locations.latitude, "
-        . "ciniki_musicfestival_locations.longitude "
-        . "FROM ciniki_musicfestival_locations "
-        . "WHERE ciniki_musicfestival_locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+    $strsql = "SELECT locations.id, "
+        . "locations.festival_id, "
+        . "locations.name, "
+        . "locations.category, "
+        . "locations.sequence, "
+        . "locations.address1, "
+        . "locations.city, "
+        . "locations.province, "
+        . "locations.postal, "
+        . "locations.latitude, "
+        . "locations.longitude "
+        . "FROM ciniki_musicfestival_locations AS locations "
+        . "WHERE locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "ORDER BY locations.category, sequence, name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(

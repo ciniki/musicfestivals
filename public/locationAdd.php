@@ -23,12 +23,15 @@ function ciniki_musicfestivals_locationAdd(&$ciniki) {
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'),
         'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'),
+        'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
+        'disciplines'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Disciplines'),
         'address1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address'),
         'city'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'City'),
         'province'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Province'),
         'postal'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Postal Code'),
         'latitude'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Latitude'),
         'longitude'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Longitude'),
+        'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

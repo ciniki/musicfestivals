@@ -60,12 +60,15 @@ function ciniki_musicfestivals_locationGet($ciniki) {
             'name'=>'',
             'permalink'=>'',
             'category'=>'',
+            'sequence'=>'',
+            'disciplines'=>'',
             'address1'=>'',
             'city'=>'',
             'province'=>'',
             'postal'=>'',
             'latitude'=>'',
             'longitude'=>'',
+            'description'=>'',
         );
     }
 
@@ -78,12 +81,15 @@ function ciniki_musicfestivals_locationGet($ciniki) {
             . "ciniki_musicfestival_locations.name, "
             . "ciniki_musicfestival_locations.permalink, "
             . "ciniki_musicfestival_locations.category, "
+            . "ciniki_musicfestival_locations.sequence, "
+            . "ciniki_musicfestival_locations.disciplines, "
             . "ciniki_musicfestival_locations.address1, "
             . "ciniki_musicfestival_locations.city, "
             . "ciniki_musicfestival_locations.province, "
             . "ciniki_musicfestival_locations.postal, "
             . "ciniki_musicfestival_locations.latitude, "
-            . "ciniki_musicfestival_locations.longitude "
+            . "ciniki_musicfestival_locations.longitude, "
+            . "ciniki_musicfestival_locations.description "
             . "FROM ciniki_musicfestival_locations "
             . "WHERE ciniki_musicfestival_locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_musicfestival_locations.id = '" . ciniki_core_dbQuote($ciniki, $args['location_id']) . "' "
@@ -91,8 +97,9 @@ function ciniki_musicfestivals_locationGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'locations', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'name', 'permalink', 'category', 'address1', 'city', 'province', 'postal', 'latitude', 'longitude'),
-                ),
+                'fields'=>array('festival_id', 'name', 'permalink', 'category', 'sequence', 'disciplines',
+                    'address1', 'city', 'province', 'postal', 'latitude', 'longitude', 'description',
+                    )),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.707', 'msg'=>'Location not found', 'err'=>$rc['err']));

@@ -42,17 +42,19 @@ function ciniki_musicfestivals_wng_locationsProcess(&$ciniki, $tnid, &$request, 
     $strsql = "SELECT locations.id, "
         . "locations.category, "
         . "locations.name, "
+        . "locations.disciplines, "
         . "locations.permalink, "
         . "locations.address1, "
         . "locations.city, "
         . "locations.province, "
         . "locations.postal, "
         . "locations.latitude, "
-        . "locations.longitude "
+        . "locations.longitude, "
+        . "locations.description "
         . "FROM ciniki_musicfestival_locations AS locations "
         . "WHERE locations.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
         . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "ORDER BY category, name "
+        . "ORDER BY category, sequence, name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -60,8 +62,8 @@ function ciniki_musicfestivals_wng_locationsProcess(&$ciniki, $tnid, &$request, 
             'fields'=>array('name'=>'category'),
             ),
         array('container'=>'locations', 'fname'=>'id', 
-            'fields'=>array('id', 'category', 'name', 'permalink', 'address1', 'city', 'province', 'postal', 
-                'latitude', 'longitude'),
+            'fields'=>array('id', 'category', 'name', 'disciplines', 'permalink', 'address1', 'city', 'province', 'postal', 
+                'latitude', 'longitude', 'description'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -94,15 +96,27 @@ function ciniki_musicfestivals_wng_locationsProcess(&$ciniki, $tnid, &$request, 
         }
         foreach($cat['locations'] as $location) {
             $content = $location['address1']
-                . '<br/>' . $location['city'] . ', ' . $location['province'] . '  ' . $location['postal'];
+                . "\n" . $location['city'] . ', ' . $location['province'] . '  ' . $location['postal'];
+            if( $location['description'] != '' ) {
+                $content .= ($content != '' ? "\n\n" : '') . $location['description'];
+            }
             if( isset($request['uri_split'][($request['cur_uri_pos']+1)])
                 && $request['uri_split'][($request['cur_uri_pos']+1)] == $location['permalink']
                 ) {
                 $blocks = [];
-                $blocks[] = [ 
-                    'type' => 'title',
-                    'title' => isset($location['name']) ? $location['name'] : '',
-                    ];
+                if( isset($s['display-format']) && $s['display-format'] == 'category-disciplines-name' ) {
+                    $blocks[] = [ 
+                        'type' => 'title',
+                        'title' => isset($location['disciplines']) ? $location['disciplines'] : '',
+                        'subtitle' => isset($location['name']) ? $location['name'] : '',
+                        ];
+                } else {
+                    $blocks[] = [ 
+                        'type' => 'title',
+                        'title' => isset($location['name']) ? $location['name'] : '',
+                        'subtitle' => isset($location['disciplines']) ? $location['disciplines'] : '',
+                        ];
+                }
                 $blocks[] = [
                     'type' => 'googlemap',
                     'id' => "map-" . ($map_id+1),
@@ -116,17 +130,23 @@ function ciniki_musicfestivals_wng_locationsProcess(&$ciniki, $tnid, &$request, 
                     ];
                 return array('stat'=>'ok', 'blocks'=>$blocks);
             }
-            $blocks[] = array(
+            $block = array(
                 'type' => 'googlemap',
                 'id' => "map-" . ($map_id+1),
                 'sid' => $map_id,
                 'class' => 'content-view',
                 'map-position' => 'bottom-right',
                 'title' => $location['name'],
+                'subtitle' => $location['disciplines'],
                 'content' => $content,
                 'latitude' => $location['latitude'],
                 'longitude' => $location['longitude'],
                 );
+            if( isset($s['display-format']) && $s['display-format'] == 'category-disciplines-name' ) {
+                $block['title'] = isset($location['disciplines']) ? $location['disciplines'] : '';
+                $block['subtitle'] = isset($location['name']) ? $location['name'] : '';
+            }
+            $blocks[] = $block;
             $map_id++;
         }
     }
