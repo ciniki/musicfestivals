@@ -2440,6 +2440,7 @@ function ciniki_musicfestivals_main() {
             }
         }
         if( s == 'locations' ) {
+            return d[this.sections[s].dataMaps[j]];
             switch(j) {
                 case 0: return d.category;
                 case 1: return d.name;
@@ -4044,6 +4045,30 @@ function ciniki_musicfestivals_main() {
                     }
                 }
             }
+            p.sections.locations.num_cols = 1;
+            p.sections.locations.headerValues = ['Name'];
+            p.sections.locations.sortTypes = ['text'];
+            p.sections.locations.dataMaps = ['name'];
+            if( M.ciniki_musicfestivals_main.festival.settingValue('locations-categories') == 'yes' ) {
+                p.sections.locations.headerValues.unshift('Category');
+                p.sections.locations.sortTypes.unshift('text');
+                p.sections.locations.dataMaps.unshift('category');
+                p.sections.locations.num_cols++;
+            }
+            if( M.ciniki_musicfestivals_main.festival.settingValue('locations-disciplines') == 'yes' ) {
+                p.sections.locations.headerValues.push('Disciplines');
+                p.sections.locations.sortTypes.push('text');
+                p.sections.locations.dataMaps.push('disciplines');
+                p.sections.locations.num_cols++;
+            }
+            p.sections.locations.headerValues.push('Address');
+            p.sections.locations.sortTypes.push('text');
+            p.sections.locations.dataMaps.push('city');
+            p.sections.locations.num_cols++;
+            p.sections.locations.headerValues.push('City');
+            p.sections.locations.sortTypes.push('text');
+            p.sections.locations.dataMaps.push('city');
+            p.sections.locations.num_cols++;
             p.nplists = {};
             if( rsp.nplists != null ) {
                 p.nplists = rsp.nplists;

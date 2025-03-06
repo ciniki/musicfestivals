@@ -3301,6 +3301,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "locations.category, "
                 . "locations.sequence, "
                 . "locations.name, "
+                . "locations.disciplines, "
                 . "locations.address1, "
                 . "locations.city "
                 . "FROM ciniki_musicfestival_locations AS locations "
@@ -3311,7 +3312,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'locations', 'fname'=>'id', 
-                    'fields'=>array('id', 'festival_id', 'category', 'sequence', 'name', 'address1', 'city')),
+                    'fields'=>array('id', 'festival_id', 'category', 'sequence', 'name', 'disciplines', 'address1', 'city')),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
