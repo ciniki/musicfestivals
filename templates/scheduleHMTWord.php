@@ -245,23 +245,21 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
             )),
     );
     $PHPWord->addParagraphStyle('Registrations', array('align' => 'left', 'spaceAfter' => 0, 'spaceBefore'=>0,
-        'indentation' => ['left' => 3500, 'hanging' => 3500],
+//        'indentation' => ['left' => 3500, 'hanging' => 3500],
         'keepLines' => true,
         'keepNext' => true,
-        'tabs' => array(
-           new \PhpOffice\PhpWord\Style\Tab('left', 360),
-           new \PhpOffice\PhpWord\Style\Tab('left', 3500),
-           ),
+//        'tabs' => array(
+//           new \PhpOffice\PhpWord\Style\Tab('left', 360),
+//           new \PhpOffice\PhpWord\Style\Tab('left', 3500),
+//           ),
         ));
     $PHPWord->addParagraphStyle('Registrations Break', array('align' => 'left', 'spaceAfter' => 120, 'spaceBefore'=>0,
         'keepLines' => false,
         'keepNext' => false,
         ));
-//    $PHPWord->addParagraphStyle('pTitles', array('align' => 'left', 'spaceAfter' => 0));
     $PHPWord->addFontStyle('Division Font', ['size'=>14, 'bold'=>true]);
     $PHPWord->addFontStyle('Timeslot Font', ['size'=>12, 'bold'=>true]);
-    $PHPWord->addFontStyle('Registration Font', ['size'=>12, 'bold'=>false]);
-//    $PHPWord->addParagraphStyle('pNotes', ['align' => 'left', 'spaceAfter' => 0, 'indentation' => ['left' => 500]]);
+    $PHPWord->addFontStyle('Registrations Font', ['size'=>12, 'bold'=>false]);
     $style_table = array('cellMargin'=>80, 'borderColor'=>'aaaaaa', 'borderSize'=>6);
     $style_header = array('borderSize'=>6, 'borderColor'=>'aaaaaa', 'bgColor'=>'dddddd', 'valign'=>'center');
     $style_cell = array('borderSize'=>6, 'borderColor'=>'aaaaaa', 'valign'=>'center', 'bgcolor'=>'ffffff');
@@ -279,8 +277,6 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
         'marginRight' => 1000,
         'orientation' => 'portrait',
         ]);
-//    $sectionWord->setMarginLeft(5);
-//    $sectionWord->setMarginRight(5);
 
     $filename = 'Schedule'; 
     $newpage = 'yes';
@@ -311,11 +307,27 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
                         $time_text = ' ';
                     }
                     $sectionWord->addText(htmlspecialchars($time_text . "\tClass " . $reg['class_code'] . ' - ' . $reg['section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name']), 'Timeslot Font', 'Timeslots');
+                    $table = $sectionWord->addTable([
+                        'borderTopSize'=>1, 
+                        'borderBottomSize'=>1, 
+                        'borderLeftSize'=>1, 
+                        'borderRightSize'=>1, 
+                        'borderColor' => 'ffffff',
+                        'cellMargin' => 50,
+                        'cellMarginLeft' => 0,
+                        'cellMarginBottom' => 25,
+                        'cellSpacing' => 0,
+                        ]);
                 }
                 $rc = ciniki_musicfestivals_titlesMerge($ciniki, $tnid, $reg);
                 $titles = isset($rc['titles']) ? $rc['titles'] : '';
+               
+                $table->addRow(10, ['cantSplit'=>'true']);
+                $table->addCell(350)->addText("{$num}.", 'Registrations Font', 'Registrations');
+                $table->addCell(4000)->addText(htmlspecialchars($reg['name']), 'Registrations Font', 'Registrations');
+                $table->addCell(8000)->addText(htmlspecialchars($titles), 'Registrations Font', 'Registrations');
 
-                $sectionWord->addText(htmlspecialchars("{$num}.\t{$reg['name']}\t{$titles}"), 'Registration Font', 'Registrations');
+//                $sectionWord->addText(htmlspecialchars("{$num}.\t{$reg['name']}\t{$titles}"), 'Registration Font', 'Registrations');
                 $prev_class_code = $reg['class_code']; 
                 $prev_time = $timeslot['time'];
                 $num++;
