@@ -236,13 +236,33 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
         'keepNext' => true,
         'indentation' => [],
         ));
-    $PHPWord->addParagraphStyle('Timeslots', array('align' => 'left', 'spaceAfter' => 0, 'spaceBefore'=>120,
-        'indentation' => ['left' => 1500, 'hanging' => 1500],
+    $PHPWord->addParagraphStyle('Locations', array('align' => 'left', 'spaceAfter' => 150, 'spaceBefore'=>0,
         'keepLines' => true,
         'keepNext' => true,
-        'tabs' => array(
-            new \PhpOffice\PhpWord\Style\Tab('left', 1500),
-            )),
+        'indentation' => [],
+        ));
+    $PHPWord->addParagraphStyle('Timeslots', array('align' => 'center', 'spaceAfter' => 120, 'spaceBefore'=>120,
+        'shading' => ['fill' => 'dddddd'],
+//        'borderSize' => 6,
+//        'borderColor' => '000000',
+//        'cellMarginTop' => 240,
+//        'line' => 240,
+//        'indentation' => ['left' => 1500, 'hanging' => 1500],
+        'lineHeight' => '1.0',
+//        'space' => ['line' => '100', 'rule' => 'exact'],
+        'keepLines' => true,
+        'keepNext' => true,
+//        'tabs' => array(
+//            new \PhpOffice\PhpWord\Style\Tab('left', 1500),
+            ),
+    );
+    $PHPWord->addParagraphStyle('Classes', array('align' => 'left', 'spaceAfter' => 0, 'spaceBefore'=>120,
+//        'indentation' => ['left' => 1500, 'hanging' => 1500],
+        'keepLines' => true,
+        'keepNext' => true,
+//        'tabs' => array(
+//            new \PhpOffice\PhpWord\Style\Tab('left', 1500),
+            ),
     );
     $PHPWord->addParagraphStyle('Registrations', array('align' => 'left', 'spaceAfter' => 0, 'spaceBefore'=>0,
 //        'indentation' => ['left' => 3500, 'hanging' => 3500],
@@ -253,14 +273,19 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
 //           new \PhpOffice\PhpWord\Style\Tab('left', 3500),
 //           ),
         ));
-    $PHPWord->addParagraphStyle('Registrations Break', array('align' => 'left', 'spaceAfter' => 120, 'spaceBefore'=>0,
+    $PHPWord->addParagraphStyle('Divisions Break', array('align' => 'left', 'spaceAfter'=>0, 'spaceBefore'=>0,
         'keepLines' => false,
         'keepNext' => false,
         ));
+    $PHPWord->addParagraphStyle('Registrations Break', array('align' => 'left', 'spaceAfter' => 0, 'spaceBefore'=>0,
+        'keepLines' => false,
+        'keepNext' => false,
+        ));
+//    $PHPWord->addFontStyle('Divisions Break Font', ['size'=>6, 'bold'=>false]);
     $PHPWord->addFontStyle('Division Font', ['size'=>14, 'bold'=>true]);
     $PHPWord->addFontStyle('Timeslot Font', ['size'=>12, 'bold'=>true]);
     $PHPWord->addFontStyle('Registrations Font', ['size'=>12, 'bold'=>false]);
-    $style_table = array('cellMargin'=>80, 'borderColor'=>'aaaaaa', 'borderSize'=>6);
+/*    $style_table = array('cellMargin'=>80, 'borderColor'=>'aaaaaa', 'borderSize'=>6);
     $style_header = array('borderSize'=>6, 'borderColor'=>'aaaaaa', 'bgColor'=>'dddddd', 'valign'=>'center');
     $style_cell = array('borderSize'=>6, 'borderColor'=>'aaaaaa', 'valign'=>'center', 'bgcolor'=>'ffffff');
     $style_header_font = array('bold'=>true, 'spaceAfter'=>20);
@@ -268,7 +293,9 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
     $style_header_pleft = array('align'=>'left');
     $style_header_pright = array('align'=>'right');
     $style_cell_pleft = array('align'=>'left');
-    $style_cell_pright = array('align'=>'right');
+    $style_cell_pright = array('align'=>'right'); */
+
+    $filename = 'Schedule'; 
 
     $sectionWord = $PHPWord->addSection([
         'marginTop' => 1000,
@@ -277,19 +304,37 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
         'marginRight' => 1000,
         'orientation' => 'portrait',
         ]);
+    $header = $sectionWord->addHeader();
+    $footer = $sectionWord->addFooter();
+//    $textRun = $footer->addTextRun(array('alignment' => Jc::CENTER));
+    $textRun = $footer->addTextRun(['alignment' => 'center']);
+    $textRun->addField('PAGE');
+//    $footer->addPreserveText('{PAGE}');
 
-    $filename = 'Schedule'; 
-    $newpage = 'yes';
-    $continued_str = ' (continued...)';
 
     foreach($divisions as $division) {
         if( !isset($division['timeslots']) ) {
             continue;
         }
-        $sectionWord->addPageBreak();
-        $sectionWord->addText(htmlspecialchars($division['section_name'] . ' - Adjudicator: ' . $division['adjudicator_name']), 'Division Font', 'Divisions');
-        $sectionWord->addText(htmlspecialchars($division['date']), 'Division Font', 'Divisions');
-        $sectionWord->addText(htmlspecialchars($division['location_name']), 'Division Font', 'Divisions');
+        $sectionWord = $PHPWord->addSection([
+            'marginTop' => 1000,
+            'marginBottom' => 1000,
+            'marginLeft' => 1000,
+            'marginRight' => 1000,
+            'orientation' => 'portrait',
+            ]);
+        $header = $sectionWord->addHeader();
+        $footer = $sectionWord->addFooter();
+
+//        $sectionWord->addPageBreak();
+        $header->addText(htmlspecialchars($division['section_name'] . ' - Adjudicator: ' . $division['adjudicator_name']), 'Division Font', 'Divisions');
+        $header->addText(htmlspecialchars($division['date']), 'Division Font', 'Divisions');
+        $header->addText(htmlspecialchars($division['location_name']), 'Division Font', 'Locations');
+//        $header->addTextBreak(1, 'Divisions Break Font', 'Divisions Break');
+//        $textRun = $footer->addTextRun(array('alignment' => Jc::CENTER));
+        $textRun = $footer->addTextRun(['alignment' => 'center']);
+        $textRun->addField('PAGE');
+//        $footer->addPreserveText('{PAGE}');
 
         foreach($division['timeslots'] as $timeslot) {
             $prev_time = '';
@@ -303,10 +348,28 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
                     $num = 1;
                     if( $prev_time != $timeslot['time'] ) {
                         $time_text = $timeslot['time'];
+                        $table = $sectionWord->addTable([
+                            'borderTopSize'=>0, 
+                            'borderBottomSize'=>0, 
+                            'borderLeftSize'=>0, 
+                            'borderRightSize'=>0, 
+                            'borderColor' => 'dddddd',
+                            'cellMargin' => 0,
+                            'cellMarginLeft' => 0,
+                            'cellMarginTop' => 0,
+                            'cellMarginBottom' => 0,
+                            'cellMarginRight' => 0,
+                            'shading' => ['fill'=>'dddddd'],
+                            'cellSpacing' => 0,
+                            ]);
+                        $table->addRow(240, ['vAlign'=>'center', 'cantSplit'=>'true', 'shadding'=>'dddddd']);
+                        $table->addCell(12000, ['valign'=>'center', 'bgColor'=>'dddddd'])->addText(htmlspecialchars($time_text), 'Timeslot Font', 'Timeslots');
+//                        $sectionWord->addText(htmlspecialchars($time_text), 'Timeslot Font', 'Timeslots');
                     } else {
                         $time_text = ' ';
                     }
-                    $sectionWord->addText(htmlspecialchars($time_text . "\tClass " . $reg['class_code'] . ' - ' . $reg['section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name']), 'Timeslot Font', 'Timeslots');
+//                    $sectionWord->addText(htmlspecialchars($time_text . "\tClass " . $reg['class_code'] . ' - ' . $reg['section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name']), 'Timeslot Font', 'Timeslots');
+                    $sectionWord->addText(htmlspecialchars("Class " . $reg['class_code'] . ' - ' . $reg['section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name']), 'Timeslot Font', 'Classes');
                     $table = $sectionWord->addTable([
                         'borderTopSize'=>1, 
                         'borderBottomSize'=>1, 
@@ -315,7 +378,8 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
                         'borderColor' => 'ffffff',
                         'cellMargin' => 50,
                         'cellMarginLeft' => 0,
-                        'cellMarginBottom' => 25,
+                        'cellMarginTop' => 25,
+                        'cellMarginBottom' => 0,
                         'cellSpacing' => 0,
                         ]);
                 }
@@ -335,6 +399,20 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
             $sectionWord->addTextBreak(1, null, 'Registrations Break');
         }
     }
+
+    $sectionWord = $PHPWord->addSection([
+        'marginTop' => 1000,
+        'marginBottom' => 1000,
+        'marginLeft' => 1000,
+        'marginRight' => 1000,
+        'orientation' => 'portrait',
+        ]);
+    $header = $sectionWord->addHeader();
+    $footer = $sectionWord->addFooter();
+    $textRun = $footer->addTextRun(['alignment' => 'center']);
+    $textRun->addField('PAGE');
+//    $footer->addPreserveText('{PAGE}');
+
 
     return array('stat'=>'ok', 'word'=>$PHPWord, 'filename'=>$filename);
 }
