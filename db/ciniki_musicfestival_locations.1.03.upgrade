@@ -2,7 +2,7 @@
 # Added permalink column for locations
 #
 ALTER TABLE ciniki_musicfestival_locations ADD COLUMN sequence tinyint unsigned not null AFTER category;
-UPDATE ciniki_musicfestivals_locations SET sequence = 1;
+UPDATE ciniki_musicfestival_locations SET sequence = 1;
 ALTER TABLE ciniki_musicfestival_locations ADD COLUMN disciplines varchar(250) not null AFTER sequence;
 ALTER TABLE ciniki_musicfestival_locations ADD COLUMN description text not null AFTER longitude;
 ALTER TABLE ciniki_musicfestival_locations COMMENT='v1.03';
