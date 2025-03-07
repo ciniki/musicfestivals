@@ -2927,7 +2927,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . ") "
                 . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
                     . "classes.id = registrations.class_id "
-                    . "AND provincials_position > 0 ";
+                    . "AND registrations.provincials_status > 0 ";
             if( isset($args['provincials_status']) && $args['provincials_status'] != '' 
                 && $args['provincials_status'] != '0' && is_numeric($args['provincials_status']) 
                 ) {
