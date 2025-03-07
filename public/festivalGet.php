@@ -2911,7 +2911,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             if( isset($festival['provincial-festival-id']) && $festival['provincial-festival-id'] > 0 ) {
                 $strsql .= "CONCAT_WS(' - ', " //pclasses.code, "
 //                    . "psections.name, "
-                    . "pcategories.name, "
+//                    . "pcategories.name, "
                     . "pclasses.name) AS provincials_class_name ";
             } else {
                 $strsql .= "registrations.provincials_code AS provincials_class_name "; 
