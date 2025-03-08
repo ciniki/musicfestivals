@@ -2906,6 +2906,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "registrations.provincials_status, "
                 . "registrations.provincials_status AS provincials_status_text, "
                 . "registrations.provincials_position, "
+                . "IF(registrations.provincials_status >= 70, 999, registrations.provincials_position) AS position_sort, "
                 . "registrations.provincials_position AS provincials_position_text, "
                 . "DATE_FORMAT(registrations.provincials_invite_date, '%b %e, %Y') AS provincials_invite_date, "
                 . "registrations.provincials_notes, ";
@@ -2960,9 +2961,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 
             }
             if( isset($args['provincials_class_code']) && $args['provincials_class_code'] != 0 && $args['provincials_class_code'] != '' ) {
-                $strsql .= "ORDER BY registrations.provincials_code, registrations.provincials_position ";
+                $strsql .= "ORDER BY registrations.provincials_code, position_sort ";
             } else {
-                $strsql .= "ORDER BY sections.sequence, sections.name, categories.sequence, categories.name, classes.sequence, classes.code, classes.name, registrations.provincials_position ";
+                $strsql .= "ORDER BY sections.sequence, sections.name, categories.sequence, categories.name, classes.sequence, classes.code, classes.name, position_sort ";
             }
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
