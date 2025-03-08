@@ -271,28 +271,23 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
     //
     // Load competitor notes
     //
-    if( (isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes')
-        || (isset($festival['runsheets-competitor-age']) && $festival['runsheets-competitor-age'] == 'yes')
-        || (isset($festival['runsheets-competitor-city']) && $festival['runsheets-competitor-city'] == 'yes')
-        ) {
-        $strsql = "SELECT competitors.id, "
-            . "competitors.age, "
-            . "competitors.city, "
-            . "competitors.flags, "
-            . "competitors.notes "
-            . "FROM ciniki_musicfestival_competitors AS competitors "
-            . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-            . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "";
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
-        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-            array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'age', 'city', 'flags', 'notes')),
-            ));
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.701', 'msg'=>'Unable to load cnotes', 'err'=>$rc['err']));
-        }
-        $competitors = isset($rc['competitors']) ? $rc['competitors'] : array();
+    $strsql = "SELECT competitors.id, "
+        . "competitors.age, "
+        . "competitors.city, "
+        . "competitors.flags, "
+        . "competitors.notes "
+        . "FROM ciniki_musicfestival_competitors AS competitors "
+        . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'age', 'city', 'flags', 'notes')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.701', 'msg'=>'Unable to load cnotes', 'err'=>$rc['err']));
     }
+    $competitors = isset($rc['competitors']) ? $rc['competitors'] : array();
 
     //
     // Load TCPDF library
