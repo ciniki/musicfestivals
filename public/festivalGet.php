@@ -3955,7 +3955,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             if( isset($args['class_id']) && $args['class_id'] > 0 ) {
                 $strsql = "SELECT entries.id, "
                     . "entries.status, "
-                    . "entries.position, "
+                    . "IF(entries.status >= 70, 600, entries.position) AS position, "
                     . "entries.name, "
                     . "entries.mark, "
                     . "recommendations.id AS recommendation_id, "
@@ -3982,7 +3982,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         . ") "
                     . "WHERE entries.class_id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
                     . "AND entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . "ORDER BY recommendations.date_submitted, entries.position "
+                    . "ORDER BY recommendations.date_submitted, position "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -4004,9 +4004,11 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         case 1: $festival['recommendation_entries'][$eid]['position'] = '1st Recommendation'; break;
                         case 2: $festival['recommendation_entries'][$eid]['position'] = '2nd Recommendation'; break;
                         case 3: $festival['recommendation_entries'][$eid]['position'] = '3rd Recommendation'; break;
+                        case 4: $festival['recommendation_entries'][$eid]['position'] = '4th Recommendation'; break;
                         case 101: $festival['recommendation_entries'][$eid]['position'] = '1st Alternate'; break;
                         case 102: $festival['recommendation_entries'][$eid]['position'] = '2nd Alternate'; break;
                         case 103: $festival['recommendation_entries'][$eid]['position'] = '3rd Alternate'; break;
+                        case 600: $festival['recommendation_entries'][$eid]['position'] = 'N/A'; break;
                     }
                 }
             }
