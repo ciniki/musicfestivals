@@ -763,6 +763,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     $pdf->SetFont('', 'B');
                     if( $time == '' ) {
                         $pdf->SetFont('', 'BI', '11');
+                        $pdf->setCellPadding(0);
                         $pdf->MultiCell(180, 0, '*** continued on next page ***', 0, 'C', 0, 0);
                         $continued = 'yes';
                     }
