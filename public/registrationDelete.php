@@ -99,7 +99,7 @@ function ciniki_musicfestivals_registrationDelete(&$ciniki) {
         //
         // Remove invoice item, the callback from sapos will remove the registration.
         //
-        if( $invoice['status'] < 50 ) {
+        if( $invoice['status'] < 15 ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemDelete');
             $rc = ciniki_sapos_hooks_invoiceItemDelete($ciniki, $args['tnid'], array(
                 'invoice_id' => $invoice['id'],

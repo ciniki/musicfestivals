@@ -38,9 +38,8 @@ function ciniki_musicfestivals_sapos_itemDelete($ciniki, $tnid, $invoice_id, $it
         //
         // Remove the registration
         //
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
-        $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.musicfestivals.registration',
-            $registration['id'], $registration['uuid'], 0x04);
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationDelete');
+        $rc = ciniki_musicfestivals_registrationDelete($ciniki, $tnid, $registration['id']);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
