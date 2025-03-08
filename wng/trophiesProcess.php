@@ -34,7 +34,7 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
         $strsql = "SELECT settings "
             . "FROM ciniki_wng_sections "
             . "WHERE page_id = '" . ciniki_core_dbQuote($ciniki, $s['syllabus-page']) . "' "
-            . "AND ref = 'ciniki.musicfestivals.syllabus' "
+            . "AND ref like '%.%.syllabus' "
             . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "ORDER BY sequence "
             . "LIMIT 1 "
@@ -398,6 +398,13 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
                     'content' => $trophy['full_description'],
                     );
             }
+        } elseif( isset($s['display-format']) && $s['display-format'] == 'buttons-buttons-trophy' ) {
+            $blocks[] = array(
+                'type' => 'buttons',
+                'class' => 'aligncenter',
+                'items' => $trophies,
+                );
+            
         } else {
             $blocks[] = array(
                 'type' => 'imagebuttons',
