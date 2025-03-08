@@ -1027,9 +1027,13 @@ function ciniki_musicfestivals_main() {
             'sortable':'yes',
             'sortTypes':['text', 'date', 'time', 'text', 'number', 'text'],
             'menu':{
-                'add':{
+                'runsheets':{
                     'label':'Runsheets PDF',
                     'fn':'M.ciniki_musicfestivals_main.festival.downloadAdjudicatorRunSheetsPDF(M.ciniki_musicfestivals_main.festival.adjudicator_id);',
+                    },
+                'competitors':{
+                    'label':'Competitors List PDF',
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadAdjudicatorCompetitorClassesPDF(M.ciniki_musicfestivals_main.festival.adjudicator_id);',
                     },
                 },
             },
@@ -1882,6 +1886,14 @@ function ciniki_musicfestivals_main() {
 //            'ipv':this.formValue('ipv'),
             };
         M.api.openPDF('ciniki.musicfestivals.runsheetsPDF',args);
+    }
+    this.festival.downloadAdjudicatorCompetitorClassesPDF = function(s) {
+        var args = {'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'adjudicator_id':this.adjudicator_id,
+//            'ipv':this.formValue('ipv'),
+            };
+        M.api.openPDF('ciniki.musicfestivals.adjudicatorCompetitorClassesPDF',args);
     }
     this.festival.downloadCompactSchedulePDF = function(s) {
         var args = {'tnid':M.curTenantID,
