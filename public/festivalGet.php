@@ -36,6 +36,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'levels'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Levels'),
         'trophies'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Trophies'),
         'recommendations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicator Recommendations'),
+        'member_submissions'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Recommendation Member Submissions'),
+        'member_entries'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Recommendation Member Entries'),
         'class_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Class'),
         'registrations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registrations'),
         'registrations_list'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registration List'),
@@ -4056,7 +4058,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             //
             // Get the member submission
             //
-            if( isset($args['member_id']) && $args['member_id'] > 0 ) {
+            if( isset($args['member_id']) && $args['member_id'] > 0 
+                && isset($args['member_submissions']) && $args['member_submissions'] == 'yes'
+                ) {
                 $strsql = "SELECT recommendations.id, "
                     . "recommendations.adjudicator_name, "
                     . "recommendations.section_id, "
@@ -4094,6 +4098,62 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.600', 'msg'=>'Unable to load submissions', 'err'=>$rc['err']));
                 }
                 $festival['recommendation_submissions'] = isset($rc['submissions']) ? $rc['submissions'] : array();
+            }
+            //
+            // Get the member recommendation entries
+            //
+            if( isset($args['member_id']) && $args['member_id'] > 0 
+                && isset($args['member_entries']) && $args['member_entries'] == 'yes'
+                ) {
+                $strsql = "SELECT entries.id, "
+                    . "entries.status, "
+                    . "entries.position, "
+                    . "entries.name, "
+                    . "entries.mark, "
+                    . "classes.code AS class_code, "
+                    . "classes.name AS class_name "
+                    . "FROM ciniki_musicfestival_recommendations AS recommendations "
+                    . "LEFT JOIN ciniki_musicfestival_recommendation_entries AS entries ON ("
+                        . "recommendations.id = entries.recommendation_id "
+                        . "AND entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+                        . "entries.class_id = classes.id "
+                        . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE recommendations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' "
+                    . "AND recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "ORDER BY class_code, class_name, position "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'entries', 'fname'=>'id', 
+                        'fields'=>array('id', 'status', 'class_code', 'class_name', 'position', 'name', 'mark'),
+                        ),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.598', 'msg'=>'Unable to load entries', 'err'=>$rc['err']));
+                }
+                $entries = isset($rc['entries']) ? $rc['entries'] : array();
+                foreach($entries as $eid => $entry) {
+                    $entries[$eid]['class_name'] = $entry['class_code'] . ' - ' . $entry['class_name'];
+//                    if( preg_match("/^([^-]+) - /", $recommendation['section_name'], $m) ) {
+//                        if( $m[1] != '' ) {
+//                            $recommendation['entries'][$eid]['name'] = str_replace($m[1] . ' - ', '', $recommendation['entries'][$eid]['name']);
+//                        }
+//                    }
+                    switch($entry['position']) {
+                        case 1: $entries[$eid]['position'] = '1st Recommendation'; break;
+                        case 2: $entries[$eid]['position'] = '2nd Recommendation'; break;
+                        case 3: $entries[$eid]['position'] = '3rd Recommendation'; break;
+                        case 4: $entries[$eid]['position'] = '4th Recommendation'; break;
+                        case 101: $entries[$eid]['position'] = '1st Alternate'; break;
+                        case 102: $entries[$eid]['position'] = '2nd Alternate'; break;
+                        case 103: $entries[$eid]['position'] = '3rd Alternate'; break;
+                    }
+                }
+                $festival['recommendation_member_entries'] = $entries;
             }
         }
 
