@@ -3847,6 +3847,22 @@ function ciniki_musicfestivals_main() {
         } else if( this.isSelected('more', 'locations') == 'yes' ) {
             this.size = 'xlarge';
             args['locations'] = 'yes';
+            if( this.settingValue('locations-categories') == 'no' ) {
+                this.sections.locations.seqDrop = function(e,from,to) {
+                    M.api.getJSONCb('ciniki.musicfestivals.locationUpdate', {'tnid':M.curTenantID, 
+                        'location_id':M.ciniki_musicfestivals_main.festival.data.locations[from].id,
+                        'sequence':M.ciniki_musicfestivals_main.festival.data.locations[to].sequence,
+                        }, function(rsp) {
+                            if( rsp.stat != 'ok' ) {
+                                M.api.err(rsp);
+                                return false;
+                            }
+                            M.ciniki_musicfestivals_main.festival.open();
+                        });
+                    };
+            } else if( this.sections.locations.seqDrop != null ) {
+                delete(this.sections.locations.seqDrop);
+            }
         } else if( this.isSelected('more', 'files') == 'yes' ) {
             this.size = 'large';
             args['files'] = 'yes';

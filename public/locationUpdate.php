@@ -70,6 +70,36 @@ function ciniki_musicfestivals_locationUpdate(&$ciniki) {
     }
 
     //
+    // Get the current section
+    //
+    $strsql = "SELECT id, "
+        . "festival_id, "
+        . "sequence "
+        . "FROM ciniki_musicfestival_locations "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['location_id']) . "' "
+        . "ORDER BY sequence, name "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'location');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.920', 'msg'=>'Unable to load location', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['location']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.921', 'msg'=>'Unable to find requested location'));
+    }
+    $location = $rc['location'];
+
+    //
+    // Load the festival settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $location['festival_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $festival = $rc['festival'];
+
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
@@ -89,6 +119,21 @@ function ciniki_musicfestivals_locationUpdate(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;
+    }
+
+    //
+    // Check if sequences should be updated
+    //
+    if( isset($args['sequence']) 
+        && isset($festival['locations-categories']) && $festival['locations-categories'] == 'no'
+        ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'sequencesUpdate');
+        $rc = ciniki_core_sequencesUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.location', 
+            'festival_id', $location['festival_id'], $args['sequence'], $location['sequence']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
     }
 
     //
