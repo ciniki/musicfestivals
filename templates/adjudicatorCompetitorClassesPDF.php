@@ -144,7 +144,6 @@ function ciniki_musicfestivals_templates_adjudicatorCompetitorClassesPDF(&$cinik
     }
     $adjudicators = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
 
-        error_log(print_r($adjudicators,true));
     //
     // Setup the class foreach competitor
     //
