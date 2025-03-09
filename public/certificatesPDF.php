@@ -329,7 +329,10 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                     if( $reg['num_people'] > 0 
                         && (!isset($festival['certificates-use-group-numpeople']) || $festival['certificates-use-group-numpeople'] == 'yes')
                         ) {
-                        $num_copies = $reg['num_people'];
+                        $num_copies = intval($reg['num_people']);
+                        if( $num_copies < 1 ) {
+                            $num_copies = 1;
+                        }
                     }
                     if( $reg['competitor2_id'] > 0 ) {
                         $num_copies++;
