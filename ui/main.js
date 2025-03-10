@@ -1041,6 +1041,8 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.festival.schedulesection_id != 'unscheduled' && M.ciniki_musicfestivals_main.festival.schedulesection_id != 'notes' && M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['timeslots','locations','dates','comments','results','photos']) == 'yes' ? 'yes' : 'no'; },
             'headerValues':['Division', 'Date', 'Adjudicator'],
             'cellClasses':['multiline', 'multiline', ''],
+            'sortable':'yes',
+            'sortTypes':['text', 'date', 'text'],
             'menu':{
                 'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['timeslots']) == 'yes' && M.ciniki_musicfestivals_main.festival.schedulesection_id > 0 ? 'yes' : 'no'; },
                 'add':{
