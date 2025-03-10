@@ -34,7 +34,7 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
     //
     if( isset($ciniki['tenant']['modules']['ciniki.musicfestivals'])
         && (isset($args['permissions']['owners'])
-            || isset($args['permissions']['employees'])
+            || isset($args['permissions']['ciniki.musicfestivals'])
             || isset($args['permissions']['resellers'])
             || ($ciniki['session']['user']['perms']&0x01) == 0x01
             )
@@ -90,7 +90,7 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
         && isset($festival['id'])
         && isset($ciniki['tenant']['modules']['ciniki.musicfestivals'])
         && (isset($args['permissions']['owners'])
-            || isset($args['permissions']['employees'])
+            || isset($args['permissions']['ciniki.musicfestivals'])
             || isset($args['permissions']['resellers'])
             || ($ciniki['session']['user']['perms']&0x01) == 0x01
             )
@@ -124,7 +124,7 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
         && isset($current_festival)
         && isset($ciniki['tenant']['modules']['ciniki.musicfestivals'])
         && (isset($args['permissions']['owners'])
-            || isset($args['permissions']['employees'])
+            || isset($args['permissions']['ciniki.musicfestivals'])
             || isset($args['permissions']['resellers'])
             || ($ciniki['session']['user']['perms']&0x01) == 0x01
             )
@@ -143,7 +143,7 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x100000)
         && isset($ciniki['tenant']['modules']['ciniki.musicfestivals'])
         && (isset($args['permissions']['owners'])
-            || isset($args['permissions']['employees'])
+            || isset($args['permissions']['ciniki.musicfestivals'])
             || isset($args['permissions']['resellers'])
             || ($ciniki['session']['user']['perms']&0x01) == 0x01
             )
