@@ -51,34 +51,57 @@ function ciniki_musicfestivals_templates_scheduleLDNWord(&$ciniki, $tnid, $args)
     }
     $festival = $rc['festival'];
 
-/*    //
-    // Load the adjudicators
     //
-    if( isset($args['section_adjudicator_bios'])
-        && $args['section_adjudicator_bios'] == 'yes' 
-        ) {
-        $strsql = "SELECT adjudicators.id, "
-            . "customers.display_name AS name, "
-            . "adjudicators.image_id, "
-            . "adjudicators.description "
-            . "FROM ciniki_musicfestival_adjudicators AS adjudicators "
-            . "LEFT JOIN ciniki_customers AS customers ON ("
-                . "adjudicators.customer_id = customers.id "
-                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+    // Load the teachers
+    //
+    $strsql = "SELECT customers.id, "
+        . "customers.last, "
+        . "customers.first "
+        . "FROM ciniki_musicfestival_registrations AS registrations "
+        . "INNER JOIN ciniki_customers AS customers ON ("
+            . "( "
+                . "registrations.teacher_customer_id = customers.id "
+                . "OR registrations.teacher2_customer_id = customers.id "
                 . ") "
-            . "WHERE adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-            . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "";
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
-        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-            array('container'=>'adjudicators', 'fname'=>'id', 'fields'=>array('id', 'name', 'image_id', 'description')),
-            ));
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.691', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
-        }
-        $adjudicators = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
+            . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "ORDER BY customers.last, customers.first "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'teachers', 'fname'=>'id', 'fields'=>array('id', 'last', 'first')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.923', 'msg'=>'Unable to load teachers', 'err'=>$rc['err']));
     }
-*/
+    $teachers = isset($rc['teachers']) ? $rc['teachers'] : array();
+
+    //
+    // Load the accompanists
+    //
+    $strsql = "SELECT customers.id, "
+        . "customers.last, "
+        . "customers.first "
+        . "FROM ciniki_musicfestival_registrations AS registrations "
+        . "INNER JOIN ciniki_customers AS customers ON ("
+            . "registrations.accompanist_customer_id = customers.id "
+            . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "ORDER BY customers.last, customers.first "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'accompanists', 'fname'=>'id', 'fields'=>array('id', 'last', 'first')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.922', 'msg'=>'Unable to load accompanists', 'err'=>$rc['err']));
+    }
+    $accompanists = isset($rc['accompanists']) ? $rc['accompanists'] : array();
+
     //
     // Load the schedule sections, divisions, timeslots, classes, registrations
     //
@@ -334,6 +357,30 @@ function ciniki_musicfestivals_templates_scheduleLDNWord(&$ciniki, $tnid, $args)
     $newpage = 'yes';
     $continued_str = ' (continued...)';
 
+    //
+    // Add the teachers
+    //
+    if( isset($teachers) && count($teachers) > 0 ) {
+        $sectionWord->addText(htmlspecialchars('Teachers'), 'Division Font', 'Divisions');
+        foreach($teachers as $teacher) {
+            $name = $teacher['last'];
+            $name .= ($name != '' ? ', ' : '') . $teacher['first'];
+            $sectionWord->addText(htmlspecialchars("{$name}"), 'Registration Font', 'Registrations');
+        }
+    }
+
+    //
+    // Add the accompanists
+    //
+    if( isset($accompanists) && count($accompanists) > 0 ) {
+        $sectionWord->addText(htmlspecialchars('Adjudicators'), 'Division Font', 'Divisions');
+        foreach($accompanists as $accompanist) {
+            $name = $accompanist['last'];
+            $name .= ($name != '' ? ', ' : '') . $accompanist['first'];
+            $sectionWord->addText(htmlspecialchars("{$name}"), 'Registration Font', 'Registrations');
+        }
+        $sectionWord->addPageBreak();
+    }
     foreach($divisions as $division) {
         if( !isset($division['timeslots']) ) {
             continue;
@@ -364,6 +411,7 @@ function ciniki_musicfestivals_templates_scheduleLDNWord(&$ciniki, $tnid, $args)
             $sectionWord->addTextBreak(1, null, 'Registrations Break');
         }
     }
+
 
     return array('stat'=>'ok', 'word'=>$PHPWord, 'filename'=>$filename);
 }
