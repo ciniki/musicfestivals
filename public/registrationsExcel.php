@@ -153,6 +153,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         . "registrations.video_url8, "
         . "registrations.music_orgfilename8, "
         . "registrations.participation, "
+        . "registrations.internal_notes, "
         . "registrations.notes AS reg_notes, "
         . "registrations.teacher_customer_id, "
         . "registrations.accompanist_customer_id, "
@@ -227,7 +228,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'participation', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
+                    'participation', 'internal_notes', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
                     'mark', 'placement', 'level', 
                     ),
                 'maps'=>array(
@@ -690,6 +691,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Member', false);
         }
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Internal Notes', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Notes', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Pronoun', false);
@@ -890,6 +892,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['member_name'], false);
             }
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['internal_notes'], false);
             $notes = $registration['notes'];
             if( isset($registration['competitors']) ) {
                 foreach($registration['competitors'] as $competitor) {
