@@ -11980,6 +11980,7 @@ function ciniki_musicfestivals_main() {
                 var p = M.ciniki_musicfestivals_main.message;
                 p.data.files = rsp.files;
                 p.refreshSection('files');
+                p.upload.remove();
             });
     }
     this.message.fileDelete = function(f) {
