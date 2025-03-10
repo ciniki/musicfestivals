@@ -367,6 +367,7 @@ function ciniki_musicfestivals_templates_scheduleLDNWord(&$ciniki, $tnid, $args)
             $name .= ($name != '' ? ', ' : '') . $teacher['first'];
             $sectionWord->addText(htmlspecialchars("{$name}"), 'Registration Font', 'Registrations');
         }
+        $sectionWord->addTextBreak(1, null, 'Registrations Break');
     }
 
     //
