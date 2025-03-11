@@ -4317,8 +4317,20 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
 
                 foreach($registrations as $reg) {
                     if( $reg['finals_placement'] != '' ) {
+                        if( !isset($festival['stats_placements'][$reg['finals_placement']]) ) {
+                            $festival['stats_placements'][$reg['finals_placement']] = array(
+                                'label' => $reg['finals_placement'],
+                                'value' => 0,
+                                );
+                        }
                         $festival['stats_placements'][$reg['finals_placement']]['value'] += 1;
                     } elseif( $reg['placement'] != '' ) {
+                        if( !isset($festival['stats_placements'][$reg['placement']]) ) {
+                            $festival['stats_placements'][$reg['placement']] = array(
+                                'label' => $reg['placement'],
+                                'value' => 0,
+                                );
+                        }
                         $festival['stats_placements'][$reg['placement']]['value'] += 1;
                     }
                 }
