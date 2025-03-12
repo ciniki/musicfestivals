@@ -592,7 +592,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "FROM ciniki_musicfestival_messagerefs AS refs "
             . "INNER JOIN ciniki_musicfestival_messages AS messages ON ("
                 . "refs.message_id = messages.id "
-                . "AND messages.status > 10 "
+//                . "AND messages.status > 10 "
                 . ") "
             . "WHERE refs.object_id = '" . ciniki_core_dbQuote($ciniki, $registration['id']) . "' "
             . "AND refs.object = 'ciniki.musicfestivals.registration' "

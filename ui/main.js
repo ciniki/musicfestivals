@@ -11961,15 +11961,19 @@ function ciniki_musicfestivals_main() {
     }
     this.message.fileAdd = function() {
         if( this.upload != null ) {
+            console.log('delete input');
             this.upload.remove();
+            this.upload = null;
         }
         if( this.upload == null ) {
+            console.log('create input');
             this.upload = M.aE('input', this.panelUID + '_file_upload', 'image_uploader');
             this.upload.setAttribute('name', 'filename');
             this.upload.setAttribute('type', 'file');
             this.upload.setAttribute('onchange', this.panelRef + '.uploadFile();');
         }
         this.upload.value = '';
+        console.log('click input');
         this.upload.click();
     }
     this.message.uploadFile = function() {
@@ -11984,7 +11988,9 @@ function ciniki_musicfestivals_main() {
                 var p = M.ciniki_musicfestivals_main.message;
                 p.data.files = rsp.files;
                 p.refreshSection('files');
+                console.log('delete input');
                 p.upload.remove();
+                p.upload = null;
             });
     }
     this.message.fileDelete = function(f) {
