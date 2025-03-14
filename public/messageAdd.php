@@ -29,6 +29,7 @@ function ciniki_musicfestivals_messageAdd(&$ciniki) {
         'dt_sent'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Date Sent'),
         'object'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Object'),
         'object_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Object ID'),
+        'object_ids'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Object IDs'),
         'object2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Object 2'),
         'object2_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Object 2 ID'),
         ));
@@ -87,6 +88,25 @@ function ciniki_musicfestivals_messageAdd(&$ciniki) {
             ), 0x04);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.719', 'msg'=>'Unable to add the messageref', 'err'=>$rc['err']));
+        }
+    }
+
+    //
+    // Check if object and object id should be added to message refs
+    //
+    if( isset($args['object']) && $args['object'] != '' 
+        && isset($args['object_ids']) && is_array($args['object_ids']) && count($args['object_ids']) > 0 
+        ) {
+        foreach($args['object_ids'] as $oid) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+            $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.messageref', array(
+                'message_id' => $message_id,
+                'object' => $args['object'],
+                'object_id' => $oid,
+                ), 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.925', 'msg'=>'Unable to add the messageref', 'err'=>$rc['err']));
+            }
         }
     }
 

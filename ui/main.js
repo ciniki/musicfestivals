@@ -773,6 +773,10 @@ function ciniki_musicfestivals_main() {
                 return '';
                 },
             'menu':{
+                'email':{
+                    'label':'Email All Registrations',
+                    'fn':'M.ciniki_musicfestivals_main.festival.emailAllRegistrations();',
+                    },
                 'excel':{'label':'Export to Excel', 
                     'fn':'M.ciniki_musicfestivals_main.festival.downloadExcel(M.ciniki_musicfestivals_main.festival.festival_id);',
                     },
@@ -917,6 +921,10 @@ function ciniki_musicfestivals_main() {
                     'label':'Open Scheduler', 
                     'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x4000) && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'timeslots') == 'yes' ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.scheduledivisions.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.festival_id);',
+                    },
+                'email':{
+                    'label':'Email All Scheduled',
+                    'fn':'M.ciniki_musicfestivals_main.festival.emailScheduled();',
                     },
                 'importunscheduled':{
                     'label':'Import Unscheduled Registrations', 
@@ -2870,6 +2878,21 @@ function ciniki_musicfestivals_main() {
                 'removeable':'yes',
             });
         
+    }
+    this.festival.emailScheduled = function() {
+        var oids = [];
+        for(var i in this.data.schedule_sections) {
+            oids.push(this.data.schedule_sections[i].id);
+        }
+        M.ciniki_musicfestivals_main.message.addnew('M.ciniki_musicfestivals_main.festival.open();',this.festival_id,'ciniki.musicfestivals.schedulesection',oids);
+    }
+    this.festival.emailAllRegistrations = function() {
+        var oids = [];
+        for(var i in this.data.sections) {
+            // Include sections with no registrations incase scheduled message and new registrations after email scheduled
+            oids.push(this.data.sections[i].id);
+        }
+        M.ciniki_musicfestivals_main.message.addnew('M.ciniki_musicfestivals_main.festival.open();',this.festival_id,'ciniki.musicfestivals.section',oids);
     }
     this.festival.switchTab = function(tab, stab) {
         if( tab != null ) { this.menutabs.selected = tab; }
@@ -11941,7 +11964,11 @@ function ciniki_musicfestivals_main() {
         var args = {'tnid':M.curTenantID, 'festival_id':fid};
         args['subject'] = '';
         args['object'] = o;
-        args['object_id'] = oid;
+        if( typeof oid == 'object' ) {
+            args['object_ids'] = oid;
+        } else {
+            args['object_id'] = oid;
+        }
         if( o2 != null ) {
             args['object2'] = o2;
         }
