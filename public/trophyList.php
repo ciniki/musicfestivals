@@ -99,7 +99,12 @@ function ciniki_musicfestivals_trophyList($ciniki) {
     $trophy_ids = array();
     foreach($trophies as $iid => $trophy) {
         $trophy_ids[] = $trophy['id'];
+        $trophies[$iid]['sortkey'] = "{$trophy['typename']}-{$trophy['category']}-{$trophy['name']}";
     }
+    uasort($trophies, function($a, $b) {
+        return strnatcasecmp($a['sortkey'], $b['sortkey']);
+        });
+    $trophies = array_values($trophies);
 
     //
     // Get the list of types
