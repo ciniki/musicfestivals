@@ -51,6 +51,8 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.menu.sections._tabs.selected == 'trophies' ? 'yes' : 'no';},
             'noData':'No Trophies',
             'headerValues':['Type', 'Category', 'Name'],
+            'sortable':'yes', 
+            'sortTypes':['text', 'text', 'text'],
             'menu':{
                 'add':{
                     'label':'Add Trophy',
