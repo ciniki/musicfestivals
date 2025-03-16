@@ -11440,6 +11440,7 @@ function ciniki_musicfestivals_main() {
                 'charm':'Charm',
                 'greatvibes':'Great Vibes',
                 'helvetica':'Helvetica',
+                'oleoscript':'Oleo Script',
                 'scriptina':'Scriptina',
                 'times':'Times',
                 'vidaloka':'Vidaloka',
