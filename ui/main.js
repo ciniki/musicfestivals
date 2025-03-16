@@ -11436,12 +11436,13 @@ function ciniki_musicfestivals_main() {
             'width':{'label':'Width', 'required':'yes', 'type':'text'},
             'height':{'label':'Height', 'required':'yes', 'type':'text'},
             'font':{'label':'Font', 'type':'select', 'options':{
-                'times':'Times',
-                'helvetica':'Helvetica',
-                'vidaloka':'Vidaloka',
-                'scriptina':'Scriptina',
                 'allison':'Allison',
+                'charm':'Charm',
                 'greatvibes':'Great Vibes',
+                'helvetica':'Helvetica',
+                'scriptina':'Scriptina',
+                'times':'Times',
+                'vidaloka':'Vidaloka',
                 }},
             'size':{'label':'Size', 'type':'text'},
             'style':{'label':'Style', 'type':'select', 'options':{
