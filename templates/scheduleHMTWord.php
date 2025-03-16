@@ -378,7 +378,11 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
                     } else {
                         $time_text = ' ';
                     }
-                    $sectionWord->addText(htmlspecialchars("Class " . $reg['class_code'] . ' - ' . $reg['section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name']), 'Timeslot Font', 'Classes');
+                    $name = "Class " . $reg['class_code'] . ' - ' . $reg['section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name'];
+                    if( isset($timeslot['groupname']) && $timeslot['groupname'] != '' ) {
+                        $name .= ' - ' . $timeslot['groupname'];
+                    }
+                    $sectionWord->addText(htmlspecialchars($name), 'Timeslot Font', 'Classes');
                     $table = $sectionWord->addTable([
                         'borderTopSize'=>1, 
                         'borderBottomSize'=>1, 
