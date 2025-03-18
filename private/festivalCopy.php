@@ -132,13 +132,14 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
         }
     } 
 */
+    $update_args = [];
     foreach($old_festival['settings'] as $k => $setting) {
         if( $setting['detail_value'] != '' 
             && (!isset($new_festival['settings'][$k]['detail_value']) || $new_festival['settings'][$k]['detail_value'] == '') 
             ) {
             $update_args[$k] = $setting['detail_value'];
         }
-    }
+    } 
     if( count($update_args) > 0 ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'settingsUpdate');
         $rc = ciniki_musicfestivals_settingsUpdate($ciniki, $tnid, $festival_id, $update_args);
@@ -150,70 +151,94 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
     //
     // Copy syllabus
     //
-    $strsql = "SELECT s.id AS sid, "
-        . "s.name AS sn, "
-        . "s.permalink AS sp, "
-        . "s.sequence AS so, "
-        . "s.flags AS sf, "
-        . "s.primary_image_id AS si, "
-        . "s.synopsis AS ss, "
-        . "s.description AS sd, "
-        . "s.live_description AS sld, "
-        . "s.virtual_description AS svd, "
-        . "c.id AS cid, "
-        . "c.name AS cn, "
-        . "c.permalink AS cp, "
-        . "c.groupname, "
-        . "c.synopsis AS cs, "
-        . "c.sequence AS co, "
-        . "c.primary_image_id AS ci, "
-        . "c.description AS cd, "
-        . "i.id AS iid, "
-        . "i.code, "
-        . "i.name AS iname, "
-        . "i.permalink AS ip, "
-        . "i.sequence AS io, "
-        . "i.flags, "
-        . "i.earlybird_fee, "
-        . "i.fee, "
-        . "i.virtual_fee, "
-        . "i.earlybird_plus_fee, "
-        . "i.plus_fee, "
-        . "i.synopsis AS class_synopsis, "
-        . "i.keywords, "
-        . "i.min_competitors, "
-        . "i.max_competitors, "
-        . "i.min_titles, "
-        . "i.max_titles, "
-        . "i.provincials_code, "
+    $strsql = "SELECT sections.id AS section_id, "
+        . "sections.syllabus AS syllabus, "
+        . "sections.name AS section_name, "
+        . "sections.permalink AS section_permalink, "
+        . "sections.sequence AS section_sequence, "
+        . "sections.flags AS section_flags, "
+        . "sections.primary_image_id AS section_image_id, "
+        . "sections.synopsis AS section_synopsis, "
+        . "sections.description AS section_description, "
+        . "sections.live_description AS section_live_description, "
+        . "sections.virtual_description AS section_virtual_description, "
+        . "sections.recommendations_description AS section_recommendations_description, "
+        . "sections.latefees_start_amount, "
+        . "sections.latefees_daily_increase, "
+        . "sections.latefees_days, "
+        . "sections.adminfees_amount, "
+        . "categories.id AS category_id, "
+        . "categories.name AS category_name, "
+        . "categories.permalink AS category_permalink, "
+        . "categories.groupname, "
+        . "categories.sequence AS category_sequence, "
+        . "categories.primary_image_id AS category_image_id, "
+        . "categories.synopsis AS category_synopsis, "
+        . "categories.description AS category_description, "
+        . "classes.id AS class_id, "
+        . "classes.code, "
+        . "classes.name AS class_name, "
+        . "classes.permalink AS class_permalink, "
+        . "classes.sequence AS class_sequence, "
+        . "classes.flags, "
+        . "classes.feeflags, "
+        . "classes.titleflags, "
+        . "classes.earlybird_fee, "
+        . "classes.fee, "
+        . "classes.virtual_fee, "
+        . "classes.earlybird_plus_fee, "
+        . "classes.plus_fee, "
+        . "classes.min_competitors, "
+        . "classes.max_competitors, "
+        . "classes.min_titles, "
+        . "classes.max_titles, "
+        . "classes.provincials_code, "
+        . "classes.synopsis AS class_synopsis, "
+        . "classes.schedule_seconds, "
+        . "classes.schedule_at_seconds, "
+        . "classes.schedule_ata_seconds, "
+        . "classes.keywords, "
+        . "classes.options, "
         . "trophies.trophy_id "
-        . "FROM ciniki_musicfestival_sections AS s "
-        . "LEFT JOIN ciniki_musicfestival_categories AS c ON ("
-            . "s.id = c.section_id "
-            . "AND c.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "FROM ciniki_musicfestival_sections AS sections "
+        . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
+            . "sections.id = categories.section_id "
+            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS i ON ("
-            . "c.id = i.category_id "
-            . "AND i.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+            . "categories.id = classes.category_id "
+            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_trophy_classes AS trophies ON ("
-            . "i.id = trophies.class_id "
+            . "classes.id = trophies.class_id "
             . "AND trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE s.festival_id = '" . ciniki_core_dbQuote($ciniki, $old_festival_id) . "' "
-        . "AND s.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "ORDER BY s.sequence, s.date_added, c.sequence, c.name, c.date_added, i.sequence, i.date_added "
+        . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $old_festival_id) . "' "
+        . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "ORDER BY sections.sequence, sections.date_added, "
+            . "categories.sequence, categories.name, categories.date_added, "
+            . "classes.sequence, classes.date_added "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'sections', 'fname'=>'sid',
-            'fields'=>array('name'=>'sn', 'permalink'=>'sp', 'sequence'=>'so', 'flags'=>'sf', 'primary_image_id'=>'si', 'synopsis'=>'ss', 'description'=>'sd', 'live_description'=>'sld', 'virtual_description'=>'svd')),
-        array('container'=>'categories', 'fname'=>'cid',
-            'fields'=>array('name'=>'cn', 'permalink'=>'cp', 'sequence'=>'co', 'groupname', 'primary_image_id'=>'ci', 'synopsis'=>'cs', 'description'=>'cd')),
-        array('container'=>'classes', 'fname'=>'iid',
-            'fields'=>array('code', 'name'=>'iname', 'permalink'=>'ip', 'synopsis'=>'class_synopsis', 'sequence'=>'io', 
-                'flags', 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
-                'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 'keywords',
+        array('container'=>'sections', 'fname'=>'section_id',
+            'fields'=>array('name'=>'section_name', 'permalink'=>'section_permalink', 'sequence'=>'section_sequence', 
+                'flags'=>'section_flags', 'primary_image_id'=>'section_image_id', 
+                'synopsis'=>'section_synopsis', 'description'=>'section_description', 
+                'live_description'=>'section_live_description', 'virtual_description'=>'section_virtual_description',
+                'recommendations_description'=>'section_recommendations_description',
+                'latefees_start_amount', 'latefees_daily_increase', 'latefees_days', 'adminfees_amount',
+                )),
+        array('container'=>'categories', 'fname'=>'category_id',
+            'fields'=>array('name'=>'category_name', 'permalink'=>'category_permalink', 'sequence'=>'category_sequence', 
+                'groupname', 'primary_image_id'=>'category_image_id', 
+                'synopsis'=>'category_synopsis', 'description'=>'category_description',
+                )),
+        array('container'=>'classes', 'fname'=>'class_id',
+            'fields'=>array('code', 'name'=>'class_name', 'permalink'=>'class_permalink', 
+                'synopsis'=>'class_synopsis', 'sequence'=>'class_sequence', 
+                'flags', 'feeflags', 'titleflags', 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
+                'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 'keywords', 'options',
                 )),
         array('container'=>'trophies', 'fname'=>'trophy_id',
             'fields'=>array('trophy_id')),
