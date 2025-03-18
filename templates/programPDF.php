@@ -441,6 +441,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
             $fill = 0;
             $border = 'T';
             $c = 1;
+            $prev_time = '';
             foreach($division['timeslots'] as $timeslot) {
                 $name = $timeslot['name'];
                 $description = $timeslot['description'];
@@ -468,6 +469,13 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
                         } else {
                             $name = $timeslot['class_name']; 
                         }
+                    }
+                    $time = $timeslot['time'];
+                    if( $prev_time == $time ) {
+                        $time = '';
+                        $border = '';
+                    } else {
+                        $prev_time = $time;
                     }
 
                     $pdf->SetCellPadding(0);
@@ -553,7 +561,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
                 }
                 
                 $pdf->SetFont('', 'B');
-                $pdf->MultiCell($w[0], $lh, $timeslot['time'], $border, 'R', 0, 0);
+                $pdf->MultiCell($w[0], $lh, $time, $border, 'R', 0, 0);
 //                $pdf->Cell($w[0], $lh, $timeslot['time'], $border, 0, 'R', 0);
 //                $pdf->Cell($w[1], $lh, '', $border, 0, 'R', 0);
                 $pdf->MultiCell($w[1], $lh, '', $border, 'R', 0, 0);
