@@ -99,7 +99,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
         . "ssections.adjudicator1_id, "
         . "divisions.id AS division_id, "
         . "divisions.name AS division_name, "
-        . "divisions.address, "
+        . "locations.name AS address, "
         . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, ";
     if( isset($festival['program-separate-classes']) && $festival['program-separate-classes'] == 'yes' ) {
         $strsql .= "CONCAT_WS('-', timeslots.id, classes.id) AS timeslot_id, ";
@@ -150,6 +150,10 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
         . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
             . "divisions.id = timeslots.sdivision_id " 
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
+            . "divisions.location_id = locations.id " 
+            . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "timeslots.id = registrations.timeslot_id "
@@ -420,13 +424,14 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
             if( $pdf->getStringWidth($division['date'] . ' - ' . $division['name'], '', 'B', 14) > $fw ) {
                 $pdf->MultiCell($fw, 10, $division['date'] . "\n" . $division['name'], 0, 'C', 0);
             } else {
-                $pdf->Cell($fw, 10, $division['date'] . ' - ' . $division['name'], 0, 0, 'C', 0);
-                $pdf->Ln(8);
+                $pdf->MultiCell($fw, '', $division['date'] . " - " . $division['name'], 0, 'C', 0, 1);
+//                $pdf->Cell($fw, 10, $division['date'] . ' - ' . $division['name'], 0, 0, 'C', 0);
+//                $pdf->Ln(8);
             }
             $pdf->SetFont('', '', '12');
             if( $address != '' ) {
-                $pdf->MultiCell($fw, $lh, $address, 0, 'C', 0, 2);
-                $pdf->Ln(2);
+                $pdf->MultiCell($fw, $lh, $address, 0, 'C', 0, 1);
+//                $pdf->Ln(5);
             }
             $fill = 1;
             
@@ -531,7 +536,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
 //                    $d_height = $pdf->getStringHeight($w2[1], $description);
 //                    if( $pdf->getY() > $pdf->getPageHeight() - 40 - $d_height) {
                         $pdf->AddPage();
-                        $pdf->SetFont('', 'B', '12');
+                        $pdf->SetFont('', 'B', '14');
                         // $pdf->Cell($fw, 10, $division['name'] . ' - ' . $division['date'] . ' (continued...)', 0, 0, 'L', 0);
                         if( $pdf->getStringWidth($division['date'] . ' - ' . $division['name'] . ' (continued...)', '', 'B', 12) > $fw ) {
                             $pdf->MultiCell($fw, 10, $division['date'] . "\n" . $division['name'] . ' (continued...)', 0, 'C', 0);
