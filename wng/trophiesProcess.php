@@ -355,6 +355,10 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
         }
         $trophies = isset($rc['trophies']) ? $rc['trophies'] : array();
 
+        uasort($trophies, function($a, $b) {
+            return strnatcasecmp($a['title'], $b['title']);
+            });
+
         foreach($trophies as $tid =>$trophy) {
             $trophies[$tid]['url'] = $base_url . '/' . urlencode($category_permalink) . '/' . urlencode($trophy['permalink']);
             $trophies[$tid]['title-position'] = 'overlay-bottomhalf';
