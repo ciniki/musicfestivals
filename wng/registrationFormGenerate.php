@@ -482,7 +482,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         }
         array_unshift($members, array(
             'id' => 0,
-            'name' => 'Choose a festival',
+            'name' => 'Choose the local festival you competed in and recommended you',
             'reg_start_dt' => '',
             'reg_start_dt' => '',
             ));
@@ -490,7 +490,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         $fields['member_id'] = array(
             'id' => 'member_id',
             'ftype' => 'select',
-            'label' => 'Recommending Local Festival',
+//            'label' => 'Recommending Local Festival',
+            'label' => 'Which festival invited you?',
+            'description' => 'You must choose the local festival where you competed and who recommended you to provincials.',
             'blank' => 'no',
             'size' => 'large',
             'required' => 'yes',
