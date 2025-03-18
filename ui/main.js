@@ -1096,7 +1096,10 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'downloads'); },
             'size':'flex',
             'buttons':{
-                'pdf':{'label':'Complete Program', 'fn':'M.ciniki_musicfestivals_main.festival.downloadProgramPDF(0);'},
+                'pdf':{'label':'Complete Program', 
+                    'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x0800) ? 'no' : 'yes'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadProgramPDF(0);',
+                    },
                 'word':{'label':'Complete Schedule Word', 
                     'fn':'M.ciniki_musicfestivals_main.festival.downloadScheduleWord(0);',
                     'visible':function() { return M.ciniki_musicfestivals_main.festival.data['schedule-word-template'] != null 
