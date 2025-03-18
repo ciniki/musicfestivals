@@ -280,7 +280,6 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     //
     $strsql = "SELECT divisions.id AS division_id, "
         . "divisions.name AS division_name, "
-        . "divisions.address, "
         . "divisions.results_notes, "
         . "divisions.results_video_url, "
         . "CONCAT_WS(' ', divisions.division_date, IFNULL(locations.name, ''), timeslots.slot_time) AS division_sort_key, "
@@ -432,7 +431,8 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         array('container'=>'divisions', 'fname'=>'division_id', 
             'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 
                 'sort_key'=>'division_sort_key',
-                'address', 'location_name', 'location_permalink', 'location_address1', 'location_city', 'location_province', 'location_postal', 
+                'location_name', 'location_permalink', 
+                'location_address1', 'location_city', 'location_province', 'location_postal', 
                 'latitude', 'longitude', 'adjudicator_name', 'adjudicator_permalink', 'results_notes', 'results_video_url',
                 'adjudicator_image_id', 'adjudicator_description',
                 ),
@@ -862,7 +862,20 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     if( $city != '' ) {
                         $address .= ($address != '' ? '<br/>' : '') . $city;
                     }
+                    if( $division['location_permalink'] != '' && isset($s['locations-page']) && $s['locations-page'] != '' ) {
+                        ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'urlProcess');
+                        $rc = ciniki_wng_urlProcess($ciniki, $tnid, $request, $s['locations-page'], '');
+                        if( isset($rc['url']) ) {
+                            $address .= "<br/><a class='link' href='" . $rc['url'] . '/' . $division['location_permalink'] . "'>View Map</a>";
+                        }
+                    }
                     $blocks[] = array(
+                        'type' => 'text',
+                        'title' => 'Location',
+                        'level' => 3,
+                        'content' => $address,
+                        );
+/*                    $blocks[] = array(
                         'type' => 'googlemap',
                         'id' => "map-" . ($did+1),
                         'sid' => $did,
@@ -871,13 +884,15 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                         'latitude' => $division['latitude'],
                         'longitude' => $division['longitude'],
                         'title' => 'Location',
+                        'gmp-map' => 'yes',
+                        'location-name' => $division['location_name'],
                         'content' => $address,
-                        );
+                        );  */
                 } else {
                     $content = '';
-                    if( $division['address'] != '' ) {
-                        $content .= '<b>Location</b>: ' . $division['address'];
-                    }
+//                    if( $division['address'] != '' ) {
+//                        $content .= '<b>Location</b>: ' . $division['address'];
+//                    }
                     if( $adjudicator_name != '' ) {
                         $content .= ($content != '' ? '<br/>' : '') . '<b>Adjudicator</b>: ' . $adjudicator_name;
                     }
