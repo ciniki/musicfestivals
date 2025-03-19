@@ -124,7 +124,7 @@ function ciniki_musicfestivals_wng_sponsorsProcess(&$ciniki, $tnid, &$request, $
             $blocks[] = array(
                 'type' => 'textcards',
                 'level' => 3,
-                'class' => 'aligncenter musicfestival.sponsors',
+                'class' => 'aligncenter musicfestival-sponsors',
                 'items' => $sponsors,
                 );
 
