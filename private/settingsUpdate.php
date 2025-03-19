@@ -219,6 +219,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'locations-categories',
         'locations-disciplines',
         'trophies-footer-msg',
+        'trophies-include-descriptions',
         );
     foreach($valid_settings as $field) {
         if( isset($args[$field]) ) {
