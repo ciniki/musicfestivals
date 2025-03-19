@@ -242,6 +242,7 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
         }
         if( $trophy['description'] != '' ) {
             $pdf->MultiCell(245, 0, $trophy['description'], 0, 'L', 0, 1);
+            $pdf->Ln(2);
         }
         $pdf->Ln(0);
 
