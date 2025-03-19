@@ -133,6 +133,7 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
             . "trophies.description "
             . "FROM ciniki_musicfestival_trophies AS trophies "
             . "WHERE trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND trophies.category = '" . ciniki_core_dbQuote($ciniki, $category_permalink) . "' "
             . "AND trophies.permalink = '" . ciniki_core_dbQuote($ciniki, $trophy_permalink) . "' ";
         if( isset($s['typename']) && $s['typename'] != '' && $s['typename'] != 'All' ) {
             $strsql .= "AND typename = '" . ciniki_core_dbQuote($ciniki, $s['typename']) . "' ";
