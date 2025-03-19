@@ -647,6 +647,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'display-format' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
                     'images' => 'Sponsor Logo Images Only',
                     'contentphoto' => 'Content Photo List',
+                    'text' => 'No Images - Text Only',
                     )),
                 'image-size'=>array('label'=>'Image Size', 'type'=>'toggle', 'default'=>'medium', 'toggles'=>array(    
                     'xsmall' => 'X-Small',

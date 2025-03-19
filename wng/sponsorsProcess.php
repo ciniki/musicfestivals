@@ -74,7 +74,7 @@ function ciniki_musicfestivals_wng_sponsorsProcess(&$ciniki, $tnid, &$request, $
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sponsors', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'image-id'=>'image_id', 'url', 'description'),
+            'fields'=>array('id', 'name', 'title'=>'name', 'image-id'=>'image_id', 'url', 'description'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -120,6 +120,14 @@ function ciniki_musicfestivals_wng_sponsorsProcess(&$ciniki, $tnid, &$request, $
                 }
                 $blocks[] = $block;
             }
+        } elseif( isset($s['display-format']) && $s['display-format'] == 'text' ) {
+            $blocks[] = array(
+                'type' => 'textcards',
+                'level' => 3,
+                'class' => 'aligncenter musicfestival.sponsors',
+                'items' => $sponsors,
+                );
+
         } else {
             //
             // Display as list of sponsor images
