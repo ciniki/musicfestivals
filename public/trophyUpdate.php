@@ -42,6 +42,23 @@ function ciniki_musicfestivals_trophyUpdate(&$ciniki) {
         return $rc;
     }
 
+    $strsql = "SELECT id, "
+        . "name, "
+        . "typename, "
+        . "category "
+        . "FROM ciniki_musicfestival_trophies "
+        . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['trophy_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'trophy');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.926', 'msg'=>'Unable to load trophy', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['trophy']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.927', 'msg'=>'Unable to find requested trophy'));
+    }
+    $trophy = $rc['trophy'];
+    
     //
     // Check name/permalink
     //
@@ -54,6 +71,7 @@ function ciniki_musicfestivals_trophyUpdate(&$ciniki) {
         $strsql = "SELECT id, name, permalink "
             . "FROM ciniki_musicfestival_trophies "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND category ='" . ciniki_core_dbQuote($ciniki, (isset($args['category']) ? $args['category'] : $trophy['category'])) . "' "
             . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
             . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['trophy_id']) . "' "
             . "";
