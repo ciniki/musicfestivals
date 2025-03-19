@@ -229,7 +229,8 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
         $lh = $pdf->getStringHeight(245, $trophy['name']);
         $pdf->SetFont('helvetica', '', 12);
         $lh += $pdf->getStringHeight(245, $trophy['criteria']);
-        if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 20 ) ) {
+        $lh += $pdf->getStringHeight(245, $trophy['description']);
+        if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 60 ) ) {
             $pdf->AddPage();
         }
 
@@ -238,6 +239,9 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
         $pdf->SetFont('helvetica', '', 12);
         if( $trophy['criteria'] != '' ) {
             $pdf->MultiCell(245, 0, $trophy['criteria'], 0, 'L', 0, 1);
+        }
+        if( $trophy['description'] != '' ) {
+            $pdf->MultiCell(245, 0, $trophy['description'], 0, 'L', 0, 1);
         }
         $pdf->Ln(0);
 
