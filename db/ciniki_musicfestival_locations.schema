@@ -13,6 +13,7 @@
 #
 # name:                     The name of the place/venue/location.
 # permalink:                The permalink of the place/venue/location.
+# shortname:                The short name used for internal purposes.
 # category:                 The category for the location, used on venues page.
 # sequence:                 The order to display the location in
 # address1:                 The street address of the location.
@@ -35,6 +36,7 @@ create table ciniki_musicfestival_locations (
     festival_id int not null,
     name varchar(250) not null,
     permalink varchar(250) not null,
+    shortname varchar(250) not null,
     category varchar(150) not null,
     sequence tinyint unsigned not null,
     disciplines varchar(250) not null,
@@ -51,4 +53,4 @@ create table ciniki_musicfestival_locations (
     primary key (id),
     unique index (uuid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.03';
+) ENGINE='InnoDB', COMMENT='v1.04';

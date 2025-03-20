@@ -1,0 +1,5 @@
+#
+# Added permalink column for locations
+#
+ALTER TABLE ciniki_musicfestival_locations ADD COLUMN shortname varchar(250) not null AFTER permalink;
+ALTER TABLE ciniki_musicfestival_locations COMMENT='v1.04';
