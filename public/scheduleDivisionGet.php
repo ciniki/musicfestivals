@@ -132,7 +132,7 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
     // Get the list of locations
     //
     $strsql = "SELECT locations.id, "
-        . "locations.name "
+        . "IF(locations.shortname <> '', locations.shortname, locations.name) AS name "
         . "FROM ciniki_musicfestival_locations AS locations "
         . "WHERE locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND locations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
