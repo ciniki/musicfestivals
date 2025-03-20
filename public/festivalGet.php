@@ -64,7 +64,6 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'invoices'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Invoices'),
         'invoice_typestatus'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Invoice Status'),
         'adjudicators'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicators'),
-        'locations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Locations'),
         'certificates'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Certificates'),
         'photos'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Photos'),
         'results'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Results'),
@@ -1221,7 +1220,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 }
                 $strsql .= "IFNULL(divisions.name, '') AS division_name, "
                     . "IFNULL(DATE_FORMAT(divisions.division_date, '%b %e'), '') AS division_date, "
-                    . "IFNULL(locations.name, '') AS location_name, "
+                    . "IFNULL(IF(locations.shortname <> '', locations.shortname, locations.name), '') AS location_name, "
                     . "IFNULL(ssections.name, '') AS section_name ";
 //                    . "competitors.id AS competitor_id, "
 //                    . "competitors.notes AS competitor_notes ";
@@ -1498,11 +1497,11 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             if( isset($args['locations']) && $args['locations'] == 'yes' ) {
                 $strsql = "SELECT locations.id, "
                     . "locations.festival_id, "
-                    . "locations.name "
+                    . "IF(locations.shortname <> '', locations.shortname, locations.name) AS name "
                     . "FROM ciniki_musicfestival_locations AS locations "
                     . "WHERE locations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                     . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . "ORDER BY locations.name "
+                    . "ORDER BY name "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -1744,7 +1743,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
 //                    . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, "
                     . "DATE_FORMAT(divisions.division_date, '%a, %b %e, %Y') AS division_date_text, "
 //                    . "divisions.address, "
-                    . "IFNULL(locations.name, '') AS location_name, "
+                    . "IFNULL(IF(locations.shortname <> '', locations.shortname, locations.name), '') AS location_name, "
                     . "customers.display_name AS adjudicator_name, "
                     . "MIN(timeslots.slot_time) AS first_timeslot "
                     . "FROM ciniki_musicfestival_schedule_divisions AS divisions "
@@ -1804,7 +1803,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
 //                    . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, "
                     . "DATE_FORMAT(divisions.division_date, '%a, %b %e, %Y') AS division_date_text, "
 //                    . "divisions.address, "
-                    . "IFNULL(locations.name, '') AS location_name, "
+                    . "IFNULL(IF(locations.shortname <> '', locations.shortname, locations.name), '') AS location_name, "
                     . "customers.display_name AS adjudicator_name, "
                     . "TIME_FORMAT(MIN(timeslots.slot_time), '%H%i') AS sort_timeslot, "
                     . "TIME_FORMAT(MIN(timeslots.slot_time), '%l:%i %p') AS first_timeslot, "
@@ -1871,7 +1870,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
 //                    . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, "
                     . "DATE_FORMAT(divisions.division_date, '%a, %b %e, %Y') AS division_date_text, "
 //                    . "divisions.address, "
-                    . "IFNULL(locations.name, '') AS location_name, "
+                    . "IFNULL(IF(locations.shortname <> '', locations.shortname, locations.name), '') AS location_name, "
                     . "customers.display_name AS adjudicator_name, "
                     . "TIME_FORMAT(MIN(timeslots.slot_time), '%H%i') AS sort_timeslot, "
                     . "TIME_FORMAT(MIN(timeslots.slot_time), '%l:%i %p') AS first_timeslot, "
@@ -2628,7 +2627,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS time_text, "
                 . "timeslots.groupname, "
                 . "ssections.name AS section_name, "
-                . "IFNULL(locations.name, '??') AS location_name "
+                . "IFNULL(IF(locations.shortname <> '', locations.shortname, locations.name), '??') AS location_name "
                 . "FROM ciniki_musicfestival_registrations AS registrations "
                 . "INNER JOIN ciniki_musicfestival_competitors AS competitors ON ("
                     . "("
@@ -2749,7 +2748,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         . "timeslots.slot_time AS slot_sort_time, ";
                 }
                 $strsql .= "DATE_FORMAT(divisions.division_date, '%b %e') AS division_date_text, "
-                    . "IFNULL(locations.name, '') AS location_name "
+                    . "IFNULL(IF(locations.shortname <> '', locations.shortname, locations.name), '') AS location_name "
                     . "FROM ciniki_musicfestival_registrations AS registrations "
                     . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
                         . "registrations.timeslot_id = timeslots.id "
@@ -2775,7 +2774,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "AND registrations.timeslot_id > 0 "  // Scheduled registrations only
                     . "AND registrations.participation <> 1 "   // Live only
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . "ORDER BY divisions.division_date, slot_sort_time, locations.name, registrations.display_name "
+                    . "ORDER BY divisions.division_date, slot_sort_time, location_name, registrations.display_name "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -2837,7 +2836,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         . "timeslots.slot_time AS slot_sort_time, ";
                 }
                 $strsql .= "DATE_FORMAT(divisions.division_date, '%b %e') AS division_date_text, "
-                    . "IFNULL(locations.name, '') AS location_name "
+                    . "IFNULL(IF(locations.shortname <> '', locations.shortname, locations.name), '') AS location_name "
                     . "FROM ciniki_musicfestival_registrations AS registrations "
                     . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
                         . "registrations.timeslot_id = timeslots.id "
@@ -2860,7 +2859,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "AND registrations.timeslot_id > 0 "  // Scheduled registrations only
                     . "AND registrations.participation <> 1 "   // Live only
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . "ORDER BY divisions.division_date, slot_sort_time, locations.name, registrations.display_name "
+                    . "ORDER BY divisions.division_date, slot_sort_time, location_name, registrations.display_name "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -3439,14 +3438,14 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "locations.festival_id, "
                 . "locations.category, "
                 . "locations.sequence, "
-                . "locations.name, "
+                . "IF(locations.shortname <> '', locations.shortname, locations.name) AS name, "
                 . "locations.disciplines, "
                 . "locations.address1, "
                 . "locations.city "
                 . "FROM ciniki_musicfestival_locations AS locations "
                 . "WHERE locations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "ORDER BY locations.category, locations.sequence, locations.name "
+                . "ORDER BY locations.category, locations.sequence, name "
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(

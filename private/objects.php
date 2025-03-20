@@ -81,6 +81,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'festival_id' => array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
             'name' => array('name'=>'Name'),
             'permalink' => array('name'=>'Permalink'),
+            'shortname' => array('name'=>'Short Name', 'default'=>''),
             'category' => array('name'=>'Category', 'default'=>''),
             'sequence' => array('name'=>'Order', 'default'=>1),
             'disciplines' => array('name'=>'Disciplines', 'default'=>''),

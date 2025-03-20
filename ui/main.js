@@ -10525,6 +10525,7 @@ function ciniki_musicfestivals_main() {
     this.location.sections = {
         'general':{'label':'', 'fields':{
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
+            'shortname':{'label':'Short Name', 'type':'text'},
             'category':{'label':'Category', 'type':'text',
                 'visible':function() { return M.ciniki_musicfestivals_main.festival.settingValue('locations-categories') == 'yes' ? 'yes' : 'no'; },
                 },
