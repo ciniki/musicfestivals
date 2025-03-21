@@ -299,7 +299,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'participation', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
+                    'participation', 'internal_notes', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
                     'mark', 'placement', 'level',
                     ),
                 'maps'=>array(
@@ -386,7 +386,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'participation', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
+                    'participation', 'internal_notes', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
                     'mark', 'placement', 'level',
                     ),
                 'maps'=>array(
@@ -476,7 +476,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'participation', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
+                    'participation', 'internal_notes', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
                     'mark', 'placement', 'level',
                     ),
                 'maps'=>array(
@@ -569,7 +569,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
                     'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
-                    'participation', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
+                    'participation', 'internal_notes', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
                     'mark', 'placement', 'level',
                     ),
                 'maps'=>array(
