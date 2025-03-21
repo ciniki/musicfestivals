@@ -87,7 +87,8 @@ function ciniki_musicfestivals_wng_festivalLoad(&$ciniki, $tnid, $festival_id) {
     }
     $festival['edit'] = ($titles_end_dt > $now ? 'yes' : 'no');
     $festival['edit-accompanist'] = ($accompanist_end_dt > $now ? 'yes' : 'no');
-    $festival['upload'] = (($festival['flags']&0x03) == 0x03 && $upload_end_dt > $now ? 'yes' : 'no');
+//    $festival['upload'] = (($festival['flags']&0x03) == 0x03 && $upload_end_dt > $now ? 'yes' : 'no');
+    $festival['upload'] = ($upload_end_dt > $now ? 'yes' : 'no');
 
     if( !isset($festival['competitor-label-singular']) || $festival['competitor-label-singular'] == '' ) {
         $festival['competitor-label-singular'] = 'Competitor';

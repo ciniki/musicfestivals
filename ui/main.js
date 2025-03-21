@@ -4391,7 +4391,7 @@ function ciniki_musicfestivals_main() {
             'status':{'label':'Status', 'type':'toggle', 'toggles':{'10':'Active', '30':'Current', '60':'Archived'}},
             'flags1':{'label':'Registrations Open', 'type':'flagtoggle', 'default':'off', 'bit':0x01, 'field':'flags'},
             'flags2':{'label':'Virtual Option', 'type':'flagtoggle', 'default':'off', 'bit':0x02, 'field':'flags',
-                'on_fields':['flags3','virtual_date', 'upload_end_dt'],
+                'on_fields':['flags3','virtual_date'],
                 },
             'flags3':{'label':'Virtual Pricing', 'type':'flagtoggle', 'default':'off', 'bit':0x04, 'field':'flags', 'visible':'no'},
             'flags4':{'label':'Section End Dates', 'type':'flagtoggle', 'default':'off', 'bit':0x08, 'field':'flags'},
@@ -4407,7 +4407,7 @@ function ciniki_musicfestivals_main() {
             'accompanist_end_dt':{'label':'Accompanist Deadline', 'type':'datetime',
                 'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x8000); },
                 },
-            'upload_end_dt':{'label':'Upload Deadline', 'type':'datetime', 'visible':'no'},
+            'upload_end_dt':{'label':'Upload Deadline', 'type':'datetime'},
             }},
 //        '_settings':{'label':'', 'aside':'yes', 'fields':{
 //            'age-restriction-msg':{'label':'Age Restriction Message', 'type':'text'},
@@ -5162,10 +5162,10 @@ function ciniki_musicfestivals_main() {
             if( (rsp.festival.flags&0x02) == 0x02 ) {
                 p.sections.general.fields.flags3.visible = 'yes';
                 p.sections.general.fields.virtual_date.visible = 'yes';
-                p.sections.general.fields.upload_end_dt.visible = 'yes';
+//                p.sections.general.fields.upload_end_dt.visible = 'yes';
             } else {
                 p.sections.general.fields.virtual_date.visible = 'no';
-                p.sections.general.fields.upload_end_dt.visible = 'no';
+//                p.sections.general.fields.upload_end_dt.visible = 'no';
             }
             p.sections._provincials.fields['provincial-festival-id'].options = [{'id':0, 'name':'None'}];
             if( rsp.festival.provincial_festivals != null ) {
