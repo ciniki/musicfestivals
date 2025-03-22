@@ -196,11 +196,15 @@ function ciniki_musicfestivals_photos($ciniki) {
             . "sections.name AS section_name, "
             . "divisions.name AS division_name, "
             . "DATE_FORMAT(divisions.division_date, '%b %D') AS division_date, "
-            . "divisions.address "
+            . "IFNULL(IF(locations.shortname <> '', locations.shortname, locations.name), '') AS location_name "
             . "FROM ciniki_musicfestival_schedule_sections AS sections "
             . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
                 . "sections.id = divisions.ssection_id "
                 . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
+                . "divisions.location_id = locations.id "
+                . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND (sections.flags&0x40) = 0 "
@@ -210,7 +214,7 @@ function ciniki_musicfestivals_photos($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'divisions', 'fname'=>'id', 
-                'fields'=>array('id', 'section_name', 'division_name', 'division_date', 'address'),
+                'fields'=>array('id', 'section_name', 'division_name', 'division_date', 'location_name'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

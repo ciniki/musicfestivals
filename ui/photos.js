@@ -11,14 +11,14 @@ function ciniki_musicfestivals_photos() {
     this.menu.sections = {
         'divisions':{'label':'Schedule', 'type':'simplegrid', 'num_cols':2,
             'noData':'No Schedule',
-            'cellClasses':['', ''],
+            'cellClasses':['', 'multiline'],
             },
     }
     this.menu.cellValue = function(s, i, j, d) {
 //        return d.division_date + ' - ' + d.section_name + ' - ' + d.division_name;
         switch(j) {
             case 0: return d.division_date;
-            case 1: return d.section_name + ' - ' + d.division_name;
+            case 1: return M.multiline(d.section_name + ' - ' + d.division_name, d.location_name);
         }
     }
     this.menu.rowFn = function(s, i, d) {
