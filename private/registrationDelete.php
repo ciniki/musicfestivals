@@ -12,7 +12,7 @@
 // Returns
 // ---------
 // 
-function ciniki_musicfestivals_registrationDelete(&$ciniki, $tnid, $reg_id) {
+function ciniki_musicfestivals__registrationDelete(&$ciniki, $tnid, $reg_id) {
 
     //
     // Get the tenant storage directory

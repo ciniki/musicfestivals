@@ -1680,7 +1680,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     // Remove registration files and object
                     //
                     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationDelete');
-                    $rc = ciniki_musicfestivals_registrationDelete($ciniki, $tnid, $registration['registration_id']);
+                    $rc = ciniki_musicfestivals__registrationDelete($ciniki, $tnid, $registration['registration_id']);
                     if( $rc['stat'] != 'ok' ) {
                         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.714', 'msg'=>'Unable to remove registration', 'err'=>$rc['err']));
                     }
@@ -1700,7 +1700,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 // Remove registration files and object
                 //
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationDelete');
-                $rc = ciniki_musicfestivals_registrationDelete($ciniki, $tnid, $registration['registration_id']);
+                $rc = ciniki_musicfestivals__registrationDelete($ciniki, $tnid, $registration['registration_id']);
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.788', 'msg'=>'Unable to remove registration', 'err'=>$rc['err']));
                 }
