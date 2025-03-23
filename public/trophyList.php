@@ -23,6 +23,8 @@ function ciniki_musicfestivals_trophyList($ciniki) {
         'class_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Class'),
         'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'),
         'typename'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Type'),
+        'sort'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sort'),
+        'output'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Output'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -101,10 +103,38 @@ function ciniki_musicfestivals_trophyList($ciniki) {
         $trophy_ids[] = $trophy['id'];
         $trophies[$iid]['sortkey'] = "{$trophy['typename']}-{$trophy['category']}-{$trophy['name']}";
     }
-    uasort($trophies, function($a, $b) {
-        return strnatcasecmp($a['sortkey'], $b['sortkey']);
-        });
+    if( isset($args['sort']) && $args['sort'] == 'name_asc' ) {
+        uasort($trophies, function($a, $b) {
+            return strnatcasecmp($a['name'], $b['name']);
+            });
+    } elseif( isset($args['sort']) && $args['sort'] == 'name_desc' ) {
+        uasort($trophies, function($a, $b) {
+            return strnatcasecmp($b['name'], $a['name']);
+            });
+    } else {
+        uasort($trophies, function($a, $b) {
+            return strnatcasecmp($a['sortkey'], $b['sortkey']);
+            });
+    }
     $trophies = array_values($trophies);
+
+    //
+    // Check if output is pdf
+    //
+    if( isset($args['output']) && $args['output'] == 'pdf' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'trophyListPDF');
+        $rc = ciniki_musicfestivals_templates_trophyListPDF($ciniki, $args['tnid'], [
+//            'festival_id' => $args['festival_id'],
+            'trophies' => $trophies,
+            ]);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.929', 'msg'=>'', 'err'=>$rc['err']));
+        }
+        if( isset($rc['pdf']) ) {
+            $rc['pdf']->Output($rc['filename'], 'I');
+            return array('stat'=>'exit');
+        }
+    }
 
     //
     // Get the list of types
