@@ -1381,6 +1381,7 @@ function ciniki_musicfestivals_main() {
                 '35':{'label':'Invited', 'fn':'M.ciniki_musicfestivals_main.festival.switchProvincialsStatusTab("35");'},
                 '50':{'label':'Accepted', 'fn':'M.ciniki_musicfestivals_main.festival.switchProvincialsStatusTab("50");'},
                 '55':{'label':'Instructions Sent', 'fn':'M.ciniki_musicfestivals_main.festival.switchProvincialsStatusTab("55");'},
+                '60':{'label':'Registered', 'fn':'M.ciniki_musicfestivals_main.festival.switchProvincialsStatusTab("60");'},
                 '70':{'label':'Ineligible', 'fn':'M.ciniki_musicfestivals_main.festival.switchProvincialsStatusTab("70");'},
                 '90':{'label':'Declined', 'fn':'M.ciniki_musicfestivals_main.festival.switchProvincialsStatusTab("90");'},
             }},
@@ -4856,12 +4857,14 @@ function ciniki_musicfestivals_main() {
                 'provincials-status-r35-colour':{'label':'Invited', 'type':'colour'},
                 'provincials-status-r50-colour':{'label':'Accepted', 'type':'colour'},
                 'provincials-status-r55-colour':{'label':'Instructions Sent', 'type':'colour'},
+                'provincials-status-r60-colour':{'label':'Registered', 'type':'colour'},
                 'provincials-status-r70-colour':{'label':'Ineligible', 'type':'colour'},
                 'provincials-status-r90-colour':{'label':'Declined', 'type':'colour'},
                 'provincials-status-a30-colour':{'label':'Alternate Recommended', 'type':'colour'},
                 'provincials-status-a35-colour':{'label':'Alternate Invited', 'type':'colour'},
                 'provincials-status-a50-colour':{'label':'Alternate Accepted', 'type':'colour'},
                 'provincials-status-a55-colour':{'label':'Alternate Instructions Sent', 'type':'colour'},
+                'provincials-status-a60-colour':{'label':'Alternate Registered', 'type':'colour'},
                 'provincials-status-a70-colour':{'label':'Alternate Ineligible', 'type':'colour'},
                 'provincials-status-a90-colour':{'label':'Alternate Declined', 'type':'colour'},
             },
@@ -5148,12 +5151,14 @@ function ciniki_musicfestivals_main() {
         M.gE(this.panelUID + '_provincials-status-r35-colour').style.background = '#ffefdd'; // orange
         M.gE(this.panelUID + '_provincials-status-r50-colour').style.background = '#ddffdd'; // green
         M.gE(this.panelUID + '_provincials-status-r55-colour').style.background = '#f0ddff'; // purple
+        M.gE(this.panelUID + '_provincials-status-r60-colour').style.background = '#fffdc5'; // yellow
         M.gE(this.panelUID + '_provincials-status-r70-colour').style.background = '#ddf1ff'; // blue
         M.gE(this.panelUID + '_provincials-status-r90-colour').style.background = '#ffdddd'; // red
         M.gE(this.panelUID + '_provincials-status-a30-colour').style.background = '#e0e0e0'; // grey
         M.gE(this.panelUID + '_provincials-status-a35-colour').style.background = '#e0e0e0'; // grey
         M.gE(this.panelUID + '_provincials-status-a50-colour').style.background = '#e0e0e0'; // grey
         M.gE(this.panelUID + '_provincials-status-a55-colour').style.background = '#e0e0e0'; // grey
+        M.gE(this.panelUID + '_provincials-status-a60-colour').style.background = '#e0e0e0'; // grey
         M.gE(this.panelUID + '_provincials-status-a70-colour').style.background = '#e0e0e0'; // grey
         M.gE(this.panelUID + '_provincials-status-a90-colour').style.background = '#e0e0e0'; // grey
     }
@@ -7251,6 +7256,7 @@ function ciniki_musicfestivals_main() {
                         '35':'Invited',
                         '50':'Accepted',
                         '55':'Instructions Sent',
+                        '60':'Registered',
                         '70':'Ineligible',
                         '90':'Declined',
                     }},
@@ -10122,6 +10128,7 @@ function ciniki_musicfestivals_main() {
                     + '<option value="35"' + (d.provincials_status == 35 ? ' selected':'') + '>Invited</option>'
                     + '<option value="50"' + (d.provincials_status == 50 ? ' selected':'') + '>Accepted</option>'
                     + '<option value="55"' + (d.provincials_status == 55 ? ' selected':'') + '>Instructions Sent</option>'
+                    + '<option value="60"' + (d.provincials_status == 60 ? ' selected':'') + '>Registered</option>'
                     + '<option value="70"' + (d.provincials_status == 70 ? ' selected':'') + '>Ineligible</option>'
                     + '<option value="90"' + (d.provincials_status == 90 ? ' selected':'') + '>Declined</option>';
                 return '<select id="' + this.panelUID + '_' + d.id + '_' + this.sections[s].dataMaps[j] + '" class="text" value="' + d[this.sections[s].dataMaps[j]] + '">' + options + '</select>';
