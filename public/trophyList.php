@@ -131,7 +131,7 @@ function ciniki_musicfestivals_trophyList($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.929', 'msg'=>'', 'err'=>$rc['err']));
         }
         if( isset($rc['pdf']) ) {
-            $rc['pdf']->Output($rc['filename'], 'I');
+            $rc['pdf']->Output('Trophy List.pdf', 'I');
             return array('stat'=>'exit');
         }
     }
