@@ -1128,7 +1128,7 @@ function ciniki_musicfestivals_main() {
             'size':'flex',
             'buttons':{
                 'pdf':{'label':'Complete Program', 
-                    'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x0800) ? 'no' : 'yes'; },
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x040000); },
                     'fn':'M.ciniki_musicfestivals_main.festival.downloadProgramPDF(0);',
                     },
                 'word':{'label':'Complete Schedule Word', 
