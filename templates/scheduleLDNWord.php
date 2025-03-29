@@ -349,6 +349,7 @@ function ciniki_musicfestivals_templates_scheduleLDNWord(&$ciniki, $tnid, $args)
         'orientation' => 'portrait',
         'colsNum' => 3,
         'colsSpace' => 500,
+        'paperSize' => 'Letter',
         ]);
 //    $sectionWord->setMarginLeft(5);
 //    $sectionWord->setMarginRight(5);

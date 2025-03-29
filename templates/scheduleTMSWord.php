@@ -11,7 +11,7 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args) {
+function ciniki_musicfestivals_templates_scheduleTMSWord(&$ciniki, $tnid, $args) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
@@ -52,10 +52,10 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
     }
     $festival = $rc['festival'];
 
-/*    //
+    //
     // Load the adjudicators
     //
-    if( isset($args['section_adjudicator_bios'])
+/*    if( isset($args['section_adjudicator_bios'])
         && $args['section_adjudicator_bios'] == 'yes' 
         ) {
         $strsql = "SELECT adjudicators.id, "
@@ -78,8 +78,8 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.691', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
         }
         $adjudicators = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
-    }
-*/
+    } */
+
     //
     // Load the schedule sections, divisions, timeslots, classes, registrations
     //
@@ -88,9 +88,15 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
         . "divisions.id AS division_id, "
         . "divisions.name AS division_name, "
         . "DATE_FORMAT(divisions.division_date, '%W, %M %e, %Y') AS division_date_text, "
-        . "locations.name AS location_name, "
-        . "divisions.adjudicator_id, "
-        . "customers.display_name AS adjudicator_name, "
+        . "locations.name AS location_name, ";
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0800) ) {
+        $strsql .= "divisions.adjudicator_id, ";
+    } else {
+        $strsql .= "ssections.adjudicator1_id AS adjudicator_id, ";
+    }
+    $strsql .= "customers.display_name AS adjudicator_name, "
+        . "adjudicators.image_id AS adjudicator_image_id, "
+        . "adjudicators.description AS adjudicator_bio, "
         . "CONCAT_WS(' ', divisions.division_date, timeslots.slot_time) AS division_sort_key, "
         . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
         . "timeslots.id AS timeslot_id, "
@@ -146,9 +152,13 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
             . "divisions.id = timeslots.sdivision_id " 
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "LEFT JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
-            . "divisions.adjudicator_id = adjudicators.id "
-            ."AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "LEFT JOIN ciniki_musicfestival_adjudicators AS adjudicators ON (";
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0800) ) {
+        $strsql .= "divisions.adjudicator_id = adjudicators.id ";
+    } else {
+        $strsql .= "ssections.adjudicator1_id = adjudicators.id ";
+    }
+    $strsql .= "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_customers AS customers ON ("
             . "adjudicators.customer_id = customers.id "
@@ -192,13 +202,14 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
     } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
         $strsql .= "AND registrations.participation = 1 ";
     }
-    $strsql .= "ORDER BY divisions.division_date, ssections.sequence, divisions.name, divisions.id, slot_time, timeslots.name, timeslots.id, registrations.timeslot_sequence, class_code, registrations.display_name "
+    $strsql .= "ORDER BY ssections.sequence, divisions.division_date, division_id, slot_time, registrations.timeslot_sequence, registrations.public_name "
+//    $strsql .= "ORDER BY divisions.division_date, ssections.sequence, divisions.name, divisions.id, slot_time, timeslots.name, timeslots.id, registrations.timeslot_sequence, class_code, registrations.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'divisions', 'fname'=>'division_id', 
             'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'section_name', 'date'=>'division_date_text', 
-                'location_name', 'adjudicator_id', 'adjudicator_name',
+                'location_name', 'adjudicator_id', 'adjudicator_name', 'adjudicator_image_id', 'adjudicator_bio',
                 'sort_key' => 'division_sort_key',
                 ),
             ),
@@ -231,47 +242,33 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
     $PHPWord->addTitleStyle(1, array('bold'=>true, 'size'=>20), array('spaceBefore'=>240, 'spaceAfter'=>120));
     $PHPWord->addTitleStyle(2, array('bold'=>true, 'size'=>16), array('spaceBefore'=>120, 'spaceAfter'=>120));
     $PHPWord->addTitleStyle(3, array('bold'=>false, 'size'=>16), array('spaceBefore'=>120, 'spaceAfter'=>120));
-    $PHPWord->addParagraphStyle('Divisions', array('align' => 'left', 'spaceAfter' => 0, 'spaceBefore'=>0,
+    $PHPWord->addParagraphStyle('Divisions', array('align' => 'center', 'spaceAfter' => 0, 'spaceBefore'=>0,
         'keepLines' => true,
         'keepNext' => true,
         'indentation' => [],
         ));
-    $PHPWord->addParagraphStyle('Locations', array('align' => 'left', 'spaceAfter' => 150, 'spaceBefore'=>0,
+    $PHPWord->addParagraphStyle('Locations', array('align' => 'center', 'spaceAfter' => 150, 'spaceBefore'=>0,
         'keepLines' => true,
         'keepNext' => true,
         'indentation' => [],
         ));
     $PHPWord->addParagraphStyle('Timeslots', array('align' => 'center', 'spaceAfter' => 120, 'spaceBefore'=>120,
         'shading' => ['fill' => 'dddddd'],
-//        'borderSize' => 6,
-//        'borderColor' => '000000',
-//        'cellMarginTop' => 240,
-//        'line' => 240,
-//        'indentation' => ['left' => 1500, 'hanging' => 1500],
         'lineHeight' => '1.0',
-//        'space' => ['line' => '100', 'rule' => 'exact'],
         'keepLines' => true,
         'keepNext' => true,
-//        'tabs' => array(
-//            new \PhpOffice\PhpWord\Style\Tab('left', 1500),
-            ),
-    );
+        ));
     $PHPWord->addParagraphStyle('Classes', array('align' => 'left', 'spaceAfter' => 0, 'spaceBefore'=>120,
-//        'indentation' => ['left' => 1500, 'hanging' => 1500],
         'keepLines' => true,
         'keepNext' => true,
-//        'tabs' => array(
-//            new \PhpOffice\PhpWord\Style\Tab('left', 1500),
-            ),
-    );
+        ));
     $PHPWord->addParagraphStyle('Registrations', array('align' => 'left', 'spaceAfter' => 0, 'spaceBefore'=>0,
-//        'indentation' => ['left' => 3500, 'hanging' => 3500],
         'keepLines' => true,
         'keepNext' => true,
-//        'tabs' => array(
-//           new \PhpOffice\PhpWord\Style\Tab('left', 360),
-//           new \PhpOffice\PhpWord\Style\Tab('left', 3500),
-//           ),
+        ));
+    $PHPWord->addParagraphStyle('Adjudicators', array('align' => 'both', 'spaceAfter' => 150, 'spaceBefore'=>0,
+//        'keepLines' => true,
+//        'keepNext' => true,
         ));
     $PHPWord->addParagraphStyle('Divisions Break', array('align' => 'left', 'spaceAfter'=>0, 'spaceBefore'=>0,
         'keepLines' => false,
@@ -282,9 +279,10 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
         'keepNext' => false,
         ));
 //    $PHPWord->addFontStyle('Divisions Break Font', ['size'=>6, 'bold'=>false]);
-    $PHPWord->addFontStyle('Division Font', ['size'=>14, 'bold'=>true]);
-    $PHPWord->addFontStyle('Timeslot Font', ['size'=>12, 'bold'=>true]);
-    $PHPWord->addFontStyle('Registrations Font', ['size'=>12, 'bold'=>false]);
+    $PHPWord->addFontStyle('Division Font', ['size'=>13, 'bold'=>true]);
+    $PHPWord->addFontStyle('Timeslot Font', ['size'=>11, 'bold'=>true]);
+    $PHPWord->addFontStyle('Adjudicators Font', ['size'=>11, 'bold'=>false]);
+    $PHPWord->addFontStyle('Registrations Font', ['size'=>11, 'bold'=>false]);
 /*    $style_table = array('cellMargin'=>80, 'borderColor'=>'aaaaaa', 'borderSize'=>6);
     $style_header = array('borderSize'=>6, 'borderColor'=>'aaaaaa', 'bgColor'=>'dddddd', 'valign'=>'center');
     $style_cell = array('borderSize'=>6, 'borderColor'=>'aaaaaa', 'valign'=>'center', 'bgcolor'=>'ffffff');
@@ -298,36 +296,88 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
     $filename = 'Schedule'; 
 
     $sectionWord = $PHPWord->addSection([
-        'marginTop' => 1000,
-        'marginBottom' => 1000,
-        'marginLeft' => 1000,
-        'marginRight' => 1000,
+        'marginTop' => 600,
+        'marginBottom' => 600,
+        'marginLeft' => 600,
+        'marginRight' => 600,
         'orientation' => 'portrait',
-        'paperSize' => 'Letter',
+        'footerHeight' => 350,
+        'pageSizeH' => \PhpOffice\PhpWord\Shared\Converter::inchToTwip(8.5),
+        'pageSizeW' => \PhpOffice\PhpWord\Shared\Converter::inchToTwip(5.5),
         ]);
     $header = $sectionWord->addHeader();
     $footer = $sectionWord->addFooter();
     $textRun = $footer->addTextRun(['alignment' => 'center']);
+    $textRun->addTextBreak(1);
     $textRun->addField('PAGE');
 
-
+    $prev_adjudicator_id = 0;
     foreach($divisions as $division) {
         if( !isset($division['timeslots']) ) {
             continue;
         }
+        if( $prev_adjudicator_id != $division['adjudicator_id'] ) {
+            $sectionWord = $PHPWord->addSection([
+                'marginTop' => 600,
+                'marginBottom' => 600,
+                'marginLeft' => 600,
+                'marginRight' => 600,
+                'footerHeight' => 250,
+                'orientation' => 'portrait',
+                'pageSizeH' => \PhpOffice\PhpWord\Shared\Converter::inchToTwip(8.5),
+                'pageSizeW' => \PhpOffice\PhpWord\Shared\Converter::inchToTwip(5.5),
+                ]);
+            $header = $sectionWord->addHeader();
+            $footer = $sectionWord->addFooter();
+            $textRun = $footer->addTextRun(['alignment' => 'center']);
+            $textRun->addField('PAGE');
+            $header->addText(htmlspecialchars($division['section_name']), 'Division Font', 'Divisions');
+            $header->addText(htmlspecialchars($division['adjudicator_name']), 'Division Font', 'Locations');
+            $adjudicator = $sectionWord->addTextRun('Adjudicators');
+            if( $division['adjudicator_image_id'] > 0 ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'hooks', 'loadOriginalStorageFilename');
+                $rc = ciniki_images_hooks_loadOriginalStorageFilename($ciniki, $tnid, [
+                    'image_id' => $division['adjudicator_image_id'],
+                    ]);
+                if( $rc['stat'] == 'ok' ) { 
+                    $src = file_get_contents($rc['filename']);
+                    $adjudicator->addImage($src, [
+                        'align' => 'right',
+                        'width' => 125,
+//                        'wrappingStyle' => 'inline',
+                        'wrappingStyle'=>'square',
+                        'positioning' => 'absolute',
+                        'posHorizontal'    => \PhpOffice\PhpWord\Style\Image::POSITION_HORIZONTAL_RIGHT,
+                        'posHorizontalRel' => 'margin',
+                        'posVerticalRel' => 'line'
+                        ]);
+                }
+            }
+            $paragraphs = explode("\n", $division['adjudicator_bio']);
+            foreach($paragraphs as $p) {
+                if( trim($p) != '' ) {
+                    $adjudicator->addText(htmlspecialchars($p), 'Adjudicators Font', 'Adjudicators');
+//                    $adjudicator->addTextBreak(2, 'Adjudicators Font', 'Adjudicators');
+                    $adjudicator = $sectionWord->addTextRun('Adjudicators');
+                }
+            }
+        }
+        $prev_adjudicator_id = $division['adjudicator_id'];
         $sectionWord = $PHPWord->addSection([
-            'marginTop' => 1000,
-            'marginBottom' => 1000,
-            'marginLeft' => 1000,
-            'marginRight' => 1000,
+            'marginTop' => 600,
+            'marginBottom' => 600,
+            'marginLeft' => 600,
+            'marginRight' => 600,
+            'footerHeight' => 250,
             'orientation' => 'portrait',
-            'paperSize' => 'Letter',
+            'pageSizeH' => \PhpOffice\PhpWord\Shared\Converter::inchToTwip(8.5),
+            'pageSizeW' => \PhpOffice\PhpWord\Shared\Converter::inchToTwip(5.5),
             ]);
         $header = $sectionWord->addHeader();
         $footer = $sectionWord->addFooter();
 
-        $header->addText(htmlspecialchars($division['section_name'] . ' - Adjudicator: ' . $division['adjudicator_name']), 'Division Font', 'Divisions');
-        $header->addText(htmlspecialchars($division['date']), 'Division Font', 'Divisions');
+        $header->addText(htmlspecialchars($division['section_name'] . ' - ' . $division['date']), 'Division Font', 'Divisions');
+//        $header->addText(htmlspecialchars($division['date']), 'Division Font', 'Divisions');
         $header->addText(htmlspecialchars($division['location_name']), 'Division Font', 'Locations');
         $textRun = $footer->addTextRun(['alignment' => 'center']);
         $textRun->addField('PAGE');
@@ -402,9 +452,9 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
                 $titles = isset($rc['titles']) ? $rc['titles'] : '';
                
                 $table->addRow(10, ['cantSplit'=>'true']);
-                $table->addCell(350)->addText("{$num}.", 'Registrations Font', 'Registrations');
-                $table->addCell(4000)->addText(htmlspecialchars($reg['name']), 'Registrations Font', 'Registrations');
-                $table->addCell(8000)->addText(htmlspecialchars($titles), 'Registrations Font', 'Registrations');
+//                $table->addCell(350)->addText("{$num}.", 'Registrations Font', 'Registrations');
+                $table->addCell(3000)->addText(htmlspecialchars($reg['name']), 'Registrations Font', 'Registrations');
+                $table->addCell(4500)->addText(htmlspecialchars($titles), 'Registrations Font', 'Registrations');
 
                 $prev_class_code = $reg['class_code']; 
                 $prev_time = $timeslot['time'];
@@ -415,12 +465,14 @@ function ciniki_musicfestivals_templates_scheduleHMTWord(&$ciniki, $tnid, $args)
     }
 
     $sectionWord = $PHPWord->addSection([
-        'marginTop' => 1000,
-        'marginBottom' => 1000,
-        'marginLeft' => 1000,
-        'marginRight' => 1000,
+        'marginTop' => 600,
+        'marginBottom' => 600,
+        'marginLeft' => 600,
+        'marginRight' => 600,
+        'footerHeight' => 250,
         'orientation' => 'portrait',
-        'paperSize' => 'Letter',
+        'pageSizeH' => \PhpOffice\PhpWord\Shared\Converter::inchToTwip(8.5),
+        'pageSizeW' => \PhpOffice\PhpWord\Shared\Converter::inchToTwip(5.5),
         ]);
     $header = $sectionWord->addHeader();
     $footer = $sectionWord->addFooter();

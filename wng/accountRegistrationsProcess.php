@@ -1949,7 +1949,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 if( preg_match("/perf_time/", $fid) ) {
                     $fields[$fid]['ftype'] = 'viewtext';
                     $fields[$fid]['value'] = sprintf("%d:%02d", intval($field['value']/60),$field['value']%60);
-                } 
+                }  
             }
             elseif( preg_match("/^accompanist_/", $fid) 
                 && isset($festival['edit-accompanist']) && $festival['edit-accompanist'] == 'yes' 

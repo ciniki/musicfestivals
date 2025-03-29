@@ -4663,9 +4663,10 @@ function ciniki_musicfestivals_main() {
             'fields':{
                 'schedule-word-template':{'label':'Template', 'type':'select', 'default':'default', 'options':{
                     '':'None', 
+                    'HMT':'Template H - 1 Column', 
                     'LDN':'Template L - 3 Column', 
-                    'HMT':'Template H - 2 Column', 
                     'PTB':'Template P - 2 Column', 
+                    'TMS':'Template T - 1 Column, 5.5 x 8.5', 
                     }},
             }},
         '_program_pdf':{'label':'Program PDF Default Options', 

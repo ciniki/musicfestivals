@@ -294,6 +294,7 @@ function ciniki_musicfestivals_templates_schedulePTBWord(&$ciniki, $tnid, $args)
         'orientation' => 'portrait',
         'colsNum' => 2,
         'colsSpace' => 500,
+        'paperSize' => 'Letter',
         ]);
 
     $filename = 'Schedule'; 
