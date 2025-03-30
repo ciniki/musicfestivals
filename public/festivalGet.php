@@ -1208,6 +1208,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "FORMAT(registrations.fee, 2) AS fee, "
                     . "registrations.participation, "
                     . "registrations.notes, "
+                    . "registrations.internal_notes, "
+                    . "registrations.runsheet_notes, "
                     . "invoices.invoice_type, "
                     . "invoices.status AS invoice_status, "
                     . "invoices.payment_status AS payment_status_text, "
@@ -1345,7 +1347,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                             'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
                             'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
-                            'notes',
+                            'notes', 'internal_notes', 'runsheet_notes',
                             'slot_time', 'division_name', 'division_date', 'location_name', 'section_name',
                             ),
                         'utctotz'=>array(
@@ -1424,6 +1426,16 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                                     ($festival['registrations'][$rid]['notes'] != '' ? "\n" : '') 
                                     . $competitors[$registration["competitor{$i}_id"]]['notes'];
                             }
+                        }
+                        if( isset($registration['internal_notes']) && $registration['internal_notes'] != '' ) {
+                            $festival['registrations'][$rid]['notes'] .= 
+                                ($festival['registrations'][$rid]['notes'] != '' ? "\n" : '') 
+                                . '<b>Internal:</b> ' . $registration['internal_notes'];
+                        }
+                        if( isset($registration['runsheet_notes']) && $registration['runsheet_notes'] != '' ) {
+                            $festival['registrations'][$rid]['notes'] .= 
+                                ($festival['registrations'][$rid]['notes'] != '' ? "\n" : '') 
+                                . '<b>Runsheet:</b> ' . $registration['runsheet_notes'];
                         }
 
                         //
