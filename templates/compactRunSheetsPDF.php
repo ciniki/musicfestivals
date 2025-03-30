@@ -200,6 +200,12 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
     if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
         $strsql .= "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
     }
+    if( isset($args['adjudicator_id']) && $args['adjudicator_id'] > 0 ) {
+        $strsql .= "AND ("
+            . "ssections.adjudicator1_id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' "
+            . "OR divisions.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' "
+            . ") ";
+    }
     if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
 //        $strsql .= "AND (registrations.participation < 1 || ISNULL(registrations.participation) ) ";
         $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";
