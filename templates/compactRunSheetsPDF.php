@@ -215,7 +215,8 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
     if( isset($args['sortorder']) && $args['sortorder'] == 'date' ) {
         $strsql .= "ORDER BY divisions.division_date, ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, timeslot_id, registrations.timeslot_sequence, class_code, registrations.display_name ";
     } else {
-        $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, timeslot_id, registrations.timeslot_sequence, class_code, registrations.display_name ";
+        $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, timeslots.name, timeslots.id, registrations.timeslot_sequence, class_code, registrations.display_name ";
+//        $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, timeslot_id, registrations.timeslot_sequence, class_code, registrations.display_name ";
     }
 //    $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, slot_time, registrations.timeslot_sequence, class_code, registrations.display_name "
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
