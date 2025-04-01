@@ -403,7 +403,8 @@ function ciniki_musicfestivals_templates_scheduleSSAWord(&$ciniki, $tnid, $args)
                     'cellSpacing' => 0,
                     ]);
                 $table->addRow(240, ['vAlign'=>'center', 'cantSplit'=>'true', 'shadding'=>'dddddd']);
-                $table->addCell(12000, ['valign'=>'center', 'bgColor'=>'dddddd'])->addText(htmlspecialchars($timeslot['name']), 'Timeslot Font', 'Timeslots');
+                $table->addCell(12000, ['valign'=>'center', 'bgColor'=>'dddddd'])->addText(htmlspecialchars($timeslot['time']), 'Timeslot Font', 'Timeslots');
+                $sectionWord->addText(htmlspecialchars($timeslot['name']), 'Timeslot Font', 'Classes');
                 $sectionWord->addTextBreak(1, null, 'Registrations Break');
                 continue;
             }
