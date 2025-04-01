@@ -433,7 +433,8 @@ function ciniki_musicfestivals_templates_scheduleSSAWord(&$ciniki, $tnid, $args)
                         $time_text = ' ';
                     }
                     //$name = "Class " . $reg['class_code'] . ' - ' . $reg['section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name'];
-                    $name = $reg['category_name'] . ' - ' . $reg['class_name'];
+//                    $name = $reg['category_name'] . ' - ' . $reg['class_name'];
+                    $name = $reg['class_name'];
                     if( isset($timeslot['groupname']) && $timeslot['groupname'] != '' ) {
                         $name .= ' - ' . $timeslot['groupname'];
                     }
