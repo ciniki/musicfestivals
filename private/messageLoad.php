@@ -1743,7 +1743,6 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 return strcmp($adomain, $bdomain);
                 });
         }
-
     }
 
     return $rsp;
