@@ -1148,6 +1148,7 @@ function ciniki_musicfestivals_main() {
                 'resultsexcel':{'label':'Provincial Recommendations Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadProvincialsExcel(0);'},
                 'recommendations':{'label':'Provincial Recommendations', 'fn':'M.ciniki_musicfestivals_main.festival.downloadProvincialRecommendations(0);'},
                 'adjudicatorgroups':{'label':'Adjudicator Class Groups', 'fn':'M.ciniki_musicfestivals_main.festival.adjudicatorGroupsPDF();'},
+                'competitorclassmarks':{'label':'Competitor Class Marks', 'fn':'M.ciniki_musicfestivals_main.festival.competitorClassMarksPDF();'},
                 'backtracks':{'label':'All Backtracks', 'fn':'M.ciniki_musicfestivals_main.festival.downloadBacktracks(0);'},
                 'artwork':{'label':'All Artwork', 'fn':'M.ciniki_musicfestivals_main.festival.downloadArtwork(0);'},
                 'blankcomments':{'label':'Blank Comments', 'fn':'M.ciniki_musicfestivals_main.festival.downloadCommentsPDF("blank");'},
@@ -2054,6 +2055,13 @@ function ciniki_musicfestivals_main() {
             'ipv':this.formValue('ipv'),
             };
         M.api.openPDF('ciniki.musicfestivals.adjudicatorGroupsPDF',args);
+    }
+    this.festival.competitorClassMarksPDF = function(s) {
+        var args = {'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'ipv':this.formValue('ipv'),
+            };
+        M.api.openPDF('ciniki.musicfestivals.competitorClassMarksPDF',args);
     }
     this.festival.scheduleTimingsPDF = function() {
         var args = {'tnid':M.curTenantID,
