@@ -1529,7 +1529,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
         $rsp['message']['competitors'] = array();
         if( count($competitor_ids) > 0 ) {
             for($i = 0; $i < count($competitor_ids); $i+=100) {
-                $ids = array_splice($competitor_ids, $i, 100);
+                $ids = array_splice($competitor_ids, 0, 100);
                 $strsql = "SELECT competitors.id, "
                     . "competitors.name, "
                     . "IF(competitors.ctype=50,competitors.name,competitors.first) AS first, "
