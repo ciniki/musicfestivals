@@ -1528,7 +1528,8 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
         $rsp['message']['customers'] = array();
         $rsp['message']['competitors'] = array();
         if( count($competitor_ids) > 0 ) {
-            for($i = 0; $i < count($competitor_ids); $i+=100) {
+//            for($i = 0; $i < count($competitor_ids); $i+=100) {
+            while(count($competitor_ids) > 0 ) {
                 $ids = array_splice($competitor_ids, 0, 100);
                 $strsql = "SELECT competitors.id, "
                     . "competitors.name, "
