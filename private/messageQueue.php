@@ -25,7 +25,7 @@ function ciniki_musicfestivals_messageQueue(&$ciniki, $tnid, $args) {
         // Get the tenant storage directory
         //
         ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
-        $rc = ciniki_tenants_hooks_storageDir($ciniki, $args['tnid'], array());
+        $rc = ciniki_tenants_hooks_storageDir($ciniki, $tnid, array());
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
