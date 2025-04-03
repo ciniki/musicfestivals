@@ -23,6 +23,7 @@ function ciniki_musicfestivals_runsheetsPDF($ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'schedulesection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Section'),
+        'scheduledivision_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Division'),
         'adjudicator_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicator'),
         'ipv'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'In Person/Virtual'),
         'sortorder'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sort Order'),
