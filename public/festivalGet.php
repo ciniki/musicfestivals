@@ -1210,6 +1210,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "registrations.notes, "
                     . "registrations.internal_notes, "
                     . "registrations.runsheet_notes, "
+                    . "registrations.mark, "
+                    . "registrations.placement, "
+                    . "registrations.level, "
                     . "invoices.invoice_type, "
                     . "invoices.status AS invoice_status, "
                     . "invoices.payment_status AS payment_status_text, "
@@ -1348,6 +1351,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
                             'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
                             'notes', 'internal_notes', 'runsheet_notes',
+                            'mark', 'placement', 'level',
                             'slot_time', 'division_name', 'division_date', 'location_name', 'section_name',
                             ),
                         'utctotz'=>array(

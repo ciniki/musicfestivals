@@ -926,6 +926,7 @@ function ciniki_musicfestivals_main() {
                     },
                 'notes':{'label':'Notes', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("notes");'},
                 'schedule':{'label':'Schedule', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("schedule");'},
+                'marks':{'label':'Marks', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("marks");'},
             }},
         'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'registrations' && M.ciniki_musicfestivals_main.festival.section_id > -1 ? 'yes' : 'no'; },
@@ -2327,6 +2328,9 @@ function ciniki_musicfestivals_main() {
                     return M.multiline(links, music);
                 case 'notes': return d.notes.replace(/\n/g, '<br/>');
                 case 'scheduled': return M.multiline(d.scheduled, d.scheduled_sd);
+                case 'mark': return d.mark;
+                case 'placement': return d.placement;
+                case 'level': return d.level;
             }
         }
         if( s == 'registration_sections' || s == 'emails_sections' ) {
@@ -3803,6 +3807,42 @@ function ciniki_musicfestivals_main() {
             this.sections.registrations.dataMaps = ['class', 'registrant', 'scheduled'];
             this.sections.registrations.sortTypes = ['text', 'text', 'text'];
             this.sections.registrations.num_cols = 3;
+        } else if( this.sections.registrations_tabs.selected == 'marks' ) {
+            this.sections.registrations.headerValues = ['Class', 'Registrant', 'Teacher'];
+            this.sections.registrations.cellClasses = ['multiline', 'multiline', ''];
+            this.sections.registrations.dataMaps = ['class', 'registrant', 'teacher'];
+            this.sections.registrations.sortTypes = ['text', 'text', 'text'];
+            this.sections.registrations.num_cols = 3;
+            if( this.data['comments-mark-ui'] != null && this.data['comments-mark-ui'] == 'yes' ) {
+                if( this.data['comments-mark-label'] != null && this.data['comments-mark-label'] != '' ) {
+                    this.sections.registrations.headerValues[this.sections.registrations.num_cols] = this.data['comments-mark-label'];
+                } else {
+                    this.sections.registrations.headerValues[this.sections.registrations.num_cols] = 'Mark';
+                }
+                this.sections.registrations.dataMaps[this.sections.registrations.num_cols] = 'mark';
+                this.sections.registrations.sortTypes[this.sections.registrations.num_cols] = 'number';
+                this.sections.registrations.num_cols++;
+            }
+            if( this.data['comments-placement-ui'] != null && this.data['comments-placement-ui'] == 'yes' ) {
+                if( this.data['comments-placement-label'] != null && this.data['comments-placement-label'] != '' ) {
+                    this.sections.registrations.headerValues[this.sections.registrations.num_cols] = this.data['comments-placement-label'];
+                } else {
+                    this.sections.registrations.headerValues[this.sections.registrations.num_cols] = 'Placement';
+                }
+                this.sections.registrations.dataMaps[this.sections.registrations.num_cols] = 'placement';
+                this.sections.registrations.sortTypes[this.sections.registrations.num_cols] = 'text';
+                this.sections.registrations.num_cols++;
+            }
+            if( this.data['comments-level-ui'] != null && this.data['comments-level-ui'] == 'yes' ) {
+                if( this.data['comments-level-label'] != null && this.data['comments-level-label'] != '' ) {
+                    this.sections.registrations.headerValues[this.sections.registrations.num_cols] = this.data['comments-level-label'];
+                } else {
+                    this.sections.registrations.headerValues[this.sections.registrations.num_cols] = 'Level';
+                }
+                this.sections.registrations.dataMaps[this.sections.registrations.num_cols] = 'level';
+                this.sections.registrations.sortTypes[this.sections.registrations.num_cols] = 'text';
+                this.sections.registrations.num_cols++;
+            }
         }
         this.sections.registration_search.headerValues = this.sections.registrations.headerValues;
         this.sections.registration_search.cellClasses = this.sections.registrations.cellClasses;
