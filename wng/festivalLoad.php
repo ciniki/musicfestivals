@@ -19,6 +19,7 @@ function ciniki_musicfestivals_wng_festivalLoad(&$ciniki, $tnid, $festival_id) {
     //
     $strsql = "SELECT id, "
         . "name, "
+        . "permalink, "
         . "flags, "
         . "earlybird_date, "
         . "live_date, "

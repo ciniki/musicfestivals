@@ -557,6 +557,10 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         && $festival['comments-class-format'] == 'category-class' 
                         ) {
                         $class_name = $reg['category_name'] . ' - ' . $reg['class_name']; 
+                    } elseif( isset($festival['comments-class-format']) 
+                        && $festival['comments-class-format'] == 'code-class' 
+                        ) {
+                        $class_name = $reg['class_code'] . ' - ' . $reg['class_name']; 
                     } else {
                         $class_name = $reg['class_name']; 
                     }

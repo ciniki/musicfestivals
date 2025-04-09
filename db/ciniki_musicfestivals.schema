@@ -19,6 +19,7 @@
 #
 #                           10 - Active
 #                           30 - Current
+#                           50 - Past (Results available in past festivals)
 #                           60 - Archived
 #
 # flags:                The options for the festival.
@@ -35,6 +36,10 @@
 #                           0x0200 - Always ask for Music PDF in Registration Form
 #                           0x0400 - Use group names for extra organization layer
 #                           0x0800 - Multiple Syllabi
+#                           0x1000 - 
+#                           0x2000 - 
+#                           0x4000 -
+#                           0x8000 -
 #
 # earlybird_date:       The UTC Date and Time when earlybird pricing ends.
 # live_date:            The UTC Date and Time when live pricing ends.

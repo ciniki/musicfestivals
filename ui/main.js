@@ -4471,7 +4471,7 @@ function ciniki_musicfestivals_main() {
             'name':{'label':'Name', 'type':'text'},
             'start_date':{'label':'Start', 'type':'date'},
             'end_date':{'label':'End', 'type':'date'},
-            'status':{'label':'Status', 'type':'toggle', 'toggles':{'10':'Active', '30':'Current', '60':'Archived'}},
+            'status':{'label':'Status', 'type':'toggle', 'toggles':{'10':'Active', '30':'Current', '50':'Past', '60':'Archived'}},
             'flags1':{'label':'Registrations Open', 'type':'flagtoggle', 'default':'off', 'bit':0x01, 'field':'flags'},
             'flags2':{'label':'Virtual Option', 'type':'flagtoggle', 'default':'off', 'bit':0x02, 'field':'flags',
                 'on_fields':['flags3','virtual_date'],
@@ -4576,6 +4576,7 @@ function ciniki_musicfestivals_main() {
                     'category-class':'Category - Class',
                     'code-section-category-class':'Code - Section - Category - Class',
                     'code-category-class':'Code - Category - Class',
+                    'code-class':'Code - Class',
                     }},
                 'comments-mark-ui':{'label':'Mark Field', 'type':'toggle', 'default':'no', 'separator':'yes', 'toggles':{
                     'no':'No',

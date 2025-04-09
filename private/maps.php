@@ -16,6 +16,7 @@ function ciniki_musicfestivals_maps($ciniki) {
         'status'=>array(
             '10'=>'Active',
             '30'=>'Current',
+            '50'=>'Past',
             '60'=>'Archived',
         ));
     $maps['registration'] = array(

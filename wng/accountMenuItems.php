@@ -162,6 +162,41 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
         }
     }
 
+    //
+    // Check for past festival registrations
+    //
+    $strsql = "SELECT DISTINCT registrations.festival_id "
+        . "FROM ciniki_musicfestival_registrations AS registrations "
+        . "INNER JOIN ciniki_musicfestivals AS festivals ON ("
+            . "registrations.festival_id = festivals.id "
+            . "AND festivals.status = 50 "
+            . "AND festivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "WHERE registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND ("
+            . "registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+            . "OR registrations.parent_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+            . "OR registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+            . ") "
+        . "AND registrations.status < 70 "
+        . "AND registrations.status > 5 "
+//        . "AND registrations.comments <> '' "
+        . "AND registrations.festival_id <> '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.930', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+    }
+    if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
+        $items[] = array(
+            'title' => 'Past Results', 
+            'priority' => 3747, 
+            'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivalpast' ? 'yes' : 'no',
+            'ref' => 'ciniki.musicfestivals.past',
+            'url' => $base_url . '/musicfestivalpast',
+            );
+    }
+
     return array('stat'=>'ok', 'items'=>$items);
 }
 ?>
