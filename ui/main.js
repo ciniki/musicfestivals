@@ -1637,6 +1637,17 @@ function ciniki_musicfestivals_main() {
             'cellClasses':['Festival', 'Rec', 'Alt'],
             'sortable':'yes',
             'sortTypes':['text', 'number', 'number'],
+            'menu':{
+                'fullexcel':{
+                    'label':'Full Excel', 
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadRecommendationsExcel();',
+                    },
+                'memberexcel':{
+                    'label':'Download Member Excel', 
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.member_id > 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadRecommendationsMemberExcel();',
+                    },
+                },
             },
         'recommendation_sections':{'label':'Section', 'aside':'yes', 'type':'select',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'classes' ? 'yes' : 'no'; },
@@ -1646,19 +1657,31 @@ function ciniki_musicfestivals_main() {
                     'options':[],
                     'onchange':'M.ciniki_musicfestivals_main.festival.switchRecommendationSection',
                     },
-            }},
+            },
+            'menu':{
+                'fullexcel':{
+                    'label':'Full Excel', 
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadRecommendationsExcel();',
+                    },
+                'sectionexcel':{
+                    'label':'Section Excel', 
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.section_id > 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadRecommendationsSectionExcel();',
+                    },
+                },
+            },
         'recommendation_classes':{'label':'Classes', 'aside':'yes', 'type':'simplegrid', 'num_cols':3,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'classes' ? 'yes' : 'no'; },
             'headerValues':['Class', 'W', 'G'],
             'headerClasses':['', 'alignright', 'alignright', 'alignright'],
             'cellClasses':['', 'alignright', 'alignright', 'alignright'],
             },
-        'recommendation_buttons1':{'label':'', 'aside':'yes',
-            'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'classes' ? 'yes' : 'no'; },
-            'buttons':{
-                'sectionexcel':{'label':'Section Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadRecommendationsSectionExcel();'},
-                'fullexcel':{'label':'Full Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadRecommendationsExcel();'},
-            }},
+//        'recommendation_buttons1':{'label':'', 'aside':'yes',
+//            'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'classes' ? 'yes' : 'no'; },
+//            'buttons':{
+//                'sectionexcel':{'label':'Section Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadRecommendationsSectionExcel();'},
+//                'fullexcel':{'label':'Full Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadRecommendationsExcel();'},
+//            }},
         'recommendation_member_search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':6,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'submissions' && M.ciniki_musicfestivals_main.festival.member_id > 0 ? 'yes' : 'no'; },
             'hint':'Search',
@@ -1674,11 +1697,11 @@ function ciniki_musicfestivals_main() {
             'sortable':'yes',
             'sortTypes':['text', 'text', 'date', 'number'],
             }, 
-        'recommendation_buttons2':{'label':'', 'aside':'no',
-            'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'submissions' && M.ciniki_musicfestivals_main.festival.member_id > 0 ? 'yes' : 'no'; },
-            'buttons':{
-                'memberexcel':{'label':'Download Member Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadRecommendationsMemberExcel();'},
-            }},
+//        'recommendation_buttons2':{'label':'', 'aside':'no',
+//            'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'submissions' && M.ciniki_musicfestivals_main.festival.member_id > 0 ? 'yes' : 'no'; },
+//            'buttons':{
+//                'memberexcel':{'label':'Download Member Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadRecommendationsMemberExcel();'},
+//            }},
         'recommendation_entries':{'label':'Recommendations', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'classes' ? 'yes' : 'no'; },
             'headerValues':['Name', 'Position', 'Mark', 'Festival', 'Date Submitted', 'Deadline'],
@@ -4261,6 +4284,7 @@ function ciniki_musicfestivals_main() {
                 p.data.emails_sections.push({'id':0, 'name':'All'});
                 p.data.provincials_sections.push({'id':0, 'name':'All'});
                 p.sections.recommendation_sections.fields.section_id.options = rsp.festival.sections;
+                p.sections.recommendation_sections.fields.section_id.options.unshift({'id':0, 'name':'Select section'});
                 p.sections.class_sections.fields.section_id.options = rsp.festival.sections;
                 if( rsp.festival.section_id != null && rsp.festival.section_id >= 0 ) {
                     p.section_id = rsp.festival.section_id;
