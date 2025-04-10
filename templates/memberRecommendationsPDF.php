@@ -80,8 +80,8 @@ function ciniki_musicfestivals_templates_memberRecommendationsPDF(&$ciniki, $tni
 
     class MYPDF extends TCPDF {
         //Page header
-        public $left_margin = 18;
-        public $right_margin = 18;
+        public $left_margin = 15;
+        public $right_margin = 15;
         public $top_margin = 15;
         public $header_image = null;
         public $header_title = '';
@@ -139,10 +139,8 @@ function ciniki_musicfestivals_templates_memberRecommendationsPDF(&$ciniki, $tni
         public function Footer() {
             // Position at 15 mm from bottom
             $this->SetY(-15);
-            $this->SetFont('helvetica', 'B', 10);
-            $this->Cell(90, 10, $this->footer_msg, 0, false, 'L', 0, '', 0, false, 'T', 'M');
             $this->SetFont('helvetica', '', 10);
-            $this->Cell(90, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+            $this->Cell(249, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
         } 
         public function labelValue($w1, $label, $w2, $value) {
             $lh = 12;
@@ -227,13 +225,13 @@ function ciniki_musicfestivals_templates_memberRecommendationsPDF(&$ciniki, $tni
     $pdf->SetCellPadding(1.5);
 
     // add a page
-    $pdf->SetFillColor(246);
+    $pdf->SetFillColor(220);
     $pdf->SetTextColor(0);
     $pdf->SetDrawColor(232);
-    $pdf->SetDrawColor(200);
+    $pdf->SetDrawColor(128);
     $pdf->SetLineWidth(0.15);
 
-    $filename = 'recommendations';
+    $filename = 'Recommendations';
 
     //
     // Go through the sections, divisions and classes
@@ -242,7 +240,6 @@ function ciniki_musicfestivals_templates_memberRecommendationsPDF(&$ciniki, $tni
     $pdf->AddPage();
 
     $pdf->SetFont('helvetica', '', 12);
-    $pdf->SetFillColor(242);
 
     $fill = 1;
     $pdf->setFont('helvetica','B');
@@ -251,6 +248,7 @@ function ciniki_musicfestivals_templates_memberRecommendationsPDF(&$ciniki, $tni
     $pdf->MultiCell($w[2], 0, 'Competitor', 1, 'L', $fill, 0);
     $pdf->MultiCell($w[3], 0, 'Mark', 1, 'L', $fill, 0);
     $pdf->MultiCell($w[4], 0, 'Adjudicator', 1, 'L', $fill, 1);
+    $fill = 0;
     $pdf->setFont('helvetica','');
 
     $classes = array();
@@ -265,13 +263,13 @@ function ciniki_musicfestivals_templates_memberRecommendationsPDF(&$ciniki, $tni
             $rec['lh'] = $pdf->getStringHeight($w[1], $rec['position']);
         }
         if( $pdf->getStringHeight($w[2], $rec['name']) > $rec['lh'] ) {
-            $rec['lh'] = $pdf->getStringHeight($w[1], $rec['name']);
+            $rec['lh'] = $pdf->getStringHeight($w[2], $rec['name']);
         }
         if( $pdf->getStringHeight($w[2], $rec['mark']) > $rec['lh'] ) {
-            $rec['lh'] = $pdf->getStringHeight($w[1], $rec['mark']);
+            $rec['lh'] = $pdf->getStringHeight($w[3], $rec['mark']);
         }
         if( $pdf->getStringHeight($w[2], $rec['adjudicator_name']) > $rec['lh'] ) {
-            $rec['lh'] = $pdf->getStringHeight($w[1], $rec['adjudicator_name']);
+            $rec['lh'] = $pdf->getStringHeight($w[4], $rec['adjudicator_name']);
         }
 
         if( $pdf->GetY() > ($pdf->getPageHeight() - $rec['lh'] - 25) ) {
@@ -283,6 +281,7 @@ function ciniki_musicfestivals_templates_memberRecommendationsPDF(&$ciniki, $tni
             $pdf->MultiCell($w[2], 0, 'Competitor', 1, 'L', $fill, 0);
             $pdf->MultiCell($w[3], 0, 'Mark', 1, 'C', $fill, 0);
             $pdf->MultiCell($w[4], 0, 'Adjudicator', 1, 'L', $fill, 1);
+            $fill = 0;
             $pdf->setFont('helvetica','');
         }
 
@@ -291,8 +290,7 @@ function ciniki_musicfestivals_templates_memberRecommendationsPDF(&$ciniki, $tni
         $pdf->MultiCell($w[2], $rec['lh'], $rec['name'], 1, 'L', $fill, 0);
         $pdf->MultiCell($w[3], $rec['lh'], $rec['mark'], 1, 'C', $fill, 0);
         $pdf->MultiCell($w[4], $rec['lh'], $rec['adjudicator_name'], 1, 'L', $fill, 1);
-        $fill = !$fill;
-
+//        $fill = !$fill;
     }
 
     return array('stat'=>'ok', 'pdf'=>$pdf, 'filename'=>$filename . '.pdf');

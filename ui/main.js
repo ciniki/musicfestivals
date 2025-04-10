@@ -1643,9 +1643,14 @@ function ciniki_musicfestivals_main() {
                     'fn':'M.ciniki_musicfestivals_main.festival.downloadRecommendationsExcel();',
                     },
                 'memberexcel':{
-                    'label':'Download Member Excel', 
+                    'label':'Member Recommendations Excel', 
                     'visible':function() { return M.ciniki_musicfestivals_main.festival.member_id > 0 ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.festival.downloadRecommendationsMemberExcel();',
+                    },
+                'memberpdf':{
+                    'label':'Member Recommendations PDF', 
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.member_id > 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadRecommendationsMemberPDF();',
                     },
                 },
             },
@@ -2037,6 +2042,13 @@ function ciniki_musicfestivals_main() {
             'member_id':this.member_id,
             };
         M.api.openFile('ciniki.musicfestivals.recommendationsExcel',args);
+    }
+    this.festival.downloadRecommendationsMemberPDF = function() {
+        var args = {'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'member_id':this.member_id,
+            };
+        M.api.openFile('ciniki.musicfestivals.recommendationsPDF',args);
     }
     this.festival.downloadRecommendationsExcel = function() {
         var args = {'tnid':M.curTenantID,
