@@ -509,6 +509,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                     . ") "
                 . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
                     . "classes.id = registrations.class_id "
+                    . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                     . ") "
                 . "WHERE sections.id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
@@ -523,6 +524,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                     . ") "
                 . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
                     . "classes.id = registrations.class_id "
+                    . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                     . ") "
                 . "WHERE categories.id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
@@ -533,6 +535,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             $reg_strsql .= "FROM ciniki_musicfestival_classes AS classes "
                 . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
                     . "classes.id = registrations.class_id "
+                    . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                     . ") "
                 . "WHERE classes.id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
@@ -551,6 +554,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                     . ") "
                 . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
                     . "timeslots.id = registrations.timeslot_id "
+                    . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                     . ") "
                 . "WHERE sections.id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
@@ -565,6 +569,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                     . ") "
                 . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
                     . "timeslots.id = registrations.timeslot_id "
+                    . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                     . ") "
                 . "WHERE divisions.id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
@@ -574,6 +579,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
         elseif( $object == 'ciniki.musicfestivals.scheduletimeslot' ) {
             $reg_strsql .= "FROM ciniki_musicfestival_registrations AS registrations "
                 . "WHERE registrations.timeslot_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $ids) . ") "
+                . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . "";
         }
@@ -590,6 +596,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             $reg_strsql .= "FROM ciniki_musicfestival_registration_tags AS tags "
                 . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
                     . "tags.registration_id = registrations.id "
+                    . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                     . ") "
                 . "WHERE (";
@@ -612,6 +619,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             }
             $reg_strsql .= ") "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
                 . "";
         }
         elseif( $object == 'ciniki.musicfestivals.registrationprovincialsstatus' ) {
@@ -624,6 +632,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             }
             $reg_strsql .= ") "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
                 . "";
         }
         elseif( $object == 'ciniki.musicfestivals.registration' ) {
@@ -636,6 +645,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             }
             $reg_strsql .= ") "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
                 . "";
         }
 
