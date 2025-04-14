@@ -592,7 +592,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $display = 'view';
             }
             elseif( isset($_POST['action']) && $_POST['action'] == 'download' 
-                && isset($_POST['submit']) && $_POST['submit'] == 'Download Adjudicators Comments'
+                && (isset($_POST['submit']) && $_POST['submit'] == 'Download Adjudicators Comments'
+                    || isset($_POST['submit']) && $_POST['submit'] == 'Comments'
+                    )
                 ) {
                 
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'commentsPDF');
@@ -615,7 +617,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 }
             }
             elseif( isset($_POST['action']) && $_POST['action'] == 'download' 
-                && isset($_POST['submit']) && $_POST['submit'] == 'Download Certificate'
+                && (isset($_POST['submit']) && $_POST['submit'] == 'Download Certificate'
+                    || isset($_POST['submit']) && $_POST['submit'] == 'Certificate'
+                    )
                 ) {
                 //
                 // Get the certificate

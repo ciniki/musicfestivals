@@ -86,6 +86,9 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
         . "registrations.movements8, "
         . "registrations.fee, "
         . "registrations.participation, "
+        . "registrations.mark, "
+        . "registrations.placement, "
+        . "registrations.level, "
         . "registrations.comments, "
         . "classes.code AS class_code, "
         . "sections.name AS section_name, "
@@ -101,7 +104,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
         . "IFNULL(locations.name, '') AS location_name, "
         . "IFNULL(locations.address1, '') AS location_address, "
         . "IFNULL(locations.city, '') AS location_city, "
-        . "IFNULL(ssections.flags, 0) AS timeslot_flags, "
+        . "IFNULL(ssections.flags, 0) AS ssection_flags, "
         . "IFNULL(divisions.flags, 0) AS division_flags, "
         . "IFNULL(invoices.status, 0) AS invoice_status, "
         . "IFNULL(invoices.payment_status, 0) AS payment_status "
@@ -172,7 +175,8 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
                 'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
                 'timeslot_time', 'timeslot_date', 'location_name', 'location_address', 'location_city', 
-                'timeslot_flags', 'division_flags', 'comments',
+                'ssection_flags', 'division_flags', 
+                'mark', 'placement', 'level', 'comments',
                 ),
             ),
         ));
@@ -401,18 +405,40 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
     }
     if( count($paid_registrations) > 0 ) {
         foreach($paid_registrations as $rid => $registration) {
+            //
+            // Check if comments can be downloaded
+            //
+            $download_buttons = '';
+            if( (($registration['ssection_flags']&0x02) == 0x02 || ($registration['division_flags']&0x02) == 0x02)
+                && $registration['comments'] != '' 
+                ) {
+                $download_buttons .= "<input class='button' type='submit' name='submit' value='Comments'>";
+            }
+            if( (($registration['ssection_flags']&0x04) == 0x04 || ($registration['division_flags']&0x04) == 0x04)
+                && $registration['comments'] != '' 
+                ) {
+                $download_buttons .= ($download_buttons != '' ? ' ' : '')
+                    . "<input class='button' type='submit' name='submit' value='Certificate'>";
+            }
             $paid_registrations[$rid]['viewbutton'] = "<form action='{$base_url}' method='POST'>"
                 . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
                 . "<input type='hidden' name='action' value='view' />"
                 . "<input class='button' type='submit' name='submit' value='View'>"
                 . "</form>";
+            if( isset($download_buttons) && $download_buttons != '' ) {
+                $paid_registrations[$rid]['viewbutton'] .= "<form action='' target='_blank' method='POST'>"
+                        . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
+                        . "<input type='hidden' name='action' value='download' />"
+                        . $download_buttons
+                        . "</form>";
+            }
             $paid_registrations[$rid]['scheduled'] = '';
             //
             // If the registration has been schedule and schedule released
             //
             if( $registration['participation'] == 1 ) {
                 $paid_registrations[$rid]['scheduled'] = 'Virtual';
-            } elseif( ($registration['timeslot_flags']&0x01) == 0x01 
+            } elseif( ($registration['ssection_flags']&0x01) == 0x01 
                 && $registration['timeslot_time'] != ''
                 && $registration['timeslot_date'] != ''
                 ) {
@@ -465,7 +491,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
             //
             if( $registration['participation'] == 1 ) {
                 $parent_registrations[$rid]['scheduled'] = 'Virtual';
-            } elseif( ($registration['timeslot_flags']&0x01) == 0x01 
+            } elseif( ($registration['ssection_flags']&0x01) == 0x01 
                 && $registration['timeslot_time'] != ''
                 && $registration['timeslot_date'] != ''
                 ) {
@@ -514,7 +540,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
             //
             if( $registration['participation'] == 1 ) {
                 $accompanist_registrations[$rid]['scheduled'] = 'Virtual';
-            } elseif( ($registration['timeslot_flags']&0x01) == 0x01 
+            } elseif( ($registration['ssection_flags']&0x01) == 0x01 
                 && $registration['timeslot_time'] != ''
                 && $registration['timeslot_date'] != ''
                 ) {
