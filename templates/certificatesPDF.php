@@ -134,9 +134,9 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $tnid, $args)
                             $image_ratio = $width/$height;
                             $available_ratio = $field['width']/$field['height'];
                             if( $available_ratio < $image_ratio ) {
-                                $pdf->Image('@'.$rc['image']->getImageBlob(), $field['xpos'], $field['ypos'], $field['width'], 0, 'PNG', '', 'C', 2, '150', '', false, false, 0, 'CM');
+                                $pdf->Image('@'.$rc['image']->getImageBlob(), $field['xpos'], $field['ypos'], $field['width'], 0, '', '', 'C', 2, '150', '', false, false, 0, 'CM');
                             } else {
-                                $pdf->Image('@'.$rc['image']->getImageBlob(), $field['xpos'], $field['ypos'], $field['width'], $field['height'], 'PNG', '', 'C', 2, '150', '', false, false, 0, 'CM');
+                                $pdf->Image('@'.$rc['image']->getImageBlob(), $field['xpos'], $field['ypos'], $field['width'], $field['height'], '', '', 'C', 2, '150', '', false, false, 0, 'CM');
                             }
                         }
                     } elseif( $border == 1 ) {
