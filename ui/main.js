@@ -11659,6 +11659,7 @@ function ciniki_musicfestivals_main() {
                 'greatvibes':'Great Vibes',
                 'helvetica':'Helvetica',
                 'oleoscript':'Oleo Script',
+                'playfairdisplay':'Playfair Display',
                 'scriptina':'Scriptina',
                 'times':'Times',
                 'vidaloka':'Vidaloka',
