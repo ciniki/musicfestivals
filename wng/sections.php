@@ -730,6 +730,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'category-name' => 'Category, Name, Disciplines',
                 'category-disciplines-name' => 'Category, Disciplines, Name',
                 )),
+            'button-text' => array('label'=>'Button Text', 'type'=>'text'),
             ),
         );
 
