@@ -349,7 +349,7 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
         if( isset($s['typename']) && $s['typename'] != '' && $s['typename'] != 'All' ) {
             $strsql .= "AND trophies.typename = '" . ciniki_core_dbQuote($ciniki, $s['typename']) . "' ";
         }
-        $strsql .= "ORDER BY trophies.name, winners.year "
+        $strsql .= "ORDER BY trophies.name, winners.year DESC "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
