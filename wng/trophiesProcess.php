@@ -257,7 +257,7 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
         if( isset($winners) && count($winners) > 0 ) {
             $blocks[] = array(
                 'type' => 'table',
-                'title' => 'Winners',
+                'subtitle' => 'Winners',
                 'class' => 'fit-width musicfestival-trophy-winners',
                 'headers' => 'no',
                 'columns' => array(
@@ -270,7 +270,7 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
         if( isset($classes) && count($classes) > 0 ) {
             $blocks[] = array(
                 'type' => 'table', 
-                'title' => 'Eligible Classes', 
+                'subtitle' => 'Eligible Classes', 
                 'class' => 'fit-width musicfestival-trophy-classes',
                 'headers' => 'yes',
                 'columns' => array(
@@ -328,28 +328,38 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
         //
         // Get the trophies for a category
         //
-        $strsql = "SELECT id, "
-            . "name, "
-            . "permalink, "
-            . "primary_image_id, "
-            . "donated_by, "
-            . "first_presented, "
-            . "criteria, "
-            . "amount, "
-            . "description "
-            . "FROM ciniki_musicfestival_trophies "
-            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND category = '" . ciniki_core_dbQuote($ciniki, $category_permalink) . "' ";
+        $strsql = "SELECT trophies.id, "
+            . "trophies.name, "
+            . "trophies.permalink, "
+            . "trophies.primary_image_id, "
+            . "trophies.donated_by, "
+            . "trophies.first_presented, "
+            . "trophies.criteria, "
+            . "trophies.amount, "
+            . "trophies.description, "
+            . "winners.year AS winner_year, "
+            . "winners.name AS winner_name "
+            . "FROM ciniki_musicfestival_trophies AS trophies "
+            . "LEFT JOIN ciniki_musicfestival_trophy_winners AS winners ON ("
+                . "trophies.id = winners.trophy_id "
+                . "AND winners.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND trophies.category = '" . ciniki_core_dbQuote($ciniki, $category_permalink) . "' ";
         if( isset($s['typename']) && $s['typename'] != '' && $s['typename'] != 'All' ) {
-            $strsql .= "AND typename = '" . ciniki_core_dbQuote($ciniki, $s['typename']) . "' ";
+            $strsql .= "AND trophies.typename = '" . ciniki_core_dbQuote($ciniki, $s['typename']) . "' ";
         }
-        $strsql .= "ORDER BY name "
+        $strsql .= "ORDER BY trophies.name, winners.year "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'trophies', 'fname'=>'permalink', 
                 'fields'=>array('id', 'title'=>'name', 'permalink', 'image-id'=>'primary_image_id',
-                    'donated_by', 'first_presented', 'criteria', 'amount', 'description')),
+                    'donated_by', 'first_presented', 'criteria', 'amount', 'description'),
+                ),
+            array('container'=>'winners', 'fname'=>'winner_year', 
+                'fields'=>array('year'=>'winner_year', 'name'=>'winner_name'),
+                ),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.343', 'msg'=>'Unable to load trophies', 'err'=>$rc['err']));
@@ -395,13 +405,42 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
         if( isset($s['display-format']) && $s['display-format'] == 'buttons-list' ) {
             foreach($trophies as $trophy) {
                 $blocks[] = array(
+                    'type' => 'title',
+                    'class' => 'trophy-title',
+                    'title' => $trophy['title'],
+                    );
+                $blocks[] = array(
+                    'type' => 'asideimage',
+                    'image-id' => $trophy['image-id'],
+                    );
+                $blocks[] = array(
+                    'type' => 'text',
+                    'content' => $trophy['full_description'],
+                    );
+/*
+                $blocks[] = array(
                     'type' => 'contentphoto',
                     'image-position' => 'top-right-inline',
                     'image-size' => 'large',
                     'title' => $trophy['title'],
                     'image-id' => $trophy['image-id'],
                     'content' => $trophy['full_description'],
-                    );
+                    ); */
+                if( isset($trophy['winners']) && count($trophy['winners']) > 0 
+                    && (!isset($s['display-winners']) || $s['display-winners'] == 'yes')
+                    ) {
+                    $blocks[] = array(
+                        'type' => 'table',
+                        'subtitle' => 'Winners',
+                        'class' => 'fit-width musicfestival-trophy-winners',
+                        'headers' => 'no',
+                        'columns' => array(
+                            array('label' => '', 'field'=>'year'),
+                            array('label' => '', 'field'=>'name'),
+                            ),
+                        'rows' => $trophy['winners'],
+                        );
+                } 
             }
         } elseif( isset($s['display-format']) && $s['display-format'] == 'buttons-buttons-trophy' ) {
             $blocks[] = array(

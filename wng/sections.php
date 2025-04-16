@@ -700,6 +700,10 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'buttons-buttons-trophy' => 'Category Buttons - Trophy Buttons - Trophy',
                     'buttons-list' => 'Buttons - List',
                     )),
+                'display-winners' => array('label'=>'Show Winners', 'type'=>'toggle', 'default'=>'yes', 'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
                 'syllabus-page' => array('label'=>'Syllabus Page', 'type'=>'select', 'pages'=>'yes'),
                 ),
             );
