@@ -687,6 +687,9 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         }
         $types = isset($rc['types']) ? $rc['types'] : array();
 
+        //
+        // Display list of trophies
+        //
         $sections['ciniki.musicfestivals.trophies'] = array(
             'name' => 'Trophies & Awards',
             'module' => 'Music Festivals',
@@ -709,7 +712,32 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'options' => $types,
                 );
         }
-
+        //
+        // Display list of winners
+        //
+        $sections['ciniki.musicfestivals.trophywinners'] = array(
+            'name' => 'Trophies & Awards Winners',
+            'module' => 'Music Festivals',
+            'settings' => array(
+                'title' => array('label'=>'Title', 'type'=>'text'),
+                'year' => array('label'=>'Year', 'type'=>'text'),
+//                'display-format' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
+//                    'buttons-imagebuttons-trophy' => 'Category Buttons - Image Buttons - Trophy',
+//                    'buttons-buttons-trophy' => 'Category Buttons - Trophy Buttons - Trophy',
+//                    'buttons-list' => 'Buttons - List',
+//                    )),
+//                'syllabus-page' => array('label'=>'Syllabus Page', 'type'=>'select', 'pages'=>'yes'),
+                ),
+            );
+        if( count($types) > 1 ) { 
+            array_unshift($types, ['name'=>'All']);
+            $sections['ciniki.musicfestivals.trophywinners']['settings']['typename'] = array(
+                'label' => 'Type',
+                'type' => 'select',
+                'complex_options' => array('value'=>'name', 'name'=>'name'),
+                'options' => $types,
+                );
+        }
     }
 
     //

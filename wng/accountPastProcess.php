@@ -51,7 +51,6 @@ function ciniki_musicfestivals_wng_accountPastProcess(&$ciniki, $tnid, &$request
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.931', 'msg'=>'Unable to load festivals', 'err'=>$rc['err']));
     }
     $festivals = isset($rc['festivals']) ? $rc['festivals'] : array();
-    error_log(print_r($festivals,true));
 
     foreach($festivals as $fid => $festival) {
         $festivals[$fid]['buttons'] = "<a class='button' href='{$base_url}/{$festival['permalink']}'>View Registrations</a>";
