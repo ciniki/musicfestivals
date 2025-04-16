@@ -730,7 +730,6 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 ),
             );
         if( count($types) > 1 ) { 
-            array_unshift($types, ['name'=>'All']);
             $sections['ciniki.musicfestivals.trophywinners']['settings']['typename'] = array(
                 'label' => 'Type',
                 'type' => 'select',
