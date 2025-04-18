@@ -687,9 +687,9 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                             $image_ratio = $width/$height;
                             $available_ratio = $wa[1]/20;
                             if( $available_ratio < $image_ratio ) {
-                                $pdf->Image('@'.$rc['image']->getImageBlob(), $x, ($y-4), $wa[1], 0, 'PNG', '', 'C', 2, '150', '', false, false, 0, 'CM');
+                                $pdf->Image('@'.$rc['image']->getImageBlob(), $x, ($y-4), $wa[1], 0, '', '', 'C', 2, '150', '', false, false, 0, 'CM');
                             } else {
-                                $pdf->Image('@'.$rc['image']->getImageBlob(), $x, ($y-4.5), $wa[1], 20, 'PNG', '', 'C', 2, '150', '', false, false, 0, 'CM');
+                                $pdf->Image('@'.$rc['image']->getImageBlob(), $x, ($y-4.5), $wa[1], 20, '', '', 'C', 2, '150', '', false, false, 0, 'CM');
                             }
                         }
                         $pdf->SetY($y);
