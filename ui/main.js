@@ -2258,7 +2258,7 @@ function ciniki_musicfestivals_main() {
                 case '50': return 'statusgreen';
                 case '70': return 'statusred';
                 case '80': return 'statuspurple';
-                case '90': return 'statusred';
+                case '90': return 'statusblue';
             }
         }
         return '';
@@ -2952,7 +2952,7 @@ function ciniki_musicfestivals_main() {
                 case '50': return 'statusgreen';
                 case '70': return 'statusred';
                 case '80': return 'statuspurple';
-                case '90': return 'statusred';
+                case '90': return 'statusblue';
             }
         }
         if( s == 'ssam_sections' && this.sections.ssam_sections.selected == d.name ) {
@@ -13167,8 +13167,8 @@ function ciniki_musicfestivals_main() {
                 case '30': return 'statusorange';
                 case '50': return 'statusgreen';
                 case '70': return 'statusred';
-                case '80': return 'statusred';
-                case '90': return 'statusred';
+                case '80': return 'statuspurple';
+                case '90': return 'statusblue';
             }
         }
     }
