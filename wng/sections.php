@@ -536,6 +536,113 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     }
 
     //
+    // Section to display the results the same as syllabus syllabus
+    //
+    $sections['ciniki.musicfestivals.syllabusresults'] = array(
+        'name' => 'Syllabus Results',
+        'module' => 'Music Festivals',
+        'settings' => array(
+            'title' => array('label'=>'Title', 'type'=>'text'),
+            'content' => array('label'=>'Intro', 'type'=>'textarea'),
+            'syllabus-id' => array('label'=>'Syllabus', 'type'=>'select', 
+                'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                'options'=>$syllabi,
+                ),
+            'layout' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
+                'tradingcards' => 'Trading Cards',
+                'imagebuttons' => 'Image Buttons',
+                'buttons' => 'Buttons',
+                'groups' => 'Groups - Table',
+                'groupbuttons' => 'Groups - Buttons',
+                'classlist' => 'Categories and Class Lists',
+                )),
+            'image-ratio' => array('label' => 'Image Ratio (Image Buttons Only)', 
+                'type'=>'select', 
+                'default'=>'4-3', 
+                'options'=>array(
+                    '2-1' => 'Panoramic',
+                    '16-9' => 'Letterbox',
+                    '6-4' => 'Wider',
+                    '4-3' => 'Wide',
+                    '1-1' => 'Square',
+                    '3-4' => 'Tall',
+                    '4-6' => 'Taller',)), 'title-position' => array('label' => 'Title Position (Image Buttons Only)', 
+                'type'=>'select', 
+                'default'=>'overlay-bottomhalf', 
+                'options'=>array(
+                    'above' => 'Above',
+                    'overlay-top' => 'Overlay Top',
+                    'overlay-tophalf' => 'Overlay Top Half',
+                    'overlay-center' => 'Centered',
+                    'overlay-bottomhalf' => 'Bottom Half',
+                    'overlay-bottom' => 'Bottom',
+                    'below' => 'Below',
+                )),
+            'class-format'=>array('label'=>'Class Format', 'type'=>'select', 'default'=>'code-category-class', 'options'=>array(
+                'default'=>'Code - Class', 
+                'section-category-class'=>'Section - Category - Class',
+                'category-class'=>'Category - Class',
+                'code-section-category-class'=>'Code - Section - Category - Class',
+                'code-category-class'=>'Code - Category - Class',
+                )), 
+            'titles' => array('label'=>'Titles', 'type'=>'toggle', 'default'=>'no',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
+            'names' => array('label'=>'Full Names', 'type'=>'toggle', 'default'=>'public',
+                'toggles'=>array(
+                    'public' => 'No',
+                    'private' => 'Yes',
+                    )),
+            'video_urls' => array('label'=>'Virtual Video URLs', 'type'=>'toggle', 'default'=>'no',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
+            'mark' => array('label'=>'Show Marks', 'type'=>'toggle', 'default'=>'no',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
+            'min-mark' => array('label'=>'Mininum Mark', 'type'=>'text', 'size'=>'small'),
+            'placement' => array('label'=>'Show Placement', 'type'=>'toggle', 'default'=>'no',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
+            'level' => array('label'=>'Show Level', 'type'=>'toggle', 'default'=>'no',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
+/*            'live-search' => array('label'=>'Class Search', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
+                'no' => 'No',
+                'top' => 'Yes',
+                // In future can add bottom/both as options if needed
+                )), */
+            ),
+        );
+    if( $virtual_festivals == 'yes' ) {
+        $sections['ciniki.musicfestivals.syllabusresults']['settings']['display-live-virtual'] = array(
+            'label'=>'Classes', 
+            'type'=>'toggle', 'default'=>'all', 'toggles'=>array(
+                'all' => 'All',
+                'live' => 'Live',
+                'virtual' => 'Virtual',
+                ));
+    }
+    if( isset($festival['comments-mark-label']) && $festival['comments-mark-label'] != '' ) {
+        $sections['ciniki.musicfestivals.syllabusresults']['settings']['mark']['label'] = 'Show ' . $festival['comments-mark-label'];
+    }
+    if( isset($festival['comments-placement-label']) && $festival['comments-placement-label'] != '' ) {
+        $sections['ciniki.musicfestivals.syllabusresults']['settings']['placement']['label'] = 'Show ' . $festival['comments-placement-label'];
+    }
+    if( isset($festival['comments-level-label']) && $festival['comments-level-label'] != '' ) {
+        $sections['ciniki.musicfestivals.syllabusresults']['settings']['level']['label'] = 'Show ' . $festival['comments-level-label'];
+    }
+
+    //
     // Section to display the photos for a festival
     //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x04) ) {
