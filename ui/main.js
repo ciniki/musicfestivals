@@ -4295,7 +4295,10 @@ function ciniki_musicfestivals_main() {
                 p.data.registration_sections.push({'id':0, 'name':'All'});
                 p.data.emails_sections.push({'id':0, 'name':'All'});
                 p.data.provincials_sections.push({'id':0, 'name':'All'});
-                p.sections.recommendation_sections.fields.section_id.options = rsp.festival.sections;
+                p.sections.recommendation_sections.fields.section_id.options = [];
+                for(var i in rsp.festival.sections) {
+                    p.sections.recommendation_sections.fields.section_id.options[i] = rsp.festival.sections[i];;
+                }
                 p.sections.recommendation_sections.fields.section_id.options.unshift({'id':0, 'name':'Select section'});
                 p.sections.class_sections.fields.section_id.options = rsp.festival.sections;
                 if( rsp.festival.section_id != null && rsp.festival.section_id >= 0 ) {
