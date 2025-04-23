@@ -98,7 +98,7 @@ function ciniki_musicfestivals_recommendationSearch($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'entries', 'fname'=>'id', 
-            'fields'=>array('id', 'status', 'adjudicator_name', 
+            'fields'=>array('id', 'recommendation_id', 'status', 'adjudicator_name', 
                 'class_code', 'class_name', 'position', 'name', 'mark', 'date_submitted', 'member_name',
                 ),
             'utctotz'=>array(
