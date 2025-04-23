@@ -645,6 +645,20 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'href' => "javascript: competitorEdit({$i});",
             ); */
     }
+
+    //
+    // Add the instrument field
+    //
+    $fields["instrument"] = array(
+        'id' => "instrument",
+        'ftype' => 'text',
+        'class' => (isset($selected_class) && ($selected_class['flags']&0x04) == 0x04 ? '' : 'hidden'),
+        'required' => 'yes',
+        'size' => 'large',
+        'label' => "{$festival['competitor-label-singular']} Instrument",
+        'value' => isset($_POST["f-instrument"]) ? $_POST["f-instrument"] : (isset($registration["instrument"]) ? $registration["instrument"] : ''),
+        );
+
     //
     // Add teacher
     //
@@ -770,19 +784,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             $fields['accompanist_share']['value'] = 'off';
         } */
     }
-
-    //
-    // Add the instrument field
-    //
-    $fields["instrument"] = array(
-        'id' => "instrument",
-        'ftype' => 'text',
-        'class' => (isset($selected_class) && ($selected_class['flags']&0x04) == 0x04 ? '' : 'hidden'),
-        'required' => 'yes',
-        'size' => 'large',
-        'label' => "Instrument",
-        'value' => isset($_POST["f-instrument"]) ? $_POST["f-instrument"] : (isset($registration["instrument"]) ? $registration["instrument"] : ''),
-        );
 
     //
     // Check if virtual performance option is available
