@@ -2258,7 +2258,7 @@ function ciniki_musicfestivals_main() {
                 case '50': return 'statusgreen';
                 case '70': return 'statusred';
                 case '80': return 'statuspurple';
-                case '90': return 'statusblue';
+                case '90': return 'statusgrey';
             }
         }
         return '';
@@ -2944,7 +2944,7 @@ function ciniki_musicfestivals_main() {
         if( s == 'recommendation_entries' || s == 'recommendation_member_entries' ) {
             switch(d.status) {
                 case '10': 
-                    if( d.position == '1st Alternate' || d.position == '2nd Alternate' || d.position == '3rd Alternate' ) {
+                    if( d.position == '1st Alt' || d.position == '2nd Alt' || d.position == '3rd Alt' ) {
                         return 'statusyellow';
                     }
                     return '';
@@ -2952,7 +2952,7 @@ function ciniki_musicfestivals_main() {
                 case '50': return 'statusgreen';
                 case '70': return 'statusred';
                 case '80': return 'statuspurple';
-                case '90': return 'statusblue';
+                case '90': return 'statusgrey';
             }
         }
         if( s == 'ssam_sections' && this.sections.ssam_sections.selected == d.name ) {
@@ -8958,24 +8958,6 @@ function ciniki_musicfestivals_main() {
         if( s == 'registrations' || s == 'unscheduled_registrations' ) {
             return M.ciniki_musicfestivals_main.regStatusColour(M.ciniki_musicfestivals_main.festival.data, d);
         } 
-        // FIXME: Convert to status colours
-/*            if( (d.flags&0x0100) == 0x0100 ) {
-                return 'statusgrey';
-            } else if( (d.flags&0x0200) == 0x0200 ) {
-                return 'statusteal';
-            } else if( (d.flags&0x0400) == 0x0400 ) {
-                return 'statusblue';
-            } else if( (d.flags&0x0800) == 0x0800 ) {
-                return 'statuspurple';
-            } else if( (d.flags&0x8000) == 0x8000 ) {
-                return 'statusgreen';
-            } else if( (d.flags&0x4000) == 0x4000 ) {
-                return 'statusyellow';
-            } else if( (d.flags&0x2000) == 0x2000 ) {
-                return 'statusorange';
-            } else if( (d.flags&0x1000) == 0x1000 ) {
-                return 'statusred';
-            } */
         return '';
     }
     this.scheduletimeslot.rowFn = function(s, i, d) {
@@ -13163,7 +13145,7 @@ function ciniki_musicfestivals_main() {
         if( s == 'entries' ) {
             switch(d.status) {
                 case '10': 
-                    if( d.position == '1st Alternate' || d.position == '2nd Alternate' || d.position == '3rd Alternate' ) {
+                    if( d.position == '1st Alt' || d.position == '2nd Alt' || d.position == '3rd Alt' ) {
                         return 'statusyellow';
                     }
                     return '';
@@ -13171,7 +13153,7 @@ function ciniki_musicfestivals_main() {
                 case '50': return 'statusgreen';
                 case '70': return 'statusred';
                 case '80': return 'statuspurple';
-                case '90': return 'statusblue';
+                case '90': return 'statusgrey';
             }
         }
     }

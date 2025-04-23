@@ -53,6 +53,7 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
         . "entries.name, "
         . "entries.mark, "
         . "entries.status, "
+        . "entries.status AS status_text, "
         . "recommendations.adjudicator_name "
         . "FROM ciniki_musicfestival_recommendations AS recommendations "
         . "INNER JOIN ciniki_musicfestival_recommendation_entries AS entries ON ("
@@ -71,8 +72,11 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'recommendations', 'fname'=>'id', 
-            'fields'=>array( 'id', 'class', 'position', 'name', 'status', 'mark', 'adjudicator_name'),
-            'maps'=>array('position'=>$maps['recommendationentry']['position']),
+            'fields'=>array( 'id', 'class', 'position', 'name', 'status', 'status_text', 'mark', 'adjudicator_name'),
+            'maps'=>array(
+                'position'=>$maps['recommendationentry']['position'],
+                'status_text'=>$maps['recommendationentry']['status'],
+                ),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -98,7 +102,7 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
         } elseif( $recommendation['status'] == 80 ) {
             $recommendations[$rid]['cssclass'] = 'statuspurple';
         } elseif( $recommendation['status'] == 90 ) {
-            $recommendations[$rid]['cssclass'] = 'statusblue';
+            $recommendations[$rid]['cssclass'] = 'statusgrey';
         }
     }
 
@@ -196,6 +200,7 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
             array('label'=>'Class', 'fold-label'=>'Class: ', 'field'=>'class'),
             array('label'=>'Position', 'fold-label'=>'Position: ', 'field'=>'position'),
             array('label'=>'Competitor', 'field'=>'name'),
+            array('label'=>'Status', 'field'=>'status_text'),
             array('label'=>'Mark', 'fold-label'=>'Mark: ', 'field'=>'mark'),
             array('label'=>'Adjudicator', 'fold-label'=>'Adjudicator: ', 'field'=>'adjudicator_name'),
             ),

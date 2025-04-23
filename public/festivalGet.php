@@ -4122,13 +4122,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $festival['recommendation_entries'] = isset($rc['entries']) ? $rc['entries'] : array();
                 foreach($festival['recommendation_entries'] as $eid => $entry) {
                     switch($entry['position']) {
-                        case 1: $festival['recommendation_entries'][$eid]['position'] = '1st Recommendation'; break;
-                        case 2: $festival['recommendation_entries'][$eid]['position'] = '2nd Recommendation'; break;
-                        case 3: $festival['recommendation_entries'][$eid]['position'] = '3rd Recommendation'; break;
-                        case 4: $festival['recommendation_entries'][$eid]['position'] = '4th Recommendation'; break;
-                        case 101: $festival['recommendation_entries'][$eid]['position'] = '1st Alternate'; break;
-                        case 102: $festival['recommendation_entries'][$eid]['position'] = '2nd Alternate'; break;
-                        case 103: $festival['recommendation_entries'][$eid]['position'] = '3rd Alternate'; break;
+                        case 1: $festival['recommendation_entries'][$eid]['position'] = '1st'; break;
+                        case 2: $festival['recommendation_entries'][$eid]['position'] = '2nd'; break;
+                        case 3: $festival['recommendation_entries'][$eid]['position'] = '3rd'; break;
+                        case 4: $festival['recommendation_entries'][$eid]['position'] = '4th'; break;
+                        case 101: $festival['recommendation_entries'][$eid]['position'] = '1st Alt'; break;
+                        case 102: $festival['recommendation_entries'][$eid]['position'] = '2nd Alt'; break;
+                        case 103: $festival['recommendation_entries'][$eid]['position'] = '3rd Alt'; break;
                         case 600: $festival['recommendation_entries'][$eid]['position'] = 'N/A'; break;
                     }
                 }
@@ -4284,13 +4284,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
 //                        }
 //                    }
                     switch($entry['position']) {
-                        case 1: $entries[$eid]['position'] = '1st Recommendation'; break;
-                        case 2: $entries[$eid]['position'] = '2nd Recommendation'; break;
-                        case 3: $entries[$eid]['position'] = '3rd Recommendation'; break;
-                        case 4: $entries[$eid]['position'] = '4th Recommendation'; break;
-                        case 101: $entries[$eid]['position'] = '1st Alternate'; break;
-                        case 102: $entries[$eid]['position'] = '2nd Alternate'; break;
-                        case 103: $entries[$eid]['position'] = '3rd Alternate'; break;
+                        case 1: $entries[$eid]['position'] = '1st'; break;
+                        case 2: $entries[$eid]['position'] = '2nd'; break;
+                        case 3: $entries[$eid]['position'] = '3rd'; break;
+                        case 4: $entries[$eid]['position'] = '4th'; break;
+                        case 101: $entries[$eid]['position'] = '1st Alt'; break;
+                        case 102: $entries[$eid]['position'] = '2nd Alt'; break;
+                        case 103: $entries[$eid]['position'] = '3rd Alt'; break;
                     }
                 }
                 $festival['recommendation_member_entries'] = $entries;

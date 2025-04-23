@@ -76,18 +76,45 @@ function ciniki_musicfestivals_templates_memberRecommendationsExcel(&$ciniki, $t
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Class', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Position', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor', false);
+    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Status', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Mark', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Adjudicator', false);
-    $objPHPExcelWorksheet->getStyle('A1:E1')->getFont()->setBold(true);
+    $objPHPExcelWorksheet->getStyle('A1:F1')->getFont()->setBold(true);
     $row++;
 
     foreach($args['recommendations'] as $rec) {
+        
         $col = 0;
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $rec['class'], false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $rec['position'], false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $rec['name'], false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $rec['status_text'], false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $rec['mark'], false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $rec['adjudicator_name'], false);
+
+        $color = '';
+        if( $rec['cssclass'] == 'statusyellow' ) {
+            $color = 'FFFDC5';
+        } elseif( $rec['cssclass'] == 'statusorange' ) {
+            $color = 'FFEFDD';
+        } elseif( $rec['cssclass'] == 'statusgreen' ) {
+            $color = 'DDFFDD';
+        } elseif( $rec['cssclass'] == 'statusred' ) {
+            $color = 'FFDDDD';
+        } elseif( $rec['cssclass'] == 'statuspurple' ) {
+            $color = 'F0DDFF';
+        } elseif( $rec['cssclass'] == 'statusblue' ) {
+            $color = 'DDF1FF';
+        } elseif( $rec['cssclass'] == 'statusgrey' ) {
+            $color = 'EEEEEE';
+        }
+        if( $color != '' ) {
+            $objPHPExcelWorksheet->getStyle("A{$row}:F{$row}")->applyFromArray(
+                array('fill'=>array(
+                    'type' => PHPExcel_Style_Fill::FILL_SOLID, 
+                    'color' => array('rgb' => $color),
+                    )));
+        }
         $row++;
     }
 

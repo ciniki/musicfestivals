@@ -140,7 +140,15 @@ function ciniki_musicfestivals_templates_memberRecommendationsPDF(&$ciniki, $tni
             // Position at 15 mm from bottom
             $this->SetY(-15);
             $this->SetFont('helvetica', '', 10);
-            $this->Cell(249, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'C', 0, '', 0, false, 'T', 'M');
+            $this->SetDrawColor(128);
+            $this->setFillColor(255, 255, 255); $this->Cell(28, 6, 'Recommended', 1, false, 'C', 1);
+            $this->setFillColor(255, 253, 197); $this->Cell(28, 6, 'Alternate', 1, false, 'C', 1);
+            $this->setFillColor(255, 239, 221); $this->Cell(28, 6, 'Accepted', 1, false, 'C', 1);
+            $this->setFillColor(221, 255, 221); $this->Cell(28, 6, 'Registered', 1, false, 'C', 1);
+            $this->setFillColor(255, 221, 221); $this->Cell(28, 6, 'Turned Down', 1, false, 'C', 1);
+            $this->setFillColor(240, 221, 255); $this->Cell(28, 6, 'Duplicate', 1, false, 'C', 1);
+            $this->setFillColor(221, 221, 221); $this->Cell(28, 6, 'Expired', 1, false, 'C', 1);
+            $this->Cell(53, 6, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
         } 
         public function labelValue($w1, $label, $w2, $value) {
             $lh = 12;
@@ -239,7 +247,7 @@ function ciniki_musicfestivals_templates_memberRecommendationsPDF(&$ciniki, $tni
     $w = array(115,20,50,14,50);
     $pdf->AddPage();
 
-    $pdf->SetFont('helvetica', '', 12);
+    $pdf->SetFont('helvetica', '', 11);
 
     $fill = 1;
     $pdf->setFont('helvetica','B');
@@ -276,6 +284,7 @@ function ciniki_musicfestivals_templates_memberRecommendationsPDF(&$ciniki, $tni
             $pdf->AddPage();
             $fill = 1;
             $pdf->setFont('helvetica','B');
+            $pdf->SetFillColor(220);
             $pdf->MultiCell($w[0], 0, 'Class', 1, 'L', $fill, 0);
             $pdf->MultiCell($w[1], 0, 'Position', 1, 'R', $fill, 0);
             $pdf->MultiCell($w[2], 0, 'Competitor', 1, 'L', $fill, 0);
@@ -285,6 +294,23 @@ function ciniki_musicfestivals_templates_memberRecommendationsPDF(&$ciniki, $tni
             $pdf->setFont('helvetica','');
         }
 
+        $pdf->setFillColor(255, 255, 255);
+        if( $rec['cssclass'] == 'statusyellow' ) {
+            $pdf->setFillColor(255, 253, 197);
+        } elseif( $rec['cssclass'] == 'statusorange' ) {
+            $pdf->setFillColor(255, 239, 221);
+        } elseif( $rec['cssclass'] == 'statusgreen' ) {
+            $pdf->setFillColor(221, 255, 221);
+        } elseif( $rec['cssclass'] == 'statusred' ) {
+            $pdf->setFillColor(255, 221, 221);
+        } elseif( $rec['cssclass'] == 'statuspurple' ) {
+            $pdf->setFillColor(240, 221, 255);
+        } elseif( $rec['cssclass'] == 'statusblue' ) {
+            $pdf->setFillColor(221, 241, 255);
+        } elseif( $rec['cssclass'] == 'statusgrey' ) {
+            $pdf->setFillColor(221, 221, 221);
+        }
+        $fill = 1;
         $pdf->MultiCell($w[0], $rec['lh'], $rec['class'], 1, 'L', $fill, 0);
         $pdf->MultiCell($w[1], $rec['lh'], $rec['position'], 1, 'R', $fill, 0);
         $pdf->MultiCell($w[2], $rec['lh'], $rec['name'], 1, 'L', $fill, 0);

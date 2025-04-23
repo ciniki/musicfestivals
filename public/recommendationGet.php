@@ -156,13 +156,13 @@ function ciniki_musicfestivals_recommendationGet($ciniki) {
                 }
             }
             switch($entry['position']) {
-                case 1: $recommendation['entries'][$eid]['position'] = '1st Recommendation'; break;
-                case 2: $recommendation['entries'][$eid]['position'] = '2nd Recommendation'; break;
-                case 3: $recommendation['entries'][$eid]['position'] = '3rd Recommendation'; break;
-                case 4: $recommendation['entries'][$eid]['position'] = '4th Recommendation'; break;
-                case 101: $recommendation['entries'][$eid]['position'] = '1st Alternate'; break;
-                case 102: $recommendation['entries'][$eid]['position'] = '2nd Alternate'; break;
-                case 103: $recommendation['entries'][$eid]['position'] = '3rd Alternate'; break;
+                case 1: $recommendation['entries'][$eid]['position'] = '1st'; break;
+                case 2: $recommendation['entries'][$eid]['position'] = '2nd'; break;
+                case 3: $recommendation['entries'][$eid]['position'] = '3rd'; break;
+                case 4: $recommendation['entries'][$eid]['position'] = '4th'; break;
+                case 101: $recommendation['entries'][$eid]['position'] = '1st Alt'; break;
+                case 102: $recommendation['entries'][$eid]['position'] = '2nd Alt'; break;
+                case 103: $recommendation['entries'][$eid]['position'] = '3rd Alt'; break;
             }
         }
     }

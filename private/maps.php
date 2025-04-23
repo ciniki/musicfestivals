@@ -124,6 +124,14 @@ function ciniki_musicfestivals_maps($ciniki) {
             102 => '2nd Alternate',
             103 => '3rd Alternate',
         ),
+        'status'=>array(
+            10 => 'Recommended',
+            30 => 'Accepted',
+            50 => 'Registered',
+            70 => 'Turned Down',
+            80 => 'Duplicate',
+            90 => 'Expired',
+        ),
     );
 
     return array('stat'=>'ok', 'maps'=>$maps);
