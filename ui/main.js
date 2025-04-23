@@ -1687,12 +1687,12 @@ function ciniki_musicfestivals_main() {
 //                'sectionexcel':{'label':'Section Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadRecommendationsSectionExcel();'},
 //                'fullexcel':{'label':'Full Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadRecommendationsExcel();'},
 //            }},
-        'recommendation_search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':6,
+        'recommendation_search':{'label':'', 'type':'livesearchgrid', 'livesearchcols':7,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'recommendations' ? 'yes' : 'no'; },
             'hint':'Search',
             'noData':'No recommendations found',
-            'headerValues':['Adjudicator', 'Class', 'Name', 'Position', 'Mark', 'Date Submitted'],
-            'cellClasses':['', '', '', '', '', '', '', '', '', ''],
+            'headerValues':['Member', 'Adjudicator', 'Class', 'Name', 'Position', 'Mark', 'Date Submitted'],
+            'cellClasses':['', '', '', '', '', '', '', '', '', '', ''],
             },
         'recommendation_submissions':{'label':'Submissions', 'type':'simplegrid', 'num_cols':5,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'submissions' ? 'yes' : 'no'; },
@@ -2223,12 +2223,13 @@ function ciniki_musicfestivals_main() {
         }
         if( s == 'recommendation_search' ) { 
             switch(j) {
-                case 0: return d.adjudicator_name;
-                case 1: return d.class_name;
-                case 2: return d.name;
-                case 3: return d.position;
-                case 4: return d.mark;
-                case 5: return d.date_submitted;
+                case 0: return d.member_name;
+                case 1: return d.adjudicator_name;
+                case 2: return d.class_name;
+                case 3: return d.name;
+                case 4: return d.position;
+                case 5: return d.mark;
+                case 6: return d.date_submitted;
             }
         }
     }

@@ -72,12 +72,17 @@ function ciniki_musicfestivals_recommendationSearch($ciniki) {
         . "classes.code AS class_code, "
         . "classes.name AS class_name, "
         . "recommendations.adjudicator_name, "
-        . "recommendations.date_submitted "
+        . "recommendations.date_submitted, "
+        . "members.shortname AS member_name "
         . "FROM ciniki_musicfestival_recommendation_entries AS entries "
         . "INNER JOIN ciniki_musicfestival_recommendations AS recommendations ON ("
             . "entries.recommendation_id = recommendations.id "
             . "AND recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestivals_members AS members ON ("
+            . "recommendations.member_id = members.id "
+            . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
             . "entries.class_id = classes.id "
@@ -94,7 +99,7 @@ function ciniki_musicfestivals_recommendationSearch($ciniki) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'entries', 'fname'=>'id', 
             'fields'=>array('id', 'status', 'adjudicator_name', 
-                'class_code', 'class_name', 'position', 'name', 'mark', 'date_submitted',
+                'class_code', 'class_name', 'position', 'name', 'mark', 'date_submitted', 'member_name',
                 ),
             'utctotz'=>array(
                 'date_submitted'=> array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i:s A'),
