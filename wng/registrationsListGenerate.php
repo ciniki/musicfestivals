@@ -299,18 +299,25 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
         $buttons = array(
             'type' => 'buttons',
             'class' => 'limit-width limit-width-90 aligncenter',
-            'list' => array(array(
+            'list' => [],
+            );
+        if( ($festival['live'] != 'no' && $festival['live'] != 'hiddensections')
+            || ($festival['virtual'] != 'no' && $festival['virtual'] != 'hiddensections')
+            ) {
+            $buttons['list'][] = array(
                 'text' => 'Add Registration',
                 'url' => "/account/musicfestivalregistrations?add=yes",
-                )),
-            );
+                );
+        }
         if( count($cart_registrations) > 0 ) {
             $buttons['list'][] = array(
                 'text' => 'Checkout',
                 'url' => "/cart",
                 );
         }
-        $blocks[] = $buttons;
+        if( count($buttons['list']) > 0 ) {
+            $blocks[] = $buttons;
+        }
     } else {
         $blocks[] = array(
             'type' => 'text',

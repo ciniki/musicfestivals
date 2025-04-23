@@ -261,7 +261,11 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         if( $festival['live'] == 'no' && $section['live_end_dt'] != '0000-00-00 00:00:00' ) {
             $live_dt = new DateTime($section['live_end_dt'], new DateTimezone('UTC'));
             if( $live_dt > $now ) {
-                $festival['live'] = 'sections';
+                if( ($section['flags']&0x04) == 0x04 && $festival['live'] != 'sections' ) {
+                    $festival['live'] = 'hiddensections';
+                } else {
+                    $festival['live'] = 'sections';
+                }
             }
             elseif( ($section['flags']&0x30) > 0 && $section['latefees_days'] > 0 ) {
                 $interval = $live_dt->diff($now);
