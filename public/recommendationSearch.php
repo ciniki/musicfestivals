@@ -15,7 +15,7 @@
 // Returns
 // -------
 //
-function ciniki_musicfestivals_recommendationMemberSearch($ciniki) {
+function ciniki_musicfestivals_recommendationSearch($ciniki) {
     //
     // Find all the required and optional arguments
     //
@@ -23,7 +23,6 @@ function ciniki_musicfestivals_recommendationMemberSearch($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
-        'member_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Member'),
         'start_needle'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Search String'),
         'limit'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Limit'),
         ));
@@ -120,9 +119,9 @@ function ciniki_musicfestivals_recommendationMemberSearch($ciniki) {
             case 2: $entries[$eid]['position'] = '2nd'; break;
             case 3: $entries[$eid]['position'] = '3rd'; break;
             case 4: $entries[$eid]['position'] = '4th'; break;
-            case 101: $entries[$eid]['position'] = 'Alt 1'; break;
-            case 102: $entries[$eid]['position'] = 'Alt 2'; break;
-            case 103: $entries[$eid]['position'] = 'Alt 3'; break;
+            case 101: $entries[$eid]['position'] = '1st Alt'; break;
+            case 102: $entries[$eid]['position'] = '2nd Alt'; break;
+            case 103: $entries[$eid]['position'] = '3rd Alt'; break;
         }
     }
 
