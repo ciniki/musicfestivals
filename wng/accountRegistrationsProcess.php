@@ -1885,6 +1885,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             }
             // Check if competitor address should be added for view registration
             if( isset($field['label']) && preg_match("/^{$festival['competitor-label-singular']}/", $field['label']) 
+                && $field['id'] != 'instrument'
                 && isset($field['class']) && $field['class'] == '' 
                 ) {
                 //
