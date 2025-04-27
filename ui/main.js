@@ -8058,7 +8058,7 @@ function ciniki_musicfestivals_main() {
     this.competitor.liveSearchCb = function(s, i, value) {
         if( i == 'name' || i == 'first' || i == 'last' ) {
             M.api.getJSONBgCb('ciniki.musicfestivals.competitorSearch', 
-                {'tnid':M.curTenantID, 'start_needle':value, 'limit':25}, function(rsp) { 
+                {'tnid':M.curTenantID, 'start_needle':value, 'festival_id':this.festival_id, 'limit':25}, function(rsp) { 
                     M.ciniki_musicfestivals_main.competitor.liveSearchShow(s, i, M.gE(M.ciniki_musicfestivals_main.competitor.panelUID + '_' + i), rsp.competitors); 
                 });
         }
