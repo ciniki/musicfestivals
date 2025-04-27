@@ -3813,19 +3813,20 @@ function ciniki_musicfestivals_main() {
         } */
     this.festival.updateRegistrations = function() {
         if( this.sections.registrations_tabs.selected == 'status' ) {
-            this.sections.registrations.headerValues = ['Class', 'Registrant', 'Teacher', 'Invoice', 'Status', 'Virtual'];
+            this.sections.registrations.headerValues = ['Class', 'Registrant', 'Teacher', 'Invoice', 'Status'];
             this.sections.registrations.cellClasses = ['multiline', 'multiline', '', 'multiline', 'multiline', ''];
             this.sections.registrations.dataMaps = ['class', 'registrant', 'teacher', 'invoice', 'status', 'participation'];
             this.sections.registrations.sortTypes = ['text', 'text', 'text', 'text', 'text', 'text'];
             this.sections.registrations.num_cols = 5;
             if( (this.data.flags&0x10) == 0x10 ) {
-                this.sections.registration_search.num_cols = 6;
+//                this.sections.registration_search.num_cols = 6;
                 this.sections.registrations.num_cols = 6;
                 this.sections.registrations.headerValues[5] = 'Plus';
-                this.sections.registration_search.headerValues[5] = 'Plus';
+//                this.sections.registration_search.headerValues[5] = 'Plus';
             } else if( (this.data.flags&0x02) == 0x02 ) {
-                this.sections.registration_search.num_cols = 6;
-                this.sections.registrations.num_cols = 6;
+//                this.sections.registration_search.num_cols = 6;
+//                this.sections.registrations.num_cols = 6;
+                this.sections.registrations.headerValues[5] = 'Virtual';
             }
         } else if( this.sections.registrations_tabs.selected == 'videos' ) {
             this.sections.registrations.headerValues = ['Class', 'Registrant', 'Video Link/PDF'];
@@ -3886,7 +3887,9 @@ function ciniki_musicfestivals_main() {
         this.sections.registration_search.cellClasses = this.sections.registrations.cellClasses;
         this.sections.registration_search.dataMaps = this.sections.registrations.dataMaps;
         this.sections.registration_search.sortTypes = this.sections.registrations.sortTypes;
-        this.sections.registration_search.num_cols = this.sections.registrations.num_cols;
+        this.sections.registration_search.livesearchcols = this.sections.registrations.num_cols;
+        console.log(this.sections.registrations.num_cols);
+        console.log(this.sections.registration_search.headerValues);
     }
     this.festival.updateCompetitors = function() {
 /*        'competitors':{'label':'', 'type':'simplegrid', 'num_cols':3,
