@@ -229,6 +229,16 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
         $lh = $pdf->getStringHeight(245, $trophy['name']);
         $pdf->SetFont('helvetica', '', 12);
         $lh += $pdf->getStringHeight(245, $trophy['criteria']);
+        if( isset($festival['trophies-include-donatedby']) && $festival['trophies-include-donatedby'] == 'yes'
+            && $trophy['donated_by'] != '' 
+            ) {
+            $lh += $pdf->getStringHeight(245, $trophy['donated_by']);
+        }
+        if( isset($festival['trophies-include-amount']) && $festival['trophies-include-amount'] == 'yes'
+            && $trophy['amount'] != '' 
+            ) {
+            $lh += $pdf->getStringHeight(245, $trophy['amount']);
+        }
         if( isset($festival['trophies-include-descriptions']) && $festival['trophies-include-descriptions'] == 'yes'
             && $trophy['description'] != '' 
             ) {
@@ -242,6 +252,22 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
         $pdf->SetFont('helvetica', 'B', 14);
         $pdf->MultiCell(245, 0, $trophy['name'], '', 'L', 0, 1);
         $pdf->SetFont('helvetica', '', 12);
+        if( isset($festival['trophies-include-donatedby']) && $festival['trophies-include-donatedby'] == 'yes'
+            && $trophy['donated_by'] != '' 
+            ) {
+            $pdf->SetFont('', 'B');
+            $pdf->MultiCell(30, 0, 'Donated By:', 0, 'L', 0, 0);
+            $pdf->SetFont('', '');
+            $pdf->MultiCell(215, 0, $trophy['donated_by'], 0, 'L', 0, 1);
+        }
+        if( isset($festival['trophies-include-amount']) && $festival['trophies-include-amount'] == 'yes'
+            && $trophy['amount'] != '' 
+            ) {
+            $pdf->SetFont('', 'B');
+            $pdf->MultiCell(30, 0, 'Amount:', 0, 'L', 0, 0);
+            $pdf->SetFont('', '');
+            $pdf->MultiCell(215, 0, $trophy['amount'], 0, 'L', 0, 1);
+        }
         if( $trophy['criteria'] != '' ) {
             $pdf->MultiCell(245, 0, $trophy['criteria'], 0, 'L', 0, 1);
         }

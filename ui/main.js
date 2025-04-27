@@ -4824,6 +4824,8 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
             'fields':{
                 'trophies-include-descriptions':{'label':'Include Descriptions', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'trophies-include-donatedby':{'label':'Include Donated By', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'trophies-include-amount':{'label':'Include Amount', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'trophies-footer-msg':{'label':'Footer Message', 'type':'text'},
             }},
         '_certificates_pdf':{'label':'Certificates PDF Options', 
