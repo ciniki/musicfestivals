@@ -800,7 +800,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     foreach($timeslot['trophies'] as $tid => $trophy) {
                         $pdf->MultiCell($cw[0], 0, '', 0, 'L', 0, 0);
                         $pdf->MultiCell($trw[0], 0, ($tid == 0 ? 'Eligible for: ' : ''), 0, 'L', 0, 0);
-                        $pdf->MultiCell($cw[1], 0, $trophy, 0, 'L', 0, 1);
+                        $pdf->MultiCell($trw[1], 0, $trophy, 0, 'L', 0, 1);
                     }
                 }
                 if( isset($timeslot['runsheet_notes']) && $timeslot['runsheet_notes'] != '' ) {
