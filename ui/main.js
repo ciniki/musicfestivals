@@ -925,6 +925,7 @@ function ciniki_musicfestivals_main() {
                     'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("videos");',
                     },
                 'notes':{'label':'Notes', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("notes");'},
+                'accompanist':{'label':'Accompanist', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("accompanist");'},
                 'schedule':{'label':'Schedule', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("schedule");'},
                 'marks':{'label':'Marks', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("marks");'},
             }},
@@ -2343,6 +2344,7 @@ function ciniki_musicfestivals_main() {
                     return M.multiline(d.class_code, '');
                 case 'registrant': return '<span class="maintext">' + d.display_name + '</span><span class="subtext">' + d.titles + '</span>';
                 case 'teacher': return d.teacher_name + (d.teacher2_name != null && d.teacher2_name != '' ? ', ' + d.teacher2_name : '');
+                case 'accompanist': return d.accompanist_name;
                 case 'invoice': return M.multiline(d.invoice_status_text, '$' + d.fee);
                 case 'status': return M.multiline(d.status_text, d.invoice_date);
                 case 'participation':
@@ -3840,6 +3842,12 @@ function ciniki_musicfestivals_main() {
             this.sections.registrations.dataMaps = ['class', 'registrant', 'notes'];
             this.sections.registrations.sortTypes = ['text', 'text', 'text'];
             this.sections.registrations.num_cols = 3;
+        } else if( this.sections.registrations_tabs.selected == 'accompanist' ) {
+            this.sections.registrations.headerValues = ['Class', 'Registrant', 'Teacher', 'Accompanist'];
+            this.sections.registrations.cellClasses = ['multiline', 'multiline', '', ''];
+            this.sections.registrations.dataMaps = ['class', 'registrant', 'teacher', 'accompanist'];
+            this.sections.registrations.sortTypes = ['text', 'text', 'text', 'text'];
+            this.sections.registrations.num_cols = 4;
         } else if( this.sections.registrations_tabs.selected == 'schedule' ) {
             this.sections.registrations.headerValues = ['Class', 'Registrant', 'Schedule'];
             this.sections.registrations.cellClasses = ['multiline', 'multiline', 'multiline'];
@@ -3888,8 +3896,6 @@ function ciniki_musicfestivals_main() {
         this.sections.registration_search.dataMaps = this.sections.registrations.dataMaps;
         this.sections.registration_search.sortTypes = this.sections.registrations.sortTypes;
         this.sections.registration_search.livesearchcols = this.sections.registrations.num_cols;
-        console.log(this.sections.registrations.num_cols);
-        console.log(this.sections.registration_search.headerValues);
     }
     this.festival.updateCompetitors = function() {
 /*        'competitors':{'label':'', 'type':'simplegrid', 'num_cols':3,
@@ -7931,7 +7937,7 @@ function ciniki_musicfestivals_main() {
         '_address':{'label':'Contact Info', 
             'visible':function() { return M.ciniki_musicfestivals_main.competitor.sections._tabs.selected == 'contact' ? 'yes' : 'hidden';},
             'fields':{
-                'address':{'label':'Address', 'type':'text'},
+                'address':{'label':'Address', 'type':'text', 'livesearch':'no'},
                 'city':{'label':'City', 'type':'text', 'size':'small'},
                 'province':{'label':'Province', 'type':'text', 'size':'small'},
                 'postal':{'label':'Postal Code', 'type':'text', 'size':'small'},
@@ -8064,12 +8070,32 @@ function ciniki_musicfestivals_main() {
                     M.ciniki_musicfestivals_main.competitor.liveSearchShow(s, i, M.gE(M.ciniki_musicfestivals_main.competitor.panelUID + '_' + i), rsp.competitors); 
                 });
         }
+        if( i == 'address' ) {
+            M.api.getJSONBgCb('ciniki.core.mailingAddressLookup', 
+                {'tnid':M.curTenantID, 'search':value, 'limit':5}, function(rsp) { 
+                    M.ciniki_musicfestivals_main.competitor.liveSearchShow(s, i, M.gE(M.ciniki_musicfestivals_main.competitor.panelUID + '_' + i), rsp.addresses); 
+                });
+        }
     }
     this.competitor.liveSearchResultValue = function(s, f, i, j, d) {
+        if( s == '_address' ) {
+            return d.address;
+        }
         return d.name;
     }
     this.competitor.liveSearchResultRowFn = function(s, f, i, j, d) { 
+        if( s == '_address' ) {
+            return 'M.ciniki_musicfestivals_main.competitor.useAddress(' + JSON.stringify(d) + ');';
+        }
         return 'M.ciniki_musicfestivals_main.competitor.open(null,\'' + d.id + '\');';
+    }
+    this.competitor.useAddress = function(a) {
+        this.removeLiveSearch('_address', 'address');
+        this.setFieldValue('address', a.address1);
+        this.setFieldValue('city', a.city);
+        this.setFieldValue('province', a.province);
+        this.setFieldValue('postal', a.postal);
+        this.setFieldValue('country', a.country);
     }
     this.competitor.cellValue = function(s, i, j, d) {
         if( s == 'messages' ) {
@@ -8104,6 +8130,9 @@ function ciniki_musicfestivals_main() {
     }
     this.competitor.addmessage = function() {
         M.ciniki_musicfestivals_main.message.addnew('M.ciniki_musicfestivals_main.competitor.open();',this.festival_id,'ciniki.musicfestivals.competitor',this.competitor_id);
+    }
+    this.competitor.addressLookup = function() {
+        var a = this.formFieldValue('_address', 'address');
     }
     this.competitor.reopen = function() {
         this.show();
@@ -12202,23 +12231,19 @@ function ciniki_musicfestivals_main() {
     }
     this.message.fileAdd = function() {
         if( this.upload != null ) {
-            console.log('delete input');
             this.upload.remove();
             this.upload = null;
         }
         if( this.upload == null ) {
-            console.log('create input');
             this.upload = M.aE('input', this.panelUID + '_file_upload', 'image_uploader');
             this.upload.setAttribute('name', 'filename');
             this.upload.setAttribute('type', 'file');
             this.upload.setAttribute('onchange', this.panelRef + '.uploadFile();');
         }
         this.upload.value = '';
-        console.log('click input');
         this.upload.click();
     }
     this.message.uploadFile = function() {
-        console.log('upload file');
         var f = this.upload;
         M.api.postJSONFile('ciniki.musicfestivals.messageFileAdd', {'tnid':M.curTenantID, 'message_id':this.message_id}, f.files[0],
             function(rsp) {
@@ -12229,7 +12254,6 @@ function ciniki_musicfestivals_main() {
                 var p = M.ciniki_musicfestivals_main.message;
                 p.data.files = rsp.files;
                 p.refreshSection('files');
-                console.log('delete input');
                 p.upload.remove();
                 p.upload = null;
             });

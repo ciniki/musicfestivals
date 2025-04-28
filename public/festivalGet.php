@@ -1335,7 +1335,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'registrations', 'fname'=>'id', 
                         'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'teacher2_name', 
-                            'billing_customer_id', 
+                            'billing_customer_id', 'accompanist_name', 
                             'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
                             'invoice_type', 'invoice_status', 'payment_status_text', 'invoice_date', 
                             'class_id', 'class_code', 'class_name', 'category_name',
