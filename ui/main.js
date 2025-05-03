@@ -7937,7 +7937,7 @@ function ciniki_musicfestivals_main() {
         '_address':{'label':'Contact Info', 
             'visible':function() { return M.ciniki_musicfestivals_main.competitor.sections._tabs.selected == 'contact' ? 'yes' : 'hidden';},
             'fields':{
-                'address':{'label':'Address', 'type':'text', 'livesearch':'no'},
+                'address':{'label':'Address', 'type':'text', 'livesearch':'yes'},
                 'city':{'label':'City', 'type':'text', 'size':'small'},
                 'province':{'label':'Province', 'type':'text', 'size':'small'},
                 'postal':{'label':'Postal Code', 'type':'text', 'size':'small'},
@@ -8073,6 +8073,7 @@ function ciniki_musicfestivals_main() {
         if( i == 'address' ) {
             M.api.getJSONBgCb('ciniki.core.mailingAddressLookup', 
                 {'tnid':M.curTenantID, 'search':value, 'limit':5}, function(rsp) { 
+                    console.log(rsp);
                     M.ciniki_musicfestivals_main.competitor.liveSearchShow(s, i, M.gE(M.ciniki_musicfestivals_main.competitor.panelUID + '_' + i), rsp.addresses); 
                 });
         }
