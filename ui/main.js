@@ -4967,6 +4967,26 @@ function ciniki_musicfestivals_main() {
                     'code-name':'Code, Name',
                     'code-category-name':'Code, Category-Name',
                     }},
+                'ui-registrations-count-status-5':{'label':'Registration Counts - Draft', 'type':'toggle', 'default':'yes', 'toggles':{
+                    'no':'Exclude',
+                    'yes':'Include',
+                    }},
+                'ui-registrations-count-status-70':{'label':'Registration Counts - Disqualified', 'type':'toggle', 'default':'yes', 'toggles':{
+                    'no':'Exclude',
+                    'yes':'Include',
+                    }},
+                'ui-registrations-count-status-75':{'label':'Registration Counts - Withdrawn', 'type':'toggle', 'default':'yes', 'toggles':{
+                    'no':'Exclude',
+                    'yes':'Include',
+                    }},
+                'ui-registrations-count-status-77':{'label':'Registration Counts - No Show', 'type':'toggle', 'default':'yes', 'toggles':{
+                    'no':'Exclude',
+                    'yes':'Include',
+                    }},
+                'ui-registrations-count-status-80':{'label':'Registration Counts - Cancelled', 'type':'toggle', 'default':'yes', 'toggles':{
+                    'no':'Exclude',
+                    'yes':'Include',
+                    }},
             }},
         '_provincials_statuses':{'label':'Provincials Status', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
