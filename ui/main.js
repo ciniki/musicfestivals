@@ -925,6 +925,7 @@ function ciniki_musicfestivals_main() {
                     'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("videos");',
                     },
                 'notes':{'label':'Notes', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("notes");'},
+                'instrument':{'label':'Instrument', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("instrument");'},
                 'accompanist':{'label':'Accompanist', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("accompanist");'},
                 'schedule':{'label':'Schedule', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("schedule");'},
                 'marks':{'label':'Marks', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("marks");'},
@@ -2386,6 +2387,7 @@ function ciniki_musicfestivals_main() {
                     }
                     return M.multiline(links, music);
                 case 'notes': return d.notes.replace(/\n/g, '<br/>');
+                case 'instrument': return d.instrument;
                 case 'scheduled': return M.multiline(d.scheduled, d.scheduled_sd);
                 case 'mark': return d.mark;
                 case 'placement': return d.placement;
@@ -3861,6 +3863,12 @@ function ciniki_musicfestivals_main() {
             this.sections.registrations.dataMaps = ['class', 'registrant', 'notes'];
             this.sections.registrations.sortTypes = ['text', 'text', 'text'];
             this.sections.registrations.num_cols = 3;
+        } else if( this.sections.registrations_tabs.selected == 'instrument' ) {
+            this.sections.registrations.headerValues = ['Class', 'Registrant', 'Teacher', 'Instrument'];
+            this.sections.registrations.cellClasses = ['multiline', 'multiline', '', ''];
+            this.sections.registrations.dataMaps = ['class', 'registrant', 'teacher', 'instrument'];
+            this.sections.registrations.sortTypes = ['text', 'text', 'text', 'text'];
+            this.sections.registrations.num_cols = 4;
         } else if( this.sections.registrations_tabs.selected == 'accompanist' ) {
             this.sections.registrations.headerValues = ['Class', 'Registrant', 'Teacher', 'Accompanist'];
             this.sections.registrations.cellClasses = ['multiline', 'multiline', '', ''];
