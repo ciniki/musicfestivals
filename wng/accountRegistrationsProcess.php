@@ -956,6 +956,16 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                         );
                 }
                 else */
+                // 
+                // For provincials, do not check when viewing a registration if movements is required
+                //
+                if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
+                    && isset($field['required']) && $field['required'] == 'yes' && $display == 'view' 
+                    && preg_match("/(composer|movements)/", $field['id'])
+                    && $festival['edit'] == 'no' 
+                    ) {
+                    $field['required'] = 'no';
+                }
                 if( isset($field['required']) && $field['required'] == 'yes' && $field['value'] < 0 && $field['id'] == 'participation' ) {
                     $errors[] = array(
                         'msg' => 'You must specify how you want to participate.',
