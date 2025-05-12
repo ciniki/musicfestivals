@@ -124,7 +124,7 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.327', 'msg'=>'Unable to load customer', 'err'=>$rc['err']));
     } */
-    if( $member_festival == 'no' ) {
+//    if( $member_festival == 'no' ) {
         $items[] = array(
             'title' => 'Registrations', 
             'priority' => 3749, 
@@ -160,7 +160,7 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
                 'url' => $base_url . '/musicfestivalschedule',
                 );
         }
-    }
+//    }
 
     //
     // Check for past festival registrations
