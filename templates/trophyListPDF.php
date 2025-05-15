@@ -240,26 +240,34 @@ function ciniki_musicfestivals_templates_trophyListPDF(&$ciniki, $tnid, $args) {
             $pdf->SetFont('', '');
             $pdf->MultiCell($w[1], $lh, $trophy['donated_by'], 0, 'L', 0, 1);
         }
-        if( isset($trophy['first_presented']) && $trophy['first_presented'] != '' ) {
-            $lh = $pdf->getStringHeight($w[1], $trophy['first_presented']);
+        if( isset($args['winners']) && is_numeric($args['winners']) ) {
+            $lh = $pdf->getStringHeight($w[1], $trophy['winner_name']);
             $pdf->SetFont('', 'B');
-            $pdf->MultiCell($w[0], $lh, 'First Presented: ', 0, 'R', 0, 0);
+            $pdf->MultiCell($w[0], $lh, $args['winners'] . ' Winner: ', 0, 'R', 0, 0);
             $pdf->SetFont('', '');
-            $pdf->MultiCell($w[1], $lh, $trophy['first_presented'], 0, 'L', 0, 1);
-        }
-        if( isset($trophy['criteria']) && $trophy['criteria'] != '' ) {
-            $lh = $pdf->getStringHeight($w[1], $trophy['criteria']);
-            $pdf->SetFont('', 'B');
-            $pdf->MultiCell($w[0], $lh, 'Criteria: ', 0, 'R', 0, 0);
-            $pdf->SetFont('', '');
-            $pdf->MultiCell($w[1], $lh, $trophy['criteria'], 0, 'L', 0, 1);
-        }
-        if( isset($trophy['amount']) && $trophy['amount'] != '' ) {
-            $lh = $pdf->getStringHeight($w[1], $trophy['amount']);
-            $pdf->SetFont('', 'B');
-            $pdf->MultiCell($w[0], $lh, 'Amount: ', 0, 'R', 0, 0);
-            $pdf->SetFont('', '');
-            $pdf->MultiCell($w[1], $lh, $trophy['amount'], 0, 'L', 0, 1);
+            $pdf->MultiCell($w[1], $lh, $trophy['winner_name'], 0, 'L', 0, 1);
+        } else {
+            if( isset($trophy['first_presented']) && $trophy['first_presented'] != '' ) {
+                $lh = $pdf->getStringHeight($w[1], $trophy['first_presented']);
+                $pdf->SetFont('', 'B');
+                $pdf->MultiCell($w[0], $lh, 'First Presented: ', 0, 'R', 0, 0);
+                $pdf->SetFont('', '');
+                $pdf->MultiCell($w[1], $lh, $trophy['first_presented'], 0, 'L', 0, 1);
+            }
+            if( isset($trophy['criteria']) && $trophy['criteria'] != '' ) {
+                $lh = $pdf->getStringHeight($w[1], $trophy['criteria']);
+                $pdf->SetFont('', 'B');
+                $pdf->MultiCell($w[0], $lh, 'Criteria: ', 0, 'R', 0, 0);
+                $pdf->SetFont('', '');
+                $pdf->MultiCell($w[1], $lh, $trophy['criteria'], 0, 'L', 0, 1);
+            }
+            if( isset($trophy['amount']) && $trophy['amount'] != '' ) {
+                $lh = $pdf->getStringHeight($w[1], $trophy['amount']);
+                $pdf->SetFont('', 'B');
+                $pdf->MultiCell($w[0], $lh, 'Amount: ', 0, 'R', 0, 0);
+                $pdf->SetFont('', '');
+                $pdf->MultiCell($w[1], $lh, $trophy['amount'], 0, 'L', 0, 1);
+            }
         }
         $pdf->Ln(3);
 /*        if( isset($festival['trophies-include-descriptions']) && $festival['trophies-include-descriptions'] == 'yes' 

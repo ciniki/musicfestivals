@@ -140,6 +140,7 @@ function ciniki_musicfestivals_trophyList($ciniki) {
         $rc = ciniki_musicfestivals_templates_trophyListPDF($ciniki, $args['tnid'], [
 //            'festival_id' => $args['festival_id'],
             'trophies' => $trophies,
+            'winners' => isset($args['year']) ? $args['year'] : '',
             ]);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.929', 'msg'=>'', 'err'=>$rc['err']));

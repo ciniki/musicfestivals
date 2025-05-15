@@ -66,6 +66,11 @@ function ciniki_musicfestivals_main() {
                     'label':'Trophy List PDF',
                     'fn':'M.ciniki_musicfestivals_main.menu.trophyListPDF();'
                     },
+                'winners':{
+                    'label':'Trophy Winners PDF',
+                    'visible':function() { return M.ciniki_musicfestivals_main.menu.sections.trophy_years.selected != 'None' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.menu.trophyWinnersPDF();'
+                    },
                 },
             },
 /*        'awards':{'label':'Awards', 'type':'simplegrid', 'num_cols':2,
@@ -108,6 +113,22 @@ function ciniki_musicfestivals_main() {
         this.open();
     }
     this.menu.trophyListPDF = function() {
+        this.popupMenuClose('trophies');
+        var sorting = M.gridSorting[this.panelUID + '_trophies_grid'];
+        var sort = '';
+        if( sorting != null && sorting.col == 2 ) {
+            sort = 'name_' + sorting.order;
+        }
+        var args = {
+            'tnid':M.curTenantID,
+            'typename':this.sections.trophy_types.selected,
+            'category':this.sections.trophy_categories.selected,
+            'sort':sort,
+            'output':'pdf',
+        };
+        M.api.openFile('ciniki.musicfestivals.trophyList',args);
+    }
+    this.menu.trophyWinnersPDF = function() {
         this.popupMenuClose('trophies');
         var sorting = M.gridSorting[this.panelUID + '_trophies_grid'];
         var sort = '';
