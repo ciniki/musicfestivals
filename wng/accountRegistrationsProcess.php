@@ -817,7 +817,15 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         'customer_type' => $customer_type,
         'customer_id' => $request['session']['customer']['id'],
         ));
-    if( $rc['stat'] != 'ok' ) {
+    if( $rc['stat'] == 'noexist' ) {
+        return array('stat'=>'ok', 'blocks'=>array(
+            array(
+                'type' => 'msg',
+                'level' => 'error', 
+                'content' => $rc['err']['msg'],
+                ),
+            ));
+    } elseif( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.348', 'msg'=>'', 'err'=>$rc['err']));
     }
     $fields = $rc['fields'];

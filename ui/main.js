@@ -47,12 +47,16 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.menu.sections._tabs.selected != 'festivals' ? 'yes' : 'no';},
             'selected':'All',
             },
+        'trophy_years':{'label':'Winners', 'type':'simplegrid', 'aside':'yes', 'num_cols':1,
+            'visible':function() { return M.ciniki_musicfestivals_main.menu.sections._tabs.selected != 'festivals' ? 'yes' : 'no';},
+            'selected':'None',
+            },
         'trophies':{'label':'Trophies & Awards', 'type':'simplegrid', 'num_cols':3,
             'visible':function() { return M.ciniki_musicfestivals_main.menu.sections._tabs.selected == 'trophies' ? 'yes' : 'no';},
             'noData':'No Trophies',
-            'headerValues':['Type', 'Category', 'Name'],
+            'headerValues':['Type', 'Category', 'Name', 'Winner'],
             'sortable':'yes', 
-            'sortTypes':['text', 'text', 'text'],
+            'sortTypes':['text', 'text', 'text', 'text'],
             'menu':{
                 'add':{
                     'label':'Add Trophy',
@@ -114,6 +118,7 @@ function ciniki_musicfestivals_main() {
             'tnid':M.curTenantID,
             'typename':this.sections.trophy_types.selected,
             'category':this.sections.trophy_categories.selected,
+            'year':this.sections.trophy_years.selected,
             'sort':sort,
             'output':'pdf',
         };
@@ -130,6 +135,10 @@ function ciniki_musicfestivals_main() {
 //        this.sections.awards.label = M.dU(t) + ' Awards';
         this.open();
     }
+    this.menu.switchTrophyYear = function(y) {
+        this.sections.trophy_years.selected = M.dU(y);
+        this.open();
+    }
     this.menu.cellValue = function(s, i, j, d) {
         if( s == 'festivals' ) {
             switch(j) {
@@ -143,11 +152,15 @@ function ciniki_musicfestivals_main() {
         if( s == 'trophy_categories' ) {
             return d.name;
         }
+        if( s == 'trophy_years' ) {
+            return d.name;
+        }
         if( s == 'trophies' ) {
             switch(j) {
                 case 0: return d.typename;
                 case 1: return d.category;
                 case 2: return d.name;
+                case 3: return d.winner_name;
             }
         }
     }
@@ -156,6 +169,9 @@ function ciniki_musicfestivals_main() {
             return 'highlight';
         }
         if( s == 'trophy_categories' && d.name == this.sections.trophy_categories.selected ) {
+            return 'highlight';
+        }
+        if( s == 'trophy_years' && d.name == this.sections.trophy_years.selected ) {
             return 'highlight';
         }
         return '';
@@ -169,6 +185,9 @@ function ciniki_musicfestivals_main() {
         }
         if( s == 'trophy_categories' ) {
             return 'M.ciniki_musicfestivals_main.menu.switchTrophyCategory("' + M.eU(d.name) + '");';
+        }
+        if( s == 'trophy_years' ) {
+            return 'M.ciniki_musicfestivals_main.menu.switchTrophyYear("' + M.eU(d.name) + '");';
         }
         if( s == 'trophies' ) {
             return 'M.ciniki_musicfestivals_main.trophy.open(\'M.ciniki_musicfestivals_main.menu.open();\',\'' + d.id + '\',M.ciniki_musicfestivals_main.menu.nplist);';
@@ -184,6 +203,7 @@ function ciniki_musicfestivals_main() {
                 'tnid':M.curTenantID, 
                 'typename':this.sections.trophy_types.selected, 
                 'category':this.sections.trophy_categories.selected,
+                'year':this.sections.trophy_years.selected,
                 }; 
             M.api.getJSONCb('ciniki.musicfestivals.trophyList', args, function(rsp) {
                 if( rsp.stat != 'ok' ) {
@@ -194,6 +214,11 @@ function ciniki_musicfestivals_main() {
                 p.data = rsp;
                 p.data.awards = rsp.trophies;
                 p.nplist = (rsp.nplist != null ? rsp.nplist : null);
+                if( p.sections.trophy_years.selected != 'None' ) {
+                    p.sections.trophies.num_cols = 4;
+                } else {
+                    p.sections.trophies.num_cols = 3;
+                }
                 p.refresh();
                 p.show(cb);
             });
@@ -5233,7 +5258,7 @@ function ciniki_musicfestivals_main() {
             'delete':{'label':'Delete', 
                 'visible':function() {return M.ciniki_musicfestivals_main.edit.festival_id > 0 ? 'yes' : 'no'; },
                 'fn':'M.ciniki_musicfestivals_main.edit.remove();'},
-            'deletefile':{'label':'Delete All Uploaded Music PDFs, Backtracks and Artwork', 'class':'delete',
+            'deletefile':{'label':'Delete All Uploaded Music PDFs and Backtracks', 'class':'delete',
                 'visible':function() {return M.ciniki_musicfestivals_main.edit.festival_id > 0 ? 'yes' : 'no'; },
                 'fn':'M.ciniki_musicfestivals_main.edit.removeFiles();'},
             }},
@@ -5397,7 +5422,7 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.edit.removeFiles = function() {
-        M.confirm('Are you sure you want to remove all uploaded music files, backtrack and artwork files for this festival?',null,function() {
+        M.confirm('Are you sure you want to remove all uploaded music files and backtrack files for this festival?',null,function() {
             M.api.getJSONCb('ciniki.musicfestivals.festivalFilesDelete', {'tnid':M.curTenantID, 'festival_id':M.ciniki_musicfestivals_main.edit.festival_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);

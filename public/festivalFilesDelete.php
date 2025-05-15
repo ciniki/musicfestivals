@@ -133,13 +133,13 @@ function ciniki_musicfestivals_festivalFilesDelete(&$ciniki) {
                 }
                 $update_args["backtrack{$i}"] = '';
             }
-            if( $reg["artwork{$i}"] != '' ) {
-                $filename = "{$tenant_storage_dir}/ciniki.musicfestivals/files/{$reg['uuid'][0]}/{$reg['uuid']}_artwork{$i}";
-                if( file_exists($filename) ) {
-                    unlink($filename);
-                }
-                $update_args["artwork{$i}"] = '';
-            }
+//            if( $reg["artwork{$i}"] != '' ) {
+//                $filename = "{$tenant_storage_dir}/ciniki.musicfestivals/files/{$reg['uuid'][0]}/{$reg['uuid']}_artwork{$i}";
+//                if( file_exists($filename) ) {
+//                    unlink($filename);
+//                }
+//                $update_args["artwork{$i}"] = '';
+//            }
         }
         if( count($update_args) > 0 ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');

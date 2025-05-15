@@ -394,8 +394,14 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     // Check for different class submitted in form
     //
     if( isset($_POST['f-section']) && is_numeric($_POST['f-section']) && $_POST['f-section'] > 0 ) {
+        if( !isset($sections[$_POST['f-section']]) ) {
+            return array('stat'=>'noexist', 'err'=>array('code'=>'ciniki.musicfestivals.949', 'msg'=>'Class no longer available'));
+        }
         $selected_section = $sections[$_POST['f-section']];
         if( isset($_POST["f-section-{$_POST['f-section']}-class"]) ) {
+            if( !isset($sections[$_POST['f-section']]['classes'][$_POST["f-section-{$_POST['f-section']}-class"]]) ) {
+                return array('stat'=>'noexist', 'err'=>array('code'=>'ciniki.musicfestivals.950', 'msg'=>'Class no longer available'));
+            }
             $selected_class = $sections[$_POST['f-section']]['classes'][$_POST["f-section-{$_POST['f-section']}-class"]];
 // Dead code, variables not used anywhere, removed Nov 24, 2023
 //            $comp_required = 1;
