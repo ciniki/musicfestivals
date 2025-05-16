@@ -830,17 +830,43 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $strsql = "SELECT classes.id, "
                     . "classes.code, "
                     . "classes.name, "
-                    . "COUNT(registrations.id) AS num_registrations, "
-                    . "("
-                        . "SUM(registrations.perf_time1)"
-                        . "+SUM(registrations.perf_time2)"
-                        . "+SUM(registrations.perf_time3)"
-                        . "+SUM(registrations.perf_time4)"
-                        . "+SUM(registrations.perf_time5)"
-                        . "+SUM(registrations.perf_time6)"
-                        . "+SUM(registrations.perf_time7)"
-                        . "+SUM(registrations.perf_time8)"
-                        . ") AS total_perf_time "
+                    . "classes.flags AS class_flags, "
+                    . "classes.schedule_seconds, "
+                    . "classes.schedule_at_seconds, "
+                    . "classes.schedule_ata_seconds, "
+                    . "registrations.id AS reg_id, "
+                    . "registrations.title1, "
+                    . "registrations.composer1, "
+                    . "registrations.movements1, "
+                    . "registrations.perf_time1, "
+                    . "registrations.title2, "
+                    . "registrations.composer2, "
+                    . "registrations.movements2, "
+                    . "registrations.perf_time2, "
+                    . "registrations.title3, "
+                    . "registrations.composer3, "
+                    . "registrations.movements3, "
+                    . "registrations.perf_time3, "
+                    . "registrations.title4, "
+                    . "registrations.composer4, "
+                    . "registrations.movements4, "
+                    . "registrations.perf_time4, "
+                    . "registrations.title5, "
+                    . "registrations.composer5, "
+                    . "registrations.movements5, "
+                    . "registrations.perf_time5, "
+                    . "registrations.title6, "
+                    . "registrations.composer6, "
+                    . "registrations.movements6, "
+                    . "registrations.perf_time6, "
+                    . "registrations.title7, "
+                    . "registrations.composer7, "
+                    . "registrations.movements7, "
+                    . "registrations.perf_time7, "
+                    . "registrations.title8, "
+                    . "registrations.composer8, "
+                    . "registrations.movements8, "
+                    . "registrations.perf_time8 "
                     . "FROM ciniki_musicfestival_categories AS categories "
                     . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
                         . "categories.id = classes.category_id "
@@ -854,22 +880,45 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         . ") "
                     . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
                     . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . "GROUP BY classes.id "
+//                    . "GROUP BY classes.id "
                     . "ORDER BY categories.sequence, categories.name, classes.sequence, classes.code, classes.name "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-                    array('container'=>'classes', 'fname'=>'id', 'fields'=>array('id', 'code', 'name', 'num_registrations', 'total_perf_time')),
+                    array('container'=>'classes', 'fname'=>'id', 'fields'=>array('id', 'code', 'name')), 
+                    array('container'=>'registrations', 'fname'=>'reg_id', 
+                        'fields'=>array('id'=>'reg_id',
+                            'class_flags', 'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds',
+                            'title1', 'composer1', 'movements1', 'perf_time1',
+                            'title2', 'composer2', 'movements2', 'perf_time2',
+                            'title3', 'composer3', 'movements3', 'perf_time3',
+                            'title4', 'composer4', 'movements4', 'perf_time4',
+                            'title5', 'composer5', 'movements5', 'perf_time5',
+                            'title6', 'composer6', 'movements6', 'perf_time6',
+                            'title7', 'composer7', 'movements7', 'perf_time7',
+                            'title8', 'composer8', 'movements8', 'perf_time8',
+                            )),
                     ));
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.597', 'msg'=>'Unable to load classes', 'err'=>$rc['err']));
                 }
                 $festival['registration_classes'] = isset($rc['classes']) ? $rc['classes'] : array();
                 foreach($festival['registration_classes'] as $cid => $class) {
+                    $festival['registration_classes'][$cid]['num_registrations'] = 0;
+                    $total_perf_time = 0;
                     $festival['registration_classes'][$cid]['total_perf_time_display'] = '';
-                    if( $class['total_perf_time'] > 0 ) {
-                        $hours = intval($class['total_perf_time']/3600);
-                        $minutes = round(($class['total_perf_time']%3600)/60, 0);
+                    if( isset($class['registrations']) ) {
+                        foreach($class['registrations'] as $reg) {
+                            $festival['registration_classes'][$cid]['num_registrations']++;
+                            $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg);
+                            if( $rc['stat'] == 'ok' ) {
+                                $total_perf_time += $rc['perf_time_seconds'];
+                            }
+                        }
+                    }
+                    if( $total_perf_time > 0 ) {
+                        $hours = intval($total_perf_time/3600);
+                        $minutes = round(($total_perf_time%3600)/60, 0);
                         if( $hours > 0 ) {
                             $festival['registration_classes'][$cid]['total_perf_time_display'] = "{$hours} hours {$minutes} minutes";
                         } else {
