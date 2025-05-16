@@ -53,27 +53,6 @@ function ciniki_musicfestivals_sectionUpdate(&$ciniki) {
         return $rc;
     }
 
-    if( isset($args['name']) ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
-        $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['name']);
-        //
-        // Make sure the permalink is unique
-        //
-        $strsql = "SELECT id, name, permalink "
-            . "FROM ciniki_musicfestival_sections "
-            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
-            . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
-            . "";
-        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
-        if( $rc['stat'] != 'ok' ) {
-            return $rc;
-        }
-        if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.23', 'msg'=>'You already have an section with this name, please choose another.'));
-        }
-    }
-
     //
     // Get the current section
     //
@@ -93,6 +72,28 @@ function ciniki_musicfestivals_sectionUpdate(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.577', 'msg'=>'Unable to find requested section'));
     }
     $section = $rc['section'];
+
+    if( isset($args['name']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+        $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['name']);
+        //
+        // Make sure the permalink is unique
+        //
+        $strsql = "SELECT id, name, permalink "
+            . "FROM ciniki_musicfestival_sections "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
+            . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
+            . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $section['festival_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( $rc['num_rows'] > 0 ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.23', 'msg'=>'You already have an section with this name, please choose another.'));
+        }
+    }
 
     //
     // Get the list of categories
