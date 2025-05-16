@@ -7547,7 +7547,6 @@ function ciniki_musicfestivals_main() {
     }
     this.registration.competitorVisible = function(i) {
         if( (this.selected_class != null && i <= this.selected_class.max_competitors) || this.data['cometitor'+i+'_id'] > 0 ) {
-//        if( (this.selected_class != null && (this.selected_class.flags&0x10) == 0x10) || this.data.competitor2_id > 0 ) {
             return 'yes';
         }
         return 'hidden';
@@ -9993,9 +9992,17 @@ function ciniki_musicfestivals_main() {
     }
     this.schedulemultislot.cellValue = function(s, i, j, d) {
         if( s.match(/^registrations/) ) {
-            switch(j) {
-                case 0: return M.multiline(d.timeslot_sequence, d.timeslot_time);
-                case 1: return M.multiline((this.showtitles == 'no' ? '<span class="subdue">[' + d.perf_time + ']</span> ': '') + d.class_code + ' - ' + d.display_name + (d.accompanist_name != '' ? ' <b>[' + d.accompanist_name + ']</b>':''), '<b>' + d.member_name + '</b>' + (this.showtitles == 'yes' ? '<br/>' + d.titles.replace(/\n/g, '<br/>') : '')) + (d.notes != '' ? '<b>' + d.notes + '</b>' : '');
+            if( d.participation == 'Virtual' ) {
+                switch(j) {
+//                    case 0: return M.multiline(d.timeslot_sequence, '<b>' + d.member_name + '</b>');
+                    case 0: return d.timeslot_sequence + '<br/>' + d.member_name;
+                    case 1: return M.multiline((this.showtitles == 'no' ? '[' + d.perf_time + '] ': '') + d.class_code + ' - ' + d.display_name + (d.teacher_name != '' ? '<br/><b>T: ' + d.teacher_name + '</b>':''), (this.showtitles == 'yes' ? d.titles.replace(/\n/g, '<br/>') : '')) + (d.notes != '' ? (this.showtitles == 'no' ? '<br/><br/>' : '') + '<b>' + d.notes + '</b>' : '');
+                    }
+            } else {
+                switch(j) {
+                    case 0: return M.multiline(d.timeslot_sequence, d.timeslot_time);
+                    case 1: return M.multiline((this.showtitles == 'no' ? '[' + d.perf_time + '] ': '') + d.class_code + ' - ' + d.display_name + (d.accompanist_name != '' ? ' <b>[' + d.accompanist_name + ']</b>':''), '<b>' + d.member_name + '</b>' + (this.showtitles == 'yes' ? '<br/>' + d.titles.replace(/\n/g, '<br/>') : '')) + (d.notes != '' ? '<b>' + d.notes + '</b>' : '');
+                }
             }
         }
         if( s == 'unscheduled_registrations' ) {
