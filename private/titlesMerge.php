@@ -69,6 +69,15 @@ function ciniki_musicfestivals_titlesMerge(&$ciniki, $tnid, $registration, $args
         $perf_time += $registration['schedule_seconds'];
     }
 
+    //
+    // Check if rounding perf time
+    //
+    if( isset($args['rounding']) && $args['rounding'] == 'up5' ) {
+        if( ($perf_time%300) != 0 ) {
+            $perf_time +=  300 - ($perf_time%300);
+        }
+    }
+
     $perf_time_str = intval($perf_time/60) . ':' . str_pad(($perf_time%60), 2, '0', STR_PAD_LEFT);
     if( isset($args['times']) && $args['times'] == 'startsum' ) {
         $titles = '[' . $perf_time_str . '] ' . $titles;

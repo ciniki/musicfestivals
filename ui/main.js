@@ -5261,6 +5261,11 @@ function ciniki_musicfestivals_main() {
                         'no':'No',
                         'yes':'Yes',
                     }},
+                'scheduling-perftime-rounding':{'label':'Performance Time Rounding', 'type':'toggle', 'default':'no', 
+                    'toggles':{
+                        'no':'No',
+                        'up5':'Up 5 Min',
+                    }},
             }},
         '_locationoptions':{'label':'Location Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'scheduling' ? 'yes' : 'hidden'; },

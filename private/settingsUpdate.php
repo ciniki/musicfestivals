@@ -223,6 +223,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'scheduling-seconds-show',
         'scheduling-timeslot-length',
         'scheduling-timeslot-startnum',
+        'scheduling-perftime-rounding',
         'locations-categories',
         'locations-disciplines',
         'trophies-footer-msg',

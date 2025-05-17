@@ -910,7 +910,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     if( isset($class['registrations']) ) {
                         foreach($class['registrations'] as $reg) {
                             $festival['registration_classes'][$cid]['num_registrations']++;
-                            $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg);
+                            $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, [
+                                'rounding' => isset($festival['scheduling-perftime-rounding']) ? $festival['scheduling-perftime-rounding'] : '',
+                                ]);
                             if( $rc['stat'] == 'ok' ) {
                                 $total_perf_time += $rc['perf_time_seconds'];
                             }
@@ -1450,6 +1452,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $registration, [
 //                            'times' => 'startsum',
                             'newline' => '<br/>',
+                            'rounding' => isset($festival['scheduling-perftime-rounding']) ? $festival['scheduling-perftime-rounding'] : '',
                             ]);
                         $festival['registrations'][$rid]['titles'] = $rc['titles'];
                         $festival['registrations'][$rid]['org_time'] = $rc['org_time'];
