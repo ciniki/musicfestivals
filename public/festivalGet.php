@@ -2595,6 +2595,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                                 }
                                 $num = ($scheduletimeslot['start_num'] && $scheduletimeslot['start_num'] > 1 ? $scheduletimeslot['start_num'] : 1);
                                 foreach($scheduletimeslot['registrations'] as $reg) {
+                                    // FIXME: use titlesMerge to do timings calc
                                     $num_reg++;
                                     if( isset($reg['schedule_at_seconds']) > $schedule_at_seconds ) {
                                         $schedule_at_seconds = $reg['schedule_at_seconds'];

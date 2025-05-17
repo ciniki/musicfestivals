@@ -249,7 +249,6 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
                     $rsp["registrations{$i}"][$rid]['notes'] .= ($reg['notes'] != '' ? ' ' : '') . $reg['competitor_notes'];
                 }
             }
-            error_log(print_r($rsp["registrations{$i}"],true));
         }
     }
 
