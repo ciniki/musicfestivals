@@ -2437,6 +2437,8 @@ function ciniki_musicfestivals_main() {
                     return M.multiline(links, music);
                 case 'notes': return d.notes.replace(/\n/g, '<br/>');
                 case 'instrument': return d.instrument;
+                case 'perf_time': return d.perf_time;
+                case 'perf_calc_time': return (d.org_time != d.perf_time ? '<strike>' + d.org_time + '</strike>&nbsp;' : '') + d.perf_time;
                 case 'scheduled': return M.multiline(d.scheduled, d.scheduled_sd);
                 case 'mark': return d.mark;
                 case 'placement': return d.placement;
@@ -3925,11 +3927,11 @@ function ciniki_musicfestivals_main() {
             this.sections.registrations.sortTypes = ['text', 'text', 'text', 'text'];
             this.sections.registrations.num_cols = 4;
         } else if( this.sections.registrations_tabs.selected == 'schedule' ) {
-            this.sections.registrations.headerValues = ['Class', 'Registrant', 'Schedule'];
-            this.sections.registrations.cellClasses = ['multiline', 'multiline', 'multiline'];
-            this.sections.registrations.dataMaps = ['class', 'registrant', 'scheduled'];
-            this.sections.registrations.sortTypes = ['text', 'text', 'text'];
-            this.sections.registrations.num_cols = 3;
+            this.sections.registrations.headerValues = ['Class', 'Registrant', 'Time', 'Schedule'];
+            this.sections.registrations.cellClasses = ['multiline', 'multiline', 'alignright', 'multiline'];
+            this.sections.registrations.dataMaps = ['class', 'registrant', 'perf_calc_time', 'scheduled'];
+            this.sections.registrations.sortTypes = ['text', 'text', 'time', 'text'];
+            this.sections.registrations.num_cols = 4;
         } else if( this.sections.registrations_tabs.selected == 'marks' ) {
             this.sections.registrations.headerValues = ['Class', 'Registrant', 'Teacher'];
             this.sections.registrations.cellClasses = ['multiline', 'multiline', ''];

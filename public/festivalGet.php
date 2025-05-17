@@ -1199,6 +1199,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "registrations.accompanist_customer_id, "
                     . "accompanists.display_name AS accompanist_name, "
                     . "classes.flags AS class_flags, "
+                    . "classes.schedule_seconds, "
+                    . "classes.schedule_at_seconds, "
+                    . "classes.schedule_ata_seconds, "
                     . "classes.min_titles, "
                     . "classes.max_titles, "
                     . "registrations.billing_customer_id, "
@@ -1404,7 +1407,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             'rtype', 'rtype_text', 'status', 'status_text', 'display_name', 
                             'invoice_type', 'invoice_status', 'payment_status_text', 'invoice_date', 
                             'class_id', 'class_code', 'class_name', 'category_name',
-                            'class_flags', 'min_titles', 'max_titles',
+                            'class_flags', 'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds',
+                            'min_titles', 'max_titles',
                             'fee', 'participation', 'flags', 'instrument',
                             'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
                             'title2', 'composer2', 'movements2', 'perf_time2', 'video_url2', 'music_orgfilename2',
@@ -1443,17 +1447,24 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
     //                $festival['registrations_copy'] = "<table cellpadding=2 cellspacing=0>";
                     foreach($festival['registrations'] as $rid => $registration) {
                         $nplists['registrations'][] = $registration['id'];
-                        $festival['registrations'][$rid]['titles'] = '';
-                        $festival['registrations'][$rid]['titles'] = '';
+                        $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $registration, [
+//                            'times' => 'startsum',
+                            'newline' => '<br/>',
+                            ]);
+                        $festival['registrations'][$rid]['titles'] = $rc['titles'];
+                        $festival['registrations'][$rid]['org_time'] = $rc['org_time'];
+                        $festival['registrations'][$rid]['perf_time'] = $rc['perf_time'];
+                        $perf_time = 0;
                         for($i = 1; $i <= 8; $i++) {
-                            if( $registration["title{$i}"] != '' ) {
+                            
+/*                            if( $registration["title{$i}"] != '' ) {
                                 $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
                                 if( $rc['stat'] == 'ok' ) {
                                     $festival['registrations'][$rid]["title{$i}"] = $rc['title'];
                                     $registration["title{$i}"] = $rc['title'];
                                     $festival['registrations'][$rid]['titles'] .= ($festival['registrations'][$rid]['titles'] != '' ? '<br/>' : '') . $rc['title'];
                                 }
-                            }
+                            } */
                             unset($festival['registrations'][$rid]["movements{$i}"]);
                             unset($festival['registrations'][$rid]["composer{$i}"]);
                             if( $i > $registration['max_titles'] ) {

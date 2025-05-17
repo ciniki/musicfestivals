@@ -50,6 +50,12 @@ function ciniki_musicfestivals_titlesMerge(&$ciniki, $tnid, $registration, $args
     }
 
     //
+    // Keep track of total time entered on registration
+    //
+    $org_time = $perf_time;
+    $org_time_str = intval($org_time/60) . ':' . str_pad(($org_time%60), 2, '0', STR_PAD_LEFT);
+
+    //
     // Add the schedule seconds to total perf time of the registration
     //
     if( isset($registration['class_flags']) && ($registration['class_flags']&0x080000) == 0x080000
@@ -68,6 +74,6 @@ function ciniki_musicfestivals_titlesMerge(&$ciniki, $tnid, $registration, $args
         $titles = '[' . $perf_time_str . '] ' . $titles;
     }
 
-    return array('stat'=>'ok', 'titles'=>$titles, 'perf_time'=>$perf_time_str, 'perf_time_seconds'=>$perf_time);
+    return array('stat'=>'ok', 'titles'=>$titles, 'perf_time'=>$perf_time_str, 'org_time'=>$org_time_str, 'perf_time_seconds'=>$perf_time);
 }
 ?>
