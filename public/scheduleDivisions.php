@@ -290,9 +290,14 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                 if( isset($timeslot['registrations']) ) {
                     foreach($timeslot["registrations"] as $rid => $reg) {
                         $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['timeslot_number'] = $num;
-                        $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, array('times'=>'startsum', 'numbers'=>'yes'));
+                        $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, [
+                            'times'=>'startorgcalcsum', 
+                            'numbers'=>'yes',
+                            'rounding' => isset($festival['scheduling-perftime-rounding']) ? $festival['scheduling-perftime-rounding'] : '',
+                            ]);
                         $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['titles'] = $rc['titles'];
                         $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['perf_time'] = $rc['perf_time'];
+                        $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['org_time'] = $rc['org_time'];
                         $perf_time += $rc['perf_time_seconds'];
                         if( isset($reg['competitors']) ) {
                             foreach($reg['competitors'] as $competitor) {
@@ -580,9 +585,14 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
         }
         $rsp['unscheduled_registrations'] = isset($rc['registrations']) ? $rc['registrations'] : array();
         foreach($rsp['unscheduled_registrations'] as $rid => $reg) {
-            $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, array('times'=>'startsum', 'numbers'=>'yes'));
+            $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, array(
+                'times'=>'startsum', 
+                'numbers'=>'yes',
+                'rounding' => isset($festival['scheduling-perftime-rounding']) ? $festival['scheduling-perftime-rounding'] : '',
+                ));
             $rsp['unscheduled_registrations'][$rid]['titles'] = $rc['titles'];
             $rsp['unscheduled_registrations'][$rid]['perf_time'] = $rc['perf_time'];
+            $rsp['unscheduled_registrations'][$rid]['org_time'] = $rc['org_time'];
             if( $reg['competitor_notes'] != '' ) {
                 $rsp['unscheduled_registrations'][$rid]['notes'] .= ($reg['notes'] != '' ? ' ' : '') . $reg['competitor_notes'];
             }

@@ -9428,7 +9428,11 @@ function ciniki_musicfestivals_main() {
                             teacher2 = (accompanist != '' || teacher != '' ? '<br/><b>' : ' <b>') + d.teacher2_name + '</b>';
                         }
                     }
-                    return M.multiline((this.showtitles == 'no' ? '<span class="subdue">[' + d.perf_time + ']</span> ': '') 
+                    var ptime = d.perf_time;
+                    if( d.org_time != null && d.org_time != d.perf_time ) {
+                        ptime = '<strike>' + d.org_time + '</strike> ' + d.perf_time;
+                    }
+                    return M.multiline((this.showtitles == 'no' ? '<span class="subdue">[' + ptime + ']</span> ': '') 
                     + d.class_code + ' - ' 
                     + (d.participation != '' ? '[' + d.participation + '] ' : '')
                     + d.display_name + member + accompanist + teacher + teacher2,
@@ -9480,7 +9484,11 @@ function ciniki_musicfestivals_main() {
                     teacher2 = (accompanist != '' || teacher != '' ? ', <b>' : ' <b>') + d.teacher2_name + '</b>';
                 }
             }
-            return M.multiline((this.showtitles == 'no' ? '<span class="subdue">[' + d.perf_time + ']</span> ': '') 
+            var ptime = d.perf_time;
+            if( d.org_time != null && d.org_time != d.perf_time ) {
+                ptime = '<strike>' + d.org_time + '</strike> ' + d.perf_time;
+            }
+            return M.multiline((this.showtitles == 'no' ? '<span class="subdue">[' + ptime + ']</span> ': '') 
                 + d.class_code + ' - ' 
                 + (d.participation != '' ? '[' + d.participation + '] ' : '')
                 + d.display_name + member + accompanist + teacher + teacher2,

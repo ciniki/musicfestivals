@@ -188,7 +188,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     if( isset($festival['scheduling-timeslot-startnum']) && $festival['scheduling-timeslot-startnum'] == 'yes' ) {
         $strsql = "SELECT start_num "
             . "FROM ciniki_musicfestival_schedule_timeslots "
-            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' "
+            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, isset($args['timeslot_id']) ? $args['timeslot_id'] : $registration['timeslot_id']) . "' "
             . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
             . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";

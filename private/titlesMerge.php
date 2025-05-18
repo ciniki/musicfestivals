@@ -79,7 +79,9 @@ function ciniki_musicfestivals_titlesMerge(&$ciniki, $tnid, $registration, $args
     }
 
     $perf_time_str = intval($perf_time/60) . ':' . str_pad(($perf_time%60), 2, '0', STR_PAD_LEFT);
-    if( isset($args['times']) && $args['times'] == 'startsum' ) {
+    if( isset($args['times']) && $args['times'] == 'startorgcalcsum' ) {
+        $titles = '[' . ($org_time_str != $perf_time_str ? "<strike>{$org_time_str}</strike> " : '') . $perf_time_str . '] ' . $titles;
+    } elseif( isset($args['times']) && $args['times'] == 'startsum' ) {
         $titles = '[' . $perf_time_str . '] ' . $titles;
     }
 
