@@ -183,6 +183,26 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     $tenant_storage_dir = $rc['storage_dir'];
 
     //
+    // Get the start_num for the timeslot
+    //
+    if( isset($festival['scheduling-timeslot-startnum']) && $festival['scheduling-timeslot-startnum'] == 'yes' ) {
+        $strsql = "SELECT start_num "
+            . "FROM ciniki_musicfestival_schedule_timeslots "
+            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' "
+            . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'timeslot');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.121', 'msg'=>'Unable to load timeslot', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['timeslot']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.122', 'msg'=>'Unable to find requested timeslot'));
+        }
+        $start_num = isset($rc['timeslot']['start_num']) && $rc['timeslot']['start_num'] > 1 ? $rc['timeslot']['start_num'] : 1;
+    }
+
+    //
     // Check if timeslot_id specified and different with not timeslot_sequene
     //
     if( isset($args['timeslot_id']) && $args['timeslot_id'] > 0 
@@ -211,7 +231,10 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         // Get the last registration 
         //
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
-            if( isset($args['timeslot_sequence']) && $args['timeslot_sequence'] == 1 ) {
+
+            if( isset($args['timeslot_sequence']) 
+                && ($args['timeslot_sequence'] == 1 || (isset($start_num) && $args['timeslot_sequence'] == $start_num)) 
+                ) {
                 $strsql = "SELECT slot_time "
                     . "FROM ciniki_musicfestival_schedule_timeslots "
                     . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' "
@@ -498,6 +521,24 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
             }
         }
         //
+        // Get the start_num for the timeslot
+        //
+        $strsql = "SELECT start_num "
+            . "FROM ciniki_musicfestival_schedule_timeslots "
+            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $registration['timeslot_id']) . "' "
+            . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'timeslot');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.121', 'msg'=>'Unable to load timeslot', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['timeslot']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.122', 'msg'=>'Unable to find requested timeslot'));
+        }
+        $cur_number = isset($rc['timeslot']['start_num']) && $rc['timeslot']['start_num'] > 1 ? $rc['timeslot']['start_num'] : 1;
+
+        //
         // Update the timeslot sequence numbers
         //
         $strsql = "SELECT id, timeslot_sequence AS number "
@@ -512,7 +553,6 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
             ciniki_core_dbTransactionRollback($ciniki, $m);
             return $rc;
         }
-        $cur_number = 1;
         if( isset($rc['rows']) ) {
             $sequences = $rc['rows'];
             foreach($sequences as $sid => $seq) {
@@ -540,6 +580,9 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         if( $args['timeslot_id'] != $registration['timeslot_id'] ) {
             $old_seq = -1;
         }
+        //
+        // Load the registrations
+        //
         $strsql = "SELECT registrations.id, "
             . "registrations.timeslot_sequence AS number, "
             . "IFNULL(classes.schedule_seconds, 0) AS schedule_seconds "
@@ -563,7 +606,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
             ciniki_core_dbTransactionRollback($ciniki, $m);
             return $rc;
         }
-        $cur_number = 1;
+        $cur_number = isset($start_num) ? $start_num : 1;
         if( isset($rc['rows']) ) {
             $sequences = $rc['rows'];
             foreach($sequences as $sid => $seq) {

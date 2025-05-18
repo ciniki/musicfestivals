@@ -83,6 +83,17 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
         }
     }
 
+    if( isset($args['start_num']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'timeslotScheduleTimesRenumber');
+        $rc = ciniki_musicfestivals_timeslotScheduleTimesRenumber($ciniki, $args['tnid'], [
+            'timeslot_id' => $args['scheduletimeslot_id']
+            ]);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
+    }
+
     //
     // Commit the transaction
     //

@@ -9433,7 +9433,7 @@ function ciniki_musicfestivals_main() {
                     + (d.participation != '' ? '[' + d.participation + '] ' : '')
                     + d.display_name + member + accompanist + teacher + teacher2,
                     (this.showtitles == 'yes' ? '' + d.titles.replace(/\n/g, '<br/>') : '')) 
-                    + (this.shownotes == 'yes' && d.notes != '' ? '<br/><b>' + d.notes + '</b>' : '');
+                    + (this.shownotes == 'yes' && d.notes != '' ? (this.showtitles == 'no' ? '<br/>' : '') + '<br/><b><i>' + d.notes + '</i></b>' : '');
             }
         }
         if( s == 'unscheduled_registrations' ) {
@@ -9485,7 +9485,7 @@ function ciniki_musicfestivals_main() {
                 + (d.participation != '' ? '[' + d.participation + '] ' : '')
                 + d.display_name + member + accompanist + teacher + teacher2,
                 (this.showtitles == 'yes' ? '' + d.titles.replace(/\n/g, '<br/>') : '')) 
-                + (this.shownotes == 'yes' && d.notes != '' ? '<b>' + d.notes + '</b>' : '');
+                + (this.shownotes == 'yes' && d.notes != '' ? (this.showtitles == 'no' ? '<br/>' : '') + '<br/><b><i>' + d.notes + '</i></b>' : '');
         }
     }
     this.scheduledivisions.cellFn = function(s, i, j, d) {
@@ -9612,6 +9612,11 @@ function ciniki_musicfestivals_main() {
             this.num_divisions = parseInt(M.ciniki_musicfestivals_main.festival.data['advanced-scheduler-num-divisions']);
             if( this.num_divisions < 2 || this.num_divisions > 9 ) {
                 this.num_divisions = 3;
+            }
+        }
+        for(var i = 1; i <= 10; i++) {
+            if( this.division_ids[i] != null && this.division_ids[i] > 0 && i > this.num_divisions ) {
+                this.num_divisions = i;
             }
         }
         var args = {
@@ -9771,9 +9776,36 @@ function ciniki_musicfestivals_main() {
         }
         this.open();
     }
+    this.scheduledivisions.chooseClass = function() {
+        M.prompt('Class Code:', '', 'Find Divisions', function(n) {
+            //
+            // Get the list of divisions with this class
+            //
+            M.api.getJSONCb('ciniki.musicfestivals.scheduleDivisionList', {'tnid':M.curTenantID, 'festival_id':M.ciniki_musicfestivals_main.scheduledivisions.festival_id, 'class_code':n}, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    var p = M.ciniki_musicfestivals_main.scheduledivisions;
+                    for(var i = 0; i < 10; i++) {
+                        if( rsp.scheduledivisions != null && rsp.scheduledivisions[i] != null ) {
+                            p.division_ids[i+1] = rsp.scheduledivisions[i].id;
+                        }
+                        else {
+                            p.division_ids[i+1] = 0;
+                        }
+                    }
+                    p.open();
+                });
+        });
+        
+    }
     this.scheduledivisions.addButton('titles', 'Titles', 'M.ciniki_musicfestivals_main.scheduledivisions.toggleTitles();');
     this.scheduledivisions.addButton('notes', 'Notes', 'M.ciniki_musicfestivals_main.scheduledivisions.toggleNotes();');
     this.scheduledivisions.addClose('Back');
+    if( M.modFlagOn('ciniki.musicfestivals', 0x010000) ) {
+        this.scheduledivisions.addLeftButton('picker', 'Change Class', 'M.ciniki_musicfestivals_main.scheduledivisions.chooseClass();');
+    }
 
     //
     // The panel to edit Schedule Time Slot

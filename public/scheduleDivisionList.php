@@ -20,6 +20,8 @@ function ciniki_musicfestivals_scheduleDivisionList($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
+        'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
+        'class_code'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Class'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -38,19 +40,38 @@ function ciniki_musicfestivals_scheduleDivisionList($ciniki) {
     //
     // Get the list of scheduledivisions
     //
-    $strsql = "SELECT ciniki_musicfestival_schedule_divisions.id, "
-        . "ciniki_musicfestival_schedule_divisions.festival_id, "
-        . "ciniki_musicfestival_schedule_divisions.ssection_id, "
-        . "ciniki_musicfestival_schedule_divisions.name, "
-        . "ciniki_musicfestival_schedule_divisions.division_date, "
-        . "ciniki_musicfestival_schedule_divisions.address "
-        . "FROM ciniki_musicfestival_schedule_divisions "
-        . "WHERE ciniki_musicfestival_schedule_divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "";
+    $strsql = "SELECT divisions.id, "
+        . "divisions.festival_id, "
+        . "divisions.ssection_id, "
+        . "divisions.name, "
+        . "divisions.division_date ";
+    if( isset($args['class_code']) && $args['class_code'] != '' && isset($args['festival_id']) && $args['festival_id'] != '' ) {
+        $strsql .= "FROM ciniki_musicfestival_schedule_divisions AS divisions "
+            . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+                . "divisions.id = timeslots.sdivision_id "
+                . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                . "timeslots.id = registrations.timeslot_id "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
+                . "registrations.class_id = classes.id "
+                . "AND classes.code = '" . ciniki_core_dbQuote($ciniki, $args['class_code']) . "' "
+                . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND divisions.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "";
+    } else {
+        $strsql .= "FROM ciniki_musicfestival_schedule_divisions AS divisions "
+            . "WHERE divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+    }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'scheduledivisions', 'fname'=>'id', 
-            'fields'=>array('id', 'festival_id', 'ssection_id', 'name', 'division_date', 'address')),
+            'fields'=>array('id', 'festival_id', 'ssection_id', 'name', 'division_date')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
