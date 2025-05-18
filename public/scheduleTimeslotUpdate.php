@@ -70,6 +70,20 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
     }
 
     //
+    // Check if registration schedule times need to be updated
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'timeslotScheduleTimesRecalc');
+        $rc = ciniki_musicfestivals_timeslotScheduleTimesRecalc($ciniki, $args['tnid'], [
+            'timeslot_id' => $args['scheduletimeslot_id']
+            ]);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
+    }
+
+    //
     // Commit the transaction
     //
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.musicfestivals');

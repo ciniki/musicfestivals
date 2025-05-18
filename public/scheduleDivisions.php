@@ -199,6 +199,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                 . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
                 . "IFNULL(teachers.display_name, '') AS teacher_name, "
                 . "IFNULL(teachers2.display_name, '') AS teacher2_name, "
+                . "IFNULL(members.shortname, '') AS member_name, "
                 . "classes.code AS class_code, "
                 . "classes.name AS class_name, "
                 . "classes.flags AS class_flags, "
@@ -246,6 +247,10 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                     . "registrations.teacher2_customer_id = teachers2.id "
                     . "AND teachers2.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
+                . "LEFT JOIN ciniki_musicfestivals_members AS members ON ("
+                    . "registrations.member_id = members.id "
+                    . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
                 . "WHERE timeslots.sdivision_id = '" . ciniki_core_dbQuote($ciniki, $args["division{$i}_id"]) . "' "
                 . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "ORDER BY timeslots.slot_time, timeslots.name, timeslots.id, registrations.timeslot_sequence, registrations.display_name "
@@ -257,7 +262,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                     ),
                 array('container'=>'registrations', 'fname'=>'reg_id', 
                     'fields'=>array('id'=>'reg_id', 'display_name', 'timeslot_id', 'timeslot_time', 'timeslot_sequence', 
-                        'flags', 'status', 'accompanist_name', 'teacher_name', 'teacher2_name',
+                        'flags', 'status', 'accompanist_name', 'teacher_name', 'teacher2_name', 'member_name',
                         'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                         'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                         'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
@@ -304,6 +309,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                             $reg['schedule_ata_seconds'] = $schedule_ata_seconds;
                         }
                         $num++;
+                        $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['notes'] = trim($reg['notes']);
                     }
                 }
                 if( $schedule_at_seconds > 0 ) {

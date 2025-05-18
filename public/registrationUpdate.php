@@ -284,8 +284,8 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                 $dt = new DateTime($dt->format('Y-m-d') . ' ' . $lastreg['timeslot_time'], new DateTimezone('UTC'));
                 $dt->add(new DateInterval('PT' . $total_time . 'S')); 
                 $args['timeslot_time'] = $dt->format('H:i');
-            }
-        }
+            } 
+        } 
     }
 
     // 
@@ -333,7 +333,6 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                 $args['finals_timeslot_time'] = $rc['timeslot']['slot_time'];
             } 
             else {
-                // FIXME: Add code to adjust individual timeslots times for class schedule_seconds
                 $strsql = "SELECT registrations.finals_timeslot_time, "
                     . "registrations.perf_time1, "
                     . "registrations.perf_time2, "
@@ -486,7 +485,21 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     // Check if registration moved timeslots and old timeslot needs to be renumbered
     //
     if( $registration['timeslot_id'] > 0 && isset($args['timeslot_id']) && $args['timeslot_id'] != $registration['timeslot_id'] ) {
-        // FIXME: Need to figure out how to auto update times when individual registration timeslot times
+        // 
+        // Update times automatically of each registrations
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'timeslotScheduleTimesRecalc');
+            $rc = ciniki_musicfestivals_timeslotScheduleTimesRecalc($ciniki, $args['tnid'], [
+                'timeslot_id' => $registration['timeslot_id'],
+                ]);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+        }
+        //
+        // Update the timeslot sequence numbers
+        //
         $strsql = "SELECT id, timeslot_sequence AS number "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE timeslot_id = '" . ciniki_core_dbQuote($ciniki, $registration['timeslot_id']) . "' "
@@ -522,9 +535,11 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     // Check if moved into a timeslot
     //
     if( isset($args['timeslot_id']) && $args['timeslot_id'] > 0 ) {
-        // FIXME: Need to figure out how to auto update times when individual registration timeslot times
         $new_seq = $args['timeslot_sequence'];
         $old_seq = $registration['timeslot_sequence'];
+        if( $args['timeslot_id'] != $registration['timeslot_id'] ) {
+            $old_seq = -1;
+        }
         $strsql = "SELECT registrations.id, "
             . "registrations.timeslot_sequence AS number, "
             . "IFNULL(classes.schedule_seconds, 0) AS schedule_seconds "
@@ -565,6 +580,18 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                 $cur_number++; 
             }
         }
+        //
+        // Redo timings of each registration
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'timeslotScheduleTimesRecalc');
+            $rc = ciniki_musicfestivals_timeslotScheduleTimesRecalc($ciniki, $args['tnid'], [
+                'timeslot_id' => $args['timeslot_id'],
+                ]);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+        } 
     }
 
     //
