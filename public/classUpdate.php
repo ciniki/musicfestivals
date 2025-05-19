@@ -226,6 +226,35 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
     }
 
     //
+    // Update timings for any timeslots that contain this class
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+        $strsql = "SELECT DISTINCT registrations.timeslot_id "
+            . "FROM ciniki_musicfestival_registrations AS registrations "
+            . "WHERE registrations.class_id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
+            . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $class['festival_id']) . "' "
+            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList');
+        $rc = ciniki_core_dbQueryList($ciniki, $strsql, 'ciniki.musicfestivals', 'timeslots', 'timeslot_id');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.958', 'msg'=>'Unable to load the list of timeslots', 'err'=>$rc['err']));
+        }
+        $timeslots = isset($rc['timeslots']) ? $rc['timeslots'] : [];
+
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'timeslotScheduleTimesRecalc');
+        foreach($timeslots AS $timeslot_id) {
+            $rc = ciniki_musicfestivals_timeslotScheduleTimesRecalc($ciniki, $args['tnid'], [
+                'timeslot_id' => $timeslot_id,
+                ]);
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+                return $rc;
+            }
+        }
+    }
+
+    //
     // Commit the transaction
     //
     $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.musicfestivals');
