@@ -46,6 +46,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'schedule'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule'),
         'locations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Locations'),
         'location_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Location'),
+        'livegrid'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Live Grid'),
         'dates'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Dates'),
         'date_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Date'),
         'adjudicator_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicator'),
@@ -1621,6 +1622,70 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     $nplists['schedule_locations'] = array();
                 }
             }
+
+            //
+            // Get the schedule live grid
+            //
+            if( isset($args['livegrid'])  && $args['livegrid'] == 'yes' ) {
+                $strsql = "SELECT IFNULL(locations.id, 0) AS location_id, "
+                    . "IFNULL(locations.shortname, 'Unknown') AS location_name, "
+                    . "ssections.id AS ssection_id, "
+                    . "ssections.name AS ssection_name, "
+                    . "divisions.id AS division_id, "
+                    . "divisions.name AS division_name "
+                    . "FROM ciniki_musicfestival_registrations AS registrations "
+                    . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+                        . "registrations.timeslot_id = timeslots.id "
+                        . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+                        . "timeslots.sdivision_id = divisions.id "
+                        . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "INNER JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
+                        . "divisions.ssection_id = ssections.id "
+                        . "AND ssections.name <> 'Unscheduled' "
+                        . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "INNER JOIN ciniki_musicfestival_locations AS locations ON ("
+                        . "divisions.location_id = locations.id "
+                        . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "AND registrations.participation = 0 "
+                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "ORDER BY locations.sequence, location_name, ssections.sequence, ssections.name "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'locations', 'fname'=>'location_id', 
+                        'fields'=>array('id'=>'location_id', 'name'=>'location_name'),
+                        ),
+                    array('container'=>'ssections', 'fname'=>'ssection_id', 
+                        'fields'=>array('id'=>'ssection_id', 'name'=>'ssection_name'),
+                        ),
+                    array('container'=>'divisions', 'fname'=>'division_id', 
+                        'fields'=>array('id'=>'division_id', 'name'=>'division_name'),
+                        ),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.959', 'msg'=>'Unable to load livegrid', 'err'=>$rc['err']));
+                }
+                $locations = isset($rc['locations']) ? $rc['locations'] : array();
+                error_log(print_r($locations,true));
+                $days = [];
+
+                foreach($locations as $lid => $location) {
+                    foreach($location['ssections'] as $sid => $ssection) {
+                        if( !isset($days[$ssection['name']]) ) {
+                            $days[$ssection['name']] = $ssection['name'];
+                        }
+                    }
+                }
+                $festival['schedule_livegrid_locations'] = $locations;
+                $festival['schedule_livegrid_days'] = $days;
+            }
+
             //
             // Get the list of schedule dates
             //
