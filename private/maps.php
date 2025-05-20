@@ -114,6 +114,14 @@ function ciniki_musicfestivals_maps($ciniki) {
             0x20 => 'Results Published',
         ),
     );
+    $maps['adjudicator'] = array(
+        'flags'=>array(
+            0x01 => 'Live',
+            0x02 => 'Virtual',
+            0x04 => '',
+            0x08 => 'Hidden',
+        ),
+    );
     $maps['recommendationentry'] = array(
         'position'=>array(
             1 => '1st',

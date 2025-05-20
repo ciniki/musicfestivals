@@ -3491,6 +3491,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "adjudicators.discipline, "
                 . "adjudicators.festival_id, "
                 . "adjudicators.customer_id, "
+                . "adjudicators.flags AS options, "
                 . "customers.display_name "
                 . "FROM ciniki_musicfestival_adjudicators AS adjudicators "
                 . "LEFT JOIN ciniki_customers AS customers ON ("
@@ -3511,7 +3512,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'adjudicators', 'fname'=>'id', 
-                        'fields'=>array('id', 'festival_id', 'customer_id', 'name'=>'display_name', 'discipline')),
+                        'fields'=>array('id', 'festival_id', 'customer_id', 'name'=>'display_name', 'discipline', 'options'),
+                        'flags'=>array('options'=>$maps['adjudicator']['flags']),
+                        ),
                     ));
             }
             if( $rc['stat'] != 'ok' ) {

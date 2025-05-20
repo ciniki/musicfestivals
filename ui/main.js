@@ -1588,11 +1588,11 @@ function ciniki_musicfestivals_main() {
             'sortable':'yes',
             'sortTypes':['number', 'text', 'text', 'number', 'text', ''],
             },
-        'adjudicators':{'label':'Adjudicators', 'type':'simplegrid', 'num_cols':2,
+        'adjudicators':{'label':'Adjudicators', 'type':'simplegrid', 'num_cols':3,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'adjudicators'); },
-            'headerValues':['Name', 'Discipline'],
+            'headerValues':['Name', 'Discipline', 'Options'],
             'sortable':'yes',
-            'sortTypes':['text', 'text'],
+            'sortTypes':['text', 'text', 'text'],
             'noData':'No adjudicators for this festival',
             'menu':{
                 'add':{
@@ -2673,6 +2673,7 @@ function ciniki_musicfestivals_main() {
             switch(j) {
                 case 0: return d.name;
                 case 1: return d.discipline;
+                case 2: return d.options;
             }
         }
         if( s == 'locations' ) {
