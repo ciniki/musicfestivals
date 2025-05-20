@@ -188,7 +188,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     if( isset($festival['scheduling-timeslot-startnum']) && $festival['scheduling-timeslot-startnum'] == 'yes' ) {
         $strsql = "SELECT start_num "
             . "FROM ciniki_musicfestival_schedule_timeslots "
-            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, isset($args['timeslot_id']) ? $args['timeslot_id'] : $registration['timeslot_id']) . "' "
+            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, (isset($args['timeslot_id']) && $args['timeslot_id'] > 0 ? $args['timeslot_id'] : $registration['timeslot_id'])) . "' "
             . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
             . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
@@ -246,7 +246,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.121', 'msg'=>'Unable to load timeslot', 'err'=>$rc['err']));
                 }
                 if( !isset($rc['timeslot']) ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.122', 'msg'=>'Unable to find requested timeslot'));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.960', 'msg'=>'Unable to find requested timeslot'));
                 }
                 $args['timeslot_time'] = $rc['timeslot']['slot_time'];
             } 
@@ -534,7 +534,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.121', 'msg'=>'Unable to load timeslot', 'err'=>$rc['err']));
         }
         if( !isset($rc['timeslot']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.122', 'msg'=>'Unable to find requested timeslot'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.961', 'msg'=>'Unable to find requested timeslot'));
         }
         $cur_number = isset($rc['timeslot']['start_num']) && $rc['timeslot']['start_num'] > 1 ? $rc['timeslot']['start_num'] : 1;
 
