@@ -232,6 +232,7 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
         $strsql = "SELECT DISTINCT registrations.timeslot_id "
             . "FROM ciniki_musicfestival_registrations AS registrations "
             . "WHERE registrations.class_id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
+            . "AND timeslot_id > 0 "
             . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $class['festival_id']) . "' "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
