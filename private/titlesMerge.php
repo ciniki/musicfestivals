@@ -72,7 +72,9 @@ function ciniki_musicfestivals_titlesMerge(&$ciniki, $tnid, $registration, $args
     //
     // Check if rounding perf time
     //
-    if( isset($args['rounding']) && $args['rounding'] == 'up5' ) {
+    if( isset($args['rounding']) && $args['rounding'] == 'up5' 
+        && isset($registration['class_flags']) && ($registration['class_flags']&0x080000) == 0  // Not set to specific time
+        ) {
         if( ($perf_time%300) != 0 ) {
             $perf_time +=  300 - ($perf_time%300);
         }
