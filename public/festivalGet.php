@@ -83,6 +83,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'action'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Action'),
         'entry_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Entry'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sequence'),
+        'lv'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Live/Virtual Flags'),
         'ipv'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'In Person/Virtual'),
         'registration_tag'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registration Tag'),
         'statistics'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Statistics'),
@@ -1556,8 +1557,16 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "sections.adjudicator1_id "
                 . "FROM ciniki_musicfestival_schedule_sections AS sections "
                 . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "ORDER BY sections.sequence, sections.name "
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x020000) 
+                && isset($args['lv']) && $args['lv'] > 0 
+                ) {
+                $strsql .= "AND ("
+                    . "(sections.flags&0x0F00) = 0 "
+                    . "OR (sections.flags&0x0F00) = '" . ciniki_core_dbQuote($ciniki, $args['lv']) . "' "
+                    . ") ";
+            }
+            $strsql .= "ORDER BY sections.sequence, sections.name "
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
