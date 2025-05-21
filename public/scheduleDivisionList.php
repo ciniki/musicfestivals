@@ -62,6 +62,7 @@ function ciniki_musicfestivals_scheduleDivisionList($ciniki) {
                 . ") "
             . "WHERE divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND divisions.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "ORDER BY divisions.division_date, divisions.id  "
             . "";
     } else {
         $strsql .= "FROM ciniki_musicfestival_schedule_divisions AS divisions "
