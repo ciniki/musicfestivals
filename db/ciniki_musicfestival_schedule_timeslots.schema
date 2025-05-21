@@ -49,6 +49,7 @@ create table ciniki_musicfestival_schedule_timeslots (
     slot_seconds int not null,
     flags tinyint unsigned not null,
     name varchar(150) not null,
+    shortname varchar(150) not null,
     groupname varchar(150) not null,
     start_num int not null,
     description varchar(2000) not null,
@@ -61,4 +62,4 @@ create table ciniki_musicfestival_schedule_timeslots (
     unique index (uuid),
     index (festival_id, sdivision_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.10';
+) ENGINE='InnoDB', COMMENT='v1.11';

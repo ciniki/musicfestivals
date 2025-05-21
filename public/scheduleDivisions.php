@@ -151,7 +151,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
             } else {
                 $strsql .= "TIME_FORMAT(slot_time, '%l:%i %p') AS slot_time, ";
             }
-            $strsql .= "timeslots.name, "
+            $strsql .= "IF(timeslots.shortname <> '', timeslots.shortname, timeslots.name) AS name, "
                 . "timeslots.groupname, "
                 . "timeslots.slot_seconds, "
                 . "timeslots.start_num, "
