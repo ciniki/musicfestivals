@@ -1,0 +1,6 @@
+#
+# Add message type
+#
+ALTER TABLE ciniki_musicfestival_messages ADD COLUMN mtype tinyint unsigned not null AFTER status;
+ALTER TABLE ciniki_musicfestival_messages COMMENT='v1.04';
+UPDATE ciniki_musicfestival_messages SET mtype = 10;

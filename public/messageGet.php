@@ -28,6 +28,7 @@ function ciniki_musicfestivals_messageGet($ciniki) {
         'schedule_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule'),
         'division_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Division'),
         'action'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Action'),
+        'mtype'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Message Type'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Flags'),
         'object'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Object'),
         'object_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Object ID'),
@@ -95,14 +96,22 @@ function ciniki_musicfestivals_messageGet($ciniki) {
     //
     // Check if there is an update the message flags
     //
-    elseif( isset($args['action']) && $args['action'] == 'updateflags' 
-        && isset($args['flags']) && $args['flags'] != '' 
-        ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-        $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.message', $args['message_id'], array('flags'=>$args['flags']), 0x04);
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.498', 'msg'=>'Unable to update the message', 'err'=>$rc['err']));
-        }
+    elseif( isset($args['action']) && $args['action'] == 'updateflags' ) {
+        if( isset($args['flags']) && $args['flags'] != '' ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+            $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.message', $args['message_id'], array('flags'=>$args['flags']), 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.498', 'msg'=>'Unable to update the message', 'err'=>$rc['err']));
+            }
+        } 
+        if( isset($args['mtype']) && $args['mtype'] != '' ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+            $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.message', $args['message_id'], array('mtype'=>$args['mtype']), 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.993', 'msg'=>'Unable to update the message', 'err'=>$rc['err']));
+            }
+        } 
+
     }
     elseif( isset($args['action']) && $args['action'] == 'extractrecipients' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'messageExtractRecipients');
@@ -134,6 +143,7 @@ function ciniki_musicfestivals_messageGet($ciniki) {
             'festival_id'=>'',
             'subject'=>'',
             'status'=>'10',
+            'mtype'=>'10',
             'flags' => 0x07,    // Default send to everybody
             'content'=>'',
             'dt_scheduled'=>'',
@@ -201,6 +211,7 @@ function ciniki_musicfestivals_messageGet($ciniki) {
             ) {
             $rc['message']['send'] = 'yes';
         }
+
 
         // 
         // Sort included/added to top when mail already sent/scheduled

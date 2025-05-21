@@ -640,6 +640,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'festival_id' => array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
             'subject' => array('name'=>'Subject'),
             'status' => array('name'=>'Status', 'default'=>'10'),
+            'mtype' => array('name'=>'Message Type', 'default'=>'10'),
             'flags' => array('name'=>'Options', 'default'=>'0'),
             'content' => array('name'=>'Content', 'default'=>''),
             'files' => array('name'=>'Files', 'default'=>''),

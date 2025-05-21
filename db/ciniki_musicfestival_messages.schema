@@ -19,12 +19,18 @@
 #                       30 - scheduled
 #                       50 - sent
 #
+# mtype:            The type of message being sent
+#
+#                       10 - default - Mass email, dedup email list
+#                       40 - Competitor Message (award notifications)
+#
 # flags:            The options for the message.
 #
 #                       0x01 - Include Competitors
 #                       0x02 - Include Teachers
 #                       0x04 - Include Accompanists 
 #                       0x08 
+#
 #
 # content:          The content of the message.
 #
@@ -47,6 +53,7 @@ create table ciniki_musicfestival_messages (
     festival_id int not null,
     subject varchar(250) not null,
     status tinyint unsigned not null,
+    mtype tinyint unsigned not null,
     flags tinyint unsigned not null,
     content text not null,
     files text not null,
@@ -58,4 +65,4 @@ create table ciniki_musicfestival_messages (
     primary key(id),
     index (tnid, uuid, last_updated),
     index (festival_id, dt_sent)
-) ENGINE='InnoDB', COMMENT='v1.03';
+) ENGINE='InnoDB', COMMENT='v1.04';

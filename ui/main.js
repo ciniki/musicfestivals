@@ -12806,24 +12806,21 @@ function ciniki_musicfestivals_main() {
             // # teachers
             // 'dt_sent':{'label':'Year', 'type':'text'},
             },
-        'excluded':{'label':'Include', 'aside':'yes', 'fields':{
-            'flags1':{'label':'', 'hidelabel':'yes', 'type':'flagspiece', 'default':'off', 'mask':0x07,
-            'field':'flags', 'toggle':'no', 'join':'yes',
-//            'flags':{'0':{'name':'Everybody'},'6':{'name':'Only Competitors'}, '5':{'name':'Only Teachers'}, '3':{'name':'Only Accompanists'}},
-            'flags':{},
-            'onchange':'M.ciniki_musicfestivals_main.messagerefs.updateFlags',
-                },
+        '_options':{'label':'Message Options', 'aside':'yes', 
+            'fields':{
+                'mtype':{'label':'Message Type', 'type':'toggle', 'toggles':{
+                        '10':'Mass Email',
+                        '40':'Competitors Directly',
+                    },
+                    'onchange':'M.ciniki_musicfestivals_main.messagerefs.updateFlags',
+                    },
+                'flags1':{'label':'Include', 'type':'flagspiece', 'default':'off', 'mask':0x07,
+                    'visible':function() { return M.ciniki_musicfestivals_main.messagerefs.data.mtype == '10' ? 'yes' : 'no'; },
+                    'field':'flags', 'toggle':'no', 'join':'yes',
+                    'flags':{},
+                    'onchange':'M.ciniki_musicfestivals_main.messagerefs.updateFlags',
+                    },
             }},
-/*        '_excluded':{'label':'', 'aside':'yes', 'fields':{
-            'flags1':{'label':'Exclude Competitors', 'type':'flagtoggle', 'default':'off', 'bit':0x01,
-                'field':'flags',
-                'onchange':'M.ciniki_musicfestivals_main.messagerefs.updateFlags',
-            },
-            'flags2':{'label':'Exclude Teachers', 'type':'flagtoggle', 'default':'off', 'bit':0x02,
-                'field':'flags',
-                'onchange':'M.ciniki_musicfestivals_main.messagerefs.updateFlags',
-                },
-            }}, */
         'objects':{'label':'Recipients', 'type':'simplegrid', 'num_cols':3, 'aside':'yes',
             'cellClasses':['label mediumlabel', '', 'alignright'],
             'noData':'No Recipients',
@@ -13088,6 +13085,8 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.messagerefs.updateFlags = function() {
+        var mtype = this.formValue('mtype');
+        console.log(mtype);
         var f = this.data.message.flags;
         if( (this.formValue('flags1')&0x01) == 0x01 ) {
             f |= 0x01;
@@ -13104,7 +13103,7 @@ function ciniki_musicfestivals_main() {
         } else {
             f &= 0xFFFB;
         }
-        if( f != this.data.message.flags ) {
+        if( mtype != this.data.mtype || f != this.data.message.flags ) {
             M.api.getJSONCb('ciniki.musicfestivals.messageGet', {'tnid':M.curTenantID, 
                 'message_id':this.message_id, 
                 'allrefs':'yes', 
@@ -13113,6 +13112,7 @@ function ciniki_musicfestivals_main() {
                 'schedule_id':this.schedule_id, 
                 'division_id':this.division_id,
                 'action':'updateflags',
+                'mtype':mtype,
                 'flags':f,
                 }, this.openFinish);
         } 
@@ -13162,6 +13162,7 @@ function ciniki_musicfestivals_main() {
         }
         var p = M.ciniki_musicfestivals_main.messagerefs;
         p.data = rsp;
+        p.data.mtype = rsp.message.mtype;
         p.data.flags = rsp.message.flags;
         p.data.details = rsp.message.details;
         p.data.objects = rsp.message.objects;
@@ -14234,13 +14235,13 @@ function ciniki_musicfestivals_main() {
         this.scheduledivisions.division_ids = [];
         this.scheduledivisions.participation = 'all';
         if( M.modFlagOn('ciniki.musicfestivals', 0x8000) ) {
-            this.messagerefs.sections.excluded.fields.flags1.flags = {
+            this.messagerefs.sections._options.fields.flags1.flags = {
                 '1':{'name':'Competitors'}, 
                 '2':{'name':'Teachers'}, 
                 '3':{'name':'Accompanists'}
                 };
         } else {
-            this.messagerefs.sections.excluded.fields.flags1.flags = {
+            this.messagerefs.sections._options.fields.flags1.flags = {
                 '1':{'name':'Competitors'}, 
                 '2':{'name':'Teachers'}
                 };
