@@ -1632,7 +1632,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "ssections.id AS ssection_id, "
                     . "ssections.name AS ssection_name, "
                     . "divisions.id AS division_id, "
-                    . "divisions.name AS division_name, "
+                    . "IF(divisions.shortname <> '', divisions.shortname, divisions.name) AS division_name, "
                     . "MIN(timeslots.slot_time) AS start_time "
                     . "FROM ciniki_musicfestival_registrations AS registrations "
                     . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("

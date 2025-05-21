@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_schedule_sections MODIFY COLUMN flags smallint unsigned not null;
+ALTER TABLE ciniki_musicfestival_schedule_sections COMMENT='v1.05';

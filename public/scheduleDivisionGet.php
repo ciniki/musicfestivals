@@ -92,6 +92,7 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
             . "divisions.location_id, "
             . "divisions.adjudicator_id, "
             . "divisions.name, "
+            . "divisions.shortname, "
             . "divisions.flags, "
             . "divisions.division_date, "
             . "divisions.address, "
@@ -103,7 +104,7 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'scheduledivisions', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'ssection_id', 'name', 'flags', 'division_date', 
+                'fields'=>array('festival_id', 'ssection_id', 'name', 'shortname', 'flags', 'division_date', 
                     'address', 'adjudicator_id', 'location_id', 'results_notes', 'results_video_url',
                     ),
                 'utctotz'=>array('division_date'=>array('timezone'=>'UTC', 'format'=>$date_format)),                ),

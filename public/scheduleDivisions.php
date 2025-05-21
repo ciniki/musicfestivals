@@ -37,6 +37,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
         'section_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus Section'),
         'class_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus Class'),
         'participation'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Participation'),
+        'lv'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Live/Virtual'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -113,15 +114,18 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
     // Get the list of available divisions
     //
     $strsql = "SELECT divisions.id, "
-        . "CONCAT_WS(' - ', sections.name, divisions.name, DATE_FORMAT(divisions.division_date, '%b %e')) AS name "
+        . "CONCAT_WS(' - ', sections.name, IF(divisions.shortname <> '', divisions.shortname, divisions.name), DATE_FORMAT(divisions.division_date, '%b %e')) AS name "
         . "FROM ciniki_musicfestival_schedule_sections AS sections "
         . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
             . "sections.id = divisions.ssection_id "
             . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "ORDER BY sections.sequence, sections.name, divisions.name "
+        . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
+    if( isset($args['lv']) && $args['lv'] > 0 ) {
+        $strsql .= "AND ((sections.flags&0x0300) = 0 OR (sections.flags&0x0300) = '" . ciniki_core_dbQuote($ciniki, $args['lv']) . "') ";
+    }
+    $strsql .= "ORDER BY sections.sequence, sections.name, divisions.name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(

@@ -430,6 +430,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'location_id'=>array('name'=>'Location', 'ref'=>'ciniki.musicfestivals.location', 'default'=>'0'),
             'adjudicator_id'=>array('name'=>'Adjudicator', 'ref'=>'ciniki.musicfestivals.adjudicator', 'default'=>'0'),
             'name'=>array('name'=>'Name'),
+            'shortname'=>array('name'=>'Name', 'shortname'=>'Short Name'),
             'flags'=>array('name'=>'Options', 'default'=>'0'),
             'division_date'=>array('name'=>'Date'),
             'address'=>array('name'=>'Address', 'default'=>''),

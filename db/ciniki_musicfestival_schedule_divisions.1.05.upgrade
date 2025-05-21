@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_schedule_divisions ADD COLUMN shortname varchar(150) not null AFTER name;
+ALTER TABLE ciniki_musicfestival_schedule_divisions COMMENT='v1.05';

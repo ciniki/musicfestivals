@@ -22,6 +22,7 @@ function ciniki_musicfestivals_scheduleDivisionUpdate(&$ciniki) {
         'location_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Location'),
         'adjudicator_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicator'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
+        'shortname'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Short Name'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'division_date'=>array('required'=>'no', 'blank'=>'no', 'type'=>'date', 'name'=>'Date'),
         'address'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address'),

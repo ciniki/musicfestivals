@@ -1008,8 +1008,20 @@ function ciniki_musicfestivals_main() {
                     },
                 'advancedscheduler':{
                     'label':'Open Scheduler', 
-                    'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x4000) && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'timeslots') == 'yes' ? 'yes' : 'no'; },
-                    'fn':'M.ciniki_musicfestivals_main.scheduledivisions.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.festival_id);',
+                    'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x4000) && !M.modFlagOn('ciniki.musicfestivals', 0x020000) && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'timeslots') == 'yes' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.scheduledivisions.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.festival_id,0);',
+                    },
+                'advancedlivescheduler':{
+                    'label':'Open Live Scheduler', 
+                    // Split Live/Virtual Festival and Advanced Scheduler
+                    'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x024000) && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'timeslots') == 'yes' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.scheduledivisions.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.festival_id,0x0100);',
+                    },
+                'advancedvirtualscheduler':{
+                    'label':'Open Virtual Scheduler', 
+                    // Split Live/Virtual Festival and Advanced Scheduler
+                    'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x024000) && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'timeslots') == 'yes' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.scheduledivisions.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.festival_id,0x0200);',
                     },
                 'email':{
                     'label':'Email All Scheduled',
@@ -8467,6 +8479,10 @@ function ciniki_musicfestivals_main() {
             'adjudicator1_id':{'label':'Adjudicator', 'type':'select', 
                 'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x0800) ? 'no' : 'yes'; },
                 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
+            'flags9':{'label':'Options', 'type':'flagspiece', 'mask':0x0300, 'field':'flags', 'join':'yes', 'toggle':'yes',
+                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x020000); },   // Split live/virtual festivals
+                'flags':{'0':{'name':'Both'}, '9':{'name':'Live'}, '10':{'name':'Virtual'}},
+                },
             }},
         '_schedule':{'label':'Schedule', 'aside':'yes', 'fields':{
             'flags1':{'label':'Release Schedule to Competitors', 'type':'flagtoggle', 'bit':0x01, 'field':'flags'},
@@ -9486,6 +9502,7 @@ function ciniki_musicfestivals_main() {
     this.scheduledivisions = new M.panel('Scheduler', 'ciniki_musicfestivals_main', 'scheduledivisions', 'mc', 'flex', 'sectioned', 'ciniki.musicfestivals.main.scheduledivisions');
     this.scheduledivisions.data = null;
     this.scheduledivisions.num_divisions = 3;
+    this.scheduledivisions.lv = 0;
     this.scheduledivisions.division_ids = [];
     this.scheduledivisions.festival_id = 0;
     this.scheduledivisions.section_id = 0;
@@ -9762,8 +9779,9 @@ function ciniki_musicfestivals_main() {
         }
         this.open();
     }
-    this.scheduledivisions.open = function(cb, fid) {
+    this.scheduledivisions.open = function(cb, fid, lv) {
         if( fid != null ) { this.festival_id = fid; }
+        if( lv != null ) { this.lv = lv; }
         if( M.ciniki_musicfestivals_main.festival.data['advanced-scheduler-num-divisions'] != null ) {
             this.num_divisions = parseInt(M.ciniki_musicfestivals_main.festival.data['advanced-scheduler-num-divisions']);
             if( this.num_divisions < 2 || this.num_divisions > 9 ) {
@@ -9781,6 +9799,7 @@ function ciniki_musicfestivals_main() {
             'section_id':this.section_id, 
             'class_id':this.class_id,
             'participation':this.participation,
+            'lv':this.lv,
             };
         for(var i = 1; i <= this.num_divisions; i++) {
             if( this.division_ids[i] == null ) {

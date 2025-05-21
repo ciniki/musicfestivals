@@ -25,6 +25,7 @@
 #                           0x08 - 
 #
 # name:                 The name for the category.
+# shortname:            The short name for the category.
 # groupname:            The group name if a split class. This will be automatically added to class name when separate classes is enabled.
 # start_num:            The number to start with for the first registration.
 #
