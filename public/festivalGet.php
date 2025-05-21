@@ -1672,7 +1672,6 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.959', 'msg'=>'Unable to load livegrid', 'err'=>$rc['err']));
                 }
                 $locations = isset($rc['locations']) ? $rc['locations'] : array();
-                error_log(print_r($locations,true));
                 $days = [];
 
                 foreach($locations as $lid => $location) {
