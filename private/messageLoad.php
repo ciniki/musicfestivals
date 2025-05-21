@@ -1761,6 +1761,11 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 return strcmp($adomain, $bdomain);
                 });
         }
+        elseif( isset($args['emaillist']) && $args['emaillist'] == 'yes' && $rsp['message']['mtype'] == 40 ) {
+            uasort($rsp['message']['emails'], function($a, $b) {
+                return strcmp($a['name'], $b['name']);
+                });
+        }
     }
 
     return $rsp;
