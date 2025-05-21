@@ -49,7 +49,7 @@ function ciniki_musicfestivals_templates_trophyRegistrationsPDF(&$ciniki, $tnid,
     $festival = $rc['festival'];
 
     if( !isset($args['trophies']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.690', 'msg'=>'No trophies specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.975', 'msg'=>'No trophies specified'));
     }
     $trophies = $args['trophies'];
 

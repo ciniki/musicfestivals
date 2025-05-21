@@ -178,7 +178,7 @@ function ciniki_musicfestivals_wng_syllabusResultsProcess(&$ciniki, $tnid, &$req
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.213', 'msg'=>'Unable to load syllabus', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.968', 'msg'=>'Unable to load syllabus', 'err'=>$rc['err']));
     }
     $sections = isset($rc['sections']) ? $rc['sections'] : array();
     foreach($sections as $sid => $sec) {

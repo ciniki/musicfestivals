@@ -63,7 +63,7 @@ function ciniki_musicfestivals_timeslotScheduleTimesRecalc(&$ciniki, $tnid, $arg
     if( preg_match("/^\s*([0-9]+):([0-9]+)/", $slot_time, $m) ) {
         $dt->setTime($m[1], $m[2], 0);
     } else {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.954', 'msg'=>'Unable to parse timeslot start time'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.990', 'msg'=>'Unable to parse timeslot start time'));
     }
 
     //

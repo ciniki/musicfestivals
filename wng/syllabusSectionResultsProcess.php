@@ -124,10 +124,10 @@ function ciniki_musicfestivals_wng_syllabusSectionResultsProcess(&$ciniki, $tnid
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'section');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.217', 'msg'=>'Unable to load section', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.969', 'msg'=>'Unable to load section', 'err'=>$rc['err']));
         }
         if( !isset($rc['section']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.218', 'msg'=>'Unable to find requested section'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.970', 'msg'=>'Unable to find requested section'));
         }
         $syllabus_section = $rc['section'];
         $section['festival_id'] = $syllabus_section['festival_id'];
@@ -187,10 +187,10 @@ function ciniki_musicfestivals_wng_syllabusSectionResultsProcess(&$ciniki, $tnid
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'section');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.799', 'msg'=>'Unable to load section', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.988', 'msg'=>'Unable to load section', 'err'=>$rc['err']));
         }
         if( !isset($rc['section']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.868', 'msg'=>'Unable to find requested section'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.989', 'msg'=>'Unable to find requested section'));
         }
         $syllabus_section = $rc['section'];
     }
@@ -404,7 +404,7 @@ function ciniki_musicfestivals_wng_syllabusSectionResultsProcess(&$ciniki, $tnid
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.547', 'msg'=>'Unable to load tags', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.971', 'msg'=>'Unable to load tags', 'err'=>$rc['err']));
         }
         $levels = array(
             array(

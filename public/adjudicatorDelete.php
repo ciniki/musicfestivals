@@ -87,7 +87,7 @@ function ciniki_musicfestivals_adjudicatorDelete(&$ciniki) {
     }
     if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
         $count = $rc['num']['items'];
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.119', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' schedule division' . ($count==1?'':'s') . ' with this adjudicator.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.963', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' schedule division' . ($count==1?'':'s') . ' with this adjudicator.'));
     }
 
     //
@@ -106,7 +106,7 @@ function ciniki_musicfestivals_adjudicatorDelete(&$ciniki) {
     }
     if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
         $count = $rc['num']['items'];
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.119', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' schedule section' . ($count==1?'':'s') . ' with this adjudicator.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.962', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' schedule section' . ($count==1?'':'s') . ' with this adjudicator.'));
     }
 
     //

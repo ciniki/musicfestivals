@@ -45,7 +45,7 @@ function ciniki_musicfestivals_wng_trophyWinnersProcess(&$ciniki, $tnid, &$reque
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'section');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.561', 'msg'=>'Unable to load section', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.972', 'msg'=>'Unable to load section', 'err'=>$rc['err']));
         }
         if( isset($rc['section']) ) {
             $settings = json_decode($rc['section']['settings'], true);

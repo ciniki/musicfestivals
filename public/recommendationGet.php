@@ -145,7 +145,7 @@ function ciniki_musicfestivals_recommendationGet($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.598', 'msg'=>'Unable to load entries', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.973', 'msg'=>'Unable to load entries', 'err'=>$rc['err']));
         }
         $recommendation['entries'] = isset($rc['entries']) ? $rc['entries'] : array();
         foreach($recommendation['entries'] as $eid => $entry) {

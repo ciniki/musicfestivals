@@ -174,7 +174,7 @@ function ciniki_musicfestivals_trophyRegistrationsPDF($ciniki) {
         'marks' => isset($args['marks']) ? $args['marks'] : 'no',
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.744', 'msg'=>'Unable to generate PDF', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.983', 'msg'=>'Unable to generate PDF', 'err'=>$rc['err']));
     }
     if( isset($rc['pdf']) ) {
         $rc['pdf']->Output($rc['filename'], 'I');
