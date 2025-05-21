@@ -12825,9 +12825,9 @@ function ciniki_musicfestivals_main() {
             'cellClasses':['label mediumlabel', '', 'alignright'],
             'noData':'No Recipients',
             },
-        '_extract':{'label':'', 'aside':'yes', 'buttons':{
-            'extract':{'label':'Extract Recipients', 'fn':'M.ciniki_musicfestivals_main.messagerefs.extractRecipients();'},
-            }},
+//        '_extract':{'label':'', 'aside':'yes', 'buttons':{
+//            'extract':{'label':'Extract Recipients', 'fn':'M.ciniki_musicfestivals_main.messagerefs.extractRecipients();'},
+//            }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'sections', 'tabs':{
             'sections':{'label':'Syllabus', 'fn':'M.ciniki_musicfestivals_main.messagerefs.switchTab("sections");'},
             'categories':{'label':'Categories', 

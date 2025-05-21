@@ -1751,7 +1751,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             }
         }
 
-        if( isset($args['emaillist']) && $args['emaillist'] == 'yes' ) {
+        if( isset($args['emaillist']) && $args['emaillist'] == 'yes' && $rsp['message']['mtype'] == 10 ) {
             uasort($rsp['message']['emails'], function($a, $b) {
                 $x = explode('@', $a['email']);
                 $adomain = isset($x[1]) ? $x[1] : '';
