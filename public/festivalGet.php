@@ -230,7 +230,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'festivals', 'fname'=>'id', 
-                'fields'=>array('name', 'permalink', 'start_date', 'end_date', 'status', 'flags', 
+                'fields'=>array('id', 'name', 'permalink', 'start_date', 'end_date', 'status', 'flags', 
                     'earlybird_date', 'live_date', 'virtual_date', 'titles_end_dt', 'accompanist_end_dt', 'upload_end_dt',
                     'primary_image_id', 'description', 
                     'document_logo_id', 'document_header_msg', 'document_footer_msg',
@@ -2542,6 +2542,17 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 }
             }   
             elseif( isset($args['sdivision_id']) && $args['sdivision_id'] > 0 ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'scheduleTimeslotsLoad');
+                $rc = ciniki_musicfestivals_scheduleTimeslotsLoad($ciniki, $args['tnid'], [
+                    'festival' => $festival,
+                    'division_id' => $args['sdivision_id'],
+                    ]);
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                $festival['schedule_timeslots'] = $rc['timeslots'];
+                $nplists['schedule_timeslots'] = $rc['nplist'];
+                /*
                 $strsql = "SELECT timeslots.id, "
                     . "timeslots.festival_id, "
                     . "timeslots.sdivision_id, "
@@ -2678,36 +2689,6 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                                     $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, [
                                         'rounding' => isset($festival['scheduling-perftime-rounding']) ? $festival['scheduling-perftime-rounding'] : '',
                                         ]);
-/*                                    if( isset($reg['schedule_at_seconds']) > $schedule_at_seconds ) {
-                                        $schedule_at_seconds = $reg['schedule_at_seconds'];
-                                    }
-                                    if( isset($reg['schedule_ata_seconds']) > $schedule_ata_seconds ) {
-                                        $schedule_ata_seconds = $reg['schedule_ata_seconds'];
-                                    }
-                                    $ptime = 0;
-                                    for($i = 1; $i <= 8; $i++) {
-                                        if( $reg["perf_time{$i}"] != '' && $reg["perf_time{$i}"] > 0 ) {
-                                            $ptime += $reg["perf_time{$i}"];
-//                                            if( isset($festival['syllabus-schedule-time']) && $festival['syllabus-schedule-time'] == 'adjudication' 
-                                        }
-                                    }
-                                    // schedule time is total time
-//                                    if( isset($festival['syllabus-schedule-time']) && $festival['syllabus-schedule-time'] == 'total' 
-                                    if( ($reg['class_flags']&0x080000) == 0x080000 
-                                        && isset($reg['schedule_seconds']) && $reg['schedule_seconds'] > 0
-                                        ) {
-                                        $ptime = $reg['schedule_seconds'];
-                                    } elseif( ($reg['class_flags']&0x040000) == 0x040000 
-                                        && isset($reg['schedule_seconds']) && $reg['schedule_seconds'] > 0
-                                        ) {
-                                        $ptime += $reg['schedule_seconds'];
-                                    } 
-                                    $perf_time += $ptime;
-                                    $ptime_text = ' [?]';
-                                    if( $ptime > 0 ) {
-                                        $ptime_text = ' [' . intval($ptime/60) . ':' . str_pad(($ptime%60), 2, '0', STR_PAD_LEFT) . ']';
-                                    } 
-                                    */
 //                                    $ptime = $rc['perf_time_seconds'];
                                     $perf_time += $rc['perf_time_seconds'];
                                     $ptime_text = ' [' . $rc['perf_time'] . ']';
@@ -2772,7 +2753,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 } else {
                     $festival['schedule_timeslots'] = array();
                     $nplists['schedule_timeslots'] = array();
-                }
+                } */
             }
         }
 

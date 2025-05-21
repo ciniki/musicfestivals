@@ -56,6 +56,16 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
 
     //
+    // Load the festival settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $args['festival_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $festival = $rc['festival'];
+
+    //
     // Return default for new Schedule Division
     //
     if( $args['scheduledivision_id'] == 0 ) {
@@ -76,20 +86,20 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
     // Get the details for an existing Schedule Division
     //
     else {
-        $strsql = "SELECT ciniki_musicfestival_schedule_divisions.id, "
-            . "ciniki_musicfestival_schedule_divisions.festival_id, "
-            . "ciniki_musicfestival_schedule_divisions.ssection_id, "
-            . "ciniki_musicfestival_schedule_divisions.location_id, "
-            . "ciniki_musicfestival_schedule_divisions.adjudicator_id, "
-            . "ciniki_musicfestival_schedule_divisions.name, "
-            . "ciniki_musicfestival_schedule_divisions.flags, "
-            . "ciniki_musicfestival_schedule_divisions.division_date, "
-            . "ciniki_musicfestival_schedule_divisions.address, "
-            . "ciniki_musicfestival_schedule_divisions.results_notes, "
-            . "ciniki_musicfestival_schedule_divisions.results_video_url "
-            . "FROM ciniki_musicfestival_schedule_divisions "
-            . "WHERE ciniki_musicfestival_schedule_divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND ciniki_musicfestival_schedule_divisions.id = '" . ciniki_core_dbQuote($ciniki, $args['scheduledivision_id']) . "' "
+        $strsql = "SELECT divisions.id, "
+            . "divisions.festival_id, "
+            . "divisions.ssection_id, "
+            . "divisions.location_id, "
+            . "divisions.adjudicator_id, "
+            . "divisions.name, "
+            . "divisions.flags, "
+            . "divisions.division_date, "
+            . "divisions.address, "
+            . "divisions.results_notes, "
+            . "divisions.results_video_url "
+            . "FROM ciniki_musicfestival_schedule_divisions AS divisions "
+            . "WHERE divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND divisions.id = '" . ciniki_core_dbQuote($ciniki, $args['scheduledivision_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'scheduledivisions', 'fname'=>'id', 
@@ -105,6 +115,19 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.94', 'msg'=>'Unable to find Schedule Division'));
         }
         $scheduledivision = $rc['scheduledivisions'][0];
+
+        //
+        // Load the timeslots
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'scheduleTimeslotsLoad');
+        $rc = ciniki_musicfestivals_scheduleTimeslotsLoad($ciniki, $args['tnid'], [
+            'festival' => $festival,
+            'division_id' => $args['scheduledivision_id'],
+            ]);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $scheduledivision['timeslots'] = $rc['timeslots'];
     }
 
     $rsp = array('stat'=>'ok', 'scheduledivision'=>$scheduledivision);
