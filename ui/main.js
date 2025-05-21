@@ -2541,7 +2541,12 @@ function ciniki_musicfestivals_main() {
                         && d.ssections[sid]['divisions'] != null 
                         ) {
                         for(var did in d.ssections[sid]['divisions']) {
-                            txt += (txt != '' ? '<br/>' : '') + d.ssections[sid]['divisions'][did]['name'];
+                            console.log(d.ssections[sid]['divisions'][did]);
+                            txt += (txt != '' ? '<br/>' : '') 
+                                + '<span class="clickable" onclick="M.ciniki_musicfestivals_main.scheduledivision.open(\'M.ciniki_musicfestivals_main.festival.open();\',' + d.ssections[sid]['divisions'][did]['id'] + ',' + d.ssections[sid]['id'] + ',' + this.festival_id + ');">'
+                                + d.ssections[sid]['divisions'][did]['start_time'] 
+                                + ' - ' + d.ssections[sid]['divisions'][did]['name'];
+                                + '</span>';
                         }
                     }
                 }

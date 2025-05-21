@@ -1632,7 +1632,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "ssections.id AS ssection_id, "
                     . "ssections.name AS ssection_name, "
                     . "divisions.id AS division_id, "
-                    . "divisions.name AS division_name "
+                    . "divisions.name AS division_name, "
+                    . "MIN(timeslots.slot_time) AS start_time "
                     . "FROM ciniki_musicfestival_registrations AS registrations "
                     . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
                         . "registrations.timeslot_id = timeslots.id "
@@ -1647,14 +1648,15 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         . "AND ssections.name <> 'Unscheduled' "
                         . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                         . ") "
-                    . "INNER JOIN ciniki_musicfestival_locations AS locations ON ("
+                    . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
                         . "divisions.location_id = locations.id "
                         . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                         . ") "
                     . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                     . "AND registrations.participation = 0 "
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . "ORDER BY locations.sequence, location_name, ssections.sequence, ssections.name "
+                    . "GROUP BY divisions.id "
+                    . "ORDER BY locations.sequence, location_name, ssections.sequence, ssections.name, start_time "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -1665,7 +1667,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         'fields'=>array('id'=>'ssection_id', 'name'=>'ssection_name'),
                         ),
                     array('container'=>'divisions', 'fname'=>'division_id', 
-                        'fields'=>array('id'=>'division_id', 'name'=>'division_name'),
+                        'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'start_time'),
+                        'utctotz'=>array(
+                            'start_time'=>array('format'=>'g:s a', 'timezone'=>'UTC'),
+                            ),
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
