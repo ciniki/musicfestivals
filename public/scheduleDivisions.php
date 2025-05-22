@@ -416,7 +416,11 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                         $perf_time_str = $slot_length;
                     }
                 }
-                $rsp["timeslots{$i}"][$tid]['perf_time_text'] = '[' . $perf_time_str . ']';
+                if( $perf_time_str != '' ) {
+                    $rsp["timeslots{$i}"][$tid]['perf_time_text'] = '[' . $perf_time_str . ']';
+                } else {
+                    $rsp["timeslots{$i}"][$tid]['perf_time_text'] = '';
+                }
             }
         }
     }
