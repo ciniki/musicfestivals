@@ -37,6 +37,10 @@ function ciniki_musicfestivals_scheduleDivisionList($ciniki) {
         return $rc;
     }
 
+    if( preg_match("/,/", $args['class_code']) ) {
+        $args['class_codes'] = explode(',', $args['class_code']);
+    }
+
     //
     // Get the list of scheduledivisions
     //
@@ -56,13 +60,18 @@ function ciniki_musicfestivals_scheduleDivisionList($ciniki) {
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
-                . "registrations.class_id = classes.id "
-                . "AND classes.code = '" . ciniki_core_dbQuote($ciniki, $args['class_code']) . "' "
-                . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "registrations.class_id = classes.id ";
+        if( isset($args['class_codes']) ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
+            $strsql .= "AND classes.code IN (" . ciniki_core_dbQuoteIDs($ciniki, $args['class_codes']) . ") ";
+        } else {
+            $strsql .= "AND classes.code = '" . ciniki_core_dbQuote($ciniki, $args['class_code']) . "' ";
+        }
+        $strsql .= "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND divisions.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-            . "ORDER BY divisions.division_date, divisions.id  "
+            . "ORDER BY divisions.division_date, divisions.shortname, divisions.name, divisions.id  "
             . "";
     } else {
         $strsql .= "FROM ciniki_musicfestival_schedule_divisions AS divisions "
