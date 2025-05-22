@@ -8731,6 +8731,7 @@ function ciniki_musicfestivals_main() {
         'general':{'label':'Division', 'aside':'yes', 'fields':{
             'ssection_id':{'label':'Section', 'required':'yes', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}},
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
+            'shortname':{'label':'Short Name', 'type':'text'},
             'division_date':{'label':'Date', 'required':'yes', 'type':'date'},
             'adjudicator_id':{'label':'Adjudicator', 'type':'select', 
                 'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x0800); },
@@ -9004,6 +9005,7 @@ function ciniki_musicfestivals_main() {
             'sdivision_id':{'label':'Division', 'required':'yes', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}},
             'slot_time':{'label':'Time', 'required':'yes', 'type':'text', 'size':'small'},
             'name':{'label':'Name', 'type':'text'},
+            'shortname':{'label':'Short Name', 'type':'text'},
             'groupname':{'label':'Group Name', 'type':'text'},
             'flags2':{'label':'Type', 'type':'flagspiece', 'mask':0x02, 'field':'flags', 'join':'yes', 'toggle':'yes', 
                 'flags':{'0':{'name':'Regular Timeslot'}, '2':{'name':'Finals/Playoff Timeslot'}},
