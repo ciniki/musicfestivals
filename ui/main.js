@@ -9747,7 +9747,7 @@ function ciniki_musicfestivals_main() {
         return '';
     }
     this.scheduledivisions.rowFn = function(s, i, d) {
-        return '';
+        return null;
         if( s.match(/^timeslot/) || s == 'unscheduled_registrations' ) {    
             return 'M.ciniki_musicfestivals_main.registration.open(\'M.ciniki_musicfestivals_main.scheduledivisions.open();\',\'' + d.id + '\',0,0,M.ciniki_musicfestivals_main.scheduledivisions.festival_id, null,\'festival\');';
         }
