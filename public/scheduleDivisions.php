@@ -135,6 +135,46 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.796', 'msg'=>'Unable to load divisions', 'err'=>$rc['err']));
     }
     $rsp['divisions'] = isset($rc['divisions']) ? $rc['divisions'] : array();
+
+    //
+    // Load accompanist numbers
+    //
+    $strsql = "SELECT divisions.division_date, "
+        . "accompanists.display_name AS name, "
+        . "COUNT(registrations.id) AS num_reg "
+        . "FROM ciniki_musicfestival_registrations AS registrations "
+        . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+            . "registrations.timeslot_id = timeslots.id "
+            . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+            . "timeslots.sdivision_id = divisions.id "
+            . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "INNER JOIN ciniki_customers AS accompanists ON ("
+            . "registrations.accompanist_customer_id = accompanists.id "
+            . "AND accompanists.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "AND registrations.accompanist_customer_id > 0 "
+        . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "GROUP BY name, division_date "
+        . "ORDER BY name, division_date "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'accompanists', 'fname'=>'name', 
+            'fields'=>array('name'),
+            ),
+        array('container'=>'divisions', 'fname'=>'division_date', 
+            'fields'=>array('num_reg'),
+            ),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.994', 'msg'=>'Unable to load accompanists', 'err'=>$rc['err']));
+    }
+    $accompanists = isset($rc['accompanists']) ? $rc['accompanists'] : array();
+    error_log(print_r($accompanists['Jennifer Rozander'],true));
     
     //
     // Get the timeslots and registrations for each division
@@ -196,11 +236,27 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                 . "registrations.timeslot_id, "
                 . "TIME_FORMAT(registrations.timeslot_time, '%l:%i') AS timeslot_time, "
                 . "registrations.timeslot_sequence, "
+                . "divisions.division_date, "
                 . "CONCAT_WS(' ', registrations.notes, registrations.runsheet_notes, registrations.internal_notes) AS notes, "
                 . "IFNULL(competitors.id, 0) AS competitor_id, "
                 . "IFNULL(competitors.notes, '') AS competitor_notes, "
 //                . "GROUP_CONCAT(' ', competitors.notes) AS competitor_notes, "
                 . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
+/*                . "(SELECT COUNT(ar.id) "
+                    . "FROM ciniki_musicfestival_registrations AS ar "
+                    . "INNER JOIN ciniki_musicfestival_schedule_divisions AS ad ON ("
+                        . "divisions.division_date = ad.division_date "
+                        . "AND divisions.festival_id = ad.festival_id "
+                        . "AND ad.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS at ON ("
+                        . "ad.id = at.sdivision_id "
+                        . "AND at.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE registrations.accompanist_customer_id = ar.accompanist_customer_id "
+                    . "AND ar.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "AND ar.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") as accompanist_num_reg, " */
                 . "IFNULL(teachers.display_name, '') AS teacher_name, "
                 . "IFNULL(teachers2.display_name, '') AS teacher2_name, "
                 . "IFNULL(members.shortname, '') AS member_name, "
@@ -213,6 +269,10 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                 . "categories.name AS category_name, "
                 . "sections.name AS section_name "
                 . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
+                . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+                    . "timeslots.sdivision_id = divisions.id "
+                    . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
                 . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
                     . "timeslots.id = registrations.timeslot_id "
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -273,7 +333,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                         'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
                         'class_code', 'class_name', 'category_name', 'section_name', 
                         'class_flags', 'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds',
-                        'participation', 'notes', 
+                        'participation', 'notes', 'division_date', 
                         ),
                     'maps'=>array(
                         'participation'=>$participation_maps,
@@ -293,6 +353,12 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                 $num = ($timeslot['start_num'] > 1 ? $timeslot['start_num'] : 1);
                 if( isset($timeslot['registrations']) ) {
                     foreach($timeslot["registrations"] as $rid => $reg) {
+                        if( $reg['accompanist_name'] != ''  
+                            && isset($accompanists[$reg['accompanist_name']]['divisions'][$reg['division_date']]['num_reg'])
+                            ) {
+                            $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['accompanist_name'] .= 
+                                " (" . $accompanists[$reg['accompanist_name']]['divisions'][$reg['division_date']]['num_reg'] . ")";
+                        }
                         $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['timeslot_number'] = $num;
                         $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, [
                             'times'=>'startorgcalcsum', 
