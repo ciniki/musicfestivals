@@ -174,7 +174,6 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.994', 'msg'=>'Unable to load accompanists', 'err'=>$rc['err']));
     }
     $accompanists = isset($rc['accompanists']) ? $rc['accompanists'] : array();
-    error_log(print_r($accompanists['Jennifer Rozander'],true));
     
     //
     // Get the timeslots and registrations for each division
