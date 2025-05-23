@@ -615,7 +615,11 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                         $name = $timeslot['class_code'] . ' - ' . $timeslot['class_name']; 
                     }
                     // $name = $timeslot['class_code'] . ' - ' . $timeslot['class_name'];
-                } elseif( !isset($timeslot['registrations']) || count($timeslot['registrations']) == 0 ) {
+                } elseif( (!isset($timeslot['registrations']) || count($timeslot['registrations']) == 0)
+                    && isset($festival['runsheets-class-format']) 
+                    && ($festival['runsheets-class-format'] == 'code-section-category-class'
+                        || $festival['runsheets-class-format'] == 'code-category-class') 
+                    ) {
                     $name = $division['name'] . ' - ' . $timeslot['name'];
                 } else {
                     $name = $timeslot['name'];
