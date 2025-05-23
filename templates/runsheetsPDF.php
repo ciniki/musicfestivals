@@ -62,9 +62,13 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         . "customers.display_name AS adjudicator_name, "
         . "divisions.id AS division_id, "
         . "divisions.name AS division_name, "
-        . "locations.name AS location_name, "
-        . "CONCAT_WS(' ', divisions.division_date, timeslots.slot_time) AS division_sort_key, "
-        . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, ";
+        . "locations.name AS location_name, ";
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) { // Provincials
+        $strsql .= "CONCAT_WS(' ', divisions.division_date, divisions.name, timeslots.slot_time) AS division_sort_key, ";
+    } else {
+        $strsql .= "CONCAT_WS(' ', divisions.division_date, timeslots.slot_time) AS division_sort_key, ";
+    }
+    $strsql .= "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, ";
     if( isset($festival['runsheets-separate-classes']) && $festival['runsheets-separate-classes'] == 'yes' ) {
         $strsql .= "CONCAT_WS('-', timeslots.id, classes.id) AS timeslot_id, ";
     } else {
