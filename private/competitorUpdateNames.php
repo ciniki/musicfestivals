@@ -16,6 +16,8 @@
 //
 function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $args) {
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
+
     //
     // Check if festival passed
     //
@@ -57,6 +59,27 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $args) {
         . "registrations.title1, "
         . "registrations.title2, "
         . "registrations.title3, "
+        . "registrations.title4, "
+        . "registrations.title5, "
+        . "registrations.title6, "
+        . "registrations.title7, "
+        . "registrations.title8, "
+        . "registrations.movements1, "
+        . "registrations.movements2, "
+        . "registrations.movements3, "
+        . "registrations.movements4, "
+        . "registrations.movements5, "
+        . "registrations.movements6, "
+        . "registrations.movements7, "
+        . "registrations.movements8, "
+        . "registrations.composer1, "
+        . "registrations.composer2, "
+        . "registrations.composer3, "
+        . "registrations.composer4, "
+        . "registrations.composer5, "
+        . "registrations.composer6, "
+        . "registrations.composer7, "
+        . "registrations.composer8, "
         . "registrations.notes "
 /*        . "competitors.id AS competitor_id, "
         . "competitors.name AS competitor_name, "
@@ -91,7 +114,9 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $args) {
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'rtype', 'invoice_id', 'status', 
                 'display_name', 'public_name', 'private_name', 'pn_display_name', 'pn_public_name', 'pn_private_name',
-                'title1', 'title2', 'title3',
+                'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
+                'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
                 )),
 //        array('container'=>'competitors', 'fname'=>'competitor_id', 
@@ -306,10 +331,11 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $args) {
             // Check if anything changed in the cart
             //
             $update_item_args = array();
-            $notes = $registration['private_name'] 
-                . ($registration['title1'] != '' ? ' - ' . $registration['title1'] : '')
-                . ($registration['title2'] != '' ? ', ' . $registration['title2'] : '')
-                . ($registration['title3'] != '' ? ', ' . $registration['title3'] : '');
+            $notes = $registration['private_name'] ;
+            $rc = ciniki_musicfestivals_titlesMerge($ciniki, $tnid, $registration, ['basicnumbers'=>'yes']);
+            if( $rc['stat'] == 'ok' ) {
+                $notes .= "\n" . $rc['titles'];
+            }
 
             if( $item['notes'] != $notes ) {
                 $update_item_args['notes'] = $notes;
