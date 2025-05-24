@@ -662,7 +662,13 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                 $h = $pdf->getStringHeight($cw[1], $name); 
                 if( isset($timeslot['runsheet_notes']) && $timeslot['runsheet_notes'] != '' ) {
                     $pdf->SetFont('', '', 12);
-                    $h += $pdf->getStringHeight($cw[1], $name); 
+                    $h += $pdf->getStringHeight($cw[1], $timeslot['runsheet_notes']); 
+                }
+                if( isset($festival['runsheets-timeslot-description']) && $festival['runsheets-timeslot-description'] == 'yes'
+                    && isset($timeslot['description']) && $timeslot['description'] != '' 
+                    ) {
+                    $pdf->SetFont('', '', 12);
+                    $h += $pdf->getStringHeight($cw[1], $timeslot['description']); 
                 }
                 $timeslot['trophies'] = array();
                 if( isset($timeslot['registrations']) && count($timeslot['registrations']) > 0 ) {
@@ -811,6 +817,15 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                         $pdf->MultiCell($trw[1], 0, $trophy, 0, 'L', 0, 1);
                     }
                 }
+                if( isset($festival['runsheets-timeslot-description']) && $festival['runsheets-timeslot-description'] == 'yes'
+                    && isset($timeslot['description']) && $timeslot['description'] != '' 
+                    ) {
+                    $pdf->SetFont('', 'B', 11);
+                    $pdf->MultiCell($cw[0], 0, '', 0, 'L', 0, 0);
+                    $pdf->SetFont('', '', 11);
+                    $pdf->MultiCell($cw[1], 0, $timeslot['description'], 0, 'L', 0, 1);
+                }
+                $pdf->Ln(2);
                 if( isset($timeslot['runsheet_notes']) && $timeslot['runsheet_notes'] != '' ) {
                     $pdf->SetFont('', 'B', 11);
                     $pdf->MultiCell($cw[0], 0, 'Notes', 0, 'L', 0, 0);
