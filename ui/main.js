@@ -998,7 +998,7 @@ function ciniki_musicfestivals_main() {
                 'registrations':{'label':'Download Registrations PDF', 'fn':'M.ciniki_musicfestivals_main.festival.downloadTeacherRegistrations();'},
             }},
         'schedule_lv_tabs':{'label':'', 'aside':'yes', 'type':'paneltabs', 'selected':'all',
-            'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x020000) && M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['timeslots','comments','provincials','results','photos']); },
+            'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x020000) && M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['timeslots','comments','provincials','results','photos']) == 'yes' ? 'yes' : 'no' ; },
             'tabs':{
                 'all':{'label':'All', 'fn':'M.ciniki_musicfestivals_main.festival.switchScheduleLVTab("all");'},
                 'live':{'label':'Live', 'fn':'M.ciniki_musicfestivals_main.festival.switchScheduleLVTab("live");'},
