@@ -1678,7 +1678,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     array('container'=>'divisions', 'fname'=>'division_id', 
                         'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'start_time'),
                         'utctotz'=>array(
-                            'start_time'=>array('format'=>'g:s a', 'timezone'=>'UTC'),
+                            'start_time'=>array('format'=>'g:i a', 'timezone'=>'UTC'),
                             ),
                         ),
                     ));
