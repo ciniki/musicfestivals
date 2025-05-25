@@ -2564,7 +2564,7 @@ function ciniki_musicfestivals_main() {
                             txt += (txt != '' ? '<br/>' : '') 
                                 + '<span class="clickable" onclick="M.ciniki_musicfestivals_main.scheduledivision.open(\'M.ciniki_musicfestivals_main.festival.open();\',' + d.ssections[sid]['divisions'][did]['id'] + ',' + d.ssections[sid]['id'] + ',' + this.festival_id + ');">'
                                 + d.ssections[sid]['divisions'][did]['start_time'] 
-                                + ' - ' + d.ssections[sid]['divisions'][did]['name'];
+                                + ' - ' + d.ssections[sid]['divisions'][did]['name']
                                 + '</span>';
                         }
                     }
