@@ -192,6 +192,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
             }
             $strsql .= "IF(timeslots.shortname <> '', timeslots.shortname, timeslots.name) AS name, "
                 . "timeslots.groupname, "
+                . "timeslots.description, "
                 . "timeslots.slot_seconds, "
                 . "timeslots.start_num, "
 //                . "IF(timeslots.name='', TIME_FORMAT(slot_time, '%l:%i %p'), timeslots.name) AS name, "
@@ -321,7 +322,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'timeslots', 'fname'=>'id', 
-                    'fields'=>array('id', 'slot_time', 'slot_seconds', 'name', 'groupname', 'start_num'),
+                    'fields'=>array('id', 'slot_time', 'slot_seconds', 'name', 'groupname', 'description', 'start_num'),
                     ),
                 array('container'=>'registrations', 'fname'=>'reg_id', 
                     'fields'=>array('id'=>'reg_id', 'display_name', 'timeslot_id', 'timeslot_time', 'timeslot_sequence', 

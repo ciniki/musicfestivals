@@ -222,6 +222,8 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'scheduling-at-times',
         'advanced-scheduler-num-divisions',
         'advanced-scheduler-unscheduled-column',
+        'advanced-scheduler-timeslot-descriptions',
+        'advanced-scheduler-titles-show',
         'scheduling-seconds-show',
         'scheduling-timeslot-length',
         'scheduling-timeslot-startnum',

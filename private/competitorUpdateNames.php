@@ -325,27 +325,29 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $args) {
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.420', 'msg'=>'Unable to get invoice item', 'err'=>$rc['err']));
             }
-            $item = $rc['item'];
+            if( isset($rc['item']) ) {
+                $item = $rc['item'];
 
-            //
-            // Check if anything changed in the cart
-            //
-            $update_item_args = array();
-            $notes = $registration['private_name'] ;
-            $rc = ciniki_musicfestivals_titlesMerge($ciniki, $tnid, $registration, ['basicnumbers'=>'yes']);
-            if( $rc['stat'] == 'ok' ) {
-                $notes .= "\n" . $rc['titles'];
-            }
+                //
+                // Check if anything changed in the cart
+                //
+                $update_item_args = array();
+                $notes = $registration['private_name'] ;
+                $rc = ciniki_musicfestivals_titlesMerge($ciniki, $tnid, $registration, ['basicnumbers'=>'yes']);
+                if( $rc['stat'] == 'ok' ) {
+                    $notes .= "\n" . $rc['titles'];
+                }
 
-            if( $item['notes'] != $notes ) {
-                $update_item_args['notes'] = $notes;
-            }
-            if( count($update_item_args) > 0 ) {
-                $update_item_args['item_id'] = $item['id'];
-                ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemUpdate');
-                $rc = ciniki_sapos_hooks_invoiceItemUpdate($ciniki, $tnid, $update_item_args);
-                if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.417', 'msg'=>'Unable to update invoice', 'err'=>$rc['err']));
+                if( $item['notes'] != $notes ) {
+                    $update_item_args['notes'] = $notes;
+                }
+                if( count($update_item_args) > 0 ) {
+                    $update_item_args['item_id'] = $item['id'];
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemUpdate');
+                    $rc = ciniki_sapos_hooks_invoiceItemUpdate($ciniki, $tnid, $update_item_args);
+                    if( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.417', 'msg'=>'Unable to update invoice', 'err'=>$rc['err']));
+                    }
                 }
             }
         }
