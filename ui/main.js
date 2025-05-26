@@ -2605,7 +2605,7 @@ function ciniki_musicfestivals_main() {
             }
             if( d.timeslots != null && d.timeslots[(j-1)] != null ) {
                 //return M.multiline(d.timeslots[(j-1)].section_name, d.timeslots[(j-1)]['date_text'] + ' - ' + d.timeslots[(j-1)]['time_text']);
-                return M.multiline(d.timeslots[(j-1)].location_name, d.timeslots[(j-1)]['date_text'] + ' - ' + d.timeslots[(j-1)]['time_text']);
+                return M.multiline(d.timeslots[(j-1)].location_name, d.timeslots[(j-1)]['date_text'] + ' - ' + d.timeslots[(j-1)]['time_text'] + ' - ' + d.timeslots[(j-1)]['class_code'] + ' - ' + d.timeslots[(j-1)]['class_name']);
             }
             return '';
         }

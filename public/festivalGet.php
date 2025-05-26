@@ -2778,6 +2778,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "competitors.last, "
                 . "competitors.first, "
                 . "IF(ctype=50,competitors.name, CONCAT_WS(', ', competitors.last, competitors.first)) AS name, "
+                . "classes.code AS class_code, "
+                . "classes.name AS class_name, "
                 . "timeslots.id AS timeslot_id, "
                 . "DATE_FORMAT(divisions.division_date, '%b %D') AS date_text, "
                 . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS time_text, "
@@ -2794,6 +2796,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         . "OR registrations.competitor5_id = competitors.id "
                         . ") "
                     . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
+                    . "registrations.class_id = classes.id "
+                    . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
                     . "registrations.timeslot_id = timeslots.id "
@@ -2819,7 +2825,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'competitors', 'fname'=>'name', 'fields'=>array('id', 'name')),
                 array('container'=>'timeslots', 'fname'=>'timeslot_id', 
-                    'fields'=>array('id'=>'timeslot_id', 'section_name', 'location_name', 'date_text', 'time_text', 'groupname')),
+                    'fields'=>array('id'=>'timeslot_id', 'class_code', 'class_name', 'section_name', 'location_name', 'date_text', 'time_text', 'groupname')),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.445', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
