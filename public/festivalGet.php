@@ -2781,9 +2781,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "classes.code AS class_code, "
                 . "classes.name AS class_name, "
                 . "timeslots.id AS timeslot_id, "
-                . "DATE_FORMAT(divisions.division_date, '%b %D') AS date_text, "
-                . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS time_text, "
-                . "timeslots.groupname, "
+                . "DATE_FORMAT(divisions.division_date, '%b %D') AS date_text, ";
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+                $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS time_text, ";
+            } else {
+                $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS time_text, ";
+            }
+            $strsql .= "timeslots.groupname, "
                 . "ssections.name AS section_name, "
                 . "IFNULL(IF(locations.shortname <> '', locations.shortname, locations.name), '??') AS location_name "
                 . "FROM ciniki_musicfestival_registrations AS registrations "
