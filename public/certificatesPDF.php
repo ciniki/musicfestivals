@@ -143,7 +143,8 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
-            . "timeslots.id = registrations.timeslot_id ";
+            . "timeslots.id = registrations.timeslot_id "
+            . "AND registrations.status < 70 ";
     if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
         $strsql .= "AND registrations.participation = 0 ";
     } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {

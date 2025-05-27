@@ -708,26 +708,34 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                         if( $extra_info != '' ) {
                             $timeslot['registrations'][$rid]['name'] .= ' [' . $extra_info . ']';
                         }
+                        if( $reg["status"] == 75 ) {
+                            $timeslot['registrations'][$rid]['name'] = 'Withdrawn';
+                        }
+                        
                         for($i = 1; $i <= 8; $i++) {
                             if( $reg["title{$i}"] != '' ) {
-                                $timeslot['registrations'][$rid]['last_title'] = $i;
-                                $perf_time = '??';
-                                if( $reg["perf_time{$i}"] != '' && is_numeric($reg["perf_time{$i}"]) ) {
-                                    $perf_time = intval($reg["perf_time{$i}"]/60) 
-                                        . ':' 
-                                        . str_pad(($reg["perf_time{$i}"]%60), 2, '0', STR_PAD_LEFT);
-                                }
-                                $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
-                                if( isset($rc['title']) ) {
-                                    if( !isset($festival['runsheets-perftime-show']) 
-                                        || $festival['runsheets-perftime-show'] == 'yes'
-                                        ) {
-                                        $timeslot['registrations'][$rid]["title{$i}"] = "- [{$perf_time}] " . $rc['title'];
-                                    } else {
-                                        $timeslot['registrations'][$rid]["title{$i}"] = $rc['title'];
+                                if( $reg["status"] == 75 ) {
+                                    $timeslot['registrations'][$rid]["title{$i}"] = '';
+                                } else {
+                                    $timeslot['registrations'][$rid]['last_title'] = $i;
+                                    $perf_time = '??';
+                                    if( $reg["perf_time{$i}"] != '' && is_numeric($reg["perf_time{$i}"]) ) {
+                                        $perf_time = intval($reg["perf_time{$i}"]/60) 
+                                            . ':' 
+                                            . str_pad(($reg["perf_time{$i}"]%60), 2, '0', STR_PAD_LEFT);
                                     }
+                                    $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
+                                    if( isset($rc['title']) ) {
+                                        if( !isset($festival['runsheets-perftime-show']) 
+                                            || $festival['runsheets-perftime-show'] == 'yes'
+                                            ) {
+                                            $timeslot['registrations'][$rid]["title{$i}"] = "- [{$perf_time}] " . $rc['title'];
+                                        } else {
+                                            $timeslot['registrations'][$rid]["title{$i}"] = $rc['title'];
+                                        }
+                                    }
+                                    $h += $pdf->getStringHeight($tw[1], $timeslot['registrations'][$rid]["title{$i}"]);
                                 }
-                                $h += $pdf->getStringHeight($tw[1], $timeslot['registrations'][$rid]["title{$i}"]);
                             }
                         }
                         //
@@ -944,10 +952,14 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                             $border = 'BLTR';
                         }
                         $h = $pdf->getStringHeight($w[1], $reg['name']);
-                        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
-                            $pdf->MultiCell($w[0], $h, $reg['reg_time_text'], $border, 'C', 0, 0);
+                        if( $reg['participation'] == 1 ) {
+                            $pdf->MultiCell($w[0], $h, 'Virtual', $border, 'C', 0, 0);
                         } else {
-                            $pdf->MultiCell($w[0], $h, $num, $border, 'C', 0, 0);
+                            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+                                $pdf->MultiCell($w[0], $h, $reg['reg_time_text'], $border, 'C', 0, 0);
+                            } else {
+                                $pdf->MultiCell($w[0], $h, $num, $border, 'C', 0, 0);
+                            }
                         }
                         $pdf->MultiCell($w[1], $h, $reg['name'], 'BLTR', 'L', 0, 0);
 /*                        if( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
