@@ -515,7 +515,8 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                             'id' => "reg{$registration['id']}-video{$i}",
                             'ftype' => 'videocontent',
                             'size' => 'large',
-                            'label' => ($registration['max_titles'] > 1 ? 'Video #' . $i : 'Video'),
+                            'label' => ($registration['max_titles'] > 1 ? 'Video #' . $i : 'Video')
+                                . " - <a class='link' target='_blank' href='{$registration["video_url{$i}"]}'>{$registration["video_url{$i}"]}</a>",
                             'url' => $registration["video_url{$i}"],
                             );
                     }
