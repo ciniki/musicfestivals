@@ -315,6 +315,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS timeslot_time, "
         . "TIME_FORMAT(registrations.finals_timeslot_time, '%l:%i %p') AS finals_timeslot_time, "
         . "TIME_FORMAT(registrations.finals_timeslot_time, '%H%i') AS reg_finals_sort_time, "
+        . "registrations.status, "
         . "registrations.flags, "
         . "registrations.title1, "
         . "registrations.title2, "
@@ -444,7 +445,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 ),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
-            'fields'=>array('id'=>'reg_id', 'display_name', 'public_name', 'flags',
+            'fields'=>array('id'=>'reg_id', 'display_name', 'public_name', 'status', 'flags',
                 'timeslot_time', 'finals_timeslot_time', 'reg_finals_sort_time',
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
