@@ -81,7 +81,8 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         . "timeslots.start_num, "
         . "timeslots.description, "
         . "timeslots.runsheet_notes, "
-        . "registrations.id AS reg_id, ";
+        . "registrations.id AS reg_id, "
+        . "registrations.status AS reg_status, ";
     if( isset($festival['waiver-name-status']) && $festival['waiver-name-status'] != 'off' ) {
         if( isset($festival['runsheets-include-pronouns']) && $festival['runsheets-include-pronouns'] == 'yes' ) {
             $strsql .= "registrations.pn_private_name AS display_name, ";
@@ -248,7 +249,8 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                 ),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
-            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'participation', 'reg_time_text',
+            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'participation', 'reg_time_text', 
+                'status'=>'reg_status',
                 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
                 'notes', 'internal_notes', 'runsheet_notes'=>'runnote',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 

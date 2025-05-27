@@ -2088,7 +2088,7 @@ function ciniki_musicfestivals_main() {
         var args = {'tnid':M.curTenantID,
             'festival_id':this.festival_id,
             'adjudicator_id':this.adjudicator_id,
-//            'ipv':this.formValue('ipv'),
+            'ipv':this.sections.ipv_tabs.selected,
             };
         M.api.openPDF('ciniki.musicfestivals.runsheetsPDF',args);
     }
