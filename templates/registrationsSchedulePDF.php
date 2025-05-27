@@ -140,6 +140,7 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
             $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, ";
         }
         $strsql .= "DATE_FORMAT(divisions.division_date, '%b %e') AS division_date_text, "
+            . "IFNULL(timeslots.name, '') AS timeslot_name, "
             . "locations.name AS location_name, "
             . "locations.address1 AS location_address, "
             . "locations.city AS location_city, "
@@ -227,7 +228,7 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
                     'title7', 'composer7', 'movements7', 'perf_time7', 
                     'title8', 'composer8', 'movements8', 'perf_time8', 
                     'participation', 'fee', 'notes',
-                    'section_name', 'category_name',
+                    'section_name', 'category_name', 'timeslot_name',
                     'class_code', 'class_name', 'class_flags',
                     'slot_time_text', 'section_flags', 'division_date_text', 'location_name', 'location_address', 'location_city',
                     ),
@@ -443,6 +444,9 @@ function ciniki_musicfestivals_templates_registrationsSchedulePDF(&$ciniki, $tni
         $pdf->SetFont('arialunicodems', '', 12);
         if( ($festival['flags']&0x0100) == 0x0100 ) {
             $description = $registration['class_code'] . ' - ' . $registration['section_name'] . ' - ' . $registration['category_name'] . ' - ' . $registration['class_name'];
+        } elseif( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) && $registration['timeslot_name'] != '' ) {
+            $description = $registration['class_code'] . ' - ' . $registration['timeslot_name'];
+
         } else {
             $description = $registration['class_code'] . ' - ' . $registration['class_name'];
         }

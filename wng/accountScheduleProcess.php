@@ -104,6 +104,7 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
         $strsql .= "IFNULL(TIME_FORMAT(timeslots.slot_time, '%l:%i %p'), '') AS timeslot_time, ";
     }
     $strsql .= "IFNULL(DATE_FORMAT(divisions.division_date, '%b %D, %Y'), '') AS timeslot_date, "
+        . "IFNULL(timeslots.name, '') AS timeslot_name, "
         . "IFNULL(locations.name, '') AS location_name, "
         . "IFNULL(locations.address1, '') AS location_address, "
         . "IFNULL(locations.city, '') AS location_city, "
@@ -169,7 +170,7 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
-                    'timeslot_time', 'timeslot_date', 'timeslot_flags',
+                    'timeslot_time', 'timeslot_date', 'timeslot_flags', 'timeslot_name',
                     'location_name', 'location_address', 'location_city', 'location_province', 'location_postal',
                     'location_latitude', 'location_longitude',
                     ),
@@ -203,6 +204,10 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
         }
         if( $reg['participation'] == 1 ) {
             $registrations[$rid]['codename'] .= ' (Virtual)';
+        } elseif( $reg['participation'] == 0 && ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+            if( $reg['timeslot_name'] != '' ) {
+                $registrations[$rid]['codename'] = $reg['class_code'] . ' - ' . $reg['timeslot_name'];
+            }
         } elseif( $reg['participation'] == 0 && ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x020000) ) {
             $registrations[$rid]['codename'] .= '';
         } elseif( $reg['participation'] == 2 ) {

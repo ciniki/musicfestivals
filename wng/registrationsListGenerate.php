@@ -101,6 +101,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
         $strsql .= "IFNULL(TIME_FORMAT(timeslots.slot_time, '%l:%i %p'), '') AS timeslot_time, ";
     }
     $strsql .= "IFNULL(DATE_FORMAT(divisions.division_date, '%b %D, %Y'), '') AS timeslot_date, "
+        . "IFNULL(timeslots.name, '') AS timeslot_name, "
         . "IFNULL(locations.name, '') AS location_name, "
         . "IFNULL(locations.address1, '') AS location_address, "
         . "IFNULL(locations.city, '') AS location_city, "
@@ -175,7 +176,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
                 'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
                 'timeslot_time', 'timeslot_date', 'location_name', 'location_address', 'location_city', 
-                'ssection_flags', 'division_flags', 
+                'ssection_flags', 'division_flags', 'timeslot_name',
                 'mark', 'placement', 'level', 'comments',
                 ),
             ),
@@ -449,7 +450,11 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
                 && $registration['timeslot_time'] != ''
                 && $registration['timeslot_date'] != ''
                 ) {
-                $paid_registrations[$rid]['scheduled'] = $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] . '<br/>' . $registration['location_name'] . '<br/>' . $registration['location_address'] . ', ' . $registration['location_city'];
+                $paid_registrations[$rid]['scheduled'] = 
+                    ($registration['timeslot_name'] != '' ? $registration['timeslot_name'] . '<br/>' : '')
+                    . $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] 
+                    . '<br/>' . $registration['location_name'] 
+                    . '<br/>' . $registration['location_address'] . ', ' . $registration['location_city'];
             }
         }
         $blocks[] = array(
@@ -524,7 +529,11 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
                 && $registration['timeslot_time'] != ''
                 && $registration['timeslot_date'] != ''
                 ) {
-                $parent_registrations[$rid]['scheduled'] = $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] . '<br/>' . $registration['location_name'] . '<br/>' . $registration['location_address'] . ', ' . $registration['location_city'];
+                $parent_registrations[$rid]['scheduled'] = 
+                    ($registration['timeslot_name'] != '' ? $registration['timeslot_name'] . '<br/>' : '')
+                    . $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] 
+                    . '<br/>' . $registration['location_name'] 
+                    . '<br/>' . $registration['location_address'] . ', ' . $registration['location_city'];
             }
         }
         $blocks[] = array(
@@ -573,7 +582,11 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
                 && $registration['timeslot_time'] != ''
                 && $registration['timeslot_date'] != ''
                 ) {
-                $accompanist_registrations[$rid]['scheduled'] = $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] . '<br/>' . $registration['location_name'] . '<br/>' . $registration['location_address'] . ', ' . $registration['location_city'];
+                $accompanist_registrations[$rid]['scheduled'] = 
+                    ($registration['timeslot_name'] != '' ? $registration['timeslot_name'] . '<br/>' : '')
+                    . $registration['timeslot_date'] . ' - ' . $registration['timeslot_time'] 
+                    . '<br/>' . $registration['location_name'] 
+                    . '<br/>' . $registration['location_address'] . ', ' . $registration['location_city'];
             }
         }
         $blocks[] = array(
