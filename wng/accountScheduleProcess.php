@@ -147,14 +147,10 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
             . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE (registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
-            . " OR ("
-                . "registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
-                . "AND (registrations.flags&0x01) = 0x01 "
-                . ") "
-            . " OR ("
-                . "registrations.accompanist_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
-                . "AND (registrations.flags&0x02) = 0x02 "
-                . ") "
+            . " OR registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+            . " OR registrations.teacher2_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+            . " OR registrations.parent_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+            . " OR registrations.accompanist_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
             . ") "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' ";
@@ -237,6 +233,12 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
 
             if( $reg['location_latitude'] != '' || $reg['location_longitude'] != '' ) {
                 $blocks[] = array(
+                    'type' => 'contentphoto',
+                    'class' => 'content-view',
+                    'title' => $registrations[$rid]['display_name'],
+                    'content' => $content,
+                    );
+/*                $blocks[] = array(
                     'type' => 'googlemap',
                     'id' => "map-" . ($map_id+1),
                     'sid' => $map_id,
@@ -247,7 +249,7 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
                     'latitude' => $reg['location_latitude'],
                     'longitude' => $reg['location_longitude'],
                     );
-                $map_id++;
+                $map_id++; */
             }
         } else {
             $unscheduled_registrations[] = $registrations[$rid];
