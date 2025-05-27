@@ -635,6 +635,10 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                         if( isset($s['names']) && $s['names'] == 'private' ) {
                             $name = $registration['display_name'];
                         }
+                        if( $registration['status'] == 75 ) {
+                            $name = 'Withdrawn';
+                            $registration['member_name'] = '';
+                        }
 
                         //
                         // Check if titles required, then add line for each title, otherwise add names
@@ -664,6 +668,9 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                                         $titles .= "<div class='perf-title'>{$rc['title']}</div>";
                                     }
                                 }
+                            }
+                            if( $registration['status'] == 75 ) {
+                                $titles = '';
                             }
                             //
                             // Finals/playoffs timeslots
