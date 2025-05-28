@@ -214,12 +214,6 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             . "OR divisions.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' "
             . ") ";
     }
-    if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
-//        $strsql .= "AND (registrations.participation < 1 || ISNULL(registrations.participation) ) ";
-        $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";
-    } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
-        $strsql .= "AND registrations.participation = 1 ";
-    }
 //    if( isset($args['adjudicator_id']) && $args['adjudicator_id'] > 0 ) {
 //        $strsql .= "ORDER BY divisions.division_date, divisions.name, slot_time, registrations.timeslot_sequence, class_code, registrations.display_name ";
 //    } else {
@@ -276,6 +270,50 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             });
     }
 
+    //
+    // Filter out live or virtual if requested
+    //
+    if( isset($args['ipv']) && ($args['ipv'] == 'inperson' || $args['ipv'] == 'virtual') ) {
+        foreach($sections as $sid => $section) {
+            $section_num_reg = 0;
+            if( isset($section['divisions']) ) {
+                foreach($section['divisions'] as $did => $division) {
+                    if( isset($division['timeslots']) ) {
+                        foreach($division['timeslots'] as $tid => $timeslot) {
+                            if( isset($timeslot['registrations']) ) {
+                                $start_num_reg = count($timeslot['registrations']);
+                                foreach($timeslot['registrations'] as $rid => $reg) {
+                                    if( $args['ipv'] == 'inperson' && $reg['participation'] != 0 && $reg['participation'] != 2 ) {
+                                        unset($timeslot['registrations'][$rid]);
+                                        unset($sections[$sid]['divisions'][$sid]['timeslots'][$tid]['registrations'][$rid]);
+                                    }
+                                    elseif( $args['ipv'] == 'virtual' && $reg['partication'] != 1 && $reg['participation'] != 3 ) {
+                                        unset($timeslot['registrations'][$rid]);
+                                        unset($sections[$sid]['divisions'][$sid]['timeslots'][$tid]['registrations'][$rid]);
+                                    } 
+                                    else {
+                                        $section_num_reg++;
+                                    }
+                                }
+                                if( $start_num_reg > 0 && count($timeslot['registrations']) == 0 ) {
+                                    unset($division['timeslots'][$tid]);
+                                    unset($sections[$sid]['divisions'][$sid]['timeslots'][$tid]);
+                                }
+                            }
+                        }
+                    } else {
+                        unset($sections[$sid]['divisions'][$did]);
+                    }
+                }
+            }
+            if( !isset($section['divisions']) || count($section['divisions']) == 0 ) {
+                unset($sections[$sid]['divisions']);
+            }
+            if( $section_num_reg == 0 ) {
+                unset($sections[$sid]);
+            }
+        }
+    }
 
     //
     // Load competitor notes
