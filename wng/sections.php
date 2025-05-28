@@ -320,6 +320,22 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     //
     // Section to display the schedules for a festival
     //
+    $sections['ciniki.musicfestivals.scheduleoverview'] = array(
+        'name' => 'Schedule Overview',
+        'module' => 'Music Festivals',
+        'settings' => array(
+            'title' => array('label'=>'Title', 'type'=>'text'),
+            'notreleased' => array('label'=>'Not Released Intro', 'type'=>'textarea'),
+            'festival-id' => array('label'=>'Festival', 'type'=>'select', 
+                'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                'options'=>$festivals,
+                ),
+            ),
+        );
+
+    //
+    // Section to display the schedules for a festival
+    //
     $sections['ciniki.musicfestivals.schedules'] = array(
         'name' => 'Schedules',
         'module' => 'Music Festivals',
