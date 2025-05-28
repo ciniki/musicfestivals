@@ -341,140 +341,142 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
     //
     require_once($ciniki['config']['ciniki.core']['lib_dir'] . '/tcpdf/tcpdf.php');
 
-    class MYPDF extends TCPDF {
-        //Page header
-        public $left_margin = 18;
-        public $right_margin = 18;
-        public $top_margin = 15;
-        public $header_visible = 'yes';
-        public $header_image = null;
-        public $header_title = '';
-        public $header_sub_title = '';
-        public $header_msg = '';
-        public $header_height = 0;      // The height of the image and address
-        public $footer_visible = 'yes';
-        public $footer_msg = '';
-        public $tenant_details = array();
+    if( !class_exists('MYPDF') ) {
+        class MYPDF extends TCPDF {
+            //Page header
+            public $left_margin = 18;
+            public $right_margin = 18;
+            public $top_margin = 15;
+            public $header_visible = 'yes';
+            public $header_image = null;
+            public $header_title = '';
+            public $header_sub_title = '';
+            public $header_msg = '';
+            public $header_height = 0;      // The height of the image and address
+            public $footer_visible = 'yes';
+            public $footer_msg = '';
+            public $tenant_details = array();
 
-        public function Header() {
-            if( $this->header_visible == 'yes' ) {
-                //
-                // Check if there is an image to be output in the header.   The image
-                // will be displayed in a narrow box if the contact information is to
-                // be displayed as well.  Otherwise, image is scaled to be 100% page width
-                // but only to a maximum height of the header_height (set far below).
-                //
-                $img_width = 0;
-                if( $this->header_image != null ) {
-                    $height = $this->header_image->getImageHeight();
-                    $width = $this->header_image->getImageWidth();
-                    $image_ratio = $width/$height;
-                    $img_width = 60;
-                    $available_ratio = $img_width/$this->header_height;
-                    // Check if the ratio of the image will make it too large for the height,
-                    // and scaled based on either height or width.
-                    if( $available_ratio < $image_ratio ) {
-//                        $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, $img_width, 0, 'JPEG', '', 'L', 2, '150');
-                        $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, $this->header_height-8, 'JPEG', '', 'L', 2, '150', '', false, false, 0, true);
-                    } else {
-                        $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-8, 'JPEG', '', 'L', 2, '150');
-                    }
-                }
-
-                $this->Ln(8);
-                $this->SetFont('helvetica', 'B', 14);
-                if( $img_width > 0 ) {
-                    $this->Cell($img_width, 10, '', 0);
-                }
-                $this->setX($this->left_margin + $img_width);
-                $this->Cell(180-$img_width, 12, $this->header_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
-                $this->Ln(7);
-
-                $this->SetFont('helvetica', '', 14);
-                $this->setX($this->left_margin + $img_width);
-                $this->Cell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
-                $this->Ln(7);
-
-                $this->SetFont('helvetica', '', 12);
-                $this->setX($this->left_margin + $img_width);
-                $this->Cell(180-$img_width, 10, $this->header_msg, 0, false, 'R', 0, '', 0, false, 'M', 'M');
-                $this->Ln(6);
-            } else {
-                // No header
-            }
-
-        }
-
-        // Page footer
-        public function Footer() {
-            // Position at 15 mm from bottom
-            if( $this->footer_visible == 'yes' ) {
-                $this->SetY(-15);
-                $this->SetFont('helvetica', '', 10);
-                $this->Cell(90, 10, $this->footer_msg, 0, false, 'L', 0, '', 0, false, 'T', 'M');
-                $this->SetFont('helvetica', '', 10);
-                $this->Cell(90, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
-            } else {
-                // No footer
-            }
-        }
-
-        public function DivisionHeader($args, $section, $division, $continued) {
-            $fields = array();
-/*            if( isset($args['division_header_format']) && $args['division_header_format'] != 'default' ) {
-                $fields = explode('-', $args['division_header_format']);
-                if( $continued == 'yes' ) {
-                    $division[$fields[0]] .= ' (continued...)';
-                }
-                if( isset($args['division_header_labels']) && $args['division_header_labels'] == 'yes' ) {
-                    foreach($fields as $fid => $field) {
-                        if( $fid == 0 ) {
-                            continue;   // No label on first field
-                        }
-                        if( $field == 'date' ) {
-                            $division[$field] = 'Date: ' . $division[$field];
-                        } elseif( $field == 'name' ) {
-                            $division[$field] = 'Section: ' . $division[$field];
-                        } elseif( $field == 'adjudicator' ) {
-                            $division[$field] = 'Adjudicator: ' . $division[$field];
-                        } elseif( $field == 'address' ) {
-                            $division[$field] = 'Location: ' . $division[$field];
+            public function Header() {
+                if( $this->header_visible == 'yes' ) {
+                    //
+                    // Check if there is an image to be output in the header.   The image
+                    // will be displayed in a narrow box if the contact information is to
+                    // be displayed as well.  Otherwise, image is scaled to be 100% page width
+                    // but only to a maximum height of the header_height (set far below).
+                    //
+                    $img_width = 0;
+                    if( $this->header_image != null ) {
+                        $height = $this->header_image->getImageHeight();
+                        $width = $this->header_image->getImageWidth();
+                        $image_ratio = $width/$height;
+                        $img_width = 60;
+                        $available_ratio = $img_width/$this->header_height;
+                        // Check if the ratio of the image will make it too large for the height,
+                        // and scaled based on either height or width.
+                        if( $available_ratio < $image_ratio ) {
+    //                        $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, $img_width, 0, 'JPEG', '', 'L', 2, '150');
+                            $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, $this->header_height-8, 'JPEG', '', 'L', 2, '150', '', false, false, 0, true);
+                        } else {
+                            $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-8, 'JPEG', '', 'L', 2, '150');
                         }
                     }
-                } 
-            } else { */
-                // Default layout
-                $fields = array('section');
-                $division['section'] = $section['name'];
-                if( $continued == 'yes' ) {
-                    $division['section'] .= ' (continued...)';
+
+                    $this->Ln(8);
+                    $this->SetFont('helvetica', 'B', 14);
+                    if( $img_width > 0 ) {
+                        $this->Cell($img_width, 10, '', 0);
+                    }
+                    $this->setX($this->left_margin + $img_width);
+                    $this->Cell(180-$img_width, 12, $this->header_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
+                    $this->Ln(7);
+
+                    $this->SetFont('helvetica', '', 14);
+                    $this->setX($this->left_margin + $img_width);
+                    $this->Cell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
+                    $this->Ln(7);
+
+                    $this->SetFont('helvetica', '', 12);
+                    $this->setX($this->left_margin + $img_width);
+                    $this->Cell(180-$img_width, 10, $this->header_msg, 0, false, 'R', 0, '', 0, false, 'M', 'M');
+                    $this->Ln(6);
+                } else {
+                    // No header
                 }
-//            }
-            // Figure out how much room the division header needs
-            $h = 0;
-            $this->SetFont('', 'B', '16');
-            foreach($fields as $field) {
-                if( isset($division[$field]) && $division[$field] != '' ) {
-                    $h += $this->getStringHeight(180, $division[$field]);
+
+            }
+
+            // Page footer
+            public function Footer() {
+                // Position at 15 mm from bottom
+                if( $this->footer_visible == 'yes' ) {
+                    $this->SetY(-15);
+                    $this->SetFont('helvetica', '', 10);
+                    $this->Cell(90, 10, $this->footer_msg, 0, false, 'L', 0, '', 0, false, 'T', 'M');
+                    $this->SetFont('helvetica', '', 10);
+                    $this->Cell(90, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+                } else {
+                    // No footer
                 }
-                $this->SetFont('', '', '13');
             }
-            // Check if enough room for division header and at least 1 timeslot
-            if( $this->getY() > $this->getPageHeight() - $h - 80) {
-                $this->AddPage();
-            } elseif( $this->getY() > 80 ) {
-                $this->Ln(10); 
+
+            public function DivisionHeader($args, $section, $division, $continued) {
+                $fields = array();
+    /*            if( isset($args['division_header_format']) && $args['division_header_format'] != 'default' ) {
+                    $fields = explode('-', $args['division_header_format']);
+                    if( $continued == 'yes' ) {
+                        $division[$fields[0]] .= ' (continued...)';
+                    }
+                    if( isset($args['division_header_labels']) && $args['division_header_labels'] == 'yes' ) {
+                        foreach($fields as $fid => $field) {
+                            if( $fid == 0 ) {
+                                continue;   // No label on first field
+                            }
+                            if( $field == 'date' ) {
+                                $division[$field] = 'Date: ' . $division[$field];
+                            } elseif( $field == 'name' ) {
+                                $division[$field] = 'Section: ' . $division[$field];
+                            } elseif( $field == 'adjudicator' ) {
+                                $division[$field] = 'Adjudicator: ' . $division[$field];
+                            } elseif( $field == 'address' ) {
+                                $division[$field] = 'Location: ' . $division[$field];
+                            }
+                        }
+                    } 
+                } else { */
+                    // Default layout
+                    $fields = array('section');
+                    $division['section'] = $section['name'];
+                    if( $continued == 'yes' ) {
+                        $division['section'] .= ' (continued...)';
+                    }
+    //            }
+                // Figure out how much room the division header needs
+                $h = 0;
+                $this->SetFont('', 'B', '16');
+                foreach($fields as $field) {
+                    if( isset($division[$field]) && $division[$field] != '' ) {
+                        $h += $this->getStringHeight(180, $division[$field]);
+                    }
+                    $this->SetFont('', '', '13');
+                }
+                // Check if enough room for division header and at least 1 timeslot
+                if( $this->getY() > $this->getPageHeight() - $h - 80) {
+                    $this->AddPage();
+                } elseif( $this->getY() > 80 ) {
+                    $this->Ln(10); 
+                }
+                // Output the division header
+                $this->SetFont('', 'B', '16');
+                $this->SetCellPaddings(3, 3, 3, 3);
+                $this->SetFillColor(225);
+                foreach($fields as $field) {
+                    $this->MultiCell(180, 0, $division[$field], 0, 'C', 1, 1);
+                    $this->SetFont('', '', '13');
+                }
+                $this->SetFillColor(246);
+                $this->Ln(4);
             }
-            // Output the division header
-            $this->SetFont('', 'B', '16');
-            $this->SetCellPaddings(3, 3, 3, 3);
-            $this->SetFillColor(225);
-            foreach($fields as $field) {
-                $this->MultiCell(180, 0, $division[$field], 0, 'C', 1, 1);
-                $this->SetFont('', '', '13');
-            }
-            $this->SetFillColor(246);
-            $this->Ln(4);
         }
     }
 

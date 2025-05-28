@@ -1152,6 +1152,12 @@ function ciniki_musicfestivals_main() {
             'cellClasses':['', 'alignright'],
             'sortable':'yes',
             'sortTypes':['text', 'number'],
+            'menu':{    
+                'runsheets':{
+                    'label':'Download All Adjudicator Runsheets',
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadAdjudicatorsRunSheetsZIP();',
+                    },
+                },
             },
         'adjudicator_schedule':{'label':'Adjudicator Schedule', 'type':'simplegrid', 'num_cols':6, 
             'visible':function() { return M.ciniki_musicfestivals_main.festival.adjudicator_id > 0 && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'adjudicators') == 'yes' ? 'yes' : 'no'; },
@@ -2091,6 +2097,13 @@ function ciniki_musicfestivals_main() {
             'ipv':this.sections.ipv_tabs.selected,
             };
         M.api.openPDF('ciniki.musicfestivals.runsheetsPDF',args);
+    }
+    this.festival.downloadAdjudicatorsRunSheetsZIP = function(s) {
+        var args = {'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'ipv':this.sections.ipv_tabs.selected,
+            };
+        M.api.openFile('ciniki.musicfestivals.adjudicatorsRunsheetsZIP',args);
     }
     this.festival.downloadAdjudicatorCompetitorClassesPDF = function(s) {
         var args = {'tnid':M.curTenantID,
