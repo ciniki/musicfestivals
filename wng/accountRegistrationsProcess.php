@@ -2102,7 +2102,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         }
         $intro = '';
         if( isset($download_buttons) && $download_buttons != '' ) {
-            $intro = "<div class='aligncenter'><form action='' target='_blank' method='POST'>"
+            $intro = "<div class='aligncenter'><form action='{$base_url}' method='POST'>"
                     . "<input type='hidden' name='f-registration_id' value='{$registration['registration_id']}' />"
                     . "<input type='hidden' name='action' value='download' />"
                     . $download_buttons
@@ -2125,7 +2125,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'type' => 'html',
                 'class' => 'aligncenter',
                 'html' => "<div class='block-text aligncenter'><div class='wrap'><div class='content'>"
-                    . "<form action='' target='_blank' method='POST'>"
+                    . "<form action='{$base_url}' method='POST'>"
                     . "<input type='hidden' name='f-registration_id' value='{$registration['registration_id']}' />"
                     . "<input type='hidden' name='action' value='download' />"
                     . $download_buttons
