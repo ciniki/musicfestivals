@@ -8794,7 +8794,7 @@ function ciniki_musicfestivals_main() {
                 'results_video_url':{'label':'', 'hidelabel':'yes', 'type':'text'},
             }},
         'timeslots':{'label':'Time Slots', 'type':'simplegrid', 'num_cols':2, 
-            'visible':function() { return M.ciniki_musicfestivals_main.scheduledivision.sections._tabs.selected == 'timeslots' ? 'yes' : 'hidden'; },
+//            'visible':function() { return M.ciniki_musicfestivals_main.scheduledivision.sections._tabs.selected == 'timeslots' ? 'yes' : 'hidden'; },
             'cellClasses':['label multiline', 'multiline', 'fabuttons'],
             'noData':'No timeslots added',
             'menu':{
@@ -8828,10 +8828,16 @@ function ciniki_musicfestivals_main() {
         return {'method':'ciniki.musicfestivals.scheduleDivisionHistory', 'args':{'tnid':M.curTenantID, 'scheduledivision_id':this.scheduledivision_id, 'field':i}};
     }
     this.scheduledivision.cellValue = function(s, i, j, d) {
-        if( s == 'timeslots' ) {
+        if( s == 'timeslots' && this.sections._tabs.selected == 'timeslots' ) {
             switch(j) {
                 case 0: return M.multiline(d.slot_time_text, d.perf_time_text);
                 case 1: return '<span class="maintext">' + d.name + (d.groupname != '' ? ' - ' + d.groupname : '') + '</span><span class="subtext">' + d.description.replace(/\n/g, '<br/>') + '</span>';
+            }
+        }
+        if( s == 'timeslots' && this.sections._tabs.selected == 'results' ) {
+            switch(j) {
+                case 0: return M.multiline(d.slot_time_text, d.perf_time_text);
+                case 1: return '<span class="maintext">' + d.name + (d.groupname != '' ? ' - ' + d.groupname : '') + '</span><span class="subtext">' + d.results_notes.replace(/\n/g, '<br/>') + (d.results_notes != '' ? '<br/>' : '') + '</span><span class="subtext">' + M.hyperlink(d.results_video_url) + '</span>';
             }
         }
     }
@@ -8849,8 +8855,8 @@ function ciniki_musicfestivals_main() {
     }
     this.scheduledivision.switchTab = function(t) {
         this.sections._tabs.selected = t;
-        this.showHideSections(['timeslots', '_results', '_results_notes', '_results_video_url']);
-        this.refreshSection('_tabs');
+        this.showHideSections(['_results', '_results_notes', '_results_video_url']);
+        this.refreshSections(['_tabs', 'timeslots']);
     }
     this.scheduledivision.open = function(cb, sid, ssid, fid, list) {
         if( sid != null ) { this.scheduledivision_id = sid; }
