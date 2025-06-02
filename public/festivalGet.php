@@ -4710,7 +4710,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         }
                     }
 
-                    unset($member[$mid]['registrations']);
+                    unset($members[$mid]['registrations']);
                 }
                 $festival['stats_members_headerValues'] = array('Name', 'Registrations', 'Live', 'Virtual');
                 $festival['stats_members_dataMaps'] = array('name', 'num_registrations', 'num_live', 'num_virtual');
