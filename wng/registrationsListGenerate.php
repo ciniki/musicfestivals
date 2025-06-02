@@ -434,7 +434,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
                 . "<input class='button' type='submit' name='submit' value='View'>"
                 . "</form>";
             if( isset($download_buttons) && $download_buttons != '' ) {
-                $paid_registrations[$rid]['viewbutton'] .= "<form action='' target='_blank' method='POST'>"
+                $paid_registrations[$rid]['viewbutton'] .= "<form action='{$base_url}' method='POST'>"
                         . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
                         . "<input type='hidden' name='action' value='download' />"
                         . $download_buttons
@@ -513,7 +513,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
                 . "<input class='button' type='submit' name='submit' value='View'>"
                 . "</form>";
             if( isset($download_buttons) && $download_buttons != '' ) {
-                $parent_registrations[$rid]['viewbutton'] .= "<form action='' target='_blank' method='POST'>"
+                $parent_registrations[$rid]['viewbutton'] .= "<form action='{$base_url}' method='POST'>"
                         . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
                         . "<input type='hidden' name='action' value='download' />"
                         . $download_buttons
