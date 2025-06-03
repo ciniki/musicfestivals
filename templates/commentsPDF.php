@@ -575,6 +575,9 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                     if( $timeslot['groupname'] != '' ) {
                         $class_name .= ' - ' . $timeslot['groupname'];
                     }
+                    if( isset($args['schedulesection_id']) && $args['schedulesection_id'] == 'blank' ) {
+                        $class_name = '';
+                    }
                     $pdf->SetFont('helvetica', '', 12);
                     $lh = $pdf->getStringHeight($w[1], $class_name);
                     $pdf->SetFont('helvetica', 'B', 12);
