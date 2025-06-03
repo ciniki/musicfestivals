@@ -79,7 +79,9 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
     //
     // Load the schedule sections, divisions, timeslots, classes, registrations
     //
-    if( isset($args['registration_id']) && $args['registration_id'] > 0 ) {
+    if( (isset($args['registration_id']) && $args['registration_id'] > 0 )
+        || (isset($args['registration_uuid']) && $args['registration_uuid'] != '' )
+        ) {
         $strsql = "SELECT 1 AS section_id, "
             . "'' AS section_name, "
             . "1 AS division_id, "
@@ -168,9 +170,14 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                 . "divisions.ssection_id = ssections.id " 
                 . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
-            . "WHERE registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
-            . "";
+            . "WHERE registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
+        if( isset($args['registration_id']) ) {
+            $strsql .= "AND registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' ";
+        } elseif( isset($args['registration_uuid']) ) {
+            $strsql .= "AND registrations.uuid = '" . ciniki_core_dbQuote($ciniki, $args['registration_uuid']) . "' ";
+        } else {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.997', 'msg'=>'No registration specified'));
+        }
         if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
             $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";
         } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {

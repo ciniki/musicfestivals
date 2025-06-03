@@ -466,9 +466,56 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     //
     // Check if comments or certificate requested
     //
-//    error_log(print_r($request['uri_split'],true));
-//    error_log(print_r($request['cur_uri_pos'],true));
+    if( isset($request['uri_split'][3]) 
+        && $request['uri_split'][3] == 'comments'
+        ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'commentsPDF');
+        $rc = ciniki_musicfestivals_templates_commentsPDF($ciniki, $tnid, array(
+            'festival_id' => $festival['id'],
+            'registration_uuid' => $request['uri_split'][2]
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.463', 'msg'=>'Unable to load comments', 'err'=>$rc['err']));
+        }
+        if( isset($rc['pdf']) ) {
+            header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+            header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+            header('Cache-Control: no-cache, must-revalidate');
+            header('Pragma: no-cache');
+            header('Content-Type: application/pdf');
+            header('Cache-Control: max-age=0');
+            $rc['pdf']->Output($rc['filename'], 'I');
+            return array('stat'=>'exit');
+        }
+    }
+    if( isset($request['uri_split'][3]) 
+        && $request['uri_split'][3] == 'certificate'
+        ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationCertsPDF');
+        $rc = ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, array(
+            'festival_id' => $festival['id'],
+            'registration_uuid' => $request['uri_split'][2],
+            'single' => 'yes', // Don't add one for each competitor in registration
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.699', 'msg'=>'Unable to load certificate', 'err'=>$rc['err']));
+        }
+        if( isset($rc['pdf']) ) {
+            header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+            header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+            header('Cache-Control: no-cache, must-revalidate');
+            header('Pragma: no-cache');
+            header('Content-Type: application/pdf');
+            header('Cache-Control: max-age=0');
+            $rc['pdf']->Output('Certificate.pdf', 'I');
+            return array('stat'=>'exit');
+        }
+    }
 
+    if( isset($request['uri_split'][3]) 
+        && $request['uri_split'][3] == 'view'
+        ) {
+    }
     //
     // Load the registration specified
     //
@@ -602,8 +649,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $display = 'view';
             }
             elseif( isset($_POST['action']) && $_POST['action'] == 'download' 
-                && (isset($_POST['submit']) && $_POST['submit'] == 'Download Adjudicators Comments'
-                    || isset($_POST['submit']) && $_POST['submit'] == 'Comments'
+                && (isset($_POST['f-comments']) && $_POST['f-comments'] == 'Download Adjudicators Comments'
+//                    || isset($_POST['submit']) && $_POST['submit'] == 'Comments'
                     )
                 ) {
                 
@@ -627,8 +674,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 }
             }
             elseif( isset($_POST['action']) && $_POST['action'] == 'download' 
-                && (isset($_POST['submit']) && $_POST['submit'] == 'Download Certificate'
-                    || isset($_POST['submit']) && $_POST['submit'] == 'Certificate'
+                && (isset($_POST['f-certificate']) && $_POST['f-certificate'] == 'Download Certificate'
+//                    || isset($_POST['submit']) && $_POST['submit'] == 'Certificate'
                     )
                 ) {
                 //
@@ -2095,7 +2142,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     || (isset($rc['schedule']['division_flags']) && ($rc['schedule']['division_flags']&0x02) == 0x02)
                     )
                 ) {
-                $download_buttons .= "<input class='button' type='submit' name='submit' value='Download Adjudicators Comments'>";
+//                $download_buttons .= "<input class='button' type='submit' name='f-comments' value='Download Adjudicators Comments'>";
+                $download_buttons .= "<a class='button' target='_blank' href='{$base_url}/{$registration['uuid']}/comments'>Download Adjudicators Comments</a>";
+
             }
             if( $registration['comments'] != '' 
                 && ((isset($rc['schedule']['flags']) && ($rc['schedule']['flags']&0x04) == 0x04)
@@ -2103,16 +2152,19 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     )
                 ) {
                 $download_buttons .= ($download_buttons != '' ? ' &nbsp; ' : '')
-                    . "<input class='button' type='submit' name='submit' value='Download Certificate'>";
+                    . "<a class='button' target='_blank' href='{$base_url}/{$registration['uuid']}/certificate'>Download Certificate</a>";
+//                    . "<input class='button' type='submit' name='f-certificate' value='Download Certificate'>";
             }
         }
         $intro = '';
         if( isset($download_buttons) && $download_buttons != '' ) {
-            $intro = "<div class='aligncenter'><form action='{$base_url}' method='POST'>"
-                    . "<input type='hidden' name='f-registration_id' value='{$registration['registration_id']}' />"
-                    . "<input type='hidden' name='action' value='download' />"
+            $intro = "<div class='block-buttons aligncenter'><div class='content'><div class='buttons'>"
+//                    . "<form action='{$base_url}' method='POST'>"
+//                    . "<input type='hidden' name='f-registration_id' value='{$registration['registration_id']}' />"
+//                    . "<input type='hidden' name='action' value='download' />"
                     . $download_buttons
-                    . "</form></div>";
+//                    . "</form>"
+                    . "</div></div></div>";
         }
         $blocks[] = array(
             'type' => 'form',

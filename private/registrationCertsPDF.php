@@ -114,9 +114,14 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
             . "categories.section_id = sections.id " 
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
-        . "";
+        . "WHERE registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
+    if( isset($args['registration_id']) ) {
+        $strsql .= "AND registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' ";
+    } elseif( isset($args['registration_uuid']) ) {
+        $strsql .= "AND registrations.uuid = '" . ciniki_core_dbQuote($ciniki, $args['registration_uuid']) . "' ";
+    } else {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.997', 'msg'=>'No registration specified'));
+    }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'section_id', 

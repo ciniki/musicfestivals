@@ -47,6 +47,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
     // Get the list of registrations
     //
     $strsql = "SELECT registrations.id, "
+        . "registrations.uuid, "
         . "registrations.status, "
         . "registrations.invoice_id, "
         . "registrations.billing_customer_id, "
@@ -168,7 +169,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
-            'fields'=>array('id', 'status', 'payment_status', 'invoice_status', 'invoice_id', 
+            'fields'=>array('id', 'uuid', 'status', 'payment_status', 'invoice_status', 'invoice_id', 
                 'billing_customer_id', 'teacher_customer_id', 'teacher2_customer_id', 'accompanist_customer_id', 'member_id', 'display_name', 
                 'class_code', 'class_name', 'section_name', 'category_name', 'codename', 
                 'fee', 'participation', 
@@ -416,7 +417,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
             //
             // Check if comments can be downloaded
             //
-            $download_buttons = '';
+/*            $download_buttons = '';
             if( (($registration['ssection_flags']&0x02) == 0x02 || ($registration['division_flags']&0x02) == 0x02)
                 && $registration['comments'] != '' 
                 ) {
@@ -448,7 +449,24 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
 //                        . "<input type='hidden' name='action' value='download' />"
 //                        . $download_buttons
 //                        . "</form>";
+            } */
+//            $paid_registrations[$rid]['viewbutton'] = "<a class='button' href='{$base_url}/{$registration['uuid']}/view'>View</a>";
+            $paid_registrations[$rid]['viewbutton'] = "<form action='{$base_url}' method='POST'>"
+                . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
+                . "<input type='hidden' name='action' value='view' />"
+                . "<input class='button' type='submit' name='submit' value='View'>"
+                . "</form>";
+            if( (($registration['ssection_flags']&0x02) == 0x02 || ($registration['division_flags']&0x02) == 0x02)
+                && $registration['comments'] != '' 
+                ) {
+                $paid_registrations[$rid]['viewbutton'] .= " <a class='button' target='_blank' href='{$base_url}/{$registration['uuid']}/comments'>Comments</a>";
             }
+            if( (($registration['ssection_flags']&0x04) == 0x04 || ($registration['division_flags']&0x04) == 0x04)
+                && $registration['comments'] != '' 
+                ) {
+                $paid_registrations[$rid]['viewbutton'] .= " <a class='button' target='_blank' href='{$base_url}/{$registration['uuid']}/certificate'>Certificate</a>";
+            }
+
             $paid_registrations[$rid]['scheduled'] = '';
             //
             // If the registration has been schedule and schedule released
