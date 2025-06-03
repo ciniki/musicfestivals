@@ -522,7 +522,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
             //
             // Check if comments can be downloaded
             //
-            $download_buttons = '';
+/*            $download_buttons = '';
             if( (($registration['ssection_flags']&0x02) == 0x02 || ($registration['division_flags']&0x02) == 0x02)
                 && $registration['comments'] != '' 
                 ) {
@@ -533,18 +533,28 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
                 ) {
                 $download_buttons .= ($download_buttons != '' ? ' ' : '')
                     . "<input class='button' type='submit' name='submit' value='Certificate'>";
-            }
+            } */
             $parent_registrations[$rid]['viewbutton'] = "<form action='{$base_url}' method='POST'>"
                 . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
                 . "<input type='hidden' name='action' value='view' />"
                 . "<input class='button' type='submit' name='submit' value='View'>"
                 . "</form>";
-            if( isset($download_buttons) && $download_buttons != '' ) {
+/*            if( isset($download_buttons) && $download_buttons != '' ) {
                 $parent_registrations[$rid]['viewbutton'] .= "<form action='{$base_url}' method='POST'>"
                         . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
                         . "<input type='hidden' name='action' value='download' />"
                         . $download_buttons
                         . "</form>";
+            } */
+            if( (($registration['ssection_flags']&0x02) == 0x02 || ($registration['division_flags']&0x02) == 0x02)
+                && $registration['comments'] != '' 
+                ) {
+                $parent_registrations[$rid]['viewbutton'] .= " <a class='button' target='_blank' href='{$base_url}/{$registration['uuid']}/comments'>Comments</a>";
+            }
+            if( (($registration['ssection_flags']&0x04) == 0x04 || ($registration['division_flags']&0x04) == 0x04)
+                && $registration['comments'] != '' 
+                ) {
+                $parent_registrations[$rid]['viewbutton'] .= " <a class='button' target='_blank' href='{$base_url}/{$registration['uuid']}/certificate'>Certificate</a>";
             }
             $parent_registrations[$rid]['scheduled'] = '';
             //
