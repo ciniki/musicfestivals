@@ -1252,6 +1252,7 @@ function ciniki_musicfestivals_main() {
                 'backtracks':{'label':'All Backtracks', 'fn':'M.ciniki_musicfestivals_main.festival.downloadBacktracks(0);'},
                 'artwork':{'label':'All Artwork', 'fn':'M.ciniki_musicfestivals_main.festival.downloadArtwork(0);'},
                 'blankcomments':{'label':'Blank Comments', 'fn':'M.ciniki_musicfestivals_main.festival.downloadCommentsPDF("blank");'},
+                'blankcert':{'label':'Blank Certificate', 'fn':'M.ciniki_musicfestivals_main.festival.downloadCertificatesPDF("blank");'},
             }},
         'sbuttons2':{'label':'Current Section Downloads', 'aside':'no',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.schedulesection_id > 0 && M.ciniki_musicfestivals_main.festival.isSelected('schedule', 'downloads') == 'yes' ? 'yes' : 'no'; },
