@@ -41,6 +41,12 @@ function ciniki_musicfestivals_scheduleSectionHistory($ciniki) {
         return $rc;
     }
 
+    if( preg_match("/^flags([0-9]+)/", $args['field'], $m) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryFlagBit');
+        return ciniki_core_dbGetModuleHistoryFlagBit($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', 
+            $args['tnid'], 'ciniki_musicfestival_schedule_sections', $args['schedulesection_id'], 'flags', pow(2, ($m[1]-1)), 'No', 'Yes');
+    }
+
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
     return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', $args['tnid'], 'ciniki_musicfestival_schedule_sections', $args['schedulesection_id'], $args['field']);
 }
