@@ -420,13 +420,21 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
             if( (($registration['ssection_flags']&0x02) == 0x02 || ($registration['division_flags']&0x02) == 0x02)
                 && $registration['comments'] != '' 
                 ) {
-                $download_buttons .= "<input class='button' type='submit' name='submit' value='Comments'>";
+                $download_buttons .= "<form action='{$base_url}' method='POST'>"
+                        . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
+                        . "<input type='hidden' name='action' value='download' />"
+                        . "<input class='button' type='submit' name='submit' value='Comments'>"
+                        . "</form>";
             }
             if( (($registration['ssection_flags']&0x04) == 0x04 || ($registration['division_flags']&0x04) == 0x04)
                 && $registration['comments'] != '' 
                 ) {
                 $download_buttons .= ($download_buttons != '' ? ' ' : '')
-                    . "<input class='button' type='submit' name='submit' value='Certificate'>";
+                    . "<form action='{$base_url}' method='POST'>"
+                        . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
+                        . "<input type='hidden' name='action' value='download' />"
+                    . "<input class='button' type='submit' name='submit' value='Certificate'>"
+                    . "</form>";
             }
             $paid_registrations[$rid]['viewbutton'] = "<form action='{$base_url}' method='POST'>"
                 . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
@@ -434,11 +442,12 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
                 . "<input class='button' type='submit' name='submit' value='View'>"
                 . "</form>";
             if( isset($download_buttons) && $download_buttons != '' ) {
-                $paid_registrations[$rid]['viewbutton'] .= "<form action='{$base_url}' method='POST'>"
-                        . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
-                        . "<input type='hidden' name='action' value='download' />"
-                        . $download_buttons
-                        . "</form>";
+                $paid_registrations[$rid]['viewbutton'] .= $download_buttons;
+//                $paid_registrations[$rid]['viewbutton'] .= "<form action='{$base_url}' method='POST'>"
+//                        . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
+//                        . "<input type='hidden' name='action' value='download' />"
+//                        . $download_buttons
+//                        . "</form>";
             }
             $paid_registrations[$rid]['scheduled'] = '';
             //

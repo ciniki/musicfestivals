@@ -464,6 +464,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     }
 
     //
+    // Check if comments or certificate requested
+    //
+//    error_log(print_r($request['uri_split'],true));
+//    error_log(print_r($request['cur_uri_pos'],true));
+
+    //
     // Load the registration specified
     //
     if( isset($_POST['f-registration_id']) && $_POST['f-registration_id'] > 0 ) {
