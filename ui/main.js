@@ -1604,7 +1604,7 @@ function ciniki_musicfestivals_main() {
             'menu':{
                 'add':{
                     'label':'Add Entry',
-                    'label':'M.ciniki_musicfestivals_main.listentry.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.listsection_id,null);',
+                    'fn':'M.ciniki_musicfestivals_main.listentry.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.listsection_id,null);',
                     },
                 },
             'seqDrop':function(e,from,to) {
