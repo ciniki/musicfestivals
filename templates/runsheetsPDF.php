@@ -287,7 +287,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                                         unset($timeslot['registrations'][$rid]);
                                         unset($sections[$sid]['divisions'][$sid]['timeslots'][$tid]['registrations'][$rid]);
                                     }
-                                    elseif( $args['ipv'] == 'virtual' && $reg['partication'] != 1 && $reg['participation'] != 3 ) {
+                                    elseif( $args['ipv'] == 'virtual' && $reg['participation'] != 1 && $reg['participation'] != 3 ) {
                                         unset($timeslot['registrations'][$rid]);
                                         unset($sections[$sid]['divisions'][$sid]['timeslots'][$tid]['registrations'][$rid]);
                                     } 
