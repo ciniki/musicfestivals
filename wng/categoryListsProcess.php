@@ -33,17 +33,6 @@ function ciniki_musicfestivals_wng_categoryListsProcess(&$ciniki, $tnid, &$reque
     }
 
     //
-    // Check if list specified
-    //
-    if( isset($request['uri_split'][($request['cur_uri_pos']+1)])
-        && $request['uri_split'][($request['cur_uri_pos']+1)] != '' 
-        ) {
-        $section['settings']['list-id'] = $request['uri_split'][($request['cur_uri_pos']+1)];
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'listProcess');
-        return ciniki_musicfestivals_wng_listProcess($ciniki, $tnid, $request, $section); 
-    }
-
-    //
     // Show the list of lists
     //
     $strsql = "SELECT lists.id, "
@@ -72,6 +61,17 @@ function ciniki_musicfestivals_wng_categoryListsProcess(&$ciniki, $tnid, &$reque
 
     foreach($lists as $lid => $list) {
         $lists[$lid]['url'] = $request['page']['path'] . '/' . $list['id'];
+        //
+        // Check if list specified
+        //
+        if( isset($request['uri_split'][($request['cur_uri_pos']+1)])
+            && $request['uri_split'][($request['cur_uri_pos']+1)] != '' 
+            && $request['uri_split'][($request['cur_uri_pos']+1)] == $list['id']
+            ) {
+            $section['settings']['list-id'] = $request['uri_split'][($request['cur_uri_pos']+1)];
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'listProcess');
+            return ciniki_musicfestivals_wng_listProcess($ciniki, $tnid, $request, $section); 
+        }
     }
 
     if( isset($s['title']) && $s['title'] != '' ) {
