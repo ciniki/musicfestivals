@@ -1298,17 +1298,22 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $strsql .= "IFNULL(divisions.name, '') AS division_name, "
                     . "IFNULL(DATE_FORMAT(divisions.division_date, '%b %e'), '') AS division_date, "
                     . "IFNULL(IF(locations.shortname <> '', locations.shortname, locations.name), '') AS location_name, "
-                    . "IFNULL(ssections.name, '') AS section_name ";
+                    . "IFNULL(ssections.name, '') AS section_name, "
+                    . "GROUP_CONCAT(tags.tag_name SEPARATOR ', ') AS tags ";
 //                    . "competitors.id AS competitor_id, "
 //                    . "competitors.notes AS competitor_notes ";
                 $strsql .= "FROM ciniki_musicfestival_registrations AS registrations USE INDEX(festival_id_2) ";
                 if( isset($args['registration_tag']) && $args['registration_tag'] != '' ) {
-                    $strsql .= "INNER JOIN ciniki_musicfestival_registration_tags AS tags ON ("
-                        . "registrations.id = tags.registration_id "
-                        . "AND tags.tag_name = '" . ciniki_core_dbQuote($ciniki, $args['registration_tag']) . "' "
-                        . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    $strsql .= "INNER JOIN ciniki_musicfestival_registration_tags AS tags1 ON ("
+                        . "registrations.id = tags1.registration_id "
+                        . "AND tags1.tag_name = '" . ciniki_core_dbQuote($ciniki, $args['registration_tag']) . "' "
+                        . "AND tags1.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                         . ") ";
                 }
+                $strsql .= "LEFT JOIN ciniki_musicfestival_registration_tags AS tags ON ("
+                        . "registrations.id = tags.registration_id "
+                        . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") ";
                 $strsql .= "LEFT JOIN ciniki_customers AS teachers ON ("
                         . "registrations.teacher_customer_id = teachers.id "
                         . "AND teachers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -1371,37 +1376,24 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     if( isset($args['class_id']) && $args['class_id'] > 0 ) {
                         $strsql .= "AND class_id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' ";
                     }
-                    $strsql .= "AND categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' ";
+                    $strsql .= "AND categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
+                        . "GROUP BY registrations.id ";
                 } elseif( isset($args['registration_status']) && $args['registration_status'] != '' ) {
-                    $strsql .= "AND registrations.status = '" . ciniki_core_dbQuote($ciniki, $args['registration_status']) . "' ";
-/*                } elseif( isset($args['colour']) && $args['colour'] != '' ) {
-                    if( $args['colour'] == 'White' ) {
-                        $strsql .= "AND (registrations.flags&0xFF00) = 0 ";
-                    } elseif( $args['colour'] == 'Grey' ) {
-                        $strsql .= "AND (registrations.flags&0x0100) = 0x0100 ";
-                    } elseif( $args['colour'] == 'Teal' ) {
-                        $strsql .= "AND (registrations.flags&0x0200) = 0x0200 ";
-                    } elseif( $args['colour'] == 'Blue' ) {
-                        $strsql .= "AND (registrations.flags&0x0400) = 0x0400 ";
-                    } elseif( $args['colour'] == 'Purple' ) {
-                        $strsql .= "AND (registrations.flags&0x0800) = 0x0800 ";
-                    } elseif( $args['colour'] == 'Red' ) {
-                        $strsql .= "AND (registrations.flags&0x1000) = 0x1000 ";
-                    } elseif( $args['colour'] == 'Orange' ) {
-                        $strsql .= "AND (registrations.flags&0x2000) = 0x2000 ";
-                    } elseif( $args['colour'] == 'Yellow' ) {
-                        $strsql .= "AND (registrations.flags&0x4000) = 0x4000 ";
-                    } elseif( $args['colour'] == 'Green' ) {
-                        $strsql .= "AND (registrations.flags&0x8000) = 0x8000 ";
-                    } */
+                    $strsql .= "AND registrations.status = '" . ciniki_core_dbQuote($ciniki, $args['registration_status']) . "' "
+                        . "GROUP BY registrations.id ";
                 } elseif( isset($args['member_id']) && $args['member_id'] > 0 ) {
                     $strsql .= "AND registrations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' "
+                        . "GROUP BY registrations.id "
                         . "ORDER BY registrations.date_added DESC "
                         . "";
                 } elseif( isset($args['teacher_customer_id']) && $args['teacher_customer_id'] > 0 ) {
-                    $strsql .= "AND registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' ";
+                    $strsql .= "AND registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' "
+                        . "GROUP BY registrations.id ";
                 } elseif( isset($args['accompanist_customer_id']) && $args['accompanist_customer_id'] > 0 ) {
-                    $strsql .= "AND registrations.accompanist_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['accompanist_customer_id']) . "' ";
+                    $strsql .= "AND registrations.accompanist_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['accompanist_customer_id']) . "' "
+                        . "GROUP BY registrations.id ";
+                } else {
+                    $strsql .= "GROUP BY registrations.id ";
                 }
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -1425,7 +1417,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
                             'notes', 'internal_notes', 'runsheet_notes',
                             'mark', 'placement', 'level',
-                            'slot_time', 'division_name', 'division_date', 'location_name', 'section_name',
+                            'slot_time', 'division_name', 'division_date', 'location_name', 'section_name', 'tags',
                             ),
                         'utctotz'=>array(
                             'invoice_date'=>array('timezone'=>$intl_timezone, 'format'=>'M j'),

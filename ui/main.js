@@ -982,6 +982,8 @@ function ciniki_musicfestivals_main() {
                 'accompanist':{'label':'Accompanist', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("accompanist");'},
                 'schedule':{'label':'Schedule', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("schedule");'},
                 'marks':{'label':'Marks', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("marks");'},
+// Move tags into Marks tab, might need it's own tab in the future
+//                'tags':{'label':'Tags', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("tags");'},
             }},
         'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'registrations' && M.ciniki_musicfestivals_main.festival.section_id > -1 ? 'yes' : 'no'; },
@@ -2535,6 +2537,7 @@ function ciniki_musicfestivals_main() {
                 case 'mark': return d.mark;
                 case 'placement': return d.placement;
                 case 'level': return d.level;
+                case 'tags': return d.tags;
             }
         }
         if( s == 'registration_sections' || s == 'emails_sections' ) {
@@ -4055,10 +4058,10 @@ function ciniki_musicfestivals_main() {
             this.sections.registrations.sortTypes = ['text', 'text', 'time', 'text'];
             this.sections.registrations.num_cols = 4;
         } else if( this.sections.registrations_tabs.selected == 'marks' ) {
-            this.sections.registrations.headerValues = ['Class', 'Registrant', 'Teacher'];
-            this.sections.registrations.cellClasses = ['multiline', 'multiline', ''];
-            this.sections.registrations.dataMaps = ['class', 'registrant', 'teacher'];
-            this.sections.registrations.sortTypes = ['text', 'text', 'text'];
+            this.sections.registrations.headerValues = ['Class', 'Registrant'];
+            this.sections.registrations.cellClasses = ['multiline', 'multiline'];
+            this.sections.registrations.dataMaps = ['class', 'registrant'];
+            this.sections.registrations.sortTypes = ['text', 'text'];
             this.sections.registrations.num_cols = 3;
             if( this.data['comments-mark-ui'] != null && this.data['comments-mark-ui'] == 'yes' ) {
                 if( this.data['comments-mark-label'] != null && this.data['comments-mark-label'] != '' ) {
@@ -4090,6 +4093,16 @@ function ciniki_musicfestivals_main() {
                 this.sections.registrations.sortTypes[this.sections.registrations.num_cols] = 'text';
                 this.sections.registrations.num_cols++;
             }
+            this.sections.registrations.headerValues[this.sections.registrations.num_cols] = 'Tags';
+            this.sections.registrations.dataMaps[this.sections.registrations.num_cols] = 'tags';
+            this.sections.registrations.sortTypes[this.sections.registrations.num_cols] = 'text';
+            this.sections.registrations.num_cols++;
+        } else if( this.sections.registrations_tabs.selected == 'tags' ) {
+            this.sections.registrations.headerValues = ['Class', 'Registrant', 'Teacher', 'Tags'];
+            this.sections.registrations.cellClasses = ['multiline', 'multiline', '', ''];
+            this.sections.registrations.dataMaps = ['class', 'registrant', 'teacher', 'tags'];
+            this.sections.registrations.sortTypes = ['text', 'text', 'text', 'text'];
+            this.sections.registrations.num_cols = 4;
         }
         this.sections.registration_search.headerValues = this.sections.registrations.headerValues;
         this.sections.registration_search.cellClasses = this.sections.registrations.cellClasses;
