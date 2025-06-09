@@ -183,7 +183,10 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                 . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
-                . "registrations.timeslot_id = timeslots.id "
+                . "("
+                    . "timeslots.id = registrations.timeslot_id "
+                    . "OR timeslots.id = registrations.finals_timeslot_id "
+                    . ") "
                 . $ipv_sql
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
