@@ -69,6 +69,7 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         . "sections.name AS section_name, "
         . "registrations.teacher_customer_id, "
         . "IFNULL(teachers.display_name, '') AS teacher_name, "
+        . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
         . "registrations.billing_customer_id, "
         . "registrations.rtype, "
         . "registrations.rtype AS rtype_text, "
@@ -154,6 +155,10 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
             . "registrations.teacher_customer_id = teachers.id "
             . "AND teachers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
+        . "LEFT JOIN ciniki_customers AS accompanists ON ("
+            . "registrations.accompanist_customer_id = accompanists.id "
+            . "AND accompanists.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
         . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
             . "registrations.class_id = classes.id "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -190,7 +195,8 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
-            'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'billing_customer_id', 'rtype', 'rtype_text', 
+            'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher_name', 'accompanist_name',
+                'billing_customer_id', 'rtype', 'rtype_text', 
                 'status', 'status_text', 'invoice_id', 'display_name', 
                 'class_id', 'class_code', 'class_name', 'category_name', 'section_name',
                 'fee', 'participation', 
@@ -210,6 +216,7 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
             'maps'=>array(
                 'rtype_text'=>$maps['registration']['rtype'],
                 'status_text'=>$maps['registration']['status'],
+                'participation'=>$maps['registration']['participation'],
                 'payment_status_text'=>$sapos_maps['invoice']['payment_status'],
                 'provincials_status_text'=>$maps['registration']['provincials_status'],
                 'provincials_position_text'=>$maps['registration']['provincials_position_short'],
