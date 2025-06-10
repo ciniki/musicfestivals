@@ -175,6 +175,9 @@ function ciniki_musicfestivals_scheduleDivisionResultsGet(&$ciniki) {
                 . "((timeslots.flags&0x02) = 0 && timeslots.id = registrations.timeslot_id) "
                 . "OR ((timeslots.flags&0x02) = 0x02 && timeslots.id = registrations.finals_timeslot_id) "
                 . ") "
+            . "AND registrations.status <> 70 " // Disqualified
+            . "AND registrations.status <> 75 " // Withdrawn
+            . "AND registrations.status <> 80 " // Cancelled
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
