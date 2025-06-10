@@ -428,6 +428,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         $strsql .= "AND registrations.participation = 1 ";
     }
     if( isset($s['results-only']) && $s['results-only'] == 'yes' ) {
+        $strsql .= "AND registrations.status < 70 ";
         $strsql .= "ORDER BY divisions.division_date, divisions.name, division_id, class_code, mark, placement, registrations.display_name ";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
