@@ -295,6 +295,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "IFNULL(customers.permalink, '') AS adjudicator_permalink, "
         . "IFNULL(adjudicators.image_id, 0) AS adjudicator_image_id, "
         . "IFNULL(adjudicators.description, 0) AS adjudicator_description, "
+        . "IFNULL(adjudicators.flags, 0) AS adjudicator_flags, "
         . "DATE_FORMAT(divisions.division_date, '" . ciniki_core_dbQuote($ciniki, $division_date_format) . "') AS division_date_text, ";
     if( isset($s['separate-classes']) && $s['separate-classes'] == 'yes' ) {
         $strsql .= "CONCAT_WS('-', timeslots.id, classes.id) AS timeslot_id, ";
@@ -437,7 +438,8 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     'sort_key'=>'division_sort_key',
                     'location_name', 'location_permalink', 
                     'location_address1', 'location_city', 'location_province', 'location_postal', 
-                    'latitude', 'longitude', 'adjudicator_name', 'adjudicator_permalink', 'results_notes', 'results_video_url',
+                    'latitude', 'longitude', 'adjudicator_name', 'adjudicator_permalink', 'adjudicator_flags',
+                    'results_notes', 'results_video_url',
                     'adjudicator_image_id', 'adjudicator_description',
                     ),
                 ),
@@ -467,7 +469,8 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     'sort_key'=>'division_sort_key',
                     'location_name', 'location_permalink', 
                     'location_address1', 'location_city', 'location_province', 'location_postal', 
-                    'latitude', 'longitude', 'adjudicator_name', 'adjudicator_permalink', 'results_notes', 'results_video_url',
+                    'latitude', 'longitude', 'adjudicator_name', 'adjudicator_permalink', 'adjudicator_flags',
+                    'results_notes', 'results_video_url',
                     'adjudicator_image_id', 'adjudicator_description',
                     ),
                 ),
@@ -859,7 +862,10 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     $columns[] = array('label'=>'Video', 'fold-label'=>'Videos:', 'field'=>'videos', 'class'=>'alignright');
                 }
                 $adjudicator_name = $division['adjudicator_name'];
-                if( $division['adjudicator_permalink'] != '' && $division['adjudicator_name'] != '' && isset($s['adjudicators-page']) && $s['adjudicators-page'] != '' ) {
+                if( $division['adjudicator_permalink'] != '' && $division['adjudicator_name'] != '' 
+                    && isset($s['adjudicators-page']) && $s['adjudicators-page'] != '' 
+                    && ($division['adjudicator_flags']&0x08) == 0
+                    ) {
                     ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'urlProcess');
                     $rc = ciniki_wng_urlProcess($ciniki, $tnid, $request, $s['adjudicators-page'], '');
                     if( isset($rc['url']) ) {
