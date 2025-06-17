@@ -1703,6 +1703,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                     $rsp['message']['teachers'][] = $row;
                     if( isset($args['emaillist']) && $args['emaillist'] == 'yes' ) {
                         if( !isset($rsp['message']['emails'][$row['email']]) ) {
+                            $row['email'] = strtolower($row['email']);
                             $rsp['message']['emails'][$row['email']] = array(
                                 'name' => $row['name'],
                                 'email' => $row['email'],
@@ -1741,6 +1742,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                     $rsp['message']['accompanists'][] = $row;
                     if( isset($args['emaillist']) && $args['emaillist'] == 'yes' ) {
                         if( !isset($rsp['message']['emails'][$row['email']]) ) {
+                            $row['email'] = strtolower($row['email']);
                             $rsp['message']['emails'][$row['email']] = array(
                                 'name' => $row['name'],
                                 'email' => $row['email'],
