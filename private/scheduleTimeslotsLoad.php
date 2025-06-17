@@ -14,7 +14,7 @@
 // 
 function ciniki_musicfestivals_scheduleTimeslotsLoad(&$ciniki, $tnid, $args) {
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'scheduleTimeslotProcess');
 
     if( !isset($args['festival']) || !isset($args['division_id']) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.982', 'msg'=>'Missing Arguments'));
@@ -29,7 +29,8 @@ function ciniki_musicfestivals_scheduleTimeslotsLoad(&$ciniki, $tnid, $args) {
     } else {
         $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, ";
     }
-    $strsql .= "timeslots.slot_seconds, "
+    $strsql .= "timeslots.slot_time, "
+        . "timeslots.slot_seconds, "
         . "timeslots.name, "
         . "timeslots.groupname, "
         . "timeslots.start_num, "
@@ -106,7 +107,7 @@ function ciniki_musicfestivals_scheduleTimeslotsLoad(&$ciniki, $tnid, $args) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'timeslots', 'fname'=>'id', 
             'fields'=>array('id', 'festival_id', 'sdivision_id', 'flags', 
-                'slot_time_text', 'slot_seconds', 'name', 'groupname', 'start_num', 'description', 
+                'slot_time_text', 'slot_time', 'slot_seconds', 'name', 'groupname', 'start_num', 'description', 
                 'class_id', 'class_name', 'results_notes', 'results_video_url',
                 )),
         array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name',
@@ -125,97 +126,12 @@ function ciniki_musicfestivals_scheduleTimeslotsLoad(&$ciniki, $tnid, $args) {
     $nplist = [];
     foreach($timeslots as $tid => $timeslot) {
         $nplist[] = $timeslot['id'];
-        $perf_time = '';
-        $schedule_at_seconds = 0;
-        $schedule_ata_seconds = 0;
-        $num_reg = 0;
 
-        //
-        // Check if class is set, then use class name
-        //
-        if( $timeslot['class_id'] > 0 ) {
-            if( $timeslot['name'] == '' && $timeslot['class_name'] != '' ) {
-                $timeslots[$tid]['name'] = $timeslot['class_name'];
-            }
-            $timeslots[$tid]['description'] .= ($timeslots[$tid]['description'] != '' ? "\n":'');
+        $rc = ciniki_musicfestivals_scheduleTimeslotProcess($ciniki, $tnid, $timeslot);
+        $timeslots[$tid] = $timeslot;
 
-            //
-            // Add the registrations to the description
-            //
-            if( isset($timeslot['registrations']) ) {
-                $perf_time = 0;
-                // Sort registrations based on finals_time for this finals timeslot
-                if( ($timeslot['flags']&0x02) == 0x02 ) {
-                    usort($timeslot['registrations'], function($a, $b) {
-                        if( $a['reg_finals_sort_time'] == $b['reg_finals_sort_time'] ) {
-                            return 0;
-                        }
-                        return ($a['reg_finals_sort_time'] < $b['reg_finals_sort_time']) ? -1 : 1;
-                        });
-                }
-                $num = ($timeslot['start_num'] && $timeslot['start_num'] > 1 ? $timeslot['start_num'] : 1);
-                foreach($timeslot['registrations'] as $reg) {
-                    $num_reg++;
-                    $rc = ciniki_musicfestivals_titlesMerge($ciniki, $tnid, $reg, [
-                        'rounding' => isset($args['festival']['scheduling-perftime-rounding']) ? $args['festival']['scheduling-perftime-rounding'] : '',
-                        ]);
-                    $perf_time += $rc['perf_time_seconds'];
-                    $ptime_text = ' [' . $rc['perf_time'] . ']';
-                    $individual_time_text = '';
-                    if( isset($args['festival']['scheduling-timeslot-startnum']) 
-                        && $args['festival']['scheduling-timeslot-startnum'] == 'yes' 
-                        ) {
-                        $individual_time_text = $num . '. ';
-                        $num++;
-                    }
-                    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) 
-                        && $reg['reg_time_text'] != ''
-                        ) {
-                        if( ($timeslot['flags']&0x02) == 0x02 ) {
-                            $individual_time_text .= $reg['reg_finals_time_text'] . ' - ';
-                        } else {
-                            $individual_time_text .= $reg['reg_time_text'] . ' - ';
-                        }
-                    }
-                    $timeslots[$tid]['description'] .= ($timeslots[$tid]['description'] != '' ? "\n":'') . $individual_time_text . $reg['class_code'] . ' - ' . $reg['name'] . $ptime_text;
-                }
-                unset($timeslots[$tid]['registrations']);
-            }
-        }
-        if( $schedule_at_seconds > 0 ) {
-            $perf_time += $schedule_at_seconds;
-        }
-        if( $schedule_ata_seconds > 0 && $num_reg > 1 ) {
-            $perf_time += ($schedule_ata_seconds * ($num_reg-1));
-        }
-        $slot_length = '';
-        if( $timeslot['slot_seconds'] > 0 ) {
-            if( $timeslot['slot_seconds'] > 3600 ) {
-                $slot_length = intval($timeslot['slot_seconds']/3600) . 'h ' . ceil(($timeslot['slot_seconds']%3600)/60) . 'm';
-            } else {
-                $slot_length = '' . intval($timeslot['slot_seconds']/60) . ':' . str_pad(($timeslot['slot_seconds']%60), 2, '0', STR_PAD_LEFT) . '';
-            }
-        }
-        $perf_time_str = '';
-        if( $perf_time != '' && $perf_time > 0 ) {
-            if( $perf_time > 3600 ) {
-                $perf_time_str = intval($perf_time/3600) . 'h ' . ceil(($perf_time%3600)/60) . 'm';
-            } else {
-                $perf_time_str = '' . intval($perf_time/60) . ':' . str_pad(($perf_time%60), 2, '0', STR_PAD_LEFT) . '';
-            }
-            if( $slot_length != '' ) {
-                $perf_time_str = '<strike>' . $perf_time_str . '</strike> ' . $slot_length;
-            }
-        } elseif( $perf_time != '' && $perf_time == 0 ) {
-            $pref_time_str = '?';
-            if( $slot_length != '' ) {
-                $perf_time_str = $slot_length;
-            }
-        }
-        if( $perf_time_str != '' ) {
-            $timeslots[$tid]['perf_time_text'] = '[' . $perf_time_str . ']';
-        } else {
-            $timeslots[$tid]['perf_time_text'] = '';
+        if( isset($timeslot['registrations']) ) {
+            unset($timeslot['registrations']);
         }
     }
 

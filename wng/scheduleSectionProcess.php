@@ -303,6 +303,8 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         $strsql .= "timeslots.id AS timeslot_id, ";
     }
     $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
+        . "timeslots.slot_time, "
+        . "timeslots.slot_seconds, "
         . "timeslots.name AS timeslot_name, "
         . "timeslots.groupname AS timeslot_groupname, "
         . "timeslots.flags AS timeslot_flags, "
@@ -444,7 +446,9 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     ),
                 ),
             array('container'=>'timeslots', 'fname'=>'class_id', 
-                'fields'=>array('id'=>'timeslot_id', 'flags'=>'timeslot_flags', 'title'=>'timeslot_name', 'groupname'=>'timeslot_groupname', 'time'=>'slot_time_text', 'synopsis'=>'description', 'start_num', 
+                'fields'=>array('id'=>'timeslot_id', 'flags'=>'timeslot_flags', 'slot_time', 'slot_seconds',
+                    'title'=>'timeslot_name', 'groupname'=>'timeslot_groupname', 
+                    'time'=>'slot_time_text', 'description', 'start_num', 
                     'class_code', 'class_name', 'category_name', 'section_name',
                     'results_notes'=>'timeslot_results_notes', 'results_video_url'=>'timeslot_results_video_url',
                     ),
@@ -475,7 +479,9 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     ),
                 ),
             array('container'=>'timeslots', 'fname'=>'timeslot_id', 
-                'fields'=>array('id'=>'timeslot_id', 'flags'=>'timeslot_flags', 'title'=>'timeslot_name', 'groupname'=>'timeslot_groupname', 'time'=>'slot_time_text', 'synopsis'=>'description', 'start_num', 
+                'fields'=>array('id'=>'timeslot_id', 'flags'=>'timeslot_flags', 'slot_time', 'slot_seconds',
+                    'title'=>'timeslot_name', 'groupname'=>'timeslot_groupname', 'time'=>'slot_time_text', 
+                    'description', 'start_num', 
                     'class_code', 'class_name', 'category_name', 'section_name',
                     'results_notes'=>'timeslot_results_notes', 'results_video_url'=>'timeslot_results_video_url',
                     ),
@@ -589,6 +595,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     // Show the divisions
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'scheduleTimeslotProcess');
     foreach($divisions as $did => $division) {
         
         if( isset($division['timeslots']) ) {
@@ -597,6 +604,8 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             //
             $videos = 'no';
             foreach($division['timeslots'] as $tid => $timeslot) {
+                $rc = ciniki_musicfestivals_scheduleTimeslotProcess($ciniki, $tnid, $timeslot);
+                $division['timeslots'][$tid] = $timeslot;
                 $name = $timeslot['title'];
                 if( $name == '' && $timeslot['class_name'] != '' 
                     && !ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) 
@@ -644,7 +653,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 //
                 if( isset($s['results-only']) && $s['results-only'] == 'yes' ) {
                     if( isset($timeslot['results_notes']) && $timeslot['results_notes'] != '' ) {
-                        $division['timeslots'][$tid]['synopsis'] = $timeslot['results_notes'];
+                        $division['timeslots'][$tid]['description'] = $timeslot['results_notes'];
                     }
                     if( isset($timeslot['results_video_url']) && $timeslot['results_video_url'] != '' ) {
                         $division['timeslots'][$tid]['video-url'] = $timeslot['results_video_url'];
@@ -962,16 +971,16 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                             'type' => 'table', 
                             'class' => 'fold-at-50',
                             'title' => $timeslot['title'],
-                            'content' => $timeslot['synopsis'],
+                            'content' => $timeslot['description'],
                             'columns' => $columns,
                             'rows' => $timeslot['items'],
                             );
-                    } elseif( $timeslot['synopsis'] != '' ) {
+                    } elseif( $timeslot['description'] != '' ) {
                         $blocks[] = array(
                             'type' => 'text',
                             'level' => 3,
                             'subtitle' => $timeslot['time'] . ' - ' . $timeslot['title'],
-                            'content' => $timeslot['synopsis'],
+                            'content' => $timeslot['description'],
                             );
                     } else {
                         $blocks[] = array(

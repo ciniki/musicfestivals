@@ -9711,6 +9711,15 @@ function ciniki_musicfestivals_main() {
     this.scheduletimeslot.addClose('Cancel');
     this.scheduletimeslot.addButton('next', 'Next');
     this.scheduletimeslot.addLeftButton('prev', 'Prev');
+    this.scheduletimeslot.helpSections = function() {
+        return {
+            'help':{'label':'Substitutions', 'type':'htmlcontent',
+                'html':'The following substitutions are available in the Description:<br/><br/>'
+                    + '{_start_time_} = Display start time of timeslot eg: 10:45 am<br/>'
+                    + '{_end_time_} = Display end time of timeslot eg: 4:15 pm<br/>'
+                    },
+            };
+    }
 
     //
     // The panel to edit Schedule Time Slot
