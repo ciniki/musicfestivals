@@ -312,6 +312,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         if( ($festival['flags']&0x02) == 0x02 && isset($args['ipv']) ) {
             if( $args['ipv'] == 'inperson' ) {
                 $ipv_sql .= "AND registrations.participation = 0 ";
+            } elseif( $args['ipv'] == 'live' ) {
+                $ipv_sql .= "AND registrations.participation = 0 ";
             } elseif( $args['ipv'] == 'virtual' ) {
                 $ipv_sql .= "AND registrations.participation = 1 ";
             }
@@ -2916,7 +2918,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     unset($festival['schedule_adjudicators'][$aid]['registrations']);
                 }
                 if( ($festival['flags']&0x02) == 0x02 && isset($args['ipv']) 
-                    && ($args['ipv'] == 'inperson' || $args['ipv'] == 'virtual') 
+                    && ($args['ipv'] == 'inperson' || $args['ipv'] == 'live' || $args['ipv'] == 'virtual') 
                     && $festival['schedule_adjudicators'][$aid]['num_registrations'] == 0
                     ) {
                     unset($festival['schedule_adjudicators'][$aid]);
