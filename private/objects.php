@@ -677,7 +677,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'category' => array('name'=>'Category', 'default'=>''),
             'synopsis' => array('name'=>'Synopsis', 'default'=>''),
             'status' => array('name'=>'Status', 'default'=>'10'),
-            'customer_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer', 'default'=>'0'),
+            'member_tnid' => array('name'=>'Member Tenant ID', 'default'=>'0'),
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );

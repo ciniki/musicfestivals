@@ -26,7 +26,7 @@ function ciniki_musicfestivals_memberAdd(&$ciniki) {
         'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'),
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
         'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),
-        'customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer'),
+        'member_tnid'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Member Tenant'),
         'reg_start_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Registrations Open'),
         'reg_end_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Registrations Close'),
         'latedays'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Late Days'),

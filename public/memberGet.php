@@ -66,7 +66,7 @@ function ciniki_musicfestivals_memberGet($ciniki) {
             'reg_start_dt' => '',
             'reg_end_dt' => '',
             'latedays' => '0',
-            'customer_id' => '0',
+            'member_tnid' => '0',
             'customer' => array(),
             'customer_details' => array(),
         );
@@ -82,7 +82,7 @@ function ciniki_musicfestivals_memberGet($ciniki) {
             . "members.category, "
             . "members.synopsis, "
             . "members.status, "
-            . "members.customer_id, "
+            . "members.member_tnid, "
             . "IFNULL(fmembers.reg_start_dt, '') AS reg_start_dt, "
             . "IFNULL(fmembers.reg_end_dt, '') AS reg_end_dt, "
             . "IFNULL(fmembers.latedays, '') AS latedays "
@@ -99,7 +99,7 @@ function ciniki_musicfestivals_memberGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'members', 'fname'=>'id', 
                 'fields'=>array('name', 'shortname', 'category', 'synopsis', 'status', 
-                    'customer_id', 'reg_start_dt', 'reg_end_dt', 'latedays'),
+                    'member_tnid', 'reg_start_dt', 'reg_end_dt', 'latedays'),
                 'utctotz'=>array(
                     'reg_start_dt' => array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
                     'reg_end_dt' => array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
@@ -137,25 +137,36 @@ function ciniki_musicfestivals_memberGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.430', 'msg'=>'Unable to load customers', 'err'=>$rc['err']));
         }
         $member['customers'] = isset($rc['customers']) ? $rc['customers'] : array();
-
-        //
-        // If the customer is specified, load the details
-        //
-/*        if( isset($member['customer_id']) && $member['customer_id'] > 0 ) {
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
-            $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], 
-                array('customer_id'=>$member['customer_id'], 'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
-            }
-            $member['customer'] = $rc['customer'];
-            $member['customer_details'] = $rc['details'];
-        } else {
-            $member['customer'] = array();
-            $member['customer_details'] = array();
-        } */
     }
 
-    return array('stat'=>'ok', 'member'=>$member);
+    $rsp = array('stat'=>'ok', 'member'=>$member);
+
+    //
+    // If sysadmin, get list of all musicfestival tenants
+    //
+    if( ($ciniki['session']['user']['perms']&0x01) == 0x01 ) {
+        $strsql = "SELECT tenants.id, "
+            . "tenants.name "
+            . "FROM ciniki_tenant_modules AS modules "
+            . "INNER JOIN ciniki_tenants AS tenants ON ("
+                . "modules.tnid = tenants.id "
+                . ") "
+            . "WHERE modules.module = 'musicfestivals' "
+            . "AND modules.status = 1 "
+            . "AND (modules.flags&0x010000) = 0 " // Not provincials tenants
+            . "ORDER BY tenants.name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'members', 'fname'=>'id', 'fields'=>array('id', 'name')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1003', 'msg'=>'Unable to load members', 'err'=>$rc['err']));
+        }
+        $rsp['member_tenants'] = isset($rc['members']) ? $rc['members'] : array();
+    }
+
+
+    return $rsp;
 }
 ?>

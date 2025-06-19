@@ -13164,6 +13164,10 @@ function ciniki_musicfestivals_main() {
             'reg_start_dt':{'label':'Reg Start', 'type':'datetime'},
             'reg_end_dt':{'label':'Reg End', 'type':'datetime'},
             'latedays':{'label':'Late Days', 'type':'number', 'size':'small'},
+            'member_tnid':{'label':'Member Tenant', 'type':'select', 'options':[],
+                'complex_options':{'value':'id', 'name':'name'},
+                'visible':'no', 'active':'no',
+                },
             }},
         'customers':{'label':'Admin Accounts', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
             'noData':'No Admin Accounts',
@@ -13273,6 +13277,16 @@ function ciniki_musicfestivals_main() {
             var p = M.ciniki_musicfestivals_main.member;
             p.data = rsp.member;
 //            p.sections.customer_details.customer_id = rsp.member.customer_id;
+            if( (M.userPerms&0x01) == 0x01 && rsp.member_tenants != null ) {
+                p.sections.general.fields.member_tnid.visible = 'yes';
+                p.sections.general.fields.member_tnid.active = 'yes';
+                p.sections.general.fields.member_tnid.options = rsp.member_tenants;
+                p.sections.general.fields.member_tnid.options.unshift({'id':0, 'name':'None'});
+            } else {
+                p.sections.general.fields.member_tnid.visible = 'no';
+                p.sections.general.fields.member_tnid.active = 'no';
+                p.sections.general.fields.member_tnid.options = [];
+            }
             p.refresh();
             p.show(cb);
         });

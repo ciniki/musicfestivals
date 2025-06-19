@@ -26,24 +26,37 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     //
     // Load the list of festivals in descending order
     //
-    $strsql = "SELECT id, name, flags, start_date "
-        . "FROM ciniki_musicfestivals "
-        . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "ORDER BY start_date DESC "
+    $strsql = "SELECT festivals.id, "
+        . "festivals.name, "
+        . "festivals.flags, "
+        . "festivals.start_date "
+//        . "IFNULL(settings.detail_value, 0) AS provincial_festival_id "
+        . "FROM ciniki_musicfestivals AS festivals "
+//        . "LEFT JOIN ciniki_musicfestival_settings AS settings ON ("
+//            . "festivals.id = settings.festival_id "
+//            . "AND settings.detail_key = 'provincial-festival-id' "
+//            . "AND settings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+//            . ") "
+        . "WHERE festivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "ORDER BY festivals.start_date DESC "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'festivals', 'fname'=>'id', 'fields'=>array('id', 'name', 'flags')),
+        array('container'=>'festivals', 'fname'=>'id', 'fields'=>array('id', 'name', 'flags')), //, 'provincial_festival_id')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.351', 'msg'=>'Unable to load festivals', 'err'=>$rc['err']));
     }
     $festivals = isset($rc['festivals']) ? $rc['festivals'] : array();
     $virtual_festivals = 'no';
+//    $provincial_festivals = [];
     foreach($festivals as $festival) {
         if( ($festival['flags']&0x02) == 0x02 ) {
             $virtual_festivals = 'yes';
         }
+//        if( isset($festival['provincial_festival_id']) && $festival['provincial_festival_id'] > 0 ) {
+//            $provincial_festivals[] = $festival;
+//        }
     }
 
     if( isset($festivals[0]) ) {
@@ -65,6 +78,35 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             $festival[$k] = $v;
         }
     }
+
+    //
+    // Get the list of connected provincial festivals
+    //
+    $strsql = "SELECT festivals.id, "
+        . "CONCAT_WS(' - ', tenants.name, festivals.name) AS name "
+        . "FROM ciniki_musicfestivals_members AS members "
+        . "INNER JOIN ciniki_musicfestival_members AS fmembers ON ("
+            . "members.id = fmembers.member_id "
+            . "AND members.tnid = fmembers.tnid "
+            . ") "
+        . "INNER JOIN ciniki_musicfestivals AS festivals ON ("
+            . "fmembers.festival_id = festivals.id "
+            . "AND fmembers.tnid = festivals.tnid "
+            . ") "
+        . "INNER JOIN ciniki_tenants AS tenants ON ("
+            . "festivals.tnid = tenants.id "
+            . ") "
+        . "WHERE members.member_tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'provincials', 'fname'=>'id', 
+            'fields'=>array('id', 'name')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1004', 'msg'=>'Unable to load provincials', 'err'=>$rc['err']));
+    }
+    $provincial_festivals = isset($rc['provincials']) ? $rc['provincials'] : array();
 
     //
     // Get the syllabi (festival_id - Syllabus), this is used for festival that have multiple syllabi
@@ -549,6 +591,25 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     }
     if( isset($festival['comments-level-label']) && $festival['comments-level-label'] != '' ) {
         $sections['ciniki.musicfestivals.results']['settings']['level']['label'] = 'Show ' . $festival['comments-level-label'];
+    }
+
+    //
+    // Provincial results for local festival
+    //
+    if( count($provincial_festivals) > 0 ) {
+        $sections['ciniki.musicfestivals.provincialresults'] = array(
+            'name' => 'Provincial Results',
+            'module' => 'Music Festivals',
+            'settings' => array(
+                'title' => array('label'=>'Title', 'type'=>'text'),
+                'content' => array('label'=>'Intro', 'type'=>'textarea'),
+                'notreleased' => array('label'=>'Not Released Intro', 'type'=>'textarea'),
+                'festival-id' => array('label'=>'Festival', 'type'=>'select', 
+                    'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                    'options'=>$provincial_festivals,
+                    ),
+                ),
+            );
     }
 
     //

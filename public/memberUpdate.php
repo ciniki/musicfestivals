@@ -23,7 +23,7 @@ function ciniki_musicfestivals_memberUpdate(&$ciniki) {
         'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'),
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
         'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),
-        'customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Customer'),
+        'member_tnid'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Member Tenant'),
         'reg_start_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Registrations Open'),
         'reg_end_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Registrations Close'),
         'latedays'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Late Days'),
@@ -52,7 +52,7 @@ function ciniki_musicfestivals_memberUpdate(&$ciniki) {
         . "members.category, "
         . "members.synopsis, "
         . "members.status, "
-        . "members.customer_id, "
+        . "members.member_tnid, "
         . "IFNULL(fmembers.id, 0) AS fmember_id, "
         . "IFNULL(fmembers.reg_start_dt, '') AS reg_start_dt, "
         . "IFNULL(fmembers.reg_end_dt, '') AS reg_end_dt, "
@@ -69,7 +69,7 @@ function ciniki_musicfestivals_memberUpdate(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'members', 'fname'=>'id', 
-            'fields'=>array('name', 'shortname', 'category', 'synopsis', 'status', 'customer_id', 'fmember_id', 'reg_start_dt', 'reg_end_dt', 'latedays'),
+            'fields'=>array('name', 'shortname', 'category', 'synopsis', 'status', 'member_tnid', 'fmember_id', 'reg_start_dt', 'reg_end_dt', 'latedays'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {

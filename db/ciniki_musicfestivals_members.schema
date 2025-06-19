@@ -23,7 +23,9 @@
 #                               70 - Closed
 #                               90 - Archive
 #
-# customer_id:              The ID of the customer than can login for this member festival.
+# customer_id:              The ID of the customer than can login for this member festival. **deprecated**
+#
+# member_tnid:              The Tenant ID of the member festival
 #
 # date_added:               The UTC date and time the record was added.
 # last_updated:             The UTC date and time the record was last update.
@@ -40,10 +42,11 @@ create table ciniki_musicfestivals_members (
     synopsis varchar(2000) not null,
     status tinyint unsigned not null,
     customer_id int not null,
+    member_tnid int not null,
 
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

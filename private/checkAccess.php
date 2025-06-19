@@ -32,7 +32,7 @@ function ciniki_musicfestivals_checkAccess(&$ciniki, $tnid, $method) {
     //
     // Sysadmins are allowed full access
     //
-    if( ($ciniki['session']['user']['perms'] & 0x01) == 0x01 ) {
+    if( ($ciniki['session']['user']['perms']&0x01) == 0x01 ) {
         return array('stat'=>'ok', 'modules'=>$modules);
     }
 

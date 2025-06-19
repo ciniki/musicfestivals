@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestivals_members ADD COLUMN member_tnid int not null AFTER customer_id;
+ALTER TABLE ciniki_musicfestivals_members COMMENT='v1.02';
