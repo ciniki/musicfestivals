@@ -70,10 +70,13 @@ function ciniki_musicfestivals_wng_provincialResultsProcess(&$ciniki, $tnid, &$r
         . "classes.code AS class_code, "
         . "classes.name AS class_name, "
         . "classes.flags AS class_flags, "
-        . "registrations.id, "
-        . "registrations.display_name, "
-        . "registrations.public_name, "
-        . "registrations.title1, "
+        . "registrations.id, ";
+    if( isset($s['names']) && $s['names'] == 'private' ) {
+        $strsql .= "registrations.display_name, ";
+    } else {
+        $strsql .= "registrations.public_name AS display_name, ";
+    }
+    $strsql .= "registrations.title1, "
         . "registrations.title2, "
         . "registrations.title3, "
         . "registrations.title4, "
@@ -154,7 +157,7 @@ function ciniki_musicfestivals_wng_provincialResultsProcess(&$ciniki, $tnid, &$r
             'fields'=>array('id'=>'class_id', 'code'=>'class_code', 'name'=>'class_name'),
             ),
         array('container'=>'registrations', 'fname'=>'id', 
-            'fields'=>array('id', 'display_name', 'public_name', 'placement', 'finals_placement',
+            'fields'=>array('id', 'display_name', 'placement', 'finals_placement',
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                 'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',

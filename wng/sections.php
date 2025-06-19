@@ -608,6 +608,11 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'complex_options'=>array('value'=>'id', 'name'=>'name'),
                     'options'=>$provincial_festivals,
                     ),
+                'names' => array('label'=>'Full Names', 'type'=>'toggle', 'default'=>'public',
+                    'toggles'=>array(
+                        'public' => 'No',
+                        'private' => 'Yes',
+                        )),
                 ),
             );
     }
