@@ -201,13 +201,13 @@ function ciniki_musicfestivals_wng_provincialResultsProcess(&$ciniki, $tnid, &$r
         && $request['uri_split'][($request['cur_uri_pos']+1)] == 'provincials'
         && isset($sections[$request['uri_split'][($request['cur_uri_pos']+2)]]) 
         ) {
+        $section = $sections[$request['uri_split'][($request['cur_uri_pos']+2)]];
         if( isset($s['title']) && $s['title'] != '' ) {
             $blocks[] = array(
                 'type' => 'title',
-                'title' => $s['title'],
+                'title' => $s['title'] . ' - ' . $section['title'],
                 );
         }
-        $section = $sections[$request['uri_split'][($request['cur_uri_pos']+2)]];
         foreach($section['classes'] as $class) {
             $registrations = $class['registrations'];
             foreach($registrations as $rid => $reg) {
