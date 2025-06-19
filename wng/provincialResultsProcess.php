@@ -235,12 +235,18 @@ function ciniki_musicfestivals_wng_provincialResultsProcess(&$ciniki, $tnid, &$r
         }
         return array('stat'=>'ok', 'blocks'=>$blocks, 'clear'=>'yes', 'stop'=>'yes');
     } else {
+        if( isset($s['title']) && $s['title'] != '' ) {
+            $content = isset($s['content']) ? $s['content'] : '';
+            $blocks[] = array(
+                'type' => ($content == '' ? 'title' : 'text'),
+                'title' => $s['title'],
+                'content' => $content,
+                );
+        }
         $blocks[] = [
             'type' => 'buttons',
             'section' => 'provincial-results',
             'class' => 'musicfestival-provincial-results',
-            'title' => $s['title'],
-            'content' => $s['content'],
             'level' => 2,
             'items' => $sections,
             ];
