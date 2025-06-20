@@ -25,7 +25,7 @@
 #                           0x08 - 
 #                           0x10 - Publish schedule on website.
 #                           0x20 - Publish Results on website
-#                           0x40 - No photos for this section, hide from photo picker
+#                           0x40 - Daily Photos, show in photos picker in main menu
 #                           0x80 - 
 #                           0x0100 - Live
 #                           0x0200 - Virtual

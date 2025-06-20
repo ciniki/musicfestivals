@@ -207,7 +207,7 @@ function ciniki_musicfestivals_photos($ciniki) {
                 . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-            . "AND (sections.flags&0x40) = 0 "
+            . "AND (sections.flags&0x40) = 0x40 "
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY divisions.division_date, divisions.name "
             . "";
