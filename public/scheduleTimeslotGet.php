@@ -126,6 +126,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             'runsheet_notes'=>'',
             'results_notes' => '',
             'results_video_url' => '',
+            'linked_timeslot_id' => 0,
         );
     }
 
@@ -152,7 +153,8 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "timeslots.description, "
             . "timeslots.runsheet_notes, "
             . "timeslots.results_notes, "
-            . "timeslots.results_video_url "
+            . "timeslots.results_video_url, "
+            . "timeslots.linked_timeslot_id "
             . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
             . "WHERE timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND timeslots.id = '" . ciniki_core_dbQuote($ciniki, $args['scheduletimeslot_id']) . "' "
@@ -161,7 +163,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             array('container'=>'scheduletimeslot', 'fname'=>'id', 
                 'fields'=>array('id', 'festival_id', 'ssection_id', 'sdivision_id', 'slot_time', 'slot_seconds',
                     'flags', 'name', 'shortname', 'groupname', 'start_num',
-                    'description', 'runsheet_notes', 'results_notes', 'results_video_url',
+                    'description', 'runsheet_notes', 'results_notes', 'results_video_url', 'linked_timeslot_id',
                     ),
                 ),
             ));
@@ -893,78 +895,29 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             }
         }
     }
-/*
+
     //
-    // Get the list of classes
+    // Get the list of playoff timeslots
     //
-    $strsql = "SELECT classes.id, "
-        . "CONCAT_WS(' - ', classes.code, classes.name) AS name, "
-        . "FORMAT(classes.fee, 2) AS fee, "
-        . "registrations.id AS registration_id, "
-        . "registrations.display_name, "
-        . "registrations.title1, "
-        . "registrations.timeslot_sequence, "
-        . "IFNULL(TIME_FORMAT(rtimeslots.slot_time, '%h:%i %p'), '') AS regtime "
-//        . "COUNT(registrations.id) AS num_registrations "
-        . "FROM ciniki_musicfestival_sections AS sections "
-        . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
-            . "sections.id = categories.section_id "
-            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
-            . "categories.id = classes.category_id "
-            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
-            . "classes.id = registrations.class_id "
-            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS rtimeslots ON ("
-            . "registrations.timeslot_id = rtimeslots.id "
-            . "AND rtimeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . ") "
-        . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-//        . "GROUP BY classes.id "
-//        . "ORDER BY num_registrations DESC, sections.name, classes.code "
-        . "ORDER BY classes.id, registrations.timeslot_sequence, sections.name, classes.code "
-        . "";
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'classes', 'fname'=>'id', 'fields'=>array('id', 'name', 'fee')),
-        array('container'=>'registrations', 'fname'=>'registration_id', 
-            'fields'=>array('id'=>'registration_id', 'name'=>'display_name', 'time'=>'regtime', 'title1', 'timeslot_sequence'),
-            ),
-        ));
-    if( $rc['stat'] != 'ok' ) { 
-        return $rc;
-    }
-    if( isset($rc['classes']) ) {
-        $rsp['classes'] = $rc['classes'];
-        foreach($rsp['classes'] as $cid => $class) {
-            $rsp['classes'][$cid]['num_registrations'] = (isset($class['registrations']) ? count($class['registrations']) : 0);
-            if( $rsp['classes'][$cid]['num_registrations'] > 0 ) {
-                $rsp['classes'][$cid]['name'] .= ' (' . $rsp['classes'][$cid]['num_registrations'] . ')';
-            } else {
-                unset($rsp['classes'][$cid]);
-                continue;
-            }
-            if( isset($class['registrations']) ) {
-                foreach($class['registrations'] as $rid => $reg) {
-                    if( $reg['time'] != '' ) {
-                        $rsp['classes'][$cid]['registrations'][$rid]['name'] .= ' (' . $reg['time'] . ')';
-                    }
-                }
-            }
+    if( isset($festival['scheduling-timeslot-linking']) && $festival['scheduling-timeslot-linking'] == 'yes' ) {
+        $strsql = "SELECT timeslots.id, "
+            . "timeslots.name "
+            . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
+            . "WHERE timeslots.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "AND (timeslots.flags&0x02) = 0x02 "  // Playoffs timeslot
+            . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'timeslots', 'fname'=>'id', 'fields'=>array('id', 'name')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1000', 'msg'=>'Unable to load timeslots', 'err'=>$rc['err']));
         }
-        usort($rsp['classes'], function($a, $b) {
-            return strcasecmp($a['name'], $b['name']);
-//            if( $a['num_registrations'] == $b['num_registrations'] ) {
-//                return strcasecmp($a['name'], $b['name']);
-//            }
-//            return ($a['num_registrations'] > $b['num_registrations'] ? -1 : 1);
-        });
+        $rsp['playoff_timeslots'] = isset($rc['timeslots']) ? $rc['timeslots'] : array();
     }
-*/
+
     return $rsp;
 }
 ?>

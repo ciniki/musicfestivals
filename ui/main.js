@@ -5429,6 +5429,12 @@ function ciniki_musicfestivals_main() {
                         'no':'No',
                         'yes':'Yes',
                     }},
+                'scheduling-timeslot-linking':{'label':'Timeslot Linking', 'type':'toggle', 'default':'no', 
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x4000); },
+                    'toggles':{
+                        'no':'No',
+                        'yes':'Yes',
+                    }},
                 'scheduling-timeslot-startnum':{'label':'Timeslot Starting Number', 'type':'toggle', 'default':'no', 
                     'toggles':{
                         'no':'No',
@@ -9214,9 +9220,14 @@ function ciniki_musicfestivals_main() {
             'name':{'label':'Name', 'type':'text'},
             'shortname':{'label':'Short Name', 'type':'text'},
             'groupname':{'label':'Group Name', 'type':'text'},
-            'flags2':{'label':'Type', 'type':'flagspiece', 'mask':0x02, 'field':'flags', 'join':'yes', 'toggle':'yes', 
-                'flags':{'0':{'name':'Regular Timeslot'}, '2':{'name':'Finals/Playoff Timeslot'}},
+            'flags2':{'label':'Type', 'type':'flagspiece', 'mask':0x06, 'field':'flags', 'join':'yes', 'toggle':'yes', 
+                'flags':{},
                 'onchange':'M.ciniki_musicfestivals_main.scheduletimeslot.switchType',
+                },
+            'linked_timeslot_id':{'label':'Linked Timeslot', 'type':'select', 
+                'visible':'no',
+                'complex_options':{'value':'id', 'name':'name'},
+                'options':[],
                 },
             'slot_seconds':{'label':'Length', 'type':'hourmin', 'max_hours':8, 'minute_interval':5,
                 'visible':function() { return M.ciniki_musicfestivals_main.festival.data['scheduling-timeslot-length'] != null
@@ -9586,16 +9597,10 @@ function ciniki_musicfestivals_main() {
             this.category_id = 0;
             this.class_id = 0;
         }
-//        } else if( M.modFlagOn('ciniki.musicfestivals', 0x010000) ) {
-            var cid = this.formValue('class_id');
-            if( cid != this.class_id ) {
-                this.class_id = cid;
-            }
-//        } else {
-//            var cid = this.formValue('category_id');
-//            if( cid != this.category_id ) {
-//                this.category_id = cid;
-//            }
+        var cid = this.formValue('class_id');
+        if( cid != this.class_id ) {
+            this.class_id = cid;
+        }
         M.api.getJSONCb('ciniki.musicfestivals.scheduleTimeslotGet', 
             {'tnid':M.curTenantID, 'scheduletimeslot_id':this.scheduletimeslot_id, 'festival_id':this.festival_id, 'section_id':this.section_id, 'category_id':this.category_id, 'class_id':this.class_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
@@ -9699,6 +9704,19 @@ function ciniki_musicfestivals_main() {
                     p.sections.unscheduled_registrations.headerValues = ['', 'Class/Category', 'Name[Accompanist]/Titles', 'Status'];
                     p.sections.unscheduled_registrations.cellClasses = ['fabuttons', 'multiline', 'multiline', ''];
                     p.sections.unscheduled_registrations.num_cols = 4;
+                }
+                p.sections.general.fields.linked_timeslot_id.visible = 'no';
+                if( M.ciniki_musicfestivals_main.festival.settingValue('scheduling-timeslot-linking') == 'yes' ) {
+                    p.sections.general.fields.flags2.mask = 0x06;
+                    p.sections.general.fields.flags2.flags = {'0':{'name':'Regular Timeslot'}, '2':{'name':'Finals/Playoff Timeslot'}, '3':{'name':'Playoff Time Linked'}};
+                    p.sections.general.fields.linked_timeslot_id.options = rsp.playoff_timeslots != null ? rsp.playoff_timeslots : [];
+                    p.sections.general.fields.linked_timeslot_id.options.unshift({'id':0, 'name':'None'});
+                    if( (p.data.flags&0x04) == 0x04 ) {
+                        p.sections.general.fields.linked_timeslot_id.visible = 'yes';
+                    }
+                } else {
+                    p.sections.general.fields.flags2.mask = 0x02;
+                    p.sections.general.fields.flags2.flags = {'0':{'name':'Regular Timeslot'}, '2':{'name':'Finals/Playoff Timeslot'}};
                 }
                 if( M.modFlagOn('ciniki.musicfestivals', 0x080000) ) {
                     p.sections.registrations.cellClasses[0] = 'multiline';
@@ -10322,7 +10340,7 @@ function ciniki_musicfestivals_main() {
     this.scheduledivisions.addButton('notes', 'Notes', 'M.ciniki_musicfestivals_main.scheduledivisions.toggleNotes();');
     this.scheduledivisions.addClose('Back');
     if( M.modFlagOn('ciniki.musicfestivals', 0x010000) ) {
-        this.scheduledivisions.addLeftButton('picker', 'Change Class', 'M.ciniki_musicfestivals_main.scheduledivisions.chooseClass();');
+        this.scheduledivisions.addLeftButton('picker', 'Class', 'M.ciniki_musicfestivals_main.scheduledivisions.chooseClass();');
     }
 
     //

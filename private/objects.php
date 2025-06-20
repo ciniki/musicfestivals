@@ -465,6 +465,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'runsheet_notes'=>array('name'=>'Runsheet Notes', 'default'=>''),
             'results_notes'=>array('name'=>'Results Notes', 'default'=>''),
             'results_video_url'=>array('name'=>'Results Video URL', 'default'=>''),
+            'linked_timeslot_id'=>array('name'=>'Linked Timeslot', 'default'=>'0'),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );

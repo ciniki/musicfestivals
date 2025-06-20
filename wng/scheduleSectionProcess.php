@@ -312,6 +312,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "timeslots.description, "
         . "timeslots.results_notes AS timeslot_results_notes, "
         . "timeslots.results_video_url AS timeslot_results_video_url, "
+        . "timeslots.linked_timeslot_id, "
         . "registrations.id AS reg_id, "
         . "registrations.display_name, "
         . "registrations.public_name, "
@@ -451,6 +452,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     'time'=>'slot_time_text', 'description', 'start_num', 
                     'class_code', 'class_name', 'category_name', 'section_name',
                     'results_notes'=>'timeslot_results_notes', 'results_video_url'=>'timeslot_results_video_url',
+                    'linked_timeslot_id',
                     ),
                 ),
             array('container'=>'registrations', 'fname'=>'reg_id', 
@@ -484,6 +486,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     'description', 'start_num', 
                     'class_code', 'class_name', 'category_name', 'section_name',
                     'results_notes'=>'timeslot_results_notes', 'results_video_url'=>'timeslot_results_video_url',
+                    'linked_timeslot_id',
                     ),
                 ),
             array('container'=>'registrations', 'fname'=>'reg_id', 
@@ -604,7 +607,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             //
             $videos = 'no';
             foreach($division['timeslots'] as $tid => $timeslot) {
-                $rc = ciniki_musicfestivals_scheduleTimeslotProcess($ciniki, $tnid, $timeslot);
+                $rc = ciniki_musicfestivals_scheduleTimeslotProcess($ciniki, $tnid, $timeslot, $festival);
                 $division['timeslots'][$tid] = $timeslot;
                 $name = $timeslot['title'];
                 if( $name == '' && $timeslot['class_name'] != '' 

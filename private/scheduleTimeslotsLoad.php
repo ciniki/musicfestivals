@@ -37,6 +37,7 @@ function ciniki_musicfestivals_scheduleTimeslotsLoad(&$ciniki, $tnid, $args) {
         . "timeslots.description, "
         . "timeslots.results_notes, "
         . "timeslots.results_video_url, "
+        . "timeslots.linked_timeslot_id, "
         . "registrations.id AS reg_id, "
         . "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS reg_time_text, "
         . "TIME_FORMAT(registrations.finals_timeslot_time, '%l:%i %p') AS reg_finals_time_text, "
@@ -108,7 +109,7 @@ function ciniki_musicfestivals_scheduleTimeslotsLoad(&$ciniki, $tnid, $args) {
         array('container'=>'timeslots', 'fname'=>'id', 
             'fields'=>array('id', 'festival_id', 'sdivision_id', 'flags', 
                 'slot_time_text', 'slot_time', 'slot_seconds', 'name', 'groupname', 'start_num', 'description', 
-                'class_id', 'class_name', 'results_notes', 'results_video_url',
+                'class_id', 'class_name', 'results_notes', 'results_video_url', 'linked_timeslot_id', 
                 )),
         array('container'=>'registrations', 'fname'=>'reg_id', 'fields'=>array('id'=>'reg_id', 'name'=>'display_name',
             'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
@@ -127,7 +128,7 @@ function ciniki_musicfestivals_scheduleTimeslotsLoad(&$ciniki, $tnid, $args) {
     foreach($timeslots as $tid => $timeslot) {
         $nplist[] = $timeslot['id'];
 
-        $rc = ciniki_musicfestivals_scheduleTimeslotProcess($ciniki, $tnid, $timeslot);
+        $rc = ciniki_musicfestivals_scheduleTimeslotProcess($ciniki, $tnid, $timeslot, $args['festival']);
         $timeslots[$tid] = $timeslot;
 
         if( isset($timeslot['registrations']) ) {

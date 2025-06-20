@@ -21,7 +21,7 @@
 #
 #                           0x01 - Split - Partial Registration List, registrations are linked by timeslot_id in registrations table. **deprecated**
 #                           0x02 - Final/Playoffs timeslot
-#                           0x04 - 
+#                           0x04 - Playoff Time Linked to another timeslot.
 #                           0x08 - 
 #
 # name:                 The name for the category.
@@ -56,10 +56,11 @@ create table ciniki_musicfestival_schedule_timeslots (
     runsheet_notes text not null,
     results_notes text not null,
     results_video_url varchar(250) not null,
+    linked_timeslot_id int not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
     index (festival_id, sdivision_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.10';
+) ENGINE='InnoDB', COMMENT='v1.11';

@@ -17,7 +17,9 @@
 //
 function ciniki_musicfestivals_scheduleDivisions($ciniki) {
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'scheduleTimeslotProcess');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
+
     //
     // Find all the required and optional arguments
     //
@@ -192,9 +194,11 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
             }
             $strsql .= "IF(timeslots.shortname <> '', timeslots.shortname, timeslots.name) AS name, "
                 . "timeslots.groupname, "
+                . "timeslots.flags AS timeslot_flags, "
                 . "timeslots.description, "
                 . "timeslots.slot_seconds, "
                 . "timeslots.start_num, "
+                . "timeslots.linked_timeslot_id, "
 //                . "IF(timeslots.name='', TIME_FORMAT(slot_time, '%l:%i %p'), timeslots.name) AS name, "
                 . "registrations.id AS reg_id, "
                 . "registrations.display_name, "
@@ -322,7 +326,9 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'timeslots', 'fname'=>'id', 
-                    'fields'=>array('id', 'slot_time', 'slot_seconds', 'name', 'groupname', 'description', 'start_num'),
+                    'fields'=>array('id', 'flags'=>'timeslot_flags', 'slot_time', 'slot_seconds', 'name', 'groupname', 
+                        'description', 'start_num', 'linked_timeslot_id',
+                        ),
                     ),
                 array('container'=>'registrations', 'fname'=>'reg_id', 
                     'fields'=>array('id'=>'reg_id', 'display_name', 'timeslot_id', 'timeslot_time', 'timeslot_sequence', 
@@ -346,6 +352,13 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
             }
             $rsp["timeslots{$i}"] = isset($rc['timeslots']) ? $rc['timeslots'] : array();
             foreach($rsp["timeslots{$i}"] as $tid => $timeslot) {
+                //
+                // NOTE: The scheduleTimeslotProcess does not contain all calculations below, and should 
+                // only currently be used for updating description.
+                //
+                $rc = ciniki_musicfestivals_scheduleTimeslotProcess($ciniki, $args['tnid'], $timeslot, $festival);
+                $rsp["timeslots{$i}"][$tid]['description'] = $timeslot['description'];
+
                 $rsp["timeslots{$i}"][$tid]['name'] = $timeslot['slot_time'] . ($timeslot['name'] != '' ? ' - ' . $timeslot['name'] : '');
                 $perf_time = 0;
                 $schedule_at_seconds = 0;
@@ -421,7 +434,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                     $rsp["timeslots{$i}"][$tid]['perf_time_text'] = '[' . $perf_time_str . ']';
                 } else {
                     $rsp["timeslots{$i}"][$tid]['perf_time_text'] = '';
-                }
+                } 
             }
         }
     }

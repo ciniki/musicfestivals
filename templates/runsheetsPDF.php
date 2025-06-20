@@ -14,6 +14,7 @@
 function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'scheduleTimeslotProcess');
 
     //
     // Load the tenant details
@@ -78,6 +79,8 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         . "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS reg_time_text, "
         . "timeslots.name AS timeslot_name, "
         . "timeslots.groupname, "
+        . "timeslots.slot_seconds, "
+        . "timeslots.slot_time, "
         . "timeslots.start_num, "
         . "timeslots.description, "
         . "timeslots.runsheet_notes, "
@@ -238,8 +241,8 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
             'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 'groupname', 'start_num',
-                'description', 'runsheet_notes', 
-                'class_code', 'class_name', 'category_name', 'syllabus_section_name',
+                'description', 'runsheet_notes', 'slot_time', 'slot_seconds', 
+                'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
                 ),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
@@ -637,7 +640,10 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                 $tnw[2] = $tnw[2] - 15;
             }
             $prev_time = '';
-            foreach($division['timeslots'] as $timeslot) {
+            foreach($division['timeslots'] as $tid => $timeslot) {
+                $rc = ciniki_musicfestivals_scheduleTimeslotProcess($ciniki, $tnid, $timeslot, $festival);
+                $division['timeslots'][$tid] = $timeslot;
+                error_log($timeslot['description']);
                 if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
                     && $timeslot['name'] == '' 
                     ) {

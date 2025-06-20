@@ -12,7 +12,7 @@
 // Returns
 // ---------
 // 
-function ciniki_musicfestivals_scheduleTimeslotProcess(&$ciniki, $tnid, &$timeslot) {
+function ciniki_musicfestivals_scheduleTimeslotProcess(&$ciniki, $tnid, &$timeslot, $festival) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
 
@@ -55,11 +55,16 @@ function ciniki_musicfestivals_scheduleTimeslotProcess(&$ciniki, $tnid, &$timesl
                     });
             }
             $num = ($timeslot['start_num'] && $timeslot['start_num'] > 1 ? $timeslot['start_num'] : 1);
-            foreach($timeslot['registrations'] as $reg) {
+            foreach($timeslot['registrations'] as $rid => $reg) {
                 $num_reg++;
                 $rc = ciniki_musicfestivals_titlesMerge($ciniki, $tnid, $reg, [
+                    'times' => 'startorgcalcsum',
+                    'numbers' => 'yes',
                     'rounding' => isset($args['festival']['scheduling-perftime-rounding']) ? $args['festival']['scheduling-perftime-rounding'] : '',
                     ]);
+                $timeslot['registrations'][$rid]['titles'] = $rc['titles'];
+                $timeslot['registrations'][$rid]['perf_time'] = $rc['perf_time'];
+                $timeslot['registrations'][$rid]['org_time'] = $rc['org_time'];
                 $perf_time += $rc['perf_time_seconds'];
                 $ptime_text = ' [' . $rc['perf_time'] . ']';
                 $individual_time_text = '';
@@ -137,6 +142,50 @@ function ciniki_musicfestivals_scheduleTimeslotProcess(&$ciniki, $tnid, &$timesl
         }
     } elseif( isset($timeslot['slot_time_text']) ) {
         $timeslot['description'] = str_replace("{_start_time_}", $timeslot['slot_time_text'], $timeslot['description']);
+    }
+    
+    //
+    // Check if linked to another timeslot
+    //
+    if( isset($timeslot['flags']) && ($timeslot['flags']&0x04) == 0x04 
+        && isset($timeslot['linked_timeslot_id']) && $timeslot['linked_timeslot_id'] > 0 
+        ) {
+        //
+        // Load linked timeslot
+        //
+        $strsql = "SELECT timeslots.id, "
+            . "timeslots.name, "
+            . "IFNULL(locations.name, 'Undecided') AS location_name, "
+            . "IFNULL(locations.address1, '') AS address1, "
+            . "IFNULL(locations.city, '') AS city, "
+            . "IFNULL(locations.province, '') AS province, "
+            . "IFNULL(locations.postal, '') AS postal "
+            . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
+            . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+                . "timeslots.sdivision_id = divisions.id "
+                . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
+                . "divisions.location_id = locations.id "
+                . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE timeslots.id = '" . ciniki_core_dbQuote($ciniki, $timeslot['linked_timeslot_id']) . "' "
+            . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'linked_timeslot');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1008', 'msg'=>'Unable to load linked_timeslot', 'err'=>$rc['err']));
+        }
+        $location_name = $rc['linked_timeslot']['location_name'];
+        $location_address = $rc['linked_timeslot']['address1'];
+        $location_address .= ($location_address != '' ? ', ' : '') . $rc['linked_timeslot']['city'];
+        $location_address .= ($location_address != '' ? ', ' : '') . $rc['linked_timeslot']['province'];
+        $location_address .= ($location_address != '' ? ' ' : '') . $rc['linked_timeslot']['postal'];
+        
+
+        // Run substitutions on description
+        $timeslot['description'] = str_replace("{_linked_location_}", $location_name, $timeslot['description']);
+        $timeslot['description'] = str_replace("{_linked_address_}", $location_address, $timeslot['description']);
     }
 
 

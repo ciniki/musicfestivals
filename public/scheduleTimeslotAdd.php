@@ -34,6 +34,7 @@ function ciniki_musicfestivals_scheduleTimeslotAdd(&$ciniki) {
         'runsheet_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Runsheet Notes'),
         'results_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Results Notes'),
         'results_video_url'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Results Video URL'),
+        'linked_timeslot_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Linked Timeslot'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -72,6 +73,27 @@ function ciniki_musicfestivals_scheduleTimeslotAdd(&$ciniki) {
         return $rc;
     }
     $scheduletimeslot_id = $rc['id'];
+
+    //
+    // Check if linked timeslot needs to be updated
+    //
+    if( isset($args['linked_timeslot_id']) && $args['linked_timeslot_id'] > 0 
+        && ($timeslot['flags']&0x04) == 0x04 // Time Linked Timeslot
+        && (isset($args['slot_time']) || isset($args['slot_seconds'])) 
+        ) {
+        $linked_args = [];
+        if( isset($args['slot_time']) ) {
+            $linked_args['slot_time'] = $args['slot_time'];
+        }
+        if( isset($args['slot_seconds']) ) {
+            $linked_args['slot_seconds'] = $args['slot_seconds'];
+        }
+        $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.scheduletimeslot', $args['linked_timeslot_id'], $linked_args, 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
+    }
 
     //
     // Commit the transaction
