@@ -9,7 +9,7 @@
 // Returns
 // -------
 //
-function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $tnid, &$request, $args) {
+function ciniki_musicfestivals_wng_accountMemberResultsProcess(&$ciniki, $tnid, &$request, $args) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'videoProcess');
@@ -25,13 +25,6 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
     }
     $maps = $rc['maps'];
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'private', 'maps');
-    $rc = ciniki_sapos_maps($ciniki);
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
-    }
-    $sapos_maps = $rc['maps'];
-
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
@@ -44,33 +37,46 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
     }
 
     if( !isset($args['member']['id']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.757', 'msg'=>'No member specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1009', 'msg'=>'No member specified'));
     }
     if( !isset($args['festival']['id']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.758', 'msg'=>'No festival specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1010', 'msg'=>'No festival specified'));
     }
+
+    //
+    // Load the festival settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $tnid, $args['festival']['id']);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $festival = $rc['festival'];
+
+    //
+    // Load maps
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalMaps');
+    $rc = ciniki_musicfestivals_festivalMaps($ciniki, $tnid, $festival);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $maps = $rc['maps'];
 
     //
     // Load the list of recommendations for the member festival
     //
     $strsql = "SELECT registrations.id, "
+        . "registrations.status, "
+        . "registrations.status AS status_text, "
         . "registrations.display_name, "
         . "registrations.participation, "
         . "registrations.placement, "
         . "registrations.finals_placement, "
         . "classes.name AS class_name, "
-        . "CONCAT_WS(' - ', classes.code, classes.name) AS class, ";
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
-        $strsql .= "IFNULL(TIME_FORMAT(registrations.timeslot_time, '%l:%i %p'), '') AS timeslot_time, ";
-    } else {
-        $strsql .= "IFNULL(TIME_FORMAT(timeslots.slot_time, '%l:%i %p'), '') AS timeslot_time, ";
-    }
-    $strsql .= "IFNULL(timeslots.flags, 0) AS timeslot_flags, "
-        . "IFNULL(DATE_FORMAT(divisions.division_date, '%b %D'), '') AS timeslot_date, "
-        . "IFNULL(locations.name, '') AS location_name, "
+        . "CONCAT_WS(' - ', classes.code, classes.name) AS class, "
         . "divisions.flags AS division_flags, "
-        . "ssections.flags AS section_flags, "
-        . "IFNULL(CONCAT_WS('.', invoices.invoice_type, invoices.status), 0) AS invoice_status "
+        . "ssections.flags AS section_flags "
         . "FROM ciniki_musicfestival_registrations AS registrations "
         . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
             . "registrations.class_id = classes.id "
@@ -84,17 +90,9 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
             . "timeslots.sdivision_id = divisions.id "
             . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
-            . "divisions.location_id = locations.id "
-            . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
         . "LEFT JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
             . "divisions.ssection_id = ssections.id "
             . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
-            . "registrations.invoice_id = invoices.id "
-            . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE registrations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member']['id']) . "' "
         . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival']['id']) . "' "
@@ -104,15 +102,15 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
-            'fields'=>array( 'id', 'display_name', 'participation', 'class', 'class_name', 'timeslot_flags',
-                'timeslot_time', 'timeslot_date', 'location_name', 'division_flags', 'section_flags', 
-                'placement', 'finals_placement', 'invoice_status',
+            'fields'=>array( 'id', 'display_name', 'status', 'participation', 'class', 'class_name', 
+                'division_flags', 'section_flags', 
+                'placement', 'finals_placement', 'status', 'status_text', 
                 ),
-            'maps'=>array('invoice_status'=>$sapos_maps['invoice']['typestatus']),
+            'maps'=>array('status_text'=>$maps['registration']['status']),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.756', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1011', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
     }
     $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
 
@@ -121,25 +119,25 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
         });
 
     foreach($registrations as $rid => $reg) {
-        $registrations[$rid]['scheduled_html'] = '';
-        $registrations[$rid]['scheduled_text'] = '';
-        if( $reg['participation'] == 1 ) {
-            $registrations[$rid]['scheduled_html'] = 'Virtual';
-            $registrations[$rid]['scheduled_text'] = 'Virtual';
-        } elseif( $reg['timeslot_time'] != '' && $reg['timeslot_date'] != '' && ($reg['section_flags']&0x01) == 0x01 ) {
-            $registrations[$rid]['scheduled_html'] = $reg['timeslot_date'] . ' @ ' . $reg['timeslot_time'];
-            $registrations[$rid]['scheduled_text'] = $reg['timeslot_date'] . ' @ ' . $reg['timeslot_time'];
-            if( $reg['location_name'] != '' ) {
-                $registrations[$rid]['scheduled_html'] .= '<br/>' . $reg['location_name'];
-                $registrations[$rid]['scheduled_text'] .= ' - ' . $reg['location_name'];
+        //
+        // If results have been released on the website
+        //
+        $registrations[$rid]['result'] = '';
+        if( (($reg['section_flags']&0x20) == 0x20 || ($reg['division_flags']&0x20) == 0x20) ) {
+            $registrations[$rid]['result'] = $reg['placement'];
+            if( $reg['finals_placement'] != '' ) {
+                $registrations[$rid]['result'] .= ($registrations[$rid]['result'] != '' ? ' - ' : '') . $reg['finals_placement'];
             }
+        }
+        if( $reg['status'] >= 70 ) {
+            $registrations[$rid]['result'] = $reg['status_text'];
         }
     }
 
     $blocks[] = array(
         'type' => 'title',
         'level' => 2,
-        'title' => $args['member']['name'] . ' - ' . $args['festival']['name'] . ' - Registrations',
+        'title' => $args['member']['name'] . ' - ' . $args['festival']['name'] . ' - Results',
         );
 
     if( count($registrations) > 0 ) {
@@ -147,24 +145,23 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
             'type' => 'buttons',
             'class' => 'aligncenter',
             'items' => array(   
-                array('text' => 'Download Excel', 'target' => '_blank', 'url' => "{$base_url}/registrations/{$request['uri_split'][3]}/{$request['uri_split'][4]}/registrations.xls"),
-                array('text' => 'Download PDF', 'target' => '_blank', 'url' => "{$base_url}/registrations/{$request['uri_split'][3]}/{$request['uri_split'][4]}/registrations.pdf"),
+                array('text' => 'Download Excel', 'target' => '_blank', 'url' => "{$base_url}/results/{$request['uri_split'][3]}/{$request['uri_split'][4]}/results.xls"),
+                array('text' => 'Download PDF', 'target' => '_blank', 'url' => "{$base_url}/results/{$request['uri_split'][3]}/{$request['uri_split'][4]}/results.pdf"),
                 ),
             );
     }
 
-    if( isset($request['uri_split'][5]) && $request['uri_split'][5] == 'registrations.xls' ) {
+    if( isset($request['uri_split'][5]) && $request['uri_split'][5] == 'results.xls' ) {
         //
         // Generate XLS of registrations
         //
         $sheets = [
             'results' => [
-                'label' => 'Registrations',
+                'label' => 'Results',
                 'columns' => [
                     ['label' => 'Class', 'field' => 'class'],
                     ['label' => 'Competitor', 'field' => 'display_name'],
-                    ['label' => 'Status', 'field' => 'invoice_status'],
-                    ['label' => 'Scheduled', 'field' => 'scheduled_text'],
+                    ['label' => 'Results', 'field' => 'result'],
                     ],
                 'rows' => $registrations,
                 ],
@@ -174,22 +171,22 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
             'sheets' => $sheets,
             'download' => 'yes', 
             'format' => 'xls',
-            'filename' => "{$args['member']['name']} - {$args['festival']['name']} - Registrations.xls",
+            'filename' => "{$args['member']['name']} - {$args['festival']['name']} - Results.xls",
             ]);
     }
-    elseif( isset($request['uri_split'][5]) && $request['uri_split'][5] == 'registrations.pdf' ) {
+    elseif( isset($request['uri_split'][5]) && $request['uri_split'][5] == 'results.pdf' ) {
         //
         // Generate PDF of registrations
         //
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'memberRegistrationsPDF');
-        $rc = ciniki_musicfestivals_templates_memberRegistrationsPDF($ciniki, $tnid, [
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'memberResultsPDF');
+        $rc = ciniki_musicfestivals_templates_memberResultsPDF($ciniki, $tnid, [
             'festival_id' => $args['festival']['id'],
             'title' => $args['member']['name'],
-            'subtitle' => $args['festival']['name'] . ' - Registrations',
+            'subtitle' => $args['festival']['name'] . ' - Results',
             'registrations' => $registrations,
             ]);
         if( $rc['stat'] != 'ok' ) {
-            error_log('ERR: Unable to generate local festival registrations excel');
+            error_log('ERR: Unable to generate local festival results pdf');
             $blocks[] = array(
                 'type' => 'msg', 
                 'level' => 'error',
@@ -201,7 +198,7 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
         //
         // Output the excel file
         //
-        $filename = "{$args['member']['name']} - {$args['festival']['name']} - Registrations";
+        $filename = "{$args['member']['name']} - {$args['festival']['name']} - Results";
         header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
         header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
         header('Cache-Control: no-cache, must-revalidate');
@@ -220,8 +217,8 @@ function ciniki_musicfestivals_wng_accountMemberRegistrationsProcess(&$ciniki, $
         'columns' => array(
             array('label'=>'Class', 'fold-label'=>'Class: ', 'field'=>'class'),
             array('label'=>'Competitor', 'field'=>'display_name'),
-            array('label'=>'Status', 'field'=>'invoice_status'),
-            array('label'=>'Scheduled', 'fold-label'=>'Scheduled: ', 'field'=>'scheduled_html'),
+//            array('label'=>'Status', 'field'=>'status'),
+            array('label'=>'Results', 'field'=>'result'),
             ),
         'rows' => $registrations,
         );

@@ -88,7 +88,9 @@ function ciniki_musicfestivals_wng_accountMembersProcess(&$ciniki, $tnid, &$requ
     //
     // Get the number of recommendations
     //
-    $strsql = "SELECT recommendations.member_id, recommendations.festival_id, COUNT(entries.id) AS num_items "
+    $strsql = "SELECT recommendations.member_id, "
+        . "recommendations.festival_id, "
+        . "COUNT(entries.id) AS num_items "
         . "FROM ciniki_musicfestival_recommendations AS recommendations "
         . "INNER JOIN ciniki_musicfestival_recommendation_entries AS entries ON ("
             . "recommendations.id = entries.recommendation_id "
@@ -115,7 +117,9 @@ function ciniki_musicfestivals_wng_accountMembersProcess(&$ciniki, $tnid, &$requ
     //
     // Get the number of alternates
     //
-    $strsql = "SELECT alternates.member_id, alternates.festival_id, COUNT(entries.id) AS num_items "
+    $strsql = "SELECT alternates.member_id, "
+        . "alternates.festival_id, "
+        . "COUNT(entries.id) AS num_items "
         . "FROM ciniki_musicfestival_recommendations AS alternates "
         . "INNER JOIN ciniki_musicfestival_recommendation_entries AS entries ON ("
             . "alternates.id = entries.recommendation_id "
@@ -191,6 +195,7 @@ function ciniki_musicfestivals_wng_accountMembersProcess(&$ciniki, $tnid, &$requ
             if( isset($registrations[$mid]['registrations'][$fid]['num_items']) ) {
                 $members[$mid]['festivals'][$fid]['num_registrations'] = $registrations[$mid]['registrations'][$fid]['num_items'];
                 $members[$mid]['festivals'][$fid]['links'] .= "<a class='button' href='{$base_url}/registrations/{$member['permalink']}/{$festival['permalink']}'>Registrations</a>";
+            $members[$mid]['festivals'][$fid]['links'] .= "<a class='button' href='{$base_url}/results/{$member['permalink']}/{$festival['permalink']}'>Results</a>";
                 if( isset($request['uri_split'][4]) 
                     && $request['uri_split'][2] == 'registrations'
                     && $request['uri_split'][3] == $member['permalink']
@@ -200,6 +205,16 @@ function ciniki_musicfestivals_wng_accountMembersProcess(&$ciniki, $tnid, &$requ
                     $args['festival'] = $festival;
                     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountMemberRegistrationsProcess');
                     return ciniki_musicfestivals_wng_accountMemberRegistrationsProcess($ciniki, $tnid, $request, $args);
+                }
+                if( isset($request['uri_split'][4]) 
+                    && $request['uri_split'][2] == 'results'
+                    && $request['uri_split'][3] == $member['permalink']
+                    && $request['uri_split'][4] == $festival['permalink']
+                    ) {
+                    $args['member'] = $member;
+                    $args['festival'] = $festival;
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountMemberResultsProcess');
+                    return ciniki_musicfestivals_wng_accountMemberResultsProcess($ciniki, $tnid, $request, $args);
                 }
             }
 

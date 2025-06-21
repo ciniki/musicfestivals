@@ -11,7 +11,7 @@
 // -------
 // <rsp stat='ok' id='34' />
 //
-function ciniki_musicfestivals_templates_memberRegistrationsPDF(&$ciniki, $tnid, $args) {
+function ciniki_musicfestivals_templates_memberResultsPDF(&$ciniki, $tnid, $args) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
 
@@ -238,7 +238,7 @@ function ciniki_musicfestivals_templates_memberRegistrationsPDF(&$ciniki, $tnid,
     //
     // Go through the sections, divisions and classes
     //
-    $w = array(70, 70, 40);
+    $w = array(100, 80);
     $pdf->AddPage();
 
     $pdf->SetFont('helvetica', '', 12);
@@ -247,17 +247,14 @@ function ciniki_musicfestivals_templates_memberRegistrationsPDF(&$ciniki, $tnid,
     $classes = array();
     $prev_class = '';
     foreach($args['registrations'] as $registration) {
-        $registration['scheduled_html'] = preg_replace("/<br\/>/", "\n", $registration['scheduled_html']);
+        $registration['result'] = preg_replace("/<br\/>/", "\n", $registration['result']);
 
         //
         // Calculate the height of registration
         //
         $registration['lh'] = $pdf->getStringHeight($w[0], $registration['display_name']);
-        if( $pdf->getStringHeight($w[1], $registration['scheduled_html']) > $registration['lh'] ) {
-            $registration['lh'] = $pdf->getStringHeight($w[1], $registration['scheduled_html']);
-        }
-        if( $pdf->getStringHeight($w[2], $registration['invoice_status']) > $registration['lh'] ) {
-            $registration['lh'] = $pdf->getStringHeight($w[2], $registration['invoice_status']);
+        if( $pdf->getStringHeight($w[1], $registration['result']) > $registration['lh'] ) {
+            $registration['lh'] = $pdf->getStringHeight($w[1], $registration['result']);
         }
 
         if( !isset($classes[$registration['class']]) ) {
@@ -292,8 +289,7 @@ function ciniki_musicfestivals_templates_memberRegistrationsPDF(&$ciniki, $tnid,
         $pdf->SetFont('', '');
         foreach($class['registrations'] as $registration) {
             $pdf->MultiCell($w[0], $registration['lh'], $registration['display_name'], 1, 'L', $fill, 0);
-            $pdf->MultiCell($w[1], $registration['lh'], $registration['scheduled_html'], 1, 'L', $fill, 0);
-            $pdf->MultiCell($w[2], $registration['lh'], $registration['invoice_status'], 1, 'L', $fill, 1);
+            $pdf->MultiCell($w[1], $registration['lh'], $registration['result'], 1, 'L', $fill, 1);
             $fill = !$fill;
         }
 
