@@ -12,7 +12,7 @@
 // Returns
 // ---------
 // 
-function ciniki_musicfestivals_timeslotScheduleTimesRecalc(&$ciniki, $tnid, $args) {
+function ciniki_musicfestivals_scheduleTimeslotRecalc(&$ciniki, $tnid, $args) {
 
     if( !isset($args['timeslot_id']) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.951', 'msg'=>'No timeslot specified'));
@@ -60,7 +60,9 @@ function ciniki_musicfestivals_timeslotScheduleTimesRecalc(&$ciniki, $tnid, $arg
     // Setup the slot time
     //
     $dt = new DateTime('now', new DateTimezone('UTC'));
-    if( preg_match("/^\s*([0-9]+):([0-9]+)/", $slot_time, $m) ) {
+    if( preg_match("/^\s*([0-9]+):([0-9]+):([0-9]+)/", $slot_time, $m) ) {
+        $dt->setTime($m[1], $m[2], $m[3]);
+    } elseif( preg_match("/^\s*([0-9]+):([0-9]+)/", $slot_time, $m) ) {
         $dt->setTime($m[1], $m[2], 0);
     } else {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.990', 'msg'=>'Unable to parse timeslot start time'));
@@ -144,7 +146,12 @@ function ciniki_musicfestivals_timeslotScheduleTimesRecalc(&$ciniki, $tnid, $arg
             $update_args['timeslot_time'] = $new_time;
         }
 
-        if( count($update_args) > 0 ) {
+        //
+        // This function used for calculating length of timeslot, not always going to have individual times
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) 
+            && count($update_args) > 0 
+            ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
             $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $reg['id'], $update_args, 0x04);
             if( $rc['stat'] != 'ok' ) {
@@ -161,6 +168,6 @@ function ciniki_musicfestivals_timeslotScheduleTimesRecalc(&$ciniki, $tnid, $arg
         $dt->add(new DateInterval('PT' . $rc['perf_time_seconds'] . 'S'));
     }
 
-    return array('stat'=>'ok');
+    return array('stat'=>'ok', 'end_time'=>$dt->format('H:i:s'));
 }
 ?>

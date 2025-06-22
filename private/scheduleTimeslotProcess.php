@@ -112,7 +112,6 @@ function ciniki_musicfestivals_scheduleTimeslotProcess(&$ciniki, $tnid, &$timesl
             $perf_time_str = '<strike>' . $perf_time_str . '</strike> ' . $slot_length;
         }
     } elseif( $perf_time != '' && $perf_time == 0 ) {
-        error_log('testing');
         $pref_time_str = '?';
         if( $slot_length != '' ) {
             $perf_time_str = $slot_length;

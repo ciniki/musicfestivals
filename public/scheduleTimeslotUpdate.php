@@ -21,6 +21,7 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
         'ssection_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Section'),
         'sdivision_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Division'),
         'slot_time'=>array('required'=>'no', 'blank'=>'no', 'type'=>'time', 'name'=>'Time'),
+        'pre_seconds'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Pre Length'),
         'slot_seconds'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Length'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name'),
@@ -52,7 +53,9 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
     // Load the current timeslot to get the flags linked_timeslot_id
     //
     $strsql = "SELECT timeslots.id, "
+        . "timeslots.name, "
         . "timeslots.festival_id, "
+        . "timeslots.sdivision_id, "
         . "timeslots.flags, "
         . "timeslots.linked_timeslot_id "
         . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
@@ -67,6 +70,35 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1006', 'msg'=>'Unable to find requested timeslot'));
     }
     $timeslot = $rc['timeslot'];
+
+    //
+    // Load the festival settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $timeslot['festival_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $festival = $rc['festival'];
+
+    //
+    // Create the shortname
+    //
+    if( isset($args['name']) && $args['name'] != $timeslot['name'] && !isset($args['shortname']) 
+        && isset($festival['scheduling-timeslot-shortname'])
+        && $festival['scheduling-timeslot-shortname'] != 'no'
+        && $festival['scheduling-timeslot-shortname'] != 'manual'
+        ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'shortnameMake');
+        $rc = ciniki_musicfestivals_shortnameMake($ciniki, $args['tnid'], [
+            'type' => 'timeslot',
+            'format' => $festival['scheduling-timeslot-shortname'],
+            'text' => $args['name'],
+            ]);
+        if( isset($rc['shortname']) ) {
+            $args['shortname'] = $rc['shortname'];
+        }
+    }
 
     //
     // Check for any timeslots linked to this one, or linked to the timeslot being linked to.
@@ -118,12 +150,24 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
         return $rc;
     }
 
+    if( isset($festival['scheduling-timeslot-autoshift']) && $festival['scheduling-timeslot-autoshift'] == 'yes' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'scheduleDivisionRecalc');
+        $rc = ciniki_musicfestivals_scheduleDivisionRecalc($ciniki, $args['tnid'], [
+            'division_id' => isset($args['sdivision_id']) ? $args['sdivision_id'] : $timeslot['sdivision_id'],
+            ]);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
+    }
+
     //
     // Check if registration schedule times need to be updated
+    // Note: Recalcs are auto run in scheduleDivisionRecal
     //
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'timeslotScheduleTimesRecalc');
-        $rc = ciniki_musicfestivals_timeslotScheduleTimesRecalc($ciniki, $args['tnid'], [
+    elseif( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'scheduleTimeslotRecalc');
+        $rc = ciniki_musicfestivals_scheduleTimeslotRecalc($ciniki, $args['tnid'], [
             'timeslot_id' => $args['scheduletimeslot_id']
             ]);
         if( $rc['stat'] != 'ok' ) {
@@ -133,8 +177,8 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
     }
 
     if( isset($args['start_num']) ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'timeslotScheduleTimesRenumber');
-        $rc = ciniki_musicfestivals_timeslotScheduleTimesRenumber($ciniki, $args['tnid'], [
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'scheduleTimeslotRenumber');
+        $rc = ciniki_musicfestivals_scheduleTimeslotRenumber($ciniki, $args['tnid'], [
             'timeslot_id' => $args['scheduletimeslot_id']
             ]);
         if( $rc['stat'] != 'ok' ) {

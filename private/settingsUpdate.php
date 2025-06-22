@@ -229,6 +229,9 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'scheduling-timeslot-startnum',
         'scheduling-timeslot-linking',
         'scheduling-perftime-rounding',
+        'scheduling-timeslot-autoshift',
+        'scheduling-division-shortnames',
+        'scheduling-timeslot-shortnames',
         'locations-categories',
         'locations-disciplines',
         'trophies-footer-msg',
@@ -258,6 +261,25 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
                 }
+            }
+            //
+            // Check if other updates should be run
+            //
+            if( $field == 'scheduling-division-shortnames' && $args[$field] != 'manual' ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'shortnamesUpdate');
+                $rc = ciniki_musicfestivals_shortnamesUpdate($ciniki, $tnid, [
+                    'type' => 'division',
+                    'format' => $args[$field],
+                    'festival_id' => $festival_id,
+                    ]);
+            }
+            elseif( $field == 'scheduling-timeslot-shortnames' && $args[$field] != 'manual' ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'shortnamesUpdate');
+                $rc = ciniki_musicfestivals_shortnamesUpdate($ciniki, $tnid, [
+                    'type' => 'timeslot',
+                    'format' => $args[$field],
+                    'festival_id' => $festival_id,
+                    ]);
             }
         }
     }

@@ -45,6 +45,54 @@ function ciniki_musicfestivals_scheduleDivisionUpdate(&$ciniki) {
     }
 
     //
+    // Load the current division
+    //
+    $strsql = "SELECT divisions.id, "
+        . "divisions.name, "
+        . "divisions.festival_id "
+        . "FROM ciniki_musicfestival_schedule_divisions AS divisions "
+        . "WHERE divisions.id = '" . ciniki_core_dbQuote($ciniki, $args['scheduledivision_id']) . "' "
+        . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'division');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1005', 'msg'=>'Unable to load division', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['division']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1006', 'msg'=>'Unable to find requested division'));
+    }
+    $division = $rc['division'];
+
+    //
+    // Load the festival settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $division['festival_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $festival = $rc['festival'];
+
+    //
+    // Create the shortname
+    //
+    if( isset($args['name']) && $args['name'] != $division['name'] && !isset($args['shortname']) 
+        && isset($festival['scheduling-division-shortname'])
+        && $festival['scheduling-division-shortname'] != 'no'
+        && $festival['scheduling-division-shortname'] != 'manual'
+        ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'shortnameMake');
+        $rc = ciniki_musicfestivals_shortnameMake($ciniki, $args['tnid'], [
+            'type' => 'division',
+            'format' => $festival['scheduling-division-shortname'],
+            'text' => $args['name'],
+            ]);
+        if( isset($rc['shortname']) ) {
+            $args['shortname'] = $rc['shortname'];
+        }
+    }
+
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');

@@ -24,6 +24,7 @@ function ciniki_musicfestivals_scheduleTimeslotAdd(&$ciniki) {
         'ssection_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Section'),
         'sdivision_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Division'),
         'slot_time'=>array('required'=>'yes', 'blank'=>'no', 'type'=>'time', 'name'=>'Time'),
+        'pre_seconds'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Pre Length'),
         'slot_seconds'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Length'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name'),

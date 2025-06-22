@@ -243,9 +243,9 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
         }
         $timeslots = isset($rc['timeslots']) ? $rc['timeslots'] : [];
 
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'timeslotScheduleTimesRecalc');
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'scheduleTimeslotRecalc');
         foreach($timeslots AS $timeslot_id) {
-            $rc = ciniki_musicfestivals_timeslotScheduleTimesRecalc($ciniki, $args['tnid'], [
+            $rc = ciniki_musicfestivals_scheduleTimeslotRecalc($ciniki, $args['tnid'], [
                 'timeslot_id' => $timeslot_id,
                 ]);
             if( $rc['stat'] != 'ok' ) {

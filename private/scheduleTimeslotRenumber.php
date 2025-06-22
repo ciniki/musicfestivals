@@ -12,7 +12,7 @@
 // Returns
 // ---------
 // 
-function ciniki_musicfestivals_timeslotScheduleTimesRenumber(&$ciniki, $tnid, $args) {
+function ciniki_musicfestivals_scheduleTimeslotRenumber(&$ciniki, $tnid, $args) {
 
     if( !isset($args['timeslot_id']) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.955', 'msg'=>'No timeslot specified'));
