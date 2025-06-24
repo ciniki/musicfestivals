@@ -89,6 +89,7 @@ function ciniki_musicfestivals_scheduleDivisionRecalc(&$ciniki, $tnid, $args) {
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1012', 'msg'=>'Unable to update the scheduletimeslot', 'err'=>$rc['err']));
             }
+            $timeslot['slot_time'] = $start_time;
         }
 
         //

@@ -2603,7 +2603,7 @@ function ciniki_musicfestivals_main() {
         }
         if( s == 'schedule_timeslots' ) {
             switch(j) {
-                case 0: return M.multiline(d.slot_time_text, d.perf_time_text);
+                case 0: console.log(d);return M.multiline(d.slot_time_text, d.perf_time_text);
                 case 1: return '<span class="maintext">' + d.name + (d.groupname != '' ? ' - ' + d.groupname : '') + '</span><span class="subtext">' + d.description.replace(/\n/g, '<br/>') + '</span>';
             }
         }
@@ -5432,6 +5432,9 @@ function ciniki_musicfestivals_main() {
                         'no':'No',
                         'yes':'Yes',
                     }},
+//                'scheduling-linked-playoffs-placement':{'label':'Auto Playoff Placement for', 'type':'text',
+//                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); },
+//                    },
                 'scheduling-timeslot-autoshift':{'label':'Auto Shift Timeslots', 'type':'toggle', 'default':'no', 
                     'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x4000); },
                     'toggles':{
