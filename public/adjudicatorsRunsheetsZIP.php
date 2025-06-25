@@ -117,7 +117,6 @@ function ciniki_musicfestivals_adjudicatorsRunsheetsZIP($ciniki) {
     // Generate and add each adjudicators runsheet
     //
     foreach($adjudicators as $adjudicator) { 
-        error_log($adjudicator['name']);
         //
         // Run the template
         //

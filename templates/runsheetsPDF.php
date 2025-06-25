@@ -643,7 +643,6 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             foreach($division['timeslots'] as $tid => $timeslot) {
                 $rc = ciniki_musicfestivals_scheduleTimeslotProcess($ciniki, $tnid, $timeslot, $festival);
                 $division['timeslots'][$tid] = $timeslot;
-                error_log($timeslot['description']);
                 if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
                     && $timeslot['name'] == '' 
                     ) {

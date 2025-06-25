@@ -36,7 +36,6 @@ function ciniki_musicfestivals_shortnamesUpdate(&$ciniki, $tnid, $args) {
                 'format' => $args['format'],
                 'text' => $row['name'],
                 ]);
-                error_log('Update: ' . $rc['shortname']);
             if( isset($rc['shortname']) && $rc['shortname'] != $row['shortname'] ) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.scheduledivision', $row['id'], [

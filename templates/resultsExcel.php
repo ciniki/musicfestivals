@@ -97,7 +97,6 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.915', 'msg'=>'Unable to load teachers', 'err'=>$rc['err']));
     }
     $teachers = isset($rc['teachers']) ? $rc['teachers'] : array();
-//    error_log(print_r($teachers,true));
 
     //
     // Get the list of registration

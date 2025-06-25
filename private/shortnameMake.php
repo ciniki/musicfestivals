@@ -15,7 +15,6 @@
 function ciniki_musicfestivals_shortnameMake(&$ciniki, $tnid, $args) {
 
     $shortname = '';
-    error_log(print_r($args,true));
     
     if( isset($args['format']) && $args['format'] == 'smartinitials'
         && isset($args['text']) && $args['text'] != '' 
