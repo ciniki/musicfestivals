@@ -20,6 +20,7 @@ function ciniki_musicfestivals_scheduleTimeslotRecalc(&$ciniki, $tnid, $args) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
 
+error_log('recalc: ' . $args['timeslot_id']);
     //
     // Get the slot start time
     //
@@ -76,6 +77,8 @@ function ciniki_musicfestivals_scheduleTimeslotRecalc(&$ciniki, $tnid, $args) {
     // Load the registrations
     //
     $strsql = "SELECT registrations.id, "
+        . "registrations.timeslot_id, "
+        . "registrations.finals_timeslot_id, "
         . "registrations.timeslot_time, "
         . "registrations.title1, "
         . "registrations.title2, "
@@ -119,14 +122,17 @@ function ciniki_musicfestivals_scheduleTimeslotRecalc(&$ciniki, $tnid, $args) {
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival_id) . "' "
-        . "AND registrations.timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' "
+        . "AND ("
+            . "registrations.timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' "
+            . "OR registrations.finals_timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' "
+            . ") "
         . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY registrations.timeslot_sequence, registrations.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
-            'fields'=>array('id', 'timeslot_time',
+            'fields'=>array('id', 'timeslot_id', 'finals_timeslot_id', 'timeslot_time',
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 
                 'title8', 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 
                 'composer7', 'composer8', 'movements1', 'movements2', 'movements3', 'movements4', 
@@ -147,7 +153,11 @@ function ciniki_musicfestivals_scheduleTimeslotRecalc(&$ciniki, $tnid, $args) {
         $update_args = [];
         $new_time = $dt->format('H:i:00');
         if( $new_time != $reg['timeslot_time'] ) {
-            $update_args['timeslot_time'] = $new_time;
+            if( $args['timeslot_id'] == $reg['finals_timeslot_id'] ) {
+                $update_args['finals_timeslot_time'] = $new_time;
+            } else {
+                $update_args['timeslot_time'] = $new_time;
+            }
         }
 
         //

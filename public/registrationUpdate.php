@@ -734,7 +734,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
             'finals_timeslot_id' => $registration['linked_timeslot_id'],
             ]);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.130', 'msg'=>'', 'err'=>$rc['err']));
+            return $rc;
         }
     }
     elseif( ($registration['timeslot_flags']&0x01) == 0x01 
@@ -750,7 +750,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
             'finals_timeslot_id' => $registration['linked_timeslot_id'],
             ]);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.130', 'msg'=>'', 'err'=>$rc['err']));
+            return $rc;
         }
     }
 
