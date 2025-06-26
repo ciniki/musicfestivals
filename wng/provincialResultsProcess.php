@@ -200,7 +200,44 @@ function ciniki_musicfestivals_wng_provincialResultsProcess(&$ciniki, $tnid, &$r
         }
     }
 
-    if( isset($request['uri_split'][($request['cur_uri_pos']+2)]) 
+    if( isset($s['layout']) && $s['layout'] == 'singlepage' ) {
+        if( isset($s['title']) && $s['title'] != '' ) {
+            $blocks[] = array(
+                'type' => 'title',
+                'title' => $s['title'],
+                );
+        }
+        foreach($sections as $section) {
+            foreach($section['classes'] as $class) {
+                $registrations = $class['registrations'];
+                foreach($registrations as $rid => $reg) {
+                    if( $reg['finals_placement'] != '' ) {
+                        $registrations[$rid]['placement'] = $reg['finals_placement'];
+                    }
+                    $rc = ciniki_musicfestivals_titlesMerge($ciniki, $tnid, $reg, ['newline'=>'<br/>']);
+                    $registrations[$rid]['titles'] = $rc['titles'];
+                }
+                uasort($registrations, function($a, $b) {
+                    return strnatcmp($a['placement'], $b['placement']);    
+                    });
+                $blocks[] = [
+                    'type' => 'table',
+                    'title' => $class['code'] . ' - ' . $class['name'],
+                    'headers' => 'no',
+                    'class' => 'fold-at-50',
+                    'columns' => [
+                        ['label'=>'Placement', 'field'=>'placement'],
+                        ['label'=>'Name', 'field'=>'display_name'],
+                        ['label'=>'Titles', 'field'=>'titles'],
+                        ],
+                    'rows' => $registrations,
+                    ];
+            }
+        }
+
+        return array('stat'=>'ok', 'blocks'=>$blocks);
+    }
+    elseif( isset($request['uri_split'][($request['cur_uri_pos']+2)]) 
         && $request['uri_split'][($request['cur_uri_pos']+1)] == 'provincials'
         && isset($sections[$request['uri_split'][($request['cur_uri_pos']+2)]]) 
         ) {
