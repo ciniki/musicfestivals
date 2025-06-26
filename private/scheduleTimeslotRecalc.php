@@ -49,12 +49,16 @@ function ciniki_musicfestivals_scheduleTimeslotRecalc(&$ciniki, $tnid, $args) {
     //
     // Load the festival settings
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
-    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $tnid, $festival_id);
-    if( $rc['stat'] != 'ok' ) {
-        return $rc;
+    if( !isset($args['festival']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+        $rc = ciniki_musicfestivals_festivalLoad($ciniki, $tnid, $festival_id);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $festival = $rc['festival'];
+    } else {
+        $festival = $args['festival'];
     }
-    $festival = $rc['festival'];
 
     //
     // Setup the slot time

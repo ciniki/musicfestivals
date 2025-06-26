@@ -20,7 +20,7 @@
 #
 # flags:                The options for this timeslot.
 #
-#                           0x01 - Split - Partial Registration List, registrations are linked by timeslot_id in registrations table. **deprecated**
+#                           0x01 - Pre Playoffs (Auto schedule playoff competitors based on placement)
 #                           0x02 - Final/Playoffs timeslot
 #                           0x04 - Playoff Time Linked to another timeslot.
 #                           0x08 - 

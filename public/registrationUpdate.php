@@ -142,10 +142,13 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         . "registrations.timeslot_sequence, "
         . "registrations.finals_timeslot_id, "
         . "registrations.finals_timeslot_sequence, "
-        . "registrations.music_orgfilename1, "
-        . "registrations.music_orgfilename2, "
-        . "registrations.music_orgfilename3 "
+        . "IFNULL(timeslots.flags, 0) AS timeslot_flags, "
+        . "IFNULL(timeslots.linked_timeslot_id, 0) AS linked_timeslot_id "
         . "FROM ciniki_musicfestival_registrations AS registrations "
+        . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+            . "registrations.timeslot_id = timeslots.id "
+            . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
         . "WHERE registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND registrations.id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
         . "";
@@ -679,7 +682,7 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     // Check if finals moved into a timeslot
     //
     if( isset($args['finals_timeslot_id']) && $args['finals_timeslot_id'] > 0 ) {
-        // FIXME: Need to figure out how to auto update times when individual registration timeslot times
+        // FIXME: Convert to scheduleTimeslotRenumber
         $new_seq = $args['finals_timeslot_sequence'];
         $old_seq = $registration['finals_timeslot_sequence'];
         $strsql = "SELECT id, finals_timeslot_sequence AS number "
@@ -715,6 +718,39 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                 }
                 $cur_number++; 
             }
+        }
+    }
+
+    if( ($registration['timeslot_flags']&0x01) == 0x01 
+        && isset($festival['scheduling-linked-playoffs-placement'])
+        && isset($args['placement'])
+        && $festival['scheduling-linked-playoffs-placement'] == $args['placement']
+        && $registration['finals_timeslot_id'] != $registration['linked_timeslot_id']
+        ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationFinalsAssign');
+        $rc = ciniki_musicfestivals_registrationFinalsAssign($ciniki, $args['tnid'], [
+            'registration' => $registration,
+            'festival' => $festival,
+            'finals_timeslot_id' => $registration['linked_timeslot_id'],
+            ]);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.130', 'msg'=>'', 'err'=>$rc['err']));
+        }
+    }
+    elseif( ($registration['timeslot_flags']&0x01) == 0x01 
+        && isset($festival['scheduling-linked-playoffs-placement'])
+        && isset($args['placement'])
+        && $festival['scheduling-linked-playoffs-placement'] != $args['placement']
+        && $registration['finals_timeslot_id'] == $registration['linked_timeslot_id']
+        ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationFinalsAssign');
+        $rc = ciniki_musicfestivals_registrationFinalsUnassign($ciniki, $args['tnid'], [
+            'registration' => $registration,
+            'festival' => $festival,
+            'finals_timeslot_id' => $registration['linked_timeslot_id'],
+            ]);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.130', 'msg'=>'', 'err'=>$rc['err']));
         }
     }
 

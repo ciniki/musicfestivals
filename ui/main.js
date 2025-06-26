@@ -2568,7 +2568,6 @@ function ciniki_musicfestivals_main() {
                         && d.ssections[sid]['divisions'] != null 
                         ) {
                         for(var did in d.ssections[sid]['divisions']) {
-                            console.log(d.ssections[sid]['divisions'][did]);
                             txt += (txt != '' ? '<br/>' : '') 
                                 + '<span class="clickable" onclick="M.ciniki_musicfestivals_main.scheduledivision.open(\'M.ciniki_musicfestivals_main.festival.open();\',' + d.ssections[sid]['divisions'][did]['id'] + ',' + d.ssections[sid]['id'] + ',' + this.festival_id + ');">'
                                 + d.ssections[sid]['divisions'][did]['start_time'] 
@@ -2603,7 +2602,7 @@ function ciniki_musicfestivals_main() {
         }
         if( s == 'schedule_timeslots' ) {
             switch(j) {
-                case 0: console.log(d);return M.multiline(d.slot_time_text, d.perf_time_text);
+                case 0: return M.multiline(d.slot_time_text, d.perf_time_text);
                 case 1: return '<span class="maintext">' + d.name + (d.groupname != '' ? ' - ' + d.groupname : '') + '</span><span class="subtext">' + d.description.replace(/\n/g, '<br/>') + '</span>';
             }
         }
@@ -5432,9 +5431,9 @@ function ciniki_musicfestivals_main() {
                         'no':'No',
                         'yes':'Yes',
                     }},
-//                'scheduling-linked-playoffs-placement':{'label':'Auto Playoff Placement for', 'type':'text',
-//                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); },
-//                    },
+                'scheduling-linked-playoffs-placement':{'label':'Auto Playoff Placement for', 'type':'text',
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); },
+                    },
                 'scheduling-timeslot-autoshift':{'label':'Auto Shift Timeslots', 'type':'toggle', 'default':'no', 
                     'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x4000); },
                     'toggles':{
@@ -9363,7 +9362,8 @@ function ciniki_musicfestivals_main() {
             },
         };
     this.scheduletimeslot.switchType = function() {
-        if( this.data.registrations != null && this.data.registrations.length > 0 ) {
+        var flags = this.formValue('flags2');
+        if( (flags&0x01) == 0 && this.data.registrations != null && this.data.registrations.length > 0 ) {
             this.refreshFormField('general', 'flags2');
             M.alert('You must remove registrations before you can change the timeslot type');
         } else {
@@ -9735,11 +9735,16 @@ function ciniki_musicfestivals_main() {
                 }
                 p.sections.general.fields.linked_timeslot_id.visible = 'no';
                 if( M.ciniki_musicfestivals_main.festival.settingValue('scheduling-timeslot-linking') == 'yes' ) {
-                    p.sections.general.fields.flags2.mask = 0x06;
-                    p.sections.general.fields.flags2.flags = {'0':{'name':'Regular Timeslot'}, '2':{'name':'Finals/Playoff Timeslot'}, '3':{'name':'Playoff Time Linked'}};
+                    if( M.ciniki_musicfestivals_main.festival.settingValue('scheduling-linked-playoffs-placement') != '' ) {
+                        p.sections.general.fields.flags2.mask = 0x07;
+                        p.sections.general.fields.flags2.flags = {'0':{'name':'Regular Timeslot'}, '1':{'name':'Pre Playoffs'}, '2':{'name':'Finals/Playoff Timeslot'}, '3':{'name':'Playoff Time Linked'}};
+                    } else {
+                        p.sections.general.fields.flags2.mask = 0x06;
+                        p.sections.general.fields.flags2.flags = {'0':{'name':'Regular Timeslot'}, '2':{'name':'Finals/Playoff Timeslot'}, '3':{'name':'Playoff Time Linked'}};
+                    }
                     p.sections.general.fields.linked_timeslot_id.options = rsp.playoff_timeslots != null ? rsp.playoff_timeslots : [];
                     p.sections.general.fields.linked_timeslot_id.options.unshift({'id':0, 'name':'None'});
-                    if( (p.data.flags&0x04) == 0x04 ) {
+                    if( (p.data.flags&0x05) > 0 ) { // Either pre-playoffs or time linked playoffs
                         p.sections.general.fields.linked_timeslot_id.visible = 'yes';
                     }
                 } else {
@@ -13134,7 +13139,6 @@ function ciniki_musicfestivals_main() {
     }
     this.messagerefs.updateFlags = function() {
         var mtype = this.formValue('mtype');
-        console.log(mtype);
         var f = this.data.message.flags;
         if( (this.formValue('flags1')&0x01) == 0x01 ) {
             f |= 0x01;

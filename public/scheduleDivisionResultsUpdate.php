@@ -66,59 +66,29 @@ function ciniki_musicfestivals_scheduleDivisionResultsUpdate(&$ciniki) {
     $maps = $rc['maps'];
 
     //
-    // Get festival details
+    // Load the festival settings
     //
-    $strsql = "SELECT ciniki_musicfestivals.id, "
-        . "ciniki_musicfestivals.name, "
-        . "ciniki_musicfestivals.permalink, "
-        . "ciniki_musicfestivals.status, "
-        . "ciniki_musicfestivals.flags "
-        . "FROM ciniki_musicfestivals "
-        . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND ciniki_musicfestivals.id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'festivals', 'fname'=>'id', 
-            'fields'=>array('name', 'permalink', 'status', 'flags', 
-                ),
-            ),
-        ));
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $args['festival_id']);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.130', 'msg'=>'Festival not found', 'err'=>$rc['err']));
+        return $rc;
     }
-    if( !isset($rc['festivals'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.146', 'msg'=>'Unable to find Festival'));
-    }
-    $festival = $rc['festivals'][0];
-
-    //
-    // Get the additional settings
-    //
-    $strsql = "SELECT detail_key, detail_value "
-        . "FROM ciniki_musicfestival_settings "
-        . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
-    $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.149', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
-    }
-    foreach($rc['settings'] as $k => $v) {
-        $festival[$k] = $v;
-    }
+    $festival = $rc['festival'];
 
     //
     // Load the registrations
     //
     $strsql = "SELECT timeslots.id AS timeslot_id, "
         . "timeslots.flags AS timeslot_flags, "
+        . "timeslots.linked_timeslot_id, "
         . "registrations.id, "
         . "registrations.status, "
         . "registrations.mark, "
         . "registrations.placement, "
         . "registrations.level, "
+        . "registrations.finals_timeslot_id, "
+        . "registrations.finals_timeslot_time, "
+        . "registrations.finals_timeslot_sequence, "
         . "registrations.finals_mark, "
         . "registrations.finals_placement, "
         . "registrations.finals_level, "
@@ -140,12 +110,16 @@ function ciniki_musicfestivals_scheduleDivisionResultsUpdate(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
-            'fields'=>array('id', 'timeslot_flags', 'status', 'mark', 'placement', 'level', 'provincials_status', 'provincials_position')),
+            'fields'=>array('id', 'timeslot_flags', 'linked_timeslot_id', 'status', 
+                'mark', 'placement', 'level', 'finals_timeslot_id',
+                'provincials_status', 'provincials_position',
+                )),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.697', 'msg'=>'Unable to load results', 'err'=>$rc['err']));
     }
     $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
+    $timeslot_update_ids = [];
     foreach($registrations as $rid => $result) {
         $update_args = array();
         if( isset($ciniki['request']['args']["mark_{$rid}"]) ) {
@@ -160,6 +134,39 @@ function ciniki_musicfestivals_scheduleDivisionResultsUpdate(&$ciniki) {
                 $update_args['finals_placement'] = $ciniki['request']['args']["placement_{$rid}"];
             } else {
                 $update_args['placement'] = $ciniki['request']['args']["placement_{$rid}"];
+            }
+            //
+            // Check if registration should be added to finals timeslot
+            //
+            if( ($result['timeslot_flags']&0x01) == 0x01 
+                && isset($festival['scheduling-linked-playoffs-placement'])
+                && $festival['scheduling-linked-playoffs-placement'] == $update_args['placement']
+                && $result['finals_timeslot_id'] != $result['linked_timeslot_id']
+                ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationFinalsAssign');
+                $rc = ciniki_musicfestivals_registrationFinalsAssign($ciniki, $args['tnid'], [
+                    'registration' => $result,
+                    'festival' => $festival,
+                    'finals_timeslot_id' => $result['linked_timeslot_id'],
+                    ]);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.130', 'msg'=>'', 'err'=>$rc['err']));
+                }
+            }
+            elseif( ($result['timeslot_flags']&0x01) == 0x01 
+                && isset($festival['scheduling-linked-playoffs-placement'])
+                && $festival['scheduling-linked-playoffs-placement'] != $update_args['placement']
+                && $result['finals_timeslot_id'] == $result['linked_timeslot_id']
+                ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationFinalsUnassign');
+                $rc = ciniki_musicfestivals_registrationFinalsUnassign($ciniki, $args['tnid'], [
+                    'registration' => $result,
+                    'festival' => $festival,
+                    'finals_timeslot_id' => $result['linked_timeslot_id'],
+                    ]);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.130', 'msg'=>'', 'err'=>$rc['err']));
+                }
             }
         }
         if( isset($ciniki['request']['args']["level_{$rid}"]) ) {
