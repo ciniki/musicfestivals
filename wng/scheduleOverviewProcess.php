@@ -13,7 +13,7 @@
 function ciniki_musicfestivals_wng_scheduleOverviewProcess(&$ciniki, $tnid, &$request, $section) {
 
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
-        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.671', 'msg'=>"I'm sorry, the page you requested does not exist."));
+        return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.1018', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
 
     //
@@ -30,7 +30,7 @@ function ciniki_musicfestivals_wng_scheduleOverviewProcess(&$ciniki, $tnid, &$re
     // Make sure a valid section was passed
     //
     if( !isset($section['ref']) || !isset($section['settings']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.672', 'msg'=>"No festival specified"));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1019', 'msg'=>"No festival specified"));
     }
     $s = $section['settings'];
     $blocks = array();
@@ -51,7 +51,7 @@ function ciniki_musicfestivals_wng_scheduleOverviewProcess(&$ciniki, $tnid, &$re
     // Make sure a festival was specified
     //
     if( !isset($s['festival-id']) || $s['festival-id'] == '' || $s['festival-id'] == 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.673', 'msg'=>"No festival specified"));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1020', 'msg'=>"No festival specified"));
     }
 
     //
@@ -118,7 +118,7 @@ function ciniki_musicfestivals_wng_scheduleOverviewProcess(&$ciniki, $tnid, &$re
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.995', 'msg'=>'Unable to load locations', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1021', 'msg'=>'Unable to load locations', 'err'=>$rc['err']));
     }
     $locations = isset($rc['locations']) ? $rc['locations'] : array();
 

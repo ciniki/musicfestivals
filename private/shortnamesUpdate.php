@@ -74,7 +74,7 @@ function ciniki_musicfestivals_shortnamesUpdate(&$ciniki, $tnid, $args) {
                     'shortname' => $rc['shortname'],
                     ], 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.801', 'msg'=>'Unable to update shortname for schedule timeslot', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1025', 'msg'=>'Unable to update shortname for schedule timeslot', 'err'=>$rc['err']));
                 }
             }
         }

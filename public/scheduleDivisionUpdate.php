@@ -56,10 +56,10 @@ function ciniki_musicfestivals_scheduleDivisionUpdate(&$ciniki) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'division');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1005', 'msg'=>'Unable to load division', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1028', 'msg'=>'Unable to load division', 'err'=>$rc['err']));
     }
     if( !isset($rc['division']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1006', 'msg'=>'Unable to find requested division'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1029', 'msg'=>'Unable to find requested division'));
     }
     $division = $rc['division'];
 

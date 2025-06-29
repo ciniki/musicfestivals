@@ -31,7 +31,7 @@ function ciniki_musicfestivals_registrationFinalsUnassign(&$ciniki, $tnid, $args
         'finals_timeslot_time' => '',
         ], 0x04);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1013', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1026', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
     }
 
     //

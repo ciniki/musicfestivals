@@ -660,7 +660,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     'registration_id' => $registration['registration_id'],
                     ));
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.463', 'msg'=>'Unable to load comments', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1022', 'msg'=>'Unable to load comments', 'err'=>$rc['err']));
                 }
                 if( isset($rc['pdf']) ) {
                     header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
@@ -688,7 +688,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     'single' => 'yes', // Don't add one for each competitor in registration
                     ));
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.699', 'msg'=>'Unable to load certificate', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1023', 'msg'=>'Unable to load certificate', 'err'=>$rc['err']));
                 }
                 if( isset($rc['pdf']) ) {
                     header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");

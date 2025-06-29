@@ -237,7 +237,7 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.63', 'msg'=>'Unable to load results', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1024', 'msg'=>'Unable to load results', 'err'=>$rc['err']));
         }
         $scheduledivision['division_results'] = isset($rc['results']) ? $rc['results'] : array();
         foreach($scheduledivision['division_results'] as $sid => $result) {

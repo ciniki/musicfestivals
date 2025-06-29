@@ -176,7 +176,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
         } elseif( isset($args['registration_uuid']) ) {
             $strsql .= "AND registrations.uuid = '" . ciniki_core_dbQuote($ciniki, $args['registration_uuid']) . "' ";
         } else {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.997', 'msg'=>'No registration specified'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1027', 'msg'=>'No registration specified'));
         }
         if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
             $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";

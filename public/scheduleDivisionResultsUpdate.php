@@ -165,7 +165,7 @@ function ciniki_musicfestivals_scheduleDivisionResultsUpdate(&$ciniki) {
                     'finals_timeslot_id' => $result['linked_timeslot_id'],
                     ]);
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.130', 'msg'=>'', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1032', 'msg'=>'', 'err'=>$rc['err']));
                 }
             }
         }
