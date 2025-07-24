@@ -13,9 +13,19 @@ function ciniki_musicfestivals_status() {
             'headerClasses':[],
             'noData':'No active/current festivals',
             },
+//        'provincials':{'label':'Provincials', 'type':'simplegrid', 'num_cols':1,
+//            'sortable':'yes',
+//            'headerValues':[],
+//            'cellClasses':[],
+//            'headerClasses':[],
+//            'noData':'No active/current festivals',
+//            },
     }
     this.menu.cellValue = function(s, i, j, d) {
         if( s == 'festivals' ) {
+            return d[this.sections[s].dataMaps[j]];
+        }
+        if( s == 'provincials' ) {
             return d[this.sections[s].dataMaps[j]];
         }
     }
@@ -32,6 +42,7 @@ function ciniki_musicfestivals_status() {
             }
             var p = M.ciniki_musicfestivals_status.menu;
             p.data = rsp;
+            // Main festivals list
             p.sections.festivals.headerValues = ['tnid', 'Festival', 'Status', 'Start', 'End', 'Tenant', 'SMTP', 'Theme', 'Matomo', 'etrans', 'Waiver', 'Stripe', '# Reg'];
             p.sections.festivals.sortTypes = ['number', 'text', 'status', 'date', 'date', 'text', 'text', 'text', 'number', 'text', 'text', 'text', 'number'];
             p.sections.festivals.dataMaps = ['tnid', 'festival_name', 'status_text', 'start_date', 'end_date', 'tenant_name', 'smtp', 'theme', 'matomo_id', 'etransfer', 'waiver', 'stripe', 'num_reg'];

@@ -42,14 +42,24 @@ function ciniki_musicfestivals_wng_syllabusResultsProcess(&$ciniki, $tnid, &$req
     }
 
     //
-    // Check if syllabus-id contains - and is a combination of festival_id+syllabus
+    // Load the syllabus
     //
-    if( preg_match("/^(.*)\-(.*)$/", $s['syllabus-id'], $m) ) {
-        $festival_id = $m[1];
-        $section['syllabus'] = $m[2];
-    } else {
-        $festival_id = $s['syllabus-id'];
+    $strsql = "SELECT syllabuses.id, "
+        . "syllabuses.festival_id, "
+        . "syllabuses.name "
+        . "FROM ciniki_musicfestival_syllabuses AS syllabuses "
+        . "WHERE syllabuses.id = '" . ciniki_core_dbQuote($ciniki, $s['syllabus-id']) . "' "
+        . "AND syllabuses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'syllabus');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1037', 'msg'=>'Unable to load syllabus', 'err'=>$rc['err']));
     }
+    if( !isset($rc['syllabus']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1038', 'msg'=>'Unable to find requested syllabus'));
+    }
+    $syllabus = $rc['syllabus'];
+    $festival_id = $syllabus['festival_id'];
 
     //
     // Get the music festival details
@@ -60,47 +70,6 @@ function ciniki_musicfestivals_wng_syllabusResultsProcess(&$ciniki, $tnid, &$req
         return $rc;
     }
     $festival = $rc['festival'];
-
-    //
-    // Check if download of syllabus requested
-    //
-/*    if( isset($request['uri_split'][($request['cur_uri_pos']+1)])
-        && $request['uri_split'][($request['cur_uri_pos']+1)] == 'download.pdf' 
-        ) {
-        //
-        // Download the syllabus section pdf
-        //
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'syllabusPDF');
-        $pdf_args = array(
-            'festival_id' => $festival['id'],
-            'live-virtual' => isset($s['display-live-virtual']) ? $s['display-live-virtual'] : '',
-            );
-        if( isset($section['syllabus']) ) {
-            $pdf_args['syllabus'] = $section['syllabus'];
-        }
-        $rc = ciniki_musicfestivals_templates_syllabusPDF($ciniki, $tnid, $pdf_args);
-        if( isset($rc['pdf']) ) {
-            $filename = $festival['name'];
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
-            $filename = ciniki_core_makePermalink($ciniki, $filename) . '.pdf';
-            header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
-            header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
-            header('Cache-Control: no-cache, must-revalidate');
-            header('Pragma: no-cache');
-            header('Content-Type: application/pdf');
-            header('Cache-Control: max-age=0');
-
-            $rc['pdf']->Output($filename, 'I');
-
-            return array('stat'=>'exit');
-        } else {
-            $blocks[] = array(
-                'type' => 'msg',
-                'level' => 'error',
-                'content' => 'Unable to download pdf',
-                );
-        }
-    } */
 
     //
     // Check for image format
@@ -121,6 +90,7 @@ function ciniki_musicfestivals_wng_syllabusResultsProcess(&$ciniki, $tnid, &$req
     // Get the list of sections
     //
     $strsql = "SELECT sections.id, "
+        . "sections.syllabus_id, "
         . "sections.permalink, "
         . "sections.name, "
         . "sections.primary_image_id, "
@@ -158,10 +128,8 @@ function ciniki_musicfestivals_wng_syllabusResultsProcess(&$ciniki, $tnid, &$req
             . ") "
         . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' ";
-    if( isset($section['syllabus']) ) {
-        $strsql .= "AND sections.syllabus = '" . ciniki_core_dbQuote($ciniki, $section['syllabus']) . "' ";
-    }
-    $strsql .= "AND (sections.flags&0x01) = 0 " // Visible on website
+        . "AND sections.syllabus_id = '" . ciniki_core_dbQuote($ciniki, $syllabus['id']) . "' ";
+        . "AND (sections.flags&0x01) = 0 " // Visible on website
         . "AND ("
             . "(divisions.flags&0x20) = 0x20 "
             . "OR (ssections.flags&0x20) = 0x20 "
@@ -284,12 +252,10 @@ function ciniki_musicfestivals_wng_syllabusResultsProcess(&$ciniki, $tnid, &$req
     if( isset($s['live-search']) && $s['live-search'] == 'top' ) {
         $api_args = [
             'festival-id' => $festival['id'],
+            'syllabus_id' => $syllabus['id'],
             'layout' => $s['layout'],
             'baseurl' => $request['ssl_domain_base_url'] . $request['page']['path'],
             ];
-        if( isset($section['syllabus']) ) {
-            $api_args['syllabus'] = $section['syllabus'];
-        }
         $blocks[] = [
             'type' => 'livesearch',
             'label' => 'Search Classes',

@@ -149,10 +149,37 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
     }
 
     //
+    // Get the existing syllabuses for the festival
+    //
+    $strsql = "SELECT syllabuses.id, "
+        . "syllabuses.uuid, "
+        . "syllabuses.name, "
+        . "COUNT(sections.id) AS num_sections "
+        . "FROM ciniki_musicfestival_syllabuses AS syllabuses "
+        . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+            . "syllabuses.id = sections.syllabus_id "
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "WHERE syllabuses.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival_id) . "' "
+        . "AND syllabuses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "GROUP BY syllabuses.id "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'syllabuses', 'fname'=>'name', 'fields'=>array('id', 'uuid', 'name', 'num_sections')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1055', 'msg'=>'Unable to load syllabuses', 'err'=>$rc['err']));
+    }
+    $new_festival_syllabuses = isset($rc['syllabuses']) ? $rc['syllabuses'] : array();
+
+    //
     // Copy syllabus
     //
-    $strsql = "SELECT sections.id AS section_id, "
-        . "sections.syllabus AS syllabus, "
+    $strsql = "SELECT syllabuses.id AS syllabus_id, "
+        . "syllabuses.name AS syllabus_name, "
+        . "syllabuses.rules AS syllabus_rules, "
+        . "sections.id AS section_id, "
         . "sections.name AS section_name, "
         . "sections.permalink AS section_permalink, "
         . "sections.sequence AS section_sequence, "
@@ -200,7 +227,12 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
         . "classes.keywords, "
         . "classes.options, "
         . "trophies.trophy_id "
-        . "FROM ciniki_musicfestival_sections AS sections "
+        . "FROM ciniki_musicfestival_syllabuses AS syllabuses "
+        . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+            . "syllabuses.id = sections.syllabus_id "
+            . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $old_festival_id) . "' "
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
         . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
             . "sections.id = categories.section_id "
             . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -213,16 +245,21 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
             . "classes.id = trophies.class_id "
             . "AND trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $old_festival_id) . "' "
-        . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "ORDER BY sections.sequence, sections.date_added, "
+        . "WHERE syllabuses.festival_id = '" . ciniki_core_dbQuote($ciniki, $old_festival_id) . "' "
+        . "AND syllabuses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "ORDER BY syllabuses.sequence, syllabuses.name, syllabuses.id, "
+            . "sections.sequence, sections.date_added, "
             . "categories.sequence, categories.name, categories.date_added, "
             . "classes.sequence, classes.date_added "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'syllabuses', 'fname'=>'syllabus_id',
+            'fields'=>array('name'=>'syllabus_name', 'rules'=>'syllabus_rules',
+                )),
         array('container'=>'sections', 'fname'=>'section_id',
             'fields'=>array('name'=>'section_name', 'permalink'=>'section_permalink', 'sequence'=>'section_sequence', 
+                'syllabus_id',
                 'flags'=>'section_flags', 'primary_image_id'=>'section_image_id', 
                 'synopsis'=>'section_synopsis', 'description'=>'section_description', 
                 'live_description'=>'section_live_description', 'virtual_description'=>'section_virtual_description',
@@ -247,55 +284,73 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.530', 'msg'=>'Previous syllabus not found', 'err'=>$rc['err']));
     }
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    if( isset($rc['sections']) ) {
-        $sections = $rc['sections'];
-        foreach($sections as $section) {
-            //
-            // Add the section
-            //
-            $section['festival_id'] = $festival_id;
-            $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.section', $section, 0x04);
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
+    if( isset($rc['syllabuses']) ) {
+        $syllabuses = $rc['syllabuses'];
+        foreach($syllabuses as $syllabus) {
+            if( isset($new_festival_syllabuses[$syllabus['name']]) ) {
+                $syllabus_id = $new_festival_syllabuses[$syllabus['name']]['id'];
+            } else {
+                $syllabus['festival_id'] = $festival_id;
+                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.syllabus', $syllabus, 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                $syllabus_id = $rc['id'];
+                $new_festival_syllabuses[$syllabus['name']] = [
+                    'id' => $rc['id'],
+                    'festival_id' => $festival_id,
+                    'name' => $syllabus['name'],
+                    ];
             }
-            $section_id = $rc['id'];
-            if( isset($section['categories']) ) {
-                foreach($section['categories'] as $category) {
-                    //
-                    // Add the category
-                    //
-                    $category['festival_id'] = $festival_id;
-                    $category['section_id'] = $section_id;
-                    $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.category', $category, 0x04);
-                    if( $rc['stat'] != 'ok' ) {
-                        return $rc;
-                    }
-                    $category_id = $rc['id'];
-                    if( isset($category['classes']) ) {
-                        foreach($category['classes'] as $class) {
-                            //
-                            // Add the class
-                            //
-                            $class['festival_id'] = $festival_id;
-                            $class['category_id'] = $category_id;
-                            $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.class', $class, 0x04);
-                            if( $rc['stat'] != 'ok' ) {
-                                return $rc;
-                            }
-                            $class_id = $rc['id'];
+            
+            foreach($syllabus['sections'] as $section) {
+                //
+                // Add the section
+                //
+                $section['festival_id'] = $festival_id;
+                $section['syllabus_id'] = $syllabus_id;
+                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.section', $section, 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                $section_id = $rc['id'];
+                if( isset($section['categories']) ) {
+                    foreach($section['categories'] as $category) {
+                        //
+                        // Add the category
+                        //
+                        $category['festival_id'] = $festival_id;
+                        $category['section_id'] = $section_id;
+                        $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.category', $category, 0x04);
+                        if( $rc['stat'] != 'ok' ) {
+                            return $rc;
+                        }
+                        $category_id = $rc['id'];
+                        if( isset($category['classes']) ) {
+                            foreach($category['classes'] as $class) {
+                                //
+                                // Add the class
+                                //
+                                $class['festival_id'] = $festival_id;
+                                $class['category_id'] = $category_id;
+                                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.class', $class, 0x04);
+                                if( $rc['stat'] != 'ok' ) {
+                                    return $rc;
+                                }
+                                $class_id = $rc['id'];
 
-                            //
-                            // Add the trophies
-                            //
-                            if( isset($class['trophies']) ) {
-                                foreach($class['trophies'] as $trophy) {
-                                    $trophy['class_id'] = $class_id;
-                                    $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.trophyclass', $trophy, 0x04);
-                                    if( $rc['stat'] != 'ok' ) {
-                                        return $rc;
+                                //
+                                // Add the trophies
+                                //
+                                if( isset($class['trophies']) ) {
+                                    foreach($class['trophies'] as $trophy) {
+                                        $trophy['class_id'] = $class_id;
+                                        $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.trophyclass', $trophy, 0x04);
+                                        if( $rc['stat'] != 'ok' ) {
+                                            return $rc;
+                                        }
+                                        
                                     }
-                                    
                                 }
                             }
                         }

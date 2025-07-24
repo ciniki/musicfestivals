@@ -103,6 +103,22 @@ function ciniki_musicfestivals_festivalAdd(&$ciniki) {
     $festival_id = $rc['id'];
 
     //
+    // Add the default syllabus for the festival
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.syllabus', [
+        'festival_id' => $festival_id,
+        'name' => 'Syllabus',
+        'permalink' => 'syllabus',
+        'sequence' => 1,
+        ], 0x04);
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+        return $rc;
+    }
+    $festival_id = $rc['id'];
+
+    //
     // Update the Festival settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'settingsUpdate');

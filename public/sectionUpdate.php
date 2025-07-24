@@ -18,7 +18,7 @@ function ciniki_musicfestivals_sectionUpdate(&$ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'section_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Section'),
         'festival_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Festival'),
-        'syllabus'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Syllabus'),
+        'syllabus_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'),
         'permalink'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Permalink'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),

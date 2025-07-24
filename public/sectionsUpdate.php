@@ -20,7 +20,7 @@ function ciniki_musicfestivals_sectionsUpdate(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Festival'),
-        'syllabus'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus'),
+        'syllabus_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus'),
         'adminfees_flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Admin Fees'),
         'adminfees_amount'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Admin Fees Amount'),
         'latefees_flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Late Fees'),
@@ -54,7 +54,7 @@ function ciniki_musicfestivals_sectionsUpdate(&$ciniki) {
         . "sections.adminfees_amount "
         . "FROM ciniki_musicfestival_sections AS sections "
         . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "AND sections.syllabus = '" . ciniki_core_dbQuote($ciniki, $args['syllabus']) . "' "
+        . "AND sections.syllabus_id = '" . ciniki_core_dbQuote($ciniki, $args['syllabus_id']) . "' "
         . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'section');

@@ -85,8 +85,8 @@ function ciniki_musicfestivals_wng_apiClassSearch(&$ciniki, $tnid, $request) {
                 . ") "
             . "INNER JOIN ciniki_musicfestival_sections AS sections ON ("
                 . "categories.section_id = sections.id ";
-        if( isset($request['args']['syllabus']) ) {
-            $strsql .= "AND sections.syllabus = '" . ciniki_core_dbQuote($ciniki, $request['args']['syllabus']) . "' ";
+        if( isset($request['args']['syllabus_id']) ) {
+            $strsql .= "AND sections.syllabus_id = '" . ciniki_core_dbQuote($ciniki, $request['args']['syllabus_id']) . "' ";
         }
         $strsql .= "AND (sections.flags&0x01) = 0 "
                 . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "

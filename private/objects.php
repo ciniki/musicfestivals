@@ -95,6 +95,26 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );
+    $objects['syllabus'] = array(
+        'name'=>'Syllabus',
+        'o_name'=>'syllabus',
+        'o_container'=>'syllabuses',
+        'sync'=>'yes',
+        'table'=>'ciniki_musicfestival_syllabuses',
+        'fields'=>array(
+            'festival_id'=>array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'name'=>array('name'=>'Name'),
+            'permalink'=>array('name'=>'Permalink', 'default'=>''),
+            'sequence'=>array('name'=>'Order', 'default'=>'1'),
+            'flags'=>array('name'=>'Options', 'default'=>'0'),
+            'live_end_dt'=>array('name'=>'Live Deadline', 'default'=>'0000-00-00 00:00:00'),
+            'virtual_end_dt'=>array('name'=>'Virtual Deadline', 'default'=>'0000-00-00 00:00:00'),
+            'titles_end_dt'=>array('name'=>'Edit Titles Deadline', 'default'=>'0000-00-00 00:00:00'),
+            'upload_end_dt'=>array('name'=>'Upload Deadline', 'default'=>'0000-00-00 00:00:00'),
+            'rules'=>array('name'=>'Rules & Regulations', 'default'=>''),
+            ),
+        'history_table'=>'ciniki_musicfestivals_history',
+        );
     $objects['section'] = array(
         'name'=>'Section',
         'o_name'=>'section',
@@ -103,7 +123,7 @@ function ciniki_musicfestivals_objects($ciniki) {
         'table'=>'ciniki_musicfestival_sections',
         'fields'=>array(
             'festival_id'=>array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
-            'syllabus'=>array('name'=>'Syllabus', 'default'=>''),
+            'syllabus_id'=>array('name'=>'Syllabus', 'ref'=>'ciniki.musicfestivals.syllabus'),
             'name'=>array('name'=>'Name'),
             'permalink'=>array('name'=>'Permalink', 'default'=>''),
             'sequence'=>array('name'=>'Order', 'default'=>'1'),

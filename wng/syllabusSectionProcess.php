@@ -240,8 +240,10 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         }
     }
 
-  
-    if( isset($groupname) ) {
+ 
+    if( isset($section['ref']) && $section['ref'] == 'ciniki.musicfestivals.syllabussection' ) {
+        $download_url = $request['ssl_domain_base_url'] . $request['page']['path'] . '/download.pdf';
+    } elseif( isset($groupname) ) {
         $download_url = $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $syllabus_section['permalink'] . '/' . ciniki_core_makePermalink($ciniki, $groupname) . '/download.pdf';
     } else {
         $download_url = $request['ssl_domain_base_url'] . $request['page']['path'] . '/' . $syllabus_section['permalink'] . '/download.pdf';

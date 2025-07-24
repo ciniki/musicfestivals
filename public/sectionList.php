@@ -21,7 +21,7 @@ function ciniki_musicfestivals_sectionList($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Festival'),
-        'syllabus'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus'),
+        'syllabus_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -71,8 +71,8 @@ function ciniki_musicfestivals_sectionList($ciniki) {
         . "FROM ciniki_musicfestival_sections AS sections "
         . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
-    if( isset($args['syllabus']) ) {
-        $strsql .= "AND sections.syllabus = '" . ciniki_core_dbQuote($ciniki, $args['syllabus']) . "' ";
+    if( isset($args['syllabus_id']) && $args['syllabus_id'] > 0 ) {
+        $strsql .= "AND sections.syllabus_id = '" . ciniki_core_dbQuote($ciniki, $args['syllabus_id']) . "' ";
     }
     $strsql .= "ORDER BY sections.sequence, sections.name "
         . "";

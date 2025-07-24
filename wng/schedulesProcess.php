@@ -417,8 +417,8 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
             'layout' => $s['layout'],
             'baseurl' => $request['ssl_domain_base_url'] . $request['page']['path'],
             ];
-        if( isset($section['syllabus']) ) {
-            $api_args['syllabus'] = $section['syllabus'];
+        if( isset($section['syllabus_id']) ) {
+            $api_args['syllabus_id'] = $section['syllabus_id'];
         }
         $blocks[] = [
             'type' => 'livesearch',

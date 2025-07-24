@@ -2,18 +2,18 @@
 //
 // Description
 // -----------
-// This method will add a new section for the tenant.
+// This method will add a new syllabus for the tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// tnid:        The ID of the tenant to add the Section to.
+// tnid:        The ID of the tenant to add the Syllabus to.
 //
 // Returns
 // -------
 //
-function ciniki_musicfestivals_sectionAdd(&$ciniki) {
+function ciniki_musicfestivals_syllabusAdd(&$ciniki) {
     //
     // Find all the required and optional arguments
     //
@@ -21,25 +21,15 @@ function ciniki_musicfestivals_sectionAdd(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
-        'syllabus_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Syllabus'),
-        'name'=>array('required'=>'yes', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'),
+        'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'),
         'permalink'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Permalink'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
-        'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
-        'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Synopsis'),
-        'description'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Description'),
-        'live_description'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Live Description'),
-        'virtual_description'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Virtual Description'),
-        'recommendations_description'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Recommendations Description'),
-        'live_end_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Live End Date'),
-        'virtual_end_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Virtual End Date'),
-        'titles_end_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Edit Titles End Date'),
-        'upload_end_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Upload End Date'),
-        'latefees_start_amount'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Late Fees Start Amount'),
-        'latefees_daily_increase'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Late Fees Daily Increase'),
-        'latefees_days'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Late Fees Number of Days'),
-        'adminfees_amount'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Admin Fees Amount'),
+        'live_end_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Live Deadline'),
+        'virtual_end_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Virtual Deadline'),
+        'titles_end_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Edit Titles Deadline'),
+        'upload_end_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Upload Deadline'),
+        'rules'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Rules & Regulations'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -50,7 +40,7 @@ function ciniki_musicfestivals_sectionAdd(&$ciniki) {
     // Check access to tnid as owner
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.sectionAdd');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.syllabusAdd');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -67,22 +57,17 @@ function ciniki_musicfestivals_sectionAdd(&$ciniki) {
     // Make sure the permalink is unique
     //
     $strsql = "SELECT id, name, permalink "
-        . "FROM ciniki_musicfestival_sections "
+        . "FROM ciniki_musicfestival_syllabuses "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
-        . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
     if( $rc['num_rows'] > 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.17', 'msg'=>'You already have a section with that name, please choose another.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1059', 'msg'=>'You already have a syllabus with that name, please choose another.'));
     }
-
-    //
-    // If no syllabus_id specified, select the default from the list
-    //
 
     //
     // Start transaction
@@ -97,15 +82,15 @@ function ciniki_musicfestivals_sectionAdd(&$ciniki) {
     }
 
     //
-    // Add the section to the database
+    // Add the syllabus to the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.section', $args, 0x04);
+    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.syllabus', $args, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;
     }
-    $section_id = $rc['id'];
+    $syllabus_id = $rc['id'];
 
     //
     // Commit the transaction
@@ -126,8 +111,8 @@ function ciniki_musicfestivals_sectionAdd(&$ciniki) {
     // Update the web index if enabled
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
-    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.musicfestivals.section', 'object_id'=>$section_id));
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.musicfestivals.syllabus', 'object_id'=>$syllabus_id));
 
-    return array('stat'=>'ok', 'id'=>$section_id);
+    return array('stat'=>'ok', 'id'=>$syllabus_id);
 }
 ?>

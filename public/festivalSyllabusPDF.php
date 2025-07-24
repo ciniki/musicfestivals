@@ -23,7 +23,7 @@ function ciniki_musicfestivals_festivalSyllabusPDF($ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'section_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Section'),
-        'syllabus'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus'),
+        'syllabus_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

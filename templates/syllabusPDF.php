@@ -129,8 +129,8 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
     if( isset($args['section_id']) && $args['section_id'] != '' && $args['section_id'] > 0 ) {
         $strsql .= "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' ";
     } 
-    if( isset($args['syllabus']) ) {
-        $strsql .= "AND sections.syllabus = '" . ciniki_core_dbQuote($ciniki, $args['syllabus']) . "' ";
+    if( isset($args['syllabus_id']) ) {
+        $strsql .= "AND sections.syllabus_id = '" . ciniki_core_dbQuote($ciniki, $args['syllabus_id']) . "' ";
     }
     $strsql .= "ORDER BY sections.sequence, sections.name, "
             . "categories.sequence, categories.name, "
