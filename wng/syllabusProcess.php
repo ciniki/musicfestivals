@@ -127,6 +127,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     // Get the list of sections
     //
     if( isset($s['display-live-virtual']) && in_array($s['display-live-virtual'], ['live','virtual']) ) {
+    error_log(print_r($s,true));
         $strsql = "SELECT sections.id, "
             . "sections.permalink, "
             . "sections.name, "
@@ -143,14 +144,14 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
         if( $s['display-live-virtual'] == 'live' ) {
             $strsql .= "AND (classes.feeflags&0x02) = 0x02 ";
         } else {
-            $strsql .= "AND (classes.feeflags&0x08) = 0x02 ";
+            $strsql .= "AND (classes.feeflags&0x08) = 0x08 ";
         }
         $strsql .= "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
             . "AND sections.syllabus_id = '" . ciniki_core_dbQuote($ciniki, $syllabus['id']) . "' "
-            . "AND (sections.flags&0x01) = 0 "
+            . "AND (sections.flags&0x01) = 0 " // Visible
             . "ORDER BY sections.sequence, sections.name "
             . "";
     } elseif( isset($s['layout']) && ($s['layout'] == 'groups' || $s['layout'] == 'groupbuttons') ) {
@@ -168,7 +169,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
             . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
             . "AND sections.syllabus_id = '" . ciniki_core_dbQuote($ciniki, $syllabus['id']) . "' "
-            . "AND (sections.flags&0x01) = 0 "
+            . "AND (sections.flags&0x01) = 0 " // Visible
             . "ORDER BY sections.sequence, sections.name, categories.sequence "
             . "";
     } else {
@@ -182,7 +183,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
             . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
             . "AND sections.syllabus_id = '" . ciniki_core_dbQuote($ciniki, $syllabus['id']) . "' "
-            . "AND (sections.flags&0x01) = 0 "
+            . "AND (sections.flags&0x01) = 0 " // Visible
             . "ORDER BY sections.sequence, sections.name "
             . "";
     }
