@@ -6884,7 +6884,7 @@ function ciniki_musicfestivals_main() {
                 'perf_time8':{'label':'Performance Time', 'type':'minsec'},
             }},
         '_synopsis':{'label':'Synopsis', 'fields':{
-            'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
+            'synopsis':{'label':'', 'hidelabel':'yes', 'type':'htmlarea', 'tinymce':'basic', 'size':'medium'},
             }},
         'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':3, 
             'headerValues':['Competitor', 'Teacher', 'Status'],
