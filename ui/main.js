@@ -5113,9 +5113,16 @@ function ciniki_musicfestivals_main() {
 //                    }},
             }},
         // Add for 2025
-/*        '_syllabus_pdf':{'label':'Syllabus PDF Options', 
+        '_syllabus_pdf':{'label':'Syllabus PDF Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
             'fields':{
+                'syllabus-rules-include':{'label':'Include Rules and Regulations', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'top':'Yes',
+//                    'bottom':'Bottom',
+                    }},
+                'syllabus-rules-title':{'label':'Rules & Regulations Title', 'type':'text'},
+/*
                 // Don't know which option is better
                 'syllabus-pdf-prices':{'label':'Show Earlybird Prices', 'type':'toggle', 'default':'either', 'toggles':{
                     'either':'Earlybird OR regular',
@@ -5129,8 +5136,8 @@ function ciniki_musicfestivals_main() {
                 'syllabus-pdf-regular':{'label':'Show Regular Prices', 'type':'toggle', 'default':'off', 'toggles':{
                     'valid':'After Earlybird',
                     'always':'Always',
-                    }},
-            }}, */
+                    }}, */
+            }},
         '_customer_types':{'label':'Customer Type Buttons', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
             'fields':{

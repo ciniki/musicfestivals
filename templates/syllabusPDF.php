@@ -41,41 +41,14 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
     $intl_currency = $rc['settings']['intl-default-currency'];
 
     //
-    // Load the festival
+    // Load the festival settings
     //
-    $strsql = "SELECT festivals.id, "
-        . "festivals.name, "
-        . "festivals.permalink, "
-        . "festivals.flags, "
-        . "festivals.start_date, "
-        . "festivals.end_date, "
-        . "festivals.earlybird_date, "
-        . "festivals.live_date, "
-        . "festivals.virtual_date, "
-        . "festivals.primary_image_id, "
-        . "festivals.description, "
-        . "festivals.document_logo_id, "
-        . "festivals.document_header_msg, "
-        . "festivals.document_footer_msg "
-        . "FROM ciniki_musicfestivals AS festivals "
-        . "WHERE festivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND festivals.id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'festivals', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'permalink', 'flags',
-                'start_date', 'end_date', 'primary_image_id', 'description', 
-                'earlybird_date', 'live_date', 'virtual_date',
-                'document_logo_id', 'document_header_msg', 'document_footer_msg')),
-        ));
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $tnid, $args['festival_id']);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.37', 'msg'=>'Festival not found', 'err'=>$rc['err']));
+        return $rc;
     }
-    if( !isset($rc['festivals'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.38', 'msg'=>'Unable to find Festival'));
-    }
-    $festival = $rc['festivals'][0];
+    $festival = $rc['festival'];
 
     //
     // Load the sections, categories and classes
@@ -84,6 +57,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         . "classes.festival_id, "
         . "classes.category_id, "
         . "sections.id AS section_id, "
+        . "sections.syllabus_id, "
         . "sections.name AS section_name, "
         . "sections.synopsis AS section_synopsis, "
         . "sections.description AS section_description, "
@@ -140,6 +114,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'section_id', 
             'fields'=>array('name'=>'section_name', 'synopsis'=>'section_synopsis', 'description'=>'section_description',
+                'syllabus_id', 
                 'live_description'=>'section_live_description', 'virtual_description'=>'section_virtual_description',
                 )),
         array('container'=>'categories', 'fname'=>'category_id', 
@@ -155,6 +130,34 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         $sections = $rc['sections'];
     } else {
         $sections = array();
+    }
+
+    //
+    // Check if rules & regs should be loaded
+    //
+    if( isset($festival['syllabus-rules-include']) && $festival['syllabus-rules-include'] != 'no' ) {
+        if( isset($args['syllabus_id']) ) {
+            $syllabus_id = $args['syllabus_id'];
+        } elseif( isset($sections[0]['syllabus_id']) ) {
+            $syllabus_id = $sections[0]['syllabus_id'];
+        } else {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.37', 'msg'=>'No syllabus specified'));
+        }
+        $strsql = "SELECT syllabuses.id, "
+            . "syllabuses.name, "
+            . "syllabuses.rules "
+            . "FROM ciniki_musicfestival_syllabuses AS syllabuses "
+            . "WHERE syllabuses.id = '" . ciniki_core_dbQuote($ciniki, $syllabus_id) . "' "
+            . "AND syllabuses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'syllabus');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.38', 'msg'=>'Unable to load syllabus', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['syllabus']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.39', 'msg'=>'Unable to find requested syllabus'));
+        }
+        $syllabus = $rc['syllabus'];
     }
 
     //
@@ -272,7 +275,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                             $lh = $this->getStringHeight($w[$i], $class['code'] . ' - ' . $class['name']);
                             $indent = $this->getStringWidth($class['code'] . ' - ') + 2;
                             $this->setCellPaddings($indent, 0, 2, 2);
-                            $lhs = $this->getStringHeight($w[$i], strip_tags($class['synopsis']));
+                            $lhs = $this->getStringHeight($w[$i], strip_tags(preg_replace("/<br>/", "\n", $class['synopsis'])));
                             $this->setCellPaddings(2, 2, 2, 2);
                         }
                     } elseif( $field == 'code_name' ) {
@@ -405,6 +408,22 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
     $pdf->SetTextColor(0);
     $pdf->SetDrawColor(200);
     $pdf->SetLineWidth(0.1);
+
+    //
+    // Check if rules and regulations are to be added at the beginning
+    //
+
+    if( isset($festival['syllabus-rules-include']) && $festival['syllabus-rules-include'] == 'top' 
+        && isset($syllabus['rules']) && $syllabus['rules'] != '' 
+        ) {
+        $pdf->AddPage();
+        if( isset($festival['syllabus-rules-title']) && $festival['syllabus-rules-title'] != '' ) {
+            $pdf->SetFont('', 'B', '18');
+            $pdf->MultiCell(180, 5, $festival['syllabus-rules-title'], 0, 'L', 0, 1);
+        }
+        $pdf->SetFont('', '', '12');
+        $pdf->writeHTMLCell(180, '', '', '', $syllabus['rules'], 0, 1, 0, true, 'L', true);
+    }
 
     //
     // Go through the sections, categories and classes

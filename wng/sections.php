@@ -151,7 +151,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         'module' => 'Music Festivals',
         'settings' => array(
             'title' => array('label'=>'Title', 'type'=>'text'),
-            'content' => array('label'=>'Intro', 'type'=>'textarea'),
+            'content' => array('label'=>'Intro', 'type'=>'htmlarea'),
             'syllabus-id' => array('label'=>'Syllabus', 'type'=>'select', 
                 'complex_options'=>array('value'=>'id', 'name'=>'name'),
                 'options'=>$syllabuses,
@@ -225,7 +225,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         'module' => 'Music Festivals',
         'settings' => array(
             'title' => array('label'=>'Title', 'type'=>'text'),
-            'content' => array('label'=>'Intro', 'type'=>'textarea'),
+            'content' => array('label'=>'Intro', 'type'=>'htmlarea'),
             'syllabus-id' => array('label'=>'Syllabus', 'type'=>'select', 
                 'complex_options'=>array('value'=>'id', 'name'=>'name'),
                 'options'=>$syllabuses,
@@ -259,7 +259,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         'module' => 'Music Festivals',
         'settings' => array(
             'title' => array('label'=>'Title', 'type'=>'text'),
-            'content' => array('label'=>'Intro', 'type'=>'textarea'),
+            'content' => array('label'=>'Intro', 'type'=>'htmlarea'),
             'section-id' => array('label'=>'Syllabus Section', 'type'=>'select', 
                 'complex_options'=>array('value'=>'id', 'name'=>'name'),
                 'options'=>$syllabus_sections,
@@ -374,7 +374,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         'module' => 'Music Festivals',
         'settings' => array(
             'title' => array('label'=>'Title', 'type'=>'text'),
-            'notreleased' => array('label'=>'Not Released Intro', 'type'=>'textarea'),
+            'notreleased' => array('label'=>'Not Released Intro', 'type'=>'htmlarea'),
             'festival-id' => array('label'=>'Festival', 'type'=>'select', 
                 'complex_options'=>array('value'=>'id', 'name'=>'name'),
                 'options'=>$festivals,
@@ -390,8 +390,8 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         'module' => 'Music Festivals',
         'settings' => array(
             'title' => array('label'=>'Title', 'type'=>'text'),
-            'content' => array('label'=>'Intro', 'type'=>'textarea'),
-            'notreleased' => array('label'=>'Not Released Intro', 'type'=>'textarea'),
+            'content' => array('label'=>'Intro', 'type'=>'htmlarea'),
+            'notreleased' => array('label'=>'Not Released Intro', 'type'=>'htmlarea'),
             'festival-id' => array('label'=>'Festival', 'type'=>'select', 
                 'complex_options'=>array('value'=>'id', 'name'=>'name'),
                 'options'=>$festivals,
@@ -522,8 +522,8 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         'module' => 'Music Festivals',
         'settings' => array(
             'title' => array('label'=>'Title', 'type'=>'text'),
-            'content' => array('label'=>'Intro', 'type'=>'textarea'),
-            'notreleased' => array('label'=>'Not Released Intro', 'type'=>'textarea'),
+            'content' => array('label'=>'Intro', 'type'=>'htmlarea'),
+            'notreleased' => array('label'=>'Not Released Intro', 'type'=>'htmlarea'),
             'festival-id' => array('label'=>'Festival', 'type'=>'select', 
                 'complex_options'=>array('value'=>'id', 'name'=>'name'),
                 'options'=>$festivals,
@@ -609,8 +609,8 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             'module' => 'Music Festivals',
             'settings' => array(
                 'title' => array('label'=>'Title', 'type'=>'text'),
-                'content' => array('label'=>'Intro', 'type'=>'textarea'),
-                'notreleased' => array('label'=>'Not Released Intro', 'type'=>'textarea'),
+                'content' => array('label'=>'Intro', 'type'=>'htmlarea'),
+                'notreleased' => array('label'=>'Not Released Intro', 'type'=>'htmlarea'),
                 'festival-id' => array('label'=>'Festival', 'type'=>'select', 
                     'complex_options'=>array('value'=>'id', 'name'=>'name'),
                     'options'=>$provincial_festivals,
@@ -636,7 +636,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         'module' => 'Music Festivals',
         'settings' => array(
             'title' => array('label'=>'Title', 'type'=>'text'),
-            'content' => array('label'=>'Intro', 'type'=>'textarea'),
+            'content' => array('label'=>'Intro', 'type'=>'htmlarea'),
             'syllabus-id' => array('label'=>'Syllabus', 'type'=>'select', 
                 'complex_options'=>array('value'=>'id', 'name'=>'name'),
                 'options'=>$syllabuses,
@@ -951,8 +951,8 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         'module' => 'Music Festivals',
         'settings' => array(
             'title' => array('label'=>'Title', 'type'=>'text'),
-            'intro' => array('label'=>'Intro', 'type'=>'textarea'),
-            'no-locations-intro' => array('label'=>'No Locations Intro', 'type'=>'textarea'),
+            'intro' => array('label'=>'Intro', 'type'=>'htmlarea'),
+            'no-locations-intro' => array('label'=>'No Locations Intro', 'type'=>'htmlarea'),
             'festival-id' => array('label'=>'Festival', 'type'=>'select', 
                 'complex_options'=>array('value'=>'id', 'name'=>'name'),
                 'options'=>$festivals,
@@ -991,7 +991,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             'module' => 'Music Festivals',
             'settings' => array(
                 'title' => array('label'=>'Title', 'type'=>'text'),
-                'content' => array('label'=>'Intro', 'type'=>'textarea'),
+                'content' => array('label'=>'Intro', 'type'=>'htmlarea'),
                 'festival-id' => array('label'=>'Festival', 'type'=>'select', 
                     'complex_options'=>array('value'=>'id', 'name'=>'name'),
                     'options'=>$festivals,
@@ -1026,7 +1026,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             'module' => 'Music Festivals',
             'settings' => array(
                 'title' => array('label'=>'Title', 'type'=>'text'),
-                'content' => array('label'=>'Intro', 'type'=>'textarea'),
+                'content' => array('label'=>'Intro', 'type'=>'htmlarea'),
                 'festival-id' => array('label'=>'Festival', 'type'=>'select', 
                     'complex_options'=>array('value'=>'id', 'name'=>'name'),
                     'options'=>$festivals,
@@ -1040,7 +1040,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             'module' => 'Music Festivals',
             'settings' => array(
                 'title' => array('label'=>'Title', 'type'=>'text'),
-                'content' => array('label'=>'Intro', 'type'=>'textarea'),
+                'content' => array('label'=>'Intro', 'type'=>'htmlarea'),
                 'festival-id' => array('label'=>'Festival', 'type'=>'select', 
                     'complex_options'=>array('value'=>'id', 'name'=>'name'),
                     'options'=>$festivals,
@@ -1053,7 +1053,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             'module' => 'Music Festivals',
             'settings' => array(
                 'title' => array('label'=>'Title', 'type'=>'text'),
-                'content' => array('label'=>'Intro', 'type'=>'textarea'),
+                'content' => array('label'=>'Intro', 'type'=>'htmlarea'),
                 'festival-id' => array('label'=>'Festival', 'type'=>'select', 
                     'complex_options'=>array('value'=>'id', 'name'=>'name'),
                     'options'=>$festivals,
@@ -1094,7 +1094,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             'module' => 'Music Festivals',
             'settings' => array(
                 'title' => array('label'=>'Title', 'type'=>'text'),
-                'content' => array('label'=>'Intro', 'type'=>'textarea'),
+                'content' => array('label'=>'Intro', 'type'=>'htmlarea'),
                 'provincial-tnid' => array('label'=>'Provincials', 'type'=>'select', 
                     'complex_options'=>array('value'=>'id', 'name'=>'name'),
                     'options'=>$provincials,
@@ -1103,6 +1103,17 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             );
     }
     
+    $sections['ciniki.musicfestivals.rules'] = array(
+        'name' => 'Rules & Regulations',
+        'module' => 'Music Festivals',
+        'settings' => array(
+            'title' => array('label'=>'Title', 'type'=>'text'),
+            'syllabus-id' => array('label'=>'Festival', 'type'=>'select', 
+                'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                'options'=>$syllabuses,
+                ),
+            ),
+        );
 
     return array('stat'=>'ok', 'sections'=>$sections);
 }
