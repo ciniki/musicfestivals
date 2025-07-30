@@ -122,6 +122,7 @@
 # keywords:             The search keywords to be used for live search.
 #
 # options:              The extra options for the class. Fixed titles, etc.
+# prev_code:            The previous festival years class code. This is used for provincials, so when local festivals copy the syllabus the codes can be updated from last years to this years.
 #
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.
@@ -155,6 +156,7 @@ create table ciniki_musicfestival_classes (
     schedule_ata_seconds int not null,
     keywords varchar(5000) not null,
     options text not null,
+    prev_code varchar(50) not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
@@ -164,4 +166,4 @@ create table ciniki_musicfestival_classes (
     index (festival_id, category_id, tnid),
     index keywords (keywords),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.16';
+) ENGINE='InnoDB', COMMENT='v1.17';

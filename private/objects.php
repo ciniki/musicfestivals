@@ -197,6 +197,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'schedule_ata_seconds'=>array('name'=>'Schedule Class Additional Registration Seconds', 'default'=>'0'),
             'keywords'=>array('name'=>'Keywords', 'default'=>''),
             'options'=>array('name'=>'Options', 'default'=>'{}'),
+            'prev_code'=>array('name'=>'Previous Year Code', 'default'=>''),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );

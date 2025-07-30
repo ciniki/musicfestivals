@@ -274,6 +274,8 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
         array('container'=>'classes', 'fname'=>'class_id',
             'fields'=>array('code', 'name'=>'class_name', 'permalink'=>'class_permalink', 
                 'synopsis'=>'class_synopsis', 'sequence'=>'class_sequence', 
+// Provincials code will need to be updated after importing
+                'provincials_code',   
                 'flags', 'feeflags', 'titleflags', 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
                 'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 'keywords', 'options',
                 )),
