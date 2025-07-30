@@ -127,7 +127,6 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     // Get the list of sections
     //
     if( isset($s['display-live-virtual']) && in_array($s['display-live-virtual'], ['live','virtual']) ) {
-    error_log(print_r($s,true));
         $strsql = "SELECT sections.id, "
             . "sections.permalink, "
             . "sections.name, "
