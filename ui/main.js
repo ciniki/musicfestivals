@@ -5153,6 +5153,12 @@ function ciniki_musicfestivals_main() {
                 'registration-teacher-msg':{'label':'Teachers Intro', 'type':'textarea', 'size':'medium'},
                 'registration-adult-msg':{'label':'Adult Intro', 'type':'textarea', 'size':'medium'},
                 'registration-participation-label':{'label':'Participation Label', 'type':'text', 'hint':'I would like to participate'},
+                'registration-class-participation':{'label':'Class Participation', 'type':'toggle', 'default':'none', 
+                    'active':function() { return M.modFlagOn('ciniki.musicfestivals', 0x010000) ? 'yes' : 'no'; },
+                    'toggles':{
+                        'none':'None',
+                        'after-class':'After Class Name',
+                    }},
                 'registration-title-label':{'label':'Title Label', 'type':'text', 'hint':'Title'},
                 'registration-movements-label':{'label':'Movements Label', 'type':'text', 
                     'hint':'Movements/Musical',
@@ -5534,7 +5540,7 @@ function ciniki_musicfestivals_main() {
         this.showHideSection('_trophies_pdf');
         this.showHideSection('_certificates_pdf');
         this.showHideSection('_syllabus');
-//        this.showHideSection('_syllabus_pdf');
+        this.showHideSection('_syllabus_pdf');
         this.showHideSection('_customer_types');
         this.showHideSection('_registration_form');
         this.showHideSection('_registration_statuses');

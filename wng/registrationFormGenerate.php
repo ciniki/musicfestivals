@@ -269,25 +269,27 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 elseif( ($festival['flags']&0x0100) == 0x0100 ) {
                     $section['classes'][$cid]['name'] = $section_class['category_name'] . ' - ' . $section_class['name'];
                 }
-//                if( ($section_class['flags']&0x04) == 0x04 ) {
-//                    $classes_instrument[] = $cid;
-//                }
-                // Check if class is NOT group/ensemble and 2,3,4 competitors enabled
-/*                if( ($section_class['flags']&0x8010) == 0x10 ) {
-                    $classes_2c[] = $cid;
-                }
-                if( ($section_class['flags']&0x8020) == 0x20 ) {
-                    $classes_3c[] = $cid;
-                }
-                if( ($section_class['flags']&0x8040) == 0x40 ) { 
-                    $classes_4c[] = $cid;
-                } */
-//                $classes_min_titles[$cid] = $section_class['min_titles'];
-//                $classes_max_titles[$cid] = $section_class['max_titles'];
                 if( isset($_GET['cl']) && $_GET['cl'] == $section_class['uuid'] ) {
                     $selected_sid = $sid;
                     $selected_cid = $cid;
                 }
+                if( isset($festival['registration-class-participation'])
+                    && $festival['registration-class-participation'] == 'after-class'
+                    ) {
+                    $participation_label = '';
+                    if( ($section_class['feeflags']&0x01) == 0x01 && $festival['earlybird'] == 'yes' ) {
+                        $participation_label = 'Earlybird Live';
+                    } elseif( ($section_class['feeflags']&0x02) == 0x02 ) {
+                        $participation_label = 'Live';
+                    }
+                    if( ($section_class['feeflags']&0x08) == 0x08 ) {
+                        $participation_label = ($participation_label != '' ? '/' : '') . 'Virtual';
+                    }
+                    if( $participation_label != '' ) {
+                        $sections[$sid]['classes'][$cid]['codename'] .= " ({$participation_label})";
+                    }
+                }
+                    
                 //
                 // Check for valid sections and options when not in view mode for the form.
                 //
@@ -312,20 +314,20 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     }
                     // Virtual option(0x02) and virtual pricing(0x04) set for festival 
                     else if( ($festival['flags']&0x06) == 0x06 ) {
-                        if( $festival['earlybird'] == 'yes' && $section_live == 'yes' && ($section_class['feeflags']&0x01) == 0x01 ) { //&& $section_class['earlybird_fee'] > 0 ) {
+                        if( $festival['earlybird'] == 'yes' && $section_live == 'yes' && ($section_class['feeflags']&0x01) == 0x01 ) {
                             $live_prices[$cid] = '$' . number_format($section_class['earlybird_fee'], 2);
                             $sections[$sid]['classes'][$cid]['live_fee'] = $section_class['earlybird_fee'];
-                        } elseif( $festival['live'] == 'yes' && $section_live == 'yes' && ($section_class['feeflags']&0x02) == 0x02 ) { //&& $section_class['fee'] > 0 ) {
+                        } elseif( $festival['live'] == 'yes' && $section_live == 'yes' && ($section_class['feeflags']&0x02) == 0x02 ) {
                             $live_prices[$cid] = '$' . number_format($section_class['fee'], 2);
                             $sections[$sid]['classes'][$cid]['live_fee'] = $section_class['fee'];
-                        } elseif( $festival['live'] == 'sections' && $section_live == 'yes' && ($section_class['feeflags']&0x02) == 0x02 ) { //$section_class['fee'] > 0 ) {
+                        } elseif( $festival['live'] == 'sections' && $section_live == 'yes' && ($section_class['feeflags']&0x02) == 0x02 ) {
                             $live_prices[$cid] = '$' . number_format($section_class['fee'], 2);
                             $sections[$sid]['classes'][$cid]['live_fee'] = $section_class['fee'];
                         }
-                        if( $festival['virtual'] == 'yes' && $section_virtual == 'yes' && ($section_class['feeflags']&0x08) == 0x08 ) { //&& $section_class['vfee'] > 0 ) {
+                        if( $festival['virtual'] == 'yes' && $section_virtual == 'yes' && ($section_class['feeflags']&0x08) == 0x08 ) {
                             $virtual_prices[$cid] = '$' . number_format($section_class['vfee'], 2);
                             $sections[$sid]['classes'][$cid]['virtual_fee'] = $section_class['vfee'];
-                        } elseif( $festival['virtual'] == 'sections' && $section_virtual == 'yes' && ($section_class['feeflags']&0x08) == 0x08 ) { //&& $section_class['vfee'] > 0 ) {
+                        } elseif( $festival['virtual'] == 'sections' && $section_virtual == 'yes' && ($section_class['feeflags']&0x08) == 0x08 ) {
                             $virtual_prices[$cid] = '$' . number_format($section_class['vfee'], 2);
                             $sections[$sid]['classes'][$cid]['virtual_fee'] = $section_class['vfee'];
                         }
@@ -346,22 +348,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                         if( ($sections[$sid]['classes'][$cid]['flags']&0x20) == 0x20 ) {
                             $virtual_only[$cid] = 1;
                         }
-    /*                    if( $festival['earlybird'] == 'yes' && $section_class['earlybird_fee'] > 0 ) {
-                            $sections[$sid]['classes'][$cid]['live_fee'] = $section_class['earlybird_fee'];
-                        } else {
-                            $sections[$sid]['classes'][$cid]['live_fee'] = $section_class['fee'];
-                        }
-                        if( $festival['virtual'] == 'yes' && $section_class['vfee'] > 0 ) {
-                            $sections[$sid]['classes'][$cid]['virtual_fee'] = $section_class['vfee'];
-                        } */
-                        //
-                        // Check to see if class is still available for registration
-                        //
-    /*                    if( !isset($sections[$sid]['classes'][$cid]['live_fee'])
-                            && !isset($sections[$sid]['classes'][$cid]['virtual_fee'])
-                            ) {
-                            unset($sections[$sid]['classes'][$cid]);
-                        } */
                         if( ($festival['flags']&0x08) == 0x08 && $section_live == 'no' && $section_virtual == 'no' ) {
                             unset($sections[$sid]['classes'][$cid]);
                         }

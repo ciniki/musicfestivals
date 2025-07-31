@@ -37,7 +37,7 @@ function ciniki_musicfestivals_flags(&$ciniki) {
         array('flag'=>array('bit'=>'16', 'name'=>'Accompanists')),
         // 0x010000
         array('flag'=>array('bit'=>'17', 'name'=>'Provincials')), // Name may change
-        array('flag'=>array('bit'=>'18', 'name'=>'Split Virtual/Live Syllabus')),
+        array('flag'=>array('bit'=>'18', 'name'=>'Split Virtual/Live Syllabus **deprecated**')), // Can now be done with syllabuses table
         array('flag'=>array('bit'=>'19', 'name'=>'Program Document')), // 5.5x8.5 program
         array('flag'=>array('bit'=>'20', 'name'=>'Schedule Individual Times')),   // each registration has a scheduled time
         // 0x100000

@@ -359,21 +359,45 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     }
 
     //
+    // Check for buttons at the top and bottom of page
+    //
+    $buttons = ['top' => [], 'bottom' => []];
+    foreach(['top', 'bottom'] AS $tp) {
+        if( isset($s["{$tp}-button-1-pdf"]) && $s["{$tp}-button-1-pdf"] == 'yes' ) {
+            $buttons[$tp][] = [
+                'url' => $download_url,
+                'target' => '_blank',
+                'text' => 'Download ' . (isset($lv_word) && $lv_word != '' ? "{$lv_word} " : '') 
+                    . 'Syllabus PDF for ' . $syllabus_section['name']
+                    . (isset($groupname) && $groupname != '' ? ' - ' . $groupname : ''),
+                ];
+        }
+        for($i = 2; $i <= 5; $i++) {
+            if( isset($s["{$tp}-button-{$i}-text"]) && $s["{$tp}-button-{$i}-text"] != '' ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'urlProcess');
+                $rc = ciniki_wng_urlProcess($ciniki, $tnid, $request, 
+                    isset($s["{$tp}-button-{$i}-page"]) ? $s["{$tp}-button-{$i}-page"] : 0, 
+                    isset($s["{$tp}-button-{$i}-url"]) ? $s["{$tp}-button-{$i}-url"] : '');
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.120', 'msg'=>'', 'err'=>$rc['err']));
+                }
+                $buttons[$tp][] = [
+                    'url' => $rc['url'],
+                    'target' => $rc['target'],
+                    'text' => $s["{$tp}-button-{$i}-text"],
+                    ];
+            }
+        }
+    }
+
+    //
     // Check if download button
     //
-    if( isset($s['section-pdf']) && ($s['section-pdf'] == 'top' || $s['section-pdf'] == 'both') ) {
+    if( count($buttons['top']) > 0 ) {
         $blocks[] = array(
             'type' => 'buttons',
             'class' => "buttons-top-{$syllabus_section['permalink']} musicfestival-syllabus-section",
-            'list' => array(
-                array(
-                    'url' => $download_url,
-                    'target' => '_blank',
-                    'text' => 'Download ' . (isset($lv_word) && $lv_word != '' ? "{$lv_word} " : '') 
-                        . 'Syllabus PDF for ' . $syllabus_section['name']
-                        . (isset($groupname) && $groupname != '' ? ' - ' . $groupname : ''),
-                    ),
-                ),
+            'list' => $buttons['top'],
             );
     }
     
@@ -587,6 +611,20 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                     } else {
                         $category['classes'][$cid]['register'] = "Closed";
                     }
+                    if( isset($s['participation-label']) && $s['participation-label'] == 'after-class' ) {
+                        $participation_label = '';
+                        if( ($class['feeflags']&0x01) == 0x01 && $festival['earlybird'] == 'yes' ) {
+                            $participation_label = 'Earlybird Live';
+                        } elseif( ($class['feeflags']&0x02) == 0x02 ) {
+                            $participation_label = 'Live';
+                        }
+                        if( ($class['feeflags']&0x08) == 0x08 ) {
+                            $participation_label = ($participation_label != '' ? '/' : '') . 'Virtual';
+                        }
+                        if( $participation_label != '' ) {
+                            $category['classes'][$cid]['fullname'] .= " ({$participation_label})";
+                        }
+                    }
                 }
                 //
                 // Check if online registrations enabled, and online registrations enabled for this class
@@ -645,7 +683,14 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     //
     // Check if download button
     //
-    if( isset($s['section-pdf']) && ($s['section-pdf'] == 'bottom' || $s['section-pdf'] == 'both') ) {
+    if( count($buttons['bottom']) > 0 ) {
+        $blocks[] = array(
+            'type' => 'buttons',
+            'class' => "buttons-buttom-{$syllabus_section['permalink']} musicfestival-syllabus-section",
+            'list' => $buttons['bottom'],
+            );
+    }
+/*    if( isset($s['section-pdf']) && ($s['section-pdf'] == 'bottom' || $s['section-pdf'] == 'both') ) {
         $blocks[] = array(
             'type' => 'buttons',
             'class' => "buttons-bottom-{$syllabus_section['permalink']} musicfestival-syllabus-section",
@@ -659,8 +704,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                     ),
                 ),
             );
-    }
-
+    } */
 
     if( isset($s['section-id']) ) {
         return array('stat'=>'ok', 'blocks'=>$blocks);

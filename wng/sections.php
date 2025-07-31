@@ -192,29 +192,62 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'top' => 'Yes',
                 // In future can add bottom/both as options if needed
                 )),
-            'section-pdf' => array('label'=>'Section PDF Download', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
-                'no' => 'Off',
-                'top' => 'Top',
-                'bottom' => 'Bottom',
-                'both' => 'Both',
-                )),
             'syllabus-pdf' => array('label'=>'Complete Syllabus PDF Download', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
                 'no' => 'Off',
                 'top' => 'Top',
                 'bottom' => 'Bottom',
                 'both' => 'Both',
                 )),
+/*            'section-pdf' => array('label'=>'Section PDF Download', 'type'=>'toggle', 'default'=>'no', 'separator'=>'yes',
+                'toggles'=>array(
+                    'no' => 'Off',
+                    'top' => 'Top',
+                    'bottom' => 'Bottom',
+                    'both' => 'Both',
+                )),*/
+            'top-button-1-pdf' => array('label'=>'Top Section PDF Download', 'type'=>'toggle', 'default'=>'no', 'separator'=>'yes',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    ),
+                ),
+            'top-button-2-page' => array('label'=>'Top Button 2', 'type'=>'select', 'pages'=>'yes'),
+            'top-button-2-text' => array('label'=>'Text', 'type'=>'text'),
+            'top-button-2-url' => array('label'=>'URL', 'type'=>'text'),
+            'top-button-3-page' => array('label'=>'Top Button 3', 'type'=>'select', 'pages'=>'yes'),
+            'top-button-3-text' => array('label'=>'Text', 'type'=>'text'),
+            'top-button-3-url' => array('label'=>'URL', 'type'=>'text'),
+            'bottom-button-1-pdf' => array('label'=>'Bottom Section PDF Download', 'type'=>'toggle', 'default'=>'no', 'separator'=>'yes',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    ),
+                ),
+            'bottom-button-2-page' => array('label'=>'Bottom Button 2', 'type'=>'select', 'pages'=>'yes'),
+            'bottom-button-2-text' => array('label'=>'Text', 'type'=>'text'),
+            'bottom-button-2-url' => array('label'=>'URL', 'type'=>'text'),
+            'bottom-button-3-page' => array('label'=>'Bottom Button 3', 'type'=>'select', 'pages'=>'yes'),
+            'bottom-button-3-text' => array('label'=>'Text', 'type'=>'text'),
+            'bottom-button-3-url' => array('label'=>'URL', 'type'=>'text'),
             ),
         );
  
     if( $virtual_festivals == 'yes' ) {
         $sections['ciniki.musicfestivals.syllabus']['settings']['display-live-virtual'] = array(
             'label'=>'Classes', 
-            'type'=>'toggle', 'default'=>'all', 'toggles'=>array(
+            'type'=>'toggle', 'default'=>'all', 'separator'=>'yes', 'toggles'=>array(
                 'all' => 'All',
                 'live' => 'Live',
                 'virtual' => 'Virtual',
                 ));
+        // Provincials Only for now
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+            $sections['ciniki.musicfestivals.syllabus']['settings']['participation-label'] = array(
+                'label'=>'Participation Label', 'type'=>'select', 'options'=>array(
+                    'none' => 'None',
+                    'after-class' => 'After Class Name',
+                    ));
+        }
     }
 
     //
