@@ -20,7 +20,6 @@ function ciniki_musicfestivals_scheduleTimeslotRecalc(&$ciniki, $tnid, $args) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
 
-error_log('recalc: ' . $args['timeslot_id']);
     //
     // Get the slot start time
     //
