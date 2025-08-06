@@ -2838,6 +2838,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         //
         if( isset($args['schedule']) && $args['schedule'] == 'adjudicators' ) {
             $strsql = "SELECT adjudicators.id, "
+                . "customers.id AS customer_id, "
                 . "customers.display_name AS name, "
                 . "registrations.id AS reg_id, "
                 . "registrations.participation, "
@@ -2887,7 +2888,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'adjudicators', 'fname'=>'id', 
-                    'fields'=>array('id', 'name'),
+                    'fields'=>array('id', 'customer_id', 'name'),
                     ),
                 array('container'=>'registrations', 'fname'=>'reg_id', 
                     'fields'=>array('id'=>'reg_id', 'display_name', 'participation',
@@ -2906,6 +2907,50 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
 
                 if( isset($args['adjudicator_id']) && $args['adjudicator_id'] == $adjudicator['id'] ) {
                     $festival['adjudicator_schedule'] = isset($adjudicator['registrations']) ? $adjudicator['registrations'] : [];
+                    $festival['adjudicator'] = $adjudicator;
+
+                    //
+                    // Load the message sent directly to this registration
+                    //
+                    $strsql = "SELECT messages.id, "
+                        . "messages.subject, "
+                        . "messages.status, "
+                        . "messages.status AS status_text, "
+                        . "messages.dt_scheduled, "
+                        . "messages.dt_sent "
+                        . "FROM ciniki_musicfestival_messagerefs AS refs "
+                        . "INNER JOIN ciniki_musicfestival_messages AS messages ON ("
+                            . "refs.message_id = messages.id "
+                            . ") "
+                        . "WHERE refs.object_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator['id']) . "' "
+                        . "AND refs.object = 'ciniki.musicfestivals.adjudicator' "
+                        . "AND refs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . "ORDER BY dt_sent DESC, dt_scheduled DESC "
+                        . "";
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                        array('container'=>'messages', 'fname'=>'id', 
+                            'fields'=>array('id', 'subject', 'status', 'status_text', 'dt_scheduled', 'dt_sent'),
+                            'maps'=>array(
+                                'status_text'=>$maps['message']['status'],
+                                ),
+                            'utctotz'=>array(
+                                'dt_scheduled'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                                'dt_sent'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                                ),
+                            ),
+                        ));
+                    if( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.321', 'msg'=>'Unable to load messages', 'err'=>$rc['err']));
+                    }
+                    $festival['adjudicator_messages'] = isset($rc['messages']) ? $rc['messages'] : array();
+                    foreach($festival['adjudicator_messages'] as $mid => $message) {
+                        if( $message['status'] == 30 ) {
+                            $festival['adjudicator_messages'][$mid]['date'] = $message['dt_scheduled'];
+                        } else {
+                            $festival['adjudicator_messages'][$mid]['date'] = $message['dt_sent'];
+                        }
+                    }
                 }
                 if( isset($adjudicator['registrations']) ) {
                     foreach($adjudicator['registrations'] as $reg) {

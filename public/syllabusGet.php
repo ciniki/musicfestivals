@@ -22,6 +22,7 @@ function ciniki_musicfestivals_syllabusGet($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'syllabus_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Syllabus'),
+        'festival_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Festival'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -56,7 +57,7 @@ function ciniki_musicfestivals_syllabusGet($ciniki) {
     //
     if( $args['syllabus_id'] == 0 ) {
         $syllabus = array('id'=>0,
-            'festival_id'=>'',
+            'festival_id'=>(isset($args['festival_id']) ? $args['festival_id'] : 0),
             'name'=>'',
             'permalink'=>'',
             'sequence'=>'1',

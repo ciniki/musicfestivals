@@ -26,6 +26,7 @@ function ciniki_musicfestivals_messageExtractRecipients(&$ciniki, $tnid, $messag
     $teachers = $rc['teachers'];
     $competitors = $rc['competitors'];
     $accompanists = $rc['accompanists'];
+    $adjudicators = $rc['adjudicators'];
    
     //
     // Setup teachers as objects
@@ -72,6 +73,21 @@ function ciniki_musicfestivals_messageExtractRecipients(&$ciniki, $tnid, $messag
                 ), 0x04);
             if( $rc['stat'] != 'ok' && $rc['err']['code'] != 'ciniki.core.73' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.557', 'msg'=>'Unable to add the messageref', 'err'=>$rc['err']));
+            }
+        }
+    }
+    foreach($adjudicators as $adjuciator) {
+        if( (isset($adjuciator['added']) && $adjuciator['added'] == 'yes')
+            || (isset($adjuciator['included']) && $adjuciator['included'] == 'yes')
+            ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+            $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.messageref', array(
+                'message_id' => $message_id,
+                'object' => 'ciniki.musicfestivals.adjudicator',
+                'object_id' => $adjudicator['id'],
+                ), 0x04);
+            if( $rc['stat'] != 'ok' && $rc['err']['code'] != 'ciniki.core.73' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.893', 'msg'=>'Unable to add the messageref', 'err'=>$rc['err']));
             }
         }
     }

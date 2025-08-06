@@ -154,6 +154,7 @@ function ciniki_musicfestivals_messageGet($ciniki) {
                 array('label' => '# Competitors', 'value' => '0'),
                 array('label' => '# Teachers', 'value' => '0'),
                 array('label' => '# Accompanists', 'value' => '0'),
+                array('label' => '# Adjudicators', 'value' => '0'),
                 ),
         );
     }
@@ -188,7 +189,7 @@ function ciniki_musicfestivals_messageGet($ciniki) {
                 $rc['timeslots'] = $rc['schedule'][$args['schedule_id']]['divisions'][$args['division_id']]['timeslots'];
             }
         }
-        foreach(['sections', 'categories', 'classes', 'schedule', 'divisions', 'timeslots', 'teachers', 'competitors', 'accompanists' ] as $s) {
+        foreach(['sections', 'categories', 'classes', 'schedule', 'divisions', 'timeslots', 'teachers', 'competitors', 'accompanists', 'adjudicators'] as $s) {
             if( isset($rc[$s]) ) {
                 $rc[$s] = array_values($rc[$s]);
             }
@@ -207,7 +208,11 @@ function ciniki_musicfestivals_messageGet($ciniki) {
         
         $rc['message']['send'] = 'no';
         if( $rc['message']['status'] == '10' 
-            && ($rc['message']['num_competitors'] > 0 || $rc['message']['num_teachers'] > 0 || $rc['message']['num_accompanists'] > 0)
+            && ($rc['message']['num_competitors'] > 0 
+                || $rc['message']['num_teachers'] > 0 
+                || $rc['message']['num_accompanists'] > 0
+                || $rc['message']['num_adjudicators'] > 0
+                )
             ) {
             $rc['message']['send'] = 'yes';
         }
