@@ -12817,10 +12817,15 @@ function ciniki_musicfestivals_main() {
                 p.addClose('Cancel');
                 p.sections._subject.fields.subject.editable = 'yes';
                 p.sections._content.fields.content.editable = 'yes';
+                p.sections._content.fields.content.type = 'htmlarea';
             } else {
                 p.addClose('Back');
                 p.sections._subject.fields.subject.editable = 'no';
                 p.sections._content.fields.content.editable = 'no';
+                p.sections._content.fields.content.type = 'info';
+                if( !p.data.content.match(/^<(p|ol|ul)/) ) {
+                    p.data.content = '<p>' + p.data.content.replace(/\n\n/g, "</p><p>").replace(/\n/g, '<br>') + '</p>';
+                }
             }
             p.refresh();
             p.show(cb);
@@ -12865,15 +12870,16 @@ function ciniki_musicfestivals_main() {
         });
     }
     this.message.sendNow = function() {
-        if( M.modFlagOn('ciniki.musicfestivals', 0x8000) ) {
+        if( M.modFlagOn('ciniki.musicfestivals', 0x8000) ) {    // Accompanists
             var msg = '<b>' + (this.data.num_teachers == 0 ? 'No' : this.data.num_teachers) + '</b> teacher' + (this.data.num_teachers != 1 ? 's' :'')
                 + ', <b>' + (this.data.num_accompanists == 0 ? 'no' : this.data.num_accompanists) + '</b> accompanist' + (this.data.num_accompanists != 1 ? 's' : '') 
-                + ' and <b>' + (this.data.num_competitors == 0 ? 'no' : this.data.num_competitors) + '</b> competitor' + (this.data.num_competitors != 1 ? 's' : '') 
+                + ', <b>' + (this.data.num_competitors == 0 ? 'no' : this.data.num_competitors) + '</b> competitor' + (this.data.num_competitors != 1 ? 's' : '') 
                 + ' and <b>' + (this.data.num_adjudicators == 0 ? 'no' : this.data.num_adjudicators) + '</b> adjudicator' + (this.data.num_adjudicators != 1 ? 's' : '') 
                 + ' will receive this email. <br/></br>';
         } else {
             var msg = '<b>' + (this.data.num_teachers == 0 ? 'No' : this.data.num_teachers) + '</b> teacher' + (this.data.num_teachers != 1 ? 's' :'')
-                + ' and <b>' + (this.data.num_competitors == 0 ? 'no' : this.data.num_competitors) + '</b> competitor' + (this.data.num_competitors != 1 ? 's' : '') 
+                + ', <b>' + (this.data.num_competitors == 0 ? 'no' : this.data.num_competitors) + '</b> competitor' + (this.data.num_competitors != 1 ? 's' : '') 
+                + ' and <b>' + (this.data.num_adjudicators == 0 ? 'no' : this.data.num_adjudicators) + '</b> adjudicator' + (this.data.num_adjudicators != 1 ? 's' : '') 
                 + ' will receive this email. <br/></br>';
         }
         M.confirm(msg + ' Is this email correct and ready to send?', null, function() {
@@ -12891,12 +12897,14 @@ function ciniki_musicfestivals_main() {
         if( M.modFlagOn('ciniki.musicfestivals', 0x8000) ) {
             var msg = '<b>' + (this.data.num_teachers == 0 ? 'No' : this.data.num_teachers) + '</b> teacher' + (this.data.num_teachers != 1 ? 's' :'')
                 + ', <b>' + (this.data.num_accompanists == 0 ? 'no' : this.data.num_accompanists) + '</b> accompanist' + (this.data.num_accompanists != 1 ? 's' : '') 
-                + ' and <b>' + (this.data.num_competitors == 0 ? 'no' : this.data.num_competitors) + '</b> competitor' + (this.data.num_competitors != 1 ? 's' : '') 
+                + ', <b>' + (this.data.num_competitors == 0 ? 'no' : this.data.num_competitors) + '</b> competitor' + (this.data.num_competitors != 1 ? 's' : '') 
+                + ' and <b>' + (this.data.num_adjudicators == 0 ? 'no' : this.data.num_adjudicators) + '</b> adjudicator' + (this.data.num_adjudicators != 1 ? 's' : '') 
                 + ' will receive this email. <br/></br>';
 
         } else {
             var msg = '<b>' + (this.data.num_teachers == 0 ? 'No' : this.data.num_teachers) + '</b> teacher' + (this.data.num_teachers != 1 ? 's' :'')
-                + ' and <b>' + (this.data.num_competitors == 0 ? 'no' : this.data.num_competitors) + '</b> competitor' + (this.data.num_competitors != 1 ? 's' : '') 
+                + ', <b>' + (this.data.num_competitors == 0 ? 'no' : this.data.num_competitors) + '</b> competitor' + (this.data.num_competitors != 1 ? 's' : '') 
+                + ' and <b>' + (this.data.num_adjudicators == 0 ? 'no' : this.data.num_adjudicators) + '</b> adjudicator' + (this.data.num_adjudicators != 1 ? 's' : '') 
                 + ' will receive this email. <br/></br>';
         }
         M.confirm(msg + 'Are you sure the email is correct and ready to be sent?', null, function() {
