@@ -1184,6 +1184,10 @@ function ciniki_musicfestivals_main() {
                     'label':'Runsheets PDF',
                     'fn':'M.ciniki_musicfestivals_main.festival.downloadAdjudicatorRunSheetsPDF(M.ciniki_musicfestivals_main.festival.adjudicator_id);',
                     },
+//                'runsheetsword':{
+//                    'label':'Results Worksheet Word',
+//                    'fn':'M.ciniki_musicfestivals_main.festival.downloadAdjudicatorResultsWord(M.ciniki_musicfestivals_main.festival.adjudicator_id);',
+//                    },
                 'competitors':{
                     'label':'Competitors List PDF',
                     'fn':'M.ciniki_musicfestivals_main.festival.downloadAdjudicatorCompetitorClassesPDF(M.ciniki_musicfestivals_main.festival.adjudicator_id);',
@@ -2120,6 +2124,20 @@ function ciniki_musicfestivals_main() {
             'ipv':this.sections.ipv_tabs.selected,
             };
         M.api.openPDF('ciniki.musicfestivals.runsheetsPDF',args);
+    }
+    this.festival.downloadAdjudicatorResultsWord = function(s) {
+        var args = {'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'adjudicator_id':this.adjudicator_id,
+            };
+        if( this.sections.schedule_lv_tabs.selected == 'all' ) {
+            args['lv'] = 0;
+        } else if( this.sections.schedule_lv_tabs.selected == 'live' ) {
+            args['lv'] = 0x0100;
+        } else if( this.sections.schedule_lv_tabs.selected == 'virtual' ) {
+            args['lv'] = 0x0200;
+        }
+        M.api.openPDF('ciniki.musicfestivals.adjudicatorResultsWord',args);
     }
     this.festival.downloadAdjudicatorsRunSheetsZIP = function(s) {
         var args = {'tnid':M.curTenantID,
@@ -3259,6 +3277,10 @@ function ciniki_musicfestivals_main() {
     }
     this.festival.switchSTab = function(t) {
         this.sections.schedule_tabs.selected = t;
+        this.open();
+    }
+    this.festival.switchScheduleLVTab = function(t) {
+        this.sections.schedule_lv_tabs.selected = t;
         this.open();
     }
     this.festival.scheduleAdjudicatorSwitchTab = function(t) {
@@ -12632,7 +12654,7 @@ function ciniki_musicfestivals_main() {
             'subject':{'label':'Subject', 'hidelabel':'yes', 'type':'text'},
             }},
         '_content':{'label':'Message', 'fields':{
-            'content':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
+            'content':{'label':'', 'hidelabel':'yes', 'type':'htmlarea', 'size':'large'},
             }},
         'files':{'label':'Attachments', 'type':'simplegrid', 'num_cols':2,
             'cellClasses':['', 'alignright fabuttons'],

@@ -68,7 +68,9 @@ function ciniki_musicfestivals_messageQueue(&$ciniki, $tnid, $args) {
                     'customer_email'=>$teacher['email'],
                     'customer_name'=>$teacher['name'],
                     'subject'=>$args['message']['subject'],
-                    'text_content'=>$content,
+                    'tinymce' => 'yes',
+                    'html_content'=>$content,
+                    'text_content'=>html_entity_decode(strip_tags($content)),
                     );
             }
         }
@@ -82,7 +84,9 @@ function ciniki_musicfestivals_messageQueue(&$ciniki, $tnid, $args) {
                     'customer_email'=>$accompanist['email'],
                     'customer_name'=>$accompanist['name'],
                     'subject'=>$args['message']['subject'],
-                    'text_content'=>$content,
+                    'tinymce' => 'yes',
+                    'html_content'=>$content,
+                    'text_content'=>html_entity_decode(strip_tags($content)),
                     );
             }
         }
@@ -96,7 +100,9 @@ function ciniki_musicfestivals_messageQueue(&$ciniki, $tnid, $args) {
                     'customer_email'=>$adjudicator['email'],
                     'customer_name'=>$adjudicator['name'],
                     'subject'=>$args['message']['subject'],
-                    'text_content'=>$content,
+                    'tinymce' => 'yes',
+                    'html_content'=>$content,
+                    'text_content'=>html_entity_decode(strip_tags($content)),
                     );
             }
         }
@@ -111,7 +117,9 @@ function ciniki_musicfestivals_messageQueue(&$ciniki, $tnid, $args) {
                         'customer_email'=>$customer['email'],
                         'customer_name'=>$customer['name'],
                         'subject'=>$args['message']['subject'],
-                        'text_content'=>$content,
+                        'tinymce' => 'yes',
+                        'html_content'=>$content,
+                        'text_content'=>html_entity_decode(strip_tags($content)),
                         );
                 }
             }
@@ -131,7 +139,9 @@ function ciniki_musicfestivals_messageQueue(&$ciniki, $tnid, $args) {
                     'object'=>'ciniki.musicfestivals.competitor',
                     'object_id'=>$competitor['id'],
                     'subject'=>$args['message']['subject'],
-                    'text_content'=>$content,
+                    'tinymce' => 'yes',
+                    'html_content'=>$content,
+                    'text_content'=>html_entity_decode(strip_tags($content)),
                     );
             }
         }
@@ -197,7 +207,9 @@ function ciniki_musicfestivals_messageQueue(&$ciniki, $tnid, $args) {
             'customer_email'=>$email,
             'customer_name'=>$name,
             'subject'=>$args['message']['subject'],
-            'text_content'=>$args['message']['content'],
+            'tinymce' => 'yes',
+            'html_content'=>$args['message']['content'],
+            'text_content'=>html_entity_decode(strip_tags($args['message']['content'])),
             'attachments'=>$attachments,
             ));
         if( $rc['stat'] != 'ok' ) {

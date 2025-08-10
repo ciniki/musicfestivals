@@ -599,7 +599,9 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             //
             $pdf->header_title = $division['date'];
             $pdf->header_sub_title = 'Adjudicator: ' . $division['adjudicator_name'];
-            $pdf->header_msg = 'Location: ' . $division['location_name'];
+            if( $division['location_name'] != '' ) {
+                $pdf->header_msg = 'Location: ' . $division['location_name'];
+            }
             if( $newpage == 'no' ) {
                 $pdf->AddPage();
             }

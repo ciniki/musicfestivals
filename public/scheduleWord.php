@@ -77,11 +77,9 @@ function ciniki_musicfestivals_scheduleWord($ciniki) {
         if( isset($rc['word']) ) {
             header('Content-Type: application/vnd.openxmlformats-officedocument.wordprocessingml.document');
             header('Content-Disposition: attachment;filename="' . preg_replace("/[^A-Za-z0-9]/", '', $rc['filename']) . '.docx');
-//            header('Content-Disposition: attachment;filename="' . preg_replace("/[^A-Za-z0-9]/", '', $rc['filename']) . '.odt');
             header('Cache-Control: max-age=0');
 
             $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($rc['word'], 'Word2007');
-//            $objWriter = \PhpOffice\PhpWord\IOFactory::createWriter($rc['word'], 'ODText');
             $objWriter->save('php://output');
         }
     }
