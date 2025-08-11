@@ -12720,7 +12720,7 @@ function ciniki_musicfestivals_main() {
                 'fn':'M.ciniki_musicfestivals_main.message.close();',
                 },
             'sendtest':{'label':'Send Test Message', 
-                'visible':function() {return M.ciniki_musicfestivals_main.message.data.send == 'yes' ? 'yes' : 'no'; },
+                'visible':function() {return M.ciniki_musicfestivals_main.message.data.status < 50 ? 'yes' : 'no'; },
                 'fn':'M.ciniki_musicfestivals_main.message.save("M.ciniki_musicfestivals_main.message.sendTest();");',
                 },
             'schedule':{'label':'Schedule', 
