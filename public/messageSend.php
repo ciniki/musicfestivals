@@ -71,7 +71,7 @@ function ciniki_musicfestivals_messageSend(&$ciniki) {
     //
     // Make sure the message has the correct status
     //
-    if( $message['status'] != 10 ) {
+    if( $message['status'] > 10 ) {
         if( $message['status'] == 30 ) {
             return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.527', 'msg'=>'Email has already been scheduled'));
         } 
