@@ -93,6 +93,7 @@ function ciniki_musicfestivals_maps($ciniki) {
     );
     $maps['message'] = array(
         'status'=>array(
+            '5'=>'Template',
             '10'=>'Draft',
             '30'=>'Scheduled',
             '50'=>'Sent',

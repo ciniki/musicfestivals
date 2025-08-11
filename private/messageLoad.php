@@ -1564,7 +1564,11 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
     $rsp['message']['num_adjudicators'] = $rsp['message']['mtype'] == 10 ? count($adjudicator_ids) : 0;
     $rsp['message']['num_competitors'] = count($competitor_ids);
 
-    if( $rsp['message']['status'] == 30 ) {
+    if( $rsp['message']['status'] == 5 ) {
+        $rsp['message']['details'] = array(
+            array('label' => 'Status', 'value' => $rsp['message']['status_text']),
+            );
+    } elseif( $rsp['message']['status'] == 30 ) {
         $rsp['message']['details'] = array(
             array('label' => 'Status', 'value' => $rsp['message']['status_text']),
             array('label' => 'Scheduled For', 'value' => $rsp['message']['dt_scheduled_text']),
@@ -1585,10 +1589,12 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             array('label' => '# Teachers', 'value' => $rsp['message']['num_teachers']),
             );
     }
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) ) {
-        $rsp['message']['details'][] = array('label' => '# Accompanists', 'value' => $rsp['message']['num_accompanists']);
+    if( $rsp['message']['status'] > 5 ) {
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) ) {
+            $rsp['message']['details'][] = array('label' => '# Accompanists', 'value' => $rsp['message']['num_accompanists']);
+        }
+        $rsp['message']['details'][] = array('label' => '# Adjudicators', 'value' => $rsp['message']['num_adjudicators']);
     }
-    $rsp['message']['details'][] = array('label' => '# Adjudicators', 'value' => $rsp['message']['num_adjudicators']);
 
     //
     // Load competitors and teachers and accompanists names and emails

@@ -15,6 +15,7 @@
 #
 # status:           The current status of this message.
 #
+#                        5 - template
 #                       10 - draft
 #                       30 - scheduled
 #                       50 - sent

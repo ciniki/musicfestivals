@@ -65,7 +65,7 @@ function ciniki_musicfestivals_messageFileAdd(&$ciniki) {
     }
     $message = $rc['message'];
 
-    if( $message['status'] != 10 ) {
+    if( $message['status'] != 5 && $message['status'] != 10 ) {
         return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.645', 'msg'=>'Message must be in Draft Mode to add files.'));
     }
 

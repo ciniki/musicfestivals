@@ -96,7 +96,6 @@ function ciniki_musicfestivals_messagesDraftsDelete($ciniki) {
         if( $message['status'] != 10 ) {
             continue;
         }
-        error_log("Remove message: " . $message['id'] . " - " . $message['subject']);
         if( isset($message['refs']) ) {
             foreach($message['refs'] as $ref) {
                 $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.musicfestivals.messageref',

@@ -3635,6 +3635,26 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 );
 
             //
+            // Get the templates
+            //
+            $strsql = "SELECT messages.id, "
+                . "messages.subject "
+                . "FROM ciniki_musicfestival_messages AS messages "
+                . "WHERE messages.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND messages.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "AND messages.status = 5 "
+                . "ORDER BY subject "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'templates', 'fname'=>'id', 'fields'=>array('id', 'subject')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1056', 'msg'=>'Unable to load templates', 'err'=>$rc['err']));
+            }
+            $festival['message_templates'] = isset($rc['templates']) ? $rc['templates'] : array();
+
+            //
             // Get the list of messages
             //
             if( !isset($args['messages_status']) ) {

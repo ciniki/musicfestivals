@@ -21,6 +21,7 @@ function ciniki_musicfestivals_messageGet($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
+        'festival_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Festival'),
         'message_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Message'),
         'allrefs'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Return All References'),
         'section_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Section'),
@@ -33,6 +34,7 @@ function ciniki_musicfestivals_messageGet($ciniki) {
         'object'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Object'),
         'object_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Object ID'),
         'emaillist'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Email List'),
+        'template'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Template'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -138,25 +140,45 @@ function ciniki_musicfestivals_messageGet($ciniki) {
     // Return default for new Mail
     //
     if( $args['message_id'] == 0 ) {
-        $message = array(
-            'id'=>0,
-            'festival_id'=>'',
-            'subject'=>'',
-            'status'=>'10',
-            'mtype'=>'10',
-            'flags' => 0x07,    // Default send to everybody
-            'content'=>'',
-            'dt_scheduled'=>'',
-            'dt_sent'=>'',
-            'objects' => array(),
-            'details' => array(
-                array('label' => 'Status', 'value' => 'Draft'),
-                array('label' => '# Competitors', 'value' => '0'),
-                array('label' => '# Teachers', 'value' => '0'),
-                array('label' => '# Accompanists', 'value' => '0'),
-                array('label' => '# Adjudicators', 'value' => '0'),
-                ),
-        );
+        if( isset($args['template']) && $args['template'] == 'yes' ) {
+            $message = array(
+                'id'=>0,
+                'festival_id'=>$args['festival_id'],
+                'subject'=>'',
+                'status'=>5,
+                'mtype'=>'10',
+                'flags' => 0x07,    // Default send to everybody
+                'content'=>'',
+                'dt_scheduled'=>'',
+                'dt_sent'=>'',
+                'objects' => array(),
+                'details' => array(
+                    array('label' => 'Status', 'value' => 'Template'),
+                    ),
+            );
+        } else {
+            $message = array(
+                'id'=>0,
+                'festival_id'=>$args['festival_id'],
+                'subject'=>'',
+                'status'=>(isset($args['template']) && $args['template'] == 'yes' ? 5 : 10),
+                'mtype'=>'10',
+                'flags' => 0x07,    // Default send to everybody
+                'content'=>'',
+                'dt_scheduled'=>'',
+                'dt_sent'=>'',
+                'objects' => array(),
+                'details' => array(
+                    array('label' => 'Status', 'value' => 'Draft'),
+                    array('label' => '# Competitors', 'value' => '0'),
+                    array('label' => '# Teachers', 'value' => '0'),
+                    array('label' => '# Accompanists', 'value' => '0'),
+                    array('label' => '# Adjudicators', 'value' => '0'),
+                    ),
+            );
+        }
+
+        $rsp = array('stat'=>'ok', 'message'=>$message);
     }
 
     //
@@ -168,77 +190,76 @@ function ciniki_musicfestivals_messageGet($ciniki) {
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.475', 'msg'=>'Unable to load message', 'err'=>$rc['err']));
         }
-        
+        $rsp = $rc; 
         if( isset($args['section_id']) && $args['section_id'] > 0 
-            && isset($rc['sections'][$args['section_id']]['categories']) 
+            && isset($rsp['sections'][$args['section_id']]['categories']) 
             ) {
-            $rc['categories'] = $rc['sections'][$args['section_id']]['categories'];
+            $rsp['categories'] = $rsp['sections'][$args['section_id']]['categories'];
             if( isset($args['category_id']) && $args['category_id'] > 0 
-                && isset($rc['sections'][$args['section_id']]['categories'][$args['category_id']]['classes']) 
+                && isset($rsp['sections'][$args['section_id']]['categories'][$args['category_id']]['classes']) 
                 ) {
-                $rc['classes'] = $rc['sections'][$args['section_id']]['categories'][$args['category_id']]['classes'];
+                $rsp['classes'] = $rsp['sections'][$args['section_id']]['categories'][$args['category_id']]['classes'];
             }
         }
         if( isset($args['schedule_id']) && $args['schedule_id'] > 0 
-            && isset($rc['schedule'][$args['schedule_id']]['divisions']) 
+            && isset($rsp['schedule'][$args['schedule_id']]['divisions']) 
             ) {
-            $rc['divisions'] = $rc['schedule'][$args['schedule_id']]['divisions'];
+            $rsp['divisions'] = $rsp['schedule'][$args['schedule_id']]['divisions'];
             if( isset($args['division_id']) && $args['division_id'] > 0 
-                && isset($rc['schedule'][$args['schedule_id']]['divisions'][$args['division_id']]['timeslots']) 
+                && isset($rsp['schedule'][$args['schedule_id']]['divisions'][$args['division_id']]['timeslots']) 
                 ) {
-                $rc['timeslots'] = $rc['schedule'][$args['schedule_id']]['divisions'][$args['division_id']]['timeslots'];
+                $rsp['timeslots'] = $rsp['schedule'][$args['schedule_id']]['divisions'][$args['division_id']]['timeslots'];
             }
         }
         foreach(['sections', 'categories', 'classes', 'schedule', 'divisions', 'timeslots', 'teachers', 'competitors', 'accompanists', 'adjudicators'] as $s) {
-            if( isset($rc[$s]) ) {
-                $rc[$s] = array_values($rc[$s]);
+            if( isset($rsp[$s]) ) {
+                $rsp[$s] = array_values($rsp[$s]);
             }
         }
         //
         // Sort the objects
         //
-        uasort($rc['message']['objects'], function($a, $b) {
+        uasort($rsp['message']['objects'], function($a, $b) {
             if( $a['seq'] == $b['seq'] ) {
                 return strcmp($a['label'], $b['label']);
             }
             return $a['seq'] < $b['seq'] ? -1 : 1;
             });
-        $rc['message']['objects'] = array_values($rc['message']['objects']);
+        $rsp['message']['objects'] = array_values($rsp['message']['objects']);
 
         
-        $rc['message']['send'] = 'no';
-        if( $rc['message']['status'] == '10' 
-            && ($rc['message']['num_competitors'] > 0 
-                || $rc['message']['num_teachers'] > 0 
-                || $rc['message']['num_accompanists'] > 0
-                || $rc['message']['num_adjudicators'] > 0
+        $rsp['message']['send'] = 'no';
+        if( $rsp['message']['status'] == '10' 
+            && ($rsp['message']['num_competitors'] > 0 
+                || $rsp['message']['num_teachers'] > 0 
+                || $rsp['message']['num_accompanists'] > 0
+                || $rsp['message']['num_adjudicators'] > 0
                 )
             ) {
-            $rc['message']['send'] = 'yes';
+            $rsp['message']['send'] = 'yes';
         }
-
 
         // 
         // Sort included/added to top when mail already sent/scheduled
         //
-        if( $rc['message']['status'] > 10 ) {
-            if( isset($rc['teachers']) ) {
-                foreach($rc['teachers'] as $tid => $teacher) {
+        if( $rsp['message']['status'] > 10 ) {
+            if( isset($rsp['teachers']) ) {
+                foreach($rsp['teachers'] as $tid => $teacher) {
                     if( !isset($teacher['added']) && !isset($teacher['included']) && !isset($teacher['students']) ) {
-                        unset($rc['teachers'][$tid]);
+                        unset($rsp['teachers'][$tid]);
                     }
                 }
             }
-            if( isset($rc['competitors']) ) {
-                foreach($rc['competitors'] as $cid => $competitor) {
+            if( isset($rsp['competitors']) ) {
+                foreach($rsp['competitors'] as $cid => $competitor) {
                     if( !isset($competitor['added']) && !isset($competitor['included']) ) {
-                        unset($rc['competitors'][$cid]);
+                        unset($rsp['competitors'][$cid]);
                     }
                 }
             }
         } else {
-            if( isset($rc['teachers']) ) {
-                uasort($rc['teachers'], function($a, $b) {
+            if( isset($rsp['teachers']) ) {
+                uasort($rsp['teachers'], function($a, $b) {
                     if( isset($a['added']) && isset($b['added']) ) {
                         return strcmp($a['name'], $b['name']);
                     } elseif( isset($a['added']) ) {
@@ -264,10 +285,10 @@ function ciniki_musicfestivals_messageGet($ciniki) {
                     }
                     return strcmp($a['name'], $b['name']);
                 });
-                $rc['teachers'] = array_values($rc['teachers']);
+                $rsp['teachers'] = array_values($rsp['teachers']);
             }
-            if( isset($rc['competitors']) ) {
-                uasort($rc['competitors'], function($a, $b) {
+            if( isset($rsp['competitors']) ) {
+                uasort($rsp['competitors'], function($a, $b) {
                     if( isset($a['added']) && isset($b['added']) ) {
                         return strcmp($a['name'], $b['name']);
                     } elseif( isset($a['added']) ) {
@@ -286,14 +307,31 @@ function ciniki_musicfestivals_messageGet($ciniki) {
                     }
                     return strcmp($a['name'], $b['name']);
                 });
-                $rc['competitors'] = array_values($rc['competitors']);
+                $rsp['competitors'] = array_values($rsp['competitors']);
             }
         }
-
-        return $rc;
-
     }
 
-    return array('stat'=>'ok', 'message'=>$message);
+    //
+    // Get the list of templates
+    //
+    $strsql = "SELECT messages.id, "
+        . "messages.subject "
+        . "FROM ciniki_musicfestival_messages AS messages "
+        . "WHERE messages.festival_id = '" . ciniki_core_dbQuote($ciniki, $rsp['message']['festival_id']) . "' "
+        . "AND messages.status = 5 "
+        . "AND messages.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "ORDER BY messages.subject "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'templates', 'fname'=>'id', 'fields'=>array('id', 'subject')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1068', 'msg'=>'Unable to load templates', 'err'=>$rc['err']));
+    }
+    $rsp['templates'] = isset($rc['templates']) ? array_values($rc['templates']) : array();
+
+    return $rsp;
 }
 ?>

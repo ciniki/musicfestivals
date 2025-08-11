@@ -21,6 +21,7 @@ function ciniki_musicfestivals_messageAdd(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
+        'template_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Template'),
         'subject'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Subject'),
         'status'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Status'),
         'mtype'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Message Type'),
@@ -53,6 +54,41 @@ function ciniki_musicfestivals_messageAdd(&$ciniki) {
     }
 
     //
+    // Get the tenant storage directory
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+    $rc = ciniki_tenants_hooks_storageDir($ciniki, $args['tnid'], array());
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $tenant_storage_dir = $rc['storage_dir'];
+
+    //
+    // Get template
+    //
+    if( isset($args['template_id']) && $args['template_id'] > 0 ) {
+        $strsql = "SELECT messages.id, "
+            . "messages.uuid, "
+            . "messages.subject, "
+            . "messages.content, "
+            . "messages.files "
+            . "FROM ciniki_musicfestival_messages AS messages "
+            . "WHERE messages.id = '" . ciniki_core_dbQuote($ciniki, $args['template_id']) . "' "
+            . "AND messages.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'message');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1069', 'msg'=>'Unable to load message', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['message']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1070', 'msg'=>'Unable to find requested message'));
+        }
+        $template = $rc['message'];
+        $args['subject'] = $template['subject'];
+        $args['content'] = $template['content'];
+    }
+
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
@@ -62,6 +98,48 @@ function ciniki_musicfestivals_messageAdd(&$ciniki) {
     $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.musicfestivals');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
+    }
+
+    //
+    // Get a UUID for use in permalink
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUUID');
+    $rc = ciniki_core_dbUUID($ciniki, 'ciniki.musicfestivals');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1071', 'msg'=>'Unable to get a new UUID', 'err'=>$rc['err']));
+    }
+    $args['uuid'] = $rc['uuid'];
+
+    //
+    // Check if files from template need to be added
+    //
+    if( isset($args['template_id']) && $args['template_id'] > 0 && isset($template['files']) && $template['files'] != '' ) {
+        $template_files = unserialize($template['files']);
+        $files = [];
+
+        foreach($template_files as $fid => $file) {
+            $template_filename = $tenant_storage_dir . '/ciniki.musicfestivals/messages/' 
+                . $template['uuid'][0] . '/' . $template['uuid'] . '_' . $file['filename'];
+            if( is_file($template_filename) ) {
+                $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/messages/' 
+                    . $args['uuid'][0] . '/' . $args['uuid'] . '_' . $file['filename'];
+                if( !is_dir(dirname($storage_filename)) ) {
+                    if( !mkdir(dirname($storage_filename), 0700, true) ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1072', 'msg'=>'Unable to add file'));
+                    }
+                }
+                
+                if( !copy($template_filename, $storage_filename) ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1073', 'msg'=>'Unable to add file'));
+                }
+
+                //
+                // Add file to message
+                //
+                $files[] = ['filename' => $file['filename']];
+            }
+        }
+        $args['files'] = serialize($files);
     }
 
     //
