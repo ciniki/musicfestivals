@@ -57,7 +57,7 @@ function ciniki_musicfestivals_messageFileDelete(&$ciniki) {
     }
     $message = $rc['message'];
 
-    if( $message['status'] != 10 ) {
+    if( $message['status'] > 10 ) {
         return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.568', 'msg'=>'Message must be in Draft Mode to add files.'));
     }
 
