@@ -69,7 +69,7 @@ function ciniki_musicfestivals_syllabusDelete(&$ciniki) {
     }
     if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
         $count = $rc['num']['items'];
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.29', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' sections' . ($count==1?'':'s') . ' in that syllabus.'));
+        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.29', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' section' . ($count==1?'':'s') . ' in that syllabus, it cannot be removed.'));
     }
 
     //
