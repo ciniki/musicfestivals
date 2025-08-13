@@ -6122,7 +6122,7 @@ function ciniki_musicfestivals_main() {
         if( cb == null ) { cb = 'M.ciniki_musicfestivals_main.syllabus.close();'; }
         if( !this.checkForm() ) { return false; }
         this.updateRules();
-        var newrules = JSON.stringify(this.rules);
+        var newrules = encodeURIComponent(JSON.stringify(this.rules));
         if( this.syllabus_id > 0 ) {
             var c = this.serializeForm('no');
             if( newrules != this.data.rules ) {
