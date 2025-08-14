@@ -417,7 +417,6 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         && isset($syllabus['rules']) && $syllabus['rules'] != '' && $syllabus['rules'] != '{}'
         ) {
         $pdf->AddPage();
-        $sections = [];
         $start = 1;
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'rulesProcess');
         $rc = ciniki_musicfestivals_rulesProcess($ciniki, $tnid, $syllabus['rules']);
