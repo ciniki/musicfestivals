@@ -62,17 +62,40 @@ function ciniki_musicfestivals_wng_rulesProcess(&$ciniki, $tnid, &$request, $sec
     }
     $syllabus = $rc['syllabus'];
 
-    if( isset($s['title']) && $s['title'] != '' ) {
-        $blocks[] = [
-            'type' => 'title',
-            'title' => $s['title'],
-            ];
+    if( $syllabus['rules'] != '' && $syllabus['rules'] != '{}' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'rulesProcess');
+        $rc = ciniki_musicfestivals_rulesProcess($ciniki, $tnid, $syllabus['rules']);    
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1078', 'msg'=>"No rules specified"));
+        }
+        $rules = $rc['rules'];
+        if( isset($rules['intro']) && $rules['intro'] != '') {
+            $blocks[] = [
+                'type' => 'text',
+                'level' => $section['sequence'] == 1 ? 1 : 2,
+                'title' => isset($rules['title']) ? $rules['title'] : '',
+                'content' => $rules['intro'],
+                ];
+        } elseif( isset($rules['title']) && $rules['title'] != '' ) {
+            $blocks[] = [
+                'type' => 'title',
+                'level' => $section['sequence'] == 1 ? 1 : 2,
+                'title' => $rules['title'],
+                ];
+        }
+        foreach($rules['sections'] as $section) {
+            $blocks[] = [
+                'type' => 'list',
+                'title' => $section['title'],
+                'level' => 2,
+                'content' => $section['intro'],
+                'class' => 'section-' . ciniki_core_makePermalink($ciniki, $section['title']),
+                'list-start' => $section['start'],
+                'list-type' => isset($section['list-type']) ? $section['list-type'] : '1',
+                'items' => $section['items'],
+                ];
+        }
     }
-
-    $blocks[] = [
-        'type' => 'text',
-        'content' => $syllabus['rules'],
-        ];
 
     return array('stat'=>'ok', 'blocks'=>$blocks);
 }

@@ -5213,7 +5213,7 @@ function ciniki_musicfestivals_main() {
                     'top':'Yes',
 //                    'bottom':'Bottom',
                     }},
-                'syllabus-rules-title':{'label':'Rules & Regulations Title', 'type':'text'},
+//                'syllabus-rules-title':{'label':'Rules & Regulations Title', 'type':'text'},
 /*
                 // Don't know which option is better
                 'syllabus-pdf-prices':{'label':'Show Earlybird Prices', 'type':'toggle', 'default':'either', 'toggles':{
@@ -5839,8 +5839,12 @@ function ciniki_musicfestivals_main() {
                 'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x0a) == 0x0a ? 'yes' : 'no';},
                 }, */
             }},
-        'rules':{'label':'Rules & Regulations', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
-            'noData':'No rules or regulations',
+        '_intro':{'label':'Rules & Regulations', 'aside':'yes', 'fields':{
+            'intro_title':{'label':'Title', 'type':'text'},
+            'intro_content':{'label':'Intro', 'type':'htmlarea'},
+            }},
+        'rules':{'label':'Sections', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
+            'noData':'No sections',
             'seqDrop':function(e,from,to){
                 var p = M.ciniki_musicfestivals_main.syllabus;
                 p.updateRules();
@@ -5934,6 +5938,12 @@ function ciniki_musicfestivals_main() {
         return this.data[s];
     }
     this.syllabus.fieldValue = function(s, i, d) { 
+        if( s == '_intro' ) {
+            switch(i) {
+                case 'intro_title': return this.rules.title;
+                case 'intro_content': return this.rules.intro;
+            }
+        }
         if( s == 'rules_section' ) {
             if( this.rules_section >= 0 ) {
                 return this.rules.sections[this.rules_section][i];
@@ -5995,8 +6005,8 @@ function ciniki_musicfestivals_main() {
         this.updateRules();
         this.rules_section = this.rules.sections.length;
         this.rules.sections[this.rules_section] = {
-            'title':'', 
-            'intro':'', 
+            'title':this.formFieldValue(this.sections.intro.fields.title, 'title'), 
+            'intro':this.formFieldValue(this.sections.intro.fields.intro, 'intro'), 
             'list-type':'1',
             'start':'previous',
             'items':[],
@@ -6077,6 +6087,8 @@ function ciniki_musicfestivals_main() {
         this.refreshSection('rules_items');
     }
     this.syllabus.updateRules = function() {
+        this.rules.title = this.formFieldValue(this.sections._intro.fields.intro_title, 'intro_title');
+        this.rules.intro = this.formFieldValue(this.sections._intro.fields.intro_content, 'intro_content');
         if( this.rules_section >= 0 ) {
             var fields = ['title', 'intro', 'list-type', 'start'];
             for(var i in fields) {

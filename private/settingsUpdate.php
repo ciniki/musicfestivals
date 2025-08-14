@@ -45,7 +45,6 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
     //
     $valid_settings = array(
         'syllabus-rules-include', 
-        'syllabus-rules-title', 
         'program-separate-classes',
         'program-class-format',
         'schedule-division-header-format',

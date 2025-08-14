@@ -414,15 +414,47 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
     //
 
     if( isset($festival['syllabus-rules-include']) && $festival['syllabus-rules-include'] == 'top' 
-        && isset($syllabus['rules']) && $syllabus['rules'] != '' 
+        && isset($syllabus['rules']) && $syllabus['rules'] != '' && $syllabus['rules'] != '{}'
         ) {
         $pdf->AddPage();
-        if( isset($festival['syllabus-rules-title']) && $festival['syllabus-rules-title'] != '' ) {
+        $sections = [];
+        $start = 1;
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'rulesProcess');
+        $rc = ciniki_musicfestivals_rulesProcess($ciniki, $tnid, $syllabus['rules']);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $rules = $rc['rules'];
+
+        if( isset($rules['title']) && $rules['title'] != '' ) {
             $pdf->SetFont('', 'B', '18');
-            $pdf->MultiCell(180, 5, $festival['syllabus-rules-title'], 0, 'L', 0, 1);
+            $pdf->MultiCell(180, 5, $rules['title'], 0, 'L', 0, 1);
         }
         $pdf->SetFont('', '', '12');
-        $pdf->writeHTMLCell(180, '', '', '', $syllabus['rules'], 0, 1, 0, true, 'L', true);
+        if( isset($rules['intro']) && $rules['intro'] != '' ) {
+            $pdf->writeHTMLCell(180, '', '', '', $rules['intro'], 0, 1, 0, true, 'L', true);
+        }
+
+        foreach($rules['sections'] as $section) {
+            if( isset($section['title']) && $section['title'] != '' ) {
+                $pdf->SetFont('', 'B', '14');
+                $pdf->MultiCell(180, 5, $section['title'], 0, 'L', 0, 1);
+            }
+            $pdf->SetFont('', '', '12');
+            if( isset($section['intro']) && $section['intro'] != '' ) {
+                $pdf->writeHTMLCell(180, '', '', '', $section['intro'], 0, 1, 0, true, 'L', true);
+            }
+            $number = $section['start'];
+            if( isset($section['items']) ) {
+                foreach($section['items'] as $item) {
+                    if( isset($item['content']) ) {
+                        $pdf->MultiCell(10, 5, $item['bullet'], 0, 'R', 0, 0);
+                        $pdf->writeHTMLCell(170, '', '', '', $item['content'], 0, 1, 0, true, 'L', true);
+                    }
+                    $number++;
+                }
+            }
+        }
     }
 
     //
