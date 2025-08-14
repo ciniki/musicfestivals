@@ -6005,8 +6005,8 @@ function ciniki_musicfestivals_main() {
         this.updateRules();
         this.rules_section = this.rules.sections.length;
         this.rules.sections[this.rules_section] = {
-            'title':this.formFieldValue(this.sections.intro.fields.title, 'title'), 
-            'intro':this.formFieldValue(this.sections.intro.fields.intro, 'intro'), 
+            'title':'', // this.formFieldValue(this.sections._intro.fields.title, 'title'), 
+            'intro':'', //this.formFieldValue(this.sections._intro.fields.intro, 'intro'), 
             'list-type':'1',
             'start':'previous',
             'items':[],
