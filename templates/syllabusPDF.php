@@ -416,6 +416,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
     if( isset($festival['syllabus-rules-include']) && $festival['syllabus-rules-include'] == 'top' 
         && isset($syllabus['rules']) && $syllabus['rules'] != '' && $syllabus['rules'] != '{}'
         ) {
+        $pdf->SetCellPadding(1);
         $pdf->AddPage();
         $start = 1;
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'rulesProcess');
@@ -429,17 +430,17 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             $pdf->SetFont('', 'B', '18');
             $pdf->MultiCell(180, 5, $rules['title'], 0, 'L', 0, 1);
         }
-        $pdf->SetFont('', '', '12');
+        $pdf->SetFont('', '', '10');
         if( isset($rules['intro']) && $rules['intro'] != '' ) {
             $pdf->writeHTMLCell(180, '', '', '', $rules['intro'], 0, 1, 0, true, 'L', true);
         }
 
         foreach($rules['sections'] as $section) {
             if( isset($section['title']) && $section['title'] != '' ) {
-                $pdf->SetFont('', 'B', '14');
+                $pdf->SetFont('', 'B', '12');
                 $pdf->MultiCell(180, 5, $section['title'], 0, 'L', 0, 1);
             }
-            $pdf->SetFont('', '', '12');
+            $pdf->SetFont('', '', '10');
             if( isset($section['intro']) && $section['intro'] != '' ) {
                 $pdf->writeHTMLCell(180, '', '', '', $section['intro'], 0, 1, 0, true, 'L', true);
             }
@@ -456,6 +457,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         }
     }
 
+    $pdf->SetCellPadding(2);
     //
     // Go through the sections, categories and classes
     //
