@@ -6118,8 +6118,8 @@ function ciniki_musicfestivals_main() {
                         cur_number = parseInt(this.rules.sections[i].start);
                     }
                     if( this.rules.sections[i].items != null ) {
-                        if( this.rules.sections[i].items[i] != null ) {
-                            for(var j in this.rules.sections[i].items) {
+                        for(var j in this.rules.sections[i].items) {
+                            if( this.rules.sections[i].items[j] != null ) {
                                 this.rules.sections[i].items[j].number = cur_number++;
                             }
                         }
@@ -6147,7 +6147,6 @@ function ciniki_musicfestivals_main() {
                 p.rules = JSON.parse(rsp.syllabus.rules);
             }
             p.renumberItems();
-
             p.festival_id = rsp.syllabus.festival_id;
             p.refresh();
             p.show(cb);
@@ -6161,8 +6160,6 @@ function ciniki_musicfestivals_main() {
         if( this.syllabus_id > 0 ) {
             var c = this.serializeForm('no');
             if( newrules != this.data.rules ) {
-                console.log('update rules');
-                console.log(this.rules);
                 c += '&rules=' + newrules;
             }
             if( c != '' ) {
