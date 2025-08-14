@@ -5949,12 +5949,12 @@ function ciniki_musicfestivals_main() {
         return this.data[i]; 
     }
     this.syllabus.cellValue = function(s, i, j, d) {
-        if( s == 'rules' ) {
+        if( s == 'rules' && d != null ) {
             switch(j) {
                 case 0: return d.title;
             }
         }
-        if( s == 'rules_items' ) {
+        if( s == 'rules_items' && d != null ) {
             switch(j) {
                 case 0: return d.number;
                 case 1: return d.content;
@@ -6006,6 +6006,15 @@ function ciniki_musicfestivals_main() {
         this.show();
     }
     this.syllabus.rulesSectionDelete = function(i) {
+        // Check for a null array element
+        if( this.rules.sections[i] == null ) {
+            this.rules.sections.splice(i, 1);
+            this.renumberItems();
+            this.showHideSections(['rules_section', 'rules_items']);
+            this.refreshSections(['rules', 'rules_section', 'rules_items']);
+            this.show();
+            return true;
+        }
         var section = this.rules.sections[i];
         M.confirm('Are you sure you want to remove ' + section['title'] + '?',null,function() {
             var p = M.ciniki_musicfestivals_main.syllabus;
@@ -6013,24 +6022,34 @@ function ciniki_musicfestivals_main() {
                 p.rules_section = -1;
                 p.rules_item = -1;
             }
-            delete p.rules.sections[i];
+            p.rules.sections.splice(i, 1);
+            p.renumberItems();
             p.showHideSections(['rules_section', 'rules_items']);
             p.refreshSections(['rules', 'rules_section', 'rules_items']);
-            p.renumberItems();
             p.show();
             });
     }
     this.syllabus.rulesItemDelete = function(i) {
+        // Check for a null array element
+        if( this.rules.sections[this.rules_section]['items'][i] == null ) {
+            this.rules.sections[this.rules_section]['items'].splice(i, 1);
+            this.renumberItems();
+            this.showHideSections(['rules_item']);
+            this.refreshSections(['rules_items']);
+            this.show();
+            return true;
+        }
+        // Delete a full item
         var item = this.rules.sections[this.rules_section]['items'][i];
         M.confirm('Are you sure you want to remove item ' + item.number + '?',null,function() {
             var p = M.ciniki_musicfestivals_main.syllabus;
             if( p.rules_item == i ) {
                 p.rules_item = -1;
             }
-            delete p.rules.sections[p.rules_section]['items'][i];
+            p.rules.sections[p.rules_section]['items'].splice(i, 1);
+            p.renumberItems();
             p.showHideSections(['rules_item']);
             p.refreshSections(['rules_items']);
-            p.renumberItems();
             p.show();
             });
     }
@@ -6082,12 +6101,16 @@ function ciniki_musicfestivals_main() {
         var cur_number = 1;
         if( this.rules.sections != null ) {
             for(var i in this.rules.sections) {
-                if( this.rules.sections[i].start != null && this.rules.sections[i].start != 'previous' ) {
-                    cur_number = parseInt(this.rules.sections[i].start);
-                }
-                if( this.rules.sections[i].items != null ) {
-                    for(var j in this.rules.sections[i].items) {
-                        this.rules.sections[i].items[j].number = cur_number++;
+                if( this.rules.sections[i] != null ) {
+                    if( this.rules.sections[i].start != null && this.rules.sections[i].start != 'previous' ) {
+                        cur_number = parseInt(this.rules.sections[i].start);
+                    }
+                    if( this.rules.sections[i].items != null ) {
+                        if( this.rules.sections[i].items[i] != null ) {
+                            for(var j in this.rules.sections[i].items) {
+                                this.rules.sections[i].items[j].number = cur_number++;
+                            }
+                        }
                     }
                 }
             }
@@ -6126,6 +6149,8 @@ function ciniki_musicfestivals_main() {
         if( this.syllabus_id > 0 ) {
             var c = this.serializeForm('no');
             if( newrules != this.data.rules ) {
+                console.log('update rules');
+                console.log(this.rules);
                 c += '&rules=' + newrules;
             }
             if( c != '' ) {
