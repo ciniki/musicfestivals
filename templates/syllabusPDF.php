@@ -442,6 +442,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             }
             $pdf->SetFont('', '', '10');
             if( isset($section['intro']) && $section['intro'] != '' ) {
+//                $pdf->MultiCell(10, 5, '', 0, 'R', 0, 0);
                 $pdf->writeHTMLCell(180, '', '', '', $section['intro'], 0, 1, 0, true, 'L', true);
             }
             $number = $section['start'];
