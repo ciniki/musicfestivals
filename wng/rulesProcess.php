@@ -84,16 +84,25 @@ function ciniki_musicfestivals_wng_rulesProcess(&$ciniki, $tnid, &$request, $sec
                 ];
         }
         foreach($rules['sections'] as $section) {
-            $blocks[] = [
-                'type' => 'list',
-                'title' => $section['title'],
-                'level' => 2,
-                'content' => $section['intro'],
-                'class' => 'section-' . ciniki_core_makePermalink($ciniki, $section['title']),
-                'list-start' => $section['start'],
-                'list-type' => isset($section['list-type']) ? $section['list-type'] : '1',
-                'items' => $section['items'],
-                ];
+            if( isset($section['items']) && count($section['items']) > 0 ) {
+                $blocks[] = [
+                    'type' => 'list',
+                    'title' => $section['title'],
+                    'level' => 2,
+                    'content' => $section['intro'],
+                    'class' => 'section-' . ciniki_core_makePermalink($ciniki, $section['title']),
+                    'list-start' => $section['start'],
+                    'list-type' => isset($section['list-type']) ? $section['list-type'] : '1',
+                    'items' => $section['items'],
+                    ];
+            } elseif( isset($section['intro']) && $section['intro'] ) {
+                $blocks[] = [
+                    'type' => 'text',
+                    'level' => 2,
+                    'title' => isset($section['title']) ? $section['title'] : '',
+                    'content' => $section['intro'],
+                    ];
+            }
         }
     }
 
