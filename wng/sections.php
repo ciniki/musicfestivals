@@ -1140,7 +1140,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         'name' => 'Rules & Regulations',
         'module' => 'Music Festivals',
         'settings' => array(
-            'title' => array('label'=>'Title', 'type'=>'text'),
+//            'title' => array('label'=>'Title', 'type'=>'text'),
             'syllabus-id' => array('label'=>'Festival', 'type'=>'select', 
                 'complex_options'=>array('value'=>'id', 'name'=>'name'),
                 'options'=>$syllabuses,
