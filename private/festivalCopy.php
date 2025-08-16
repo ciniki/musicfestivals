@@ -110,33 +110,12 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
         }
     }
 
-// No long restrict, copy all settings
-/*
-    $setting_keys = array(
-        'registration-parent-msg',
-        'registration-teacher-msg',
-        'registration-adult-msg',
-        'competitor-parent-msg',
-        'competitor-teacher-msg',
-        'competitor-adult-msg',
-        'competitor-group-parent-msg',
-        'competitor-group-teacher-msg',
-        'competitor-group-adult-msg',
-        );
-    $update_args = array();
-    foreach($setting_keys as $k) {
-        if( isset($old_festival['settings'][$k]['detail_value']) && $old_festival['settings'][$k]['detail_value'] != '' 
-            && (!isset($new_festival['settings'][$k]['detail_value']) || $new_festival['settings'][$k]['detail_value'] == '') 
-            ) {
-            $update_args[$k] = $old_festival['settings'][$k]['detail_value'];
-        }
-    } 
-*/
     $update_args = [];
     foreach($old_festival['settings'] as $k => $setting) {
         if( $setting['detail_value'] != '' 
             && (!isset($new_festival['settings'][$k]['detail_value']) || $new_festival['settings'][$k]['detail_value'] == '') 
             ) {
+            error_log("$k => " . $setting['detail_value']);
             $update_args[$k] = $setting['detail_value'];
         }
     } 
