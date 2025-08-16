@@ -5073,6 +5073,7 @@ function ciniki_musicfestivals_main() {
                     'no':'No',
                     'yes':'Yes',
                     }},
+                'comments-intro-online':{'label':'Online Intro', 'type':'htmlarea'},
             }},
         '_schedule_pdf':{'label':'Schedule PDF Options', 
             // These options can be changed on the download screen

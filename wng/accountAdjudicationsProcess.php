@@ -779,6 +779,16 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
 //            );
 
     } else {
+
+        if( isset($festival['comments-intro-online']) && $festival['comments-intro-online'] != '' ) {
+            $blocks[] = [
+                'type' => 'text',
+                'title' => 'Adjudications',
+                'level' => 2,
+                'content' => $festival['comments-intro-online'],
+                ];
+        }
+        
         //
         // Setup the open button and status
         //
