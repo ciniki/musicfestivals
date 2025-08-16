@@ -5037,11 +5037,11 @@ function ciniki_musicfestivals_main() {
         '_adjudications_pdf':{'label':'Comments PDF', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'adjudications' ? 'yes' : 'hidden'; },
             'fields':{
-                'comments-header-adjudicator':{'label':'PDF Header Adjudicator Name', 'type':'toggle', 'separator':'yes', 'toggles':{
+                'comments-header-adjudicator':{'label':'PDF Header Adjudicator Name', 'type':'toggle', 'separator':'yes', 'default':'yes', 'toggles':{
                     'no':'No',
                     'yes':'Yes',
                     }},
-                'comments-timeslot-datetime':{'label':'PDF Timeslot Date/Time', 'type':'toggle', 'toggles':{
+                'comments-timeslot-datetime':{'label':'PDF Timeslot Date/Time', 'type':'toggle', 'default':'yes', 'toggles':{
                     'no':'No',
                     'yes':'Yes',
                     }},

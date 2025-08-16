@@ -516,7 +516,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
 
                 foreach($timeslot['registrations'] as $reg) {
                     $pdf->SetAutoPageBreak(true, PDF_MARGIN_FOOTER+20);
-                    if( isset($festival['comments-header-adjudicator']) && $festival['comments-header-adjudicator'] == 'yes'
+                    if( (!isset($festival['comments-header-adjudicator']) || $festival['comments-header-adjudicator'] == 'yes')
                         && isset($adjudicators[$reg['adjudicator_id']]['name'])
                         && $adjudicators[$reg['adjudicator_id']]['name'] != '' 
                         ) {
@@ -533,7 +533,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                     // Check if timeslot date/time to be displayed
                     //
 //                    if( ($festival['flags']&0x40) == 0x40 
-                    if( isset($festival['comments-timeslot-datetime']) && $festival['comments-timeslot-datetime'] == 'yes'
+                    if( (!isset($festival['comments-timeslot-datetime']) || $festival['comments-timeslot-datetime'] == 'yes')
                         && $reg['timeslot_time'] != '' && $reg['timeslot_date'] != ''
                         && $reg['participation'] != 1
                         ) {
