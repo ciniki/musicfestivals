@@ -5360,7 +5360,7 @@ function ciniki_musicfestivals_main() {
                     }},
             }},
         '_provincials_statuses':{'label':'Provincials Status', 
-            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' && !M.modFlagOn('ciniki.musicfestivals', 0x010000) ? 'yes' : 'hidden'; },
             'fields':{
                 'provincials-status-r30-colour':{'label':'Recommended', 'type':'colour'},
                 'provincials-status-r35-colour':{'label':'Invited', 'type':'colour'},
