@@ -4947,134 +4947,6 @@ function ciniki_musicfestivals_main() {
             'fields':{
                 'document_footer_msg':{'label':'', 'hidelabel':'yes', 'type':'text'},
             }},
-        '_adjudications_general':{'label':'Adjudications', 
-            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'adjudications' ? 'yes' : 'hidden'; },
-            'fields':{
-//                'flags6':{'label':'Header Adjudicator Name', 'type':'flagtoggle', 'default':'off', 'bit':0x20, 'field':'flags'},
-//                'flags7':{'label':'Timeslot Date/Time', 'type':'flagtoggle', 'default':'off', 'bit':0x40, 'field':'flags'},
-//                'comments_grade_label':{'label':'Grade Label', 'default':'Mark', 'type':'text'},
-//                'comments_footer_msg':{'label':'Footer Message', 'type':'text'},
-                'comments-include-pronouns':{'label':'Include Pronouns', 'type':'toggle', 'default':'no', 'toggles':{
-                    'no':'No',
-                    'yes':'Yes',
-                    }},
-                'comments-class-format':{'label':'Class Format', 'type':'select', 'default':'default', 'options':{
-                    'default':'Class', 
-                    'section-category-class':'Section - Category - Class',
-                    'category-class':'Category - Class',
-                    'code-section-category-class':'Code - Section - Category - Class',
-                    'code-category-class':'Code - Category - Class',
-                    'code-class':'Code - Class',
-                    }},
-            }},
-        '_adjudications_mark':{'label':'Mark', 
-            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'adjudications' ? 'yes' : 'hidden'; },
-            'fields':{
-                'comments-mark-ui':{'label':'Mark Field', 'type':'toggle', 'default':'no', 'separator':'yes', 'toggles':{
-                    'no':'No',
-                    'yes':'Yes',
-                    }},
-                'comments-mark-label':{'label':'Mark Label', 'default':'Mark', 'type':'text'},
-                'comments-mark-adjudicator':{'label':'Adjudicator Form', 'type':'toggle', 'default':'no', 'toggles':{
-                    'no':'No',
-                    'yes':'Yes',
-                    }},
-// FIXME: Currently competitors can't see mark or placement online, they must download PDF
-//                'comments-mark-competitor':{'label':'Competitor Account', 'type':'toggle', 'default':'no', 'toggles':{
-//                    'no':'No',
-//                    'yes':'Yes',
-//                    }},
-                'comments-mark-pdf':{'label':'On Comments PDF', 'type':'toggle', 'default':'no', 'toggles':{
-                    'no':'No',
-                    'yes':'Yes',
-                    }},
-            }},
-        '_adjudications_placement':{'label':'Placement', 
-            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'adjudications' ? 'yes' : 'hidden'; },
-            'fields':{
-                'comments-placement-ui':{'label':'Use Placement Field', 'type':'toggle', 'default':'no', 'separator':'yes', 'toggles':{
-                    'no':'No',
-                    'yes':'Yes',
-                    }},
-                'comments-placement-label':{'label':'Placement Label', 'default':'Mark', 'type':'text'},
-                'comments-placement-autofill':{'label':'Placement Autofill', 'default':'', 'type':'text'},
-                'comments-placement-options':{'label':'Dropdown Options', 'default':'', 'type':'text'},
-                'comments-placement-adjudicator':{'label':'Adjudicator Form', 'type':'toggle', 'default':'no', 'toggles':{
-                    'no':'No',
-                    'yes':'Yes',
-                    }},
-//                'comments-placement-competitor':{'label':'Competitor Account', 'type':'toggle', 'default':'no', 'toggles':{
-//                    'no':'No',
-//                    'yes':'Yes',
-//                    }},
-                'comments-placement-pdf':{'label':'On Comments PDF', 'default':'yes', 'type':'toggle', 'default':'no', 'toggles':{
-                    'no':'No',
-                    'yes':'Yes',
-                    }},
-            }},
-        '_adjudications_level':{'label':'Level', 
-            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'adjudications' ? 'yes' : 'hidden'; },
-            'fields':{
-                'comments-level-ui':{'label':'Use Level Field', 'type':'toggle', 'default':'no', 'separator':'yes', 'toggles':{
-                    'no':'No',
-                    'yes':'Yes',
-                    }},
-                'comments-level-label':{'label':'Level Label', 'default':'Mark', 'type':'text'},
-                'comments-level-autofill':{'label':'Level Autofill', 'default':'', 'type':'text'},
-                'comments-level-adjudicator':{'label':'Adjudicator Form', 'type':'toggle', 'default':'no', 'toggles':{
-                    'no':'No',
-                    'yes':'Yes',
-                    }},
-//                'comments-level-competitor':{'label':'Competitor Account', 'type':'toggle', 'default':'no', 'toggles':{
-//                    'no':'No',
-//                    'yes':'Yes',
-//                    }},
-                'comments-level-pdf':{'label':'On Comments PDF', 'default':'yes', 'type':'toggle', 'default':'no', 'toggles':{
-                    'no':'No',
-                    'yes':'Yes',
-                    }},
-            }},
-        '_adjudications_pdf':{'label':'Comments PDF', 
-            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'adjudications' ? 'yes' : 'hidden'; },
-            'fields':{
-                'comments-header-adjudicator':{'label':'PDF Header Adjudicator Name', 'type':'toggle', 'separator':'yes', 'default':'yes', 'toggles':{
-                    'no':'No',
-                    'yes':'Yes',
-                    }},
-                'comments-timeslot-datetime':{'label':'PDF Timeslot Date/Time', 'type':'toggle', 'default':'yes', 'toggles':{
-                    'no':'No',
-                    'yes':'Yes',
-                    }},
-                'comments-adjudicator-signature':{'label':'Adjudicator Signature', 'type':'toggle', 'default':'no', 'toggles':{
-                    'no':'No',
-                    'filledout':'Filled Out',
-                    'always':'Always',
-                    }},
-                'comments-adjudicator-fontsig':{'label':'Adjudicator Font Signature', 'type':'toggle', 'default':'no', 'toggles':{
-                    'no':'No',
-                    'filledout':'Filled Out',
-                    'always':'Always',
-                    }},
-                'comments-footer-msg':{'label':'PDF Footer Message', 'type':'text'},
-                'comments-paper-size':{'label':'Paper Size', 'type':'toggle', 'default':'letter', 'toggles':{
-                    'letter':'Letter',
-                    'legal':'Legal',
-                    }},
-//                'comments_footer_msg':{'label':'OLD Footer Message', 'type':'text', 'editable':'no'},
-                'comments-sorting':{'label':'Sorting', 'type':'toggle', 'default':'schedule', 'toggles':{
-                    'schedule':'Schedule',
-                    'byclass':'By Class',
-                    }},
-            }},
-        '_adjudications_online':{'label':'Online Adjudications', 
-            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'adjudications' ? 'yes' : 'hidden'; },
-            'fields':{
-                'comments-live-adjudication-online':{'label':'Live Online Adjudications', 'type':'toggle', 'default':'no', 'toggles':{
-                    'no':'No',
-                    'yes':'Yes',
-                    }},
-                'comments-intro-online':{'label':'Online Intro', 'type':'htmlarea'},
-            }},
         '_schedule_pdf':{'label':'Schedule PDF Options', 
             // These options can be changed on the download screen
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'documents' ? 'yes' : 'hidden'; },
@@ -5483,6 +5355,138 @@ function ciniki_musicfestivals_main() {
                     'visible':function() { return M.ciniki_musicfestivals_main.edit.formValue('waiver-name-status') != 'disabled' ? 'yes' : 'no'; },
                     },
             }},
+        '_adjudications_options':{'label':'Adjudications', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'adjudications' ? 'yes' : 'hidden'; },
+            'fields':{
+//                'flags6':{'label':'Header Adjudicator Name', 'type':'flagtoggle', 'default':'off', 'bit':0x20, 'field':'flags'},
+//                'flags7':{'label':'Timeslot Date/Time', 'type':'flagtoggle', 'default':'off', 'bit':0x40, 'field':'flags'},
+//                'comments_grade_label':{'label':'Grade Label', 'default':'Mark', 'type':'text'},
+//                'comments_footer_msg':{'label':'Footer Message', 'type':'text'},
+                'comments-include-pronouns':{'label':'Include Pronouns', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+                'comments-class-format':{'label':'Class Format', 'type':'select', 'default':'default', 'options':{
+                    'default':'Class', 
+                    'section-category-class':'Section - Category - Class',
+                    'category-class':'Category - Class',
+                    'code-section-category-class':'Code - Section - Category - Class',
+                    'code-category-class':'Code - Category - Class',
+                    'code-class':'Code - Class',
+                    }},
+            }},
+        '_adjudications_mark':{'label':'Mark', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'adjudications' ? 'yes' : 'hidden'; },
+            'fields':{
+                'comments-mark-ui':{'label':'Mark Field', 'type':'toggle', 'default':'no', 'separator':'yes', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+                'comments-mark-label':{'label':'Mark Label', 'default':'Mark', 'type':'text'},
+                'comments-mark-adjudicator':{'label':'Adjudicator Form', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+// FIXME: Currently competitors can't see mark or placement online, they must download PDF
+//                'comments-mark-competitor':{'label':'Competitor Account', 'type':'toggle', 'default':'no', 'toggles':{
+//                    'no':'No',
+//                    'yes':'Yes',
+//                    }},
+                'comments-mark-pdf':{'label':'On Comments PDF', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+            }},
+        '_adjudications_placement':{'label':'Placement', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'adjudications' ? 'yes' : 'hidden'; },
+            'fields':{
+                'comments-placement-ui':{'label':'Use Placement Field', 'type':'toggle', 'default':'no', 'separator':'yes', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+                'comments-placement-label':{'label':'Placement Label', 'default':'Mark', 'type':'text'},
+                'comments-placement-autofill':{'label':'Placement Autofill', 'default':'', 'type':'text'},
+                'comments-placement-options':{'label':'Dropdown Options', 'default':'', 'type':'text'},
+                'comments-placement-adjudicator':{'label':'Adjudicator Form', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+//                'comments-placement-competitor':{'label':'Competitor Account', 'type':'toggle', 'default':'no', 'toggles':{
+//                    'no':'No',
+//                    'yes':'Yes',
+//                    }},
+                'comments-placement-pdf':{'label':'On Comments PDF', 'default':'yes', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+            }},
+        '_adjudications_level':{'label':'Level', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'adjudications' ? 'yes' : 'hidden'; },
+            'fields':{
+                'comments-level-ui':{'label':'Use Level Field', 'type':'toggle', 'default':'no', 'separator':'yes', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+                'comments-level-label':{'label':'Level Label', 'default':'Mark', 'type':'text'},
+                'comments-level-autofill':{'label':'Level Autofill', 'default':'', 'type':'text'},
+                'comments-level-adjudicator':{'label':'Adjudicator Form', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+//                'comments-level-competitor':{'label':'Competitor Account', 'type':'toggle', 'default':'no', 'toggles':{
+//                    'no':'No',
+//                    'yes':'Yes',
+//                    }},
+                'comments-level-pdf':{'label':'On Comments PDF', 'default':'yes', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+            }},
+        '_adjudications_pdf':{'label':'Comments PDF', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'adjudications' ? 'yes' : 'hidden'; },
+            'fields':{
+                'comments-header-adjudicator':{'label':'PDF Header Adjudicator Name', 'type':'toggle', 'separator':'yes', 'default':'yes', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+                'comments-timeslot-datetime':{'label':'PDF Timeslot Date/Time', 'type':'toggle', 'default':'yes', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+                'comments-adjudicator-signature':{'label':'Adjudicator Signature', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'filledout':'Filled Out',
+                    'always':'Always',
+                    }},
+                'comments-adjudicator-fontsig':{'label':'Adjudicator Font Signature', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'filledout':'Filled Out',
+                    'always':'Always',
+                    }},
+                'comments-footer-msg':{'label':'PDF Footer Message', 'type':'text'},
+                'comments-paper-size':{'label':'Paper Size', 'type':'toggle', 'default':'letter', 'toggles':{
+                    'letter':'Letter',
+                    'legal':'Legal',
+                    }},
+//                'comments_footer_msg':{'label':'OLD Footer Message', 'type':'text', 'editable':'no'},
+                'comments-sorting':{'label':'Sorting', 'type':'toggle', 'default':'schedule', 'toggles':{
+                    'schedule':'Schedule',
+                    'byclass':'By Class',
+                    }},
+            }},
+        '_adjudications_online':{'label':'Online Adjudications', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'adjudications' ? 'yes' : 'hidden'; },
+            'fields':{
+                'adjudications-online-live':{'label':'Live Online Adjudications', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+                'adjudications-online-review':{'label':'Timeslot Review', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+                'adjudications-online-intro':{'label':'Online Intro', 'type':'htmlarea'},
+            }},
         '_scheduleoptions':{'label':'Schedule Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'scheduling' ? 'yes' : 'hidden'; },
             'fields':{
@@ -5646,7 +5650,7 @@ function ciniki_musicfestivals_main() {
         this.showHideSection('_document_logo_id');
         this.showHideSection('_document_header_msg');
         this.showHideSection('_document_footer_msg');
-        this.showHideSections(['_adjudications_general', '_adjudications_mark', '_adjudications_placement', '_adjudications_level', '_adjudications_pdf', '_adjudications_online']);
+        this.showHideSections(['_adjudications_options', '_adjudications_mark', '_adjudications_placement', '_adjudications_level', '_adjudications_pdf', '_adjudications_online']);
         this.showHideSection('_schedule_pdf');
         this.showHideSection('_schedule_word');
         this.showHideSection('_program_pdf');

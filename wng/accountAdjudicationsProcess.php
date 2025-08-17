@@ -14,6 +14,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'videoProcess');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'classNameFormat');
 
     $blocks = array();
 
@@ -22,7 +23,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     $display = 'list';
 
     if( isset($_POST['submit']) && $_POST['submit'] == 'Back' ) {
-        header("Location: {$request['ssl_domain_base_url']}/account/musicfestivaladjudications");
+        header("Location: {$base_url}");
         return array('stat'=>'exit');
     }
 
@@ -61,6 +62,20 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     }
 
     //
+    // Set up placement sorting
+    //
+    if( isset($festival['comments-placement-options']) && $festival['comments-placement-options'] != '' ) {
+        $options = explode(',', $festival['comments-placement-options']);
+        $psorts = [];
+        $i = 0;
+        foreach($options as $o) {
+            $psorts[trim($o)] = chr($i+65);
+            $i++;
+        }
+        $psorts[''] = 'ZZ';
+    }
+
+    //
     // Load the adjudicator
     //
     $strsql = "SELECT id "  
@@ -82,7 +97,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     // Default to only allow online adjudications of virtual entries
     //
     $ipv_sql = '';
-    if( !isset($festival['comments-live-adjudication-online']) || $festival['comments-live-adjudication-online'] != 'yes' ) {
+    if( !isset($festival['adjudications-online-live']) || $festival['adjudications-online-live'] != 'yes' ) {
         $ipv_sql = "AND registrations.participation = 1 ";
     }
 
@@ -239,9 +254,41 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     }
     $divisions = isset($rc['divisions']) ? $rc['divisions'] : array();
 
+    //
+    // Show timeslot results
+    //
+    if( isset($request['uri_split'][($request['cur_uri_pos']+4)]) 
+        && $request['uri_split'][($request['cur_uri_pos']+4)] == 'results'
+        && isset($divisions[$request['uri_split'][($request['cur_uri_pos']+2)]]['timeslots'][$request['uri_split'][($request['cur_uri_pos']+3)]])
+        ) {
+        $timeslot = $divisions[$request['uri_split'][($request['cur_uri_pos']+2)]]['timeslots'][$request['uri_split'][($request['cur_uri_pos']+3)]];
+    
+        //
+        // Check for form submit
+        //
+        if( isset($_POST['action']) && $_POST['action'] == 'submit' ) {
+            //
+            // Update the comments for the adjudicator and registrations
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'adjudicatorCommentsUpdate');
+            $rc = ciniki_musicfestivals_wng_adjudicatorCommentsUpdate($ciniki, $tnid, $request, array(
+                'registrations' => $timeslot['registrations'],
+                'adjudicator_id' => $adjudicator_id,
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.394', 'msg'=>'Unable to update comments', 'err'=>$rc['err']));
+            }
 
-    /* Check for division and timeslot */
-    if( isset($request['uri_split'][($request['cur_uri_pos']+3)]) 
+            header("Location: {$base_url}");
+            $request['session']['account-musicfestivals-adjudications-saved'] = 'yes';
+            return array('stat'=>'exit');
+        }
+        $display = 'results';
+    }
+    //
+    // Show selected division timeslot
+    //
+    elseif( isset($request['uri_split'][($request['cur_uri_pos']+3)]) 
         && isset($divisions[$request['uri_split'][($request['cur_uri_pos']+2)]]['timeslots'][$request['uri_split'][($request['cur_uri_pos']+3)]])
         ) {
         $timeslot = $divisions[$request['uri_split'][($request['cur_uri_pos']+2)]]['timeslots'][$request['uri_split'][($request['cur_uri_pos']+3)]];
@@ -263,7 +310,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.394', 'msg'=>'Unable to update comments', 'err'=>$rc['err']));
             }
 
-            header("Location: {$request['ssl_domain_base_url']}/account/musicfestivaladjudications");
+            header("Location: {$base_url}");
             $request['session']['account-musicfestivals-adjudications-saved'] = 'yes';
             return array('stat'=>'exit');
         }
@@ -406,35 +453,176 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         unset($request['session']['account-musicfestivals-adjudications-saved']);
     }
 
-    if( $display == 'timeslot' ) {
+    if( $display == 'results' ) {
+        $blocks[] = [
+            'type' => 'title',
+            'level' => 2,
+            'title' => $timeslot['name'] != '' ? $timeslot['name'] : '',
+            ];
+        $classes = [];
+        foreach($timeslot['registrations'] as $rid => $reg) {
+            $rc = ciniki_musicfestivals_classNameFormat($ciniki, $tnid, [
+                'format' => isset($festival['comments-class-format']) ? $festival['comments-class-format'] : '',
+                'section' => $reg['syllabus_section_name'],
+                'category' => $reg['category_name'],
+                'code' => $reg['class_code'],
+                'name' => $reg['class_name'],
+                ]);
+            $class_name = $rc['name'];
+            if( !in_array($class_name, $classes) ) {  
+                $classes[] = $class_name;
+            }
+            $timeslot['registrations'][$rid]['class_name'] = $class_name;
+            $update_args = [];
+            if( isset($festival['comments-mark-adjudicator']) && $festival['comments-mark-adjudicator'] == 'yes' 
+                && ($registration['class_flags']&0x0100) == 0x0100
+                ) {
+                $timeslot['registrations'][$rid]['mark_input'] = "<input class='small aligncenter'"
+                    . " name='f-{$reg['id']}-mark'"
+                    . " id='f-{$reg['id']}-mark'"
+                    . " value='{$reg['mark']}' maxlength='3'>";
+            } else {
+                $timeslot['registrations'][$rid]['mark_input'] = "n/a";
+            }
+            $timeslot['registrations'][$rid]['psort'] = 'ZZ';
+            if( isset($psorts[$reg['placement']]) ) {
+                $timeslot['registrations'][$rid]['psort'] = $psorts[$reg['placement']];
+            }
+            if( isset($festival['comments-placement-adjudicator']) && $festival['comments-placement-adjudicator'] == 'yes' 
+                && ($reg['class_flags']&0x0200) == 0x0200
+                ) {
+                $label = 'Placement';
+                if( isset($festival['comments-placement-label']) && $festival['comments-placement-label'] != '' ) {
+                    $label = $festival['comments-placement-label'];
+                }
+                if( isset($festival['comments-placement-options']) && $festival['comments-placement-options'] != '' ) {
+                    $timeslot['registrations'][$rid]['placement_input'] = "<select name='f-{$reg['id']}-placement' id='f-{$reg['id']}-placement'>";
+                    foreach(explode(',', $festival['comments-placement-options']) as $option) {
+                        $option = trim($option);
+                        $timeslot['registrations'][$rid]['placement_input'] .= "<option value='{$option}'"
+                            . ($option == $reg['placement'] ? " selected" : '')
+                            . ">{$option}</option>";
+                    }
+                    $timeslot['registrations'][$rid]['placement_input'] .= "</select>";
+                } else {
+                    $timeslot['registrations'][$rid]['placement_input'] = "<input name='f-{$reg['id']}-placement'"
+                        . " id='f-{$reg['id']}-placement'"
+                        . " value='{$reg['placement']}'>";
+                }
+            } else {
+                $timeslot['registrations'][$rid]['placement_input'] = "n/a";
+            }
+            if( isset($festival['comments-level-adjudicator']) && $festival['comments-level-adjudicator'] == 'yes' 
+                && ($registration['class_flags']&0x0400) == 0x0400
+                ) {
+                $timeslot['registrations'][$rid]['level_input'] = "<input class=''"
+                    . " name='f-{$reg['id']}-level'"
+                    . " id='f-{$reg['id']}-level'"
+                    . " value='{$reg['mark']}'>";
+            } else {
+                $timeslot['registrations'][$rid]['level_input'] = "n/a";
+            }
+            
+            if( count($update_args) > 0 ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $reg['id'], $update_args, 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1079', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
+                }
+            }
+        }
+        if( count($timeslot['registrations']) > 0 ) {
+            if( count($classes) > 1 ) {
+                $columns = [
+                    'name' => ['label' => 'Name', 'field' => 'name'],
+                    'class' => ['label' => 'Class', 'field' => 'class_name'],
+                    ];
+            } else {
+                $columns = [
+                    'name' => ['label' => 'Name', 'field' => 'name'],
+                    ];
+            }
+            $sortby = '';
+            if( isset($festival['comments-mark-adjudicator']) && $festival['comments-mark-adjudicator'] == 'yes' ) {
+                $label = 'Mark';
+                if( isset($festival['comments-mark-label']) && $festival['comments-mark-label'] != '' ) {
+                    $label = $festival['comments-mark-label'];
+                }
+                $columns[] = ['label' => $label, 'fold-label' => $label, 'field' => 'mark_input'];
+                $sortby = 'mark';
+            }
+            if( isset($festival['comments-placement-adjudicator']) && $festival['comments-placement-adjudicator'] == 'yes' ) {
+                $columns[] = ['label' => 'Placement', 'fold-label' => 'Placement', 'field' => 'placement_input'];
+                if( $sortby == '' ) {
+                    $sortby = 'placement';
+                }
+            }
+            if( isset($festival['comments-level-adjudicator']) && $festival['comments-level-adjudicator'] == 'yes' ) {
+                $columns[] = ['label' => 'Level', 'fold-label' => 'Level', 'field' => 'level_input'];
+                if( $sortby == '' ) {
+                    $sortby = 'level';
+                }
+            }
+            if( $sortby == 'mark' ) {
+                uasort($timeslot['registrations'], function($a, $b) {
+                    if( $a['mark'] == $b['mark'] ) {
+                        return strcasecmp($a['name'], $b['name']);
+                    }
+                    return ($a['mark'] < $b['mark'] ? -1 : 1);
+                    });
+            }
+            if( $sortby == 'placement' ) {
+                if( isset($psorts) ) {
+                    uasort($timeslot['registrations'], function($a, $b) {
+                        if( $a['psort'] == $b['psort'] ) {
+                            return strcasecmp($a['name'], $b['name']);
+                        }
+                        return strnatcasecmp($a['psort'], $b['psort']);
+                        });
+                } else {
+                    uasort($timeslot['registrations'], function($a, $b) {
+                        if( $a['placement'] == $b['placement'] ) {
+                            return strcasecmp($a['name'], $b['name']);
+                        }
+                        return strnatcasecmp($a['placement'], $b['placement']);
+                        });
+                }
+            }
+            if( $sortby == 'level' ) {
+                uasort($timeslot['registrations'], function($a, $b) {
+                    if( $a['level'] == $b['level'] ) {
+                        return strcasecmp($a['name'], $b['name']);
+                    }
+                    return strnatcasecmp($a['level'], $b['level']);
+                    });
+            }
+            $blocks[] = [
+                'type' => 'table',
+                'headers' => 'yes',
+                'form' => 'yes',
+                'form-action' => 'submit',
+                'cancel-url' => $base_url,
+                'class' => 'fold-at-50',
+                'columns' => $columns,
+                'rows' => $timeslot['registrations'],
+                ];
+
+        }
+    }
+    elseif( $display == 'timeslot' ) {
         $sections = array();
         $js_fields = '';
         $reg_ids = '[';
         $db_values = [];
         foreach($timeslot['registrations'] as $registration) {
-            $class_name = $registration['class_name'];
-            if( isset($festival['comments-class-format']) 
-                && $festival['comments-class-format'] == 'code-section-category-class' 
-                ) {
-                $class_name = $registration['class_code'] . ' - ' . $registration['syllabus_section_name'] . ' - ' . $registration['category_name'] . ' - ' . $registration['class_name']; 
-            } elseif( isset($festival['comments-class-format']) 
-                && $festival['comments-class-format'] == 'section-category-class' 
-                ) {
-                $class_name = $registration['syllabus_section_name'] . ' - ' . $registration['category_name'] . ' - ' . $registration['class_name']; 
-            } elseif( isset($festival['comments-class-format']) 
-                && $festival['comments-class-format'] == 'code-category-class' 
-                ) {
-                $class_name = $registration['class_code'] . ' - ' . $registration['category_name'] . ' - ' . $registration['class_name']; 
-            } elseif( isset($festival['comments-class-format']) 
-                && $festival['comments-class-format'] == 'category-class' 
-                ) {
-                $class_name = $registration['category_name'] . ' - ' . $registration['class_name']; 
-            } else {
-                $class_name = $registration['class_name']; 
-            }
-            if( isset($timeslot['groupname']) && $timeslot['groupname'] != '' ) {
-                $class_name .= ' - ' . $timeslot['groupname']; 
-            }
+            $rc = ciniki_musicfestivals_classNameFormat($ciniki, $tnid, [
+                'format' => isset($festival['comments-class-format']) ? $festival['comments-class-format'] : '',
+                'section' => $registration['syllabus_section_name'],
+                'category' => $registration['category_name'],
+                'code' => $registration['class_code'],
+                'name' => $registration['class_name'],
+                ]);
+            $class_name = $rc['name'];
 
             $section = array(    
                 'id' => 'section-' . $registration['id'],
@@ -458,7 +646,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                         );
                     if( ($registration['class_flags']&0x300000) != 0x200000 ) {
                         if( $registration["music_orgfilename{$i}"] != '' ) {
-                            $download_url = "{$request['ssl_domain_base_url']}/account/musicfestivaladjudications"
+                            $download_url = "{$base_url}"
                                 . '/' . $request['uri_split'][($request['cur_uri_pos']+2)]
                                 . '/' . $request['uri_split'][($request['cur_uri_pos']+3)]
                                 . '/' . $registration['uuid']
@@ -485,7 +673,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                     }
                     if( ($registration['titleflags']&0x0300) > 0 ) {
                         if( $registration["artwork{$i}"] != '' ) {
-                            $download_url = "{$request['ssl_domain_base_url']}/account/musicfestivaladjudications"
+                            $download_url = "{$base_url}"
                                 . '/' . $request['uri_split'][($request['cur_uri_pos']+2)]
                                 . '/' . $request['uri_split'][($request['cur_uri_pos']+3)]
                                 . '/' . $registration['uuid']
@@ -760,11 +948,15 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 . "fSaveTimer=setTimeout(fSave, 10000);"
             . "}"
             . "}";
-
+    
+        $blocks[] = [
+            'type' => 'title',
+            'level' => 2,
+            'title' => $timeslot['name'] != '' ? $timeslot['name'] : '',
+            ];
         $blocks[] = array(
             'type' => 'form',
             'id' => 'adjudication-form',
-            'title' => $timeslot['name'] != '' ? $timeslot['name'] : '',
             'class' => 'limit-width limit-width-60 musicfestival-adjudications',
             'form-sections' => $sections,
             'js' => $js,
@@ -780,12 +972,12 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
 
     } else {
 
-        if( isset($festival['comments-intro-online']) && $festival['comments-intro-online'] != '' ) {
+        if( isset($festival['adjudications-online-intro']) && $festival['adjudications-online-intro'] != '' ) {
             $blocks[] = [
                 'type' => 'text',
                 'title' => 'Adjudications',
                 'level' => 2,
-                'content' => $festival['comments-intro-online'],
+                'content' => $festival['adjudications-online-intro'],
                 ];
         }
         
@@ -840,7 +1032,10 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                         $division['timeslots'][$tid]['name'] .= ' - ' . $timeslot['groupname']; 
                     }
                     $division['timeslots'][$tid]['status'] = $num_completed . ' of ' . count($timeslot['registrations']);
-                    $division['timeslots'][$tid]['actions'] = "<a class='button' href='{$base_url}/{$division['uuid']}/{$timeslot['permalink']}'>Open</a>";
+                    $division['timeslots'][$tid]['actions'] = "<a class='button' href='{$base_url}/{$division['uuid']}/{$timeslot['permalink']}'>Adjudicate</a>";
+                    if( isset($festival['adjudications-online-review']) && $festival['adjudications-online-review'] == 'yes' ) {
+                        $division['timeslots'][$tid]['actions'] .= " <a class='button' href='{$base_url}/{$division['uuid']}/{$timeslot['permalink']}/results'>Results</a>";
+                    }
                 }
                 if( $division['section_name'] != '' 
                     && strncmp($division['section_name'], $division['name'], strlen($division['section_name']) != 0 )
@@ -855,7 +1050,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                     'columns' => array(
                         array('label'=>'Name', 'field'=>'name', 'class'=>''),
                         array('label'=>'Completed', 'field'=>'status', 'class'=>'aligncenter'),
-                        array('label'=>'', 'field'=>'actions', 'class'=>'alignright'),
+                        array('label'=>'', 'field'=>'actions', 'class'=>'alignright buttons'),
                         ),
                     'rows'=>$division['timeslots'],
                     );
