@@ -5107,22 +5107,6 @@ function ciniki_musicfestivals_main() {
                     'top':'Yes',
 //                    'bottom':'Bottom',
                     }},
-//                'syllabus-rules-title':{'label':'Rules & Regulations Title', 'type':'text'},
-/*
-                // Don't know which option is better
-                'syllabus-pdf-prices':{'label':'Show Earlybird Prices', 'type':'toggle', 'default':'either', 'toggles':{
-                    'either':'Earlybird OR regular',
-                    'both':'Earlybird AND Regular',
-                    }},
-                // Or these???
-                'syllabus-pdf-earlybird':{'label':'Show Earlybird Prices', 'type':'toggle', 'default':'off', 'toggles':{
-                    'valid':'Until Deadline',
-                    'always':'Always',
-                    }},
-                'syllabus-pdf-regular':{'label':'Show Regular Prices', 'type':'toggle', 'default':'off', 'toggles':{
-                    'valid':'After Earlybird',
-                    'always':'Always',
-                    }}, */
             }},
         '_customer_types':{'label':'Customer Type Buttons', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.sections._tabs.selected == 'registrations' ? 'yes' : 'hidden'; },
