@@ -202,6 +202,9 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     foreach($sections as $sid => $sec) {
         if( isset($sec['groups']) ) {
             foreach($sec['groups'] as $gid => $group) {
+                if( $group == null ) {
+                    continue;
+                }
                 $permalink = ciniki_core_makePermalink($ciniki, $group['groupname']);
                 if( $permalink != $gid ) {
                     $sections[$sid]['groups'][$permalink] = $group;
@@ -401,6 +404,9 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
         foreach($sections as $sid => $section) {
             $buttons = array();
             foreach($section['groups'] as $groupname => $group) {
+                if( $group == null ) {
+                    $group = ['groupname' => 'Other'];
+                }
                 $buttons[] = array(
                     'title' => $group['groupname'] == '' ? 'Other' : $group['groupname'],
                     'url' => "{$request['ssl_domain_base_url']}{$request['page']['path']}/{$section['permalink']}/{$groupname}",
