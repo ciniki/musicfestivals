@@ -728,7 +728,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     // FIXME: add height of titles
                     foreach($timeslot['registrations'] as $rid => $reg) {
                         $extra_info = '';
-                        for($i = 1; $i <= 4; $i++) {
+                        for($i = 1; $i <= 5; $i++) {
                             $info = '';
                             if( isset($festival['waiver-photo-status']) && $festival['waiver-photo-status'] != 'no'
                                 && isset($competitors[$reg["competitor{$i}_id"]]['flags']) 
@@ -804,7 +804,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                             ) {
                             $notes .= ($notes != '' ? "\n" : '') . $reg['notes'];
                         }
-                        for($i = 1; $i <= 4; $i++ ) {
+                        for($i = 1; $i <= 5; $i++ ) {
                             if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes'
                                 && isset($competitors[$reg["competitor{$i}_id"]]['notes']) 
                                 && $competitors[$reg["competitor{$i}_id"]]['notes'] != '' 

@@ -157,6 +157,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     $classes_2c = array();  // Class id's with 2 competitors
     $classes_3c = array();  // Class id's with 3 competitors
     $classes_4c = array();  // Class id's with 4 competitors
+    $classes_5c = array();  // Class id's with 5 competitors
     $js_classes = array();  // Class array that will be in javascript: flags, min_titles, max_titles
     $live_prices = array();
     $plus_prices = array();
@@ -575,7 +576,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     //
     // Add competitor information 
     //
-    for($i = 1; $i <= 4; $i++) {
+    for($i = 1; $i <= 5; $i++) {
         $required = 'no';
         if( isset($selected_class) && $i <= $selected_class['max_competitors'] ) {
             $class = '';
@@ -594,6 +595,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             $prefix = '3rd ';
         } elseif( $i == 4 ) {
             $prefix = '4th ';
+        } elseif( $i == 5 ) {
+            $prefix = '5th ';
         }
         if( isset($selected_class) ) {
             $label = $prefix . (($selected_class['flags']&0x8000) == 0x8000 ? 'Group/Ensemble' : $festival['competitor-label-singular']);
@@ -1311,7 +1314,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             . "var c=C.gE('f-section-'+sid+'-class').value;"
             . $js_set_prices
             . "if(c!=null&&classes[c]!=null){"
-                . "for(var i=1;i<=4;i++){"
+                . "for(var i=1;i<=5;i++){"
                     . "if(i<=classes[c].mac){"        // Less than max num competitors
                         . "C.rC(C.gE('f-competitor'+i+'_id').parentNode,'hidden');"
                     . "}else{"
@@ -1329,6 +1332,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                         . "C.gE('f-competitor2_id').parentNode.firstChild.innerHTML = '2nd Group/Ensemble';"
                         . "C.gE('f-competitor3_id').parentNode.firstChild.innerHTML = '3rd Group/Ensemble';"
                         . "C.gE('f-competitor4_id').parentNode.firstChild.innerHTML = '4th Group/Ensemble';"
+                        . "C.gE('f-competitor5_id').parentNode.firstChild.innerHTML = '4th Group/Ensemble';"
                     . "}else{"
                         . "C.gE('f-competitor1_id').parentNode.firstChild.innerHTML = 'Group/Ensemble';"
                     . "}"
@@ -1338,6 +1342,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                         . "C.gE('f-competitor2_id').parentNode.firstChild.innerHTML = '2nd {$festival['competitor-label-singular']}';"
                         . "C.gE('f-competitor3_id').parentNode.firstChild.innerHTML = '3rd {$festival['competitor-label-singular']}';"
                         . "C.gE('f-competitor4_id').parentNode.firstChild.innerHTML = '4th {$festival['competitor-label-singular']}';"
+                        . "C.gE('f-competitor5_id').parentNode.firstChild.innerHTML = '4th {$festival['competitor-label-singular']}';"
                     . "}else{"
                         . "C.gE('f-competitor1_id').parentNode.firstChild.innerHTML = '{$festival['competitor-label-singular']}';"
                     . "}" 
@@ -1351,19 +1356,27 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     . "C.aC(C.gE('f-competitor1_id').lastChild,'hidden');"
                     . "C.aC(C.gE('f-competitor2_id').lastChild,'hidden');"
                     . "C.aC(C.gE('f-competitor3_id').lastChild,'hidden');"
+                    . "C.aC(C.gE('f-competitor4_id').lastChild,'hidden');"
+                    . "C.aC(C.gE('f-competitor5_id').lastChild,'hidden');"
                 . "}else{"
                     . "C.rC(C.gE('f-competitor1_id').lastChild,'hidden');"
                     . "C.rC(C.gE('f-competitor2_id').lastChild,'hidden');"
                     . "C.rC(C.gE('f-competitor3_id').lastChild,'hidden');"
+                    . "C.rC(C.gE('f-competitor4_id').lastChild,'hidden');"
+                    . "C.rC(C.gE('f-competitor5_id').lastChild,'hidden');"
                 . "}" 
                 . "if((classes[c].f&0xC000)==0x8000){"
                     . "C.aC(C.gE('f-competitor1_id').lastChild.previousSibling,'hidden');"
                     . "C.aC(C.gE('f-competitor2_id').lastChild.previousSibling,'hidden');"
                     . "C.aC(C.gE('f-competitor3_id').lastChild.previousSibling,'hidden');"
+                    . "C.aC(C.gE('f-competitor4_id').lastChild.previousSibling,'hidden');"
+                    . "C.aC(C.gE('f-competitor5_id').lastChild.previousSibling,'hidden');"
                 . "}else{"
                     . "C.rC(C.gE('f-competitor1_id').lastChild.previousSibling,'hidden');"
                     . "C.rC(C.gE('f-competitor2_id').lastChild.previousSibling,'hidden');"
                     . "C.rC(C.gE('f-competitor3_id').lastChild.previousSibling,'hidden');"
+                    . "C.rC(C.gE('f-competitor4_id').lastChild.previousSibling,'hidden');"
+                    . "C.rC(C.gE('f-competitor5_id').lastChild.previousSibling,'hidden');"
                 . "}"; 
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) ) {
                 $js .= "if((classes[c].f&0x3000)>0){"

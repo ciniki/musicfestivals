@@ -29,6 +29,7 @@ function ciniki_musicfestivals_locationUpdate(&$ciniki) {
         'postal'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Postal Code'),
         'latitude'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Latitude'),
         'longitude'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Longitude'),
+        'image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
         'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),
         ));
     if( $rc['stat'] != 'ok' ) {

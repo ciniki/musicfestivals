@@ -69,6 +69,7 @@ function ciniki_musicfestivals_locationGet($ciniki) {
             'postal'=>'',
             'latitude'=>'',
             'longitude'=>'',
+            'image_id'=>'0',
             'description'=>'',
         );
     }
@@ -91,6 +92,7 @@ function ciniki_musicfestivals_locationGet($ciniki) {
             . "ciniki_musicfestival_locations.postal, "
             . "ciniki_musicfestival_locations.latitude, "
             . "ciniki_musicfestival_locations.longitude, "
+            . "ciniki_musicfestival_locations.image_id, "
             . "ciniki_musicfestival_locations.description "
             . "FROM ciniki_musicfestival_locations "
             . "WHERE ciniki_musicfestival_locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -100,7 +102,7 @@ function ciniki_musicfestivals_locationGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'locations', 'fname'=>'id', 
                 'fields'=>array('festival_id', 'name', 'permalink', 'shortname', 'category', 'sequence', 'disciplines',
-                    'address1', 'city', 'province', 'postal', 'latitude', 'longitude', 'description',
+                    'address1', 'city', 'province', 'postal', 'latitude', 'longitude', 'image_id', 'description',
                     )),
             ));
         if( $rc['stat'] != 'ok' ) {

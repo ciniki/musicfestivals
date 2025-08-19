@@ -98,6 +98,7 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
         . "registrations.competitor2_id, "
         . "registrations.competitor3_id, "
         . "registrations.competitor4_id, "
+        . "registrations.competitor5_id, "
         . "registrations.title1, "
         . "registrations.title2, "
         . "registrations.title3, "
@@ -238,7 +239,7 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'participation',
-                'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id',
+                'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 
                 'notes', 'internal_notes',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
@@ -708,7 +709,7 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                             ) {
                             $notes .= ($notes != '' ? "\n" : '') . $reg['notes'];
                         }
-                        for($i = 1; $i <= 4; $i++ ) {
+                        for($i = 1; $i <= 5; $i++ ) {
                             if( isset($festival['runsheets-competitor-notes']) && $festival['runsheets-competitor-notes'] == 'yes'
                                 && isset($competitors[$reg["competitor{$i}_id"]]['notes']) 
                                 && $competitors[$reg["competitor{$i}_id"]]['notes'] != '' 
@@ -824,7 +825,7 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                     }
                     foreach($timeslot['registrations'] as $rid => $reg) {
                         $extra_info = '';
-                        for($i = 1; $i <= 4; $i++) {
+                        for($i = 1; $i <= 5; $i++) {
                             $info = '';
                             if( isset($festival['waiver-photo-status']) && $festival['waiver-photo-status'] != 'no'
                                 && isset($competitors[$reg["competitor{$i}_id"]]['flags']) 

@@ -82,6 +82,7 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
         . "registrations.competitor2_id, "
         . "registrations.competitor3_id, "
         . "registrations.competitor4_id, "
+        . "registrations.competitor5_id, "
         . "competitors.id AS competitor_id, "
         . "competitors.ctype, "
         . "competitors.first AS competitor_first, "
@@ -135,6 +136,7 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
                 . "OR registrations.competitor2_id = competitors.id "
                 . "OR registrations.competitor3_id = competitors.id "
                 . "OR registrations.competitor4_id = competitors.id "
+                . "OR registrations.competitor5_id = competitors.id "
                 . ") "
             . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
@@ -158,7 +160,7 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'participation',
                 'section_name', 'division_name', 'slot_time'=>'slot_time_text',
-                'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id',
+                'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
                 'notes', 'internal_notes',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
                 ),

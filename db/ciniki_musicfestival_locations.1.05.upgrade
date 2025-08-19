@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_locations ADD COLUMN image_id int not null AFTER longitude;
+ALTER TABLE ciniki_musicfestival_locations COMMENT='v1.05';

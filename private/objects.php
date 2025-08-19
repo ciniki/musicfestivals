@@ -91,6 +91,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'postal' => array('name'=>'Postal Code', 'default'=>''),
             'latitude' => array('name'=>'Latitude', 'default'=>''),
             'longitude' => array('name'=>'Longitude', 'default'=>''),
+            'image_id' => array('name'=>'Image', 'default'=>'0', 'ref'=>'ciniki.images.image'),
             'description' => array('name'=>'Description', 'default'=>''),
             ),
         'history_table' => 'ciniki_musicfestivals_history',

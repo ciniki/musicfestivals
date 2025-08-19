@@ -119,6 +119,7 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
         . "registrations.competitor2_id, "
         . "registrations.competitor3_id, "
         . "registrations.competitor4_id, "
+        . "registrations.competitor5_id, "
         . "registrations.teacher_customer_id, "
         . "registrations.teacher2_customer_id, "
         . "registrations.title1, "
@@ -214,7 +215,7 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
             ),
         array('container'=>'registrations', 'fname'=>'registration_id', 
             'fields'=>array('id'=>'registration_id', 'display_name', 'participation',
-                'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id',
+                'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
                 'teacher_customer_id', 'teacher2_customer_id',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
                 'mark', 'placement', 'level', 'provincials_code', 'provincials_status_text', 'provincials_position_text',

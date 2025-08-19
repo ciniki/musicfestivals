@@ -156,7 +156,7 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $args) {
             $pn_names = array();    // Display Name + pronouns
             $pn_pnames = array();   // Public names + pronouns
             $pn_privatenames = array();   // Public names + pronouns
-            for($i = 1; $i <= 4; $i++) {
+            for($i = 1; $i <= 5; $i++) {
                 if( $registration["competitor{$i}_id"] > 0 
                     && isset($registration['competitors'][$registration["competitor{$i}_id"]]['name']) 
                     ) {

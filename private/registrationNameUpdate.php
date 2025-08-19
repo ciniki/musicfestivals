@@ -108,7 +108,7 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $tnid, $args) {
         $pn_names = array();  // Pronoun Full Names
         $pn_publicnames = array();  // Pronoun Public Names
         $pn_privatenames = array();  // Pronoun Private Names
-        for($i = 1; $i <= 4; $i++) {
+        for($i = 1; $i <= 5; $i++) {
             if( $registration["competitor{$i}_id"] > 0 
                 && isset($registration['competitors'][$registration["competitor{$i}_id"]]['name']) 
                 ) {
@@ -139,7 +139,14 @@ function ciniki_musicfestivals_registrationNameUpdate(&$ciniki, $tnid, $args) {
                 }
             } 
         }
-        if( count($names) == 4 ) {
+        if( count($names) == 5 ) {
+            $display_name = $names[0] . ', ' . $names[1] . ', ' . $names[2] . ', ' . $names[3] . ' & ' . $names[4];
+            $public_name = $publicnames[0] . ', ' . $publicnames[1] . ', ' . $publicnames[2] . ', ' . $publicnames[3] . ' & ' . $publicnames[4];
+            $private_name = $privatenames[0] . ', ' . $privatenames[1] . ', ' . $privatenames[2] . ', ' . $privatenames[3] . ' & ' . $privatenames[4];
+            $pn_display_name = $pn_names[0] . ', ' . $pn_names[1] . ', ' . $pn_names[2] . ', ' . $pn_names[3] . ' & ' . $pn_names[4];
+            $pn_public_name = $pn_publicnames[0] . ', ' . $pn_publicnames[1] . ', ' . $pn_publicnames[2] . ', ' . $pn_publicnames[3] . ' & ' . $pn_publicnames[4];
+            $pn_private_name = $pn_privatenames[0] . ', ' . $pn_privatenames[1] . ', ' . $pn_privatenames[2] . ', ' . $pn_privatenames[3] . ' & ' . $pn_privatenames[4];
+        } elseif( count($names) == 4 ) {
             $display_name = $names[0] . ', ' . $names[1] . ', ' . $names[2] . ' & ' . $names[3];
             $public_name = $publicnames[0] . ', ' . $publicnames[1] . ', ' . $publicnames[2] . ' & ' . $publicnames[3];
             $private_name = $privatenames[0] . ', ' . $privatenames[1] . ', ' . $privatenames[2] . ' & ' . $privatenames[3];

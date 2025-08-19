@@ -50,6 +50,7 @@ function ciniki_musicfestivals_wng_locationsProcess(&$ciniki, $tnid, &$request, 
         . "locations.postal, "
         . "locations.latitude, "
         . "locations.longitude, "
+        . "locations.image_id, "
         . "locations.description "
         . "FROM ciniki_musicfestival_locations AS locations "
         . "WHERE locations.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
@@ -63,7 +64,7 @@ function ciniki_musicfestivals_wng_locationsProcess(&$ciniki, $tnid, &$request, 
             ),
         array('container'=>'locations', 'fname'=>'id', 
             'fields'=>array('id', 'category', 'name', 'disciplines', 'permalink', 'address1', 'city', 'province', 'postal', 
-                'latitude', 'longitude', 'description'),
+                'latitude', 'longitude', 'image-id'=>'image_id', 'description'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -174,10 +175,17 @@ function ciniki_musicfestivals_wng_locationsProcess(&$ciniki, $tnid, &$request, 
         }
 
         $blocks[] = array(
+            'type' => 'tradingcards',
+            'class' => 'musicfestival-locations',
+            'size' => '30',
+            'image-ratio' => isset($s['image-ratio']) && $s['image-ratio'] != '' ? $s['image-ratio'] : '4-3',
+            'items' => $items,
+            );
+/*        $blocks[] = array(
             'type' => 'textcards',
             'class' => 'musicfestival-locations',
             'items' => $items,
-            );
+            ); */
     }
 
     return array('stat'=>'ok', 'blocks'=>$blocks);
