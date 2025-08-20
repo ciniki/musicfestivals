@@ -243,7 +243,10 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                 . "divisions.division_date, "
                 . "CONCAT_WS(' ', registrations.notes, registrations.runsheet_notes, registrations.internal_notes) AS notes, "
                 . "IFNULL(competitors.id, 0) AS competitor_id, "
+                . "IFNULL(competitors.ctype, 0) AS ctype, "
                 . "IFNULL(competitors.notes, '') AS competitor_notes, "
+                . "IFNULL(competitors.age, '') AS competitor_age, "
+                . "IFNULL(competitors.num_people, '') AS competitor_num_people, "
 //                . "GROUP_CONCAT(' ', competitors.notes) AS competitor_notes, "
                 . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
 /*                . "(SELECT COUNT(ar.id) "
@@ -345,7 +348,10 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                         'participation'=>$participation_maps,
                         ),
                     ),
-                array('container'=>'competitors', 'fname'=>'competitor_id', 'fields'=>array('notes'=>'competitor_notes')),
+                array('container'=>'competitors', 'fname'=>'competitor_id', 
+                    'fields'=>array('ctype', 'notes'=>'competitor_notes', 
+                        'age'=>'competitor_age', 'num_people'=>'competitor_num_people',
+                    )),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.798', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
@@ -383,10 +389,22 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                         $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['org_time'] = $rc['org_time'];
                         $perf_time += $rc['perf_time_seconds'];
                         if( isset($reg['competitors']) ) {
+                            $ra = '';
+                            $gs = '';
                             foreach($reg['competitors'] as $competitor) {
                                 if( $competitor['notes'] != '' ) {
                                     $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['notes'] .= ($rsp["timeslots{$i}"][$tid]["registrations"][$rid]['notes'] != '' ? ' ' : '') . $competitor['notes'];
                                 }
+                                $ra .= ($ra != '' ? ',' : '') . $competitor['age'];
+                                if( $competitor['ctype'] == 50 ) {
+                                    $gs .= ($gs != '' ? ',' : '') . $competitor['num_people'];
+                                }
+                            }
+                            if( $gs != '' && isset($festival['scheduling-group-size-show']) && $festival['scheduling-group-size-show'] == 'yes' ) {
+                                $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['display_name'] .= " ({$gs})";
+                            }
+                            if( $ra != '' && isset($festival['scheduling-age-show']) && $festival['scheduling-age-show'] == 'yes' ) {
+                                $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['display_name'] .= " [{$ra}]";
                             }
                             unset($rsp["timeslots{$i}"][$tid]["registrations"][$rid]['competitors']);
                         }

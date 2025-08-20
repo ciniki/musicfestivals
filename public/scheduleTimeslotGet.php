@@ -91,20 +91,34 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
     $festival = $rc['festival'];
 
     //
-    // Load competitor ages if required
+    // Load competitor ages and group sizes if required
     //
-    if( isset($festival['scheduling-age-show']) && $festival['scheduling-age-show'] == 'yes' ) {
-        $strsql = "SELECT competitors.id, competitors.age "
+    if( (isset($festival['scheduling-age-show']) && $festival['scheduling-age-show'] == 'yes')
+        || (isset($festival['scheduling-group-size-show']) && $festival['scheduling-group-size-show'] == 'yes')
+        ) {
+        $strsql = "SELECT competitors.id, "
+            . "competitors.ctype, "
+            . "competitors.age AS _age, "
+            . "competitors.num_people "
             . "FROM ciniki_musicfestival_competitors AS competitors "
             . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "";
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
-        $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'competitors');
-        if( $rc['stat'] != 'ok' ) { 
-            return $rc;
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'ctype', 'age'=>'_age', 'num_people')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.971', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
         }
-        $ages = isset($rc['competitors']) ? $rc['competitors'] : array();
+        $ages = [];
+        $groupsizes = [];
+        foreach($rc['competitors'] as $c ) {
+            $ages[$c['id']] = $c['age'];
+            if( $c['ctype'] == 50 ) {
+                $groupsizes[$c['id']] = $c['num_people'];
+            }
+        }
     }
 
     //
@@ -357,8 +371,20 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             if( isset($reg['schedule_ata_seconds']) > $schedule_ata_seconds ) {
                 $schedule_ata_seconds = $reg['schedule_ata_seconds'];
             }
+            if( isset($groupsizes) ) {
+                $gs = '';
+                for($i = 1; $i<=5; $i++) {
+                    if( $reg["competitor{$i}_id"] > 0 && isset($groupsizes[$reg["competitor{$i}_id"]]) ) {
+                        $gs .= ($gs != '' ? ',' : '') . $groupsizes[$reg["competitor{$i}_id"]];
+                    }
+                }
+                if( $gs != '' ) {
+                    $scheduletimeslot['registrations'][$rid]['display_name'] .= " ({$gs})";
+                    $scheduletimeslot['registrations'][$rid]['groupsize'] = $gs;
+                }
+            }
             if( isset($ages) ) {
-                $ra= '';
+                $ra = '';
                 for($i = 1; $i<=5; $i++) {
                     if( $reg["competitor{$i}_id"] > 0 && isset($ages[$reg["competitor{$i}_id"]]) ) {
                         $ra .= ($ra != '' ? ',' : '') . $ages[$reg["competitor{$i}_id"]];

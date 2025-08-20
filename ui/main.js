@@ -5479,6 +5479,11 @@ function ciniki_musicfestivals_main() {
                         'no':'No',
                         'yes':'Yes',
                     }},
+                'scheduling-group-size-show':{'label':'Show Group Size', 'type':'toggle', 'default':'no', 
+                    'toggles':{
+                        'no':'No',
+                        'yes':'Yes',
+                    }},
                 'scheduling-draft-show':{'label':'Show Draft', 'type':'toggle', 'default':'no', 
                     'toggles':{
                         'no':'No',

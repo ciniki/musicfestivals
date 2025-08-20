@@ -216,6 +216,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'competitor-group-etransfer-email',
         'provincial-festival-id',
         'scheduling-age-show',
+        'scheduling-group-size-show',
         'scheduling-draft-show',
         'scheduling-disqualified-show',
         'scheduling-withdrawn-show',
