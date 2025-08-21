@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_members ADD COLUMN yearly_details varchar(2000) not null AFTER latedays;
+ALTER TABLE ciniki_musicfestival_members COMMENT='v1.03';
