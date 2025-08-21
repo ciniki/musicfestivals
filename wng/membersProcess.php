@@ -120,20 +120,24 @@ function ciniki_musicfestivals_wng_membersProcess(&$ciniki, $tnid, &$request, $s
                 $member['synopsis'] = '';
             }
             if( isset($s['display-deadlines']) && $s['display-deadlines'] == 'yes' ) {
-                $late_dt = new DateTime($member['reg_end_dt_display'], new DateTimezone($intl_timezone));
-                if( $member['latedays'] > 0 ) {
-                    $late_dt->add(new DateInterval('P' . $member['latedays'] . 'D'));
+                
+                if( $member['reg_end_dt_display'] != '' ) {
+                    $late_dt = new DateTime($member['reg_end_dt_display'], new DateTimezone($intl_timezone));
+                    if( $member['latedays'] > 0 ) {
+                        $late_dt->add(new DateInterval('P' . $member['latedays'] . 'D'));
+                    }
+                    $member['reg_late_dt_display'] = $late_dt->format('M j, Y g:i A');
                 }
-                $member['reg_late_dt_display'] = $late_dt->format('M j, Y g:i A');
                 if( $member['yearly_details'] != '' ) {
                     $member['synopsis'] .= ($member['synopsis'] != '' ? "\n\n" : '' ) . $member['yearly_details'];
                 }
                 $member['synopsis'] .= ($member['synopsis'] != '' ? "\n\n<div class='line'></div>" : '')
                     . "<b class='subheading'>Provincial Registration Dates</b>"
                     . "<b>Registration Open</b>: " . $member['reg_start_dt_display'] . "<br>"
-                    . "<b>Registration Close</b>: " . $member['reg_end_dt_display'] . "<br>"
-                    . "<i>Late entries will be accepted until " . $member['reg_late_dt_display'] . "</i>"
-                    . "";
+                    . "<b>Registration Close</b>: " . $member['reg_end_dt_display'] . "<br>";
+                if( $member['reg_end_dt_display'] != '' ) {
+                    $member['synopsis'] .= "<i>Late entries will be accepted until " . $member['reg_late_dt_display'] . "</i>";
+                }
             }
             $categories[$member['category']][] = $member;
         }
