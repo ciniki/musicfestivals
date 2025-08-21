@@ -13962,10 +13962,10 @@ function ciniki_musicfestivals_main() {
 //            'noData':'No Admin Account',
 //            },
         '_synopsis':{'label':'Synopsis', 'fields':{
-            'synopsis':{'label':'', 'hidelabel':'yes', 'type':'htmlarea', 'size':'large'},
+            'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
             }},
         '_yearly_details':{'label':'Yearly Details', 'fields':{
-            'yearly_details':{'label':'', 'hidelabel':'yes', 'type':'htmlarea', 'size':'large'},
+            'yearly_details':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.member.save();'},
