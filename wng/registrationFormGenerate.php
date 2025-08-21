@@ -485,7 +485,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'ftype' => 'select',
 //            'label' => 'Recommending Local Festival',
             'label' => 'Which festival invited you?',
-            'description' => 'You must choose the local festival where you competed and who recommended you to provincials.',
+            'description' => 'You must choose the local festival where you competed and who recommended you to provincials.<br><br><b>DO NOT CHOOSE Kitchener-Waterloo unless you competed in the Kitchener Waterloo Kiwanis Music Festival in April.</b>',
             'blank' => 'no',
             'size' => 'large',
             'required' => 'yes',

@@ -714,9 +714,10 @@ function ciniki_musicfestivals_objects($ciniki) {
         'fields' => array(
             'festival_id' => array('name'=>'Festival'),
             'member_id' => array('name'=>'Member'),
-            'reg_start_dt' => array('name'=>'Registrations Open'),
-            'reg_end_dt' => array('name'=>'Registrations Close'),
+            'reg_start_dt' => array('name'=>'Registrations Open', 'default'=>''),
+            'reg_end_dt' => array('name'=>'Registrations Close', 'default'=>''),
             'latedays' => array('name'=>'Late Days', 'default'=>'0'),
+            'yearly_details' => array('name'=>'Yearly Details', 'default'=>''),
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );

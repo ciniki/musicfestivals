@@ -66,6 +66,7 @@ function ciniki_musicfestivals_memberGet($ciniki) {
             'reg_start_dt' => '',
             'reg_end_dt' => '',
             'latedays' => '0',
+            'yearly_details' => '',
             'member_tnid' => '0',
             'customer' => array(),
             'customer_details' => array(),
@@ -85,7 +86,8 @@ function ciniki_musicfestivals_memberGet($ciniki) {
             . "members.member_tnid, "
             . "IFNULL(fmembers.reg_start_dt, '') AS reg_start_dt, "
             . "IFNULL(fmembers.reg_end_dt, '') AS reg_end_dt, "
-            . "IFNULL(fmembers.latedays, '') AS latedays "
+            . "IFNULL(fmembers.latedays, '') AS latedays, "
+            . "IFNULL(fmembers.yearly_details, '') AS yearly_details "
             . "FROM ciniki_musicfestivals_members AS members "
             . "LEFT JOIN ciniki_musicfestival_members AS fmembers ON ("
                 . "members.id = fmembers.member_id "
@@ -99,7 +101,7 @@ function ciniki_musicfestivals_memberGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'members', 'fname'=>'id', 
                 'fields'=>array('name', 'shortname', 'category', 'synopsis', 'status', 
-                    'member_tnid', 'reg_start_dt', 'reg_end_dt', 'latedays'),
+                    'member_tnid', 'reg_start_dt', 'reg_end_dt', 'latedays', 'yearly_details'),
                 'utctotz'=>array(
                     'reg_start_dt' => array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
                     'reg_end_dt' => array('timezone'=>$intl_timezone, 'format'=>$datetime_format),

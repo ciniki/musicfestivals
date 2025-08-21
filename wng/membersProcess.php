@@ -50,7 +50,8 @@ function ciniki_musicfestivals_wng_membersProcess(&$ciniki, $tnid, &$request, $s
         . "IFNULL(fmembers.reg_end_dt, '') AS reg_end_dt, "
         . "IFNULL(fmembers.reg_end_dt, '') AS reg_end_dt_display, "
 //        . "IFNULL(DATE_ADD(fmembers.reg_end_dt, INTERVAL fmembers.latedays DAY), '') AS reg_late_dt_display, "
-        . "IFNULL(fmembers.latedays, '') AS latedays "
+        . "IFNULL(fmembers.latedays, '') AS latedays, "
+        . "IFNULL(fmembers.yearly_details, '') AS yearly_details "
         . "FROM ciniki_musicfestivals_members AS members "
         . "LEFT JOIN ciniki_musicfestival_members AS fmembers ON ("
             . "members.id = fmembers.member_id "
@@ -65,7 +66,7 @@ function ciniki_musicfestivals_wng_membersProcess(&$ciniki, $tnid, &$request, $s
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'members', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'title'=>'name', 'permalink', 'id-permalink'=>'permalink', 'category', 'status', 'synopsis', 'reg_start_dt_display', 'reg_end_dt', 'reg_end_dt_display', 'latedays'),
+            'fields'=>array('id', 'name', 'title'=>'name', 'permalink', 'id-permalink'=>'permalink', 'category', 'status', 'synopsis', 'reg_start_dt_display', 'reg_end_dt', 'reg_end_dt_display', 'latedays', 'yearly_details'),
             'utctotz'=>array(
                 'reg_start_dt_display' => array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i A'),
                 'reg_end_dt_display' => array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i A'),
@@ -112,6 +113,9 @@ function ciniki_musicfestivals_wng_membersProcess(&$ciniki, $tnid, &$request, $s
         $categories = array();
         foreach($members as $member) {
             $member['synopsis'] = preg_replace("/\n([A-Za-z ]+): /", "\n<b>$1</b>: ", $member['synopsis']);
+            $member['synopsis'] = preg_replace("/^([A-Za-z ]+): /", "\n<b>$1</b>: ", $member['synopsis']);
+            $member['yearly_details'] = preg_replace("/^([A-Za-z ]+): /", "\n<b>$1</b>: ", $member['yearly_details']);
+            $member['yearly_details'] = preg_replace("/\n([A-Za-z ]+): /", "\n<b>$1</b>: ", $member['yearly_details']);
             if( isset($s['display-synopsis']) && $s['display-synopsis'] == 'no' ) {
                 $member['synopsis'] = '';
             }
@@ -121,6 +125,9 @@ function ciniki_musicfestivals_wng_membersProcess(&$ciniki, $tnid, &$request, $s
                     $late_dt->add(new DateInterval('P' . $member['latedays'] . 'D'));
                 }
                 $member['reg_late_dt_display'] = $late_dt->format('M j, Y g:i A');
+                if( $member['yearly_details'] != '' ) {
+                    $member['synopsis'] .= ($member['synopsis'] != '' ? "\n\n" : '' ) . $member['yearly_details'];
+                }
                 $member['synopsis'] .= ($member['synopsis'] != '' ? "\n\n<div class='line'></div>" : '')
                     . "<b class='subheading'>Provincial Registration Dates</b>"
                     . "<b>Registration Open</b>: " . $member['reg_start_dt_display'] . "\n"

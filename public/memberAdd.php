@@ -30,6 +30,7 @@ function ciniki_musicfestivals_memberAdd(&$ciniki) {
         'reg_start_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Registrations Open'),
         'reg_end_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Registrations Close'),
         'latedays'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Late Days'),
+        'yearly_details'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Yearly Details'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

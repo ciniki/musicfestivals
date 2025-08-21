@@ -13964,6 +13964,9 @@ function ciniki_musicfestivals_main() {
         '_synopsis':{'label':'Synopsis', 'fields':{
             'synopsis':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
             }},
+        '_yearly_details':{'label':'Yearly Details', 'fields':{
+            'yearly_details':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
+            }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.member.save();'},
             'delete':{'label':'Delete', 
