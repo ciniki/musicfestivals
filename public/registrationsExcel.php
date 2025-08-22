@@ -161,6 +161,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         . "registrations.mark, "
         . "registrations.placement, "
         . "registrations.level, "
+        . "IFNULL(invoices.invoice_number, '') AS invoice_number, "
         . "competitors.id AS competitor_id, "
         . "competitors.ctype, "
         . "competitors.name AS competitor_name, "
@@ -192,6 +193,10 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $strsql .= "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
+                . "registrations.invoice_id = invoices.id "
+                . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "registrations.class_id = classes.id "
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -222,7 +227,8 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'reg_id', 
                 'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 
-                    'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 'fee'=>'reg_fee', 
+                    'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 
+                    'fee'=>'reg_fee', 'invoice_number', 
                     'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
                     'title2', 'composer2', 'movements2', 'perf_time2', 'video_url2', 'music_orgfilename2',
                     'title3', 'composer3', 'movements3', 'perf_time3', 'video_url3', 'music_orgfilename3',
@@ -259,6 +265,10 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
     } 
     elseif( isset($args['teacher_customer_id']) && $args['teacher_customer_id'] > 0 ) {
         $strsql .= "FROM ciniki_musicfestival_registrations AS registrations "
+            . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
+                . "registrations.invoice_id = invoices.id "
+                . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "registrations.class_id = classes.id "
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -295,7 +305,8 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'reg_id', 
                 'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 
-                    'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 'fee'=>'reg_fee', 
+                    'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 
+                    'fee'=>'reg_fee', 'invoice_number', 
                     'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
                     'title2', 'composer2', 'movements2', 'perf_time2', 'video_url2', 'music_orgfilename2',
                     'title3', 'composer3', 'movements3', 'perf_time3', 'video_url3', 'music_orgfilename3',
@@ -348,6 +359,10 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
     } 
     elseif( isset($args['accompanist_customer_id']) && $args['accompanist_customer_id'] > 0 ) {
         $strsql .= "FROM ciniki_musicfestival_registrations AS registrations "
+            . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
+                . "registrations.invoice_id = invoices.id "
+                . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "registrations.class_id = classes.id "
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -384,7 +399,8 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'reg_id', 
                 'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 
-                    'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 'fee'=>'reg_fee', 
+                    'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 
+                    'fee'=>'reg_fee', 'invoice_number', 
                     'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
                     'title2', 'composer2', 'movements2', 'perf_time2', 'video_url2', 'music_orgfilename2',
                     'title3', 'composer3', 'movements3', 'perf_time3', 'video_url3', 'music_orgfilename3',
@@ -440,6 +456,10 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
     //
     elseif( isset($args['member_id']) && $args['member_id'] > 0 ) {
         $strsql .= "FROM ciniki_musicfestival_registrations AS registrations "
+            . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
+                . "registrations.invoice_id = invoices.id "
+                . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "registrations.class_id = classes.id "
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -476,7 +496,8 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'reg_id', 
                 'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 
-                    'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 'fee'=>'reg_fee', 
+                    'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 
+                    'fee'=>'reg_fee', 'invoice_number', 
                     'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
                     'title2', 'composer2', 'movements2', 'perf_time2', 'video_url2', 'music_orgfilename2',
                     'title3', 'composer3', 'movements3', 'perf_time3', 'video_url3', 'music_orgfilename3',
@@ -546,6 +567,10 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         }
         $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_sapos_invoices AS invoices ON ("
+                . "registrations.invoice_id = invoices.id "
+                . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ("
                 . "("
                     . "registrations.competitor1_id = competitors.id "
@@ -571,7 +596,8 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'name'=>'section_name')),
             array('container'=>'registrations', 'fname'=>'reg_id', 
                 'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 
-                    'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 'fee'=>'reg_fee', 
+                    'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 
+                    'fee'=>'reg_fee', 'invoice_number', 
                     'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
                     'title2', 'composer2', 'movements2', 'perf_time2', 'video_url2', 'music_orgfilename2',
                     'title3', 'composer3', 'movements3', 'perf_time3', 'video_url3', 'music_orgfilename3',
@@ -671,6 +697,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         if( ($festival['flags']&0x02) == 0x02 ) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Virtual', false);
         }
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Invoice #', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Status', false);
         if( isset($festival['comments-mark-ui']) && $festival['comments-mark-ui'] == 'yes' ) {
             if( isset($festival['comments-mark-label']) && $festival['comments-mark-label'] != '' ) {
@@ -889,6 +916,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             if( ($festival['flags']&0x02) == 0x02 ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, ($registration['participation'] == 1 ? 'Virtual' : 'In Person'), false);
             }
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['invoice_number'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['status_text'], false);
             if( isset($festival['comments-mark-ui']) && $festival['comments-mark-ui'] == 'yes' ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['mark'], false);
