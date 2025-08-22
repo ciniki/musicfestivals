@@ -264,7 +264,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         $blocks[] = [
             'type' => 'text',
             'title' => (($festival['flags']&0x06) > 0 ? 'Live ' : '') . 'Adjudication Instructions',
-            'content' => $festival['adjudications-live-instructions'],
+            'content' => isset($festival['adjudications-live-instructions']) ? $festival['adjudications-live-instructions'] : '',
             ];
         return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
     }
@@ -274,7 +274,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         $blocks[] = [
             'type' => 'text',
             'title' => 'Virtual Adjudication Instructions',
-            'content' => $festival['adjudications-virtual-instructions'],
+            'content' => isset($festival['adjudications-virtual-instructions']) ? $festival['adjudications-virtual-instructions'] : '',
             ];
         return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
     }
@@ -1088,10 +1088,14 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     
         $buttons = [];
         if( $num_live > 0 
-            && isset($festival['adjudications-virtual-instructions']) 
-            && $festival['adjudications-virtual-instructions'] != '' 
+            && isset($festival['adjudications-live-instructions']) 
+            && $festival['adjudications-live-instructions'] != '' 
             ) {
-            $buttons[] = ['title' => 'Live Instructions', 'url'=>"{$base_url}/instructions"];
+            if( ($festival['flags']&0x06) > 0 ) {
+                $buttons[] = ['title' => 'Live Instructions', 'url'=>"{$base_url}/instructions"];
+            } else {
+                $buttons[] = ['title' => 'Instructions', 'url'=>"{$base_url}/instructions"];
+            }
         }
         if( $num_virtual > 0 
             && isset($festival['adjudications-virtual-instructions']) 
