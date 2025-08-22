@@ -123,6 +123,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         . "registrations.uuid AS reg_uuid, "
         . "registrations.display_name, "
         . "registrations.public_name, "
+        . "registrations.participation, "
         . "registrations.title1, "
         . "registrations.title2, "
         . "registrations.title3, "
@@ -235,7 +236,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 'description', 'groupname',
                 )),
         array('container'=>'registrations', 'fname'=>'reg_uuid', 
-            'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name', 
+            'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name', 'participation',
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                 'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
@@ -257,7 +258,27 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     //
     // Show timeslot results
     //
-    if( isset($request['uri_split'][($request['cur_uri_pos']+4)]) 
+    if( isset($request['uri_split'][($request['cur_uri_pos']+2)]) 
+        && $request['uri_split'][($request['cur_uri_pos']+2)] == 'instructions'
+        ) {
+        $blocks[] = [
+            'type' => 'text',
+            'title' => (($festival['flags']&0x06) > 0 ? 'Live ' : '') . 'Adjudication Instructions',
+            'content' => $festival['adjudications-live-instructions'],
+            ];
+        return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
+    }
+    elseif( isset($request['uri_split'][($request['cur_uri_pos']+2)]) 
+        && $request['uri_split'][($request['cur_uri_pos']+2)] == 'instructions-virtual'
+        ) {
+        $blocks[] = [
+            'type' => 'text',
+            'title' => 'Virtual Adjudication Instructions',
+            'content' => $festival['adjudications-virtual-instructions'],
+            ];
+        return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
+    }
+    elseif( isset($request['uri_split'][($request['cur_uri_pos']+4)]) 
         && $request['uri_split'][($request['cur_uri_pos']+4)] == 'results'
         && isset($divisions[$request['uri_split'][($request['cur_uri_pos']+2)]]['timeslots'][$request['uri_split'][($request['cur_uri_pos']+3)]])
         ) {
@@ -984,12 +1005,20 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         //
         // Setup the open button and status
         //
+        $num_virtual = 0;
+        $num_live = 0;
+        $timeslot_blocks = [];
         foreach($divisions as $division) {
             if( isset($division['timeslots']) && count($division['timeslots']) > 0 ) {
                 foreach($division['timeslots'] as $tid => $timeslot) {
                     $num_completed = 0;
                     if( isset($timeslot['registrations']) ) {
                         foreach($timeslot['registrations'] as $rid => $registration) {
+                            if( $registration['participation'] == 1 ) {
+                                $num_virtual++;
+                            } else {
+                                $num_live++;
+                            }
                             if( (!isset($division['timeslots'][$tid]['name']) || $division['timeslots'][$tid]['name'] == '') ) {
                                 if( isset($festival['comments-class-format']) 
                                     && $festival['comments-class-format'] == 'code-section-category-class' 
@@ -1043,7 +1072,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
 //                    $division['name'] = $division['category_name'] . ' - ' . $division['name'];
                 }
                 
-                $blocks[] = array(
+                $timeslot_blocks[] = array(
                     'type' => 'table', 
                     'title' => $division['name'], 
                     'section' => 'musicfestival-adjudications limit-width limit-width-60', 
@@ -1055,6 +1084,29 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                     'rows'=>$division['timeslots'],
                     );
             }
+        }
+    
+        $buttons = [];
+        if( $num_live > 0 
+            && isset($festival['adjudications-virtual-instructions']) 
+            && $festival['adjudications-virtual-instructions'] != '' 
+            ) {
+            $buttons[] = ['title' => 'Live Instructions', 'url'=>"{$base_url}/instructions"];
+        }
+        if( $num_virtual > 0 
+            && isset($festival['adjudications-virtual-instructions']) 
+            && $festival['adjudications-virtual-instructions'] != '' 
+            ) {
+            $buttons[] = ['title' => 'Virtual Instructions', 'url'=>"{$base_url}/instructions-virtual"];
+        }
+        if( count($buttons) > 0 ) {
+            $blocks[] = [
+                'type' => 'buttons',
+                'items' => $buttons,
+                ];
+        }
+        foreach($timeslot_blocks as $block) {
+            $blocks[] = $block;
         }
     }
 

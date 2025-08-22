@@ -108,6 +108,8 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'comments-sorting',
         'adjudications-online-live',
         'adjudications-online-intro',
+        'adjudications-virtual-instructions',
+        'adjudications-live-instructions',
         'adjudications-online-review',
         'certificates-include-pronouns',
         'certificates-class-format',

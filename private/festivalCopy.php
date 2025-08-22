@@ -115,7 +115,6 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
         if( $setting['detail_value'] != '' 
             && (!isset($new_festival['settings'][$k]['detail_value']) || $new_festival['settings'][$k]['detail_value'] == '') 
             ) {
-            error_log("$k => " . $setting['detail_value']);
             $update_args[$k] = $setting['detail_value'];
         }
     } 
