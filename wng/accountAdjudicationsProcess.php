@@ -259,14 +259,40 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     // Show timeslot results
     //
     if( isset($request['uri_split'][($request['cur_uri_pos']+2)]) 
-        && $request['uri_split'][($request['cur_uri_pos']+2)] == 'instructions'
+        && $request['uri_split'][($request['cur_uri_pos']+2)] == 'instructions-virtual.pdf'
         ) {
-        $blocks[] = [
-            'type' => 'text',
-            'title' => (($festival['flags']&0x06) > 0 ? 'Live ' : '') . 'Adjudication Instructions',
-            'content' => isset($festival['adjudications-live-instructions']) ? $festival['adjudications-live-instructions'] : '',
-            ];
-        return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'adjudicatorInstructionsPDF');
+        $rc = ciniki_musicfestivals_templates_adjudicatorInstructionsPDF($ciniki, $tnid, [
+            'virtual'=>'yes',
+            'festival-id' => $festival['id'],
+            ]);
+        if( isset($rc['pdf']) ) {
+            $rc['pdf']->Output($rc['filename'], 'I');
+            return array('stat'=>'exit');
+        } 
+        return array('stat' => 'ok', 'blocks' => [
+            'type' => 'msg',
+            'level' => 'error',
+            'content' => 'No instructions found',
+            ]);
+    }
+    elseif( isset($request['uri_split'][($request['cur_uri_pos']+2)]) 
+        && $request['uri_split'][($request['cur_uri_pos']+2)] == 'instructions.pdf'
+        ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'adjudicatorInstructionsPDF');
+        $rc = ciniki_musicfestivals_templates_adjudicatorInstructionsPDF($ciniki, $tnid, [
+            'live'=>'yes',
+            'festival-id' => $festival['id'],
+            ]);
+        if( isset($rc['pdf']) ) {
+            $rc['pdf']->Output($rc['filename'], 'I');
+            return array('stat'=>'exit');
+        } 
+        return array('stat' => 'ok', 'blocks' => [
+            'type' => 'msg',
+            'level' => 'error',
+            'content' => 'No instructions found',
+            ]);
     }
     elseif( isset($request['uri_split'][($request['cur_uri_pos']+2)]) 
         && $request['uri_split'][($request['cur_uri_pos']+2)] == 'instructions-virtual'
@@ -275,6 +301,28 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             'type' => 'text',
             'title' => 'Virtual Adjudication Instructions',
             'content' => isset($festival['adjudications-virtual-instructions']) ? $festival['adjudications-virtual-instructions'] : '',
+            ];
+        $blocks[] = [
+            'type' => 'buttons',
+            'items' => [
+                ['title' => 'Download PDF', 'target' => '_blank', 'url' => "{$base_url}/instructions-virtual.pdf"],
+                ],
+            ];
+        return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
+    }
+    elseif( isset($request['uri_split'][($request['cur_uri_pos']+2)]) 
+        && $request['uri_split'][($request['cur_uri_pos']+2)] == 'instructions'
+        ) {
+        $blocks[] = [
+            'type' => 'text',
+            'title' => (($festival['flags']&0x06) > 0 ? 'Live ' : '') . 'Adjudication Instructions',
+            'content' => isset($festival['adjudications-live-instructions']) ? $festival['adjudications-live-instructions'] : '',
+            ];
+        $blocks[] = [
+            'type' => 'buttons',
+            'items' => [
+                ['title' => 'Download PDF', 'target' => '_blank', 'url' => "{$base_url}/instructions.pdf"],
+                ],
             ];
         return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
     }
@@ -1093,8 +1141,10 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             ) {
             if( ($festival['flags']&0x06) > 0 ) {
                 $buttons[] = ['title' => 'Live Instructions', 'url'=>"{$base_url}/instructions"];
+                $buttons[] = ['title' => 'Live Instructions PDF', 'target' => '_blank', 'url' => "{$base_url}/instructions.pdf"];
             } else {
                 $buttons[] = ['title' => 'Instructions', 'url'=>"{$base_url}/instructions"];
+                $buttons[] = ['title' => 'Instructions PDF', 'target' => '_blank', 'url' => "{$base_url}/instructions.pdf"];
             }
         }
         if( $num_virtual > 0 
@@ -1102,6 +1152,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             && $festival['adjudications-virtual-instructions'] != '' 
             ) {
             $buttons[] = ['title' => 'Virtual Instructions', 'url'=>"{$base_url}/instructions-virtual"];
+            $buttons[] = ['title' => 'Virtual Instructions PDF', 'target' => '_blank', 'url' => "{$base_url}/instructions-virtual.pdf"];
         }
         if( count($buttons) > 0 ) {
             $blocks[] = [
