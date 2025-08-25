@@ -4407,6 +4407,40 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $festival['statistics']['num_accompanists'] = array('label'=>'Number of Accompanists', 'value'=>$rc['num']);
 
             //
+            // Get the amount of registration fees
+            //
+            $strsql = "SELECT registrations.participation, "
+                . "SUM(items.total_amount) AS total_fees "
+                . "FROM ciniki_musicfestival_registrations AS registrations "
+                . "LEFT JOIN ciniki_sapos_invoice_items AS items ON ("
+                    . "registrations.invoice_id = items.invoice_id "
+                    . "AND registrations.id = items.object_id "
+                    . "AND items.object = 'ciniki.musicfestivals.registration' "
+                    . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "GROUP BY participation "
+                . "ORDER BY participation "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'fees', 'fname'=>'participation', 
+                    'fields'=>array('participation', 'total_fees'),
+                    'maps'=>array('participation'=>$maps['registration']['participation']),
+                    ),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1081', 'msg'=>'Unable to load fees', 'err'=>$rc['err']));
+            }
+            foreach($rc['fees'] as $row) {
+                $festival['statistics'][$row['participation'] . '_fees'] = array(
+                    'label'=>$row['participation'] . ' Fees', 
+                    'value'=>'$' . number_format($row['total_fees'], 2),
+                    );
+            }
+
+            //
             // Get the placements
             //
             if( isset($festival['comments-placement-options']) && $festival['comments-placement-options'] != '' ) {
