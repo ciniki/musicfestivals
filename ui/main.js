@@ -5443,7 +5443,7 @@ function ciniki_musicfestivals_main() {
                     'no':'No',
                     'yes':'Yes',
                     }},
-                'adjudications-online-review':{'label':'Timeslot Review', 'type':'toggle', 'default':'no', 'toggles':{
+                'adjudications-online-review':{'label':'Results Review', 'type':'toggle', 'default':'no', 'toggles':{
                     'no':'No',
                     'yes':'Yes',
                     }},
