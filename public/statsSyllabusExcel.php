@@ -58,9 +58,9 @@ function ciniki_musicfestivals_statsSyllabusExcel(&$ciniki) {
         . "classes.fee AS live_fee, "
         . "classes.virtual_fee AS virtual_fee, "
         . "classes.plus_fee AS plus_fee, "
-        . "registrations.participation, "
+        . "IFNULL(registrations.participation, 0) AS _p, "
         . "COUNT(registrations.id) AS num_reg, "
-        . "SUM(items.total_amount) AS fees "
+        . "IFNULL(SUM(items.total_amount), 0) AS fees "
         . "FROM ciniki_musicfestival_sections AS sections "
         . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
             . "sections.id = categories.section_id "
@@ -82,8 +82,8 @@ function ciniki_musicfestivals_statsSyllabusExcel(&$ciniki) {
             . ") "
         . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "GROUP BY sections.id, categories.id, classes.id, registrations.participation "
-        . "ORDER BY sections.sequence, sections.name, categories.sequence, categories.name, classes.sequence, classes.name, registrations.participation "
+        . "GROUP BY sections.id, categories.id, classes.id, _p "
+        . "ORDER BY sections.sequence, sections.name, categories.sequence, categories.name, classes.sequence, classes.name, _p "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -92,7 +92,7 @@ function ciniki_musicfestivals_statsSyllabusExcel(&$ciniki) {
         array('container'=>'classes', 'fname'=>'class_id', 'fields'=>array('id'=>'class_id', 
             'code'=>'class_code', 'name'=>'class_name', 'live_fee', 'virtual_fee', 'plus_fee',
             )),
-        array('container'=>'registrations', 'fname'=>'participation', 'fields'=>array('participation', 'num_reg', 'fees')),
+        array('container'=>'registrations', 'fname'=>'_p', 'fields'=>array('participation'=>'_p', 'num_reg', 'fees')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1082', 'msg'=>'Unable to load sections', 'err'=>$rc['err']));

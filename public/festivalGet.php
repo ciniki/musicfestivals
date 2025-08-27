@@ -4501,9 +4501,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             //
             $strsql = "SELECT sections.id, "
                 . "sections.name, "
-                . "registrations.participation, "
+                . "IFNULL(registrations.participation, 0) AS _p, "
                 . "COUNT(registrations.id) AS num_reg, "
-                . "SUM(items.total_amount) AS fees "
+                . "IFNULL(SUM(items.total_amount), 0) AS fees "
                 . "FROM ciniki_musicfestival_sections AS sections "
                 . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
                     . "sections.id = categories.section_id "
@@ -4525,13 +4525,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . ") "
                 . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "GROUP BY sections.id, registrations.participation "
-                . "ORDER BY sections.name, registrations.participation "
+                . "GROUP BY sections.id, _p "
+                . "ORDER BY sections.name, _p "
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'sections', 'fname'=>'id', 'fields'=>array('id', 'name')),
-                array('container'=>'registrations', 'fname'=>'participation', 'fields'=>array('participation', 'num_reg', 'fees')),
+                array('container'=>'registrations', 'fname'=>'_p', 'fields'=>array('participation'=>'_p', 'num_reg', 'fees')),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1082', 'msg'=>'Unable to load sections', 'err'=>$rc['err']));
