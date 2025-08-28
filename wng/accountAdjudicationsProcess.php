@@ -326,6 +326,44 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             ];
         return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
     }
+    elseif( isset($request['uri_split'][($request['cur_uri_pos']+2)]) 
+        && $request['uri_split'][($request['cur_uri_pos']+2)] == 'runsheets-virtual.pdf'
+        ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'runsheetsPDF');
+        $rc = ciniki_musicfestivals_templates_runsheetsPDF($ciniki, $tnid, [
+            'ipv'=>'virtual',
+            'festival_id' => $festival['id'],
+            'adjudicator_id' => $adjudicator_id,
+            ]);
+        if( isset($rc['pdf']) ) {
+            $rc['pdf']->Output($rc['filename'], 'I');
+            return array('stat'=>'exit');
+        } 
+        return array('stat' => 'ok', 'blocks' => [
+            'type' => 'msg',
+            'level' => 'error',
+            'content' => 'No runsheets found',
+            ]);
+    }
+    elseif( isset($request['uri_split'][($request['cur_uri_pos']+2)]) 
+        && $request['uri_split'][($request['cur_uri_pos']+2)] == 'runsheets.pdf'
+        ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'runsheetsPDF');
+        $rc = ciniki_musicfestivals_templates_runsheetsPDF($ciniki, $tnid, [
+            'ipv'=>'inperson',
+            'festival_id' => $festival['id'],
+            'adjudicator_id' => $adjudicator_id,
+            ]);
+        if( isset($rc['pdf']) ) {
+            $rc['pdf']->Output($rc['filename'], 'I');
+            return array('stat'=>'exit');
+        } 
+        return array('stat' => 'ok', 'blocks' => [
+            'type' => 'msg',
+            'level' => 'error',
+            'content' => 'No runsheets found',
+            ]);
+    }
     elseif( isset($request['uri_split'][($request['cur_uri_pos']+4)]) 
         && $request['uri_split'][($request['cur_uri_pos']+4)] == 'results'
         && isset($divisions[$request['uri_split'][($request['cur_uri_pos']+2)]]['timeslots'][$request['uri_split'][($request['cur_uri_pos']+3)]])
@@ -1135,24 +1173,32 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         }
     
         $buttons = [];
-        if( $num_live > 0 
-            && isset($festival['adjudications-live-instructions']) 
-            && $festival['adjudications-live-instructions'] != '' 
-            ) {
-            if( ($festival['flags']&0x06) > 0 ) {
-                $buttons[] = ['title' => 'Live Instructions', 'url'=>"{$base_url}/instructions"];
-                $buttons[] = ['title' => 'Live Instructions PDF', 'target' => '_blank', 'url' => "{$base_url}/instructions.pdf"];
-            } else {
-                $buttons[] = ['title' => 'Instructions', 'url'=>"{$base_url}/instructions"];
-                $buttons[] = ['title' => 'Instructions PDF', 'target' => '_blank', 'url' => "{$base_url}/instructions.pdf"];
+        if( $num_live > 0 ) {
+            if( isset($festival['adjudications-live-instructions']) && $festival['adjudications-live-instructions'] != '' ) {
+                if( ($festival['flags']&0x06) > 0 ) {
+                    $buttons[] = ['title' => 'Live Instructions', 'url'=>"{$base_url}/instructions"];
+                    $buttons[] = ['title' => 'Live Instructions PDF', 'target' => '_blank', 'url' => "{$base_url}/instructions.pdf"];
+                } else {
+                    $buttons[] = ['title' => 'Instructions', 'url'=>"{$base_url}/instructions"];
+                    $buttons[] = ['title' => 'Instructions PDF', 'target' => '_blank', 'url' => "{$base_url}/instructions.pdf"];
+                }
+            }
+            if( isset($festival['adjudications-runsheets-live']) && $festival['adjudications-runsheets-live'] != '' ) {
+                if( ($festival['flags']&0x06) > 0 ) {
+                    $buttons[] = ['title' => 'Live Runsheets PDF', 'target' => '_blank', 'url' => "{$base_url}/runsheets.pdf"];
+                } else {
+                    $buttons[] = ['title' => 'Runsheets PDF', 'target' => '_blank', 'url' => "{$base_url}/runsheets.pdf"];
+                }
             }
         }
-        if( $num_virtual > 0 
-            && isset($festival['adjudications-virtual-instructions']) 
-            && $festival['adjudications-virtual-instructions'] != '' 
-            ) {
-            $buttons[] = ['title' => 'Virtual Instructions', 'url'=>"{$base_url}/instructions-virtual"];
-            $buttons[] = ['title' => 'Virtual Instructions PDF', 'target' => '_blank', 'url' => "{$base_url}/instructions-virtual.pdf"];
+        if( $num_virtual > 0 ) {
+            if( isset($festival['adjudications-virtual-instructions']) && $festival['adjudications-virtual-instructions'] != '' ) {
+                $buttons[] = ['title' => 'Virtual Instructions', 'url'=>"{$base_url}/instructions-virtual"];
+                $buttons[] = ['title' => 'Virtual Instructions PDF', 'target' => '_blank', 'url' => "{$base_url}/instructions-virtual.pdf"];
+            }
+            if( isset($festival['adjudications-runsheets-virtual']) && $festival['adjudications-runsheets-virtual'] != '' ) {
+                $buttons[] = ['title' => 'Virtual Runsheets PDF', 'target' => '_blank', 'url' => "{$base_url}/runsheets-virtual.pdf"];
+            }
         }
         if( count($buttons) > 0 ) {
             $blocks[] = [

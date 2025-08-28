@@ -107,6 +107,8 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'comments-paper-size',
         'comments-sorting',
         'adjudications-online-live',
+        'adjudications-runsheets-live',
+        'adjudications-runsheets-virtual',
         'adjudications-online-intro',
         'adjudications-virtual-instructions',
         'adjudications-live-instructions',

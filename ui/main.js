@@ -5501,6 +5501,14 @@ function ciniki_musicfestivals_main() {
                     'no':'No',
                     'yes':'Yes',
                     }},
+                'adjudications-runsheets-live':{'label':'Live Runsheets', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+                'adjudications-runsheets-virtual':{'label':'Virtual Runsheets', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
                 'adjudications-online-review':{'label':'Results Review', 'type':'toggle', 'default':'no', 'toggles':{
                     'no':'No',
                     'yes':'Yes',
