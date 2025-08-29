@@ -11657,6 +11657,19 @@ function ciniki_musicfestivals_main() {
     this.location.location_id = 0;
     this.location.nplist = [];
     this.location.sections = {
+        '_image_id':{'label':'Location Photo', 'type':'imageform', 'aside':'yes', 'fields':{
+            'image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
+                'addDropImage':function(iid) {
+                    M.ciniki_musicfestivals_main.location.setFieldValue('image_id', iid);
+                    return true;
+                    },
+                'addDropImageRefresh':'',
+                'deleteImage':function(fid) {
+                    M.ciniki_musicfestivals_main.location.setFieldValue(fid, 0);
+                    return true;
+                    },
+             },
+        }},
         'general':{'label':'Location Information', 'aside':'yes', 'fields':{
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
             'shortname':{'label':'Short Name', 'type':'text'},
@@ -11674,25 +11687,12 @@ function ciniki_musicfestivals_main() {
             'latitude':{'label':'Latitude', 'type':'text'},
             'longitude':{'label':'Longitude', 'type':'text'},
             }},
-        '_lookup':{'label':'', 'buttons':{
+        '_lookup':{'label':'', 'aside':'yes', 'buttons':{
             'lookup':{'label':'Lookup Lat/Long', 'fn':'M.ciniki_musicfestivals_main.location.lookupLatLong();'},
             }},
-        '_image_id':{'label':'Logo', 'type':'imageform', 'aside':'no', 'fields':{
-            'image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
-                'addDropImage':function(iid) {
-                    M.ciniki_musicfestivals_main.location.setFieldValue('image_id', iid);
-                    return true;
-                    },
-                'addDropImageRefresh':'',
-                'deleteImage':function(fid) {
-                    M.ciniki_musicfestivals_main.location.setFieldValue(fid, 0);
-                    return true;
-                    },
-             },
-        }},
         '_description':{'label':'Description', 
             'fields':{
-                'description':{'label':'', 'hidelabel':'yes', 'type':'htmlarea', 'size':'medium'},
+                'description':{'label':'', 'hidelabel':'yes', 'type':'htmlarea', 'size':'large'},
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.location.save();'},
