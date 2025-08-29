@@ -191,7 +191,7 @@ function ciniki_musicfestivals_wng_provincialResultsProcess(&$ciniki, $tnid, &$r
             $sections[$permalink] = [
                 'title' => $name,
                 'classes' => $section['classes'],
-                'url' => $request['page']['path'] . '/provincials/' . $permalink, 
+                'url' => ($request['page']['path'] != '/' ? $request['page']['path'] : '') . '/provincials/' . $permalink, 
                 ];
         } else {
             foreach($section['classes'] as $class) {
@@ -200,6 +200,8 @@ function ciniki_musicfestivals_wng_provincialResultsProcess(&$ciniki, $tnid, &$r
         }
     }
 
+    error_log(print_r($request['cur_uri_pos'],true));
+    error_log(print_r($request['uri_split'],true));
     if( isset($s['layout']) && $s['layout'] == 'singlepage' ) {
         if( isset($s['title']) && $s['title'] != '' ) {
             $blocks[] = array(
@@ -273,7 +275,7 @@ function ciniki_musicfestivals_wng_provincialResultsProcess(&$ciniki, $tnid, &$r
                 'rows' => $registrations,
                 ];
         }
-        return array('stat'=>'ok', 'blocks'=>$blocks, 'clear'=>'yes', 'stop'=>'yes');
+        return array('stat'=>'ok', 'blocks'=>$blocks, 'url_found'=>'yes', 'clear'=>'yes', 'stop'=>'yes');
     } else {
         if( isset($s['title']) && $s['title'] != '' ) {
             $content = isset($s['content']) ? $s['content'] : '';
