@@ -194,12 +194,12 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'top' => 'Yes',
                 // In future can add bottom/both as options if needed
                 )),
-            'syllabus-pdf' => array('label'=>'Complete Syllabus PDF Download', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
+/*            'syllabus-pdf' => array('label'=>'Complete Syllabus PDF Download', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
                 'no' => 'Off',
                 'top' => 'Top',
                 'bottom' => 'Bottom',
                 'both' => 'Both',
-                )),
+                )), */
 /*            'section-pdf' => array('label'=>'Section PDF Download', 'type'=>'toggle', 'default'=>'no', 'separator'=>'yes',
                 'toggles'=>array(
                     'no' => 'Off',
