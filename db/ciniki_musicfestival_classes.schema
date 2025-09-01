@@ -168,4 +168,4 @@ create table ciniki_musicfestival_classes (
     index (festival_id, category_id, tnid),
     index keywords (keywords),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.17';
+) ENGINE='InnoDB', COMMENT='v1.18';
