@@ -70,6 +70,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         . "classes.code, "
         . "classes.name, "
         . "classes.permalink, "
+        . "classes.icon_image_id, "
         . "classes.sequence, "
         . "classes.synopsis as class_synopsis, "
         . "classes.flags, "
@@ -120,7 +121,8 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         array('container'=>'categories', 'fname'=>'category_id', 
             'fields'=>array('name'=>'category_name', 'synopsis'=>'category_synopsis', 'description'=>'category_description')),
         array('container'=>'classes', 'fname'=>'id', 
-            'fields'=>array('id', 'festival_id', 'category_id', 'code', 'name', 'permalink', 'sequence', 'flags', 'feeflags',
+            'fields'=>array('id', 'festival_id', 'category_id', 'code', 'name', 'permalink', 'icon_image_id',
+                'sequence', 'flags', 'feeflags',
                 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 'synopsis'=>'class_synopsis')),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -177,6 +179,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         public $header_height = 0;      // The height of the image and address
         public $footer_msg = '';
         public $tenant_details = array();
+        public $class_icons = [];
 
         public function Header() {
             //
@@ -195,9 +198,9 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                 // Check if the ratio of the image will make it too large for the height,
                 // and scaled based on either height or width.
                 if( $available_ratio < $image_ratio ) {
-                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, 0, 'JPEG', '', 'L', 2, '150');
+                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, 0, '', '', 'L', 2, '150');
                 } else {
-                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-10, 'JPEG', '', 'L', 2, '150');
+                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-10, '', '', 'L', 2, '150');
                 }
             }
 
@@ -267,22 +270,35 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             foreach($category['classes'] as $class) {
                 $lh = 0;
                 $lhs = 0;
+                $icon_width = 0;
+                $icon_x = 0;
+                $img = '';
                 foreach($fields as $i => $field) {
+                    if( isset($this->class_icons[$class['icon_image_id']]) && $i == 0 ) {
+                        $icon_x = $this->GetX() + $this->getStringWidth($class['code']) + 3;
+                        $icon_y = $this->GetY() + 1.5;
+                        $icon_width = ($this->class_icons[$class['icon_image_id']]['ratio'] * 6); // + 8;
+                        // Setup blank space which will be filled in with icon
+                        $img = '';
+                        for( $j = 0; $j < $icon_width; $j++) {
+                            $img .= '&nbsp;';
+                        }
+                    }
                     if( $field == 'code_name_synopsis' ) {
-                        $lh = $this->getStringHeight($w[$i], $class['code'] . ' - ' . $class['name']);
+                        $lh = $this->getStringHeight(($w[$i] - $icon_width), $class['code'] . ' - ' . $class['name']);
                         if( $class['synopsis'] != '' ) {
                             $this->setCellPaddings(2, 2, 2, 1);
-                            $lh = $this->getStringHeight($w[$i], $class['code'] . ' - ' . $class['name']);
-                            $indent = $this->getStringWidth($class['code'] . ' - ') + 2;
+                            $lh = $this->getStringHeight(($w[$i] - $icon_width), $class['code'] . ' - ' . $class['name']);
+                            $indent = $this->getStringWidth($class['code'] . ' - ') + 2 + $icon_width;
                             $this->setCellPaddings($indent, 0, 2, 2);
                             $lhs = $this->getStringHeight($w[$i], strip_tags(preg_replace("/<br>/", "\n", $class['synopsis'])));
                             $this->setCellPaddings(2, 2, 2, 2);
                         }
                     } elseif( $field == 'code_name' ) {
-                        $lh = $this->getStringHeight($w[$i], $class['code'] . ' - ' . $class['name']);
+                        $lh = $this->getStringHeight(($w[$i] - $icon_width), $class['code'] . ' - ' . $class['name']);
                     }
                 }
-                if( $this->getY() > ($this->getPageHeight() - $lh - $lhs - 22) ) {
+                if( $this->getY() > ($this->getPageHeight() - $lh - $lhs - 22 - 5) ) { // 5 is added buffer for html line wrapping
                     $this->AddPage();
                     $this->SetFont('', 'B', '18');
                     $this->MultiCell(180, 10, $category['name'] . ' (continued)', 0, 'L', 0, 1);
@@ -294,25 +310,29 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                 }
                 
                 foreach($fields as $i => $field) {
+                    $x = $this->getX();
+                    $y = $this->getY();
                     if( $field == 'code_name_synopsis' ) {
                         if( $class['synopsis'] != '' ) {
-                            $x = $this->getX();
-                            $y = $this->getY();
                             $this->setCellPaddings(2, 2, 2, 1);
-                            $this->MultiCell($w[$i], $lh, $class['code'] . ' - ' . $class['name'], 'LT', 'L', $fill, 1);
+                            $this->MultiCell($w[$i], $lh, "{$class['code']} {$img}- {$class['name']}", 'LT', 'L', $fill, 1, '', '', true, 0, true);
                             $this->SetFont('', 'I', '12');
                             $this->setCellPaddings($indent, 0, 2, 2);
-                            $this->writeHTMLCell($w[$i], $lhs, '', '', preg_replace("/\n/", '<br/>', $class['synopsis']), 'LB', 0, $fill);
+                            $this->MultiCell($w[$i], $lhs, $class['synopsis'], 'LB', 'L', $fill, 1, '', '', true, 0, true, true, 0, 'T', false);
+                            // HTML can mess up the getStringHeight, so check if actual height is greater
+                            if( $this->getY() > $y + $lh + $lhs ) {
+                                $lhs += $this->getY() - ($y + $lh + $lhs);
+                            }
                             $this->setCellPaddings(2, 2, 2, 2);
                             $this->SetFont('', '', '12');
                             $this->setY($y);
                             $this->setX($x+$w[$i]);
                         } else {
-                            $this->MultiCell($w[$i], $lh, $class['code'] . ' - ' . $class['name'], 'LTB', 'L', $fill, 0);
+                            $this->MultiCell($w[$i], $lh, "{$class['code']} {$img}- {$class['name']}", 'LTB', 'L', $fill, 0, '', '', true, 0, true);
                         }
                     } elseif( $field == 'code_name' ) {
                         $lh = $this->getStringHeight($w[$i], $class['code'] . ' - ' . $class['name']);
-                        $this->MultiCell($w[$i], $lh, $class['code'] . ' - ' . $class['name'], 'LTB', 'L', $fill, 0);
+                        $this->MultiCell($w[$i], $lh, "{$class['code']} {$img}- {$class['name']}", 'LTB', 'L', $fill, 0, '', '', true, 0, true);
                     } elseif( $field == 'earlybird_fee'
                         || $field == 'fee'
                         || $field == 'virtual_fee'
@@ -344,6 +364,9 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                         $this->setCellPaddings(2, 2, 2, 2);
                     } else {
                         $this->MultiCell($w[$i], $lh+$lhs, (isset($class[$field]) ? $class[$field] : ''), 'TRBL', 'C', $fill, 0, '', '', true, 0, false, true, ($lh+$lhs), 'M');
+                    }
+                    if( $img != '' && ($field == 'code_name_synopsis' || $field == 'code_name') ) {
+                        $this->Image('@'.$this->class_icons[$class['icon_image_id']]['image']->getImageBlob(), $icon_x, $icon_y, $icon_width, 0); //, '', '', 'C', true, '300');
                     }
                 }
 
@@ -491,6 +514,31 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         }
 
         //
+        // Scan through section category classes for icons, load and get widths
+        //
+        foreach($section['categories'] as $cid => $category) {
+            if( isset($category['classes']) ) {
+                foreach($category['classes'] as $id => $class) {
+                    if( $class['icon_image_id'] > 0 ) {
+                        if( !isset($pdf->class_icons[$class['icon_image_id']]) ) {
+                            //
+                            // Load the image
+                            //
+                            ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
+                            $rc = ciniki_images_loadImage($ciniki, $tnid, $class['icon_image_id'], 'original');
+                            if( $rc['stat'] == 'ok' ) {
+                                $pdf->class_icons[$class['icon_image_id']] = [
+                                    'image' => $rc['image'],
+                                    'ratio' => $rc['image']->getImageWidth() / $rc['image']->getImageHeight(),
+                                    ];
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        //
         // Output the categories
         //
         $newpage = 'yes';
@@ -524,7 +572,9 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             }
             $newpage = 'no';
 
-            $pdf->MultiCell(180, 5, $category['name'], 0, 'L', 0, 1);
+            if( $section['name'] != $category['name'] ) {
+                $pdf->MultiCell(180, 5, $category['name'], 0, 'L', 0, 1);
+            }
             $pdf->SetFont('', '', '12');
             if( $description != '' ) {
                 $pdf->writeHTMLCell(180, '', '', '', preg_replace("/\n/", '<br/>', $description), 0, 1);

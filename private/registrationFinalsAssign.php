@@ -21,8 +21,6 @@ function ciniki_musicfestivals_registrationFinalsAssign(&$ciniki, $tnid, $args) 
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.149', 'msg'=>'No timeslot specified'));
     }
 
-    error_log("Assign Finals: " . $args['finals_timeslot_id']);
-
     //
     // Get the next sequence and time for the new
     //

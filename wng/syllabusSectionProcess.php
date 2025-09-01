@@ -475,6 +475,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         . "classes.name, "
         . "classes.synopsis, "
         . "classes.permalink, "
+        . "classes.icon_image_id, "
         . "classes.sequence, "
         . "classes.flags, "
         . "classes.feeflags, "
@@ -512,7 +513,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             )),
         array('container'=>'classes', 'fname'=>'id',  
             'fields'=>array('id', 'uuid', 'festival_id', 'category_id', 'code', 'name', 'synopsis',
-                'permalink', 'sequence', 'flags', 'feeflags',
+                'permalink', 'icon_image_id', 'sequence', 'flags', 'feeflags',
                 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
                 )),
         ));
@@ -602,7 +603,17 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                             $category['classes'][$cid]['plus_live_fee'] = 'n/a';
                         }
                     }
-                    $category['classes'][$cid]['fullname'] = $class['code'] . ' - ' . $class['name'];
+                    if( $class['icon_image_id'] > 0 ) {
+                        ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'cacheImageAdd');
+                        $rc = ciniki_wng_cacheImageAdd($ciniki, $tnid, $request['site'], array( 
+                            'image_id' => $class['icon_image_id'],
+                            'version' => 'original',
+                            'maxheight' => 150,
+                            ));
+                        $category['classes'][$cid]['fullname'] = $class['code'] . ' <span><img class="syllabus-class-icon" src="' . $rc['url'] . '"></span> - ' . $class['name'];
+                    } else {
+                        $category['classes'][$cid]['fullname'] = $class['code'] . ' - ' . $class['name'];
+                    }
                     if( ($festival['flags']&0x01) == 0x01 
                         && ($class['flags']&0x01) == 0x01
                         && ($festival['live'] == 'yes' || $festival['virtual'] == 'yes') 

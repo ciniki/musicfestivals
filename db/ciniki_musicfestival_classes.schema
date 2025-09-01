@@ -15,6 +15,8 @@
 # name:                 The name for the class.
 # permalink:            The permalink for the class, a combination of code and name.
 #
+# icon_image_id:        The ID of the image for the class icon.
+#
 # sequence:             The order to display the classes in.
 # flags:                The options for the class.
 #

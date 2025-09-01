@@ -109,6 +109,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
             'code' => '',
             'name' => '',
             'permalink' => '',
+            'icon_image_id' => 0,
             'sequence' => $seq,
             'flags' => 0x4001,
             'feeflags' => 0,
@@ -161,6 +162,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
             . "ciniki_musicfestival_classes.code, "
             . "ciniki_musicfestival_classes.name, "
             . "ciniki_musicfestival_classes.permalink, "
+            . "ciniki_musicfestival_classes.icon_image_id, "
             . "ciniki_musicfestival_classes.sequence, "
             . "ciniki_musicfestival_classes.flags, "
             . "ciniki_musicfestival_classes.feeflags, "
@@ -190,7 +192,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'classes', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'category_id', 'section_id', 'code', 'name', 'permalink', 
+                'fields'=>array('festival_id', 'category_id', 'section_id', 'code', 'name', 'permalink', 'icon_image_id',
                     'sequence', 'flags', 'feeflags', 'titleflags',
                     'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 
                     'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 'provincials_code', 'synopsis',

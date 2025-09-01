@@ -22,6 +22,7 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
         'code'=>array('required'=>'no', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Code'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'),
         'permalink'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Permalink'),
+        'icon_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Icon'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'feeflags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Fee Options'),

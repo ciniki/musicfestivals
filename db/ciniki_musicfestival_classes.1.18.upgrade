@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN icon_image_id int NOT NULL AFTER permalink;
+ALTER TABLE ciniki_musicfestival_classes COMMENT='v1.18';

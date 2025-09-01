@@ -5125,6 +5125,10 @@ function ciniki_musicfestivals_main() {
 //                'syllabus-schedule-time':{'label':'Class Time', 'type':'toggle', 'default':'none', 'toggles':{
 //                    'none':'None', 'total':'Playing + Adjudication', 'adjudication':'Adjudication', 
 //                    }},
+                'syllabus-class-icons':{'label':'Class Icons', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
             }},
         // Add for 2025
         '_syllabus_pdf':{'label':'Syllabus PDF Options', 
@@ -7182,6 +7186,18 @@ function ciniki_musicfestivals_main() {
     this.class.nplist = [];
     this.class.sections = {
         'general':{'label':'Class Details', 'aside':'yes', 'fields':{
+            'icon_image_id':{'label':'Icon', 'type':'image_id', 'controls':'all', 'history':'no', 'size':'icon',
+                'visible':function() { return M.ciniki_musicfestivals_main.festival.settingValue('syllabus-class-icons') == 'yes' ? 'yes' : 'no'; },
+                'addDropImage':function(iid) {
+                    M.ciniki_musicfestivals_main.class.setFieldValue('icon_image_id', iid);
+                    return true;
+                    },
+                'addDropImageRefresh':'',
+                'deleteImage':function(fid) {
+                    M.ciniki_musicfestivals_main.class.setFieldValue(fid,0);
+                    return true;
+                 },
+             },
             'category_id':{'label':'Category', 'type':'select', 'complex_options':{'value':'id', 'name':'name'}, 'options':{}},
             'code':{'label':'Code', 'type':'text', 'size':'small'},
             'name':{'label':'Name', 'type':'text'},
