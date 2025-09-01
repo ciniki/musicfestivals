@@ -217,20 +217,25 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     //
     // Add the title block
     //
+    $blocks[] = array(
+        'type' => 'title', 
+        'title_sequence' => (isset($section['title_sequence']) && $section['title_sequence'] == 1 ? 1 : 2),
+        'title' => isset($s['title']) ? $s['title'] : 'Syllabus',
+        );
     if( isset($s['content']) && $s['content'] != '' ) {
         $blocks[] = array(
             'type' => 'text', 
-            'title_sequence' => (isset($section['title_sequence']) && $section['title_sequence'] == 1 ? 1 : 2),
-            'title' => isset($s['title']) ? $s['title'] : 'Syllabus',
+//            'title_sequence' => (isset($section['title_sequence']) && $section['title_sequence'] == 1 ? 1 : 2),
+//            'title' => isset($s['title']) ? $s['title'] : 'Syllabus',
             'content' => $s['content'],
             );
-    } else {
+    } /*else {
         $blocks[] = array(
             'type' => 'title', 
             'title_sequence' => (isset($section['title_sequence']) && $section['title_sequence'] == 1 ? 1 : 2),
             'title' => isset($s['title']) ? $s['title'] : 'Syllabus',
             );
-    }
+    } */
 
     //
     // Check for syllabus section requested
@@ -339,7 +344,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     if( count($buttons['top']) > 0 ) {
         $blocks[] = array(
             'type' => 'buttons',
-            'class' => "buttons-top-{$syllabus_section['permalink']} musicfestival-syllabus",
+            'class' => "buttons-top-syllabus musicfestival-syllabus",
             'list' => $buttons['top'],
             );
     }
@@ -535,7 +540,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     if( count($buttons['bottom']) > 0 ) {
         $blocks[] = array(
             'type' => 'buttons',
-            'class' => "buttons-bottom-{$syllabus_section['permalink']} musicfestival-syllabus",
+            'class' => "buttons-bottom-syllabus musicfestival-syllabus",
             'list' => $buttons['bottom'],
             );
     }
