@@ -338,16 +338,22 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 );
         }
     } else {
+        $blocks[] = array(
+            'type' => 'title',
+            'class' => 'musicfestival-syllabus-section',
+            'title_sequence' => 1,
+            'title' => (isset($s['title']) ? $s['title'] . ($s['title'] != '' ? ' - ' : '') : 'Syllabus - ') . $syllabus_section['name'],
+            );
         if( isset($syllabus_section['description']) && $syllabus_section['description'] != '' ) {
             $blocks[] = array(
                 'type' => 'text',
-                'title_sequence' => 1,
+//                'title_sequence' => 1,
                 'class' => 'musicfestival-syllabus-section',
-                'title' => (isset($s['title']) ? $s['title'] . ($s['title'] != '' ? ' - ' : '') : 'Syllabus - ') . $syllabus_section['name'],
+//                'title' => (isset($s['title']) ? $s['title'] . ($s['title'] != '' ? ' - ' : '') : 'Syllabus - ') . $syllabus_section['name'],
 //                        . (isset($groupname) && $groupname != '' ? ' - ' . $groupname : ''),
                 'content' => $syllabus_section['description'],
                 );
-        } else {
+        } /*else {
             $blocks[] = array(
                 'type' => 'title', 
                 'title_sequence' => 1,
@@ -355,7 +361,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 'title' => (isset($s['title']) ? $s['title'] . ($s['title'] != '' ? ' - ' : ''): 'Syllabus - ') . $syllabus_section['name'],
 //                        . (isset($groupname) && $groupname != '' ? ' - ' . $groupname : ''),
                 );
-        }
+        } */
     }
 
     //

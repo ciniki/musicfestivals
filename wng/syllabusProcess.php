@@ -310,10 +310,10 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     //
     // Check for buttons at the top and bottom of page
     //
-    $buttons = ['top' => [], 'bottom' => []];
+    $syllabus_buttons = ['top' => [], 'bottom' => []];
     foreach(['top', 'bottom'] AS $tp) {
         if( isset($s["syllabus-{$tp}-button-1-pdf"]) && $s["syllabus-{$tp}-button-1-pdf"] == 'yes' ) {
-            $buttons[$tp][] = [
+            $syllabus_buttons[$tp][] = [
                 'url' => $download_url,
                 'target' => '_blank',
                 'text' => 'Download Complete ' . (isset($lv_word) && $lv_word != '' ? "{$lv_word} " : '') 
@@ -329,7 +329,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.120', 'msg'=>'', 'err'=>$rc['err']));
                 }
-                $buttons[$tp][] = [
+                $syllabus_buttons[$tp][] = [
                     'url' => $rc['url'],
                     'target' => $rc['target'],
                     'text' => $s["syllabus-{$tp}-button-{$i}-text"],
@@ -341,11 +341,11 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     //
     // Check if download button
     //
-    if( count($buttons['top']) > 0 ) {
+    if( isset($syllabus_buttons['top']) && count($syllabus_buttons['top']) > 0 ) {
         $blocks[] = array(
             'type' => 'buttons',
             'class' => "buttons-top-syllabus musicfestival-syllabus",
-            'list' => $buttons['top'],
+            'list' => $syllabus_buttons['top'],
             );
     }
     
@@ -537,11 +537,11 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     //
     // Check if download button
     //
-    if( count($buttons['bottom']) > 0 ) {
+    if( isset($syllabus_buttons['bottom']) && count($syllabus_buttons['bottom']) > 0 ) {
         $blocks[] = array(
             'type' => 'buttons',
             'class' => "buttons-bottom-syllabus musicfestival-syllabus",
-            'list' => $buttons['bottom'],
+            'list' => $syllabus_buttons['bottom'],
             );
     }
     
