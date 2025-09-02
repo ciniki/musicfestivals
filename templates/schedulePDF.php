@@ -332,10 +332,14 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 //
                 $img_width = 0;
                 if( $this->header_image != null && $this->header_sponsor_image != null ) {
+                    $width = $this->header_image->getImageWidth();
+                    if( $width > 600 ) {
+                        $this->header_image->scaleImage(600, 0);
+                    }
                     $img_width = ($this->header_height-8)*2;
-                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, $this->header_height-8, 'JPEG', '', 'L', 0, '150', '', false, false, 0, true);
+                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, $this->header_height-8, '', '', 'L', 0, '150', '', false, false, 0, true);
                     $offset = $img_width - (($this->header_sponsor_image->getImageWidth()*($this->header_height-8))/$this->header_sponsor_image->getImageHeight());
-                    $this->Image('@'.$this->header_sponsor_image->getImageBlob(), $this->left_margin + $img_width + (180-($img_width*2)) + $offset, 10, $img_width, $this->header_height-8, 'JPEG', '', 'R', 0, '150', '', false, false, 0, true);
+                    $this->Image('@'.$this->header_sponsor_image->getImageBlob(), $this->left_margin + $img_width + (180-($img_width*2)) + $offset, 10, $img_width, $this->header_height-8, '', '', 'R', 0, '150', '', false, false, 0, true);
                     $this->SetY(10);
                     $this->SetX($this->left_margin + $img_width);
                     $this->SetFont('helvetica', 'B', 20);
@@ -353,16 +357,19 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     if( $this->header_image != null ) {
                         $height = $this->header_image->getImageHeight();
                         $width = $this->header_image->getImageWidth();
+                        if( $width > 600 ) {
+                            $this->header_image->scaleImage(600, 0);
+                        }
                         $image_ratio = $width/$height;
                         $img_width = 50;
                         $available_ratio = $img_width/$this->header_height;
                         // Check if the ratio of the image will make it too large for the height,
                         // and scaled based on either height or width.
                         if( $available_ratio < $image_ratio ) {
-    //                        $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, $img_width, 0, 'JPEG', '', 'L', 2, '150', '', false, false, 0);
-                            $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, $this->header_height-8, 'JPEG', '', 'L', 2, '150', '', false, false, 0, true);
+    //                        $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, $img_width, 0, '', '', 'L', 2, '150', '', false, false, 0);
+                            $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, $this->header_height-8, '', '', 'L', 2, '150', '', false, false, 0, true);
                         } else {
-                            $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-8, 'JPEG', '', 'L', 2, '150');
+                            $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-8, '', '', 'L', 2, '150');
                         }
                     }
 
@@ -397,7 +404,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             if( $this->footer_visible == 'yes' ) {
                 if( $this->footer_image != null ) {
                     $this->SetY(-(15+$this->footer_image_height));
-                    $this->Image('@'.$this->footer_image->getImageBlob(), $this->left_margin, '', 180, '', 'JPEG', '', 'L', 2, '150', '', false, false, 0, true);
+                    $this->Image('@'.$this->footer_image->getImageBlob(), $this->left_margin, '', 180, '', '', '', 'L', 2, '150', '', false, false, 0, true);
                     $this->Ln($this->footer_image_height);
                 } else {
                     $this->SetY(-15);
@@ -519,10 +526,10 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     // Check if the ratio of the image will make it too large for the height,
                     // and scaled based on either height or width.
                     if( $available_ratio < $image_ratio ) {
-                        $this->Image('@'.$sponsor['img']->getImageBlob(), $this->left_margin + $w[0], $y+$h1, $w[1], 0, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                        $this->Image('@'.$sponsor['img']->getImageBlob(), $this->left_margin + $w[0], $y+$h1, $w[1], 0, '', '', 'M', 2, '150', '', false, false,0);
                     } else {
                         $reduced_width = ($img_height/$height)*$width;
-                        $this->Image('@'.$sponsor['img']->getImageBlob(), $this->left_margin + $w[0] + (($w[1]-$reduced_width)/2), $y+$h1, 0, $img_height, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                        $this->Image('@'.$sponsor['img']->getImageBlob(), $this->left_margin + $w[0] + (($w[1]-$reduced_width)/2), $y+$h1, 0, $img_height, '', '', 'M', 2, '150', '', false, false,0);
                     }
                 } elseif( count($sponsors) == 2 ) {
                     $offset = 0;
@@ -534,10 +541,10 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                         // Check if the ratio of the image will make it too large for the height,
                         // and scaled based on either height or width.
                         if( $available_ratio < $image_ratio ) {
-                            $this->Image('@'.$sponsor['img']->getImageBlob(), $this->left_margin + $w[0] + $offset, $y+$h1, ($w[1]/2), 0, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                            $this->Image('@'.$sponsor['img']->getImageBlob(), $this->left_margin + $w[0] + $offset, $y+$h1, ($w[1]/2), 0, '', '', 'M', 2, '150', '', false, false,0);
                         } else {
                             $reduced_width = ($img_height/$height)*$width;
-                            $this->Image('@'.$sponsor['img']->getImageBlob(), $this->left_margin + $w[0] + $offset + ((($w[1]/2)-$reduced_width)/2), $y+$h1, 0, $img_height, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                            $this->Image('@'.$sponsor['img']->getImageBlob(), $this->left_margin + $w[0] + $offset + ((($w[1]/2)-$reduced_width)/2), $y+$h1, 0, $img_height, '', '', 'M', 2, '150', '', false, false,0);
                         }
                         $offset+=($w[1]/2);
                     }
@@ -727,7 +734,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     $img_width = 60; 
                     $h = ($height/$width) * $img_width;
                     $y = $pdf->getY();
-                    $pdf->Image('@'.$image->getImageBlob(), ($fw-$img_width) + $pdf->left_margin, $y, $img_width, 0, 'JPEG', '', 'TL', 2, '150');
+                    $pdf->Image('@'.$image->getImageBlob(), ($fw-$img_width) + $pdf->left_margin, $y, $img_width, 0, '', '', 'TL', 2, '150');
                     $pdf->setPageRegions(array(array('page'=>'', 'xt'=>($fw-$img_width) + $pdf->left_margin - 5, 'yt'=>$y, 'xb'=>($fw-$img_width) + $pdf->left_margin - 5, 'yb'=>$y+$h+2, 'side'=>'R')));
                     $pdf->setY($y-2.5);
                 }
@@ -809,10 +816,10 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     // Check if the ratio of the image will make it too large for the height,
                     // and scaled based on either height or width.
                     if( $available_ratio < $image_ratio ) {
-                        $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin + 130, $y+$h1, $img_width, 0, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                        $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin + 130, $y+$h1, $img_width, 0, '', '', 'M', 2, '150', '', false, false,0);
                     } else {
                         $reduced_width = ($img_height/$height)*$width;
-                        $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin + 130 + ((50-$reduced_width)/2), $y+$h1, 0, $img_height, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                        $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin + 130 + ((50-$reduced_width)/2), $y+$h1, 0, $img_height, '', '', 'M', 2, '150', '', false, false,0);
                     }
                 }
                 $pdf->SetY($y);
@@ -853,9 +860,9 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                             // Check if the ratio of the image will make it too large for the height,
                             // and scaled based on either height or width.
                             if( $available_ratio < $image_ratio ) {
-                                $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin + $offsets[$col], $y, $img_width, $h, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                                $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin + $offsets[$col], $y, $img_width, $h, '', '', 'M', 2, '150', '', false, false,0);
                             } else {
-                                $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin + $offsets[$col], $y, $img_width, $h, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                                $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin + $offsets[$col], $y, $img_width, $h, '', '', 'M', 2, '150', '', false, false,0);
                             }
                             $col++;
                             $pdf->SetX($pdf->GetX() + 45);
@@ -1194,9 +1201,9 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     // Check if the ratio of the image will make it too large for the height,
                     // and scaled based on either height or width.
                     if( $available_ratio < $image_ratio ) {
-                        $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin+$w[0], $y, $img_width, 0, 'JPEG', '', 'L', 2, '150');
+                        $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin+$w[0], $y, $img_width, 0, '', '', 'L', 2, '150');
                     } else {
-                        $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin+$w[0], $y, 0, $h-8, 'JPEG', '', 'L', 2, '150');
+                        $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin+$w[0], $y, 0, $h-8, '', '', 'L', 2, '150');
                     }
                 }
             }
@@ -1289,9 +1296,9 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                         // Check if the ratio of the image will make it too large for the height,
                         // and scaled based on either height or width.
                         if( $available_ratio < $image_ratio ) {
-                            $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin + $offsets[$col], $y, $img_width, $h, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                            $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin + $offsets[$col], $y, $img_width, $h, '', '', 'M', 2, '150', '', false, false,0);
                         } else {
-                            $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin + $offsets[$col], $y, $img_width, $h, 'JPEG', '', 'M', 2, '150', '', false, false,0);
+                            $pdf->Image('@'.$img->getImageBlob(), $pdf->left_margin + $offsets[$col], $y, $img_width, $h, '', '', 'M', 2, '150', '', false, false,0);
                         }
                         $col++;
                         $pdf->SetX($pdf->GetX() + 45);

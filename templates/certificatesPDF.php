@@ -131,6 +131,9 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $tnid, $args)
                         if( $rc['stat'] == 'ok' ) {
                             $height = $rc['image']->getImageHeight();
                             $width = $rc['image']->getImageWidth();
+                            if( $width > 600 ) {
+                                $this->header_image->scaleImage(600, 0);
+                            }
                             $image_ratio = $width/$height;
                             $available_ratio = $field['width']/$field['height'];
                             if( $available_ratio < $image_ratio ) {

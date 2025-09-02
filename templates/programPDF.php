@@ -387,6 +387,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
                             $image = $rc['image'];
                             $height = $image->getImageHeight();
                             $width = $image->getImageWidth();
+                            $this->header_image->setFormat('JPEG');
                             $image_ratio = $width/$height;
                             $img_width = 53; 
                             $h = ($height/$width) * $img_width;

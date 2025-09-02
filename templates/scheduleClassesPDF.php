@@ -167,10 +167,14 @@ function ciniki_musicfestivals_templates_scheduleClassesPDF(&$ciniki, $tnid, $ar
                 //
                 $img_width = 0;
                 if( $this->header_image != null && $this->header_sponsor_image != null ) {
+                    $width = $this->header_image->getImageWidth();
+                    if( $width > 600 ) {
+                        $this->header_image->scaleImage(600, 0);
+                    }
                     $img_width = ($this->header_height-8)*2;
-                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, $this->header_height-8, 'JPEG', '', 'L', 0, '150', '', false, false, 0, true);
+                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, $this->header_height-8, '', '', 'L', 0, '150', '', false, false, 0, true);
                     $offset = $img_width - (($this->header_sponsor_image->getImageWidth()*($this->header_height-8))/$this->header_sponsor_image->getImageHeight());
-                    $this->Image('@'.$this->header_sponsor_image->getImageBlob(), $this->left_margin + $img_width + (180-($img_width*2)) + $offset, 10, $img_width, $this->header_height-8, 'JPEG', '', 'R', 0, '150', '', false, false, 0, true);
+                    $this->Image('@'.$this->header_sponsor_image->getImageBlob(), $this->left_margin + $img_width + (180-($img_width*2)) + $offset, 10, $img_width, $this->header_height-8, '', '', 'R', 0, '150', '', false, false, 0, true);
                     $this->SetY(10);
                     $this->SetX($this->left_margin + $img_width);
                     $this->SetFont('helvetica', 'B', 20);
@@ -188,16 +192,19 @@ function ciniki_musicfestivals_templates_scheduleClassesPDF(&$ciniki, $tnid, $ar
                     if( $this->header_image != null ) {
                         $height = $this->header_image->getImageHeight();
                         $width = $this->header_image->getImageWidth();
+                        if( $width > 600 ) {
+                            $this->header_image->scaleImage(600, 0);
+                        }
                         $image_ratio = $width/$height;
                         $img_width = 50;
                         $available_ratio = $img_width/$this->header_height;
                         // Check if the ratio of the image will make it too large for the height,
                         // and scaled based on either height or width.
                         if( $available_ratio < $image_ratio ) {
-    //                        $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, $img_width, 0, 'JPEG', '', 'L', 2, '150', '', false, false, 0);
-                            $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, $this->header_height-8, 'JPEG', '', 'L', 2, '150', '', false, false, 0, true);
+    //                        $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, $img_width, 0, '', '', 'L', 2, '150', '', false, false, 0);
+                            $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, $this->header_height-8, '', '', 'L', 2, '150', '', false, false, 0, true);
                         } else {
-                            $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-8, 'JPEG', '', 'L', 2, '150');
+                            $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-8, '', '', 'L', 2, '150');
                         }
                     }
 
@@ -232,7 +239,7 @@ function ciniki_musicfestivals_templates_scheduleClassesPDF(&$ciniki, $tnid, $ar
             if( $this->footer_visible == 'yes' ) {
                 if( $this->footer_image != null ) {
                     $this->SetY(-(15+$this->footer_image_height));
-                    $this->Image('@'.$this->footer_image->getImageBlob(), $this->left_margin, '', 180, '', 'JPEG', '', 'L', 2, '150', '', false, false, 0, true);
+                    $this->Image('@'.$this->footer_image->getImageBlob(), $this->left_margin, '', 180, '', '', '', 'L', 2, '150', '', false, false, 0, true);
                     $this->Ln($this->footer_image_height);
                 } else {
                     $this->SetY(-15);
