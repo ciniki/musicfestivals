@@ -3731,6 +3731,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
 //                . "members.customer_id, "
                 . "IFNULL(customers.id, 0) AS customer_id, "
                 . "IFNULL(customers.first, '') AS customer_name, "
+                . "IFNULL(customers.display_name, '') AS display_name, "
                 . "IFNULL(emails.email, '') AS emails, "
                 . "IFNULL(fmembers.reg_start_dt, '') AS reg_start_dt_display, "
                 . "IFNULL(fmembers.reg_end_dt, '') AS reg_end_dt_display, "
@@ -3776,7 +3777,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         ),
                     ),
                 array('container'=>'customers', 'fname'=>'customer_id',
-                    'fields'=>array('id'=>'customer_id', 'name'=>'customer_name', 'emails'),
+                    'fields'=>array('id'=>'customer_id', 'name'=>'customer_name', 'display_name', 'emails'),
                     'dlists'=>array('emails'=>', '),
                     ),
                 ));
@@ -3785,6 +3786,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             }
             if( isset($rc['members']) ) {
                 $festival['members'] = $rc['members'];
+                $festival['members_customers'] = [];
                 $festival['members_ids'] = array();
                 foreach($festival['members'] as $k => $v) {
                     $festival['members_ids'][] = $v['id'];
@@ -3795,6 +3797,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     $festival['members'][$k]['admins'] = '';
                     if( isset($v['customers']) ) {
                         foreach($v['customers'] as $customer) {
+                            $festival['members_customers'][] = [
+                                'customer_id' => $customer['id'],
+                                'display_name' => $customer['display_name'],
+                                ];
                             $festival['members'][$k]['admins'] .= ($festival['members'][$k]['admins'] != '' ? ', ' : '')
                                 . $customer['name'] . ' [' . (isset($customer['emails']) ? $customer['emails'] : '') . ']';
                             

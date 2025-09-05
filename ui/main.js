@@ -3284,11 +3284,11 @@ function ciniki_musicfestivals_main() {
     }
     this.festival.emailMembers = function() {
         var customers = [];
-        for(var i in this.data.members) {
-            if( this.data.members[i].customer_id > 0 ) {
+        for(var i in this.data.members_customers) {
+            if( this.data.members_customers[i].customer_id > 0 ) {
                 customers[i] = {
-                    'id':this.data.members[i].customer_id,
-                    'name':this.data.members[i].customer_name,
+                    'id':this.data.members_customers[i].customer_id,
+                    'name':this.data.members_customers[i].display_name,
                     };
             }
         }
