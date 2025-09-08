@@ -206,7 +206,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
     // Get the details for an existing Festival
     //
     else {
-/*        $strsql = "SELECT ciniki_musicfestivals.id, "
+        $strsql = "SELECT ciniki_musicfestivals.id, "
             . "ciniki_musicfestivals.name, "
             . "ciniki_musicfestivals.permalink, "
             . "ciniki_musicfestivals.start_date, "
@@ -274,16 +274,28 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         foreach($rc['settings'] as $k => $v) {
             $festival[$k] = $v;
         }
-*/
+
         //
-        // Load the festival settings
+        // Format CRS deadline
+        //
+        if( isset($festival['registration-crs-deadline']) && $festival['registration-crs-deadline'] != '' ) {
+            $dt = new DateTime($festival['registration-crs-deadline'], new DateTimezone('UTC'));
+            if( $now < $dt ) {
+                $festival['registration-crs-open'] = 'yes';
+            }
+            $dt->setTimezone(new DateTimezone($intl_timezone));
+            $festival['registration-crs-deadline'] = $dt->format($datetime_format);
+        }
+
+/*        //
+        // Load the festival
         //
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
         $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $args['festival_id']);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
-        $festival = $rc['festival'];
+        $festival = $rc['festival']; */
 
         if( isset($festival['comments-placement-autofill']) && $festival['comments-placement-autofill'] != '' ) {
             $placements = explode(',', $festival['comments-placement-autofill']);
