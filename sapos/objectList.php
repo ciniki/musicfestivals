@@ -26,6 +26,9 @@ function ciniki_musicfestivals_sapos_objectList($ciniki, $tnid) {
         'ciniki.musicfestivals.latefee' => array(
             'name' => 'Music Festival Late Fees',
             ),
+        'ciniki.musicfestivals.cr' => array(
+            'name' => 'Music Festival Change Request',
+            ),
         );
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
         $objects['ciniki.musicfestivals.memberlatefee'] = array('name'=>'Member Festival Late Fee');

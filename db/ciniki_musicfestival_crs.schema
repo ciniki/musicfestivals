@@ -1,0 +1,58 @@
+#
+# Description
+# -----------
+# This table stores the change requests, initially for registrations, but possibly more in the future.
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# cr_number:                The unique number assigned to this change request.
+# festival_id:              The ID of the festival the change request is attached to.
+# customer_id:              The ID of the customer who submitted the request.
+# status:                   The current status of the change request.
+#
+#                               10 - Draft **future**
+#                               20 - Submitted
+#                               30 - Reviewing
+#                               40 - Pending Payment
+#                               50 - Pending
+#                               70 - Completed
+#                               90 - Cancelled
+#
+# object:                   The object the change request references. Currently must be ciniki.musicfestivals.registration
+# object_id:                The ID of the object, currently the registration id.
+#
+# dt_submitted:             The UTC Date and Time the change request was submitted.
+# dt_completed:             The UTC Date and Time the change request was completed.
+#
+# content:                  The details of the request.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_musicfestival_crs (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    cr_number int not null,
+    festival_id int not null,
+    customer_id int not null,
+    status tinyint unsigned not null,
+    object varchar(100) not null,
+    object_id varchar(100) not null,
+    dt_submitted datetime not null,
+    dt_completed datetime not null,
+    content text not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    index sync (tnid, uuid, last_updated),
+    unique index cr_number (tnid, festival_id, cr_number),
+    index (festival_id, customer_id, object, object_id)
+) ENGINE='InnoDB', COMMENT='v1.01';

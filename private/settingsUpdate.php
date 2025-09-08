@@ -21,6 +21,16 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
 
     //
+    // Load the tenant settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $intl_timezone = $rc['settings']['intl-default-timezone'];
+    
+    //
     // Get the current settings
     //
     $strsql = "SELECT id, uuid, detail_key, detail_value "
@@ -181,6 +191,9 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'registration-status-70-colour',
         'registration-status-75-colour',
         'registration-status-80-colour',
+        'registration-crs-enable',
+        'registration-crs-deadline',
+//        'registration-crs-online',
         'ui-registrations-class-format',
         'ui-registrations-count-status-5',
         'ui-registrations-count-status-70',
@@ -251,6 +264,15 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         );
     foreach($valid_settings as $field) {
         if( isset($args[$field]) ) {
+            if( $field == 'registration-crs-deadline' ) {
+                try {
+                    $dt = new DateTime($args[$field], new DateTimezone($intl_timezone));
+                    $dt->setTimezone(new DateTimezone('UTC'));
+                } catch(Exception $e) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1093', 'msg'=>'Invalid Date Format: ' . $args[$field], 'pmsg'=>$e->getMessage()));
+                }
+                $args[$field] = $dt->format('Y-m-d H:i:s');
+            }
             if( isset($settings[$field]['detail_value']) && $settings[$field]['detail_value'] != $args[$field] ) {
                 //
                 // Update the setting

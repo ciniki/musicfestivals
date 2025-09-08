@@ -24,6 +24,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'registration_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Registration'),
         'class_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Class'),
+        'cr_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Change Request'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -696,6 +697,67 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     $registration['tags'] = $tags['tags']['lists'];
                 }
             }
+        }
+
+        // 
+        // Get the list of change requests
+        //
+        $strsql = "SELECT crs.id, "
+            . "crs.cr_number, "
+            . "crs.status, "
+            . "crs.status AS status_text, "
+            . "crs.dt_submitted, "
+            . "crs.dt_completed, "
+            . "crs.content "
+            . "FROM ciniki_musicfestival_crs AS crs "
+            . "WHERE crs.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "AND crs.object_id = '" . ciniki_core_dbQuote($ciniki, $registration['id']) . "' "
+            . "AND crs.object = 'ciniki.musicfestivals.registration' "
+            . "AND crs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY crs.dt_submitted DESC "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'crs', 'fname'=>'id', 
+                'fields'=>array(
+                    'id', 'cr_number', 'status', 'status_text', 'dt_submitted', 'dt_completed', 'content',
+                    ),
+                'maps'=>array('status_text' => $maps['cr']['status']),
+                'utctotz'=>array(
+                    'dt_submitted' => array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                    'dt_completed' => array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
+                    ),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1086', 'msg'=>'Unable to load crs', 'err'=>$rc['err']));
+        }
+        $registration['crs'] = isset($rc['crs']) ? $rc['crs'] : array();
+        foreach($registration['crs'] as $cid => $cr) {
+            $registration['crs'][$cid]['status_date'] = $cr['dt_submitted'];
+            if( $cr['status'] == 70 ) {
+                $registration['crs'][$cid]['status_date'] = $cr['dt_completed'];
+            }
+        }
+
+        //
+        // Check if change request requested
+        //
+        if( isset($args['cr_id']) && $args['cr_id'] > 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'crLoad');
+            $rc = ciniki_musicfestivals_crLoad($ciniki, $args['tnid'], [
+                'cr_id' => $args['cr_id'],
+                'details' => 'yes',
+                'emails' => 'yes',
+                'invoices' => 'yes',
+                ]);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $registration['cr'] = $rc['cr'];
+            $registration['cr_details'] = $rc['cr']['details'];
+            $registration['cr_invoice_items'] = $rc['cr']['invoice_items'];
+            $registration['cr_emails'] = $rc['cr']['emails'];
         }
     }
 

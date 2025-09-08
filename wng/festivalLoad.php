@@ -98,6 +98,13 @@ function ciniki_musicfestivals_wng_festivalLoad(&$ciniki, $tnid, $festival_id) {
         $festival['competitor-label-plural'] = 'Competitors';
     }
 
+    if( isset($festival['registration-crs-deadline']) && $festival['registration-crs-deadline'] != '' ) {
+        $dt = new DateTime($festival['registration-crs-deadline'], new DateTimezone('UTC'));
+        if( $now < $dt ) {
+            $festival['registration-crs-open'] = 'yes';
+        }
+    }
+
     return array('stat'=>'ok', 'festival'=>$festival);
 }
 ?>

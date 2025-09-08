@@ -64,8 +64,8 @@ function ciniki_musicfestivals_wng_syllabusResultsProcess(&$ciniki, $tnid, &$req
     //
     // Get the music festival details
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'festivalLoad');
-    $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $festival_id);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $tnid, $festival_id);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }

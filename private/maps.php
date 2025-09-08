@@ -142,6 +142,17 @@ function ciniki_musicfestivals_maps($ciniki) {
             90 => 'Expired',
         ),
     );
+    $maps['cr'] = array(
+        'status'=>array(
+            10 => 'Draft',
+            20 => 'Submitted',
+            30 => 'Reviewing',
+            40 => 'Pending Payment',
+            50 => 'Pending',
+            70 => 'Completed',
+            90 => 'Cancelled',
+        ),
+    );
 
     return array('stat'=>'ok', 'maps'=>$maps);
 }

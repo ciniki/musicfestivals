@@ -23,6 +23,26 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     $errors = array();
 
     //
+    // Load the tenant settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $intl_timezone = $rc['settings']['intl-default-timezone'];
+    
+    //
+    // Load maps
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'maps');
+    $rc = ciniki_musicfestivals_maps($ciniki);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $maps = $rc['maps'];
+
+    //
     // Check for a cancel
     //
     if( (isset($_POST['cancel']) && $_POST['cancel'] == 'Cancel')
@@ -57,6 +77,17 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     }
     if( isset($request['session']['account-musicfestivals-competitor-form-return']) ) {
         unset($request['session']['account-musicfestivals-competitor-form-return']);
+    }
+
+    if( isset($request['session']['redirect-message']) 
+        && $request['session']['redirect-message'] != '' 
+        ) {
+        $blocks[] = [
+            'type' => 'msg',
+            'level' => 'success',
+            'content' => $request['session']['redirect-message'],
+            ];
+        unset($request['session']['redirect-message']);
     }
 
     //
@@ -830,6 +861,66 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $request['session']['account-musicfestivals-registration-return-url'] = $return_url;
             }
         }
+    }
+
+    //
+    // Check if change request submitt
+    //
+    if( isset($_POST['f-action']) && $_POST['f-action'] == 'crsubmit' ) {
+        $display = 'view';
+        if( isset($_POST['f-cr']) && $_POST['f-cr'] != '' 
+            && isset($registration)
+            ) {
+            $strsql = "SELECT MAX(crs.cr_number) AS max "
+                . "FROM ciniki_musicfestival_crs AS crs "
+                . "WHERE crs.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+                . "AND crs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
+            if( $rc['stat'] != 'ok' ) {
+                error_log("ERR: Unable to get max cr_number");
+                $blocks[] = [
+                    'type' => 'msg',
+                    'level' => 'error', 
+                    'content' => 'Internal Error',
+                    ];
+            } else {
+                if( !isset($rc['num']['max']) ) {
+                    $cr_number = 1;
+                } else {
+                    $cr_number = $rc['num']['max'] + 1;
+                }
+                
+                $dt = new DateTime('now', new DateTimezone('UTC'));
+                
+                //
+                // Add the change request
+                //
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.cr', [
+                    'cr_number' => $cr_number,
+                    'status' => 20,
+                    'festival_id' => $festival['id'],
+                    'customer_id' => $request['session']['customer']['id'],
+                    'object' => 'ciniki.musicfestivals.registration',
+                    'object_id' => $registration['registration_id'],
+                    'dt_submitted' => $dt->format("Y-m-d H:i:s"),
+                    'content' => $_POST['f-cr'],
+                    ], 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    $blocks[] = [
+                        'type' => 'msg',
+                        'level' => 'error', 
+                        'content' => 'Unable to submit change request, please try again or contact us for help.',
+                        ];
+                } else {
+                    $request['session']['redirect-message'] = 'Your request has been submitted and will be reviewed.';
+
+                    header("Location: {$base_url}");
+                    return array('stat'=>'exit');
+                }
+            }
+        } 
     }
 
     //
@@ -2167,18 +2258,134 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
 //                    . "</form>"
                     . "</div></div></div>";
         }
-        $blocks[] = array(
+        if( $editable == 'no' 
+            && isset($festival['registration-crs-enable']) && $festival['registration-crs-enable'] == 'yes' 
+            ) {
+            if( isset($festival['registration-crs-open']) && $festival['registration-crs-open'] == 'yes' ) {
+                $fields['line-cr'] = array(
+                    'id' => 'line-cr',
+                    'ftype' => 'line',
+                    'class' => (isset($_POST['f-cr']) && $_POST['f-cr'] != '' ? '' : 'hidden'),
+                    );
+                $fields['cr'] = [
+                    'id' => 'cr',
+                    'label' => 'Request a Change',
+                    'separator' => 'yes',
+                    'ftype' => 'textarea',
+                    'size' => 'medium',
+                    'class' => (isset($_POST['f-cr']) && $_POST['f-cr'] != '' ? '' : 'hidden'),
+                    'value' => (isset($_POST['f-cr']) ? trim($_POST['f-cr']) : ''),
+                    ];
+                $fields['cr-button'] = [
+                    'id' => 'cr-button',
+                    'ftype' => 'button',
+                    'label' => '',
+                    'class' => 'alignright' . (isset($_POST['f-cr']) && $_POST['f-cr'] != '' ? '' : ' hidden'),
+                    'href' => 'javascript: submitCR();',
+                    'value' => 'Submit Request',
+                    ];
+                $js .= 'function showChangeRequest(e) {'
+                        . "C.rC(C.gE('f-line-cr'), 'hidden');"
+                        . "C.rC(C.gE('f-cr').parentNode, 'hidden');"
+                        . "C.rC(C.gE('f-cr-button').parentNode, 'hidden');"
+                        . "C.aC(e.srcElement.parentNode, 'hidden');"
+                        . "e.srcElement.parentNode.previousSibling.firstChild.innerHTML='Cancel';"
+                    . '};'
+                    . 'function submitCR() {'
+                        . "C.gE('f-action').value = 'crsubmit';"
+                        . "C.gE('registration-form').submit();"
+                    . '};';
+            }
+            //
+            // Get the list of CRs already submitted
+            //
+            $strsql = "SELECT crs.id, "
+                . "crs.cr_number, "
+                . "crs.status, "
+                . "crs.status AS status_text, "
+                . "crs.dt_submitted, "
+                . "crs.dt_completed, "
+                . "crs.content "
+                . "FROM ciniki_musicfestival_crs AS crs "
+                . "WHERE crs.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+                . "AND crs.object_id = '" . ciniki_core_dbQuote($ciniki, $registration['registration_id']) . "' "
+                . "AND crs.object = 'ciniki.musicfestivals.registration' "
+                . "AND crs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "ORDER BY crs.dt_submitted DESC "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'crs', 'fname'=>'id', 
+                    'fields'=>array(
+                        'id', 'cr_number', 'status', 'status_text', 'dt_submitted', 'dt_completed', 'content',
+                        ),
+                    'maps'=>array(
+                        'status_text' => $maps['cr']['status'],
+                        ),
+                    'utctotz'=>array(
+                        'dt_submitted' => array('timezone'=>$intl_timezone, 'format'=>'M j, Y H:i a'),
+                        'dt_completed' => array('timezone'=>$intl_timezone, 'format'=>'M j, Y H:i a'),
+                        ),
+                    ),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1086', 'msg'=>'Unable to load crs', 'err'=>$rc['err']));
+            }
+            $crs = isset($rc['crs']) ? $rc['crs'] : array();
+            if( count($crs) > 0 ) {
+                $fields['line-crs'] = array(
+                    'id' => 'line-crs',
+                    'ftype' => 'line',
+                    'class' => '',
+                    );
+            }
+            $crs_content = '';
+            foreach($crs as $cr) {
+                $status_date = "<b>Submitted</b>: " . $cr['dt_submitted'] . "<br>";
+                if( $cr['status'] == 70 ) {
+                    $status_date = "<b>Completed</b>: " . $cr['dt_completed'] . "<br>";
+                }
+                $crs_content .= ($crs_content != '' ? '<br><br>' : '') 
+                    . "<b>ID</b>: " . sprintf("%04d", $cr['cr_number']) . "<br>"
+                    . "<b>Status</b>: " . $cr['status_text'] . "<br>"
+                    . $status_date
+                    . "<span style='display: inline-block; padding-left: 1rem;'>" . preg_replace("/\n/", "<br>", $cr['content']) . "</span>";
+            }
+            if( $crs_content != '' ) {
+                $fields["crs"] = [
+                    'id' => "crs",
+                    'ftype' => 'content',
+                    'label' => 'Change Requests',
+                    'description' => $crs_content,
+                    ];
+            }
+        }
+        $blocks[] = [
+            'form-id' => 'registration-form',
             'type' => 'form',
             'title' => 'Registration',
             'guidelines' => $intro,
             'class' => 'limit-width limit-width-80',
             'problem-list' => $form_errors,
-            'cancel-label' => $editable == 'yes' ? 'Cancel' : 'Back',
+            'cancel-label' => $editable == 'yes' ? 'Cancel' : '',
             'submit-label' => 'Save',
             'submit-hide' => $editable == 'no' ? 'yes' : 'no',
             'fields' => $fields,
             'js' => $js,
-            );
+            ];
+        if( $editable == 'no' ) {
+            $buttons = [];
+            $buttons[] = ['url' => '/account/musicfestivalregistrations', 'text' => 'Back'];
+            if( isset($festival['registration-crs-open']) && $festival['registration-crs-open'] == 'yes' ) {
+                $buttons[] = ['js' => 'showChangeRequest(event);', 'text' => 'Request Change'];
+            }
+            $blocks[] = [
+                'id' => 'form-buttons',
+                'type' => 'buttons',
+                'class' => 'limit-width limit-width-80 alignapart',
+                'items' => $buttons,
+                ];
+        }
         if( isset($download_buttons) && $download_buttons != '' ) {
             $blocks[] = array(
                 'type' => 'html',

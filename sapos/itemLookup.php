@@ -95,6 +95,22 @@ function ciniki_musicfestivals_sapos_itemLookup($ciniki, $tnid, $args) {
         return array('stat'=>'ok', 'item'=>$item);
     }
 
+/*    if( $args['object'] == 'ciniki.musicfestivals.cr' ) {
+        //
+        // Check the CR exists
+        //
+        $item = [
+            'object' => 'ciniki.musicfestivals.cr',
+            'object_id' => $args['object_id'],
+            'flags' => 0,
+            'price_id' => 0,
+            'quantity' => 1,
+            'taxtype_id' => 0,
+            'notes' => '',
+            'description' => 'Change Request #' . sprintf("%04d", $cr
+            ];
+    } */
+
     return array('stat'=>'ok');        
 }
 ?>

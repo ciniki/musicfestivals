@@ -135,8 +135,8 @@ function ciniki_musicfestivals_wng_syllabusSectionResultsProcess(&$ciniki, $tnid
         //
         // Get the music festival details
         //
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'festivalLoad');
-        $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $section['festival_id']);
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+        $rc = ciniki_musicfestivals_festivalLoad($ciniki, $tnid, $section['festival_id']);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
@@ -146,8 +146,8 @@ function ciniki_musicfestivals_wng_syllabusSectionResultsProcess(&$ciniki, $tnid
         //
         // Get the music festival details
         //
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'festivalLoad');
-        $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $section['festival_id']);
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+        $rc = ciniki_musicfestivals_festivalLoad($ciniki, $tnid, $section['festival_id']);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }

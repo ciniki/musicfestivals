@@ -43,6 +43,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'registrations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registrations'),
         'registrations_list'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registration List'),
         'registration_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registration Status'),
+        'cr_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Change Request Status'),
 //        'colour'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registration Colour'),
         'schedule'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule'),
         'locations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Locations'),
@@ -205,7 +206,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
     // Get the details for an existing Festival
     //
     else {
-        $strsql = "SELECT ciniki_musicfestivals.id, "
+/*        $strsql = "SELECT ciniki_musicfestivals.id, "
             . "ciniki_musicfestivals.name, "
             . "ciniki_musicfestivals.permalink, "
             . "ciniki_musicfestivals.start_date, "
@@ -273,6 +274,16 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         foreach($rc['settings'] as $k => $v) {
             $festival[$k] = $v;
         }
+*/
+        //
+        // Load the festival settings
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+        $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $args['festival_id']);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $festival = $rc['festival'];
 
         if( isset($festival['comments-placement-autofill']) && $festival['comments-placement-autofill'] != '' ) {
             $placements = explode(',', $festival['comments-placement-autofill']);
@@ -1122,6 +1133,46 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $festival['registration_statuses'] = isset($rc['statuses']) ? $rc['statuses'] : array();
             }
             //
+            // Get the list of change requests
+            //
+            elseif( isset($args['registrations_list']) && $args['registrations_list'] == 'crs' ) {
+                $strsql = "SELECT crs.status, "
+                    . "COUNT(registrations.id) AS num_reg "
+                    . "FROM ciniki_musicfestival_crs AS crs "
+                    . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                        . "crs.object_id = registrations.id "
+                        . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                        . $ipv_sql
+                        . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE crs.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "AND crs.object = 'ciniki.musicfestivals.registration' "
+                    . "AND crs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "GROUP BY crs.status "
+                    . "ORDER BY crs.status "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
+                $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1092', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+                }
+                $statuses = isset($rc['num']) ? $rc['num'] : array();
+                $total = 0;
+                foreach($statuses as $status) {
+                    $total += $status;
+                }
+
+                $festival['registration_cr_statuses'] = [
+                    ['status' => 0, 'name' => 'All', 'label' => 'Change Requests', 'num_registrations' => ($total > 0 ? $total : '')],
+                    ['status' => 20, 'name' => 'Submitted', 'label' => 'Submitted Change Requests', 'num_registrations' => (isset($statuses[20]) ? $statuses[20] : '')],
+                    ['status' => 30, 'name' => 'Reviewing', 'label' => 'Reviewing', 'num_registrations' => (isset($statuses[30]) ? $statuses[30] : '')],
+                    ['status' => 40, 'name' => 'Pending Payment', 'label' => 'Pending Payments', 'num_registrations' => (isset($statuses[40]) ? $statuses[40] : '')],
+                    ['status' => 50, 'name' => 'Pending', 'label' => 'Pending', 'num_registrations' => (isset($statuses[50]) ? $statuses[50] : '')],
+                    ['status' => 70, 'name' => 'Completed', 'label' => 'Completed', 'num_registrations' => (isset($statuses[70]) ? $statuses[70] : '')],
+                    ['status' => 90, 'name' => 'Cancelled', 'label' => 'Cancelled', 'num_registrations' => (isset($statuses[90]) ? $statuses[90] : '')],
+                    ];
+            }
+            //
             // Get the list of colours
             //
 /*            elseif( isset($args['registrations_list']) && $args['registrations_list'] == 'colours') {
@@ -1310,7 +1361,17 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         . "AND tags1.tag_name = '" . ciniki_core_dbQuote($ciniki, $args['registration_tag']) . "' "
                         . "AND tags1.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                         . ") ";
-                }
+                } 
+                if( isset($args['cr_status']) && $args['cr_status'] != '' ) {
+                    $strsql .= "INNER JOIN ciniki_musicfestival_crs AS crs ON ("
+                        . "registrations.id = crs.object_id "
+                        . "AND crs.object = 'ciniki.musicfestivals.registration' ";
+                    if( $args['cr_status'] > 0 ) {
+                        $strsql .= "AND crs.status = '" . ciniki_core_dbQuote($ciniki, $args['cr_status']) . "' ";
+                    }
+                    $strsql .= "AND crs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") ";
+                } 
                 $strsql .= "LEFT JOIN ciniki_musicfestival_registration_tags AS tags ON ("
                         . "registrations.id = tags.registration_id "
                         . "AND tags.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "

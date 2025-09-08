@@ -15,12 +15,29 @@
 function ciniki_musicfestivals_festivalLoad(&$ciniki, $tnid, $festival_id) {
 
     //
+    // Load the tenant settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $intl_timezone = $rc['settings']['intl-default-timezone'];
+
+    //
+    // Load the date format strings for the user
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'datetimeFormat');
+    $datetime_format = ciniki_users_datetimeFormat($ciniki, 'php');
+    
+    //
     // Get the current festival
     //
     $strsql = "SELECT id, "
         . "name, "
         . "start_date, "
         . "end_date, "
+        . "status, "
         . "flags, "
         . "earlybird_date, "
         . "live_date, "
@@ -100,6 +117,15 @@ function ciniki_musicfestivals_festivalLoad(&$ciniki, $tnid, $festival_id) {
     }
     if( !isset($festival['competitor-label-plural']) || $festival['competitor-label-plural'] == '' ) {
         $festival['competitor-label-plural'] = 'Competitors';
+    }
+
+    if( isset($festival['registration-crs-deadline']) && $festival['registration-crs-deadline'] != '' ) {
+        $dt = new DateTime($festival['registration-crs-deadline'], new DateTimezone('UTC'));
+        if( $now < $dt ) {
+            $festival['registration-crs-open'] = 'yes';
+        }
+        $dt->setTimezone(new DateTimezone($intl_timezone));
+        $festival['registration-crs-deadline'] = $dt->format($datetime_format);
     }
 
     return array('stat'=>'ok', 'festival'=>$festival);

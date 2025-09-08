@@ -797,6 +797,25 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );
+    $objects['cr'] = array(
+        'name' => 'Change Request',
+        'sync' => 'yes',
+        'o_name' => 'cr',
+        'o_container' => 'crs',
+        'table' => 'ciniki_musicfestival_crs',
+        'fields' => array(
+            'cr_number' => array('name'=>'Request Number'),
+            'festival_id' => array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'customer_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
+            'status' => array('name'=>'Status', 'default'=>'10'),
+            'object' => array('name'=>'Object'),
+            'object_id' => array('name'=>'Object ID'),
+            'dt_submitted' => array('name'=>'Date Submitted', 'default'=>''),
+            'dt_completed' => array('name'=>'Date Completed', 'default'=>''),
+            'content' => array('name'=>'Request'),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
     
     return array('stat'=>'ok', 'objects'=>$objects);
 }

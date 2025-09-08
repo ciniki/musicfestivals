@@ -111,6 +111,9 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         'internal_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Interal Notes'),
         'runsheet_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Runsheet Notes'),
         'tags'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Registration Tags'),
+        'cr_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Change Request'),
+        'cr_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Change Request Status',
+            'validlist'=>[10,20,30,40,50,70,90]),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -751,6 +754,30 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
             ]);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
+        }
+    }
+
+    //
+    // Check if change request specified and status update
+    //
+    if( isset($args['cr_id']) && $args['cr_id'] > 0 && isset($args['cr_status']) && $args['cr_status'] > 0 ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'crLoad');
+        $rc = ciniki_musicfestivals_crLoad($ciniki, $args['tnid'], ['cr_id' => $args['cr_id']]);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['cr']) ) {
+            if( $args['cr_status'] != $rc['cr']['status'] ) {
+                $dt = new DateTime('now', new DateTimezone('UTC'));
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+                $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.cr', $args['cr_id'], [
+                    'status' => $args['cr_status'],
+                    'dt_completed' => $dt->format('Y-m-d H:i:s'),
+                    ], 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1090', 'msg'=>'Unable to update the change request', 'err'=>$rc['err']));
+                }
+            }
         }
     }
 

@@ -152,6 +152,23 @@ function ciniki_musicfestivals_sapos_itemAdd($ciniki, $tnid, $invoice_id, $item)
         return array('stat'=>'ok', 'object'=>'ciniki.musicfestivals.registration', 'object_id'=>$reg_id);
     }
 
+    if( isset($item['object']) && $item['object'] == 'ciniki.musicfestivals.cr' && isset($item['object_id']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'crLoad');
+        $rc = ciniki_musicfestivals_crLoad($ciniki, $tnid, ['cr_id' => $item['object_id']]);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['cr']) && $rc['cr']['status'] < 40 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.cr', $rc['cr']['id'], [
+                'status' => 40,
+                ], 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1091', 'msg'=>'Unable to update the cr', 'err'=>$rc['err']));
+            }
+        }
+    }
+
     return array('stat'=>'ok');
 }
 ?>
