@@ -139,6 +139,22 @@ function ciniki_musicfestivals_memberGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.430', 'msg'=>'Unable to load customers', 'err'=>$rc['err']));
         }
         $member['customers'] = isset($rc['customers']) ? $rc['customers'] : array();
+
+        $customer_ids = [];
+        foreach($member['customers'] as $customer) {
+            $customer_ids[] = $customer['customer_id'];
+        }
+
+        if( count($customer_ids) > 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'customerMessages');
+            $rc = ciniki_mail_hooks_customerMessages($ciniki, $args['tnid'], [
+                'customer_ids' => $customer_ids,
+                ]);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $member['messages'] = isset($rc['messages']) ? $rc['messages'] : array();
+        }
     }
 
     $rsp = array('stat'=>'ok', 'member'=>$member);
