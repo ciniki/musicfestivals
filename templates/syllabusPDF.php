@@ -197,7 +197,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                 }
                 $image_ratio = $width/$height;
                 $img_width = 60;
-                $available_ratio = $img_width/$this->header_height;
+                $available_ratio = $img_width/($this->header_height-8);
                 // Check if the ratio of the image will make it too large for the height,
                 // and scaled based on either height or width.
                 if( $available_ratio < $image_ratio ) {
