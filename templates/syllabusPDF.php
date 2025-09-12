@@ -310,6 +310,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                         $this->ClassesAddHeaders($w, $headers, $fields);
                         $fill = 0;
                     }
+                    $icon_y = $this->GetY() + 1.5;
                 }
                 
                 foreach($fields as $i => $field) {
