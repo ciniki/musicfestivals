@@ -322,16 +322,9 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
         }
         for($i = 2; $i <= 5; $i++) {
             if( isset($s["syllabus-{$tp}-button-{$i}-text"]) && $s["syllabus-{$tp}-button-{$i}-text"] != '' ) {
-                ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'urlProcess');
-                $rc = ciniki_wng_urlProcess($ciniki, $tnid, $request, 
-                    isset($s["syllabus-{$tp}-button-{$i}-page"]) ? $s["syllabus-{$tp}-button-{$i}-page"] : 0, 
-                    isset($s["syllabus-{$tp}-button-{$i}-url"]) ? $s["syllabus-{$tp}-button-{$i}-url"] : '');
-                if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.120', 'msg'=>'', 'err'=>$rc['err']));
-                }
                 $syllabus_buttons[$tp][] = [
-                    'url' => $rc['url'],
-                    'target' => $rc['target'],
+                    'page' => isset($s["syllabus-{$tp}-button-{$i}-page"]) ? $s["syllabus-{$tp}-button-{$i}-page"] : 0, 
+                    'url' => isset($s["syllabus-{$tp}-button-{$i}-url"]) ? $s["syllabus-{$tp}-button-{$i}-url"] : '',
                     'text' => $s["syllabus-{$tp}-button-{$i}-text"],
                     ];
             }
