@@ -57,14 +57,16 @@ function ciniki_musicfestivals_trophyGet($ciniki) {
     if( $args['trophy_id'] == 0 ) {
         $trophy = array('id'=>0,
             'name' => '',
-            'typename' => (isset($args['typename']) ? $args['typename'] : 'Trophies'),
-            'category' => '',
+            'subcategory_id' => 0,
+//            'typename' => (isset($args['typename']) ? $args['typename'] : 'Trophies'),
+//            'category' => '',
             'primary_image_id' => '0',
             'donated_by' => '',
             'first_presented' => '',
             'criteria' => '',
-            'description' => '',
             'amount' => '',
+            'description' => '',
+            'donor_thankyou_info' => '',
             'winners' => array(),
         );
     }
@@ -75,14 +77,16 @@ function ciniki_musicfestivals_trophyGet($ciniki) {
     else {
         $strsql = "SELECT ciniki_musicfestival_trophies.id, "
             . "ciniki_musicfestival_trophies.name, "
-            . "ciniki_musicfestival_trophies.typename, "
-            . "ciniki_musicfestival_trophies.category, "
+            . "ciniki_musicfestival_trophies.subcategory_id, "
+//            . "ciniki_musicfestival_trophies.typename, "
+//            . "ciniki_musicfestival_trophies.category, "
             . "ciniki_musicfestival_trophies.primary_image_id, "
             . "ciniki_musicfestival_trophies.donated_by, "
             . "ciniki_musicfestival_trophies.first_presented, "
             . "ciniki_musicfestival_trophies.criteria, "
             . "ciniki_musicfestival_trophies.amount, "
-            . "ciniki_musicfestival_trophies.description "
+            . "ciniki_musicfestival_trophies.description, "
+            . "ciniki_musicfestival_trophies.donor_thankyou_info "
             . "FROM ciniki_musicfestival_trophies "
             . "WHERE ciniki_musicfestival_trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_musicfestival_trophies.id = '" . ciniki_core_dbQuote($ciniki, $args['trophy_id']) . "' "
@@ -90,8 +94,8 @@ function ciniki_musicfestivals_trophyGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'trophies', 'fname'=>'id', 
-                'fields'=>array('name', 'typename', 'category', 
-                    'primary_image_id', 'donated_by', 'first_presented', 'criteria', 'amount', 'description',
+                'fields'=>array('name', 'subcategory_id', 'primary_image_id', 
+                    'donated_by', 'first_presented', 'criteria', 'amount', 'description', 'donor_thankyou_info',
                     ),
                 ),
             ));
@@ -130,6 +134,30 @@ function ciniki_musicfestivals_trophyGet($ciniki) {
         }
     }
 
-    return array('stat'=>'ok', 'trophy'=>$trophy);
+    $rsp = array('stat'=>'ok', 'trophy'=>$trophy);
+
+    //
+    // Get the list of available subcategories
+    //
+    $strsql = "SELECT subcategories.id, "
+        . "CONCAT_WS(' - ', categories.name, subcategories.name) AS name "
+        . "FROM ciniki_musicfestival_trophy_categories AS categories "
+        . "INNER JOIN ciniki_musicfestival_trophy_subcategories AS subcategories ON ("
+            . "categories.id = subcategories.category_id "
+            . "AND subcategories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "WHERE categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "ORDER BY categories.sequence, categories.name, subcategories.sequence, subcategories.name "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'subcategories', 'fname'=>'id', 'fields'=>array('id', 'name')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1101', 'msg'=>'Unable to load subcategories', 'err'=>$rc['err']));
+    }
+    $rsp['subcategories'] = isset($rc['subcategories']) ? $rc['subcategories'] : array();
+
+    return $rsp;
 }
 ?>

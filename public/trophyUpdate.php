@@ -18,14 +18,16 @@ function ciniki_musicfestivals_trophyUpdate(&$ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'trophy_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Trophy'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'),
-        'typename'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Type'),
-        'category'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Category'),
+        'subcategory_id'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Subcategory'),
+//        'typename'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Type'),
+//        'category'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Category'),
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
         'donated_by'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Donated By'),
         'first_presented'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'First Presented'),
         'criteria'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Criteria'),
         'amount'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Amount'),
         'description'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Description'),
+        'donor_thankyou_info'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Donor Thank You Info'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -43,9 +45,9 @@ function ciniki_musicfestivals_trophyUpdate(&$ciniki) {
     }
 
     $strsql = "SELECT id, "
-        . "name, "
-        . "typename, "
-        . "category "
+        . "name "
+//        . "typename, "
+//        . "category "
         . "FROM ciniki_musicfestival_trophies "
         . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['trophy_id']) . "' "
         . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "

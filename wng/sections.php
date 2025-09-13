@@ -944,7 +944,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         //
         // Get the list of typenames
         //
-        $strsql = "SELECT DISTINCT trophies.typename "
+/*        $strsql = "SELECT DISTINCT trophies.typename "
             . "FROM ciniki_musicfestival_trophies AS trophies "
             . "WHERE trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "ORDER BY trophies.typename "
@@ -956,7 +956,20 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.855', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
         }
-        $types = isset($rc['types']) ? $rc['types'] : array();
+        $types = isset($rc['types']) ? $rc['types'] : array(); */
+        $strsql = "SELECT id, name, permalink "
+            . "FROM ciniki_musicfestival_trophy_categories "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "ORDER BY sequence, name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'categories', 'fname'=>'id', 'fields'=>array('id', 'name')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.855', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
+        }
+        $categories = isset($rc['categories']) ? $rc['categories'] : array();
 
         //
         // Display list of trophies
@@ -978,13 +991,13 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'syllabus-page' => array('label'=>'Syllabus Page', 'type'=>'select', 'pages'=>'yes'),
                 ),
             );
-        if( count($types) > 1 ) { 
-            array_unshift($types, ['name'=>'All']);
-            $sections['ciniki.musicfestivals.trophies']['settings']['typename'] = array(
-                'label' => 'Type',
+        if( count($categories) > 1 ) { 
+            array_unshift($categories, ['name'=>'All']);
+            $sections['ciniki.musicfestivals.trophies']['settings']['category-id'] = array(
+                'label' => 'Category',
                 'type' => 'select',
-                'complex_options' => array('value'=>'name', 'name'=>'name'),
-                'options' => $types,
+                'complex_options' => array('value'=>'id', 'name'=>'name'),
+                'options' => $categories,
                 );
         }
         //
@@ -1004,12 +1017,12 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
 //                'syllabus-page' => array('label'=>'Syllabus Page', 'type'=>'select', 'pages'=>'yes'),
                 ),
             );
-        if( count($types) > 1 ) { 
-            $sections['ciniki.musicfestivals.trophywinners']['settings']['typename'] = array(
-                'label' => 'Type',
+        if( count($categories) > 1 ) { 
+            $sections['ciniki.musicfestivals.trophywinners']['settings']['category-id'] = array(
+                'label' => 'Category',
                 'type' => 'select',
-                'complex_options' => array('value'=>'name', 'name'=>'name'),
-                'options' => $types,
+                'complex_options' => array('value'=>'id', 'name'=>'name'),
+                'options' => $categories,
                 );
         }
     }

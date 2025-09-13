@@ -63,27 +63,32 @@ function ciniki_musicfestivals_wng_trophyWinnersProcess(&$ciniki, $tnid, &$reque
     // Get the list of winners for the year
     //
     $strsql = "SELECT trophies.id, "
-        . "trophies.category, "
+        . "subcategories.id AS subcategory_id, "
+        . "subcategories.name AS subcategory_name, "
         . "trophies.name, "
         . "trophies.permalink, "
         . "winners.name AS winner_name "
-        . "FROM ciniki_musicfestival_trophies AS trophies "
+        . "FROM ciniki_musicfestival_trophy_subcategories AS subcategories "
+        . "INNER JOIN ciniki_musicfestival_trophies AS trophies ON ("
+            . "subcategories.id = trophies.subcategory_id "
+            . "AND trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
         . "INNER JOIN ciniki_musicfestival_trophy_winners AS winners ON ("
             . "trophies.id = winners.trophy_id "
             . "AND winners.year = '" . ciniki_core_dbQuote($ciniki, $s['year']) . "' "
             . "AND winners.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "WHERE subcategories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
-    if( isset($s['typename']) && $s['typename'] != '' && $s['typename'] != 'All' ) {
-        $strsql .= "AND trophies.typename = '" . ciniki_core_dbQuote($ciniki, $s['typename']) . "' ";
+    if( isset($s['category-id']) && $s['category-id'] != '' && $s['category-id'] > 0 ) {
+        $strsql .= "AND subcategories.category_id = '" . ciniki_core_dbQuote($ciniki, $s['category-id']) . "' ";
     }
-    $strsql .= "ORDER BY trophies.category, trophies.name "
+    $strsql .= "ORDER BY subcategories.sequence, subcategories.name, trophies.name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'categories', 'fname'=>'category', 
-            'fields'=>array('name' => 'category'),
+        array('container'=>'subcategories', 'fname'=>'subcategory_id', 
+            'fields'=>array('id' => 'subcategory_id', 'name' => 'subcategory_name'),
             ),
         array('container'=>'winners', 'fname'=>'id', 
             'fields'=>array('id', 'name', 'permalink', 'winner_name'),
@@ -92,7 +97,7 @@ function ciniki_musicfestivals_wng_trophyWinnersProcess(&$ciniki, $tnid, &$reque
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.939', 'msg'=>'Unable to load winners', 'err'=>$rc['err']));
     }
-    $categories = isset($rc['categories']) ? $rc['categories'] : array();
+    $subcategories = isset($rc['subcategories']) ? $rc['subcategories'] : array();
 
     if( $s['title'] != '' ) {
         $blocks[] = array(
@@ -104,19 +109,19 @@ function ciniki_musicfestivals_wng_trophyWinnersProcess(&$ciniki, $tnid, &$reque
     //
     // Display the winners list
     //
-    foreach($categories as $category) {
+    foreach($subcategories as $subcategory) {
         //
         // Display a table for each category
         //
         $blocks[] = array(
             'type' => 'table',
-            'title' => $category['name'],
+            'title' => $subcategory['name'],
             'headers' => 'yes',
             'columns' => array(
                 array('label' => 'Trophy/Award', 'field' => 'name'),
                 array('label' => 'Winner', 'field' => 'winner_name'),
                 ),
-            'rows' => $category['winners'],
+            'rows' => $subcategory['winners'],
             );
     }
 

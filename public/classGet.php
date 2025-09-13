@@ -323,13 +323,21 @@ function ciniki_musicfestivals_classGet($ciniki) {
         //
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x40) ) {
             $strsql = "SELECT tc.id, "
-                . "trophies.typename, "
-                . "trophies.category, "
+                . "categories.name AS category_name, "
+                . "subcategories.name AS subcategory_name, "
                 . "trophies.name "
                 . "FROM ciniki_musicfestival_trophy_classes AS tc "
                 . "INNER JOIN ciniki_musicfestival_trophies AS trophies ON ("
                     . "tc.trophy_id = trophies.id "
                     . "AND trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_musicfestival_trophy_subcategories AS subcategories ON ("
+                    . "trophies.subcategory_id = subcategories.id "
+                    . "AND subcategories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_musicfestival_trophy_categories AS categories ON ("
+                    . "subcategories.category_id = categories.id "
+                    . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "WHERE tc.class_id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
                 . "AND tc.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -337,7 +345,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'trophies', 'fname'=>'id', 
-                    'fields'=>array('id', 'typename', 'category', 'name')),
+                    'fields'=>array('id', 'category_name', 'subcategory_name', 'name')),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.550', 'msg'=>'Unable to load trophies', 'err'=>$rc['err']));

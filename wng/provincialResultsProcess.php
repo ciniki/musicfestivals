@@ -200,8 +200,6 @@ function ciniki_musicfestivals_wng_provincialResultsProcess(&$ciniki, $tnid, &$r
         }
     }
 
-    error_log(print_r($request['cur_uri_pos'],true));
-    error_log(print_r($request['uri_split'],true));
     if( isset($s['layout']) && $s['layout'] == 'singlepage' ) {
         if( isset($s['title']) && $s['title'] != '' ) {
             $blocks[] = array(

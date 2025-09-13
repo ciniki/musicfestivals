@@ -21,9 +21,10 @@ function ciniki_musicfestivals_trophyList($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'class_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Class'),
-        'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'),
+        'category_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'),
+        'subcategory_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Subcategory'),
         'year'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Year'),
-        'typename'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Type'),
+//        'typename'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Type'),
         'sort'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sort'),
         'output'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Output'),
         ));
@@ -46,9 +47,12 @@ function ciniki_musicfestivals_trophyList($ciniki) {
     //
     if( isset($args['class_id']) && $args['class_id'] > 0 ) {
         $strsql = "SELECT trophies.id, "
+            . "trophies.subcategory_id, "
             . "trophies.name, "
-            . "trophies.typename, "
-            . "trophies.category, "
+            . "categories.name AS category_name, "
+            . "subcategories.name AS subcategory_name, "
+//            . "trophies.typename, "
+//            . "trophies.category, "
             . "trophies.donated_by, "
             . "trophies.first_presented, "
             . "trophies.amount, "
@@ -56,26 +60,43 @@ function ciniki_musicfestivals_trophyList($ciniki) {
             . "classes.class_id, "
             . "'' AS winner_name "
             . "FROM ciniki_musicfestival_trophies AS trophies "
+            . "INNER JOIN ciniki_musicfestival_trophy_subcategories AS subcategories ON ("
+                . "trophies.subcategory_id = subcategories.id "
+                . "AND subcategories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_trophy_categories AS categories ON ("
+                . "subcategories.category_id = categories.id "
+                . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "LEFT JOIN ciniki_musicfestival_trophy_classes AS classes ON ("
                 . "trophies.id = classes.trophy_id "
                 . "AND classes.class_id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
-        if( isset($args['typename']) && $args['typename'] != '' && $args['typename'] != 'All' ) {
-            $strsql .= "AND trophies.typename = '" . ciniki_core_dbQuote($ciniki, $args['typename']) . "' ";
+        if( isset($args['category_id']) && $args['category_id'] != '' && $args['category_id'] > 0 ) {
+            $strsql .= "AND categories.id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' ";
         }
-        if( isset($args['category']) && $args['category'] != '' && $args['category'] != 'All' ) {
-            $strsql .= "AND trophies.category = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' ";
+        if( isset($args['subcategory_id']) && $args['subcategory_id'] != '' && $args['subcategory_id'] > 0 ) {
+            $strsql .= "AND subcategories.id = '" . ciniki_core_dbQuote($ciniki, $args['subcategory_id']) . "' ";
         }
+//        if( isset($args['typename']) && $args['typename'] != '' && $args['typename'] != 'All' ) {
+//            $strsql .= "AND trophies.typename = '" . ciniki_core_dbQuote($ciniki, $args['typename']) . "' ";
+//        }
+//        if( isset($args['category']) && $args['category'] != '' && $args['category'] != 'All' ) {
+//            $strsql .= "AND trophies.category = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' ";
+//        }
         $strsql .= "HAVING ISNULL(classes.class_id) "
-            . "ORDER BY typename, trophies.category, trophies.name "
+            . "ORDER BY categories.sequence, categories.name, subcategories.sequence, subcategories.name, trophies.category, trophies.name "
             . "";
     } else {
         $strsql = "SELECT trophies.id, "
+            . "trophies.subcategory_id, "
             . "trophies.name, "
-            . "trophies.typename, "
-            . "trophies.category, "
+            . "categories.name AS category_name, "
+            . "subcategories.name AS subcategory_name, "
+//            . "trophies.typename, "
+//            . "trophies.category, "
             . "trophies.donated_by, "
             . "trophies.first_presented, "
             . "trophies.amount, "
@@ -85,7 +106,16 @@ function ciniki_musicfestivals_trophyList($ciniki) {
         } else {
             $strsql .= "'' AS winner_name ";
         }
-        $strsql .= "FROM ciniki_musicfestival_trophies AS trophies ";
+        $strsql .= "FROM ciniki_musicfestival_trophies AS trophies "
+            . "INNER JOIN ciniki_musicfestival_trophy_subcategories AS subcategories ON ("
+                . "trophies.subcategory_id = subcategories.id "
+                . "AND subcategories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_trophy_categories AS categories ON ("
+                . "subcategories.category_id = categories.id "
+                . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "";
         if( isset($args['year']) && $args['year'] != 'None' && is_numeric($args['year']) ) {
             $strsql .= "LEFT JOIN ciniki_musicfestival_trophy_winners AS winners ON ("
                 . "trophies.id = winners.trophy_id "
@@ -94,19 +124,25 @@ function ciniki_musicfestivals_trophyList($ciniki) {
                 . ") ";
         }
         $strsql .= "WHERE trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
-        if( isset($args['typename']) && $args['typename'] != '' && $args['typename'] != 'All' ) {
-            $strsql .= "AND trophies.typename = '" . ciniki_core_dbQuote($ciniki, $args['typename']) . "' ";
+        if( isset($args['category_id']) && $args['category_id'] != '' && $args['category_id'] > 0 ) {
+            $strsql .= "AND categories.id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' ";
         }
-        if( isset($args['category']) && $args['category'] != '' && $args['category'] != 'All' ) {
-            $strsql .= "AND trophies.category = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' ";
+        if( isset($args['subcategory_id']) && $args['subcategory_id'] != '' && $args['subcategory_id'] > 0 ) {
+            $strsql .= "AND subcategories.id = '" . ciniki_core_dbQuote($ciniki, $args['subcategory_id']) . "' ";
         }
-        $strsql .= "ORDER BY typename, category, name "
+//        if( isset($args['typename']) && $args['typename'] != '' && $args['typename'] != 'All' ) {
+//            $strsql .= "AND trophies.typename = '" . ciniki_core_dbQuote($ciniki, $args['typename']) . "' ";
+//        }
+//        if( isset($args['category']) && $args['category'] != '' && $args['category'] != 'All' ) {
+//            $strsql .= "AND trophies.category = '" . ciniki_core_dbQuote($ciniki, $args['category']) . "' ";
+//        }
+        $strsql .= "ORDER BY categories.sequence, categories.name, subcategories.sequence, subcategories.name, name "
             . "";
     }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'trophies', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'typename', 'category', 'donated_by', 'first_presented', 'amount', 'criteria', 'winner_name')),
+            'fields'=>array('id', 'subcategory_id', 'category_name', 'subcategory_name', 'name', 'donated_by', 'first_presented', 'amount', 'criteria', 'winner_name')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -115,9 +151,9 @@ function ciniki_musicfestivals_trophyList($ciniki) {
     $trophy_ids = array();
     foreach($trophies as $iid => $trophy) {
         $trophy_ids[] = $trophy['id'];
-        $trophies[$iid]['sortkey'] = "{$trophy['typename']}-{$trophy['category']}-{$trophy['name']}";
+//        $trophies[$iid]['sortkey'] = "{$trophy['typename']}-{$trophy['category']}-{$trophy['name']}";
     }
-    if( isset($args['sort']) && $args['sort'] == 'name_asc' ) {
+/*    if( isset($args['sort']) && $args['sort'] == 'name_asc' ) {
         uasort($trophies, function($a, $b) {
             return strnatcasecmp($a['name'], $b['name']);
             });
@@ -129,8 +165,9 @@ function ciniki_musicfestivals_trophyList($ciniki) {
         uasort($trophies, function($a, $b) {
             return strnatcasecmp($a['sortkey'], $b['sortkey']);
             });
-    }
+    } 
     $trophies = array_values($trophies);
+    */
 
     //
     // Check if output is pdf
@@ -151,6 +188,50 @@ function ciniki_musicfestivals_trophyList($ciniki) {
         }
     }
 
+    $rsp = array('stat'=>'ok', 'trophies'=>$trophies, 'nplist'=>$trophy_ids);
+
+    //
+    // Get the list of categories
+    //
+    $strsql = "SELECT id, sequence, name "
+        . "FROM ciniki_musicfestival_trophy_categories AS categories "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "ORDER BY sequence, name "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'categories', 'fname'=>'id', 
+            'fields'=>array('id', 'sequence', 'name'),
+            ),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1100', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
+    }
+    $rsp['trophy_categories'] = isset($rc['categories']) ? $rc['categories'] : array();
+    array_unshift($rsp['trophy_categories'], ['id'=>0, 'sequence'=>0, 'name'=>'All']);
+
+    $rsp['trophy_subcategories'] = [];
+    if( isset($args['category_id']) && $args['category_id'] > 0 ) {
+        $strsql = "SELECT id, sequence, name "
+            . "FROM ciniki_musicfestival_trophy_subcategories AS subcategories "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND category_id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' "
+            . "ORDER BY sequence, name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'subcategories', 'fname'=>'id', 
+                'fields'=>array('id', 'sequence', 'name'),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1100', 'msg'=>'Unable to load subcategories', 'err'=>$rc['err']));
+        }
+        $rsp['trophy_subcategories'] = isset($rc['subcategories']) ? $rc['subcategories'] : array();
+        array_unshift($rsp['trophy_subcategories'], ['id'=>0, 'sequence'=>0, 'name'=>'All']);
+    }
+
+/*
     //
     // Get the list of types
     //
@@ -189,7 +270,7 @@ function ciniki_musicfestivals_trophyList($ciniki) {
     }
     $categories = isset($rc['categories']) ? $rc['categories'] : array();
     array_unshift($categories, ['name'=>'All']);
-
+*/
     //
     // Get the list of years of winners
     //
@@ -205,9 +286,10 @@ function ciniki_musicfestivals_trophyList($ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.903', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
     }
-    $years = isset($rc['years']) ? $rc['years'] : array();
-    array_unshift($years, ['name'=>'None']);
+    $rsp['trophy_years'] = isset($rc['years']) ? $rc['years'] : array();
+    array_unshift($rsp['trophy_years'], ['name'=>'None']);
 
-    return array('stat'=>'ok', 'trophies'=>$trophies, 'trophy_types'=>$types, 'trophy_categories'=>$categories, 'trophy_years'=>$years, 'nplist'=>$trophy_ids);
+    return $rsp;
+//    $rsp = array('stat'=>'ok', 'trophies'=>$trophies, 'trophy_types'=>$types, 'trophy_categories'=>$categories, 'trophy_years'=>$years, 'nplist'=>$trophy_ids);
 }
 ?>

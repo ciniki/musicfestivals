@@ -148,7 +148,7 @@ function ciniki_musicfestivals_crLoad(&$ciniki, $tnid, $args) {
                 'xml' => 'no',
                 ]);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1088', 'msg'=>'Unable to load emails', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1120', 'msg'=>'Unable to load emails', 'err'=>$rc['err']));
             }
             if( isset($rc['messages']) && count($rc['messages']) > 0 ) {
                 $cr['emails'] = array_merge($cr['emails'], $rc['messages']);
