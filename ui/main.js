@@ -13379,7 +13379,7 @@ function ciniki_musicfestivals_main() {
              },
             'name':{'label':'Name', 'required':'yes', 'type':'text'},
             'flags1':{'label':'Visible', 'type':'flagtoggle', 'default':'off', 'bit':0x01, 'field':'flags'},
-            'flags2':{'label':'Display Winners', 'type':'flagtoggle', 'default':'off', 'bit':0x02, 'field':'flags'},
+//            'flags2':{'label':'Display Winners', 'type':'flagtoggle', 'default':'off', 'bit':0x02, 'field':'flags'},
 //            'sequence':{'label':'Order', 'type':'text'},
             }},
 //        '_synopsis':{'label':'Synopsis', 'fields':{

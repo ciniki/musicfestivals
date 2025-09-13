@@ -257,7 +257,9 @@ function ciniki_musicfestivals_wng_trophiesProcess(&$ciniki, $tnid, &$request, $
             'class' => 'content-aligntop limit-width limit-width-90',
             'content' => $trophy['full_description'],
             );
-        if( isset($winners) && count($winners) > 0 ) {
+        if( isset($winners) && count($winners) > 0 
+            && (!isset($s['display-winners']) || $s['display-winners'] == 'yes')
+            ) {
             $blocks[] = array(
                 'type' => 'table',
                 'subtitle' => 'Winners',
