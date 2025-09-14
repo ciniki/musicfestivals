@@ -699,6 +699,39 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             }
         }
 
+        //
+        // Get the list of trophies won
+        //
+        $strsql = "SELECT winners.id, "
+            . "winners.flags, "
+            . "winners.awarded_amount, "
+            . "CONCAT_WS(' - ', categories.name, subcategories.name, trophies.name) AS name "
+            . "FROM ciniki_musicfestival_trophy_winners AS winners "
+            . "LEFT JOIN ciniki_musicfestival_trophies AS trophies ON ("
+                . "winners.trophy_id = trophies.id "
+                . "AND trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_trophy_subcategories AS subcategories ON ("
+                . "trophies.subcategory_id = subcategories.id "
+                . "AND subcategories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_trophy_categories AS categories ON ("
+                . "subcategories.category_id = categories.id "
+                . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE winners.registration_id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
+            . "AND winners.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY trophies.name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'tas', 'fname'=>'id', 'fields'=>array('id', 'flags', 'awarded_amount', 'name')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1126', 'msg'=>'Unable to load tas', 'err'=>$rc['err']));
+        }
+        $registration['tas'] = isset($rc['tas']) ? $rc['tas'] : array();
+
         // 
         // Get the list of change requests
         //

@@ -18,8 +18,12 @@ function ciniki_musicfestivals_trophyWinnerUpdate(&$ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'winner_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Trophy Winner'),
         'trophy_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Trophy'),
+        'registration_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Registration'),
+        'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
+        'awarded_amount'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Awarded Amount'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'),
         'year'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Year'),
+        'internal_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Internal Notes'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

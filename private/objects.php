@@ -682,9 +682,11 @@ function ciniki_musicfestivals_objects($ciniki) {
         'fields' => array(
             'trophy_id' => array('name'=>'Trophy', 'ref'=>'ciniki.musicfestivals.trophy'),
             'registration_id' => array('name'=>'Registration', 'ref'=>'ciniki.musicfestivals.registration'),
+            'flags' => array('name'=>'Options', 'default'=>'0'),
             'awarded_amount' => array('name'=>'Amount', 'default'=>'0'),
             'name' => array('name'=>'Name'),
             'year' => array('name'=>'Year', 'default'=>''),
+            'internal_notes' => array('name'=>'Internal Notes', 'default'=>''),
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );

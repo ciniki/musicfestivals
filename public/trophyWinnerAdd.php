@@ -21,13 +21,27 @@ function ciniki_musicfestivals_trophyWinnerAdd(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'trophy_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Trophy'),
-        'name'=>array('required'=>'yes', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'),
-        'year'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Year'),
+        'registration_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Registration'),
+        'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
+        'awarded_amount'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Awarded Amount'),
+        'name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name'),
+        'year'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Year'),
+        'internal_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Internal Year'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
     $args = $rc['args'];
+
+    if( (!isset($args['registration_id']) || $args['registration_id'] == '')
+        && (!isset($args['name']) || $args['name'] == '') 
+        ) {
+        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.365', 'msg'=>'You must specify a registration or name'));
+    }
+
+    if( $args['trophy_id'] == '' || $args['trophy_id'] == 0 ) {
+        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1127', 'msg'=>'You must specify a trophy'));
+    }
 
     //
     // Check access to tnid as owner
@@ -36,6 +50,10 @@ function ciniki_musicfestivals_trophyWinnerAdd(&$ciniki) {
     $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.trophyWinnerAdd');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
+    }
+
+    if( isset($args['registration_id']) && $args['registration_id'] > 0 ) {
+        $args['name'] = '';
     }
 
     //
