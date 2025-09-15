@@ -22,7 +22,7 @@ function ciniki_musicfestivals_trophySubcategoryAdd(&$ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'category_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Category'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'),
-        'permalink'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Permalink'),
+        'permalink'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Permalink'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
         'image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),

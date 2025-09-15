@@ -29,6 +29,7 @@ function ciniki_musicfestivals_trophyCategoryAdd(&$ciniki) {
         'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),
         'awarded_email_subject'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Awarded Registration Email Subject'),
         'awarded_email_content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Awarded Registration Email Template'),
+        'awarded_pdf_content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Awarded Registration PDF Template'),
         'teacher_email_subject'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Awarded Teacher Email Subject'),
         'teacher_email_content'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Awarded Teacher Email Template'),
         ));

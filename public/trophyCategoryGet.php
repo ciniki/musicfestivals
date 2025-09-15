@@ -75,6 +75,7 @@ function ciniki_musicfestivals_trophyCategoryGet($ciniki) {
             'description'=>'',
             'awarded_email_subject'=>'',
             'awarded_email_content'=>'',
+            'awarded_pdf_content'=>'',
             'teacher_email_subject'=>'',
             'teacher_email_content'=>'',
         );
@@ -94,6 +95,7 @@ function ciniki_musicfestivals_trophyCategoryGet($ciniki) {
             . "ciniki_musicfestival_trophy_categories.description, "
             . "ciniki_musicfestival_trophy_categories.awarded_email_subject, "
             . "ciniki_musicfestival_trophy_categories.awarded_email_content, "
+            . "ciniki_musicfestival_trophy_categories.awarded_pdf_content, "
             . "ciniki_musicfestival_trophy_categories.teacher_email_subject, "
             . "ciniki_musicfestival_trophy_categories.teacher_email_content "
             . "FROM ciniki_musicfestival_trophy_categories "
@@ -103,7 +105,7 @@ function ciniki_musicfestivals_trophyCategoryGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'trophycategories', 'fname'=>'id', 
-                'fields'=>array('name', 'permalink', 'flags', 'sequence', 'image_id', 'synopsis', 'description', 'awarded_email_subject', 'awarded_email_content', 'teacher_email_subject', 'teacher_email_content'),
+                'fields'=>array('name', 'permalink', 'flags', 'sequence', 'image_id', 'synopsis', 'description', 'awarded_email_subject', 'awarded_email_content', 'awarded_pdf_content', 'teacher_email_subject', 'teacher_email_content'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

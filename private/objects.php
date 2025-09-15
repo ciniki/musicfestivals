@@ -650,6 +650,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'description' => array('name'=>'Description', 'default'=>''),
             'awarded_email_subject' => array('name'=>'Awarded Registration Email Subject', 'default'=>''),
             'awarded_email_content' => array('name'=>'Awarded Registration Email Template', 'default'=>''),
+            'awarded_pdf_content' => array('name'=>'Awarded Registration PDF Template', 'default'=>''),
             'teacher_email_subject' => array('name'=>'Awarded Teacher Email Subject', 'default'=>''),
             'teacher_email_content' => array('name'=>'Awarded Teacher Email Template', 'default'=>''),
             ),

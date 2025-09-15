@@ -29,6 +29,8 @@
 # 
 # awarded_email_subject:    The email subject for the awarded email.
 # awarded_email_content:    The email html template for the awarded email.
+# awarded_pdf_content:      The html content to be used in PDF for awarded letter.
+#
 # teacher_email_subject:    The email subject for sending teachers their winners list.
 # teacher_email_content:    The email html template for sending teachers their winners list.
 #
@@ -49,6 +51,7 @@ create table ciniki_musicfestival_trophy_categories (
     description text not null,
     awarded_email_subject varchar(250) not null,
     awarded_email_content text not null,
+    awarded_pdf_content text not null,
     teacher_email_subject varchar(250) not null,
     teacher_email_content text not null,
 

@@ -10521,7 +10521,7 @@ function ciniki_musicfestivals_main() {
             && d.status != null 
             && M.ciniki_musicfestivals_main.festival.data['registration-status-' + d.status + '-colour'] != null 
             && M.ciniki_musicfestivals_main.festival.data['registration-status-' + d.status + '-colour'] != '' 
-            && M.ciniki_musicfestivals_main.festival.data['registration-status-' + d.status + '-colour'] != '#ffffff' 
+//            && M.ciniki_musicfestivals_main.festival.data['registration-status-' + d.status + '-colour'] != '#ffffff' 
             ) {
             return 'colored';
         }
@@ -13440,6 +13440,7 @@ function ciniki_musicfestivals_main() {
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'description', 'tabs':{
             'description':{'label':'Description', 'fn':'M.ciniki_musicfestivals_main.trophycategory.switchTab("description");'},
             'awardedemail':{'label':'Awarded Email', 'fn':'M.ciniki_musicfestivals_main.trophycategory.switchTab("awardedemail");'},
+            'awardedpdf':{'label':'Awarded PDF', 'fn':'M.ciniki_musicfestivals_main.trophycategory.switchTab("awardedpdf");'},
             'teacheremail':{'label':'Teacher Email', 'fn':'M.ciniki_musicfestivals_main.trophycategory.switchTab("teacheremail");'},
             }},
         '_description':{'label':'Description', 
@@ -13452,6 +13453,11 @@ function ciniki_musicfestivals_main() {
             'fields':{
                 'awarded_email_subject':{'label':'Subject', 'type':'text'},
                 'awarded_email_content':{'label':'Content', 'type':'htmlarea', 'size':'large'},
+            }},
+        '_awarded_pdf':{'label':'Awarded Registration PDF Template', 
+            'visible':function() { return M.ciniki_musicfestivals_main.trophycategory.sections._tabs.selected == 'awardedpdf' ? 'yes' : 'hidden'; },
+            'fields':{
+                'awarded_pdf_content':{'label':'', 'hidelabel':'yes', 'type':'htmlarea', 'size':'large'},
             }},
         '_teacher_email':{'label':'Awarded Teacher Email Template', 
             'visible':function() { return M.ciniki_musicfestivals_main.trophycategory.sections._tabs.selected == 'teacheremail' ? 'yes' : 'hidden'; },
@@ -13473,7 +13479,7 @@ function ciniki_musicfestivals_main() {
     this.trophycategory.switchTab = function(t) {
         this.sections._tabs.selected = t;
         this.refreshSection('_tabs');
-        this.showHideSections(['_description', '_awarded_email', '_teacher_email']);
+        this.showHideSections(['_description', '_awarded_email', '_awarded_pdf', '_teacher_email']);
     }
     this.trophycategory.open = function(cb, cid, list) {
         if( cid != null ) { this.category_id = cid; }
