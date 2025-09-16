@@ -19,11 +19,11 @@ function ciniki_musicfestivals_wng_accountMembersProcess(&$ciniki, $tnid, &$requ
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
-    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestivalmembers';
+    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/members';
     $display = 'list';
 
     if( isset($_POST['submit']) && $_POST['submit'] == 'Back' ) {
-        header("Location: {$request['ssl_domain_base_url']}/account/musicfestivalmembers");
+        header("Location: {$request['ssl_domain_base_url']}/account/musicfestival/members");
         return array('stat'=>'exit');
     }
 
@@ -177,10 +177,10 @@ function ciniki_musicfestivals_wng_accountMembersProcess(&$ciniki, $tnid, &$requ
             if( isset($recommendations[$mid]['recommendations'][$fid]['num_items']) ) {
                 $members[$mid]['festivals'][$fid]['num_recommendations'] = $recommendations[$mid]['recommendations'][$fid]['num_items'];
                 $members[$mid]['festivals'][$fid]['links'] .= "<a class='button' href='{$base_url}/recommendations/{$member['permalink']}/{$festival['permalink']}'>Recommendations</a>";
-                if( isset($request['uri_split'][4]) 
-                    && $request['uri_split'][2] == 'recommendations'
-                    && $request['uri_split'][3] == $member['permalink']
-                    && $request['uri_split'][4] == $festival['permalink']
+                if( isset($request['uri_split'][5]) 
+                    && $request['uri_split'][3] == 'recommendations'
+                    && $request['uri_split'][4] == $member['permalink']
+                    && $request['uri_split'][5] == $festival['permalink']
                     ) {
                     $args['member'] = $member;
                     $args['festival'] = $festival;
@@ -196,20 +196,20 @@ function ciniki_musicfestivals_wng_accountMembersProcess(&$ciniki, $tnid, &$requ
                 $members[$mid]['festivals'][$fid]['num_registrations'] = $registrations[$mid]['registrations'][$fid]['num_items'];
                 $members[$mid]['festivals'][$fid]['links'] .= "<a class='button' href='{$base_url}/registrations/{$member['permalink']}/{$festival['permalink']}'>Registrations</a>";
             $members[$mid]['festivals'][$fid]['links'] .= "<a class='button' href='{$base_url}/results/{$member['permalink']}/{$festival['permalink']}'>Results</a>";
-                if( isset($request['uri_split'][4]) 
-                    && $request['uri_split'][2] == 'registrations'
-                    && $request['uri_split'][3] == $member['permalink']
-                    && $request['uri_split'][4] == $festival['permalink']
+                if( isset($request['uri_split'][5]) 
+                    && $request['uri_split'][3] == 'registrations'
+                    && $request['uri_split'][4] == $member['permalink']
+                    && $request['uri_split'][5] == $festival['permalink']
                     ) {
                     $args['member'] = $member;
                     $args['festival'] = $festival;
                     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountMemberRegistrationsProcess');
                     return ciniki_musicfestivals_wng_accountMemberRegistrationsProcess($ciniki, $tnid, $request, $args);
                 }
-                if( isset($request['uri_split'][4]) 
-                    && $request['uri_split'][2] == 'results'
-                    && $request['uri_split'][3] == $member['permalink']
-                    && $request['uri_split'][4] == $festival['permalink']
+                if( isset($request['uri_split'][5]) 
+                    && $request['uri_split'][3] == 'results'
+                    && $request['uri_split'][4] == $member['permalink']
+                    && $request['uri_split'][5] == $festival['permalink']
                     ) {
                     $args['member'] = $member;
                     $args['festival'] = $festival;

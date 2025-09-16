@@ -104,6 +104,7 @@ function ciniki_musicfestivals_recommendationSearch($ciniki) {
             'utctotz'=>array(
                 'date_submitted'=> array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i:s A'),
                 ),
+            'maps'=>array('position'=>$maps['recommendationentry']['position_shortname']),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -119,15 +120,6 @@ function ciniki_musicfestivals_recommendationSearch($ciniki) {
 //            }
 //        }
         $entry_ids[] = $entry['id'];
-        switch($entry['position']) {
-            case 1: $entries[$eid]['position'] = '1st'; break;
-            case 2: $entries[$eid]['position'] = '2nd'; break;
-            case 3: $entries[$eid]['position'] = '3rd'; break;
-            case 4: $entries[$eid]['position'] = '4th'; break;
-            case 101: $entries[$eid]['position'] = '1st Alt'; break;
-            case 102: $entries[$eid]['position'] = '2nd Alt'; break;
-            case 103: $entries[$eid]['position'] = '3rd Alt'; break;
-        }
     }
 
     return array('stat'=>'ok', 'entries'=>$entries, 'nplist'=>$entry_ids);

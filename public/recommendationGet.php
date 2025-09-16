@@ -52,11 +52,23 @@ function ciniki_musicfestivals_recommendationGet($ciniki) {
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
 
     //
+    // Load maps
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'maps');
+    $rc = ciniki_musicfestivals_maps($ciniki);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $maps = $rc['maps'];
+    $nplist = [];
+
+    //
     // Return default for new Adjudicator Recommendation
     //
     if( $args['recommendation_id'] == 0 ) {
         $recommendation = array('id'=>0,
             'festival_id'=>'',
+            'status'=>10,
             'member_id'=>'',
             'section_id'=>'',
             'adjudicator_name'=>'',
@@ -76,6 +88,8 @@ function ciniki_musicfestivals_recommendationGet($ciniki) {
             . "recommendations.member_id, "
             . "IFNULL(members.name, '') AS member_name, "
             . "IFNULL(sections.name, '') AS section_name, "
+            . "recommendations.status, "
+            . "recommendations.status AS status_text, "
             . "recommendations.section_id, "
             . "recommendations.adjudicator_name, "
             . "recommendations.adjudicator_phone, "
@@ -97,9 +111,10 @@ function ciniki_musicfestivals_recommendationGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'recommendations', 'fname'=>'id', 
-                'fields'=>array('id', 'member_id', 'member_name', 'section_id', 'section_name', 
+                'fields'=>array('id', 'member_id', 'member_name', 'status', 'status_text', 'section_id', 'section_name', 
                     'adjudicator_name', 'adjudicator_phone', 'adjudicator_email', 'acknowledgement', 'date_submitted',
                     ),
+                'maps'=>array('status_text'=>$maps['recommendation']['status']),
                 'utctotz'=>array(
                     'date_submitted'=> array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i:s A'),
                     ),
@@ -113,6 +128,7 @@ function ciniki_musicfestivals_recommendationGet($ciniki) {
         }
         $recommendation = $rc['recommendations'][0];
         $recommendation['details'] = array(
+            array('label' => 'Status', 'value'=>$recommendation['status_text']),
             array('label' => 'Member', 'value'=>$recommendation['member_name']),
             array('label' => 'Section', 'value'=>$recommendation['section_name']),
             array('label' => 'Acknowledgement', 'value'=>$recommendation['acknowledgement']),
@@ -124,6 +140,7 @@ function ciniki_musicfestivals_recommendationGet($ciniki) {
         //
         $strsql = "SELECT entries.id, "
             . "entries.status, "
+            . "entries.status AS status_text, "
             . "entries.position, "
             . "entries.name, "
             . "entries.mark, "
@@ -141,32 +158,43 @@ function ciniki_musicfestivals_recommendationGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'entries', 'fname'=>'id', 
-                'fields'=>array('id', 'status', 'class_code', 'class_name', 'position', 'name', 'mark'),
+                'fields'=>array('id', 'status', 'status_text', 'class_code', 'class_name', 'position', 'name', 'mark'),
+                'maps'=>array(
+                    'position'=>$maps['recommendationentry']['position_shortname'],
+                    'status_text'=>$maps['recommendationentry']['status'],
+                    ),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.973', 'msg'=>'Unable to load entries', 'err'=>$rc['err']));
         }
         $recommendation['entries'] = isset($rc['entries']) ? $rc['entries'] : array();
+
         foreach($recommendation['entries'] as $eid => $entry) {
+            $nplist[] = $entry['id'];
             $recommendation['entries'][$eid]['class_name'] = str_replace($recommendation['section_name'] . ' - ', '', $recommendation['entries'][$eid]['class_name']);
             if( preg_match("/^([^-]+) - /", $recommendation['section_name'], $m) ) {
                 if( $m[1] != '' ) {
                     $recommendation['entries'][$eid]['name'] = str_replace($m[1] . ' - ', '', $recommendation['entries'][$eid]['name']);
                 }
             }
-            switch($entry['position']) {
-                case 1: $recommendation['entries'][$eid]['position'] = '1st'; break;
-                case 2: $recommendation['entries'][$eid]['position'] = '2nd'; break;
-                case 3: $recommendation['entries'][$eid]['position'] = '3rd'; break;
-                case 4: $recommendation['entries'][$eid]['position'] = '4th'; break;
-                case 101: $recommendation['entries'][$eid]['position'] = '1st Alt'; break;
-                case 102: $recommendation['entries'][$eid]['position'] = '2nd Alt'; break;
-                case 103: $recommendation['entries'][$eid]['position'] = '3rd Alt'; break;
-            }
         }
+
+        //
+        // Get the sent emails
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'objectMessages');
+        $rc = ciniki_mail_hooks_objectMessages($ciniki, $args['tnid'], array(
+            'object' => 'ciniki.musicfestivals.recommendation',
+            'object_id' => $recommendation['id'],
+            'xml' => 'no',
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $recommendation['messages'] = isset($rc['messages']) ? $rc['messages'] : array();
     }
 
-    return array('stat'=>'ok', 'recommendation'=>$recommendation);
+    return array('stat'=>'ok', 'recommendation'=>$recommendation, 'nplist'=>$nplist);
 }
 ?>

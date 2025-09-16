@@ -53,6 +53,16 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
+    
+    //
+    // Load maps
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'maps');
+    $rc = ciniki_musicfestivals_maps($ciniki);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $maps = $rc['maps'];
 
     //
     // Return default for new Adjudicator Recommendation Entry
@@ -61,10 +71,11 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
         $entry = array('id'=>0,
             'status' => 10,
             'recommendation_id'=>'',
-            'class_id'=>'',
+            'class_id'=>0,
             'position'=>'',
             'name'=>'',
             'mark'=>'',
+            'notes'=>'',
         );
     }
 
@@ -72,21 +83,22 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
     // Get the details for an existing Adjudicator Recommendation Entry
     //
     else {
-        $strsql = "SELECT ciniki_musicfestival_recommendation_entries.id, "
-            . "ciniki_musicfestival_recommendation_entries.status, "
-            . "ciniki_musicfestival_recommendation_entries.recommendation_id, "
-            . "ciniki_musicfestival_recommendation_entries.class_id, "
-            . "ciniki_musicfestival_recommendation_entries.position, "
-            . "ciniki_musicfestival_recommendation_entries.name, "
-            . "ciniki_musicfestival_recommendation_entries.mark "
-            . "FROM ciniki_musicfestival_recommendation_entries "
-            . "WHERE ciniki_musicfestival_recommendation_entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND ciniki_musicfestival_recommendation_entries.id = '" . ciniki_core_dbQuote($ciniki, $args['entry_id']) . "' "
+        $strsql = "SELECT entries.id, "
+            . "entries.status, "
+            . "entries.recommendation_id, "
+            . "entries.class_id, "
+            . "entries.position, "
+            . "entries.name, "
+            . "entries.mark, "
+            . "entries.notes "
+            . "FROM ciniki_musicfestival_recommendation_entries AS entries "
+            . "WHERE entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND entries.id = '" . ciniki_core_dbQuote($ciniki, $args['entry_id']) . "' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'entries', 'fname'=>'id', 
-                'fields'=>array('id', 'status', 'recommendation_id', 'class_id', 'position', 'name', 'mark'),
+                'fields'=>array('id', 'status', 'recommendation_id', 'class_id', 'position', 'name', 'mark', 'notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -130,7 +142,7 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
     // Get the list of classes for this section
     //
     $strsql = "SELECT classes.id , "
-        . "CONCAT_WS(' - ', classes.code, categories.name, classes.name) AS name "
+        . "CONCAT_WS(' - ', classes.code, classes.name) AS name "
         . "FROM ciniki_musicfestival_categories AS categories "
         . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
             . "categories.id = classes.category_id "
@@ -149,6 +161,115 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.722', 'msg'=>'Unable to load classes', 'err'=>$rc['err']));
     }
     $rsp['classes'] = isset($rc['classes']) ? $rc['classes'] : array();
+
+    //
+    // Get the list of recommendations for this class
+    //
+    if( $entry['class_id'] > 0 ) {
+        //
+        // Get the list of recommendations for this class
+        //
+        $strsql = "SELECT entries.id, "
+            . "entries.status, "
+            . "IF(entries.status >= 70, 600, entries.position) AS position, "
+            . "entries.name, "
+            . "entries.mark, "
+            . "recommendations.id AS recommendation_id, "
+            . "recommendations.member_id, "
+            . "recommendations.section_id, "
+            . "recommendations.date_submitted, "
+            . "members.shortname AS member_name, "
+            . "member.reg_end_dt AS end_date, "
+            . "member.latedays "
+            . "FROM ciniki_musicfestival_recommendation_entries AS entries "
+            . "LEFT JOIN ciniki_musicfestival_recommendations AS recommendations ON ("
+                . "entries.recommendation_id = recommendations.id "
+                . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestivals_members AS members ON ("
+                . "recommendations.member_id = members.id "
+                . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_members AS member ON ("
+                . "members.id = member.member_id "
+                . "AND member.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND member.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE entries.class_id = '" . ciniki_core_dbQuote($ciniki, $entry['class_id']) . "' "
+            . "AND entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY recommendations.date_submitted, position "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'entries', 'fname'=>'id', 
+                'fields'=>array('id', 'status', 'recommendation_id', 'position', 'name', 'mark',
+                    'date_submitted', 'member_id', 'section_id', 'member_name', 'end_date', 'latedays'),
+                'utctotz'=>array(
+                    'date_submitted'=> array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i:s A'),
+                    'end_date'=> array('timezone'=>$intl_timezone, 'format'=>'M j'),
+                    ),
+                'maps'=>array('position'=>$maps['recommendationentry']['position_shortname']),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.656', 'msg'=>'Unable to load entries', 'err'=>$rc['err']));
+        }
+        $rsp['class_recommendations'] = isset($rc['entries']) ? $rc['entries'] : array();
+    }
+
+    //
+    // Get the list of classes this name has been recommended for
+    //
+    if( $entry['name'] != '' ) {
+        $strsql = "SELECT entries.id, "
+            . "entries.recommendation_id, "
+            . "entries.status, "
+            . "entries.position, "
+            . "entries.name, "
+            . "entries.mark, "
+            . "classes.code AS class_code, "
+            . "classes.name AS class_name, "
+            . "recommendations.adjudicator_name, "
+            . "recommendations.date_submitted, "
+            . "members.shortname AS member_name "
+            . "FROM ciniki_musicfestival_recommendation_entries AS entries "
+            . "INNER JOIN ciniki_musicfestival_recommendations AS recommendations ON ("
+                . "entries.recommendation_id = recommendations.id "
+                . "AND recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestivals_members AS members ON ("
+                . "recommendations.member_id = members.id "
+                . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+                . "entries.class_id = classes.id "
+                . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND ("
+                . "entries.name like '" . ciniki_core_dbQuote($ciniki, $entry['name']) . "%' "
+                . "OR entries.name like '% " . ciniki_core_dbQuote($ciniki, $entry['name']) . "%' "
+                . ") "
+            . "ORDER BY class_code, entries.position "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'entries', 'fname'=>'id', 
+                'fields'=>array('id', 'recommendation_id', 'status', 'adjudicator_name', 
+                    'class_code', 'class_name', 'position', 'name', 'mark', 'date_submitted', 'member_name',
+                    ),
+                'utctotz'=>array(
+                    'date_submitted'=> array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i:s A'),
+                    ),
+                'maps'=>array('position'=>$maps['recommendationentry']['position_shortname']),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.974', 'msg'=>'Unable to load entries', 'err'=>$rc['err']));
+        }
+        $rsp['name_recommendations'] = isset($rc['entries']) ? $rc['entries'] : array();
+    }
 
     return $rsp;
 }

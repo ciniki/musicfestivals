@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestivals_members ADD COLUMN flags tinyint unsigned not null AFTER shortname;
+ALTER TABLE ciniki_musicfestivals_members COMMENT='v1.03';

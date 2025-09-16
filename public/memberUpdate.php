@@ -20,6 +20,7 @@ function ciniki_musicfestivals_memberUpdate(&$ciniki) {
         'member_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Member Festival'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
         'shortname'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Short Name'),
+        'flags'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Options'),
         'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'),
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),
         'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),

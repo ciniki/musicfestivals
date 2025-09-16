@@ -19,7 +19,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
-    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestivaladjudications';
+    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/adjudications';
     $display = 'list';
 
     if( isset($_POST['submit']) && $_POST['submit'] == 'Back' ) {
@@ -258,8 +258,8 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     //
     // Show timeslot results
     //
-    if( isset($request['uri_split'][($request['cur_uri_pos']+2)]) 
-        && $request['uri_split'][($request['cur_uri_pos']+2)] == 'instructions-virtual.pdf'
+    if( isset($request['uri_split'][($request['cur_uri_pos']+3)]) 
+        && $request['uri_split'][($request['cur_uri_pos']+3)] == 'instructions-virtual.pdf'
         ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'adjudicatorInstructionsPDF');
         $rc = ciniki_musicfestivals_templates_adjudicatorInstructionsPDF($ciniki, $tnid, [
@@ -276,8 +276,8 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             'content' => 'No instructions found',
             ]);
     }
-    elseif( isset($request['uri_split'][($request['cur_uri_pos']+2)]) 
-        && $request['uri_split'][($request['cur_uri_pos']+2)] == 'instructions.pdf'
+    elseif( isset($request['uri_split'][($request['cur_uri_pos']+3)]) 
+        && $request['uri_split'][($request['cur_uri_pos']+3)] == 'instructions.pdf'
         ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'adjudicatorInstructionsPDF');
         $rc = ciniki_musicfestivals_templates_adjudicatorInstructionsPDF($ciniki, $tnid, [
@@ -294,8 +294,8 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             'content' => 'No instructions found',
             ]);
     }
-    elseif( isset($request['uri_split'][($request['cur_uri_pos']+2)]) 
-        && $request['uri_split'][($request['cur_uri_pos']+2)] == 'instructions-virtual'
+    elseif( isset($request['uri_split'][($request['cur_uri_pos']+3)]) 
+        && $request['uri_split'][($request['cur_uri_pos']+3)] == 'instructions-virtual'
         ) {
         $blocks[] = [
             'type' => 'text',
@@ -310,8 +310,8 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             ];
         return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
     }
-    elseif( isset($request['uri_split'][($request['cur_uri_pos']+2)]) 
-        && $request['uri_split'][($request['cur_uri_pos']+2)] == 'instructions'
+    elseif( isset($request['uri_split'][($request['cur_uri_pos']+3)]) 
+        && $request['uri_split'][($request['cur_uri_pos']+3)] == 'instructions'
         ) {
         $blocks[] = [
             'type' => 'text',
@@ -326,8 +326,8 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             ];
         return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
     }
-    elseif( isset($request['uri_split'][($request['cur_uri_pos']+2)]) 
-        && $request['uri_split'][($request['cur_uri_pos']+2)] == 'runsheets-virtual.pdf'
+    elseif( isset($request['uri_split'][($request['cur_uri_pos']+3)]) 
+        && $request['uri_split'][($request['cur_uri_pos']+3)] == 'runsheets-virtual.pdf'
         ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'runsheetsPDF');
         $rc = ciniki_musicfestivals_templates_runsheetsPDF($ciniki, $tnid, [
@@ -345,8 +345,8 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             'content' => 'No runsheets found',
             ]);
     }
-    elseif( isset($request['uri_split'][($request['cur_uri_pos']+2)]) 
-        && $request['uri_split'][($request['cur_uri_pos']+2)] == 'runsheets.pdf'
+    elseif( isset($request['uri_split'][($request['cur_uri_pos']+3)]) 
+        && $request['uri_split'][($request['cur_uri_pos']+3)] == 'runsheets.pdf'
         ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'runsheetsPDF');
         $rc = ciniki_musicfestivals_templates_runsheetsPDF($ciniki, $tnid, [
@@ -364,11 +364,11 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             'content' => 'No runsheets found',
             ]);
     }
-    elseif( isset($request['uri_split'][($request['cur_uri_pos']+4)]) 
-        && $request['uri_split'][($request['cur_uri_pos']+4)] == 'results'
-        && isset($divisions[$request['uri_split'][($request['cur_uri_pos']+2)]]['timeslots'][$request['uri_split'][($request['cur_uri_pos']+3)]])
+    elseif( isset($request['uri_split'][($request['cur_uri_pos']+5)]) 
+        && $request['uri_split'][($request['cur_uri_pos']+5)] == 'results'
+        && isset($divisions[$request['uri_split'][($request['cur_uri_pos']+3)]]['timeslots'][$request['uri_split'][($request['cur_uri_pos']+4)]])
         ) {
-        $timeslot = $divisions[$request['uri_split'][($request['cur_uri_pos']+2)]]['timeslots'][$request['uri_split'][($request['cur_uri_pos']+3)]];
+        $timeslot = $divisions[$request['uri_split'][($request['cur_uri_pos']+3)]]['timeslots'][$request['uri_split'][($request['cur_uri_pos']+4)]];
     
         //
         // Check for form submit
@@ -395,10 +395,10 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     //
     // Show selected division timeslot
     //
-    elseif( isset($request['uri_split'][($request['cur_uri_pos']+3)]) 
-        && isset($divisions[$request['uri_split'][($request['cur_uri_pos']+2)]]['timeslots'][$request['uri_split'][($request['cur_uri_pos']+3)]])
+    elseif( isset($request['uri_split'][($request['cur_uri_pos']+4)]) 
+        && isset($divisions[$request['uri_split'][($request['cur_uri_pos']+3)]]['timeslots'][$request['uri_split'][($request['cur_uri_pos']+4)]])
         ) {
-        $timeslot = $divisions[$request['uri_split'][($request['cur_uri_pos']+2)]]['timeslots'][$request['uri_split'][($request['cur_uri_pos']+3)]];
+        $timeslot = $divisions[$request['uri_split'][($request['cur_uri_pos']+3)]]['timeslots'][$request['uri_split'][($request['cur_uri_pos']+4)]];
         $display = 'timeslot';
 
         //
@@ -425,11 +425,11 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         //
         // Check for download
         //
-        if( isset($request['uri_split'][($request['cur_uri_pos']+5)]) 
-            && isset($timeslot['registrations'][$request['uri_split'][($request['cur_uri_pos']+4)]])
-            && in_array($request['uri_split'][($request['cur_uri_pos']+5)], ['music1.pdf','music2.pdf','music3.pdf','music4.pdf','music5.pdf','music6.pdf','music7.pdf','music8.pdf'])
+        if( isset($request['uri_split'][($request['cur_uri_pos']+6)]) 
+            && isset($timeslot['registrations'][$request['uri_split'][($request['cur_uri_pos']+5)]])
+            && in_array($request['uri_split'][($request['cur_uri_pos']+6)], ['music1.pdf','music2.pdf','music3.pdf','music4.pdf','music5.pdf','music6.pdf','music7.pdf','music8.pdf'])
             ) {
-            $registration = $timeslot['registrations'][$request['uri_split'][($request['cur_uri_pos']+4)]];
+            $registration = $timeslot['registrations'][$request['uri_split'][($request['cur_uri_pos']+5)]];
 
             //
             // Get the tenant storage directory
@@ -441,7 +441,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             }
             $storage_filename = $rc['storage_dir'] . '/ciniki.musicfestivals/files/' 
                 . $registration['uuid'][0] . '/' . $registration['uuid'] . '_' 
-                . preg_replace("/\.pdf/", "", $request['uri_split'][($request['cur_uri_pos']+5)]);
+                . preg_replace("/\.pdf/", "", $request['uri_split'][($request['cur_uri_pos']+6)]);
             if( !file_exists($storage_filename) ) {
                 $blocks[] = array(
                     'type' => 'msg',
@@ -462,7 +462,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             }
             // Open file in browser
             header('Content-Disposition: inline;filename="' 
-                . $registration[preg_replace("/music([1-8])\.pdf/", 'music_orgfilename$1', $request['uri_split'][($request['cur_uri_pos']+5)])]
+                . $registration[preg_replace("/music([1-8])\.pdf/", 'music_orgfilename$1', $request['uri_split'][($request['cur_uri_pos']+6)])]
                 . '"');
             // Download file to filesystem
             header('Content-Length: ' . filesize($storage_filename));
@@ -476,11 +476,11 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         //
         // Check for artwork download
         //
-        if( isset($request['uri_split'][($request['cur_uri_pos']+5)]) 
-            && isset($timeslot['registrations'][$request['uri_split'][($request['cur_uri_pos']+4)]])
+        if( isset($request['uri_split'][($request['cur_uri_pos']+6)]) 
+            && isset($timeslot['registrations'][$request['uri_split'][($request['cur_uri_pos']+6)]])
             && in_array($request['uri_split'][($request['cur_uri_pos']+5)], ['artwork1','artwork2','artwork3','artwork4','artwork5','artwork6','artwork7','artwork8'])
             ) {
-            $registration = $timeslot['registrations'][$request['uri_split'][($request['cur_uri_pos']+4)]];
+            $registration = $timeslot['registrations'][$request['uri_split'][($request['cur_uri_pos']+5)]];
 
             //
             // Get the tenant storage directory
@@ -492,7 +492,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             }
             $storage_filename = $rc['storage_dir'] . '/ciniki.musicfestivals/files/' 
                 . $registration['uuid'][0] . '/' . $registration['uuid'] . '_' 
-                . preg_replace("/\.pdf/", "", $request['uri_split'][($request['cur_uri_pos']+5)]);
+                . preg_replace("/\.pdf/", "", $request['uri_split'][($request['cur_uri_pos']+6)]);
             if( !file_exists($storage_filename) ) {
                 $blocks[] = array(
                     'type' => 'msg',
@@ -513,7 +513,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             }
             // Open file in browser
             header('Content-Disposition: inline;filename="' 
-                . $registration[preg_replace("/artwork([1-8])\.pdf/", 'artwork$1', $request['uri_split'][($request['cur_uri_pos']+5)])]
+                . $registration[preg_replace("/artwork([1-8])\.pdf/", 'artwork$1', $request['uri_split'][($request['cur_uri_pos']+6)])]
                 . '"');
             // Download file to filesystem
             header('Content-Length: ' . filesize($storage_filename));
@@ -756,6 +756,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                             $download_url = "{$base_url}"
                                 . '/' . $request['uri_split'][($request['cur_uri_pos']+2)]
                                 . '/' . $request['uri_split'][($request['cur_uri_pos']+3)]
+                                . '/' . $request['uri_split'][($request['cur_uri_pos']+4)]
                                 . '/' . $registration['uuid']
                                 . '/music' . $i . '.pdf'
                                 . "";
@@ -783,6 +784,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                             $download_url = "{$base_url}"
                                 . '/' . $request['uri_split'][($request['cur_uri_pos']+2)]
                                 . '/' . $request['uri_split'][($request['cur_uri_pos']+3)]
+                                . '/' . $request['uri_split'][($request['cur_uri_pos']+4)]
                                 . '/' . $registration['uuid']
                                 . '/artwork' . $i
                                 . "";
@@ -1183,7 +1185,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                     $buttons[] = ['title' => 'Instructions PDF', 'target' => '_blank', 'url' => "{$base_url}/instructions.pdf"];
                 }
             }
-            if( isset($festival['adjudications-runsheets-live']) && $festival['adjudications-runsheets-live'] != '' ) {
+            if( isset($festival['adjudications-runsheets-live']) && $festival['adjudications-runsheets-live'] == 'yes' ) {
                 if( ($festival['flags']&0x06) > 0 ) {
                     $buttons[] = ['title' => 'Live Runsheets PDF', 'target' => '_blank', 'url' => "{$base_url}/runsheets.pdf"];
                 } else {
@@ -1196,7 +1198,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 $buttons[] = ['title' => 'Virtual Instructions', 'url'=>"{$base_url}/instructions-virtual"];
                 $buttons[] = ['title' => 'Virtual Instructions PDF', 'target' => '_blank', 'url' => "{$base_url}/instructions-virtual.pdf"];
             }
-            if( isset($festival['adjudications-runsheets-virtual']) && $festival['adjudications-runsheets-virtual'] != '' ) {
+            if( isset($festival['adjudications-runsheets-virtual']) && $festival['adjudications-runsheets-virtual'] == 'yes' ) {
                 $buttons[] = ['title' => 'Virtual Runsheets PDF', 'target' => '_blank', 'url' => "{$base_url}/runsheets-virtual.pdf"];
             }
         }

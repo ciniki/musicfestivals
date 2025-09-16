@@ -58,9 +58,9 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
             $items[] = array(
                 'title' => 'Local Festival' . (count($rc['rows']) > 1 ? 's' : ''), 
                 'priority' => 3760, 
-                'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivalmember' ? 'yes' : 'no',
+                'selected' => isset($args['selected']) && $args['selected'] == 'musicfestival/member' ? 'yes' : 'no',
                 'ref' => 'ciniki.musicfestivals.members',
-                'url' => $base_url . '/musicfestivalmember',
+                'url' => $base_url . '/musicfestival/member',
                 );
             $member_festival = 'yes';
         }
@@ -81,13 +81,62 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.393', 'msg'=>'Unable to load adjudicator', 'err'=>$rc['err']));
     }
     if( isset($rc['adjudicator']) ) {
-        $items[] = array(
-            'title' => 'Adjudications', 
-            'priority' => 3750, 
-            'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivaladjudications' ? 'yes' : 'no',
-            'ref' => 'ciniki.musicfestivals.adjudications',
-            'url' => $base_url . '/musicfestivaladjudications',
-            );
+        $adjudicator_id = $rc['adjudicator']['id'];
+        //
+        // Check if virtual entries
+        //
+        $num_virtual = 0;
+        if( isset($festival['comments-live-adjudication-online']) && $festival['comments-live-adjudication-online'] == 'no' ) {
+            $strsql = "SELECT COUNT(registrations.id) AS num "
+                . "FROM ciniki_musicfestival_schedule_sections AS ssections "
+                . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+                    . "ssections.id = divisions.ssection_id "
+                    . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+                    . "divisions.id = timeslots.sdivision_id "
+                    . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                    . "timeslots.id = registrations.timeslot_id "
+                    . "AND registrations.participation = 1 "
+                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . ") "
+                . "WHERE ("
+                    . "ssections.adjudicator1_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
+                    . "OR divisions.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
+                    . ") "
+                . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "AND ssections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+            $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1016', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+            }
+            $num_virtual = isset($rc['num']) ? $rc['num'] : '';
+        }
+        if( (isset($festival['comments-live-adjudication-online']) && $festival['comments-live-adjudication-online'] == 'yes')
+            || (($festival['flags']&0x06) > 0 && $num_virtual > 0)
+            ) {
+            $items[] = array(
+                'title' => 'Adjudications', 
+                'priority' => 3751, 
+                'selected' => isset($args['selected']) && $args['selected'] == 'musicfestival/adjudications' ? 'yes' : 'no',
+                'ref' => 'ciniki.musicfestivals.adjudications',
+                'url' => $base_url . '/musicfestival/adjudications',
+                );
+        }
+        if( isset($festival['provincial-festival-id']) && $festival['provincial-festival-id'] > 0 ) {
+            $items[] = array(
+                'title' => 'Provincial Recommendations', 
+                'priority' => 3750, 
+                'selected' => isset($args['selected']) && $args['selected'] == 'musicfestival/recommendations' ? 'yes' : 'no',
+                'ref' => 'ciniki.musicfestivals.recommendations',
+                'url' => $base_url . '/musicfestival/recommendations',
+                );
+        }
+        $adjudicator = 'yes';
     }
 
     //
@@ -109,7 +158,7 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
             'priority' => 750, 
             'selected' => 'no',
             'ref' => 'ciniki.musicfestivals.registrations',
-            'url' => $base_url . '/musicfestivalregistrations',
+            'url' => $base_url . '/musicfestival/registrations',
             );
     } */
 
@@ -131,16 +180,16 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
         $items[] = array(
             'title' => 'Registrations', 
             'priority' => 3749, 
-            'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivalregistrations' ? 'yes' : 'no',
+            'selected' => isset($args['selected']) && $args['selected'] == 'musicfestival/registrations' ? 'yes' : 'no',
             'ref' => 'ciniki.musicfestivals.registrations',
-            'url' => $base_url . '/musicfestivalregistrations',
+            'url' => $base_url . '/musicfestival/registrations',
             );
         $items[] = array(
             'title' => $festival['competitor-label-plural'], 
             'priority' => 3748, 
-            'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivalcompetitors' ? 'yes' : 'no',
+            'selected' => isset($args['selected']) && $args['selected'] == 'musicfestival/competitors' ? 'yes' : 'no',
             'ref' => 'ciniki.musicfestivals.competitors',
-            'url' => $base_url . '/musicfestivalcompetitors',
+            'url' => $base_url . '/musicfestival/competitors',
             );
 
         //
@@ -158,9 +207,9 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
             $items[] = array(
                 'title' => 'Schedule', 
                 'priority' => 3747, 
-                'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivalschedule' ? 'yes' : 'no',
+                'selected' => isset($args['selected']) && $args['selected'] == 'musicfestival/schedule' ? 'yes' : 'no',
                 'ref' => 'ciniki.musicfestivals.schedule',
-                'url' => $base_url . '/musicfestivalschedule',
+                'url' => $base_url . '/musicfestival/schedule',
                 );
         }
 //    }
@@ -194,10 +243,22 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
         $items[] = array(
             'title' => 'Past Results', 
             'priority' => 3747, 
-            'selected' => isset($args['selected']) && $args['selected'] == 'musicfestivalpast' ? 'yes' : 'no',
+            'selected' => isset($args['selected']) && $args['selected'] == 'pastmusicfestivals' ? 'yes' : 'no',
             'ref' => 'ciniki.musicfestivals.past',
-            'url' => $base_url . '/musicfestivalpast',
+            'url' => $base_url . '/pastmusicfestivals',
             );
+    }
+
+    //
+    // Adjudicators for the current local festival get dropdown menu 
+    //
+    if( $adjudicator == 'yes' ) {
+        $dropdown_items = $items;
+        $items = [[
+            'title' => 'Music Festival',
+            'priority' => 3700,
+            'items' => $dropdown_items,
+            ]];
     }
 
     return array('stat'=>'ok', 'items'=>$items);

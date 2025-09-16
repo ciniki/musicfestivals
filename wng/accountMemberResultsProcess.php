@@ -28,11 +28,11 @@ function ciniki_musicfestivals_wng_accountMemberResultsProcess(&$ciniki, $tnid, 
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
-    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestivalmembers';
+    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/members';
     $display = 'list';
 
     if( isset($_POST['submit']) && $_POST['submit'] == 'Back' ) {
-        header("Location: {$request['ssl_domain_base_url']}/account/musicfestivalmembers");
+        header("Location: {$request['ssl_domain_base_url']}/account/musicfestival/members");
         return array('stat'=>'exit');
     }
 
@@ -145,13 +145,13 @@ function ciniki_musicfestivals_wng_accountMemberResultsProcess(&$ciniki, $tnid, 
             'type' => 'buttons',
             'class' => 'aligncenter',
             'items' => array(   
-                array('text' => 'Download Excel', 'target' => '_blank', 'url' => "{$base_url}/results/{$request['uri_split'][3]}/{$request['uri_split'][4]}/results.xls"),
-                array('text' => 'Download PDF', 'target' => '_blank', 'url' => "{$base_url}/results/{$request['uri_split'][3]}/{$request['uri_split'][4]}/results.pdf"),
+                array('text' => 'Download Excel', 'target' => '_blank', 'url' => "{$base_url}/results/{$request['uri_split'][4]}/{$request['uri_split'][5]}/results.xls"),
+                array('text' => 'Download PDF', 'target' => '_blank', 'url' => "{$base_url}/results/{$request['uri_split'][4]}/{$request['uri_split'][5]}/results.pdf"),
                 ),
             );
     }
 
-    if( isset($request['uri_split'][5]) && $request['uri_split'][5] == 'results.xls' ) {
+    if( isset($request['uri_split'][6]) && $request['uri_split'][6] == 'results.xls' ) {
         //
         // Generate XLS of registrations
         //
@@ -174,7 +174,7 @@ function ciniki_musicfestivals_wng_accountMemberResultsProcess(&$ciniki, $tnid, 
             'filename' => "{$args['member']['name']} - {$args['festival']['name']} - Results.xls",
             ]);
     }
-    elseif( isset($request['uri_split'][5]) && $request['uri_split'][5] == 'results.pdf' ) {
+    elseif( isset($request['uri_split'][6]) && $request['uri_split'][6] == 'results.pdf' ) {
         //
         // Generate PDF of registrations
         //

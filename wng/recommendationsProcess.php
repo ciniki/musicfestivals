@@ -56,6 +56,7 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
             . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE members.status = 10 " // Active
+        . "AND (members.flags&0x01) = 0 " // Recommendation NOT submitted via local ciniki website
         . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY members.name "
         . "";
@@ -70,6 +71,9 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.594', 'msg'=>'Unable to load members', 'err'=>$rc['err']));
     }
     $members = isset($rc['members']) ? $rc['members'] : array();
+    if( isset($_POST['f-member_id']) && isset($members[$_POST['f-member_id']]) ) {
+        $member = $members[$_POST['f-member_id']];
+    }
 
     //
     // Get the list of sections
@@ -92,7 +96,6 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
     }
     $sections = isset($rc['sections']) ? $rc['sections'] : array();
 
-
     if( (isset($s['title']) && $s['title'] != '') || (isset($s['content']) && $s['content'] != '') ) {
         $blocks[] = array(
             'type' => (!isset($s['content']) || $s['content'] == '' ? 'title' : 'text'),
@@ -113,225 +116,20 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
         $section = $sections[$request['uri_split'][($request['cur_uri_pos']+1)]];
 
         //
-        // Get the list of classes
+        // Generate the form
         //
-        $strsql = "SELECT classes.id, "
-            . "classes.uuid, "
-            . "classes.festival_id, "
-            . "classes.category_id, "
-            . "categories.id AS category_id, "
-            . "categories.name AS category_name, "
-            . "categories.primary_image_id AS category_image_id, "
-            . "categories.synopsis AS category_synopsis, "
-            . "categories.description AS category_description, "
-            . "classes.code, "
-            . "classes.name, "
-            . "classes.permalink, "
-            . "classes.sequence, "
-            . "classes.flags, "
-            . "earlybird_fee, "
-            . "fee, "
-            . "virtual_fee, "
-            . "earlybird_plus_fee, "
-            . "plus_fee "
-            . "FROM ciniki_musicfestival_categories AS categories "
-            . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
-                . "categories.id = classes.category_id "
-                . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $section['id']) . "' "
-            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "ORDER BY categories.sequence, categories.name, classes.sequence, classes.name "
-            . "";
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
-        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-            array('container'=>'classes', 'fname'=>'id', 
-                'fields'=>array('id', 'uuid', 'festival_id', 'category_id', 'code', 'name', 'permalink', 
-                    'sequence', 'flags'),
-                ),
-            ));
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'recommendationFormGenerate');
+        $rc = ciniki_musicfestivals_wng_recommendationFormGenerate($ciniki, $tnid, $request, [
+            'section' => $section,
+            'members' => $members,
+            'cancel-url' => "{$request['ssl_domain_base_url']}{$request['page']['path']}",
+            ]);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.596', 'msg'=>'Unable to load classes', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1037', 'msg'=>'', 'err'=>$rc['err']));
         }
-        $classes = isset($rc['classes']) ? $rc['classes'] : array();
-
-        //
-        // Auto remove section name from class names
-        //
-        foreach($classes as $cid => $class) {
-            $classes[$cid]['name'] = str_replace($section['name'] . ' - ', '', $classes[$cid]['name']);
-            if( preg_match("/^([^-]+) - /", $section['name'], $m) ) {
-                if( $m[1] != '' ) {
-                    $classes[$cid]['name'] = str_replace($m[1] . ' - ', '', $classes[$cid]['name']);
-                }
-            }
-        }
-        
-        //
-        // Generate the form fields
-        //
-        $form_errors = '';
-        $form_sections = array(
-            'adjudicator' => array(
-                'id' => 'adjudicator',
-                'label' => 'Adjudicator Information',
-                'fields' => array(
-                    'member_id' => array(
-                        'id' => 'member_id',
-                        'label' => 'Name of Festival',
-                        'ftype' => 'select',
-                        'options' => $members,
-                        'complex_options' => array(
-                            'value' => 'id',
-                            'name' => 'name',
-                            ),
-                        'required' => 'yes',
-                        'value' => (isset($_POST['f-member_id']) ? $_POST['f-member_id'] : (isset($request['session']['ciniki.musicfestivals']['member_id']) ? $request['session']['ciniki.musicfestivals']['member_id'] : 0)),
-                        ),
-                    'adjudicator_name' => array(
-                        'id' => 'adjudicator_name',
-                        'label' => "Adjudicator's Name",
-                        'ftype' => 'text',
-                        'required' => 'yes',
-                        'value' => (isset($_POST['f-adjudicator_name']) ? $_POST['f-adjudicator_name'] : (isset($request['session']['ciniki.musicfestivals']['adjudicator_name']) ? $request['session']['ciniki.musicfestivals']['adjudicator_name'] : '')),
-                        ),
-                    'adjudicator_phone' => array(
-                        'id' => 'adjudicator_phone',
-                        'label' => "Adjudicator's Phone Number",
-                        'ftype' => 'text',
-                        'size' => 'small',
-                        'flex-basis' => '40%',
-                        'required' => 'yes',
-                        'value' => (isset($_POST['f-adjudicator_phone']) ? $_POST['f-adjudicator_phone'] : (isset($request['session']['ciniki.musicfestivals']['adjudicator_phone']) ? $request['session']['ciniki.musicfestivals']['adjudicator_phone'] : '')),
-                        ),
-                    'adjudicator_email' => array(
-                        'id' => 'adjudicator_email',
-                        'label' => "Adjudicator's Email",
-                        'ftype' => 'text',
-                        'size' => 'small-medium',
-                        'flex-basis' => '40%',
-                        'required' => 'yes',
-                        'value' => (isset($_POST['f-adjudicator_email']) ? $_POST['f-adjudicator_email'] : (isset($request['session']['ciniki.musicfestivals']['adjudicator_email']) ? $request['session']['ciniki.musicfestivals']['adjudicator_email'] : '')),
-                        ),
-                    ),
-                ),
-            );
-        $mark_options = array(
-            '85' => '85',
-            '86' => '86',
-            '87' => '87',
-            '88' => '88',
-            '89' => '89',
-            '90' => '90',
-            '91' => '91',
-            '92' => '92',
-            '93' => '93',
-            '94' => '94',
-            '95' => '95',
-            '96' => '96',
-            '97' => '97',
-            '98' => '98',
-            '99' => '99',
-            '100' => '100',
-            );
-        foreach($classes as $cid => $class) {
-            $form_sections[$cid] = array(
-                'id' => "class_{$cid}",
-                'label' => $class['code'] . ' - ' . $class['name'],
-                'fields' => array(),
-                );
-            if( in_array($class['code'], ['31012', '11007', '33009', '13007', '12007', '14007', '16007', '16031'])  ) {
-                $num_recommendations = 4;
-            } else {
-                $num_recommendations = 3;
-            }
-            for($i = 1; $i <= $num_recommendations; $i++) {
-                $label = ($i == 1 ? '1st' : ($i == 2 ? '2nd' : ($i == 3 ? '3rd' : $i . 'th')));
-
-                $form_sections[$cid]['fields']["recommendation_{$i}_{$cid}"] = array(
-                    'id' => "recommendation_{$i}_{$cid}",
-                    'label' => $label . ' Recommendation',
-                    'size' => 'small',
-                    'flex-basis' => '75%',
-                    'ftype' => 'text',
-                    'value' => (isset($_POST["f-recommendation_{$i}_{$cid}"]) ? $_POST["f-recommendation_{$i}_{$cid}"] : ''),
-                    );
-                $form_sections[$cid]['fields']["recommendation_mark_{$i}_{$cid}"] = array(
-                    'id' => "recommendation_mark_{$i}_{$cid}",
-                    'label' => 'Mark',
-                    'size' => 'tiny',
-                    'flex-basis' => '10%',
-                    'ftype' => 'select',
-                    'options' => $mark_options,
-                    'value' => (isset($_POST["f-recommendation_mark_{$i}_{$cid}"]) ? $_POST["f-recommendation_mark_{$i}_{$cid}"] : ''),
-                    );
-                $form_sections[$cid]['fields']["newline_{$i}_{$cid}"] = array(
-                    'id' => "newline_{$i}_{$cid}",
-                    'ftype' => 'newline',
-                    );
-            }
-            $form_sections[$cid]['fields']["break_{$i}_{$cid}"] = array(
-                'id' => "break_{$i}_{$cid}",
-                'ftype' => 'break',
-                'class' => 'break',
-                'label' => 'Alternates',
-                );
-            for($i = 1; $i <= $num_alternates; $i++) {
-                $label = ($i == 1 ? '1st' : ($i == 2 ? '2nd' : ($i == 3 ? '3rd' : $i . 'th')));
-                $form_sections[$cid]['fields']["alternate_{$i}_{$cid}"] = array(
-                    'id' => "alternate_{$i}_{$cid}",
-                    'label' => $label . ' Alternate',
-                    'size' => 'small',
-                    'flex-basis' => '75%',
-                    'ftype' => 'text',
-                    'value' => (isset($_POST["f-alternate_{$i}_{$cid}"]) ? $_POST["f-alternate_{$i}_{$cid}"] : ''),
-                    );
-                $form_sections[$cid]['fields']["alternate_mark_{$i}_{$cid}"] = array(
-                    'id' => "alternate_mark_{$i}_{$cid}",
-                    'label' => 'Mark',
-                    'size' => 'tiny',
-                    'flex-basis' => '10%',
-                    'ftype' => 'select',
-                    'options' => $mark_options,
-                    'value' => (isset($_POST["f-alternate_mark_{$i}_{$cid}"]) ? $_POST["f-alternate_mark_{$i}_{$cid}"] : ''),
-                    );
-                $form_sections[$cid]['fields']["newlineb_{$i}_{$cid}"] = array(
-                    'id' => "newlineb_{$i}_{$cid}",
-                    'ftype' => 'newline',
-                    );
-            }
-        }
-        $form_sections['submit'] = array(
-            'id' => 'submit',
-            'label' => 'Submit',
-            'fields' => array(
-                'acknowledgement_label' => array(
-                    'id' => 'acknowledgement_label',
-                    'ftype' => 'content', 
-                    'label' => 'Acknowledgement',
-                    'description' => '',
-                    'required' => 'yes',
-                    ),
-                'acknowledgement' => array(
-                    'id' => 'acknowledgement',
-                    'ftype' => 'checkbox', 
-                    'label' => 'I acknowledge that I am the adjudicator for this discipline, and am recommending the participants that I feel are the best qualified to participate in the OMFA Provincial Finals.',
-                    'required' => 'yes',
-                    'value' => (isset($_POST["f-acknowledgement"]) ? $_POST["f-acknowledgement"] : ''),
-                    ),
-                'cancel' => array(
-                    'id' => 'cancel',
-                    'ftype' => 'cancel', 
-                    'label' => 'Cancel',
-                    'url' => "{$request['ssl_domain_base_url']}{$request['page']['path']}",
-                    ),
-                'submit' => array(
-                    'id' => 'submit',
-                    'ftype' => 'submit', 
-                    'label' => 'Submit Recommendations',
-                    ),
-                ),
-            );
+        $form_sections = $rc['form_sections'];
+        $form_errors = $rc['form_errors'];
+        $classes = $rc['classes'];
         $display = 'form';
 
         //
@@ -339,189 +137,38 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
         //
         if( isset($_POST['action']) && $_POST['action'] == 'submit' ) {
             header("Cache-Control: no cache");
-//            session_cache_limiter("private_no_expire");
-            //
-            // Check adjudicator section
-            //
-            $email_content = "Section: {$section['name']}<br/>";
-            $recommendation_args = array(
-                'festival_id' => $s['festival-id'],
-                'section_id' => $section['id'],
-                );
-            if( !isset($_POST['f-member_id']) || trim($_POST['f-member_id']) == 0 ) {
-                $form_errors .= "You must specify the Name of Festival.<br/>";
-            } else {
-                $recommendation_args['member_id'] = $_POST['f-member_id'];
-                $request['session']['ciniki.musicfestivals']['member_id'] = $_POST['f-member_id'];
-                $member = $members[$_POST["f-member_id"]];
-                $email_content .= "Festival: " . $member['name'] . "<br/>";
-            }
-            if( !isset($_POST['f-adjudicator_name']) || trim($_POST['f-adjudicator_name']) == '' ) {
-                $form_errors .= "You must specify a Adjudicator Name.<br/>";
-            } else {
-                $recommendation_args['adjudicator_name'] = trim($_POST['f-adjudicator_name']);
-                $request['session']['ciniki.musicfestivals']['adjudicator_name'] = trim($_POST['f-adjudicator_name']);
-                $email_content .= "Adjudicator Name: " . $_POST['f-adjudicator_name'] . "<br/>";
-            }
-            if( !isset($_POST['f-adjudicator_phone']) || trim($_POST['f-adjudicator_phone']) == '' ) {
-                $form_errors .= "You must specify a Adjudicator Phone Number.<br/>";
-            } else {
-                $recommendation_args['adjudicator_phone'] = trim($_POST['f-adjudicator_phone']);
-                $request['session']['ciniki.musicfestivals']['adjudicator_phone'] = trim($_POST['f-adjudicator_phone']);
-                $email_content .= "Adjudicator Phone: " . $_POST['f-adjudicator_phone'] . "<br/>";
-            }
-            if( !isset($_POST['f-adjudicator_email']) || trim($_POST['f-adjudicator_email']) == '' ) {
-                $form_errors .= "You must specify a Adjudicator's Email.<br/>";
-            } else {
-                $recommendation_args['adjudicator_email'] = trim($_POST['f-adjudicator_email']);
-                $request['session']['ciniki.musicfestivals']['adjudicator_email'] = trim($_POST['f-adjudicator_email']);
-                $email_content .= "Adjudicator Email: " . $_POST['f-adjudicator_email'] . "<br/>";
-            }
-            if( !isset($_POST['f-acknowledgement']) || $_POST['f-acknowledgement'] != 'on' ) {
-                $form_errors .= "You must accept the Acknowledgement.<br/>";
-            } else {
-                $recommendation_args['acknowledgement'] = 'yes';
-                $email_content .= "Acknowledgement: yes<br/>";
-            }
-            $dt = new DateTime('now', new DateTimezone('UTC'));
-            $recommendation_args['date_submitted'] = $dt->format('Y-m-d H:i:s');
-            $dt->setTimezone(new DateTimezone($intl_timezone));
-            $email_content .= "Date Submitted: " . $dt->format('M j, Y g:i:s a') . "<br/>";
-            $email_content .= "<br/>";
-           
-            //
-            // Check to make sure at least 1 class is specified
-            //
-            $entries = array();
-            foreach($classes as $cid => $class) {
-                $class_entries = array();
-                $class_email_content = "";
-                if( isset($_POST["f-recommendation_1_{$cid}"]) && trim($_POST["f-recommendation_1_{$cid}"]) != '' ) {
-                    if( !isset($_POST["f-recommendation_mark_1_{$cid}"]) || trim($_POST["f-recommendation_mark_1_{$cid}"]) == '' ) {
-                        $form_errors .= "You must specify a Mark for your 1st Recommendation in " . $class['name'] . ".<br/>";
-                    } else {
-                        $class_entries[] = array(
-                            'class_id' => $class['id'],
-                            'position' => 1,
-                            'name' => trim($_POST["f-recommendation_1_{$cid}"]),
-                            'mark' => trim($_POST["f-recommendation_mark_1_{$cid}"]),
-                            );
-//                        $class_args['recommendation_1'] = $_POST["f-recommendation_1_{$cid}"];
-//                        $class_args['recommendation_mark_1'] = $_POST["f-recommendation_mark_1_{$cid}"];
-                        $class_email_content .= "1st Recommendation: " . $_POST["f-recommendation_1_{$cid}"] . ", mark: " . $_POST["f-recommendation_mark_1_{$cid}"] . "<br/>";
-                    }
-                }
-                if( isset($_POST["f-recommendation_2_{$cid}"]) && trim($_POST["f-recommendation_2_{$cid}"]) != '' ) {
-                    if( !isset($_POST["f-recommendation_mark_2_{$cid}"]) || trim($_POST["f-recommendation_mark_2_{$cid}"]) == '' ) {
-                        $form_errors .= "You must specify a Mark for your 2nd Recommendation in " . $class['name'] . ".<br/>";
-                    } else {
-                        $class_entries[] = array(
-                            'class_id' => $class['id'],
-                            'position' => 2,
-                            'name' => trim($_POST["f-recommendation_2_{$cid}"]),
-                            'mark' => trim($_POST["f-recommendation_mark_2_{$cid}"]),
-                            );
-//                        $class_args['recommendation_2'] = $_POST["f-recommendation_2_{$cid}"];
-//                        $class_args['recommendation_mark_2'] = $_POST["f-recommendation_mark_2_{$cid}"];
-                        $class_email_content .= "2nd Recommendation: " . $_POST["f-recommendation_2_{$cid}"] . ", mark: " . $_POST["f-recommendation_mark_2_{$cid}"] . "<br/>";
-                    }
-                }
-                if( isset($_POST["f-recommendation_3_{$cid}"]) && trim($_POST["f-recommendation_3_{$cid}"]) != '' ) {
-                    if( !isset($_POST["f-recommendation_mark_3_{$cid}"]) || trim($_POST["f-recommendation_mark_3_{$cid}"]) == '' ) {
-                        $form_errors .= "You must specify a Mark for your 3rd Recommendation in " . $class['name'] . ".<br/>";
-                    } else {
-                        $class_entries[] = array(
-                            'class_id' => $class['id'],
-                            'position' => 3,
-                            'name' => trim($_POST["f-recommendation_3_{$cid}"]),
-                            'mark' => trim($_POST["f-recommendation_mark_3_{$cid}"]),
-                            );
-//                        $class_args['recommendation_3rd'] = $_POST["f-recommendation_3_{$cid}"];
-//                        $class_args['recommendation_mark_3rd'] = $_POST["f-recommendation_mark_3_{$cid}"];
-                        $class_email_content .= "3rd Recommendation: " . $_POST["f-recommendation_3_{$cid}"] . ", mark: " . $_POST["f-recommendation_mark_3_{$cid}"] . "<br/>";
-                    }
-                }
-                if( isset($_POST["f-recommendation_4_{$cid}"]) && trim($_POST["f-recommendation_4_{$cid}"]) != '' ) {
-                    if( !isset($_POST["f-recommendation_mark_4_{$cid}"]) || trim($_POST["f-recommendation_mark_4_{$cid}"]) == '' ) {
-                        $form_errors .= "You must specify a Mark for your 4th Recommendation in " . $class['name'] . ".<br/>";
-                    } else {
-                        $class_entries[] = array(
-                            'class_id' => $class['id'],
-                            'position' => 4,
-                            'name' => trim($_POST["f-recommendation_4_{$cid}"]),
-                            'mark' => trim($_POST["f-recommendation_mark_4_{$cid}"]),
-                            );
-                        $class_email_content .= "4th Recommendation: " . $_POST["f-recommendation_4_{$cid}"] . ", mark: " . $_POST["f-recommendation_mark_4_{$cid}"] . "<br/>";
-                    }
-                }
-                if( isset($_POST["f-alternate_1_{$cid}"]) && trim($_POST["f-alternate_1_{$cid}"]) != '' ) {
-                    if( !isset($_POST["f-alternate_mark_1_{$cid}"]) || trim($_POST["f-alternate_mark_1_{$cid}"]) == '' ) {
-                        $form_errors .= "You must specify a Mark for your 1st Alternate in " . $class['name'] . ".<br/>";
-                    } else {
-                        $class_entries[] = array(
-                            'class_id' => $class['id'],
-                            'position' => 101,
-                            'name' => trim($_POST["f-alternate_1_{$cid}"]),
-                            'mark' => trim($_POST["f-alternate_mark_1_{$cid}"]),
-                            );
-//                        $class_args['alternate_1'] = $_POST["f-alternate_1_{$cid}"];
-//                        $class_args['alternate_mark_1'] = $_POST["f-alternate_mark_1_{$cid}"];
-                        $class_email_content .= "1st Alternate: " . $_POST["f-alternate_1_{$cid}"] . ", mark: " . $_POST["f-alternate_mark_1_{$cid}"] . "<br/>";
-                    }
-                }
-                if( isset($_POST["f-alternate_2_{$cid}"]) && trim($_POST["f-alternate_2_{$cid}"]) != '' ) {
-                    if( !isset($_POST["f-alternate_mark_2_{$cid}"]) || trim($_POST["f-alternate_mark_2_{$cid}"]) == '' ) {
-                        $form_errors .= "You must specify a Mark for your 2nd Alternate in " . $class['name'] . ".<br/>";
-                    } else {
-                        $class_entries[] = array(
-                            'class_id' => $class['id'],
-                            'position' => 102,
-                            'name' => trim($_POST["f-alternate_2_{$cid}"]),
-                            'mark' => trim($_POST["f-alternate_mark_2_{$cid}"]),
-                            );
-//                        $class_args['alternate_2'] = $_POST["f-alternate_2_{$cid}"];
-//                        $class_args['alternate_mark_2'] = $_POST["f-alternate_mark_2_{$cid}"];
-                        $class_email_content .= "2nd Alternate: " . $_POST["f-alternate_2_{$cid}"] . ", mark: " . $_POST["f-alternate_mark_2_{$cid}"] . "<br/>";
-                    }
-                }
-                if( isset($_POST["f-alternate_3_{$cid}"]) && trim($_POST["f-alternate_3_{$cid}"]) != '' ) {
-                    if( !isset($_POST["f-alternate_mark_3_{$cid}"]) || trim($_POST["f-alternate_mark_3_{$cid}"]) == '' ) {
-                        $form_errors .= "You must specify a Mark for your 3rd Alternate in " . $class['name'] . ".<br/>";
-                    } else {
-                        $class_entries[] = array(
-                            'class_id' => $class['id'],
-                            'position' => 103,
-                            'name' => trim($_POST["f-alternate_3_{$cid}"]),
-                            'mark' => trim($_POST["f-alternate_mark_3_{$cid}"]),
-                            );
-//                        $class_args['alternate_3rd'] = $_POST["f-alternate_3_{$cid}"];
-//                        $class_args['alternate_mark_3rd'] = $_POST["f-alternate_mark_3_{$cid}"];
-                        $class_email_content .= "3rd Alternate: " . $_POST["f-alternate_3_{$cid}"] . ", mark: " . $_POST["f-alternate_mark_3_{$cid}"] . "<br/>";
-                    }
-                }
 
-                //
-                // Check if at least 1 recommendation or alternate specified
-                //
-                if( count($class_entries) > 0 ) {
-                    foreach($class_entries as $entry) {
-                        $entries[] = $entry;
-                    }
-                    $email_content .= "<b>{$class['code']} - {$class['name']}</b><br/>"
-                        . $class_email_content
-                        . "<br/>";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'recommendationSave');
+            $rc = ciniki_musicfestivals_wng_recommendationSave($ciniki, $tnid, $request, [
+                'form_sections' => $form_sections,
+                'classes' => $classes,
+                'members' => $members,
+                'recommendation' => [
+                    'id' => 0,
+                    'festival_id' => $s['festival-id'],
+                    'member_id' => $_POST['f-member_id'],
+                    'section_id' => $section['id'],
+                    ],
+                ]);
+            if( $rc['stat'] != 'ok' ) {
+                if( isset($rc['form_errors']) ) {
+                    $form_errors = $rc['form_errors'];
+                } else {
+                    $form_errors = $rc['err']['msg'];
                 }
-            }
-
-            if( count($entries) == 0 && $form_errors == '' ) {
-                $form_errors .= "You must specify at least 1 class recommendation.<br/>";
+//            } else {
+//                header("Location: $base_url");
+//                return array('stat'=>'exit');
             }
 
             //
             // When no errors, save to the database
             //
             if( $form_errors == '' ) {
-                //
+                $recommendation = $rc['recommendation'];
+                $recommendation['section_name'] = $section['name'];
+                $recommendation['member_name'] = $members[$recommendation['member_id']]['name'];
+/*                //
                 // Start transaction
                 //
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
@@ -544,6 +191,11 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                     ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
                 }
                 $recommendation_id = $rc['id'];
+                $recommendation = $recommendation_args;
+                $recommendation['acknowledgement'] = 'yes';
+                $recommendation['id'] = $rc['id'];
+                $recommendation['entries'] = [];
+                $recommendation['date_submitted'] = $dt->format('M j, Y g:i:s a');
 
                 foreach($entries as $entry) {
                     if( $form_errors == '' ) {
@@ -555,6 +207,7 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
                         }
                     }
+                    $recommendation['entries'][$entry['class_id']][$entry['position']] = $entry;
                 }
 
                 //
@@ -564,88 +217,27 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
                 }
-
+*/
                 //
-                // Send an email to the adjudicator
+                // Email the submission
                 //
-                ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
-                $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
-                    'object' => 'ciniki.musicfestivals.recommendation',
-                    'object_id' => $recommendation_id,
-                    'subject' => "Thank you for your submission", // [{$recommendation_args['adjudicator_email']}]",
-                    'html_content' => $email_content,
-                    'customer_name' => $recommendation_args['adjudicator_name'],
-                    'customer_email' => $recommendation_args['adjudicator_email'],
-                    ));
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'recommendationEmail');
+                $rc = ciniki_musicfestivals_recommendationEmail($ciniki, $tnid, [
+                    'recommendation' => $recommendation,
+                    'classes' => $classes,
+                    'adjudicator-subject' => 'Thank you for your submission',
+                    'member-subject' => "We have received adjudicator recommendations for " . $member['name'] . ' in ' . $section['name'],
+                    'members' => isset($member['customers']) ? $member['customers'] : [],
+                    'notify-subject' => "Recommendations for " . $member['name'] . ' in ' . $section['name'],
+                    'nofity-emails' => isset($s['notify-emails']) ? $s['notify-emails'] : '',
+                    'email-type' => 'submitted',
+                    ]);
                 if( $rc['stat'] != 'ok' ) {
                     $blocks[] = array(
                         'type' => 'msg',
                         'level' => 'error',
-                        'content' => 'Your recommendations have been saved, but we were unable to send you followup. Please contact us if you have any questions.',
+                        'content' => $rc['err']['msg'],
                         );
-                } else {
-                    $ciniki['emailqueue'][] = array('mail_id' => $rc['id'], 'tnid'=>$tnid);
-                }
-
-                //
-                // Check for the member email address
-                //
-                if( isset($member) && $member['customers'] && is_array($member['customers']) ) {
-                    foreach($member['customers'] as $customer_id => $customer) {
-                        //
-                        // Lookup customer record
-                        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
-                        $rc = ciniki_customers_hooks_customerDetails2($ciniki, $tnid, 
-                            array('customer_id'=>$customer_id, 'phones'=>'no', 'emails'=>'yes', 'addresses'=>'no', 'subscriptions'=>'no'));
-                        if( $rc['stat'] != 'ok' ) {
-                            return $rc;
-                        }
-                        if( isset($rc['customer']['emails'][0]['address']) ) {
-                            $customer = $rc['customer'];
-                            $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
-                                'object' => 'ciniki.musicfestivals.recommendation',
-                                'object_id' => $recommendation_id,
-                                'subject' => "We have received adjudicator recommendations for " . $member['name'], // [{$customer['emails'][0]['email']['address']}]",
-                                'html_content' => $email_content,
-                                'customer_id' => $customer_id,
-                                'customer_name' => $customer['display_name'],
-                                'customer_email' => $customer['emails'][0]['address'],
-                                ));
-                            if( $rc['stat'] != 'ok' ) {
-                                error_log("Unable to email member contact for recommendation: " . $recommedation_id);
-                            } else {
-                                $ciniki['emailqueue'][] = array('mail_id' => $rc['id'], 'tnid'=>$tnid);
-                            }
-                        } else {
-                            error_log("No member contact info found for recommendation: " . $recommendation_id);
-                        }
-                    }
-                }
-
-                //
-                // Send an email to the emails specified
-                //
-                if( isset($s['notify-emails']) && $s['notify-emails'] != '' ) {
-                    $emails = explode(',', $s['notify-emails']);
-                    foreach($emails as $email) {
-                        $email = trim($email);
-                        $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
-                            'object' => 'ciniki.musicfestivals.recommendation',
-                            'object_id' => $recommendation_id,
-                            'subject' => "Adjudicators Recommendation: " . $member['name'] . " - " . $section['name'],
-                            'html_content' => $email_content,
-                            'customer_email' => $email,
-                            ));
-                        if( $rc['stat'] != 'ok' ) {
-                            $blocks[] = array(
-                                'type' => 'msg',
-                                'level' => 'error',
-                                'content' => 'Your recommendations have been saved, but we were unable to send you followup. Please contact us if you have any questions.',
-                                );
-                        } else {
-                            $ciniki['emailqueue'][] = array('mail_id' => $rc['id'], 'tnid'=>$tnid);
-                        }
-                    }
                 }
 
                 $request['session']['ciniki.musicfestivals']['recommendation-submit-msg'] = 'Thank you for your recommendations for ' . $section['name'];

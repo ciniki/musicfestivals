@@ -123,6 +123,13 @@ function ciniki_musicfestivals_maps($ciniki) {
             0x08 => 'Hidden',
         ),
     );
+    $maps['recommendation'] = array(
+        'status'=>array(
+            10 => 'Draft',
+            30 => 'Submitted',
+            50 => 'Reviewed',
+            ),
+        );
     $maps['recommendationentry'] = array(
         'position'=>array(
             1 => '1st',
@@ -132,13 +139,42 @@ function ciniki_musicfestivals_maps($ciniki) {
             101 => '1st Alternate',
             102 => '2nd Alternate',
             103 => '3rd Alternate',
+            600 => 'N/A',
         ),
         'status'=>array(
             10 => 'Recommended',
+            20 => 'Issues',
             30 => 'Accepted',
+            35 => 'Invited',
+            40 => 'Confirmed',
+            45 => 'Instructions Sent',
             50 => 'Registered',
             70 => 'Turned Down',
-            80 => 'Duplicate',
+            80 => 'Already Recommended',
+            85 => 'Ineligible',
+            90 => 'Expired',
+        ),
+        'position_shortname'=>array(
+            1 => '1st',
+            2 => '2nd',
+            3 => '3rd',
+            4 => '4th',
+            101 => '1st Alt',
+            102 => '2nd Alt',
+            103 => '3rd Alt',
+            600 => 'N/A',
+        ),
+        'status'=>array(
+            10 => 'Recommended',
+            20 => 'Issues',
+            30 => 'Accepted',
+            35 => 'Invited',
+            40 => 'Confirmed',
+            45 => 'Instructions Sent',
+            50 => 'Registered',
+            70 => 'Turned Down',
+            80 => 'Already Recommended',
+            85 => 'Ineligible',
             90 => 'Expired',
         ),
     );

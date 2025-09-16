@@ -26,6 +26,7 @@ function ciniki_musicfestivals_recommendationEntryAdd(&$ciniki) {
         'position'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Position'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'),
         'mark'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Mark'),
+        'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

@@ -37,6 +37,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'levels'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Levels'),
         'trophies'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Trophies'),
         'recommendations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicator Recommendations'),
+        'recommendation_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Recommendation Status'),
+        'recommendation_statuses'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Recommendation Statuses'),
         'member_submissions'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Recommendation Member Submissions'),
         'member_entries'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Recommendation Member Entries'),
         'class_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Class'),
@@ -168,20 +170,21 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
     //
     // Setup the arrays for the lists of next/prev ids
     //
-    $nplists = array(
-        'sections'=>array(),
-        'categories'=>array(),
-        'classes'=>array(),
-        'levels'=>array(),
-        'registrations'=>array(),
-        'schedule_sections'=>array(),
-        'schedule_divisions'=>array(),
-        'schedule_timeslots'=>array(),
-        'adjudicators'=>array(),
-        'locations'=>array(),
-        'files'=>array(),
-        'sponsors'=>array(),
-        );
+    $nplists = [
+        'sections' => [],
+        'categories' => [],
+        'classes' => [],
+        'levels' => [],
+        'registrations' => [],
+        'schedule_sections' => [],
+        'schedule_divisions' => [],
+        'schedule_timeslots' => [],
+        'adjudicators' => [],
+        'locations' => [],
+        'files' => [],
+        'sponsors' => [],
+        'submissions' => [],
+        ];
 
     //
     // Return default for new Festival
@@ -4203,24 +4206,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             'date_submitted'=> array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i:s A'),
                             'end_date'=> array('timezone'=>$intl_timezone, 'format'=>'M j'),
                             ),
+                        'maps'=>array('position'=>$maps['recommendationentry']['position_shortname']),
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.656', 'msg'=>'Unable to load entries', 'err'=>$rc['err']));
                 }
                 $festival['recommendation_entries'] = isset($rc['entries']) ? $rc['entries'] : array();
-                foreach($festival['recommendation_entries'] as $eid => $entry) {
-                    switch($entry['position']) {
-                        case 1: $festival['recommendation_entries'][$eid]['position'] = '1st'; break;
-                        case 2: $festival['recommendation_entries'][$eid]['position'] = '2nd'; break;
-                        case 3: $festival['recommendation_entries'][$eid]['position'] = '3rd'; break;
-                        case 4: $festival['recommendation_entries'][$eid]['position'] = '4th'; break;
-                        case 101: $festival['recommendation_entries'][$eid]['position'] = '1st Alt'; break;
-                        case 102: $festival['recommendation_entries'][$eid]['position'] = '2nd Alt'; break;
-                        case 103: $festival['recommendation_entries'][$eid]['position'] = '3rd Alt'; break;
-                        case 600: $festival['recommendation_entries'][$eid]['position'] = 'N/A'; break;
-                    }
-                }
             }
         }
 
@@ -4294,6 +4286,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "recommendations.adjudicator_name, "
                     . "recommendations.section_id, "
                     . "recommendations.member_id, "
+                    . "recommendations.status, "
+                    . "recommendations.status AS status_text, "
                     . "recommendations.date_submitted, "
                     . "sections.name AS section_name, "
                     . "COUNT(entries.id) AS num_entries "
@@ -4317,16 +4311,21 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     array('container'=>'submissions', 'fname'=>'id', 
                         'fields'=>array(
                             'id', 'adjudicator_name', 'section_id', 'section_name', 'num_entries', 'date_submitted',
+                            'status', 'status_text',
                             ),
                         'utctotz'=>array(
                             'date_submitted'=> array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i:s A'),
                             ),
+                        'maps'=>array('status_text'=>$maps['recommendation']['status']),
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.600', 'msg'=>'Unable to load submissions', 'err'=>$rc['err']));
                 }
-                $festival['recommendation_submissions'] = isset($rc['submissions']) ? $rc['submissions'] : array();
+                $festival['member_submissions'] = isset($rc['submissions']) ? $rc['submissions'] : array();
+                foreach($festival['member_submissions'] as $k => $v) {
+                    $nplists['submissions'][] = $v['id'];
+                }
             }
             //
             // Get the member recommendation entries
@@ -4359,6 +4358,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'entries', 'fname'=>'id', 
                         'fields'=>array('id', 'status', 'class_code', 'class_name', 'position', 'name', 'mark'),
+                        'maps'=>array('position'=>$maps['recommendationentry']['position_shortname']),
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
@@ -4372,17 +4372,88 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
 //                            $recommendation['entries'][$eid]['name'] = str_replace($m[1] . ' - ', '', $recommendation['entries'][$eid]['name']);
 //                        }
 //                    }
-                    switch($entry['position']) {
-                        case 1: $entries[$eid]['position'] = '1st'; break;
-                        case 2: $entries[$eid]['position'] = '2nd'; break;
-                        case 3: $entries[$eid]['position'] = '3rd'; break;
-                        case 4: $entries[$eid]['position'] = '4th'; break;
-                        case 101: $entries[$eid]['position'] = '1st Alt'; break;
-                        case 102: $entries[$eid]['position'] = '2nd Alt'; break;
-                        case 103: $entries[$eid]['position'] = '3rd Alt'; break;
-                    }
                 }
                 $festival['recommendation_member_entries'] = $entries;
+            }
+        }
+        //
+        // Get the counts for each submission status
+        //
+        if( isset($args['recommendation_statuses']) && $args['recommendation_statuses'] == 'yes' ) {
+            $strsql = "SELECT recommendations.status, "
+                . "COUNT(recommendations.id) AS num_submissions "
+                . "FROM ciniki_musicfestival_recommendations AS recommendations "
+                . "WHERE recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "GROUP BY recommendations.status "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
+            $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.musicfestivals', 'statuses');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1047', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+            }
+            $festival['recommendation_statuses'] = [
+                '10'=>array('status' => 10, 'name' => 'Draft', 'num_submissions'=>(isset($rc['statuses'][10]) ? $rc['statuses'][10] : '')),
+                '30'=>array('status' => 30, 'name' => 'Submitted', 'num_submissions'=>(isset($rc['statuses'][30]) ? $rc['statuses'][30] : '')),
+                '50'=>array('status' => 50, 'name' => 'Reviewed', 'num_submissions'=>(isset($rc['statuses'][50]) ? $rc['statuses'][50] : '')),
+                ];
+        }
+
+        //
+        // Get the submissions of a status
+        //
+        if( isset($args['recommendation_status']) && $args['recommendation_status'] != '' ) {
+            $strsql = "SELECT recommendations.id, "
+                . "recommendations.adjudicator_name, "
+                . "recommendations.section_id, "
+                . "recommendations.member_id, "
+                . "members.shortname AS member_name, "
+                . "recommendations.status, "
+                . "recommendations.status AS status_text, "
+                . "recommendations.date_submitted, "
+                . "sections.name AS section_name, "
+                . "COUNT(entries.id) AS num_entries "
+                . "FROM ciniki_musicfestival_recommendations AS recommendations "
+                . "LEFT JOIN ciniki_musicfestivals_members AS members ON ("
+                    . "recommendations.member_id = members.id "
+                    . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+                    . "recommendations.section_id = sections.id "
+                    . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "LEFT JOIN ciniki_musicfestival_recommendation_entries AS entries ON ("
+                    . "recommendations.id = entries.recommendation_id "
+                    . "AND entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE recommendations.status = '" . ciniki_core_dbQuote($ciniki, $args['recommendation_status']) . "' "
+                . "AND recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "GROUP BY recommendations.id ";
+            if( $args['recommendation_status'] == 50 ) {
+                $strsql .= "ORDER BY date_submitted DESC ";
+            } else {
+                $strsql .= "ORDER BY date_submitted ";
+            }
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'submissions', 'fname'=>'id', 
+                    'fields'=>array(
+                        'id', 'adjudicator_name', 'member_name', 'section_id', 'section_name', 'num_entries', 'date_submitted',
+                        'status', 'status_text', 
+                        ),
+                    'utctotz'=>array(
+                        'date_submitted'=> array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i:s A'),
+                        ),
+                    'maps'=>array('status_text'=>$maps['recommendation']['status']),
+                    ),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.600', 'msg'=>'Unable to load submissions', 'err'=>$rc['err']));
+            }
+            $festival['recommendation_submissions'] = isset($rc['submissions']) ? $rc['submissions'] : array();
+            foreach($festival['recommendation_submissions'] as $k => $v) {
+                $nplists['submissions'][] = $v['id'];
             }
         }
 

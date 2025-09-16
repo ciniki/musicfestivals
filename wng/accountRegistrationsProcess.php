@@ -17,7 +17,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
-    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestivalregistrations';
+    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/registrations';
     $display = 'list';
     $form_errors = '';
     $errors = array();
@@ -497,13 +497,13 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     //
     // Check if comments or certificate requested
     //
-    if( isset($request['uri_split'][3]) 
-        && $request['uri_split'][3] == 'comments'
+    if( isset($request['uri_split'][4]) 
+        && $request['uri_split'][4] == 'comments'
         ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'commentsPDF');
         $rc = ciniki_musicfestivals_templates_commentsPDF($ciniki, $tnid, array(
             'festival_id' => $festival['id'],
-            'registration_uuid' => $request['uri_split'][2]
+            'registration_uuid' => $request['uri_split'][3]
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.463', 'msg'=>'Unable to load comments', 'err'=>$rc['err']));
@@ -519,13 +519,13 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             return array('stat'=>'exit');
         }
     }
-    if( isset($request['uri_split'][3]) 
-        && $request['uri_split'][3] == 'certificate'
+    if( isset($request['uri_split'][4]) 
+        && $request['uri_split'][4] == 'certificate'
         ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationCertsPDF');
         $rc = ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, array(
             'festival_id' => $festival['id'],
-            'registration_uuid' => $request['uri_split'][2],
+            'registration_uuid' => $request['uri_split'][3],
             'single' => 'yes', // Don't add one for each competitor in registration
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -543,8 +543,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         }
     }
 
-    if( isset($request['uri_split'][3]) 
-        && $request['uri_split'][3] == 'view'
+    if( isset($request['uri_split'][4]) 
+        && $request['uri_split'][4] == 'view'
         ) {
     }
     //
@@ -1536,7 +1536,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 return array('stat'=>'exit');
             }
 
-            header("Location: {$request['ssl_domain_base_url']}/account/musicfestivalregistrations");
+            header("Location: {$request['ssl_domain_base_url']}/account/musicfestival/registrations");
             return array('stat'=>'exit');
         }
         elseif( count($errors) == 0 ) {
@@ -1793,7 +1793,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 return array('stat'=>'exit');
             }
 
-            header("Location: {$request['ssl_domain_base_url']}/account/musicfestivalregistrations");
+            header("Location: {$request['ssl_domain_base_url']}/account/musicfestival/registrations");
             return array('stat'=>'exit');
         }
     }
@@ -1877,7 +1877,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 }
             }
            
-            header("Location: {$request['ssl_domain_base_url']}/account/musicfestivalregistrations");
+            header("Location: {$request['ssl_domain_base_url']}/account/musicfestival/registrations");
             return array('stat'=>'exit');
         }
         else {

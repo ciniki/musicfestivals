@@ -1,0 +1,6 @@
+ALTER TABLE ciniki_musicfestival_recommendations ADD COLUMN status tinyint unsigned not null AFTER section_id;
+ALTER TABLE ciniki_musicfestival_recommendations ADD COLUMN local_adjudicator_id int not null AFTER adjudicator_email;
+UPDATE ciniki_musicfestival_recommendations SET status = 50;
+ALTER TABLE ciniki_musicfestival_recommendations COMMENT='v1.02';
+ALTER TABLE ciniki_musicfestival_recommendations DROP INDEX festival_id;
+ALTER TABLE ciniki_musicfestival_recommendations ADD INDEX (festival_id, member_id, section_id, local_adjudicator_id);

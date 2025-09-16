@@ -13,6 +13,13 @@
 # permalink:                The permalink of the festival.
 # shortname:                The short name of the festival, used in results.
 #
+# flags:                    The options for the member.
+#
+#                               0x01 - Force recommendations local festival Ciniki website
+#                               0x02 - 
+#                               0x04 - 
+#                               0x08 - 
+#
 # category:                 The category for the member.
 #
 # synopsis:                 The synopsis of the festival to display on the website.
@@ -38,6 +45,7 @@ create table ciniki_musicfestivals_members (
     name varchar(250) not null,
     shortname varchar(250) not null,
     permalink varchar(250) not null,
+    flags smallint unsigned not null,
     category varchar(250) not null,
     synopsis varchar(2000) not null,
     status tinyint unsigned not null,
@@ -49,4 +57,4 @@ create table ciniki_musicfestivals_members (
     primary key (id),
     unique index (uuid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.02';
+) ENGINE='InnoDB', COMMENT='v1.03';

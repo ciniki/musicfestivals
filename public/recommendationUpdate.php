@@ -19,6 +19,7 @@ function ciniki_musicfestivals_recommendationUpdate(&$ciniki) {
         'recommendation_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Adjudicator Recommendation'),
         'festival_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Festival'),
         'member_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Member Festival'),
+        'status'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Status'),
         'section_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Syllabus Section'),
         'adjudicator_name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Adjudicator Name'),
         'adjudicator_phone'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicator Phone'),

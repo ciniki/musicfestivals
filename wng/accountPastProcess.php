@@ -17,7 +17,7 @@ function ciniki_musicfestivals_wng_accountPastProcess(&$ciniki, $tnid, &$request
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
-    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestivalpast';
+    $base_url = $request['ssl_domain_base_url'] . '/account/pastmusicfestivals';
 
     //
     // Get the list of past festivals

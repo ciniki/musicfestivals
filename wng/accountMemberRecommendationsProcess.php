@@ -29,11 +29,11 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
-    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestivalmembers';
+    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/members';
     $display = 'list';
 
     if( isset($_POST['submit']) && $_POST['submit'] == 'Back' ) {
-        header("Location: {$request['ssl_domain_base_url']}/account/musicfestivalmembers");
+        header("Location: {$request['ssl_domain_base_url']}/account/musicfestival/members");
         return array('stat'=>'exit');
     }
 
@@ -117,13 +117,13 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
             'type' => 'buttons',
             'class' => 'aligncenter',
             'items' => array(   
-                array('text' => 'Download Excel', 'target' => '_blank', 'url' => "{$base_url}/recommendations/{$request['uri_split'][3]}/{$request['uri_split'][4]}/recommendations.xls"),
-                array('text' => 'Download PDF', 'target' => '_blank', 'url' => "{$base_url}/recommendations/{$request['uri_split'][3]}/{$request['uri_split'][4]}/recommendations.pdf"),
+                array('text' => 'Download Excel', 'target' => '_blank', 'url' => "{$base_url}/recommendations/{$request['uri_split'][4]}/{$request['uri_split'][5]}/recommendations.xls"),
+                array('text' => 'Download PDF', 'target' => '_blank', 'url' => "{$base_url}/recommendations/{$request['uri_split'][4]}/{$request['uri_split'][5]}/recommendations.pdf"),
                 ),
             );
     }
 
-    if( isset($request['uri_split'][5]) && $request['uri_split'][5] == 'recommendations.xls' ) {
+    if( isset($request['uri_split'][6]) && $request['uri_split'][6] == 'recommendations.xls' ) {
         //
         // Generate XLS of recommendations
         //
@@ -156,7 +156,7 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
 
         return array('stat'=>'exit');
     }
-    elseif( isset($request['uri_split'][5]) && $request['uri_split'][5] == 'recommendations.pdf' ) {
+    elseif( isset($request['uri_split'][6]) && $request['uri_split'][6] == 'recommendations.pdf' ) {
         //
         // Generate PDF of recommendations
         //

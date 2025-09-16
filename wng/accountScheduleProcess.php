@@ -17,7 +17,7 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
-    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestivalschedule';
+    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/schedule';
     $display = 'list';
     $form_errors = '';
     $errors = array();

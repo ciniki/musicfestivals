@@ -15,7 +15,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
-    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestivalcompetitors';
+    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/competitors';
     $display = 'list';
 
     //
@@ -766,7 +766,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     header("Location: {$request['session']['account-musicfestivals-competitor-form-return']}");
                     return array('stat'=>'exit');
                 }
-                header("Location: {$request['ssl_domain_base_url']}/account/musicfestivalcompetitors");
+                header("Location: {$request['ssl_domain_base_url']}/account/musicfestival/competitors");
                 exit;
             } 
             else {
@@ -878,7 +878,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                         header("Location: {$request['session']['account-musicfestivals-competitor-form-return']}");
                         exit;
                     }
-                    header("Location: {$request['ssl_domain_base_url']}/account/musicfestivalcompetitors");
+                    header("Location: {$request['ssl_domain_base_url']}/account/musicfestival/competitors");
                     exit;
                 }
             }
@@ -923,7 +923,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.359', 'msg'=>'Unable to remove competitor', 'err'=>$rc['err']));
             }
-            header("Location: {$request['ssl_domain_base_url']}/account/musicfestivalcompetitors");
+            header("Location: {$request['ssl_domain_base_url']}/account/musicfestival/competitors");
             exit;
         } else {
             $display = 'delete';
@@ -1099,7 +1099,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                         . "<input class='button' type='submit' name='f-delete' value='Remove'>"
                         . "</form>";
                 }
-//                $add_button = "<a class='button' href='{$request['ssl_domain_base_url']}/account/musicfestivalcompetitors?add=yes'>Add</a>";
+//                $add_button = "<a class='button' href='{$request['ssl_domain_base_url']}/account/musicfestival/competitors?add=yes'>Add</a>";
             }
             $columns = array(
                 array('label' => 'Name', 'field' => 'name', 'class' => 'alignleft')
@@ -1146,11 +1146,11 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                 'list' => array(
                     array(
                         'text' => 'Add Individual',
-                        'url' => "/account/musicfestivalcompetitors?add=individual",
+                        'url' => "/account/musicfestival/competitors?add=individual",
                         ),
                     array(
                         'text' => 'Add Group/Ensemble',
-                        'url' => "/account/musicfestivalcompetitors?add=group",
+                        'url' => "/account/musicfestival/competitors?add=group",
                         ),
                     ),
                 );

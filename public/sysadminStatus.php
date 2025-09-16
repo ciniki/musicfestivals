@@ -71,7 +71,7 @@ function ciniki_musicfestivals_sysadminStatus($ciniki) {
             . "festivals.id = settings.festival_id "
             . "AND detail_key IN ('waiver-general-title', 'waiver-general-msg') "
             . ") "
-        . "WHERE festivals.status < 60 "
+        . "WHERE festivals.status < 50 "
         . "ORDER BY festivals.start_date "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');

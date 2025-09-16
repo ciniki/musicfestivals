@@ -26,8 +26,8 @@
 #                           0x08 - Instrument optional **future placeholder, not implemented**
 #                           0x10 - Fixed title(s) **to be deprecated**
 #                           0x20 - Virtual Only (Only applicable when festival flags 0x06 = 0x02 - no virtual pricing)
-#                           0x40 - Teacher Required
-#                           0x80 - Teacher Optional
+#                           0x40 - Teacher Required **future**
+#                           0x80 - Teacher Optional **future**
 #                           0x0100 - Mark
 #                           0x0200 - Placement
 #                           0x0400 - Level

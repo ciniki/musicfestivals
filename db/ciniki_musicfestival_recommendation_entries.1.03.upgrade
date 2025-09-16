@@ -1,0 +1,6 @@
+ALTER TABLE ciniki_musicfestival_recommendation_entries ADD COLUMN provincials_reg_id int not null AFTER mark;
+ALTER TABLE ciniki_musicfestival_recommendation_entries ADD COLUMN local_reg_id int not null AFTER provincials_reg_id;
+ALTER TABLE ciniki_musicfestival_recommendation_entries ADD COLUMN notes text not null AFTER local_reg_id;
+ALTER TABLE ciniki_musicfestival_recommendation_entries COMMENT='v1.03';
+ALTER TABLE ciniki_musicfestival_recommendation_entries DROP INDEX recommendation_id;
+ALTER TABLE ciniki_musicfestival_recommendation_entries ADD INDEX (recommendation_id, class_id, provincials_reg_id, local_reg_id);

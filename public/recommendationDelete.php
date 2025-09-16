@@ -37,7 +37,7 @@ function ciniki_musicfestivals_recommendationDelete(&$ciniki) {
         return $rc;
     }
 
-    //
+/*    //
     // Get the current settings for the adjudicator recommendation
     //
     $strsql = "SELECT id, uuid "
@@ -57,42 +57,7 @@ function ciniki_musicfestivals_recommendationDelete(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-    $entries = isset($rc['rows']) ? $rc['rows'] : array();
-
-    //
-    // Check for any dependencies before deleting
-    //
-    $strsql = "SELECT id, uuid "
-        . "FROM ciniki_musicfestival_recommendation_entries AS entries "
-        . "WHERE entries.recommendation_id = '" . ciniki_core_dbQuote($ciniki, $args['recommendation_id']) . "' "
-        . "AND entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'entries', 'fname'=>'id', 'fields'=>array('id', 'uuid'),
-            ),
-        ));
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.622', 'msg'=>'Unable to load entries', 'err'=>$rc['err']));
-    }
-    $entries = isset($rc['entries']) ? $rc['entries'] : array();
-
-//    if( count($entries) > 0 ) {
-//        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.623', 'msg'=>'There are still entries for this submission, they must be removed first.'));
-//    }
-
-    //
-    // Remove this submission from any mail entries
-    //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'objectMessagesDetach');
-    $rc = ciniki_mail_hooks_objectMessagesDetach($ciniki, $args['tnid'], array(
-        'object' => 'ciniki.musicfestivals.recommendation',
-        'object_id' => $args['recommendation_id'],
-        ));
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.624', 'msg'=>'Unable to detach from mail messages.', 'err'=>$rc['err']));
-    }
-
+*/
     //
     // Check if any modules are currently using this object
     //
@@ -105,7 +70,10 @@ function ciniki_musicfestivals_recommendationDelete(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.603', 'msg'=>'The adjudicator recommendation is still in use. ' . $rc['msg']));
     }
 
-    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'recommendationRemove');
+    return ciniki_musicfestivals_recommendationRemove($ciniki, $args['tnid'], $args['recommendation_id']);
+
+/*    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
@@ -155,7 +123,7 @@ function ciniki_musicfestivals_recommendationDelete(&$ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'updateModuleChangeDate');
     ciniki_tenants_updateModuleChangeDate($ciniki, $args['tnid'], 'ciniki', 'musicfestivals');
-
+*/
     return array('stat'=>'ok');
 }
 ?>

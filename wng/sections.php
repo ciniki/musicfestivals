@@ -30,13 +30,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         . "festivals.name, "
         . "festivals.flags, "
         . "festivals.start_date "
-//        . "IFNULL(settings.detail_value, 0) AS provincial_festival_id "
         . "FROM ciniki_musicfestivals AS festivals "
-//        . "LEFT JOIN ciniki_musicfestival_settings AS settings ON ("
-//            . "festivals.id = settings.festival_id "
-//            . "AND settings.detail_key = 'provincial-festival-id' "
-//            . "AND settings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-//            . ") "
         . "WHERE festivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY festivals.start_date DESC "
         . "";
@@ -49,14 +43,10 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     }
     $festivals = isset($rc['festivals']) ? $rc['festivals'] : array();
     $virtual_festivals = 'no';
-//    $provincial_festivals = [];
     foreach($festivals as $festival) {
         if( ($festival['flags']&0x02) == 0x02 ) {
             $virtual_festivals = 'yes';
         }
-//        if( isset($festival['provincial_festival_id']) && $festival['provincial_festival_id'] > 0 ) {
-//            $provincial_festivals[] = $festival;
-//        }
     }
 
     if( isset($festivals[0]) ) {
