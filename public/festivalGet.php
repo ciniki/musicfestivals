@@ -279,6 +279,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         // Format CRS deadline
         //
         if( isset($festival['registration-crs-deadline']) && $festival['registration-crs-deadline'] != '' ) {
+            $now = new DateTime('now', new DateTimezone('UTC'));
             $dt = new DateTime($festival['registration-crs-deadline'], new DateTimezone('UTC'));
             if( $now < $dt ) {
                 $festival['registration-crs-open'] = 'yes';
