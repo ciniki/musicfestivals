@@ -257,10 +257,10 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'scheduling-timeslot-shortnames',
         'locations-categories',
         'locations-disciplines',
-        'trophies-footer-msg',
-        'trophies-include-descriptions',
-        'trophies-include-donatedby',
-        'trophies-include-amount',
+        'accolades-footer-msg',
+        'accolades-include-descriptions',
+        'accolades-include-donatedby',
+        'accolades-include-amount',
         );
     foreach($valid_settings as $field) {
         if( isset($args[$field]) ) {

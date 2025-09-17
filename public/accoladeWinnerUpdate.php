@@ -1,27 +1,29 @@
 <?php
 //
 // Description
-// -----------
-// This method will attach a accolade to a class
+// ===========
 //
 // Arguments
 // ---------
-// api_key:
-// auth_token:
-// tnid:        The ID of the tenant to add the Class to.
 //
 // Returns
 // -------
 //
-function ciniki_musicfestivals_classAccoladeAdd(&$ciniki) {
+function ciniki_musicfestivals_accoladeWinnerUpdate(&$ciniki) {
     //
     // Find all the required and optional arguments
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
-        'accolade_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Accolade'),
-        'class_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Class'),
+        'winner_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Accolade Winner'),
+        'accolade_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Accolade'),
+        'registration_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Registration'),
+        'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
+        'awarded_amount'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Awarded Amount'),
+        'name'=>array('required'=>'no', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'),
+        'year'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Year'),
+        'internal_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Internal Notes'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -29,10 +31,11 @@ function ciniki_musicfestivals_classAccoladeAdd(&$ciniki) {
     $args = $rc['args'];
 
     //
-    // Check access to tnid as owner
+    // Make sure this module is activated, and
+    // check permission to run this function for this tenant
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.classAccoladeAdd');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.accoladeWinnerUpdate');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -50,15 +53,14 @@ function ciniki_musicfestivals_classAccoladeAdd(&$ciniki) {
     }
 
     //
-    // Add the class to the database
+    // Update the Accolade Winner in the database
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.accoladeclass', $args, 0x04);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+    $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.accoladewinner', $args['winner_id'], $args, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;
     }
-    $tc_id = $rc['id'];
 
     //
     // Commit the transaction
@@ -79,8 +81,8 @@ function ciniki_musicfestivals_classAccoladeAdd(&$ciniki) {
     // Update the web index if enabled
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
-    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.musicfestivals.accoladeclass', 'object_id'=>$tc_id));
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.musicfestivals.accoladeWinner', 'object_id'=>$args['winner_id']));
 
-    return array('stat'=>'ok', 'id'=>$tc_id);
+    return array('stat'=>'ok');
 }
 ?>

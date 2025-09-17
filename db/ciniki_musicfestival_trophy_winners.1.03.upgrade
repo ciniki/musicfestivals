@@ -1,3 +1,0 @@
-ALTER TABLE ciniki_musicfestival_trophy_winners ADD COLUMN flags tinyint unsigned not null AFTER registration_id;
-ALTER TABLE ciniki_musicfestival_trophy_winners ADD COLUMN internal_notes text null AFTER year;
-ALTER TABLE ciniki_musicfestival_trophy_winners COMMENT='v1.03';

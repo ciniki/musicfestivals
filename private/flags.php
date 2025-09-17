@@ -23,7 +23,7 @@ function ciniki_musicfestivals_flags(&$ciniki) {
         // 0x10
         array('flag'=>array('bit'=>'5', 'name'=>'Sponsors')),
         array('flag'=>array('bit'=>'6', 'name'=>'Lists')),
-        array('flag'=>array('bit'=>'7', 'name'=>'Trophies')),
+        array('flag'=>array('bit'=>'7', 'name'=>'Accolades')),
         array('flag'=>array('bit'=>'8', 'name'=>'Pronouns')),
         // 0x0100
         array('flag'=>array('bit'=>'9', 'name'=>'Main Menu Festivals')),

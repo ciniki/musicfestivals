@@ -74,18 +74,18 @@ function ciniki_musicfestivals_wng_process(&$ciniki, $tnid, &$request, $section)
     } elseif( $section['ref'] == 'ciniki.musicfestivals.sponsors' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'sponsorsProcess');
         return ciniki_musicfestivals_wng_sponsorsProcess($ciniki, $tnid, $request, $section);
-    } elseif( $section['ref'] == 'ciniki.musicfestivals.trophies' ) {
+    } elseif( $section['ref'] == 'ciniki.musicfestivals.accolades' ) {
         $section['itemtype'] = 10;
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'trophiesProcess');
-        return ciniki_musicfestivals_wng_trophiesProcess($ciniki, $tnid, $request, $section);
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accoladesProcess');
+        return ciniki_musicfestivals_wng_accoladesProcess($ciniki, $tnid, $request, $section);
     } elseif( $section['ref'] == 'ciniki.musicfestivals.awards' ) {
         // FIXME: Check if this can be removed
         $section['itemtype'] = 40;
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'trophiesProcess');
-        return ciniki_musicfestivals_wng_trophiesProcess($ciniki, $tnid, $request, $section);
-    } elseif( $section['ref'] == 'ciniki.musicfestivals.trophywinners' ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'trophyWinnersProcess');
-        return ciniki_musicfestivals_wng_trophyWinnersProcess($ciniki, $tnid, $request, $section);
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accoladesProcess');
+        return ciniki_musicfestivals_wng_accoladesProcess($ciniki, $tnid, $request, $section);
+    } elseif( $section['ref'] == 'ciniki.musicfestivals.accoladewinners' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accoladeWinnersProcess');
+        return ciniki_musicfestivals_wng_accoladeWinnersProcess($ciniki, $tnid, $request, $section);
     } elseif( $section['ref'] == 'ciniki.musicfestivals.members' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'membersProcess');
         return ciniki_musicfestivals_wng_membersProcess($ciniki, $tnid, $request, $section);

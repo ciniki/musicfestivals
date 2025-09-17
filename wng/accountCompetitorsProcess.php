@@ -35,12 +35,12 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     //
     if( isset($_POST['f-action']) && $_POST['f-action'] == 'addcompetitor' ) {
         $request['session']['account-musicfestivals-registration-saved'] = $_POST;
-        $return_url = $request['ssl_domain_base_url'] . '/account/musicfestivalregistrations';
+        $return_url = $request['ssl_domain_base_url'] . '/account/musicfestival/registrations';
         $request['session']['account-musicfestivals-competitor-form-return'] = $return_url;
     }
     elseif( isset($_POST['f-action']) && $_POST['f-action'] == 'editcompetitor' ) {
         $request['session']['account-musicfestivals-registration-saved'] = $_POST;
-        $return_url = $request['ssl_domain_base_url'] . '/account/musicfestivalregistrations';
+        $return_url = $request['ssl_domain_base_url'] . '/account/musicfestival/registrations';
         $request['session']['account-musicfestivals-competitor-form-return'] = $return_url;
     }
 

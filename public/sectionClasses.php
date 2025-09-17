@@ -99,7 +99,7 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
     //
     // Get the list of classes
     //
-    if( isset($args['list']) && $args['list'] == 'trophies' ) {
+    if( isset($args['list']) && $args['list'] == 'accolades' ) {
         $strsql = "SELECT categories.id AS category_id, "
             . "categories.name AS category_name, "
             . "categories.permalink, "
@@ -110,30 +110,30 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
             . "classes.name AS class_name, "
             . "classes.sequence AS class_sequence, "
             . "classes.schedule_seconds, "
-            . "trophies.name AS trophies "
+            . "accolades.name AS accolades "
             . "FROM ciniki_musicfestival_categories AS categories "
             . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "categories.id = classes.category_id "
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "LEFT JOIN ciniki_musicfestival_trophy_classes AS tc ON ("
+            . "LEFT JOIN ciniki_musicfestival_accolade_classes AS tc ON ("
                 . "classes.id = tc.class_id "
                 . "AND tc.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "LEFT JOIN ciniki_musicfestival_trophies AS trophies ON ("
-                . "tc.trophy_id = trophies.id "
-                . "AND trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "LEFT JOIN ciniki_musicfestival_accolades AS accolades ON ("
+                . "tc.accolade_id = accolades.id "
+                . "AND accolades.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
-            . "ORDER BY categories.sequence, categories.name, classes.sequence, classes.name, trophies.category, trophies.name "
+            . "ORDER BY categories.sequence, categories.name, classes.sequence, classes.name, accolades.category, accolades.name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'classes', 'fname'=>'id', 
                 'fields'=>array('id', 'joined_sequence', 'category_id', 'category_name', 'permalink', 'category_sequence', 
-                    'code', 'class_name', 'class_sequence', 'trophies', 'schedule_seconds'),
-                'dlists'=>array('trophies'=>', '),
+                    'code', 'class_name', 'class_sequence', 'accolades', 'schedule_seconds'),
+                'dlists'=>array('accolades'=>', '),
                 ),
             ));
     } 
@@ -239,9 +239,9 @@ function ciniki_musicfestivals_sectionClasses($ciniki) {
     $festival = $rc['festival'];
    
     //
-    // Check if trophies requested and get registration count
+    // Check if accolades requested and get registration count
     //
-    if( isset($args['list']) && $args['list'] == 'trophies' ) {
+    if( isset($args['list']) && $args['list'] == 'accolades' ) {
         //
         // Get the list of number of registrations for each class
         //

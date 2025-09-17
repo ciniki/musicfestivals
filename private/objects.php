@@ -625,18 +625,16 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );
-    $objects['trophy'] = array(
-        'name' => 'Trophy',
+    $objects['accolade'] = array(
+        'name' => 'Accolade',
         'sync' => 'yes',
-        'o_name' => 'trophy',
-        'o_container' => 'trophies',
-        'table' => 'ciniki_musicfestival_trophies',
+        'o_name' => 'accolade',
+        'o_container' => 'accolades',
+        'table' => 'ciniki_musicfestival_accolades',
         'fields' => array(
             'name' => array('name'=>'Name'),
             'permalink' => array('name'=>'Permalink', 'default'=>''),
             'subcategory_id' => array('name'=>'Subcategory'),
-//            'typename' => array('name'=>'Type', 'default'=>'Trophies'),
-//            'category' => array('name'=>'Category', 'default'=>''),
             'primary_image_id' => array('name'=>'Image', 'default'=>'0', 'ref'=>'ciniki.images.image'),
             'donated_by' => array('name'=>'Donated By', 'default'=>''),
             'first_presented' => array('name'=>'First Presented', 'default'=>''),
@@ -647,12 +645,12 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );
-    $objects['trophycategory'] = array(
-        'name' => 'Trophy Category',
+    $objects['accoladecategory'] = array(
+        'name' => 'Accolade Category',
         'sync' => 'yes',
-        'o_name' => 'trophycategory',
-        'o_container' => 'trophycategories',
-        'table' => 'ciniki_musicfestival_trophy_categories',
+        'o_name' => 'accoladecategory',
+        'o_container' => 'accoladecategories',
+        'table' => 'ciniki_musicfestival_accolade_categories',
         'fields' => array(
             'name' => array('name'=>'Name'),
             'permalink' => array('name'=>'Permalink'),
@@ -669,14 +667,14 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );
-    $objects['trophysubcategory'] = array(
-        'name' => 'Trophy Subcategory',
+    $objects['accoladesubcategory'] = array(
+        'name' => 'Accolade Subcategory',
         'sync' => 'yes',
-        'o_name' => 'trophysubcategory',
-        'o_container' => 'trophysubcategories',
-        'table' => 'ciniki_musicfestival_trophy_subcategories',
+        'o_name' => 'accoladesubcategory',
+        'o_container' => 'accoladesubcategories',
+        'table' => 'ciniki_musicfestival_accolade_subcategories',
         'fields' => array(
-            'category_id' => array('name'=>'Category', 'ref'=>'ciniki.musicfestivals.trophycategory'),
+            'category_id' => array('name'=>'Category', 'ref'=>'ciniki.musicfestivals.accoladecategory'),
             'name' => array('name'=>'Name'),
             'permalink' => array('name'=>'Permalink'),
             'flags' => array('name'=>'Options', 'default'=>'0'),
@@ -687,14 +685,14 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );
-    $objects['trophywinner'] = array(
-        'name' => 'Trophy Winner',
+    $objects['accoladewinner'] = array(
+        'name' => 'Accolade Winner',
         'sync' => 'yes',
         'o_name' => 'winner',
         'o_container' => 'winners',
-        'table' => 'ciniki_musicfestival_trophy_winners',
+        'table' => 'ciniki_musicfestival_accolade_winners',
         'fields' => array(
-            'trophy_id' => array('name'=>'Trophy', 'ref'=>'ciniki.musicfestivals.trophy'),
+            'accolade_id' => array('name'=>'Accolade', 'ref'=>'ciniki.musicfestivals.accolade'),
             'registration_id' => array('name'=>'Registration', 'ref'=>'ciniki.musicfestivals.registration'),
             'flags' => array('name'=>'Options', 'default'=>'0'),
             'awarded_amount' => array('name'=>'Amount', 'default'=>'0'),
@@ -704,14 +702,14 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );
-    $objects['trophyclass'] = array(
-        'name' => 'Trophy Class',
+    $objects['accoladeclass'] = array(
+        'name' => 'Accolade Class',
         'sync' => 'yes',
         'o_name' => 'class',
         'o_container' => 'classes',
-        'table' => 'ciniki_musicfestival_trophy_classes',
+        'table' => 'ciniki_musicfestival_accolade_classes',
         'fields' => array(
-            'trophy_id' => array('name'=>'Trophy', 'ref'=>'ciniki.musicfestivals.trophy'),
+            'accolade_id' => array('name'=>'Accolade', 'ref'=>'ciniki.musicfestivals.accolade'),
             'class_id' => array('name'=>'Class', 'ref'=>'ciniki.musicfestivals.class'),
             ),
         'history_table' => 'ciniki_musicfestivals_history',

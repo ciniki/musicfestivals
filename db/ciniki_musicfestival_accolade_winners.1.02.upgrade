@@ -1,0 +1,3 @@
+ALTER TABLE ciniki_musicfestival_accolade_winners ADD COLUMN registration_id int not null AFTER accolade_id;
+ALTER TABLE ciniki_musicfestival_accolade_winners ADD COLUMN awarded_amount decimal(19,4) not null AFTER registration_id;
+ALTER TABLE ciniki_musicfestival_accolade_winners COMMENT='v1.02';

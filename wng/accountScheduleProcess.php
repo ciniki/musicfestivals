@@ -308,7 +308,7 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
         'list' => array(array(
             'text' => 'Download Schedule PDF',
             'target' => '_blank',
-            'url' => "/account/musicfestivalregistrations?schedulepdf=yes",
+            'url' => "/account/musicfestival/registrations?schedulepdf=yes",
             )),
         );
 

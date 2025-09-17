@@ -928,16 +928,16 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     }
 
     //
-    // Section to display trophies
+    // Section to display accolades
     //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x40) ) {
         //
         // Get the list of typenames
         //
-/*        $strsql = "SELECT DISTINCT trophies.typename "
-            . "FROM ciniki_musicfestival_trophies AS trophies "
-            . "WHERE trophies.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "ORDER BY trophies.typename "
+/*        $strsql = "SELECT DISTINCT accolades.typename "
+            . "FROM ciniki_musicfestival_accolades AS accolades "
+            . "WHERE accolades.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "ORDER BY accolades.typename "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -948,7 +948,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         }
         $types = isset($rc['types']) ? $rc['types'] : array(); */
         $strsql = "SELECT id, name, permalink "
-            . "FROM ciniki_musicfestival_trophy_categories "
+            . "FROM ciniki_musicfestival_accolade_categories "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "ORDER BY sequence, name "
             . "";
@@ -962,16 +962,16 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         $categories = isset($rc['categories']) ? $rc['categories'] : array();
 
         //
-        // Display list of trophies
+        // Display list of accolades
         //
-        $sections['ciniki.musicfestivals.trophies'] = array(
-            'name' => 'Trophies & Awards',
+        $sections['ciniki.musicfestivals.accolades'] = array(
+            'name' => 'Accolades',
             'module' => 'Music Festivals',
             'settings' => array(
                 'title' => array('label'=>'Title', 'type'=>'text'),
                 'display-format' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
-                    'buttons-imagebuttons-trophy' => 'Category Buttons - Image Buttons - Trophy',
-                    'buttons-buttons-trophy' => 'Category Buttons - Trophy Buttons - Trophy',
+                    'buttons-imagebuttons-accolade' => 'Category Buttons - Image Buttons - Accolade',
+                    'buttons-buttons-accolade' => 'Category Buttons - Accolade Buttons - Accolade',
                     'buttons-list' => 'Buttons - List',
                     )),
                 'display-winners' => array('label'=>'Show Winners', 'type'=>'toggle', 'default'=>'yes', 'toggles'=>array(
@@ -983,7 +983,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             );
         if( count($categories) > 1 ) { 
             array_unshift($categories, ['name'=>'All']);
-            $sections['ciniki.musicfestivals.trophies']['settings']['category-id'] = array(
+            $sections['ciniki.musicfestivals.accolades']['settings']['category-id'] = array(
                 'label' => 'Category',
                 'type' => 'select',
                 'complex_options' => array('value'=>'id', 'name'=>'name'),
@@ -993,22 +993,22 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         //
         // Display list of winners
         //
-        $sections['ciniki.musicfestivals.trophywinners'] = array(
-            'name' => 'Trophies & Awards Winners',
+        $sections['ciniki.musicfestivals.accoladewinners'] = array(
+            'name' => 'Accolade Recipients',
             'module' => 'Music Festivals',
             'settings' => array(
                 'title' => array('label'=>'Title', 'type'=>'text'),
                 'year' => array('label'=>'Year', 'type'=>'text'),
 //                'display-format' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
-//                    'buttons-imagebuttons-trophy' => 'Category Buttons - Image Buttons - Trophy',
-//                    'buttons-buttons-trophy' => 'Category Buttons - Trophy Buttons - Trophy',
+//                    'buttons-imagebuttons-accolade' => 'Category Buttons - Image Buttons - Accolade',
+//                    'buttons-buttons-accolade' => 'Category Buttons - Accolade Buttons - Accolade',
 //                    'buttons-list' => 'Buttons - List',
 //                    )),
 //                'syllabus-page' => array('label'=>'Syllabus Page', 'type'=>'select', 'pages'=>'yes'),
                 ),
             );
         if( count($categories) > 1 ) { 
-            $sections['ciniki.musicfestivals.trophywinners']['settings']['category-id'] = array(
+            $sections['ciniki.musicfestivals.accoladewinners']['settings']['category-id'] = array(
                 'label' => 'Category',
                 'type' => 'select',
                 'complex_options' => array('value'=>'id', 'name'=>'name'),

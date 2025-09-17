@@ -2,7 +2,7 @@
 //
 // Description
 // -----------
-// This method will attach a trophy to a class
+// This method will attach a accolade to a class
 //
 // Arguments
 // ---------
@@ -13,14 +13,14 @@
 // Returns
 // -------
 //
-function ciniki_musicfestivals_classTrophyRemove(&$ciniki) {
+function ciniki_musicfestivals_classAccoladeRemove(&$ciniki) {
     //
     // Find all the required and optional arguments
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
-        'tc_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Trophy Class'),
+        'tc_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Accolade Class'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -31,7 +31,7 @@ function ciniki_musicfestivals_classTrophyRemove(&$ciniki) {
     // Check access to tnid as owner
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.classTrophyRemove');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.classAccoladeRemove');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -52,7 +52,7 @@ function ciniki_musicfestivals_classTrophyRemove(&$ciniki) {
     // Add the class to the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
-    $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.musicfestivals.trophyclass', $args['tc_id'], null, 0x04);
+    $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.musicfestivals.accoladeclass', $args['tc_id'], null, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;
@@ -77,7 +77,7 @@ function ciniki_musicfestivals_classTrophyRemove(&$ciniki) {
     // Update the web index if enabled
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
-    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.musicfestivals.trophyclass', 'object_id'=>$args['tc_id']));
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.musicfestivals.accoladeclass', 'object_id'=>$args['tc_id']));
 
     return array('stat'=>'ok');
 }

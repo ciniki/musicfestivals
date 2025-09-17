@@ -475,7 +475,7 @@ function ciniki_musicfestivals_templates_compactSchedulePDF(&$ciniki, $tnid, $ar
             $cw = array(30, 150);   // Class lines
             $tw = array(10, 170);   // Title lines
             $tnw = array(10, 15, 155);   // reg notes lines
-            $trw = array(22, 128);   // Trophy lines
+            $trw = array(22, 128);   // Accolade lines
             $prev_time = '';
             foreach($division['timeslots'] as $timeslot) {
 

@@ -1,0 +1,50 @@
+#
+# Description
+# -----------
+# This table stores the music festival accolade winners.
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# accolade_id:                The ID of the accolade the winner is for.
+# registration_id:          The ID of the registration that won the accolade.
+# flags:                    The options for the winner.
+#
+#                               0x01 - Emailed awarded email
+#                               0x02 - Payment Sent
+#                               0x04 - 
+#                               0x08 - 
+#
+# awarded_amount:           The amount awarded to the registration.
+#
+# name:                     The name of the winner copied from registration, can be changed if needed.
+# year:                     The year won.
+#
+# internal_notes:           Any notes about the winner, for internal use only.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_musicfestival_accolade_winners (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    accolade_id int not null,
+    registration_id int not null,
+    flags tinyint unsigned not null,
+    awarded_amount decimal(19,4) not null,
+    name varchar(250) not null,
+    year varchar(50) not null,
+    internal_notes text not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    index sync (tnid, uuid, last_updated),
+    unique index (accolade_id, name, year)
+) ENGINE='InnoDB', COMMENT='v1.03';
