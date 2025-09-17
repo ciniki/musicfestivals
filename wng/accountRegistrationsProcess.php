@@ -2375,7 +2375,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             ];
         if( $editable == 'no' ) {
             $buttons = [];
-            $buttons[] = ['url' => '/account/musicfestivalregistrations', 'text' => 'Back'];
+            $buttons[] = ['url' => '/account/musicfestival/registrations', 'text' => 'Back'];
             if( isset($festival['registration-crs-open']) && $festival['registration-crs-open'] == 'yes' ) {
                 $buttons[] = ['js' => 'showChangeRequest(event);', 'text' => 'Request Change'];
             }
