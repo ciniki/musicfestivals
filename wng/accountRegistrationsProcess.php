@@ -1290,7 +1290,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 'timeslot_id' => 0,
                 'instrument' => isset($fields['instrument']['value']) ? $fields['instrument']['value'] : '',
                 'participation' => (isset($fields['participation']['value']) ? $fields['participation']['value'] : ''),
-                'notes' => $fields['notes']['value'],
+                'notes' => isset($fields['notes']['value']) ? $fields['notes']['value'] : '',
                 );
             for($i = 1; $i <= 8; $i++) {
                 $registration["title{$i}"] = isset($fields["title{$i}"]['value']) ? $fields["title{$i}"]['value'] : '';

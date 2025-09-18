@@ -5485,6 +5485,10 @@ function ciniki_musicfestivals_main() {
                     'minsec':'Minutes/Seconds',
                     'minonly':'Minutes Only',
                     }},
+                'registration-notes-enable':{'label':'Notes', 'type':'toggle', 'default':'yes', 'separator':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
                 'registration-crs-enable':{'label':'Change Requests', 'type':'toggle', 'default':'no', 'separator':'yes', 'toggles':{
                     'no':'No',
                     'yes':'Yes',
@@ -5615,6 +5619,10 @@ function ciniki_musicfestivals_main() {
                 'competitor-individual-etransfer-email':{'label':'e-transfer Email', 'type':'toggle', 'default':'hidden', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
+                'competitor-individual-notes-enable':{'label':'Notes', 'type':'toggle', 'default':'yes', 'separator':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
             }},
         '_competitor_group_parent_msg':{'label':'Group/Ensemble Competitor Form', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('competitors'); },
@@ -5634,6 +5642,10 @@ function ciniki_musicfestivals_main() {
                 'competitor-group-age-label':{'label':'Age Label', 'type':'text'},
                 'competitor-group-etransfer-email':{'label':'e-transfer Email', 'type':'toggle', 'default':'hidden', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
+                    }},
+                'competitor-group-notes-enable':{'label':'Notes', 'type':'toggle', 'default':'yes', 'separator':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
                     }},
             }},
         '_waiver':{'label':'General Waiver Message', 

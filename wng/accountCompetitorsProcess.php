@@ -486,14 +486,23 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             $fields['etransfer_email']['required'] = 'yes';
         }
     }
-    $fields['comp_notes'] = array(
-        'id' => 'comp_notes',
-        'label' => "{$festival['competitor-label-singular']} Notes",
-        'ftype' => 'textarea',
-        'size' => 'tiny',
-        'class' => '',
-        'value' => (isset($_POST['f-comp_notes']) ? trim($_POST['f-comp_notes']) : (isset($competitor['notes']) ? $competitor['notes'] :'')),
-        );
+    if( ($ctype != 50
+            && (!isset($festival['competitor-individual-notes-enable']) 
+            || $festival['competitor-individual-notes-enable'] == 'yes')
+        ) || (
+            $ctype == 50 
+            && (!isset($festival['competitor-group-notes-enable']) 
+            || $festival['competitor-group-notes-enable'] == 'yes')
+        ) ) {
+        $fields['comp_notes'] = array(
+            'id' => 'comp_notes',
+            'label' => "{$festival['competitor-label-singular']} Notes",
+            'ftype' => 'textarea',
+            'size' => 'tiny',
+            'class' => '',
+            'value' => (isset($_POST['f-comp_notes']) ? trim($_POST['f-comp_notes']) : (isset($competitor['notes']) ? $competitor['notes'] :'')),
+            );
+    }
     if( isset($festival['waiver-general-msg']) && $festival['waiver-general-msg'] != '' ) {
         $fields['termstitle'] = array(
             'id' => "termstitle",
@@ -719,7 +728,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     'study_level' => isset($fields['study_level']['value']) ? $fields['study_level']['value'] : '',
                     'instrument' => isset($fields['instrument']['value']) ? $fields['instrument']['value'] : '',
                     'etransfer_email' => isset($fields['etransfer_email']['value']) ? $fields['etransfer_email']['value'] : '',
-                    'notes' => $fields['comp_notes']['value'],
+                    'notes' => isset($fields['comp_notes']['value']) ? $fields['comp_notes']['value'] : '',
                     );
                 if( isset($fields['terms']['value']) && $fields['terms']['value'] == 'on' ) {
                     $competitor['flags'] |= 0x01;

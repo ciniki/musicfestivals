@@ -1177,21 +1177,23 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         } 
     }
 
-    $fields['line-notes'] = array(
-        'ftype' => 'line',
-        );
+    if( !isset($festival['registration-notes-enable']) || $festival['registration-notes-enable'] == 'yes' ) {
+        $fields['line-notes'] = array(
+            'ftype' => 'line',
+            );
 
-    //
-    // Add notes field
-    //
-    $fields['notes'] = array(
-        'id' => 'notes',
-        'label' => 'Registration Notes',
-        'ftype' => 'textarea',
-        'size' => 'tiny',
-        'class' => '',
-        'value' => (isset($_POST['f-notes']) ? trim($_POST['f-notes']) : (isset($registration['notes']) ? $registration['notes'] :'')),
-        );
+        //
+        // Add notes field
+        //
+        $fields['notes'] = array(
+            'id' => 'notes',
+            'label' => 'Registration Notes',
+            'ftype' => 'textarea',
+            'size' => 'tiny',
+            'class' => '',
+            'value' => (isset($_POST['f-notes']) ? trim($_POST['f-notes']) : (isset($registration['notes']) ? $registration['notes'] :'')),
+            );
+    }
 
     //
     // Setup the Javascript for updating the form as fields change
