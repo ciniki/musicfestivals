@@ -36,6 +36,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'classes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Classes'),
         'levels'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Levels'),
         'accolades'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Accolades'),
+        'accolade_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Accolade'),
         'recommendations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicator Recommendations'),
         'recommendation_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Recommendation Status'),
         'recommendation_statuses'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Recommendation Statuses'),
@@ -3258,13 +3259,94 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             foreach($festival['accolades'] as $aid => $accolade) {
                 $nplists['accolades'][] = $accolade['id'];
             }
+
+            if( isset($args['accolade_id']) && $args['accolade_id'] > 0 && in_array($args['accolade_id'], $nplists['accolades']) ) {
+                $strsql = "SELECT winners.id, "
+                    . "winners.flags, "
+                    . "IFNULL(registrations.display_name, winners.name) AS recipient_name, "
+                    . "winners.awarded_amount "
+                    . "FROM ciniki_musicfestival_accolade_winners AS winners "
+                    . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                        . "winners.registration_id = registrations.id "
+                        . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                        . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE winners.accolade_id = '" . ciniki_core_dbQuote($ciniki, $args['accolade_id']) . "' "
+                    . "AND winners.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'recipients', 'fname'=>'id', 
+                        'fields'=>array(
+                            'id', 'flags', 'recipient_name', 'awarded_amount'),
+                        ),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1129', 'msg'=>'Unable to load recipients', 'err'=>$rc['err']));
+                }
+                $festival['accolade_recipients'] = isset($rc['recipients']) ? $rc['recipients'] : array();
+                $nplists['accolade_recipients'] = [];
+                foreach($festival['accolade_recipients'] as $rid => $recipient) {
+                    $nplists['accolade_recipients'][] = $recipient['id'];
+                }
+            }
         }
 
         //
         // Get the list of accolade recipients
         //
         if( isset($args['accolades']) && $args['accolades'] == 'recipients' ) {
-
+            $strsql = "SELECT winners.id, "
+                . "winners.flags, "
+                . "IFNULL(registrations.display_name, winners.name) AS recipient_name, "
+                . "winners.awarded_amount, "
+                . "accolades.id AS accolade_id, "
+                . "accolades.name, "
+                . "accolades.subcategory_id, "
+                . "categories.name AS category_name, "
+                . "subcategories.name AS subcategory_name "
+                . "FROM ciniki_musicfestival_accolade_winners AS winners "
+                . "INNER JOIN ciniki_musicfestival_accolades AS accolades ON ("
+                    . "winners.accolade_id = accolades.id "
+                    . "AND accolades.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                    . "winners.registration_id = registrations.id "
+                    . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_musicfestival_accolade_subcategories AS subcategories ON ("
+                    . "accolades.subcategory_id = subcategories.id "
+                    . "AND subcategories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_musicfestival_accolade_categories AS categories ON ("
+                    . "subcategories.category_id = categories.id "
+                    . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE accolades.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
+            if( isset($args['accolade_category_id']) && $args['accolade_category_id'] != '' && $args['accolade_category_id'] > 0 ) {
+                $strsql .= "AND categories.id = '" . ciniki_core_dbQuote($ciniki, $args['accolade_category_id']) . "' ";
+            }
+            if( isset($args['accolade_subcategory_id']) && $args['accolade_subcategory_id'] != '' && $args['accolade_subcategory_id'] > 0 ) {
+                $strsql .= "AND subcategories.id = '" . ciniki_core_dbQuote($ciniki, $args['accolade_subcategory_id']) . "' ";
+            }
+            $strsql .= "ORDER BY categories.sequence, categories.name, subcategories.sequence, subcategories.name, name "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'recipients', 'fname'=>'id', 
+                    'fields'=>array('id', 'flags', 'recipient_name', 'awarded_amount', 'accolade_id', 'name', 'subcategory_id',
+                        'category_name', 'subcategory_name',),
+                    ),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1128', 'msg'=>'Unable to load recipients', 'err'=>$rc['err']));
+            }
+            $festival['accolades_recipients'] = isset($rc['recipients']) ? $rc['recipients'] : array();
+            $nplists['accolades_recipients'] = [];
+            foreach($festival['accolades_recipients'] as $rid => $recipient) {
+                $nplists['accolades_recipients'][] = $recipient['id'];
+            }
         }
 
         if( isset($args['accolades']) && in_array($args['accolades'], ['list', 'recipients']) ) {

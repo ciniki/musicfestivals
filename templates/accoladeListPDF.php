@@ -195,24 +195,25 @@ function ciniki_musicfestivals_templates_accoladeListPDF(&$ciniki, $tnid, $args)
     //
     // Check if marks are to be included
     //
-    $prev_category = '';
+    $prev_subcategory_name = '';
     foreach($accolades as $accolade) {
         $newpage = 'no';
         if( $pdf->GetY() > $pdf->getPageHeight() - PDF_MARGIN_FOOTER - 70) {
             $pdf->AddPage();
             $newpage = 'yes';
         }
-        if( $prev_category != $accolade['category'] && $accolade['category'] != '' ) {
+        if( $prev_subcategory_name != $accolade['subcategory_name'] && $accolade['subcategory_name'] != '' ) {
+            $subcat_fullname = $accolade['category_name'] . ' - ' . $accolade['subcategory_name'];
             $pdf->SetCellPadding(4);
             $pdf->SetFont('helvetica', 'B', 16);
-            $lh = $pdf->getStringHeight(180, $accolade['category']);
-            $prev_category = $accolade['category'];
+            $lh = $pdf->getStringHeight(180, $subcat_fullname);
+            $prev_subcategory_name = $accolade['subcategory_name'];
 //            if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 55 ) ) {
 //            }
             if( $newpage == 'no' ) {
                 $pdf->AddPage();
             }
-            $pdf->MultiCell(180, 0, $accolade['category'], 0, 'C', 1, 1);
+            $pdf->MultiCell(180, 0, $subcat_fullname, 0, 'C', 1, 1);
             $pdf->SetCellPadding(1);
         }
 
