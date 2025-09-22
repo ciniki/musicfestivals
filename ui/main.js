@@ -5312,14 +5312,16 @@ function ciniki_musicfestivals_main() {
             'flags5':{'label':'Adjudication Plus', 'type':'flagtoggle', 'default':'off', 'bit':0x10, 'field':'flags',
                 },
             'flags10':{'label':'Live Music PDF', 'type':'flagtoggle', 'default':'off', 'bit':0x0200, 'field':'flags'},
-            'earlybird_date':{'label':'Earlybird Deadline', 'type':'datetime'},
-            'live_date':{'label':'Live Deadline', 'type':'datetime'},
-            'virtual_date':{'label':'Virtual Deadline', 'type':'datetime', 'visible':'no'},
-            'titles_end_dt':{'label':'Edit Titles Deadline', 'type':'datetime'},
-            'accompanist_end_dt':{'label':'Accompanist Deadline', 'type':'datetime',
+            }},
+        'deadlines':{'label':'Deadlines', 'aside':'yes', 'fields':{
+            'earlybird_date':{'label':'Earlybird', 'type':'datetime'},
+            'live_date':{'label':'Live', 'type':'datetime'},
+            'virtual_date':{'label':'Virtual', 'type':'datetime', 'visible':'no'},
+            'titles_end_dt':{'label':'Edit Titles', 'type':'datetime'},
+            'accompanist_end_dt':{'label':'Accompanist', 'type':'datetime',
                 'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x8000); },
                 },
-            'upload_end_dt':{'label':'Upload Deadline', 'type':'datetime'},
+            'upload_end_dt':{'label':'Upload', 'type':'datetime'},
             }},
         '_provincials':{'label':'Provincial Festival', 'aside':'yes',
             'visible':function() { return !M.modFlagOn('ciniki.musicfestivals', 0x010000) ? 'yes' : 'no'; },
@@ -6235,10 +6237,10 @@ function ciniki_musicfestivals_main() {
             p.data = rsp.festival;
             if( (rsp.festival.flags&0x02) == 0x02 ) {
                 p.sections.general.fields.flags3.visible = 'yes';
-                p.sections.general.fields.virtual_date.visible = 'yes';
+                p.sections.deadlines.fields.virtual_date.visible = 'yes';
 //                p.sections.general.fields.upload_end_dt.visible = 'yes';
             } else {
-                p.sections.general.fields.virtual_date.visible = 'no';
+                p.sections.deadlines.fields.virtual_date.visible = 'no';
 //                p.sections.general.fields.upload_end_dt.visible = 'no';
             }
             p.sections._provincials.fields['provincial-festival-id'].options = [{'id':0, 'name':'None'}];
