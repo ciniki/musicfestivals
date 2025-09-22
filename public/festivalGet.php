@@ -4737,8 +4737,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $festival['statistics']['num_accompanists'] = array('label'=>'Number of Accompanists', 'value'=>$rc['num']);
 
             //
-            // Get the number of competitors
+            // Get the number of individual competitors
             //
+            $total_competitors = 0;
             $strsql = "SELECT COUNT(DISTINCT competitors.id) AS num "
                 . "FROM ciniki_musicfestival_registrations AS registrations "
                 . "INNER JOIN ciniki_musicfestival_competitors AS competitors ON ("
@@ -4748,6 +4749,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "OR registrations.competitor4_id = competitors.id "
                     . "OR registrations.competitor5_id = competitors.id "
                     . ") "
+                    . "AND competitors.ctype = 10 "
                     . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
@@ -4758,7 +4760,64 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.768', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
             }
-            $festival['statistics']['num_competitors'] = array('label'=>'Number of Competitors', 'value'=>$rc['num']);
+            $festival['statistics']['num_individuals'] = array('label'=>'Number of Individuals', 'value'=>$rc['num']);
+            $total_competitors += $rc['num'];
+
+            //
+            // Get the number of group competitors
+            //
+            $strsql = "SELECT COUNT(DISTINCT competitors.id) AS num "
+                . "FROM ciniki_musicfestival_registrations AS registrations "
+                . "INNER JOIN ciniki_musicfestival_competitors AS competitors ON ("
+                    . "(registrations.competitor1_id = competitors.id "
+                    . "OR registrations.competitor2_id = competitors.id "
+                    . "OR registrations.competitor3_id = competitors.id "
+                    . "OR registrations.competitor4_id = competitors.id "
+                    . "OR registrations.competitor5_id = competitors.id "
+                    . ") "
+                    . "AND competitors.ctype = 50 "
+                    . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+            $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.768', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+            }
+            $festival['statistics']['num_groups'] = array('label'=>'Number of Groups', 'value'=>$rc['num']);
+
+            //
+            // Get the number of group competitors
+            //
+            $strsql = "SELECT SUM(competitors.num_people) AS num "
+                . "FROM ciniki_musicfestival_registrations AS registrations "
+                . "INNER JOIN ciniki_musicfestival_competitors AS competitors ON ("
+                    . "(registrations.competitor1_id = competitors.id "
+                    . "OR registrations.competitor2_id = competitors.id "
+                    . "OR registrations.competitor3_id = competitors.id "
+                    . "OR registrations.competitor4_id = competitors.id "
+                    . "OR registrations.competitor5_id = competitors.id "
+                    . ") "
+                    . "AND competitors.ctype = 50 "
+                    . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+            $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.768', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+            }
+            $festival['statistics']['num_group_competitors'] = array('label'=>'Number of Group Competitors', 'value'=>$rc['num']);
+            $total_competitors += $rc['num'];
+
+            //
+            // Total Competitors
+            //
+            $festival['statistics']['num_competitors'] = array('label'=>'Total Number of Competitors', 'value'=>$total_competitors);
 
             //
             // Get the number of titles
