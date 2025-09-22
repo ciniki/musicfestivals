@@ -5567,6 +5567,14 @@ function ciniki_musicfestivals_main() {
                     }},
                 'registration-crs-deadline':{'label':'Deadline', 'type':'datetime'},
             }},
+        '_registration_options':{'label':'Registration Options', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('registrations'); },
+            'fields':{
+                'registration-scrutineers-enable':{'label':'Scrutineers', 'type':'toggle', 'default':'no', 'separator':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+            }},
         '_registration_statuses':{'label':'Registration Status', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('registrations'); },
             'fields':{
@@ -6093,35 +6101,46 @@ function ciniki_musicfestivals_main() {
     }
     this.edit.switchTab = function(tab) {
         this.sections._tabs.selected = tab;
-        this.showHideSection('_document_logo_id');
-        this.showHideSection('_document_header_msg');
-        this.showHideSection('_document_footer_msg');
-        this.showHideSections(['_adjudications_tabs', '_adjudications_options', '_adjudications_mark', '_adjudications_placement', '_adjudications_level', '_adjudications_pdf', '_adjudications_online', '_adjudications_live_instructions', '_adjudications_virtual_instructions']);
-        this.showHideSection('_schedule_pdf');
-        this.showHideSection('_schedule_word');
-        this.showHideSection('_program_pdf');
-        this.showHideSection('_runsheets_pdf');
-        this.showHideSection('_accolades_pdf');
-        this.showHideSection('_certificates_pdf');
-        this.showHideSection('_syllabus');
-        this.showHideSection('_syllabus_pdf');
-        this.showHideSection('_customer_types');
-        this.showHideSection('_registration_form');
-        this.showHideSection('_registration_statuses');
-        this.showHideSection('_registration_lists');
-        this.showHideSection('_provincials_statuses');
-        this.showHideSection('_registration_teacher_msg');
-        this.showHideSection('_registration_adult_msg');
-        this.showHideSection('_competitor_general');
-        this.showHideSection('_competitor_parent_msg');
-        this.showHideSection('_competitor_teacher_msg');
-        this.showHideSection('_competitor_adult_msg');
-        this.showHideSection('_competitor_group_parent_msg');
-        this.showHideSection('_competitor_group_teacher_msg');
-        this.showHideSection('_competitor_group_adult_msg');
-        this.showHideSection('_waiver');
-        this.showHideSection('_scheduleoptions');
-        this.showHideSection('_locationoptions');
+        this.showHideSections([
+            '_document_logo_id',
+            '_document_header_msg',
+            '_document_footer_msg',
+            '_adjudications_tabs', 
+            '_adjudications_options', 
+            '_adjudications_mark', 
+            '_adjudications_placement', 
+            '_adjudications_level', 
+            '_adjudications_pdf', 
+            '_adjudications_online', 
+            '_adjudications_live_instructions', 
+            '_adjudications_virtual_instructions',
+            '_schedule_pdf',
+            '_schedule_word',
+            '_program_pdf',
+            '_runsheets_pdf',
+            '_accolades_pdf',
+            '_certificates_pdf',
+            '_syllabus',
+            '_syllabus_pdf',
+            '_customer_types',
+            '_registration_form', 
+            '_registration_options', 
+            '_registration_statuses', 
+            '_registration_lists',
+            '_provincials_statuses',
+            '_registration_teacher_msg',
+            '_registration_adult_msg',
+            '_competitor_general',
+            '_competitor_parent_msg',
+            '_competitor_teacher_msg',
+            '_competitor_adult_msg',
+            '_competitor_group_parent_msg',
+            '_competitor_group_teacher_msg',
+            '_competitor_group_adult_msg',
+            '_waiver',
+            '_scheduleoptions',
+            '_locationoptions'
+            ]);
         this.refreshSection('_tabs');
         this.updateForm();
     }
@@ -6799,6 +6818,11 @@ function ciniki_musicfestivals_main() {
             p.sections.sections.headerValues.push('Admin Fees');
             p.sections.sections.cellClasses.push('alignright');
             p.sections.sections.dataMaps.push('adminfees_amount');
+            if( M.ciniki_musicfestivals_main.festival.settingValue('registration-scrutineers-enable') == 'yes' ) {
+                p.sections.sections.headerValues.push('Scrutineer');
+                p.sections.sections.cellClasses.push('');
+                p.sections.sections.dataMaps.push('scrutineer1_name');
+            }
             p.sections.sections.num_cols = p.sections.sections.headerValues.length;
             p.sections.sections.headerClasses = p.sections.sections.cellClasses;
 
@@ -6870,6 +6894,13 @@ function ciniki_musicfestivals_main() {
                     },
                 'adminfees_amount':{'label':'Admin Fee Amount', 'type':'text', 'size':'small', 'visible':'no'},
             }},
+        'scrutineer1_details':{'label':'Scrutineer Account', 'type':'customer', 'num_cols':2, 'aside':'yes',
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.settingValue('registration-scrutineers-enable') == 'yes' ? 'yes' : 'hidden'; },
+            'customer_id':0,
+            'customer_field':'scrutineer1_id',
+            'cellClasses':['label', ''],
+            'noData':'No Scrutineer',
+            },
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'categories', 'tabs':{
             'categories':{'label':'Categories', 'fn':'M.ciniki_musicfestivals_main.section.switchTab(\'categories\');'},
             'synopsis':{'label':'Description', 'fn':'M.ciniki_musicfestivals_main.section.switchTab(\'synopsis\');'},
@@ -6954,6 +6985,18 @@ function ciniki_musicfestivals_main() {
         return {'method':'ciniki.musicfestivals.sectionHistory', 'args':{'tnid':M.curTenantID, 'section_id':this.section_id, 'field':i}};
     }
     this.section.cellValue = function(s, i, j, d) {
+        if( s == 'scrutineer1_details' ) {
+            switch(j) {
+                case 0: return d.label;
+                case 1:
+                    if( d.label == 'Email' ) {
+                        return M.linkEmail(d.value);
+                    } else if( d.label == 'Address' ) {
+                        return d.value.replace(/\n/g, '<br/>');
+                    }
+                    return d.value;
+            }
+        }
         if( this.sections.categories.num_cols == 2 ) {
             switch (j) {
                 case 0: return d.groupname;
@@ -6979,7 +7022,7 @@ function ciniki_musicfestivals_main() {
     this.section.downloadSyllabusPDF = function() {
         M.api.openPDF('ciniki.musicfestivals.festivalSyllabusPDF', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'section_id':this.section_id});
     }
-    this.festival.downloadScheduleWord = function(s) {
+    this.section.downloadScheduleWord = function(s) {
         var args = {'tnid':M.curTenantID,
             'festival_id':this.festival_id,
             'schedulesection_id':(s==null ? this.schedulesection_id : s),
@@ -7061,6 +7104,7 @@ function ciniki_musicfestivals_main() {
             if( rsp.nplists != null ) {
                 p.nplists = rsp.nplists;
             }
+            p.sections.scrutineer1_details.customer_id = parseInt(rsp.section.scrutineer1_id);
             p.refresh();
             p.show(cb);
             p.updateForm();

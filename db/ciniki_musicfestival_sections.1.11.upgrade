@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_sections ADD COLUMN scrutineer1_id int not null AFTER latefees_days;
+ALTER TABLE ciniki_musicfestival_sections COMMENT='v1.11';

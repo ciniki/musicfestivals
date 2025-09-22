@@ -44,7 +44,9 @@
 # latefees_daily_increase:      How much to increase fees per day.
 # latefees_days:                The number of days to allow late registrations/fees.
 #
-# adminfees_amount:             The amount to charge for late fees on 1st day after end_dt.
+# adminfees_amount:             The amount to charge for admin fees for this section.
+#
+# scrutineer1_id:               The ID of the customer who is a scrutineer of this section.
 #
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.
@@ -74,10 +76,11 @@ create table ciniki_musicfestival_sections (
     latefees_start_amount decimal(19,6) not null,
     latefees_daily_increase decimal(19,6) not null,
     latefees_days tinyint not null,
+    scrutineer1_id int not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
     unique index (festival_id, permalink),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.10';
+) ENGINE='InnoDB', COMMENT='v1.11';

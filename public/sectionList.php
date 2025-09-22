@@ -67,8 +67,14 @@ function ciniki_musicfestivals_sectionList($ciniki) {
         . "sections.latefees_start_amount, "
         . "sections.latefees_daily_increase, "
         . "sections.latefees_days, "
-        . "sections.adminfees_amount "
+        . "sections.adminfees_amount, "
+        . "sections.scrutineer1_id, "
+        . "IFNULL(scrutineer1.display_name, '') AS scrutineer1_name "
         . "FROM ciniki_musicfestival_sections AS sections "
+        . "LEFT JOIN ciniki_customers AS scrutineer1 ON ("
+            . "sections.scrutineer1_id = scrutineer1.id "
+            . "AND scrutineer1.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
         . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
     if( isset($args['syllabus_id']) && $args['syllabus_id'] > 0 ) {
@@ -82,6 +88,7 @@ function ciniki_musicfestivals_sectionList($ciniki) {
             'fields'=>array('id', 'festival_id', 'name', 'permalink', 'sequence', 'flags',
                 'live_end_dt', 'virtual_end_dt', 
                 'latefees_start_amount', 'latefees_daily_increase', 'latefees_days', 'adminfees_amount',
+                'scrutineer1_id', 'scrutineer1_name',
                 ),
             'naprices'=>array(
                 'latefees_start_amount', 'latefees_daily_increase', 'adminfees_amount',
