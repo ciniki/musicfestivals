@@ -8509,7 +8509,7 @@ function ciniki_musicfestivals_main() {
             'payment':{'label':'Payment', 'fn':'M.ciniki_musicfestivals_main.registration.switchTab("payment");'},
             'notes':{'label':'Notes', 'fn':'M.ciniki_musicfestivals_main.registration.switchTab("notes");'},
             'crs':{'label':'Change Requests', 
-                'visible':function() { return M.ciniki_musicfestivals_main.festival.settingValue('registration-crs-enable') == 'yes' ? 'yes' : 'no'; },
+                'visible':function() { return M.ciniki_musicfestivals_main.registration.settingValue('registration-crs-enable') == 'yes' ? 'yes' : 'no'; },
                 'fn':'M.ciniki_musicfestivals_main.registration.switchTab("crs");',
                 },
             }},
@@ -9073,6 +9073,12 @@ function ciniki_musicfestivals_main() {
         if( s == 'cr_invoice_items' ) {
             return 'M.ciniki_musicfestivals_main.registration.save("M.ciniki_musicfestivals_main.registration.crInvoiceOpen(' + d.invoice_id + ');");';
         }
+    }
+    this.registration.settingValue = function(s) {
+        if( this.data.festival[s] != null ) {
+            return this.data.festival[s];
+        }
+        return '';
     }
     this.registration.updateForm = function(s, i, cf) {
         var festival = this.data.festival;
