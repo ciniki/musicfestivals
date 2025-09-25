@@ -69,7 +69,25 @@ function ciniki_musicfestivals_sectionDelete(&$ciniki) {
     }
     if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
         $count = $rc['num']['items'];
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.29', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' categories' . ($count==1?'':'s') . ' in that section.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.29', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' categor' . ($count==1?'y':'ies') . ' in that section.'));
+    }
+
+    //
+    // Check for any dependencies before deleting
+    //
+    $strsql = "SELECT 'items', COUNT(*) "
+        . "FROM ciniki_musicfestival_scrutineers "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
+    $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
+    if( $rc['stat'] != 'ok' ) { 
+        return $rc;
+    }
+    if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
+        $count = $rc['num']['items'];
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.29', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' scrutineer' . ($count==1?'':'s') . ' in that section.'));
     }
 
     //

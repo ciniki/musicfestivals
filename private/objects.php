@@ -159,6 +159,20 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );
+    $objects['scrutineer'] = array(
+        'name'=>'Scrutiner',
+        'o_name'=>'scrutineer',
+        'o_container'=>'scrutineers',
+        'sync'=>'yes',
+        'table'=>'ciniki_musicfestival_scrutineers',
+        'fields'=>array(
+            'festival_id'=>array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'syllabus_id'=>array('name'=>'Syllabus', 'ref'=>'ciniki.musicfestivals.syllabus', 'default'=>'0'),
+            'section_id'=>array('name'=>'Section', 'ref'=>'ciniki.musicfestivals.section', 'default'=>'0'),
+            'customer_id'=>array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
+            ),
+        'history_table'=>'ciniki_musicfestivals_history',
+        );
     $objects['category'] = array(
         'name'=>'Category',
         'o_name'=>'category',

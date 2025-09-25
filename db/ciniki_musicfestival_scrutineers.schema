@@ -1,0 +1,41 @@
+#
+# Description
+# -----------
+# This table stores the scrutineers for sections of the syllabus.
+#
+# The festival and customer must be specified, but the syllabus and section are options. This allows scrutineers
+# to be attached to an entire festival, one or more syllabuses in a festival or one or more sections.
+#
+# **NOTE**: at time of development the only option is to fill in syllabus and section.
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# festival_id:              The ID of the festival.
+# syllabus_id:              The ID of the syllabus (optional).
+# section_id:               The ID of the section to link the customer to as a scrutineer (optional).
+# customer_id:              The ID of the customer who is the scrutineer.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_musicfestival_scrutineers (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    festival_id int not null,
+    syllabus_id int not null,
+    section_id int not null,
+    customer_id int not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    index sync (tnid, uuid, last_updated),
+    unique index (festival_id, syllabus_id, section_id, customer_id)
+) ENGINE='InnoDB', COMMENT='v1.01';

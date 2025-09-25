@@ -46,6 +46,27 @@ function ciniki_musicfestivals_hooks_customerMerge($ciniki, $tnid, $args) {
     }
 
     //
+    // Get the list of scrutineers to update
+    //
+    $strsql = "SELECT id, customer_id "
+        . "FROM ciniki_musicfestival_scrutineers "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'items');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1137', 'msg'=>'Unable to find scrutineers', 'err'=>$rc['err']));
+    }
+    $items = $rc['rows'];
+    foreach($items as $i => $row) {
+        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.scrutineer', $row['id'], array('customer_id'=>$args['primary_customer_id']), 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1138', 'msg'=>'Unable to update scrutineer.', 'err'=>$rc['err']));
+        }
+        $updated++;
+    }
+
+    //
     // Get the list of competitors to update
     //
     $strsql = "SELECT id, billing_customer_id "

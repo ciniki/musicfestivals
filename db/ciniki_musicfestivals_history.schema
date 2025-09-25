@@ -13,6 +13,8 @@
 #                       must be tied to a tenant for security reasons.
 #
 # user_id:              The user who made the change.
+# 
+# customer_id:          The ID of the customer who made the change IF done on website.
 #
 # session:              The id of the current session for the user.  A login starts a
 #                       session, a logout or timeout ends a session.
