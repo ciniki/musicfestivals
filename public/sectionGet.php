@@ -117,8 +117,7 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
             . "ciniki_musicfestival_sections.latefees_start_amount, "
             . "ciniki_musicfestival_sections.latefees_daily_increase, "
             . "ciniki_musicfestival_sections.latefees_days, "
-            . "ciniki_musicfestival_sections.adminfees_amount, "
-            . "ciniki_musicfestival_sections.scrutineer1_id "
+            . "ciniki_musicfestival_sections.adminfees_amount "
             . "FROM ciniki_musicfestival_sections "
             . "WHERE ciniki_musicfestival_sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_musicfestival_sections.id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
@@ -132,7 +131,6 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
                     'live_description', 'virtual_description', 'recommendations_description', 
                     'live_end_dt', 'virtual_end_dt', 'titles_end_dt', 'upload_end_dt',
                     'latefees_start_amount', 'latefees_daily_increase', 'latefees_days', 'adminfees_amount',
-                    'scrutineer1_id',
                     ),
                 'utctotz'=>array(
                     'live_end_dt'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
@@ -205,7 +203,7 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
         //
         // Load scrutineer customer 
         //
-        if( isset($section['scrutineer1_id']) && $section['scrutineer1_id'] > 0 ) {
+/*        if( isset($section['scrutineer1_id']) && $section['scrutineer1_id'] > 0 ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
             $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], 
                 array('customer_id'=>$section['scrutineer1_id'], 'phones'=>'yes', 'emails'=>'yes', 'addresses'=>'yes'));
@@ -214,7 +212,10 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
             }
             $section['scrutineer1'] = $rc['customer'];
             $section['scrutineer1_details'] = $rc['details'];
-        }
+        } */
+        //
+        // Load the list of scrutineers 
+        //
     }
 
     //

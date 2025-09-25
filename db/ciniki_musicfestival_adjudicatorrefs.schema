@@ -5,7 +5,7 @@
 #
 # Objects:
 # ciniki.musicfestivals.schedulesection (schedule section ID)
-# ciniki.musicfestivals.scheduledivision (schedule section ID)
+# ciniki.musicfestivals.scheduledivision (schedule division ID)
 #
 # Fields
 # -------
