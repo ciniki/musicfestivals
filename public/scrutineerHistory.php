@@ -2,7 +2,7 @@
 //
 // Description
 // -----------
-// This method will return the list of actions that were applied to an element of an adjudicator recommendation.
+// This method will return the list of actions that were applied to an element of an scrutiner.
 // This method is typically used by the UI to display a list of changes that have occured
 // on an element through time. This information can be used to revert elements to a previous value.
 //
@@ -11,20 +11,20 @@
 // api_key:
 // auth_token:
 // tnid:         The ID of the tenant to get the details for.
-// recommendation_id:          The ID of the adjudicator recommendation to get the history for.
+// scrutineer_id:          The ID of the scrutiner to get the history for.
 // field:                   The field to get the history for.
 //
 // Returns
 // -------
 //
-function ciniki_musicfestivals_recommendationHistory($ciniki) {
+function ciniki_musicfestivals_scrutineerHistory($ciniki) {
     //
     // Find all the required and optional arguments
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
-        'recommendation_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Adjudicator Recommendation'),
+        'scrutineer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Scrutiner'),
         'field'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'field'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -36,17 +36,12 @@ function ciniki_musicfestivals_recommendationHistory($ciniki) {
     // Check access to tnid as owner, or sys admin
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.recommendationHistory');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.scrutineerHistory');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectHistory');
-    return ciniki_core_objectHistory($ciniki, $args['tnid'], 'ciniki.musicfestivals.recommendation', [
-        'key' => $args['recommendation_id'], 
-        'field' => $args['field']
-        ]);
-//    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
-//    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', $args['tnid'], 'ciniki_musicfestival_recommendations', $args['recommendation_id'], $args['field']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
+    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', $args['tnid'], 'ciniki_musicfestival_scrutineers', $args['scrutineer_id'], $args['field']);
 }
 ?>

@@ -49,6 +49,7 @@ create table ciniki_musicfestivals_history (
         uuid char(36) not null,
         tnid int not null,
         user_id int not null,
+        customer_id int not null,
         session varchar(50) not null,
         action tinyint unsigned not null,
         table_name varchar(50) not null,
@@ -60,4 +61,4 @@ create table ciniki_musicfestivals_history (
         index (user_id),
         index (tnid, table_name, table_key, table_field),
         index (log_date)
-) ENGINE=InnoDB, COMMENT='v1.01';
+) ENGINE=InnoDB, COMMENT='v1.02';

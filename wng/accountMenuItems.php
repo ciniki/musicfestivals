@@ -140,6 +140,33 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
     }
 
     //
+    // Check if customer is a scrutineer
+    //
+    $scrutineer = 'no';
+    if( isset($festival['registration-scrutineers-enable']) && $festival['registration-scrutineers-enable'] == 'yes' ) {
+        $strsql = "SELECT id "
+            . "FROM ciniki_musicfestival_scrutineers "
+            . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+            . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'scrutineer');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1140', 'msg'=>'Unable to load adjudicator', 'err'=>$rc['err']));
+        }
+        if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
+            $scrutineer = 'yes';
+/*            $items[] = array(
+                'title' => 'Scrutinizations', 
+                'priority' => 3751, 
+                'selected' => isset($args['selected']) && $args['selected'] == 'musicfestival/scrutinizations' ? 'yes' : 'no',
+                'ref' => 'ciniki.musicfestivals.scrutinizations',
+                'url' => $base_url . '/musicfestival/scrutinizations',
+                ); */
+        }
+    }
+
+    //
     // Check if the customer is or has been registered for the published festival
     //
 /*    $strsql = "SELECT COUNT(*) AS registrations "
@@ -252,7 +279,7 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
     //
     // Adjudicators for the current local festival get dropdown menu 
     //
-    if( $adjudicator == 'yes' ) {
+    if( $adjudicator == 'yes' || $scrutineer == 'yes' ) {
         $dropdown_items = $items;
         $items = [[
             'title' => 'Music Festival',

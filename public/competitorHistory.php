@@ -41,7 +41,7 @@ function ciniki_musicfestivals_competitorHistory($ciniki) {
         return $rc;
     }
 
-    if( $args['field'] == 'flags1' ) {
+/*    if( $args['field'] == 'flags1' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryFlagBit');
         return ciniki_core_dbGetModuleHistoryFlagBit($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', 
             $args['tnid'], 'ciniki_musicfestival_competitors', $args['competitor_id'], 'flags', 0x01, 'Unsigned', 'Signed');
@@ -55,9 +55,42 @@ function ciniki_musicfestivals_competitorHistory($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryFlagBit');
         return ciniki_core_dbGetModuleHistoryFlagBit($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', 
             $args['tnid'], 'ciniki_musicfestival_competitors', $args['competitor_id'], 'flags', 0x04, 'Hide Name', 'Publish');
-    }
+    } */
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
-    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', $args['tnid'], 'ciniki_musicfestival_competitors', $args['competitor_id'], $args['field']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectHistory');
+    if( $args['field'] == 'flags1' ) {
+        return ciniki_core_objectHistory($ciniki, $args['tnid'], 'ciniki.musicfestivals.competitor', [
+            'key' => $args['competitor_id'], 
+            'field' => 'flags',
+            'flagbit' => 0x01,
+            'flagoff' => 'Unsigned',
+            'flagon' => 'Signed',
+            ]);
+    }
+    if( $args['field'] == 'flags2' ) {
+        return ciniki_core_objectHistory($ciniki, $args['tnid'], 'ciniki.musicfestivals.competitor', [
+            'key' => $args['competitor_id'], 
+            'field' => 'flags',
+            'flagbit' => 0x02,
+            'flagoff' => 'No Photos',
+            'flagon' => 'Publish',
+            ]);
+    }
+    if( $args['field'] == 'flags3' ) {
+        return ciniki_core_objectHistory($ciniki, $args['tnid'], 'ciniki.musicfestivals.competitor', [
+            'key' => $args['competitor_id'], 
+            'field' => 'flags',
+            'flagbit' => 0x04,
+            'flagoff' => 'Hide Name',
+            'flagon' => 'Publish',
+            ]);
+    }
+    return ciniki_core_objectHistory($ciniki, $args['tnid'], 'ciniki.musicfestivals.competitor', [
+        'key' => $args['competitor_id'], 
+        'field' => $args['field']
+        ]);
+//    return ciniki_core_objectHistory($ciniki, $args['tnid'], 'ciniki.musicfestivals.competitor', $args['competitor_id'], $args['field']);
+//    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
+//    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', $args['tnid'], 'ciniki_musicfestival_competitors', $args['competitor_id'], $args['field']);
 }
 ?>

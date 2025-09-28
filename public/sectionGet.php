@@ -201,6 +201,29 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
             }
         }
         //
+        // Load the scrutineers
+        //
+        $strsql = "SELECT scrutineers.id, "
+            . "scrutineers.customer_id, "
+            . "customers.display_name AS scrutineer_name "
+            . "FROM ciniki_musicfestival_scrutineers AS scrutineers "
+            . "INNER JOIN ciniki_customers AS customers ON ("
+                . "scrutineers.customer_id = customers.id "
+                . "AND scrutineers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE scrutineers.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
+            . "AND scrutineers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'scrutineers', 'fname'=>'id', 'fields'=>array('id', 'customer_id', 'scrutineer_name')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1139', 'msg'=>'Unable to load scrutineers', 'err'=>$rc['err']));
+        }
+        $section['scrutineers'] = isset($rc['scrutineers']) ? $rc['scrutineers'] : array();
+
+        //
         // Load scrutineer customer 
         //
 /*        if( isset($section['scrutineer1_id']) && $section['scrutineer1_id'] > 0 ) {

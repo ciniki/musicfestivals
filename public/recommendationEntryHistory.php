@@ -41,7 +41,13 @@ function ciniki_musicfestivals_recommendationEntryHistory($ciniki) {
         return $rc;
     }
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
-    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', $args['tnid'], 'ciniki_musicfestival_recommendation_entries', $args['entry_id'], $args['field']);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectHistory');
+    return ciniki_core_objectHistory($ciniki, $args['tnid'], 'ciniki.musicfestivals.recommendationentry', [
+        'key' => $args['entry_id'], 
+        'field' => $args['field']
+        ]);
+
+//    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistory');
+//    return ciniki_core_dbGetModuleHistory($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', $args['tnid'], 'ciniki_musicfestival_recommendation_entries', $args['entry_id'], $args['field']);
 }
 ?>

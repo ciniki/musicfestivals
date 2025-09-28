@@ -53,6 +53,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'ctype' => array('name'=>'Type', 'default'=>'0'),
             ),
         'history_table' => 'ciniki_musicfestivals_history',
+        'history_customer' => 'yes',
         );
     $objects['adjudicator'] = array(
         'name'=>'Adjudicator',
@@ -297,6 +298,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'notes'=>array('name'=>'Notes', 'default'=>''),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
+        'history_customer' => 'yes',
         );
     $objects['registration'] = array(
         'name'=>'Registration',
@@ -334,35 +336,35 @@ function ciniki_musicfestivals_objects($ciniki) {
             'title1'=>array('name'=>'Title', 'default'=>''),
             'composer1'=>array('name'=>'Composer', 'default'=>''),
             'movements1'=>array('name'=>'Movements', 'default'=>''),
-            'perf_time1'=>array('name'=>'Performance Time', 'default'=>''),
+            'perf_time1'=>array('name'=>'Performance Time', 'type'=>'minsec', 'default'=>''),
             'title2'=>array('name'=>'2nd Title', 'default'=>''),
             'composer2'=>array('name'=>'2nd Composer', 'default'=>''),
             'movements2'=>array('name'=>'2nd Movements', 'default'=>''),
-            'perf_time2'=>array('name'=>'2nd Performance Time', 'default'=>''),
+            'perf_time2'=>array('name'=>'2nd Performance Time', 'type'=>'minsec', 'default'=>''),
             'title3'=>array('name'=>'3rd Title', 'default'=>''),
             'composer3'=>array('name'=>'3rd Composer', 'default'=>''),
             'movements3'=>array('name'=>'3rd Movements', 'default'=>''),
-            'perf_time3'=>array('name'=>'3rd Performance Time', 'default'=>''),
+            'perf_time3'=>array('name'=>'3rd Performance Time', 'type'=>'minsec', 'default'=>''),
             'title4'=>array('name'=>'4th Title', 'default'=>''),
             'composer4'=>array('name'=>'4th Composer', 'default'=>''),
             'movements4'=>array('name'=>'4th Movements', 'default'=>''),
-            'perf_time4'=>array('name'=>'4th Performance Time', 'default'=>''),
+            'perf_time4'=>array('name'=>'4th Performance Time', 'type'=>'minsec', 'default'=>''),
             'title5'=>array('name'=>'5th Title', 'default'=>''),
             'composer5'=>array('name'=>'5th Composer', 'default'=>''),
             'movements5'=>array('name'=>'5th Movements', 'default'=>''),
-            'perf_time5'=>array('name'=>'5th Performance Time', 'default'=>''),
+            'perf_time5'=>array('name'=>'5th Performance Time', 'type'=>'minsec', 'default'=>''),
             'title6'=>array('name'=>'6th Title', 'default'=>''),
             'composer6'=>array('name'=>'6th Composer', 'default'=>''),
             'movements6'=>array('name'=>'6th Movements', 'default'=>''),
-            'perf_time6'=>array('name'=>'6th Performance Time', 'default'=>''),
+            'perf_time6'=>array('name'=>'6th Performance Time', 'type'=>'minsec', 'default'=>''),
             'title7'=>array('name'=>'7th Title', 'default'=>''),
             'composer7'=>array('name'=>'7th Composer', 'default'=>''),
             'movements7'=>array('name'=>'7th Movements', 'default'=>''),
-            'perf_time7'=>array('name'=>'7th Performance Time', 'default'=>''),
+            'perf_time7'=>array('name'=>'7th Performance Time', 'type'=>'minsec', 'default'=>''),
             'title8'=>array('name'=>'8th Title', 'default'=>''),
             'composer8'=>array('name'=>'8th Composer', 'default'=>''),
             'movements8'=>array('name'=>'8th Movements', 'default'=>''),
-            'perf_time8'=>array('name'=>'8th Performance Time', 'default'=>''),
+            'perf_time8'=>array('name'=>'8th Performance Time', 'type'=>'minsec', 'default'=>''),
             'fee'=>array('name'=>'Fee', 'type'=>'currency', 'default'=>'0'),
             'participation'=>array('name'=>'Virtual Submission', 'default'=>'0'),
             'video_url1'=>array('name'=>'Video Link 1', 'default'=>''),
@@ -418,6 +420,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'runsheet_notes'=>array('name'=>'Runsheet Notes', 'default'=>''),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
+        'history_customer' => 'yes',
         );
     $objects['tag'] = array(
         'name'=>'Registration Tag',
@@ -806,7 +809,6 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );
-
     $objects['recommendation'] = array(
         'name' => 'Adjudicator Recommendation',
         'sync' => 'yes',
@@ -826,6 +828,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'local_adjudicator_id' => array('name'=>'Local Festival Adjudicator', 'default'=>0),
             ),
         'history_table' => 'ciniki_musicfestivals_history',
+        'history_customer' => 'yes',
         );
     $objects['recommendationentry'] = array(
         'name' => 'Adjudicator Recommendation Entry',
@@ -845,6 +848,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'notes' => array('name'=>'Notes', 'default'=>''),
             ),
         'history_table' => 'ciniki_musicfestivals_history',
+        'history_customer' => 'yes',
         );
     $objects['setting'] = array(
         'name' => 'Setting',
@@ -892,6 +896,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'content' => array('name'=>'Request'),
             ),
         'history_table' => 'ciniki_musicfestivals_history',
+        'history_customer' => 'yes',
         );
     
     return array('stat'=>'ok', 'objects'=>$objects);
