@@ -156,13 +156,13 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
         }
         if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
             $scrutineer = 'yes';
-/*            $items[] = array(
+            $items[] = array(
                 'title' => 'Scrutinizations', 
                 'priority' => 3751, 
                 'selected' => isset($args['selected']) && $args['selected'] == 'musicfestival/scrutinizations' ? 'yes' : 'no',
                 'ref' => 'ciniki.musicfestivals.scrutinizations',
                 'url' => $base_url . '/musicfestival/scrutinizations',
-                ); */
+                );
         }
     }
 

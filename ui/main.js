@@ -5576,10 +5576,59 @@ function ciniki_musicfestivals_main() {
         '_registration_options':{'label':'Registration Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('registrations'); },
             'fields':{
-                'registration-scrutineers-enable':{'label':'Scrutineers', 'type':'toggle', 'default':'no', 'separator':'no', 'toggles':{
-                    'no':'No',
-                    'yes':'Yes',
-                    }},
+                'registration-scrutineers-enable':{'label':'Scrutineers', 'type':'toggle', 'default':'no', 'separator':'no', 
+                    'onchange':'M.ciniki_musicfestivals_main.edit.updateForm',
+                    'toggles':{'no':'No', 'yes':'Yes'},
+                    },
+                }},
+        '_scrutineer_options':{'label':'Scrutineer Options', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('registrations') && M.ciniki_musicfestivals_main.edit.formValue('registration-scrutineers-enable') == 'yes' ? 'yes' : 'hidden'; },
+            'fields':{
+                'registration-scrutineers-status-10':{'label':'Registered', 'type':'toggle', 'default':'yes', 
+                    'toggles':{'no':'No', 'yes':'Yes'},
+                    },
+                'registration-scrutineers-status-31':{'label':'', 'type':'toggle', 'default':'no', 'visible':'no', 
+                    'toggles':{'no':'No', 'yes':'Yes'},
+                    },
+                'registration-scrutineers-status-32':{'label':'', 'type':'toggle', 'default':'no', 'visible':'no', 
+                    'toggles':{'no':'No', 'yes':'Yes'},
+                    },
+                'registration-scrutineers-status-33':{'label':'', 'type':'toggle', 'default':'no', 'visible':'no', 
+                    'toggles':{'no':'No', 'yes':'Yes'},
+                    },
+                'registration-scrutineers-status-34':{'label':'', 'type':'toggle', 'default':'no', 'visible':'no', 
+                    'toggles':{'no':'No', 'yes':'Yes'},
+                    },
+                'registration-scrutineers-status-35':{'label':'', 'type':'toggle', 'default':'no', 'visible':'no', 
+                    'toggles':{'no':'No', 'yes':'Yes'}
+                    },
+                'registration-scrutineers-status-36':{'label':'', 'type':'toggle', 'default':'no', 'visible':'no',
+                    'toggles':{'no':'No', 'yes':'Yes'},
+                    },
+                'registration-scrutineers-status-37':{'label':'', 'type':'toggle', 'default':'no', 'visible':'no',
+                    'toggles':{'no':'No', 'yes':'Yes'},
+                    },
+                'registration-scrutineers-status-38':{'label':'', 'type':'toggle', 'default':'no', 'visible':'no',
+                    'toggles':{'no':'No', 'yes':'Yes'},
+                    },
+                'registration-scrutineers-status-50':{'label':'Approved', 'type':'toggle', 'default':'yes',
+                    'toggles':{'no':'No', 'yes':'Yes'},
+                    },
+                'registration-scrutineers-status-51':{'label':'Approved', 'type':'toggle', 'default':'no', 'visible':'no',
+                    'toggles':{'no':'No', 'yes':'Yes'},
+                    },
+                'registration-scrutineers-status-52':{'label':'Approved', 'type':'toggle', 'default':'no', 'visible':'no',
+                    'toggles':{'no':'No', 'yes':'Yes'},
+                    },
+                'registration-scrutineers-status-53':{'label':'Approved', 'type':'toggle', 'default':'no', 'visible':'no',
+                    'toggles':{'no':'No', 'yes':'Yes'},
+                    },
+                'registration-scrutineers-status-54':{'label':'Approved', 'type':'toggle', 'default':'no', 'visible':'no',
+                    'toggles':{'no':'No', 'yes':'Yes'},
+                    },
+                'registration-scrutineers-status-55':{'label':'Approved', 'type':'toggle', 'default':'no', 'visible':'no',
+                    'toggles':{'no':'No', 'yes':'Yes'},
+                    },
             }},
         '_registration_statuses':{'label':'Registration Status', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('registrations'); },
@@ -6131,6 +6180,7 @@ function ciniki_musicfestivals_main() {
             '_customer_types',
             '_registration_form', 
             '_registration_options', 
+            '_scrutineer_options', 
             '_registration_statuses', 
             '_registration_lists',
             '_provincials_statuses',
@@ -6228,6 +6278,19 @@ function ciniki_musicfestivals_main() {
         this.showHideFormField('_namewaiver', 'waiver-name-msg');
         this.showHideFormField('_namewaiver', 'waiver-name-option-yes');
         this.showHideFormField('_namewaiver', 'waiver-name-option-no');
+        this.showHideSection('_scrutineer_options');
+        for(const i of [31,32,33,34,35,36,37,38,51,52,53,54,55]) {
+            if( this.data['registration-status-' + i + '-label'] != null
+                && this.data['registration-status-' + i + '-label'] != ''
+                ) {
+                this.sections._scrutineer_options.fields['registration-scrutineers-status-'+i].visible = 'yes';
+                this.sections._scrutineer_options.fields['registration-scrutineers-status-'+i].label = this.data['registration-status-' + i + '-label'];
+            } else {
+                this.sections._scrutineer_options.fields['registration-scrutineers-status-'+i].visible = 'no';
+                this.sections._scrutineer_options.fields['registration-scrutineers-status-'+i].label = '';
+            }
+            this.showHideFormField('_scrutineer_options', 'registration-scrutineers-status-' + i);
+        }
     }
     this.edit.open = function(cb, fid, list) {
         if( fid != null ) { this.festival_id = fid; }
