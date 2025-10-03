@@ -223,7 +223,8 @@ function ciniki_musicfestivals_wng_apiClassSearch(&$ciniki, $tnid, $request) {
             if( substr($request['args']['baseurl'], -1) != '/' ) {
                 $request['args']['baseurl'] .= '/';
             }
-            if( isset($request['args']['layout']) && $request['args']['layout'] == 'groupbuttons' ) {
+            if( isset($request['args']['layout']) 
+                && ($request['args']['layout'] == 'groupbuttons' || $request['args']['layout'] == 'groups') ) {
                 $group_permalink = ciniki_core_makePermalink($ciniki, $class['groupname']);
                 $classes[$cid]['link'] = "<a class='button' href='{$request['args']['baseurl']}{$class['section_permalink']}/{$group_permalink}#{$class['category_permalink']}'>View</a>";
             } else {

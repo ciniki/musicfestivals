@@ -45,11 +45,8 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
         }
         if( isset($rc['section']) ) {
             $settings = json_decode($rc['section']['settings'], true);
-            if( isset($settings['syllabus-id']) && preg_match("/^([0-9]+)(\-|$)/", $settings['syllabus-id'], $m) ) {
-                $festival_id = $m[1];
-            }
-            elseif( isset($settings['festival-id']) ) {
-                $festival_id = $settings['festival-id'];
+            if( isset($settings['syllabus-id']) ) {
+                $syllabus_id = $settings['syllabus-id'];
             }
         }
     }
@@ -200,12 +197,19 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
         //
         // Get the list of classes
         //
-        if( isset($festival_id) && $festival_id > 0 ) {
+//        if( isset($syllabus_id) && $syllabus_id > 0 ) {
+        if( isset($s['display-classes']) && $s['display-classes'] == 'yes' ) {
             $strsql = "SELECT classes.id, "
                 . "classes.code AS class_code, "
                 . "classes.name AS class_name, "
                 . "categories.name AS category_name, "
-                . "sections.name AS section_name "
+                . "categories.permalink AS category_permalink, "
+                . "categories.groupname AS category_groupname, "
+                . "sections.name AS section_name, "
+                . "sections.permalink AS section_permalink, "
+                . "sections.festival_id, "
+                . "wngsections.settings AS wngsectionsettings, "
+                . "wngpages.id AS page_id "
                 . "FROM ciniki_musicfestival_accolade_classes AS tc "
                 . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
                     . "tc.class_id = classes.id "
@@ -217,8 +221,19 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
                     . ") "
                 . "INNER JOIN ciniki_musicfestival_sections AS sections ON ("
                     . "categories.section_id = sections.id "
-                    . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival_id) . "' "
                     . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . ") "
+                // sections and pages must be visible for class list to show
+                . "INNER JOIN ciniki_wng_sections AS wngsections ON ("
+                    . "wngsections.ref = 'ciniki.musicfestivals.syllabus' "
+                    . "AND wngsections.settings like CONCAT('%\"syllabus-id\":\"', sections.syllabus_id, '\"%') "
+                    . "AND (wngsections.flags&0x10) = 0 " // Visible
+                    . "AND wngsections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_wng_pages AS wngpages ON ("
+                    . "wngsections.page_id = wngpages.id "
+                    . "AND (wngpages.flags&0x01) = 1 " // Visible
+                    . "AND wngpages.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                     . ") "
                 . "WHERE tc.accolade_id = '" . ciniki_core_dbQuote($ciniki, $accolade['id']) . "' "
                 . "AND tc.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -228,12 +243,49 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'classes', 'fname'=>'id', 
-                    'fields'=>array('id', 'class_code', 'class_name', 'category_name', 'section_name')),
+                    'fields'=>array('id', 'class_code', 'class_name', 
+                        'category_name', 'category_permalink', 'category_groupname', 
+                        'section_name', 'section_permalink',
+                        'wngsectionsettings', 'page_id', 'festival_id',
+                        )),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
             $classes = isset($rc['classes']) ? $rc['classes'] : array();
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'classNameFormat');
+            foreach($classes as $cid => $class) {
+                $rc = ciniki_musicfestivals_classNameFormat($ciniki, $tnid, [
+                    'format' => 'code-section-category-class', //isset($festival['comments-class-format']) ? $festival['comments-class-format'] : '',
+                    'section' => $class['section_name'],
+                    'category' => $class['category_name'],
+                    'code' => $class['class_code'],
+                    'name' => $class['class_name'],
+                    ]);
+                $classes[$cid]['class_name'] = $rc['name'];
+                $classes[$cid]['buttons'] = '';
+                if( isset($class['wngsectionsettings']) && $class['wngsectionsettings'] != '' 
+                    && isset($request['site']['pages'][$class['page_id']])
+                    ) {
+                    $settings = json_decode($class['wngsectionsettings'], true);
+                    if( isset($settings['layout']) && $settings['layout'] != '' ) {
+                        if( $settings['layout'] == 'groups' ) {
+                            $groupname = ciniki_core_makePermalink($ciniki, $class['category_groupname']);
+                            $classes[$cid]['buttons'] .= "<a class='button' href='{$request['ssl_domain_base_url']}"
+                                . "{$request['site']['pages'][$class['page_id']]['path']}"
+                                . "/{$class['section_permalink']}/{$groupname}#{$class['category_permalink']}'>"
+                                . "View"
+                                . "</a>";
+                        } else {
+                            $classes[$cid]['buttons'] .= "<a class='button' href='{$request['ssl_domain_base_url']}"
+                                . "{$request['site']['pages'][$class['page_id']]['path']}"
+                                . "/{$class['section_permalink']}#{$class['category_permalink']}'>"
+                                . "View"
+                                . "</a>";
+                        }
+                    }
+                }
+            }
         }
 
         $blocks[] = array(
@@ -277,12 +329,13 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
                 'type' => 'table', 
                 'subtitle' => 'Eligible Classes', 
                 'class' => 'fit-width musicfestival-accolade-classes limit-width limit-width-90',
-                'headers' => 'yes',
+                'headers' => 'no',
                 'columns' => array(
-                    array('label' => 'Section', 'field'=>'section_name'),
-                    array('label' => 'Category', 'field'=>'category_name'),
-                    array('label' => 'Code', 'field'=>'class_code'),
+//                    array('label' => 'Section', 'field'=>'section_name'),
+//                    array('label' => 'Category', 'field'=>'category_name'),
+//                    array('label' => 'Code', 'field'=>'class_code'),
                     array('label' => 'Class', 'field'=>'class_name'),
+                    array('label' => '', 'field'=>'buttons'),
                     ),
                 'rows' => $classes,
                 );

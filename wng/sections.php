@@ -977,7 +977,11 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'no' => 'No',
                     'yes' => 'Yes',
                     )),
-                'syllabus-page' => array('label'=>'Syllabus Page', 'type'=>'select', 'pages'=>'yes'),
+                'display-classes' => array('label'=>'Show Classes', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
+//                'syllabus-page' => array('label'=>'Syllabus Page', 'type'=>'select', 'pages'=>'yes'),
                 ),
             );
         if( count($categories) > 1 ) { 
