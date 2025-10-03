@@ -184,6 +184,10 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'top' => 'Yes',
                 // In future can add bottom/both as options if needed
                 )),
+            'display-accolades' => array('label'=>'Show Accolades', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
+                'no' => 'No',
+                'yes' => 'Yes',
+                )),
 /*            'syllabus-pdf' => array('label'=>'Complete Syllabus PDF Download', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
                 'no' => 'Off',
                 'top' => 'Top',
@@ -984,7 +988,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
 //                'syllabus-page' => array('label'=>'Syllabus Page', 'type'=>'select', 'pages'=>'yes'),
                 ),
             );
-        if( count($categories) > 1 ) { 
+//        if( count($categories) > 1 ) { 
             array_unshift($categories, ['name'=>'All']);
             $sections['ciniki.musicfestivals.accolades']['settings']['category-id'] = array(
                 'label' => 'Category',
@@ -992,7 +996,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'complex_options' => array('value'=>'id', 'name'=>'name'),
                 'options' => $categories,
                 );
-        }
+//        }
         //
         // Display list of winners
         //
@@ -1010,14 +1014,14 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
 //                'syllabus-page' => array('label'=>'Syllabus Page', 'type'=>'select', 'pages'=>'yes'),
                 ),
             );
-        if( count($categories) > 1 ) { 
+//        if( count($categories) > 1 ) { 
             $sections['ciniki.musicfestivals.accoladewinners']['settings']['category-id'] = array(
                 'label' => 'Category',
                 'type' => 'select',
                 'complex_options' => array('value'=>'id', 'name'=>'name'),
                 'options' => $categories,
                 );
-        }
+//        }
     }
 
     //

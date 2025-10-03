@@ -21,6 +21,7 @@ function ciniki_musicfestivals_accoladeUpdate(&$ciniki) {
         'subcategory_id'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Subcategory'),
 //        'typename'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Type'),
 //        'category'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Category'),
+        'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
         'donated_by'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Donated By'),
         'first_presented'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'First Presented'),

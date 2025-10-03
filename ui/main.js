@@ -13590,6 +13590,7 @@ function ciniki_musicfestivals_main() {
             'first_presented':{'label':'First Presented', 'type':'text'},
             'criteria':{'label':'Criteria', 'type':'text'},
             'amount':{'label':'Amount', 'type':'text'},
+            'flags1':{'label':'Visible', 'type':'flagtoggle', 'default':'off', 'bit':0x01, 'field':'flags'},
             }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'recipients', 'tabs':{
             'recipients':{'label':'Recipients', 'fn':'M.ciniki_musicfestivals_main.accolade.switchTab("recipients");'},

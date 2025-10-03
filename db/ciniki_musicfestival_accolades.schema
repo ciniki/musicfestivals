@@ -12,10 +12,14 @@
 #
 # name:                     The name of the accolade.
 # permalink:                The permalink for the accolade.
-# subcategory
-# category:                 The category for the accolade (Piano, Voice, Strings, etc)
+# subcategory_id:           The ID of the subcategory the accolades is in.
+# category:                 The category for the accolade (Piano, Voice, Strings, etc) **Deprecated**
 #
-# typename:                 The type of accolade or award, which is use for grouping on the website.
+# typename:                 The type of accolade or award, which is use for grouping on the website. **Deprecated**
+#
+# flags:                    The options for the accolade.
+#
+#                               0x01 - Visible (not visible on website)
 #
 # primary_image_id:         The image of the accolade.
 # donated_by:               Who donated the accolade.
@@ -38,6 +42,7 @@ create table ciniki_musicfestival_accolades (
     subcategory_id int not null,
     typename varchar(250) not null,
     category varchar(150) not null,
+    flags tinyint unsigned not null,
     primary_image_id int not null,
     donated_by varchar(250) not null,
     first_presented varchar(250) not null,
@@ -51,4 +56,4 @@ create table ciniki_musicfestival_accolades (
     primary key (id),
     unique index (uuid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.04';
+) ENGINE='InnoDB', COMMENT='v1.05';

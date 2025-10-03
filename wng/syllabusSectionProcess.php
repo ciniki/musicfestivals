@@ -482,8 +482,17 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         . "fee, "
         . "virtual_fee, "
         . "earlybird_plus_fee, "
-        . "plus_fee "
-        . "FROM ciniki_musicfestival_categories AS categories "
+        . "plus_fee, ";
+    if( isset($s['display-accolades']) && $s['display-accolades'] == 'yes' ) {
+        $strsql .= "accolades.id AS accolade_id, "
+            . "accolades.name AS accolade_name, "
+            . "CONCAT_WS('/', asubcategories.permalink, accolades.permalink) AS accolade_permalink, "
+            . "IFNULL(wngpages.id, 0) AS page_id "
+            . "";
+    } else {
+        $strsql .= "null AS accolade_id ";
+    }
+    $strsql .= "FROM ciniki_musicfestival_categories AS categories "
         . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
             . "categories.id = classes.category_id ";
     if( isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'live' ) {
@@ -495,8 +504,40 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     }
         $strsql .= "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . $level_strsql 
-        . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $syllabus_section['id']) . "' "
+        . $level_strsql;
+    if( isset($s['display-accolades']) && $s['display-accolades'] == 'yes' ) {
+        $strsql .= "LEFT JOIN ciniki_musicfestival_accolade_classes AS ac ON ("
+                . "classes.id = ac.class_id "
+                . "AND ac.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+            . "LEFT JOIN ciniki_musicfestival_accolades AS accolades ON ("
+                . "ac.accolade_id = accolades.id "
+                . "AND (accolades.flags&0x01) = 0x01 " // Visible
+                . "AND accolades.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+            . "LEFT JOIN ciniki_musicfestival_accolade_subcategories AS asubcategories ON ("
+                . "accolades.subcategory_id = asubcategories.id "
+                . "AND (asubcategories.flags&0x01) = 0x01 " // Visible
+                . "AND asubcategories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+            . "LEFT JOIN ciniki_musicfestival_accolade_categories AS acategories ON ("
+                . "asubcategories.category_id = acategories.id "
+                . "AND (acategories.flags&0x01) = 0x01 " // Visible
+                . "AND acategories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+            . "LEFT JOIN ciniki_wng_sections AS wngsections ON ("
+                . "wngsections.ref = 'ciniki.musicfestivals.accolades' "
+                . "AND wngsections.settings like CONCAT('%\"category-id\":\"', acategories.id, '\"%') "
+                . "AND (wngsections.flags&0x10) = 0 " // Visible
+                . "AND wngsections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_wng_pages AS wngpages ON ("
+                . "wngsections.page_id = wngpages.id "
+                . "AND (wngpages.flags&0x01) = 1 " // Visible
+                . "AND wngpages.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") ";
+    }
+    $strsql .= "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $syllabus_section['id']) . "' "
         . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
     if( isset($groupname) ) {
         $strsql .= "AND categories.groupname = '" . ciniki_core_dbQuote($ciniki, $groupname) . "' ";
@@ -515,6 +556,9 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 'permalink', 'icon_image_id', 'sequence', 'flags', 'feeflags',
                 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
                 )),
+        array('container'=>'accolades', 'fname'=>'accolade_id',
+            'fields' => array('id' => 'accolade_id', 'name' => 'accolade_name', 'permalink'=>'accolade_permalink', 'page_id'),
+            ),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -634,6 +678,28 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                         if( $participation_label != '' ) {
                             $category['classes'][$cid]['fullname'] .= " ({$participation_label})";
                         }
+                    }
+                    //
+                    // Check if accolades
+                    //
+                    if( isset($class['accolades']) ) {
+                        $synopsis = $category['classes'][$cid]['synopsis'];
+                        $accolades = '';
+                        foreach($class['accolades'] as $accolade) {
+                            if( $accolade['page_id'] > 0 && isset($request['site']['pages'][$accolade['page_id']]) ) {
+                                $accolades .= ($accolades != '' ? ', ' : '')
+                                    . "<a class='link' href='{$request['ssl_domain_base_url']}"
+                                    . "{$request['site']['pages'][$accolade['page_id']]['path']}/{$accolade['permalink']}'>"
+                                    . $accolade['name']
+                                    . "</a>";
+                            } else {
+                                $accolades .= ($accolades != '' ? ', ' : '') . $accolade['name'];
+                            }
+                        }
+                        if( $accolades != '' ) {
+                            $synopsis .= ($synopsis != '' ? "" : '') . '<p>Eligible for: ' . $accolades . "</p>";
+                        }
+                        $category['classes'][$cid]['synopsis'] = $synopsis;
                     }
                 }
                 //

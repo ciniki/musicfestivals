@@ -58,6 +58,7 @@ function ciniki_musicfestivals_accoladeGet($ciniki) {
         $accolade = array('id'=>0,
             'name' => '',
             'subcategory_id' => 0,
+            'flags' => 1,
             'primary_image_id' => '0',
             'donated_by' => '',
             'first_presented' => '',
@@ -76,6 +77,7 @@ function ciniki_musicfestivals_accoladeGet($ciniki) {
         $strsql = "SELECT accolades.id, "
             . "accolades.name, "
             . "accolades.subcategory_id, "
+            . "accolades.flags, "
             . "accolades.primary_image_id, "
             . "accolades.donated_by, "
             . "accolades.first_presented, "
@@ -90,7 +92,7 @@ function ciniki_musicfestivals_accoladeGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'accolades', 'fname'=>'id', 
-                'fields'=>array('name', 'subcategory_id', 'primary_image_id', 
+                'fields'=>array('name', 'subcategory_id', 'flags', 'primary_image_id', 
                     'donated_by', 'first_presented', 'criteria', 'amount', 'description', 'donor_thankyou_info',
                     ),
                 ),
