@@ -403,6 +403,7 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
                 . "AND winners.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "WHERE accolades.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND (accolades.flags&0x01) = 0x01 "
             . "AND accolades.subcategory_id = '" . ciniki_core_dbQuote($ciniki, $subcategory['id']) . "' ";
         $strsql .= "ORDER BY accolades.name, winners.year DESC "
             . "";
