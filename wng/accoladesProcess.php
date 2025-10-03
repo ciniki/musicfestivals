@@ -136,6 +136,7 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
             . "accolades.description "
             . "FROM ciniki_musicfestival_accolades AS accolades "
             . "WHERE accolades.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND (accolades.flags&0x01) = 0x01 "
             . "AND accolades.subcategory_id = '" . ciniki_core_dbQuote($ciniki, $subcategory['id']) . "' "
             . "AND accolades.permalink = '" . ciniki_core_dbQuote($ciniki, $accolade_permalink) . "' ";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'accolade');
@@ -149,7 +150,7 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
                 'level' => 'error',
                 'content' => 'Accolade not found',
                 );
-            return array('stat'=>'ok', 'blocks'=>$blocks);
+            return array('stat'=>'404', 'blocks'=>$blocks);
         }
         $accolade = $rc['accolade'];
         $accolade['full_description'] = '';
