@@ -1902,6 +1902,11 @@ function ciniki_musicfestivals_main() {
                     'label':'Add Location',
                     'fn':'M.ciniki_musicfestivals_main.location.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.festival_id,null);',
                     },
+                'copy':{
+                    'label':'Copy Previous Locations',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.data.locations.length == 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.festivalLocationsCopy("previous");',
+                    },
                 },
             },
         'files':{'label':'', 'type':'simplegrid', 'num_cols':2,
@@ -5217,6 +5222,15 @@ function ciniki_musicfestivals_main() {
     }
     this.festival.festivalCopy = function(old_fid) {
         M.api.getJSONCb('ciniki.musicfestivals.festivalCopy', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'old_festival_id':old_fid}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            M.ciniki_musicfestivals_main.festival.open();
+        });
+    }
+    this.festival.festivalLocationsCopy = function(old_fid) {
+        M.api.getJSONCb('ciniki.musicfestivals.festivalLocationsCopy', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'old_festival_id':old_fid}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
