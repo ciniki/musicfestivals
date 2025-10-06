@@ -1,0 +1,59 @@
+#
+# Description
+# -----------
+# This table stores the list names created by a tenant.
+#
+# Note: This may be used in the future to store RCM syllabus information
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# name:                     The name of the list.
+# permlink:                 The permalink of the name.
+#
+# search_label:             The label for the row in search results
+#
+# flags:                    The options for the category.
+#
+#                               0x01 - Publish - allow other tenants to use
+#                               0x02 
+#                               0x04
+#                               0x08
+#                               0x10 - SSAM format
+#                               0x20 
+#                               0x40
+#                               0x80
+#
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_musicfestivals_titlelists (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    name varchar(250) not null,
+    permalink varchar(250) not null,
+    search_label varchar(250) not null,
+    flags smallint unsigned not null,
+    col1_field varchar(50) not null,
+    col1_label varchar(50) not null,
+    col2_field varchar(50) not null,
+    col2_label varchar(50) not null,
+    col3_field varchar(50) not null,
+    col3_label varchar(50) not null,
+    col4_field varchar(50) not null,
+    col4_label varchar(50) not null,
+    description text not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    unique index (permalink),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

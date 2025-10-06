@@ -79,7 +79,7 @@ function ciniki_musicfestivals_crLoad(&$ciniki, $tnid, $args) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1086', 'msg'=>'Unable to load crs', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1194', 'msg'=>'Unable to load crs', 'err'=>$rc['err']));
     }
     if( !isset($rc['crs'][0]) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1087', 'msg'=>'Unable to load crs', 'err'=>$rc['err']));

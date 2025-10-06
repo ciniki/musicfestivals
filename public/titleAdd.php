@@ -2,29 +2,29 @@
 //
 // Description
 // -----------
-// This method will add a new change request for the tenant.
+// This method will add a new approved title for the tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// tnid:        The ID of the tenant to add the Change Request to.
+// tnid:        The ID of the tenant to add the Approved Title to.
 //
 // Returns
 // -------
 //
-function ciniki_musicfestivals_crAdd(&$ciniki) {
+function ciniki_musicfestivals_titleAdd(&$ciniki) {
     //
     // Find all the required and optional arguments
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
-        'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
-        'customer_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Customer'),
-        'object'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Object'),
-        'object_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Object ID'),
-        'content'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Request'),
+        'list_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'List'),
+        'title'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Title'),
+        'movements'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Movements/Musical'),
+        'composer'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Composer'),
+        'source_type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Source Type'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -35,9 +35,13 @@ function ciniki_musicfestivals_crAdd(&$ciniki) {
     // Check access to tnid as owner
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.crAdd');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.titleAdd');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
+    }
+
+    if( !isset($args['list_id']) || $args['list_id'] == '' || $args['list_id'] <= 0 ) {
+        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1158', 'msg'=>'You must choose a list'));
     }
 
     //
@@ -52,38 +56,16 @@ function ciniki_musicfestivals_crAdd(&$ciniki) {
         return $rc;
     }
 
-    $dt = new DateTime('now', new DateTimezone('UTC'));
-    $args['status'] = 20;
-    $args['dt_submitted'] = $dt->format('Y-m-d H:i:s');
-
     //
-    // Get the next cr number
-    //
-    $strsql = "SELECT MAX(crs.cr_number) AS max "
-        . "FROM ciniki_musicfestival_crs AS crs "
-        . "WHERE crs.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "AND crs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1196', 'msg'=>'Unable to assign ID', 'err'=>$rc['err']));
-    } 
-    if( !isset($rc['num']['max']) ) {
-        $args['cr_number'] = 1;
-    } else {
-        $args['cr_number'] = $rc['num']['max'] + 1;
-    }
-
-    //
-    // Add the change request to the database
+    // Add the approved title to the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.cr', $args, 0x04);
+    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.title', $args, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;
     }
-    $cr_id = $rc['id'];
+    $title_id = $rc['id'];
 
     //
     // Commit the transaction
@@ -104,8 +86,8 @@ function ciniki_musicfestivals_crAdd(&$ciniki) {
     // Update the web index if enabled
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
-    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.musicfestivals.cr', 'object_id'=>$cr_id));
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.musicfestivals.title', 'object_id'=>$title_id));
 
-    return array('stat'=>'ok', 'id'=>$cr_id);
+    return array('stat'=>'ok', 'id'=>$title_id);
 }
 ?>

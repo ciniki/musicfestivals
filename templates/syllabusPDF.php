@@ -157,7 +157,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.38', 'msg'=>'Unable to load syllabus', 'err'=>$rc['err']));
         }
         if( !isset($rc['syllabus']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.39', 'msg'=>'Unable to find requested syllabus'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1181', 'msg'=>'Unable to find requested syllabus'));
         }
         $syllabus = $rc['syllabus'];
     }

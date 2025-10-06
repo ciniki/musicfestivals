@@ -205,7 +205,7 @@ function ciniki_musicfestivals_accoladeList($ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1100', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1167', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
     }
     $rsp['accolade_categories'] = isset($rc['categories']) ? $rc['categories'] : array();
     array_unshift($rsp['accolade_categories'], ['id'=>0, 'sequence'=>0, 'name'=>'All']);

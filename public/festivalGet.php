@@ -79,6 +79,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'lists'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Lists'),
         'list_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'List'),
         'listsection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'List Section'),
+        'titlelists'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Approved Title Lists'),
+        'titlelist_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Approved Title List'),
         'sponsors'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sponsors'),
         'messages'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Messages List'),
         'messages_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Messages Status'),
@@ -375,7 +377,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 array('container'=>'syllabuses', 'fname'=>'id', 'fields'=>array('id', 'name')),
                 ));
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1047', 'msg'=>'Unable to load syllabuses', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1177', 'msg'=>'Unable to load syllabuses', 'err'=>$rc['err']));
             }
             $festival['syllabuses'] = isset($rc['syllabuses']) ? $rc['syllabuses'] : array();
             if( !isset($args['syllabus_id']) ) {
@@ -3021,7 +3023,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             ),
                         ));
                     if( $rc['stat'] != 'ok' ) {
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.321', 'msg'=>'Unable to load messages', 'err'=>$rc['err']));
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1170', 'msg'=>'Unable to load messages', 'err'=>$rc['err']));
                     }
                     $festival['adjudicator_messages'] = isset($rc['messages']) ? $rc['messages'] : array();
                     foreach($festival['adjudicator_messages'] as $mid => $message) {
@@ -3365,7 +3367,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     ),
                 ));
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1100', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1179', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
             }
             $festival['accolade_categories'] = isset($rc['categories']) ? $rc['categories'] : array();
             array_unshift($festival['accolade_categories'], ['id'=>0, 'sequence'=>0, 'name'=>'All']);
@@ -3385,7 +3387,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1100', 'msg'=>'Unable to load subcategories', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1180', 'msg'=>'Unable to load subcategories', 'err'=>$rc['err']));
                 }
                 $festival['accolade_subcategories'] = isset($rc['subcategories']) ? $rc['subcategories'] : array();
                 array_unshift($festival['accolade_subcategories'], ['id'=>0, 'sequence'=>0, 'name'=>'All']);
@@ -3803,27 +3805,97 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             //
             // Check if need query for list sections
             //
-            if( isset($args['listsection_id']) && $args['listsection_id'] > 0 ) {
+            if( isset($args['list_id']) && $args['list_id'] > 0 ) {
                 $strsql = "SELECT id, "
                     . "sequence, "
-                    . "award, "
-                    . "amount, "
-                    . "donor, "
-                    . "winner "
-                    . "FROM ciniki_musicfestival_list_entries "
+                    . "name "
+                    . "FROM ciniki_musicfestival_list_sections "
                     . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . "AND section_id = '" . ciniki_core_dbQuote($ciniki, $args['listsection_id']) . "' "
+                    . "AND list_id = '" . ciniki_core_dbQuote($ciniki, $args['list_id']) . "' "
                     . "ORDER BY sequence "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-                    array('container'=>'listentries', 'fname'=>'id', 
-                        'fields'=>array('id', 'sequence', 'award', 'amount', 'donor', 'winner')),
+                    array('container'=>'listsections', 'fname'=>'id', 'fields'=>array('id', 'sequence', 'name')),
                     ));
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
                 }
-                $festival['listentries'] = isset($rc['listentries']) ? $rc['listentries'] : array();
+                $festival['listsections'] = isset($rc['listsections']) ? $rc['listsections'] : array();
+            }
+        }
+
+        //
+        // Get the list of title lists
+        //
+        if( isset($args['titlelists']) && $args['titlelists'] == 'yes' ) {
+            $strsql = "SELECT id, "
+                . "name, "
+                . "flags, "
+                . "col1_field, "
+                . "col1_label, "
+                . "col2_field, "
+                . "col2_label, "
+                . "col3_field, "
+                . "col3_label, "
+                . "col4_field, "
+                . "col4_label "
+                . "FROM ciniki_musicfestivals_titlelists "
+                . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "ORDER BY name "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'lists', 'fname'=>'id', 'fields'=>array('id', 'name', 'flags',
+                    'col1_field', 'col1_label',
+                    'col2_field', 'col2_label',
+                    'col3_field', 'col3_label',
+                    'col4_field', 'col4_label',
+                    )),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $festival['titlelists'] = isset($rc['lists']) ? $rc['lists'] : array();
+
+            //
+            // Check if need query for list sections
+            //
+            if( isset($args['titlelist_id']) && $args['titlelist_id'] > 0 ) {
+                $order_sql = '';
+                foreach($festival['titlelists'] as $list) {
+                    if( $list['id'] == $args['titlelist_id'] ) {
+                        for($i = 1; $i < 5; $i++ ) {
+                            if( $list["col{$i}_field"] != 'none' && $list["col{$i}_field"] != '' ) {
+                                $order_sql .= ($order_sql != '' ? ', ' : '') . $list["col{$i}_field"];
+                            }
+                        }
+                    }
+                }
+                if( $order_sql == '' ) {
+                    $order_sql = "ORDER BY title, movements, composer ";
+                } else {
+                    $order_sql = "ORDER BY " . $order_sql;
+                }
+                $strsql = "SELECT id, "
+                    . "title, "
+                    . "movements, "
+                    . "composer, "
+                    . "source_type "
+                    . "FROM ciniki_musicfestivals_titles "
+                    . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "AND list_id = '" . ciniki_core_dbQuote($ciniki, $args['titlelist_id']) . "' "
+                    . $order_sql
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'titles', 'fname'=>'id', 
+                        'fields'=>array('id', 'title', 'movements', 'composer', 'source_type')),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                $festival['titles'] = isset($rc['titles']) ? $rc['titles'] : array();
             }
         }
 
@@ -4392,7 +4464,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.656', 'msg'=>'Unable to load entries', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1172', 'msg'=>'Unable to load entries', 'err'=>$rc['err']));
                 }
                 $festival['recommendation_entries'] = isset($rc['entries']) ? $rc['entries'] : array();
             }
@@ -4502,7 +4574,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.600', 'msg'=>'Unable to load submissions', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1171', 'msg'=>'Unable to load submissions', 'err'=>$rc['err']));
                 }
                 $festival['member_submissions'] = isset($rc['submissions']) ? $rc['submissions'] : array();
                 foreach($festival['member_submissions'] as $k => $v) {
@@ -4732,7 +4804,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
             $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.768', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1173', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
             }
             $festival['statistics']['num_accompanists'] = array('label'=>'Number of Accompanists', 'value'=>$rc['num']);
 
@@ -4758,7 +4830,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
             $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.768', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1174', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
             }
             $festival['statistics']['num_individuals'] = array('label'=>'Number of Individuals', 'value'=>$rc['num']);
             $total_competitors += $rc['num'];
@@ -4784,7 +4856,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
             $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.768', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1175', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
             }
             $festival['statistics']['num_groups'] = array('label'=>'Number of Groups', 'value'=>$rc['num']);
 
@@ -4809,7 +4881,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
             $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.768', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1176', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
             }
             $festival['statistics']['num_group_competitors'] = array('label'=>'Number of Group Competitors', 'value'=>$rc['num']);
             $total_competitors += $rc['num'];
@@ -4973,7 +5045,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 array('container'=>'registrations', 'fname'=>'_p', 'fields'=>array('participation'=>'_p', 'num_reg', 'fees')),
                 ));
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1082', 'msg'=>'Unable to load sections', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1178', 'msg'=>'Unable to load sections', 'err'=>$rc['err']));
             }
             $festival['stats_sections'] = isset($rc['sections']) ? $rc['sections'] : array();
             foreach($festival['stats_sections'] as $sid => $section) {

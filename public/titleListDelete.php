@@ -2,26 +2,26 @@
 //
 // Description
 // -----------
-// This method will delete an syllabus.
+// This method will delete an approved title list.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// tnid:            The ID of the tenant the syllabus is attached to.
-// syllabus_id:            The ID of the syllabus to be removed.
+// tnid:            The ID of the tenant the approved title list is attached to.
+// list_id:            The ID of the approved title list to be removed.
 //
 // Returns
 // -------
 //
-function ciniki_musicfestivals_syllabusDelete(&$ciniki) {
+function ciniki_musicfestivals_titleListDelete(&$ciniki) {
     //
     // Find all the required and optional arguments
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
-        'syllabus_id'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Syllabus'),
+        'list_id'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Approved Title List'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -32,56 +32,42 @@ function ciniki_musicfestivals_syllabusDelete(&$ciniki) {
     // Check access to tnid as owner
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.syllabusDelete');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.titleListDelete');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
 
     //
-    // Get the current settings for the syllabus
+    // Get the current settings for the approved title list
     //
     $strsql = "SELECT id, uuid "
-        . "FROM ciniki_musicfestival_syllabuses "
+        . "FROM ciniki_musicfestivals_titlelists "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['syllabus_id']) . "' "
+        . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['list_id']) . "' "
         . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'syllabus');
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'titlelist');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-    if( !isset($rc['syllabus']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1060', 'msg'=>'Syllabus does not exist.'));
+    if( !isset($rc['titlelist']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1146', 'msg'=>'Approved Title List does not exist.'));
     }
-    $syllabus = $rc['syllabus'];
+    $titlelist = $rc['titlelist'];
 
     //
     // Check for any dependencies before deleting
     //
-    $strsql = "SELECT 'items', COUNT(*) "
-        . "FROM ciniki_musicfestival_sections "
-        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND syllabus_id = '" . ciniki_core_dbQuote($ciniki, $args['syllabus_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
-    $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
-    if( $rc['stat'] != 'ok' ) { 
-        return $rc;
-    }
-    if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
-        $count = $rc['num']['items'];
-        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1169', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' section' . ($count==1?'':'s') . ' in that syllabus, it cannot be removed.'));
-    }
 
     //
     // Check if any modules are currently using this object
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectCheckUsed');
-    $rc = ciniki_core_objectCheckUsed($ciniki, $args['tnid'], 'ciniki.musicfestivals.syllabus', $args['syllabus_id']);
+    $rc = ciniki_core_objectCheckUsed($ciniki, $args['tnid'], 'ciniki.musicfestivals.titleList', $args['list_id']);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1061', 'msg'=>'Unable to check if the syllabus is still being used.', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1147', 'msg'=>'Unable to check if the approved title list is still being used.', 'err'=>$rc['err']));
     }
     if( $rc['used'] != 'no' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1062', 'msg'=>'The syllabus is still in use. ' . $rc['msg']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1148', 'msg'=>'The approved title list is still in use. ' . $rc['msg']));
     }
 
     //
@@ -97,12 +83,33 @@ function ciniki_musicfestivals_syllabusDelete(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
+    
+    //
+    // Remove the titles
+    //
+    $strsql = "SELECT id, uuid "
+        . "FROM ciniki_musicfestivals_titles "
+        . "WHERE list_id = '" . ciniki_core_dbQuote($ciniki, $args['list_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'list');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1152', 'msg'=>'Unable to load list', 'err'=>$rc['err']));
+    }
+    $titles = isset($rc['rows']) ? $rc['rows'] : array();
+   
+    foreach($titles as $title) {
+        $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.musicfestivals.title', $title['id'], $title['uuid'], 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
+    }
 
     //
-    // Remove the syllabus
+    // Remove the titlelist
     //
-    $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.musicfestivals.syllabus',
-        $args['syllabus_id'], $syllabus['uuid'], 0x04);
+    $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.musicfestivals.titlelist', $args['list_id'], $titlelist['uuid'], 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;

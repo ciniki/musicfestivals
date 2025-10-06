@@ -136,12 +136,12 @@ function ciniki_musicfestivals_messageUpdate(&$ciniki) {
                     . $message['uuid'][0] . '/' . $message['uuid'] . '_' . $file['filename'];
                 if( !is_dir(dirname($storage_filename)) ) {
                     if( !mkdir(dirname($storage_filename), 0700, true) ) {
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1072', 'msg'=>'Unable to add file'));
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1190', 'msg'=>'Unable to add file'));
                     }
                 }
                 
                 if( !copy($template_filename, $storage_filename) ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1073', 'msg'=>'Unable to add file'));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1191', 'msg'=>'Unable to add file'));
                 }
 
                 //

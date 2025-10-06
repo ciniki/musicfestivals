@@ -99,6 +99,30 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     $provincial_festivals = isset($rc['provincials']) ? $rc['provincials'] : array();
 
     //
+    // Get the list of available Approved Title Lists
+    //
+    $strsql = "SELECT lists.id, "
+        . "CONCAT_WS(' - ', tenants.name, lists.name) AS name, "
+        . "IF(lists.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "', 1, 2) AS sortrank "
+        . "FROM ciniki_musicfestivals_titlelists AS lists "
+        . "INNER JOIN ciniki_tenants AS tenants ON ("
+            . "lists.tnid = tenants.id "
+            . ") "
+        . "WHERE (lists.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . " OR (lists.flags&0x01) = 0x01 " // public shared
+            . ") "
+        . "ORDER BY sortrank, name "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'titlelists', 'fname'=>'id', 'fields'=>array('id', 'name')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1165', 'msg'=>'Unable to load titlelists', 'err'=>$rc['err']));
+    }
+    $titlelists = isset($rc['titlelists']) ? $rc['titlelists'] : array();
+
+    //
     // Get the syllabuses (festival_id - Syllabus), this is used for festival that have multiple syllabuses
     //
     $strsql = "SELECT syllabuses.id, "
@@ -935,21 +959,8 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     //
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x40) ) {
         //
-        // Get the list of typenames
+        // Get the list of categories
         //
-/*        $strsql = "SELECT DISTINCT accolades.typename "
-            . "FROM ciniki_musicfestival_accolades AS accolades "
-            . "WHERE accolades.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "ORDER BY accolades.typename "
-            . "";
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-            array('container'=>'types', 'fname'=>'typename', 'fields'=>array('name'=>'typename')),
-            ));
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.855', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
-        }
-        $types = isset($rc['types']) ? $rc['types'] : array(); */
         $strsql = "SELECT id, name, permalink "
             . "FROM ciniki_musicfestival_accolade_categories "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -1206,6 +1217,35 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 ),
             ),
         );
+
+    //
+    // Approved Titles Lists
+    //
+    $sections['ciniki.musicfestivals.approvedtitles'] = array(
+        'name'=>'Approved Titles',
+        'module' => 'Music Festivals',
+        'settings'=>array(
+            'title' => array('label'=>'Title', 'type'=>'text'),
+            'content' => array('label'=>'Intro', 'type'=>'htmlarea'),
+            'search'=>array('label'=>'Search', 'type'=>'toggle', 'default'=>'yes', 'toggles'=>array(    
+                'no' => 'No',
+                'yes' => 'Yes',
+                )),
+            ),
+        'repeats' => array(
+            'label' => 'Approved Title Lists',
+            'headerValues' => array('Lists'),
+            'cellClasses' => array(''),
+            'dataMaps' => array('list-id'),
+            'addtxt' => 'add title list',
+            'fields' => array(
+                'list-id' => array('label'=>'list', 'type'=>'select', 
+                    'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                    'options'=>$titlelists,
+                    ),
+                )),
+        );
+
 
     return array('stat'=>'ok', 'sections'=>$sections);
 }

@@ -87,7 +87,7 @@ function ciniki_musicfestivals_sectionDelete(&$ciniki) {
     }
     if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
         $count = $rc['num']['items'];
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.29', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' scrutineer' . ($count==1?'':'s') . ' in that section.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1168', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' scrutineer' . ($count==1?'':'s') . ' in that section.'));
     }
 
     //

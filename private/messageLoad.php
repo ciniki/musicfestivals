@@ -440,7 +440,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.890', 'msg'=>'Unable to load adjudicator', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1193', 'msg'=>'Unable to load adjudicator', 'err'=>$rc['err']));
             }
             $label = (isset($rc['item']['name']) ? $rc['item']['name'] : 'Unknown Adjudicator');
             $adjudicator_ids[] = $ref['object_id'];
@@ -971,7 +971,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
             array('container'=>'adjudicators', 'fname'=>'id', 'fields'=>array('id', 'name')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.891', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1195', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
         }
         $rsp['adjudicators'] = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
         foreach($rsp['adjudicators'] as $aid => $adjudicators) {
@@ -1848,7 +1848,7 @@ function ciniki_musicfestivals_messageLoad(&$ciniki, $tnid, $args) {
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.886', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1192', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
             }
             if( isset($rc['rows']) ) {
                 foreach($rc['rows'] as $row) {
