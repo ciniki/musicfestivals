@@ -91,7 +91,7 @@ function ciniki_musicfestivals_wng_approvedTitlesProcess(&$ciniki, $tnid, &$requ
         . "FROM ciniki_musicfestivals_titlelists AS lists "
         . "INNER JOIN ciniki_musicfestivals_titles AS titles ON ("
             . "lists.id = titles.list_id "
-            . "AND titles.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND lists.tnid = titles.tnid "
             . ") "
         . "WHERE list_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $list_ids) . ") "
         . "AND ("
