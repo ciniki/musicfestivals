@@ -1237,7 +1237,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             'headerValues' => array('Lists'),
             'cellClasses' => array(''),
             'dataMaps' => array('list-id'),
-            'addtxt' => 'add title list',
+            'addTxt' => 'Add List',
             'fields' => array(
                 'list-id' => array('label'=>'list', 'type'=>'select', 
                     'complex_options'=>array('value'=>'id', 'name'=>'name'),
