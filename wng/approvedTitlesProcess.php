@@ -182,7 +182,7 @@ function ciniki_musicfestivals_wng_approvedTitlesProcess(&$ciniki, $tnid, &$requ
                 $list_blocks[] = [
                     'type' => 'table',
                     'id' => $list['permalink'],
-                    'class' => 'musicfestivals-approved-titles' . (count($list_blocks) > 0 ? ' hidden' : ''),
+                    'class' => 'musicfestivals-approved-titles' . (count($list_blocks) > 0 ? ' hidden' : ' hidden'),
                     'title' => $list['name'],
                     'content' => $list['description'],
                     'headers' => 'yes',
