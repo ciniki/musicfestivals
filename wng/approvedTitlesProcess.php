@@ -73,6 +73,7 @@ function ciniki_musicfestivals_wng_approvedTitlesProcess(&$ciniki, $tnid, &$requ
     //
     $strsql = "SELECT lists.id, "
         . "lists.name, "
+        . "lists.permalink, "
         . "lists.flags, "
         . "lists.description, "
         . "lists.col1_field, "
@@ -100,10 +101,10 @@ function ciniki_musicfestivals_wng_approvedTitlesProcess(&$ciniki, $tnid, &$requ
             . ") "
         . "ORDER BY lists.id, title, movements, composer "
         . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'lists', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'description',
+            'fields'=>array('id', 'name', 'permalink', 'description',
                 'col1_field', 'col1_label',
                 'col2_field', 'col2_label',
                 'col3_field', 'col3_label',
@@ -135,7 +136,94 @@ function ciniki_musicfestivals_wng_approvedTitlesProcess(&$ciniki, $tnid, &$requ
             ];
     }
 
-    foreach($lists as $list) {
+    if( count($lists) > 1 ) {
+/*        $blocks[] = [
+            'type' => 'buttons',
+            'class' => 'aligncenter',
+            'items' => $lists,
+            ]; */
+    }
+
+    //
+    // Display the lists in the order they specified
+    //
+    $buttons = [];
+    $list_blocks = [];
+    for($i = 1; $i < 100; $i++) {
+        if( isset($s["list-id-{$i}"]) && $s["list-id-{$i}"] != '' && $s["list-id-{$i}"] > 0 
+            && isset($lists[$s["list-id-{$i}"]]) 
+            ) {
+            $list = $lists[$s["list-id-{$i}"]];
+            $columns = [];
+            for($j = 1; $j < 5; $j++) {
+                if( in_array($list["col{$j}_field"], ['title', 'movements', 'composer', 'source_type']) ) {
+                    $columns[] = [
+                        'label' => $list["col{$j}_label"],
+                        'field' => $list["col{$j}_field"],
+                        ];
+                }
+            }
+            if( count($columns) > 0 ) {
+                // Sort based on columns specified
+                uasort($list['titles'], function($a, $b) use ($list) {
+                    for($j = 1; $j < 5; $j++) {
+                        if( in_array($list["col{$j}_field"], ['title', 'movements', 'composer', 'source_type']) ) {
+                            if( $a[$list["col{$j}_field"]] != $b[$list["col{$j}_field"]] ) {
+                                return strnatcasecmp($a[$list["col{$j}_field"]], $b[$list["col{$j}_field"]]);
+                            }
+                        }
+                    }
+                    });
+                $buttons[] = [
+                    'title' => $list['name'],
+                    'permalink' => $list['permalink'],
+                    'js' => "openList(\"{$list['permalink']}\");",
+                    ];
+                $list_blocks[] = [
+                    'type' => 'table',
+                    'id' => $list['permalink'],
+                    'class' => 'musicfestivals-approved-titles' . (count($list_blocks) > 0 ? ' hidden' : ''),
+                    'title' => $list['name'],
+                    'content' => $list['description'],
+                    'headers' => 'yes',
+                    'columns' => $columns,
+                    'rows' => $list['titles'],
+                    ];
+            }
+        }
+    }
+    $js = '';
+    if( count($buttons) > 0 ) {
+        $items = '';
+        foreach($buttons as $button) {
+            $items .= ($items != '' ? ', ' : '') . '"' . $button['permalink'] . '"';
+        }
+        $js .= "openList = function(l) {"
+                . "const lists=[{$items}];"
+                . "for(var i in lists) {"
+                    . "var e=C.gE(lists[i]).parentNode.parentNode;"
+                    . "if(l==lists[i]){"
+                        . "C.rC(e,'hidden');"
+                    . "}else{"
+                        . "C.aC(e,'hidden');"
+                    . "}"
+                . "} "
+            . '}';
+        $blocks[] = [
+            'type' => 'buttons',
+            'class' => 'aligncenter',
+            'items' => $buttons,
+            'js' => $js,
+            ];
+
+    }
+    if( count($list_blocks) > 0 ) {
+        foreach($list_blocks as $block) {
+            $blocks[] = $block;
+        }
+    }
+
+/*    foreach($lists as $list) {
         $columns = [];
         for($i = 1; $i < 5; $i++) {
             if( in_array($list["col{$i}_field"], ['title', 'movements', 'composer', 'source_type']) ) {
@@ -166,7 +254,7 @@ function ciniki_musicfestivals_wng_approvedTitlesProcess(&$ciniki, $tnid, &$requ
                 'rows' => $list['titles'],
                 ];
         }
-    }
+    } */
 
     return array('stat'=>'ok', 'blocks'=>$blocks);
 }
