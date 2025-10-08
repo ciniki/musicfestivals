@@ -13720,6 +13720,11 @@ function ciniki_musicfestivals_main() {
                     },
                 },
             },
+        '_notes':{'label':'Notes', 
+//            'visible':function() { return M.ciniki_musicfestivals_main.accolade.sections._tabs.selected == 'description' ? 'yes' :'hidden'; },
+            'fields':{
+                'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'large'},
+            }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.accolade.save();'},
             'delete':{'label':'Delete', 

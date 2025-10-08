@@ -660,6 +660,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'amount' => array('name'=>'Amount', 'default'=>''),
             'description' => array('name'=>'Description', 'default'=>''),
             'donor_thankyou_info' => array('name'=>'Donor Thank You Info', 'default'=>''),
+            'notes' => array('name'=>'Notes', 'default'=>''),
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );

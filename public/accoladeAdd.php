@@ -32,6 +32,7 @@ function ciniki_musicfestivals_accoladeAdd(&$ciniki) {
         'amount'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Amount'),
         'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),
         'donor_thankyou_info'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Donor Thank You Info'),
+        'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

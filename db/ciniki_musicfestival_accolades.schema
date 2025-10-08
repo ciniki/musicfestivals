@@ -28,6 +28,7 @@
 # amount:                   The Amount for the award. Stored as text so they can format however or add extra text if required.
 # description:              The description for the accolade.
 # donor_thankyou_info:      The info to be passed to recipients to send thank you's to.
+# notes:                    Internal notes for admins only.
 #
 # date_added:               The UTC date and time the record was added.
 # last_updated:             The UTC date and time the record was last update.
@@ -50,10 +51,11 @@ create table ciniki_musicfestival_accolades (
     amount varchar(250) not null,
     description text not null,
     donor_thankyou_info text not null,
+    notes text not null,
 
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.05';
+) ENGINE='InnoDB', COMMENT='v1.06';
