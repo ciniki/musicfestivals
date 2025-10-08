@@ -66,7 +66,7 @@ function ciniki_musicfestivals_titleListImport(&$ciniki) {
     for($sheet = 0; $sheet < 1; $sheet++) {
         $objWorksheet = $spreadsheet->getSheet($sheet);
 
-        $start = 2;
+        $start = 1;
         $size = 10000;
 
         $numRows = $objWorksheet->getHighestRow(); // e.g. 10
