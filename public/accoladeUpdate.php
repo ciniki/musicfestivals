@@ -46,9 +46,8 @@ function ciniki_musicfestivals_accoladeUpdate(&$ciniki) {
     }
 
     $strsql = "SELECT id, "
-        . "name "
-//        . "typename, "
-//        . "category "
+        . "name, "
+        . "subcategory_id "
         . "FROM ciniki_musicfestival_accolades "
         . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['accolade_id']) . "' "
         . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -74,7 +73,7 @@ function ciniki_musicfestivals_accoladeUpdate(&$ciniki) {
         $strsql = "SELECT id, name, permalink "
             . "FROM ciniki_musicfestival_accolades "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND category ='" . ciniki_core_dbQuote($ciniki, (isset($args['category']) ? $args['category'] : $accolade['category'])) . "' "
+            . "AND subcategory_id ='" . ciniki_core_dbQuote($ciniki, (isset($args['subcategory_id']) ? $args['subcategory_id'] : $accolade['subcategory_id'])) . "' "
             . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
             . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['accolade_id']) . "' "
             . "";

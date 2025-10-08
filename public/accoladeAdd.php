@@ -61,7 +61,7 @@ function ciniki_musicfestivals_accoladeAdd(&$ciniki) {
     $strsql = "SELECT id, name, permalink "
         . "FROM ciniki_musicfestival_accolades "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND category = '" . ciniki_core_dbQuote($ciniki, (isset($args['category']) ? $args['category'] : '')) . "' "
+        . "AND subcategory_id = '" . ciniki_core_dbQuote($ciniki, (isset($args['subcategory_id']) ? $args['subcategory_id'] : '')) . "' "
         . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
