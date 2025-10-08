@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_accolades ADD COLUMN notes text not null AFTER donor_thankyou_info;
+ALTER TABLE ciniki_musicfestival_accolades COMMENT='v1.06';
