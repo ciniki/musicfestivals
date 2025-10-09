@@ -79,8 +79,13 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         . "classes.fee, "
         . "classes.virtual_fee, "
         . "classes.earlybird_plus_fee, "
-        . "classes.plus_fee "
+        . "classes.plus_fee, "
+        . "syllabuses.sections_description "
         . "FROM ciniki_musicfestival_sections AS sections "
+        . "INNER JOIN ciniki_musicfestival_syllabuses AS syllabuses ON ("
+            . "sections.syllabus_id = syllabuses.id "
+            . "AND syllabuses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
         . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
             . "sections.id = categories.section_id ";
     if( isset($args['groupname']) && $args['groupname'] != '' ) {
@@ -115,7 +120,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'section_id', 
             'fields'=>array('name'=>'section_name', 'synopsis'=>'section_synopsis', 'description'=>'section_description',
-                'syllabus_id', 
+                'syllabus_id', 'sections_description',
                 'live_description'=>'section_live_description', 'virtual_description'=>'section_virtual_description',
                 )),
         array('container'=>'categories', 'fname'=>'category_id', 
@@ -128,11 +133,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-    if( isset($rc['sections']) ) {
-        $sections = $rc['sections'];
-    } else {
-        $sections = array();
-    }
+    $sections = isset($rc['sections']) ? $rc['sections'] : array();
 
     //
     // Check if rules & regs should be loaded
@@ -495,6 +496,9 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             $section['description'] = $section['live_description'];
         } elseif( isset($args['live-virtual']) && $args['live-virtual'] == 'virtual' && $section['virtual_description'] != '' ) {
             $section['description'] = $section['virtual_description'];
+        }
+        if( isset($section['sections_description']) && $section['sections_description'] != '' ) {
+            $section['description'] .= $section['sections_description'];
         }
         //
         // Start a new section
