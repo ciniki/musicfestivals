@@ -6520,6 +6520,9 @@ function ciniki_musicfestivals_main() {
                 'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x0a) == 0x0a ? 'yes' : 'no';},
                 }, */
             }},
+        '_sections_description':{'label':'Sections Description', 'aside':'yes', 'fields':{
+            'sections_description':{'label':'', 'hidelabel':'yes', 'type':'htmlarea'},
+            }},
         '_intro':{'label':'Rules & Regulations', 'aside':'yes', 'fields':{
             'intro_title':{'label':'Title', 'type':'text'},
             'intro_content':{'label':'Intro', 'type':'htmlarea'},

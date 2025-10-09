@@ -29,6 +29,7 @@ function ciniki_musicfestivals_syllabusAdd(&$ciniki) {
         'virtual_end_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Virtual Deadline'),
         'titles_end_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Edit Titles Deadline'),
         'upload_end_dt'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'datetimetoutc', 'name'=>'Upload Deadline'),
+        'sections_description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sections Description'),
         'rules'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Rules & Regulations'),
         ));
     if( $rc['stat'] != 'ok' ) {

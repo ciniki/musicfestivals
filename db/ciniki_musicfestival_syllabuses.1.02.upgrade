@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_syllabuses ADD COLUMN sections_description text not null AFTER upload_end_dt;
+ALTER TABLE ciniki_musicfestival_syllabuses COMMENT='v1.02';

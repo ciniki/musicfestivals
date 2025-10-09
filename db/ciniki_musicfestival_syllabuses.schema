@@ -29,6 +29,8 @@
 # titles_end_dt:        The UTC date and time deadline for editing titles and times **future**
 # upload_end_dt:        The UTC date and time deadline for uploading video URL's and music. **future**
 #
+# sections_description: The additional information to display at the bottom of the section description.
+#
 # rules:                The rules and regulations for the syllabus.
 #
 # date_added:           The UTC date and time the record was added.
@@ -48,6 +50,7 @@ create table ciniki_musicfestival_syllabuses (
     virtual_end_dt datetime not null,
     titles_end_dt datetime not null,
     upload_end_dt datetime not null,
+    sections_description text not null,
     rules text not null,
 
     date_added datetime not null,
@@ -56,4 +59,4 @@ create table ciniki_musicfestival_syllabuses (
     unique index (uuid),
     unique index (festival_id, permalink),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

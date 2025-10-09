@@ -115,8 +115,13 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             $strsql .= "sections.description, ";
         }
         $strsql .= "sections.live_end_dt, "
-            . "sections.virtual_end_dt "
+            . "sections.virtual_end_dt, "
+            . "IFNULL(syllabuses.sections_description, '') AS sections_description "
             . "FROM ciniki_musicfestival_sections AS sections "
+            . "LEFT JOIN ciniki_musicfestival_syllabuses AS syllabuses ON ("
+                . "sections.syllabus_id = syllabuses.id "
+                . "AND syllabuses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
             . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND sections.id = '" . ciniki_core_dbQuote($ciniki, $s['section-id']) . "' "
             . "";
@@ -177,8 +182,13 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             $strsql .= "sections.description, ";
         }
         $strsql .= "sections.live_end_dt, "
-            . "sections.virtual_end_dt "
+            . "sections.virtual_end_dt, "
+            . "IFNULL(syllabuses.sections_description, '') AS sections_description "
             . "FROM ciniki_musicfestival_sections AS sections "
+            . "LEFT JOIN ciniki_musicfestival_syllabuses AS syllabuses ON ("
+                . "sections.syllabus_id = syllabuses.id "
+                . "AND syllabuses.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
             . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
             . "AND sections.permalink = '" . ciniki_core_dbQuote($ciniki, $section_permalink) . "' "
@@ -344,6 +354,9 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             'title_sequence' => 1,
             'title' => (isset($s['title']) ? $s['title'] . ($s['title'] != '' ? ' - ' : '') : 'Syllabus - ') . $syllabus_section['name'],
             );
+        if( isset($syllabus_section['sections_description']) && $syllabus_section['sections_description'] != '' ) {
+            $syllabus_section['description'] .= $syllabus_section['sections_description'];
+        }
         if( isset($syllabus_section['description']) && $syllabus_section['description'] != '' ) {
             $blocks[] = array(
                 'type' => 'text',

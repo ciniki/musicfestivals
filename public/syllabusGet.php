@@ -66,6 +66,7 @@ function ciniki_musicfestivals_syllabusGet($ciniki) {
             'virtual_end_dt'=>'0000-00-00 00:00:00',
             'titles_end_dt'=>'0000-00-00 00:00:00',
             'upload_end_dt'=>'0000-00-00 00:00:00',
+            'sections_description'=>'',
             'rules'=>'',
         );
     }
@@ -84,6 +85,7 @@ function ciniki_musicfestivals_syllabusGet($ciniki) {
             . "syllabuses.virtual_end_dt, "
             . "syllabuses.titles_end_dt, "
             . "syllabuses.upload_end_dt, "
+            . "syllabuses.sections_description, "
             . "syllabuses.rules "
             . "FROM ciniki_musicfestival_syllabuses AS syllabuses "
             . "WHERE syllabuses.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -94,7 +96,7 @@ function ciniki_musicfestivals_syllabusGet($ciniki) {
             array('container'=>'syllabuses', 'fname'=>'id', 
                 'fields'=>array('festival_id', 'name', 'permalink', 'sequence', 'flags', 
                     'live_end_dt', 'virtual_end_dt', 'titles_end_dt', 'upload_end_dt',
-                    'rules',
+                    'sections_description', 'rules',
                     ),
                 ),
             ));

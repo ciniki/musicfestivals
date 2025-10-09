@@ -126,6 +126,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'virtual_end_dt'=>array('name'=>'Virtual Deadline', 'default'=>'0000-00-00 00:00:00'),
             'titles_end_dt'=>array('name'=>'Edit Titles Deadline', 'default'=>'0000-00-00 00:00:00'),
             'upload_end_dt'=>array('name'=>'Upload Deadline', 'default'=>'0000-00-00 00:00:00'),
+            'sections_description'=>array('name'=>'Sections Description', 'default'=>''),
             'rules'=>array('name'=>'Rules & Regulations', 'default'=>''),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
