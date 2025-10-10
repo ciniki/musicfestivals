@@ -556,13 +556,20 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "classes.schedule_ata_seconds, ";
             if( isset($args['levels']) && $args['levels'] == 'yes' ) {
                 $strsql .= "'' AS accolades, "
-                    . "tags.tag_name AS levels ";
+                    . "tags.tag_name AS levels, "
+                    . "'' AS provincials_class_name ";
             } elseif( isset($args['accolades']) && $args['accolades'] == 'yes' ) {
                 $strsql .= "accolades.name AS accolades, "
-                    . "'' AS levels ";
+                    . "'' AS levels, "
+                    . "'' AS provincials_class_name ";
+            } elseif( isset($args['provincials']) && $args['provincials'] == 'yes' ) {
+                $strsql .= "'' AS accolades, "
+                    . "'' AS levels, "
+                    . "IFNULL(provincials.name, '??') AS provincials_class_name ";
             } else {
                 $strsql .= "'' AS accolades, "
-                    . "'' AS levels ";
+                    . "'' AS levels, "
+                    . "'' AS provincials_class_name ";
             }
             $strsql .= ", (SELECT COUNT(*) "
                 . "FROM ciniki_musicfestival_registrations AS registrations "
@@ -603,6 +610,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "tc.accolade_id = accolades.id "
                     . "AND accolades.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") ";
+            } elseif( isset($args['provincials']) && $args['provincials'] == 'yes' 
+                && isset($festival['provincial-festival-id']) && $festival['provincial-festival-id'] > 0 
+                ) {
+                $strsql .= "LEFT JOIN ciniki_musicfestival_classes AS provincials ON ("
+                    . "classes.provincials_code = provincials.code "
+                    . "AND provincials.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['provincial-festival-id']) . "' "
+                    . ") ";
             }
 //                . "LEFT JOIN ciniki_musicfestival_registrations AS registrations USE INDEX (festival_id_2) ON ("
 //                    . "classes.id = registrations.class_id "
@@ -626,7 +640,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         'code', 'name', 'permalink', 'sequence', 'flags', 'feeflags', 'titleflags',
                         'earlybird_fee', 'fee', 'virtual_fee', 'plus_fee', 'earlybird_plus_fee',
                         'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 
-                        'synopsis', 'provincials_code',
+                        'synopsis', 'provincials_code', 'provincials_class_name', 
                         'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds', 'levels', 'accolades',
                         'num_registrations', 'perf_time',
                         ),
