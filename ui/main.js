@@ -488,6 +488,10 @@ function ciniki_musicfestivals_main() {
                     'label':'View Sections',
                     'fn':'M.ciniki_musicfestivals_main.sections.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.syllabus_id,M.ciniki_musicfestivals_main.festival.festival_id);',
                     },
+                'findreplacecategories':{
+                    'label':'Find/Replace Category Descriptions',
+                    'fn':'M.ciniki_musicfestivals_main.festival.findReplaceCategoryDescriptions();',
+                    },
                 'updaterules':{
                     'label':'Update Rules & Regulations',
                     'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x0800) == 0x0800 ? 'no' : 'yes'; },
@@ -4004,6 +4008,28 @@ function ciniki_musicfestivals_main() {
                 }
                 M.ciniki_musicfestivals_main.festival.open();
                 });
+            });
+    }
+    this.festival.findReplaceCategoryDescriptions = function() {
+        M.findreplace('Update', function(f,r) {
+            M.ciniki_musicfestivals_main.section.popupMenuClose('categories');
+            if( f != null && f != '' && r != null ) {
+                var args = {
+                    'tnid':M.curTenantID, 
+                    'section_id':0,
+                    'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
+                    'find_replace_fields':'description',
+                    'find':f,
+                    'replace':r,
+                    }; 
+                M.api.getJSONCb('ciniki.musicfestivals.sectionCategoriesUpdate', args, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    M.ciniki_musicfestivals_main.festival.open();
+                    });
+            }
             });
     }
     this.festival.findReplaceSynopsis = function(sid) {

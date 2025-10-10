@@ -60,7 +60,8 @@ function ciniki_musicfestivals_sectionCategoriesUpdate($ciniki) {
         . "categories.name, "
         . "categories.description "
         . "FROM ciniki_musicfestival_categories AS categories "
-        . "WHERE categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
+        . "WHERE categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND categories.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
     if( !isset($args['section_id']) || $args['section_id'] == 0 ) {
         // Apply to all classes in festival when section_id is zero
         $strsql .= "AND categories.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
