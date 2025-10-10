@@ -630,6 +630,10 @@ function ciniki_musicfestivals_main() {
                     'fn':'M.ciniki_musicfestivals_main.festival.switchTab(null,\'accolades\');',
                     },
                 'scheduling':{'label':'Scheduling', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(null,\'scheduling\');'},
+                'provincials':{'label':'Provincials', 
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x02); },
+                    'fn':'M.ciniki_musicfestivals_main.festival.switchTab(null,\'provincials\');',
+                    },
                 'synopsis':{'label':'Synopsis', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(null,\'synopsis\');'},
 //                'descriptions':{'label':'Descriptions', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(null,\'descriptions\');'},
             }},
@@ -4531,6 +4535,13 @@ function ciniki_musicfestivals_main() {
             if( this.data['scheduling-at-times'] != null && this.data['scheduling-at-times'] == 'yes' ) {
                 this.sections.classes.num_cols+=3;
             }
+        } 
+        else if( this.sections._stabs.selected == 'provincials' ) {
+            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Provincials Code'];
+            this.sections.classes.cellClasses = ['', '', '', ''];
+            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'provincials_code'];
+            this.sections.classes.sortTypes = ['text', 'text', 'text', 'text'];
+            this.sections.classes.num_cols = 4;
         } 
         else if( this.sections._stabs.selected == 'synopsis' ) {
             this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Synopsis'];
