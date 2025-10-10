@@ -4032,6 +4032,7 @@ function ciniki_musicfestivals_main() {
         });
     }
     this.festival.provincialsCodeChange = function(cid, m) {
+        this.savePos();
         m = unescape(m);
         M.prompt('New Provincials Code:', '', 'Update', function(n) {
             if( m != n ) {
