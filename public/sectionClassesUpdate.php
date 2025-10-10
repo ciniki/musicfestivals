@@ -39,6 +39,9 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         'music'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music Setting'),
         'marking'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Marking Flags Setting'),
         'multireg'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Multi Registration Option'),
+        'find_replace_fields'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Fields'),
+        'find'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Find String'),
+        'replace'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Replace String'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -91,7 +94,8 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         . "classes.fee, "
         . "classes.virtual_fee, "
         . "classes.earlybird_plus_fee, "
-        . "classes.plus_fee "
+        . "classes.plus_fee, "
+        . "classes.synopsis "
         . "FROM ciniki_musicfestival_categories AS categories "
         . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
             . "categories.id = classes.category_id "
@@ -114,6 +118,7 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         array('container'=>'classes', 'fname'=>'id', 
             'fields'=>array('id', 'flags', 'feeflags', 'titleflags', 
                 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
+                'synopsis',
                 )),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -270,6 +275,16 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
             $flags = $flags&0xFFFFFFFD;
         }
 
+        if( isset($args['find_replace_fields']) && is_array($args['find_replace_fields']) && count($args['find_replace_fields']) > 0 ) {
+            foreach($args['find_replace_fields'] as $field) {
+                if( $field == 'synopsis' ) {
+                    $synopsis = str_replace($args['find'], $args['replace'], $class['synopsis']);
+                    if( $synopsis != $class['synopsis'] ) {
+                        $update_args['synopsis'] = $synopsis;
+                    }
+                }
+            }
+        }
         //
         // Check if anything changed flags
         //

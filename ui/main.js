@@ -816,6 +816,11 @@ function ciniki_musicfestivals_main() {
                     'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.festival.setMusic(M.ciniki_musicfestivals_main.festival.section_id, "Optional");',
                     },
+                'findreplacesynopsis':{
+                    'label':'Find/Replace Synopsis',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'synopsis' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.findReplaceSynopsis(M.ciniki_musicfestivals_main.festival.section_id);',
+                    },
                 'updatemarking':{
                     'label':'Update Marking',
                     'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'marking' && M.ciniki_musicfestivals_main.festival.section_id > 0 && M.ciniki_musicfestivals_main.festival.sections.syllabus_tabs.selected == 'sections' ? 'yes' : 'no'; },
@@ -4001,6 +4006,28 @@ function ciniki_musicfestivals_main() {
                 });
             });
     }
+    this.festival.findReplaceSynopsis = function(sid) {
+        M.findreplace('Update', function(f,r) {
+            M.ciniki_musicfestivals_main.festival.popupMenuClose('classes');
+            if( f != null && f != '' && r != null ) {
+                var args = {
+                    'tnid':M.curTenantID, 
+                    'section_id':sid,
+                    'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
+                    'find_replace_fields':'synopsis',
+                    'find':f,
+                    'replace':r,
+                    }; 
+                M.api.getJSONCb('ciniki.musicfestivals.sectionClassesUpdate', args, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    M.ciniki_musicfestivals_main.festival.open();
+                    });
+            }
+            });
+    }
     this.festival.registrationMarkChange = function(rid, m) {
         m = unescape(m);
         var label = 'Mark';
@@ -7182,6 +7209,10 @@ function ciniki_musicfestivals_main() {
                     'label':'Add Category',
                     'fn':'M.ciniki_musicfestivals_main.section.openCategory(0);',
                     },
+                'findreplace':{
+                    'label':'Find/Replace Descriptions',
+                    'fn':'M.ciniki_musicfestivals_main.section.findReplaceDescriptions();',
+                    },
                 },
             'seqDrop':function(e,from,to){
                 M.api.getJSONCb('ciniki.musicfestivals.categoryUpdate', {'tnid':M.curTenantID, 
@@ -7273,6 +7304,28 @@ function ciniki_musicfestivals_main() {
                 }
                 M.ciniki_musicfestivals_main.section.open();
                 });
+            });
+    }
+    this.section.findReplaceDescriptions = function() {
+        M.findreplace('Update', function(f,r) {
+            M.ciniki_musicfestivals_main.section.popupMenuClose('categories');
+            if( f != null && f != '' && r != null ) {
+                var args = {
+                    'tnid':M.curTenantID, 
+                    'section_id':M.ciniki_musicfestivals_main.section.section_id,
+                    'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
+                    'find_replace_fields':'description',
+                    'find':f,
+                    'replace':r,
+                    }; 
+                M.api.getJSONCb('ciniki.musicfestivals.sectionCategoriesUpdate', args, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    M.ciniki_musicfestivals_main.section.open();
+                    });
+            }
             });
     }
     this.section.refreshCategories = function() {
