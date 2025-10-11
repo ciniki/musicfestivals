@@ -1910,8 +1910,12 @@ function ciniki_musicfestivals_main() {
                     'fn':'M.ciniki_musicfestivals_main.title.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.titlelist_id,null);',
                     },
                 'import':{
-                    'label':'Import Spreadsheet',
+                    'label':'Import Excel',
                     'fn':'M.ciniki_musicfestivals_main.festival.titleListImportExcel();',
+                    },
+                'export':{
+                    'label':'Download Excel',
+                    'fn':'M.ciniki_musicfestivals_main.festival.titleListExcelDownload();',
                     },
                 },
             },
@@ -4401,6 +4405,14 @@ function ciniki_musicfestivals_main() {
         }
         this.upload.value = '';
         this.upload.click();
+    }
+    this.festival.titleListExcelDownload = function() {
+        this.popupMenuClose('titles');
+        var args = {'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'list_id':this.titlelist_id,
+            };
+        M.api.openFile('ciniki.musicfestivals.titleListExcel',args);
     }
     this.festival.titleListImport = function() {
         var f = this.upload;
