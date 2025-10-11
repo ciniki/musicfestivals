@@ -3302,8 +3302,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 }
                 $festival['accolade_recipients'] = isset($rc['recipients']) ? $rc['recipients'] : array();
                 $nplists['accolade_recipients'] = [];
-                foreach($festival['accolade_recipients'] as $rid => $recipient) {
-                    $nplists['accolade_recipients'][] = $recipient['id'];
+                if( count($festival['accolade_recipients']) > 0 ) {
+                    $festival['totals']['accolade_recipients'] = ['awarded_amount' => 0];
+                    foreach($festival['accolade_recipients'] as $rid => $recipient) {
+                        $nplists['accolade_recipients'][] = $recipient['id'];
+                        $festival['totals']['accolade_recipients']['awarded_amount'] += $recipient['awarded_amount'];
+                    }
                 }
             }
         }
@@ -3360,8 +3364,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             }
             $festival['accolades_recipients'] = isset($rc['recipients']) ? $rc['recipients'] : array();
             $nplists['accolades_recipients'] = [];
-            foreach($festival['accolades_recipients'] as $rid => $recipient) {
-                $nplists['accolades_recipients'][] = $recipient['id'];
+            if( count($festival['accolades_recipients']) > 0 ) {
+                $festival['totals']['accolades_recipients'] = ['awarded_amount' => 0];
+                foreach($festival['accolades_recipients'] as $rid => $recipient) {
+                    $nplists['accolades_recipients'][] = $recipient['id'];
+                    $festival['totals']['accolades_recipients']['awarded_amount'] += $recipient['awarded_amount'];
+                }
             }
         }
 

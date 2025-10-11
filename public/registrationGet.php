@@ -731,6 +731,12 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1126', 'msg'=>'Unable to load accolades', 'err'=>$rc['err']));
         }
         $registration['accolades'] = isset($rc['accolades']) ? $rc['accolades'] : array();
+        if( count($registration['accolades']) > 1 ) {
+            $registration['totals']['accolades']['awarded_amount'] = 0;
+            foreach($registration['accolades'] as $accolade) {
+                $registration['totals']['accolades']['awarded_amount'] += $accolade['awarded_amount'];
+            }
+        }
 
         // 
         // Get the list of change requests
