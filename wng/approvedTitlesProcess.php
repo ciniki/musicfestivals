@@ -175,11 +175,10 @@ function ciniki_musicfestivals_wng_approvedTitlesProcess(&$ciniki, $tnid, &$requ
                     'permalink' => $list['permalink'],
                     'js' => "openList(\"{$list['permalink']}\");",
                     ];
-                if( !isset($s['download-lists']) || $s['download-lists'] == 'yes' ) {
+                if( isset($s['download-lists']) && $s['download-lists'] == 'yes' ) {
                     if( isset($request['uri_split'][($request['cur_uri_pos']+1)])
                         && $request['uri_split'][($request['cur_uri_pos']+1)] == $list['permalink'] . '.pdf'
                         ) {
-                        error_log('download: ' . $list['name']);
                         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'approvedTitlesPDF');
                         $rc = ciniki_musicfestivals_templates_approvedTitlesPDF($ciniki, $tnid, [
                             'list' => $list,

@@ -1231,7 +1231,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'no' => 'No',
                 'yes' => 'Yes',
                 )),
-            'download-lists'=>array('label'=>'Download Lists', 'type'=>'toggle', 'default'=>'yes', 'toggles'=>array(    
+            'download-lists'=>array('label'=>'Download Lists', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(    
                 'no' => 'No',
                 'yes' => 'Yes',
                 )),
