@@ -18,6 +18,8 @@ function ciniki_musicfestivals_wng_approvedTitlesProcess(&$ciniki, $tnid, &$requ
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.1182', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
 
+    $base_url = $request['ssl_domain_base_url'] . $request['page']['path'];
+
     //
     // Load the tenant settings
     //
@@ -173,6 +175,29 @@ function ciniki_musicfestivals_wng_approvedTitlesProcess(&$ciniki, $tnid, &$requ
                     'permalink' => $list['permalink'],
                     'js' => "openList(\"{$list['permalink']}\");",
                     ];
+                if( !isset($s['download-lists']) || $s['download-lists'] == 'yes' ) {
+                    if( isset($request['uri_split'][($request['cur_uri_pos']+1)])
+                        && $request['uri_split'][($request['cur_uri_pos']+1)] == $list['permalink'] . '.pdf'
+                        ) {
+                        error_log('download: ' . $list['name']);
+                        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'approvedTitlesPDF');
+                        $rc = ciniki_musicfestivals_templates_approvedTitlesPDF($ciniki, $tnid, [
+                            'list' => $list,
+                            'download' => 'I',
+                            ]);
+                        if( $rc['stat'] != 'ok' && $rc['stat'] != 'exit' ) {
+                            $blocks[] = [
+                                'type' => 'msg',
+                                'level' => 'error',
+                                'content' => 'Unable to generate PDF',
+                                ];
+                            return array('stat'=>'ok', 'blocks'=>$blocks);
+                        } 
+                        return array('stat'=>'exit');
+                    }
+                    $list['description'] .= "<p><a target='_blank' class='button' href='{$base_url}/{$list['permalink']}.pdf'>Download PDF</a></p>";
+                }
+
                 $list_blocks[] = [
                     'type' => 'table',
                     'id' => $list['permalink'],
