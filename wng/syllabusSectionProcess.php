@@ -619,7 +619,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                     if( ($class['feeflags']&0x03) > 0 ) {
                         $live_column = 'yes';
                     }
-                    if( ($class['feeflags']&0x08) == 0x08 ) {
+                    if( ($festival['flags']&0x04) == 0x04 && ($class['feeflags']&0x08) == 0x08 ) {
                         $virtual_column = 'yes';
                     }
                     if( ($class['feeflags']&0x30) > 0 ) {
