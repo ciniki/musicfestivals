@@ -1222,7 +1222,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             //
             if( count($errors) > 0 && isset($teacher_added) && $teacher_added == 'yes' ) {
                 $fields['teacher_customer_id']['value'] = -1;
-                $fields['teacher_name']['class'] = '';
+                $fields['teacher_first']['class'] = '';
+                $fields['teacher_last']['class'] = '';
                 $fields['teacher_email']['class'] = '';
                 $fields['teacher_phone']['class'] = '';
             }
@@ -1586,7 +1587,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             foreach($fields as $field) {
                 if( $field['ftype'] == 'content' || $field['ftype'] == 'hidden' || $field['ftype'] == 'line' 
                     || strncmp($field['id'], 'section', 7) == 0 
-                    || $field['id'] == 'teacher_name'
+                    || $field['id'] == 'teacher_first'
+                    || $field['id'] == 'teacher_last'
                     || $field['id'] == 'teacher_email'
                     || $field['id'] == 'teacher_phone'
                     || $field['id'] == 'accompanist_name'

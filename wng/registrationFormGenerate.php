@@ -672,13 +672,21 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 ),
             'value' => isset($_POST["f-teacher_customer_id"]) ? $_POST["f-teacher_customer_id"] : (isset($registration["teacher_customer_id"]) ? $registration["teacher_customer_id"] : 0),
             );
-        $fields['teacher_name'] = array(
-            'id' => 'teacher_name',
-            'label' => 'Teacher Name',
+        $fields['teacher_first'] = array(
+            'id' => 'teacher_first',
+            'label' => 'Teacher First Name',
             'ftype' => 'text',
-            'size' => 'large',
+            'size' => 'medium',
             'class' => isset($_POST['f-teacher_customer_id']) && $_POST['f-teacher_customer_id'] == -1 ? '' : 'hidden',
-            'value' => isset($_POST['f-teacher_name']) ? $_POST['f-teacher_name'] : '',
+            'value' => isset($_POST['f-teacher_first']) ? $_POST['f-teacher_first'] : '',
+            );
+        $fields['teacher_last'] = array(
+            'id' => 'teacher_last',
+            'label' => 'Teacher Last Name',
+            'ftype' => 'text',
+            'size' => 'medium',
+            'class' => isset($_POST['f-teacher_customer_id']) && $_POST['f-teacher_customer_id'] == -1 ? '' : 'hidden',
+            'value' => isset($_POST['f-teacher_last']) ? $_POST['f-teacher_last'] : '',
             );
         $fields['teacher_email'] = array(
             'id' => 'teacher_email',
@@ -1561,11 +1569,13 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         . "function teacherSelected(){"
             . "var t=C.gE('f-teacher_customer_id').value;"
             . "if(t==-1){"
-                . "C.rC(C.gE('f-teacher_name').parentNode,'hidden');"
+                . "C.rC(C.gE('f-teacher_first').parentNode,'hidden');"
+                . "C.rC(C.gE('f-teacher_last').parentNode,'hidden');"
                 . "C.rC(C.gE('f-teacher_phone').parentNode,'hidden');"
                 . "C.rC(C.gE('f-teacher_email').parentNode,'hidden');"
             . "}else{"
-                . "C.aC(C.gE('f-teacher_name').parentNode,'hidden');"
+                . "C.aC(C.gE('f-teacher_first').parentNode,'hidden');"
+                . "C.aC(C.gE('f-teacher_last').parentNode,'hidden');"
                 . "C.aC(C.gE('f-teacher_phone').parentNode,'hidden');"
                 . "C.aC(C.gE('f-teacher_email').parentNode,'hidden');"
             . "}"

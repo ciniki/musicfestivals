@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_competitors ADD COLUMN last_exam varchar(100) not null AFTER study_level;
+ALTER TABLE ciniki_musicfestival_competitors COMMENT='v1.07';

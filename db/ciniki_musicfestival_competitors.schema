@@ -34,10 +34,14 @@
 #
 # flags:                The options for the competitor.
 #
-#                           0x01 - Waiver signed
+#                           0x01 - General Waiver signed
 #                           0x02 - Photo waiver signed
 #                           0x04 - Name waiver signed
 #                           0x08 - 
+#                           0x10 - 
+#                           0x20 - 2nd Waiver signed
+#                           0x40 - 3rd Waiver signed
+#                           0x80 - 
 #
 # conductor:            The conductor for a group or ensemble, not used for individual.
 # num_people:           The number of people in the ensemble.
@@ -52,6 +56,7 @@
 # email:                The email address of the competitor.
 # age:                  The age of the competitor.
 # study_level:          The study level of the competitor.
+# last_exam:            The Last Exam taken of the competitor.
 # instrument:           The instrument of the competitor.
 # etransfer_email:      The email address to receive any etransfer awards.
 # 
@@ -87,6 +92,7 @@ create table ciniki_musicfestival_competitors (
     email varchar(250) not null,
     age varchar(25) not null,
     study_level varchar(250) not null,
+    last_exam varchar(100) not null,
     instrument varchar(250) not null,
     etransfer_email varhcar(250) not null,
     notes varchar(5000) not null,
@@ -96,4 +102,4 @@ create table ciniki_musicfestival_competitors (
     unique index (uuid),
     index name (id, tnid, festival_id, name, city, province),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.06';
+) ENGINE='InnoDB', COMMENT='v1.07';

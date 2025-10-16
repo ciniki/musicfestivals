@@ -91,6 +91,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
             'email'=>'',
             'age'=>'',
             'study_level'=>'',
+            'last_exam'=>'',
             'instrument'=>'',
             'etransfer_email'=>'',
             'notes'=>'',
@@ -134,6 +135,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
             . "ciniki_musicfestival_competitors.email, "
             . "ciniki_musicfestival_competitors.age AS _age, "
             . "ciniki_musicfestival_competitors.study_level, "
+            . "ciniki_musicfestival_competitors.last_exam, "
             . "ciniki_musicfestival_competitors.instrument, "
             . "ciniki_musicfestival_competitors.etransfer_email, "
             . "ciniki_musicfestival_competitors.notes "
@@ -147,7 +149,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
                 'fields'=>array('id', 'festival_id', 'ctype', 'first', 'last', 'name', 'public_name', 'pronoun', 
                     'flags', 'conductor', 'num_people', 
                     'parent', 'address', 'city', 'province', 'postal', 'country', 'phone_home', 'phone_cell', 
-                    'email', '_age', 'study_level', 'instrument', 'etransfer_email', 'notes'),
+                    'email', '_age', 'study_level', 'last_exam', 'instrument', 'etransfer_email', 'notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

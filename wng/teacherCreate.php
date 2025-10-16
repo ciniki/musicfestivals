@@ -25,8 +25,8 @@ function ciniki_musicfestivals_wng_teacherCreate(&$ciniki, $tnid, $request, $arg
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.369', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
 
-    if( !isset($_POST['f-teacher_name']) 
-        || ($_POST['f-teacher_name'] == '' && isset($_POST['f-teacher_email']) && $_POST['f-teacher_email'] == '')
+    if( !isset($_POST['f-teacher_first']) || !isset($_POST['f-teacher_last'])
+        || ($_POST['f-teacher_first'] == '' && $_POST['f-teacher_last'] == '' && isset($_POST['f-teacher_email']) && $_POST['f-teacher_email'] == '')
         ) {
         return array('stat'=>'ok', 'teacher_customer_id'=>0);
     }
@@ -57,7 +57,7 @@ function ciniki_musicfestivals_wng_teacherCreate(&$ciniki, $tnid, $request, $arg
     //
     // Check if the teacher_name is found
     //
-    if( isset($_POST['f-teacher_name']) && $_POST['f-teacher_name'] != '' ) {
+/*    if( isset($_POST['f-teacher_name']) && $_POST['f-teacher_name'] != '' ) {
         $strsql = "SELECT id, display_name "
             . "FROM ciniki_customers "
             . "WHERE (display_name = '" . ciniki_core_dbQuote($ciniki, $_POST['f-teacher_name']) . "' "
@@ -72,12 +72,12 @@ function ciniki_musicfestivals_wng_teacherCreate(&$ciniki, $tnid, $request, $arg
         if( isset($rc['item']) ) {
             return array('stat'=>'ok', 'teacher_customer_id'=>$rc['item']['id']);
         }
-    }
+    } */
 
     //
     // Check that both name and email were specified
     //
-    if( $_POST['f-teacher_name'] == '' && isset($_POST['f-teacher_email']) && $_POST['f-teacher_email'] != '' ) {
+    if( $_POST['f-teacher_first'] == '' && $_POST['f-teacher_last'] == '' && isset($_POST['f-teacher_email']) && $_POST['f-teacher_email'] != '' ) {
         return array('stat'=>'error', 'err'=>array('code'=>'ciniki.musicfestivals.377', 'msg'=>"You must specifiy the Teacher's Name"));
     }
 
@@ -86,9 +86,10 @@ function ciniki_musicfestivals_wng_teacherCreate(&$ciniki, $tnid, $request, $arg
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'customerAdd');
     $rc = ciniki_customers_web_customerAdd($ciniki, $tnid, array(
-        'name'=>$_POST['f-teacher_name'],
+        'first'=>$_POST['f-teacher_first'],
+        'last'=>$_POST['f-teacher_last'],
         'email_address'=>$_POST['f-teacher_email'],
-        'phone_label_1'=>'Home',
+        'phone_label_1'=>'Work',
         'phone_number_1'=>$_POST['f-teacher_phone'],
         ));
     if( $rc['stat'] != 'ok' ) {

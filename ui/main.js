@@ -5974,19 +5974,29 @@ function ciniki_musicfestivals_main() {
                 'competitor-parent-msg':{'label':'Parent Intro', 'type':'textarea', 'size':'medium'},
                 'competitor-teacher-msg':{'label':'Teacher Intro', 'type':'textarea', 'size':'medium'},
                 'competitor-adult-msg':{'label':'Adult Intro', 'type':'textarea', 'size':'medium'},
-                'competitor-individual-study-level':{'label':'Study Level', 'type':'toggle', 'default':'hidden', 'toggles':{
-                    'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
-                    }},
-                'competitor-individual-instrument':{'label':'Instrument', 'type':'toggle', 'default':'hidden', 'toggles':{
-                    'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
-                    }},
                 'competitor-individual-age':{'label':'Age', 'type':'toggle', 'default':'required', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
                 'competitor-individual-age-label':{'label':'Age Label', 'type':'text'},
+                'competitor-individual-study-level':{'label':'Study Level', 'type':'toggle', 'default':'hidden', 'toggles':{
+                    'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
+                    }},
+                'competitor-individual-study-level-label':{'label':'Study Level Label', 'type':'text'},
+                'competitor-individual-last-exam':{'label':'Last Exam', 'type':'toggle', 'default':'hidden', 'toggles':{
+                    'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
+                    }},
+                'competitor-individual-last-exam-label':{'label':'Last Exam Label', 'type':'text'},
+                'competitor-individual-instrument':{'label':'Instrument', 'type':'toggle', 'default':'hidden', 'toggles':{
+                    'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
+                    }},
+                'competitor-individual-phone-cell-label':{'label':'Cell Phone Label', 'type':'text'},
+                'competitor-individual-phone-home':{'label':'Phone Home', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
+                    }},
                 'competitor-individual-etransfer-email':{'label':'e-transfer Email', 'type':'toggle', 'default':'hidden', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
+                'competitor-individual-etransfer-email-label':{'label':'e-transfer Email Label', 'type':'text'},
                 'competitor-individual-notes-enable':{'label':'Notes', 'type':'toggle', 'default':'yes', 'separator':'no', 'toggles':{
                     'no':'No',
                     'yes':'Yes',
@@ -5998,29 +6008,50 @@ function ciniki_musicfestivals_main() {
                 'competitor-group-parent-msg':{'label':'Parent Intro', 'type':'textarea', 'size':'medium'},
                 'competitor-group-teacher-msg':{'label':'Teacher Intro', 'type':'textarea', 'size':'medium'},
                 'competitor-group-adult-msg':{'label':'Adult Intro', 'type':'textarea', 'size':'medium'},
-                'competitor-group-study-level':{'label':'Study Level', 'type':'toggle', 'default':'hidden', 'toggles':{
+/*                'competitor-group-study-level':{'label':'Study Level', 'type':'toggle', 'default':'hidden', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
-                'competitor-group-instrument':{'label':'Instrument', 'type':'toggle', 'default':'hidden', 'toggles':{
+                'competitor-group-study-level-label':{'label':'Study Level Label', 'type':'text'},
+                'competitor-group-last-exam':{'label':'Last Exam', 'type':'toggle', 'default':'hidden', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
+                'competitor-group-last-exam-label':{'label':'Last Exam Label', 'type':'text'}, */
                 'competitor-group-age':{'label':'Age', 'type':'toggle', 'default':'required', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
                 'competitor-group-age-label':{'label':'Age Label', 'type':'text'},
+                'competitor-group-instrument':{'label':'Instrument', 'type':'toggle', 'default':'hidden', 'toggles':{
+                    'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
+                    }},
                 'competitor-group-etransfer-email':{'label':'e-transfer Email', 'type':'toggle', 'default':'hidden', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
+                'competitor-group-etransfer-email-label':{'label':'e-transfer Email Label', 'type':'text'},
                 'competitor-group-notes-enable':{'label':'Notes', 'type':'toggle', 'default':'yes', 'separator':'no', 'toggles':{
                     'no':'No',
                     'yes':'Yes',
                     }},
             }},
-        '_waiver':{'label':'General Waiver Message', 
+        '_waiver':{'label':'General Waiver', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('competitors'); },
             'fields':{
+                'waiver-general-name':{'label':'Name (internal)', 'type':'text', 'size':'small'},
                 'waiver-general-title':{'label':'Title', 'type':'text'},
-                'waiver-general-msg':{'label':'Message', 'type':'textarea', 'size':'medium'},
+                'waiver-general-msg':{'label':'Message', 'type':'htmlarea', 'size':'medium'},
+            }},
+        '_waiver_second':{'label':'2nd Waiver', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('competitors'); },
+            'fields':{
+                'waiver-second-name':{'label':'Name (internal)', 'type':'text', 'size':'small'},
+                'waiver-second-title':{'label':'Title', 'type':'text'},
+                'waiver-second-msg':{'label':'Message', 'type':'htmlarea', 'size':'medium'},
+            }},
+        '_waiver_third':{'label':'3nd Waiver', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('competitors'); },
+            'fields':{
+                'waiver-third-name':{'label':'Name (internal)', 'type':'text', 'size':'small'},
+                'waiver-third-title':{'label':'Title', 'type':'text'},
+                'waiver-third-msg':{'label':'Message', 'type':'htmlarea', 'size':'medium'},
             }},
         '_photowaiver':{'label':'Photo Waiver Message', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('competitors'); },
@@ -6426,7 +6457,7 @@ function ciniki_musicfestivals_main() {
             '_competitor_group_parent_msg',
             '_competitor_group_teacher_msg',
             '_competitor_group_adult_msg',
-            '_waiver',
+            '_waiver', '_waiver_second', '_waiver_third',
             '_scheduleoptions',
             '_locationoptions'
             ]);
@@ -9875,6 +9906,7 @@ function ciniki_musicfestivals_main() {
         '_other':{'label':'', 'aside':'yes', 'fields':{
             'age':{'label':'Age', 'type':'text'},
             'study_level':{'label':'Study/Level', 'type':'text', 'visible':'no'},
+            'last_exam':{'label':'Last Exam', 'type':'text', 'visible':'no'},
             'instrument':{'label':'Instrument', 'type':'text', 'visible':'no'},
             'flags1':{'label':'Waiver', 'type':'flagtoggle', 'bit':0x01, 'field':'flags', 'off':'Unsigned', 'on':'Signed'},
             'flags2':{'label':'Photo Waiver', 'type':'flagtoggle', 'bit':0x02, 'field':'flags', 
@@ -9884,6 +9916,14 @@ function ciniki_musicfestivals_main() {
             'flags3':{'label':'Name Waiver', 'type':'flagtoggle', 'bit':0x04, 'field':'flags', 
                 'visible':function() { return ['on','internal'].indexOf(M.ciniki_musicfestivals_main.competitor.festival['waiver-name-status']) >= 0 ? 'yes' : 'no'; },
                 'off':'Hide Name', 'on':'Publish',
+                },
+            'flags6':{'label':'2nd Waiver', 'type':'flagtoggle', 'bit':0x20, 'field':'flags', 
+                'visible':function() { return M.ciniki_musicfestivals_main.competitor.festival['waiver-second-msg'] != null && M.ciniki_musicfestivals_main.competitor.festival['waiver-second-msg'] != '' ? 'yes' : 'no'; },
+                'off':'Unsigned', 'on':'Signed',
+                },
+            'flags7':{'label':'3nd Waiver', 'type':'flagtoggle', 'bit':0x40, 'field':'flags', 
+                'visible':function() { return M.ciniki_musicfestivals_main.competitor.festival['waiver-third-msg'] != null && M.ciniki_musicfestivals_main.competitor.festival['waiver-third-msg'] != '' ? 'yes' : 'no'; },
+                'off':'Unsigned', 'on':'Signed',
                 },
             }},
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'contact', 'visible':'yes',
@@ -9977,6 +10017,13 @@ function ciniki_musicfestivals_main() {
             } else {
                 this.sections._other.fields.instrument.visible = 'no';
             }
+            if( M.ciniki_musicfestivals_main.competitor.festival['competitor-group-last-exam'] != null
+                && ['optional','required'].indexOf(M.ciniki_musicfestivals_main.competitor.festival['competitor-group-last-exam']) >= 0 
+                ) {
+                this.sections._other.fields.last_exam.visible = 'yes';
+            } else {
+                this.sections._other.fields.last_exam.visible = 'no';
+            }
         } else {
             this.sections.general.fields.first.visible = 'yes';
             this.sections.general.fields.last.visible = 'yes';
@@ -10001,6 +10048,13 @@ function ciniki_musicfestivals_main() {
             } else {
                 this.sections._other.fields.instrument.visible = 'no';
             }
+            if( M.ciniki_musicfestivals_main.competitor.festival['competitor-individual-last-exam'] != null
+                && ['optional','required'].indexOf(M.ciniki_musicfestivals_main.competitor.festival['competitor-individual-last-exam']) >= 0 
+                ) {
+                this.sections._other.fields.last_exam.visible = 'yes';
+            } else {
+                this.sections._other.fields.last_exam.visible = 'no';
+            }
         }
         this.showHideFormField('general', 'first');
         this.showHideFormField('general', 'last');
@@ -10011,6 +10065,7 @@ function ciniki_musicfestivals_main() {
         this.showHideFormField('general', 'num_people');
         this.showHideFormField('general', 'parent');
         this.showHideFormField('_other', 'study_level');
+        this.showHideFormField('_other', 'last_exam');
         this.showHideFormField('_other', 'instrument');
         this.refreshSections(['_ctype']);
     }
@@ -10115,6 +10170,11 @@ function ciniki_musicfestivals_main() {
                 p.sections._tabs.visible = 'yes';
             }
             p.sections._ctype.selected = rsp.competitor.ctype;
+            if( p.festival['waiver-general-name'] != null && p.festival['waiver-general-name'] != '' ) {
+                p.sections._other.fields.flags1.label = p.festival['waiver-general-name'];
+            } else {
+                p.sections._other.fields.flags1.label = 'Geneal Waiver';
+            }
             if( p.festival['waiver-photo-option-yes'] != null
                 && p.festival['waiver-photo-option-yes'] != ''
                 ) {
@@ -10142,6 +10202,16 @@ function ciniki_musicfestivals_main() {
                 p.sections._other.fields.flags3.off = p.festival['waiver-name-option-no'];
             } else {
                 p.sections._other.fields.flags3.off = 'Hide Name';
+            }
+            if( p.festival['waiver-second-name'] != null && p.festival['waiver-second-name'] != '' ) {
+                p.sections._other.fields.flags6.label = p.festival['waiver-second-name'];
+            } else {
+                p.sections._other.fields.flags6.label = '2nd Waiver';
+            }
+            if( p.festival['waiver-third-name'] != null && p.festival['waiver-third-name'] != '' ) {
+                p.sections._other.fields.flags7.label = p.festival['waiver-third-name'];
+            } else {
+                p.sections._other.fields.flags7.label = '3rd Waiver';
             }
             p.refresh();
             p.show(cb);

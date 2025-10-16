@@ -85,6 +85,24 @@ function ciniki_musicfestivals_competitorHistory($ciniki) {
             'flagon' => 'Publish',
             ]);
     }
+    if( $args['field'] == 'flags6' ) {
+        return ciniki_core_objectHistory($ciniki, $args['tnid'], 'ciniki.musicfestivals.competitor', [
+            'key' => $args['competitor_id'], 
+            'field' => 'flags',
+            'flagbit' => 0x20,
+            'flagoff' => 'Unsigned',
+            'flagon' => 'Signed',
+            ]);
+    }
+    if( $args['field'] == 'flags7' ) {
+        return ciniki_core_objectHistory($ciniki, $args['tnid'], 'ciniki.musicfestivals.competitor', [
+            'key' => $args['competitor_id'], 
+            'field' => 'flags',
+            'flagbit' => 0x40,
+            'flagoff' => 'Unsigned',
+            'flagon' => 'Signed',
+            ]);
+    }
     return ciniki_core_objectHistory($ciniki, $args['tnid'], 'ciniki.musicfestivals.competitor', [
         'key' => $args['competitor_id'], 
         'field' => $args['field']
