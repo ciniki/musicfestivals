@@ -216,14 +216,64 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
         if( $address != '' ) {
             $details[] = array('label'=>'Address', 'value'=>$address);
         }
-        if( $competitor['phone_home'] != '' ) { $details[] = array('label'=>'Home', 'value'=>$competitor['phone_home']); }
-        if( $competitor['phone_cell'] != '' ) { $details[] = array('label'=>'Cell', 'value'=>$competitor['phone_cell']); }
+        if( $competitor['phone_cell'] != '' ) { 
+            $label = 'Cell';
+            if( $competitor['ctype'] == 50 && isset($festival['competitor-group-phone-cell-label']) && $festival['competitor-group-phone-cell-label'] != '' ) {
+                $label = $festival['competitor-individual-phone-cell-label'];
+            } elseif( $competitor['ctype'] != 50 && isset($festival['competitor-individual-phone-cell-label']) && $festival['competitor-individual-phone-cell-label'] != '' ) {
+                $label = $festival['competitor-individual-phone-cell-label'];
+            }
+            $details[] = array('label'=>$label, 'value'=>$competitor['phone_cell']); 
+        }
+        if( $competitor['phone_home'] != '' ) { 
+            $label = 'Home';
+            if( $competitor['ctype'] == 50 && isset($festival['competitor-group-phone-home-label']) && $festival['competitor-group-phone-home-label'] != '' ) {
+                $label = $festival['competitor-individual-phone-home-label'];
+            } elseif( $competitor['ctype'] != 50 && isset($festival['competitor-individual-phone-home-label']) && $festival['competitor-individual-phone-home-label'] != '' ) {
+                $label = $festival['competitor-individual-phone-home-label'];
+            }
+            $details[] = array('label'=>$label, 'value'=>$competitor['phone_home']); 
+        }
         if( $competitor['email'] != '' ) { $details[] = array('label'=>'Email', 'value'=>$competitor['email']); }
         if( $competitor['age'] != '' ) { $details[] = array('label'=>'Age', 'value'=>$competitor['age']); }
-        if( $competitor['study_level'] != '' ) { $details[] = array('label'=>'Study/Level', 'value'=>$competitor['study_level']); }
+        if( $competitor['study_level'] != '' ) { 
+            $label = 'Study/Level';
+            if( $competitor['ctype'] == 50 && isset($festival['competitor-group-study-level-label']) && $festival['competitor-group-study-level-label'] != '' ) {
+                $label = $festival['competitor-individual-study-level-label'];
+            } elseif( $competitor['ctype'] != 50 && isset($festival['competitor-individual-study-level-label']) && $festival['competitor-individual-study-level-label'] != '' ) {
+                $label = $festival['competitor-individual-study-level-label'];
+            }
+            $details[] = array('label'=>$label, 'value'=>$competitor['study_level']); 
+        }
+        if( $competitor['last_exam'] != '' ) { 
+            $label = 'Study/Level';
+            if( $competitor['ctype'] == 50 && isset($festival['competitor-group-last-exam-label']) && $festival['competitor-group-last-exam-label'] != '' ) {
+                $label = $festival['competitor-individual-last-exam-label'];
+            } elseif( $competitor['ctype'] != 50 && isset($festival['competitor-individual-last-exam-label']) && $festival['competitor-individual-last-exam-label'] != '' ) {
+                $label = $festival['competitor-individual-last-exam-label'];
+            }
+            $details[] = array('label'=>$label, 'value'=>$competitor['last_exam']); 
+        }
         if( $competitor['instrument'] != '' ) { $details[] = array('label'=>'Instrument', 'value'=>$competitor['instrument']); }
         if( $competitor['etransfer_email'] != '' ) { $details[] = array('label'=>'etransfer Email', 'value'=>$competitor['etransfer_email']); }
-        if( ($competitor['flags']&0x01) == 0x01 ) { $details[] = array('label'=>'Waiver', 'value'=>'Signed'); }
+        if( ($competitor['flags']&0x01) == 0x01 ) { 
+            $details[] = array(
+                'label'=>isset($festival['waiver-general-name']) && $festival['waiver-general-name'] != '' ? $festival['waiver-general-name'] : 'Waiver', 
+                'value'=>'Signed',
+                ); 
+        }
+        if( ($competitor['flags']&0x20) == 0x20 ) { 
+            $details[] = array(
+                'label'=>isset($festival['waiver-second-name']) && $festival['waiver-second-name'] != '' ? $festival['waiver-second-name'] : 'Waiver', 
+                'value'=>'Signed',
+                ); 
+        }
+        if( ($competitor['flags']&0x40) == 0x40 ) { 
+            $details[] = array(
+                'label'=>isset($festival['waiver-third-name']) && $festival['waiver-third-name'] != '' ? $festival['waiver-third-name'] : 'Waiver', 
+                'value'=>'Signed',
+                ); 
+        }
         if( $competitor['notes'] != '' ) {
             $details[] = array('label'=>'Notes', 'value'=>$competitor['notes']);
         }

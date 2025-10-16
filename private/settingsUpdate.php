@@ -253,6 +253,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'competitor-individual-instrument',
         'competitor-individual-phone-cell-label',
         'competitor-individual-phone-home',
+        'competitor-individual-phone-home-label',
         'competitor-individual-etransfer-email',
         'competitor-individual-etransfer-email-label',
         'competitor-individual-notes-enable',

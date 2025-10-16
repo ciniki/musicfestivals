@@ -56,7 +56,7 @@
 # email:                The email address of the competitor.
 # age:                  The age of the competitor.
 # study_level:          The study level of the competitor.
-# last_exam:            The Last Exam taken of the competitor.
+# last_exam:            The Last Exam Level taken of the competitor.
 # instrument:           The instrument of the competitor.
 # etransfer_email:      The email address to receive any etransfer awards.
 # 

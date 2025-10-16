@@ -5982,7 +5982,7 @@ function ciniki_musicfestivals_main() {
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
                 'competitor-individual-study-level-label':{'label':'Study Level Label', 'type':'text'},
-                'competitor-individual-last-exam':{'label':'Last Exam', 'type':'toggle', 'default':'hidden', 'toggles':{
+                'competitor-individual-last-exam':{'label':'Last Exam Level', 'type':'toggle', 'default':'hidden', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
                 'competitor-individual-last-exam-label':{'label':'Last Exam Label', 'type':'text'},
@@ -5993,6 +5993,7 @@ function ciniki_musicfestivals_main() {
                 'competitor-individual-phone-home':{'label':'Phone Home', 'type':'toggle', 'default':'optional', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
+                'competitor-individual-phone-home-label':{'label':'Home Phone Label', 'type':'text'},
                 'competitor-individual-etransfer-email':{'label':'e-transfer Email', 'type':'toggle', 'default':'hidden', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
@@ -6012,7 +6013,7 @@ function ciniki_musicfestivals_main() {
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
                 'competitor-group-study-level-label':{'label':'Study Level Label', 'type':'text'},
-                'competitor-group-last-exam':{'label':'Last Exam', 'type':'toggle', 'default':'hidden', 'toggles':{
+                'competitor-group-last-exam':{'label':'Last Exam Level', 'type':'toggle', 'default':'hidden', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
                 'competitor-group-last-exam-label':{'label':'Last Exam Label', 'type':'text'}, */
@@ -9906,7 +9907,7 @@ function ciniki_musicfestivals_main() {
         '_other':{'label':'', 'aside':'yes', 'fields':{
             'age':{'label':'Age', 'type':'text'},
             'study_level':{'label':'Study/Level', 'type':'text', 'visible':'no'},
-            'last_exam':{'label':'Last Exam', 'type':'text', 'visible':'no'},
+            'last_exam':{'label':'Last Exam Level', 'type':'text', 'visible':'no'},
             'instrument':{'label':'Instrument', 'type':'text', 'visible':'no'},
             'flags1':{'label':'Waiver', 'type':'flagtoggle', 'bit':0x01, 'field':'flags', 'off':'Unsigned', 'on':'Signed'},
             'flags2':{'label':'Photo Waiver', 'type':'flagtoggle', 'bit':0x02, 'field':'flags', 
@@ -9940,8 +9941,8 @@ function ciniki_musicfestivals_main() {
                 'province':{'label':'Province', 'type':'text', 'size':'small'},
                 'postal':{'label':'Postal Code', 'type':'text', 'size':'small'},
                 'country':{'label':'Country', 'type':'text', 'size':'small'},
-                'phone_home':{'label':'Home Phone', 'type':'text', 'size':'small'},
                 'phone_cell':{'label':'Cell Phone', 'type':'text', 'size':'small'},
+                'phone_home':{'label':'Home Phone', 'type':'text', 'size':'small'},
                 'email':{'label':'Email', 'type':'text'},
                 'etransfer_email':{'label':'etransfer Email', 'type':'text',
                     'visible':function() { 
@@ -10010,6 +10011,13 @@ function ciniki_musicfestivals_main() {
             } else {
                 this.sections._other.fields.study_level.visible = 'no';
             }
+            if( M.ciniki_musicfestivals_main.competitor.festival['competitor-group-last-exam'] != null
+                && ['optional','required'].indexOf(M.ciniki_musicfestivals_main.competitor.festival['competitor-group-last-exam']) >= 0 
+                ) {
+                this.sections._other.fields.last_exam.visible = 'yes';
+            } else {
+                this.sections._other.fields.last_exam.visible = 'no';
+            }
             if( M.ciniki_musicfestivals_main.competitor.festival['competitor-group-instrument'] != null
                 && ['optional','required'].indexOf(M.ciniki_musicfestivals_main.competitor.festival['competitor-group-instrument']) >= 0 
                 ) {
@@ -10017,12 +10025,15 @@ function ciniki_musicfestivals_main() {
             } else {
                 this.sections._other.fields.instrument.visible = 'no';
             }
-            if( M.ciniki_musicfestivals_main.competitor.festival['competitor-group-last-exam'] != null
-                && ['optional','required'].indexOf(M.ciniki_musicfestivals_main.competitor.festival['competitor-group-last-exam']) >= 0 
-                ) {
-                this.sections._other.fields.last_exam.visible = 'yes';
+            if( this.festival['competitor-group-phone-cell-label'] != null && this.festival['competitor-group-phone-cell-label'] != '' ) {
+                this.sections._address.fields.phone_cell.label = this.festival['competitor-group-phone-cell-label'];
             } else {
-                this.sections._other.fields.last_exam.visible = 'no';
+                this.sections._address.fields.phone_cell.label = 'Cell Phone';
+            }
+            if( this.festival['competitor-group-phone-home-label'] != null && this.festival['competitor-group-phone-home-label'] != '' ) {
+                this.sections._address.fields.phone_home.label = this.festival['competitor-group-phone-home-label'];
+            } else {
+                this.sections._address.fields.phone_home.label = 'Home Phone';
             }
         } else {
             this.sections.general.fields.first.visible = 'yes';
@@ -10038,8 +10049,25 @@ function ciniki_musicfestivals_main() {
                 && ['optional','required'].indexOf(M.ciniki_musicfestivals_main.competitor.festival['competitor-individual-study-level']) >= 0 
                 ) {
                 this.sections._other.fields.study_level.visible = 'yes';
+                if( this.festival['competitor-individual-study-level-label'] != null && this.festival['competitor-individual-study-level-label'] != '' ) {
+                    this.sections._other.fields.study_level.label = this.festival['competitor-individual-study-level-label'];
+                } else {
+                    this.sections._other.fields.study_level.label = 'Study/Level';
+                }
             } else {
                 this.sections._other.fields.study_level.visible = 'no';
+            }
+            if( M.ciniki_musicfestivals_main.competitor.festival['competitor-individual-last-exam'] != null
+                && ['optional','required'].indexOf(M.ciniki_musicfestivals_main.competitor.festival['competitor-individual-last-exam']) >= 0 
+                ) {
+                this.sections._other.fields.last_exam.visible = 'yes';
+                if( this.festival['competitor-individual-last-exam-label'] != null && this.festival['competitor-individual-last-exam-label'] != '' ) {
+                    this.sections._other.fields.last_exam.label = this.festival['competitor-individual-last-exam-label'];
+                } else {
+                    this.sections._other.fields.last_exam.label = 'Last Exam Level';
+                }
+            } else {
+                this.sections._other.fields.last_exam.visible = 'no';
             }
             if( M.ciniki_musicfestivals_main.competitor.festival['competitor-individual-instrument'] != null
                 && ['optional','required'].indexOf(M.ciniki_musicfestivals_main.competitor.festival['competitor-individual-instrument']) >= 0 
@@ -10048,12 +10076,15 @@ function ciniki_musicfestivals_main() {
             } else {
                 this.sections._other.fields.instrument.visible = 'no';
             }
-            if( M.ciniki_musicfestivals_main.competitor.festival['competitor-individual-last-exam'] != null
-                && ['optional','required'].indexOf(M.ciniki_musicfestivals_main.competitor.festival['competitor-individual-last-exam']) >= 0 
-                ) {
-                this.sections._other.fields.last_exam.visible = 'yes';
+            if( this.festival['competitor-individual-phone-cell-label'] != null && this.festival['competitor-individual-phone-cell-label'] != '' ) {
+                this.sections._address.fields.phone_cell.label = this.festival['competitor-individual-phone-cell-label'];
             } else {
-                this.sections._other.fields.last_exam.visible = 'no';
+                this.sections._address.fields.phone_cell.label = 'Cell Phone';
+            }
+            if( this.festival['competitor-individual-phone-home-label'] != null && this.festival['competitor-individual-phone-home-label'] != '' ) {
+                this.sections._address.fields.phone_home.label = this.festival['competitor-individual-phone-home-label'];
+            } else {
+                this.sections._address.fields.phone_home.label = 'Home Phone';
             }
         }
         this.showHideFormField('general', 'first');

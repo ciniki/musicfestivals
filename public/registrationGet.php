@@ -514,6 +514,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     . "ciniki_musicfestival_competitors.age AS _age, "
                     . "ciniki_musicfestival_competitors.num_people, "
                     . "ciniki_musicfestival_competitors.study_level, "
+                    . "ciniki_musicfestival_competitors.last_exam, "
                     . "ciniki_musicfestival_competitors.instrument, "
                     . "ciniki_musicfestival_competitors.notes "
                     . "FROM ciniki_musicfestival_competitors "
@@ -525,7 +526,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     array('container'=>'competitors', 'fname'=>'id', 
                         'fields'=>array('festival_id', 'ctype', 'flags', 'name', 'pronoun', 'conductor', 'parent', 
                             'address', 'city', 'province', 'postal', 'phone_home', 'phone_cell', 
-                            'email', '_age', 'num_people', 'study_level', 'instrument', 'notes'),
+                            'email', '_age', 'num_people', 'study_level', 'last_exam', 'instrument', 'notes'),
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
@@ -570,14 +571,64 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                 if( $address != '' ) {
                     $details[] = array('label'=>'Address', 'value'=>$address);
                 }
-                if( $competitor['phone_home'] != '' ) { $details[] = array('label'=>'Home', 'value'=>$competitor['phone_home']); }
-                if( $competitor['phone_cell'] != '' ) { $details[] = array('label'=>'Cell', 'value'=>$competitor['phone_cell']); }
+                if( $competitor['phone_cell'] != '' ) { 
+                    $label = 'Cell';
+                    if( $competitor['ctype'] == 50 && isset($festival['competitor-group-phone-cell-label']) && $festival['competitor-group-phone-cell-label'] != '' ) {
+                        $label = $festival['competitor-individual-phone-cell-label'];
+                    } elseif( $competitor['ctype'] != 50 && isset($festival['competitor-individual-phone-cell-label']) && $festival['competitor-individual-phone-cell-label'] != '' ) {
+                        $label = $festival['competitor-individual-phone-cell-label'];
+                    }
+                    $details[] = array('label'=>$label, 'value'=>$competitor['phone_cell']); 
+                }
+                if( $competitor['phone_home'] != '' ) { 
+                    $label = 'Home';
+                    if( $competitor['ctype'] == 50 && isset($festival['competitor-group-phone-home-label']) && $festival['competitor-group-phone-home-label'] != '' ) {
+                        $label = $festival['competitor-individual-phone-home-label'];
+                    } elseif( $competitor['ctype'] != 50 && isset($festival['competitor-individual-phone-home-label']) && $festival['competitor-individual-phone-home-label'] != '' ) {
+                        $label = $festival['competitor-individual-phone-home-label'];
+                    }
+                    $details[] = array('label'=>$label, 'value'=>$competitor['phone_home']); 
+                }
                 if( $competitor['email'] != '' ) { $details[] = array('label'=>'Email', 'value'=>$competitor['email']); }
                 if( $competitor['age'] != '' ) { $details[] = array('label'=>'Age', 'value'=>$competitor['_age']); }
                 if( $competitor['num_people'] != '' ) { $details[] = array('label'=>'# People', 'value'=>$competitor['num_people']); }
-                if( $competitor['study_level'] != '' ) { $details[] = array('label'=>'Study/Level', 'value'=>$competitor['study_level']); }
+                if( $competitor['study_level'] != '' ) { 
+                    $label = 'Study/Level';
+                    if( $competitor['ctype'] == 50 && isset($festival['competitor-group-study-level-label']) && $festival['competitor-group-study-level-label'] != '' ) {
+                        $label = $festival['competitor-individual-study-level-label'];
+                    } elseif( $competitor['ctype'] != 50 && isset($festival['competitor-individual-study-level-label']) && $festival['competitor-individual-study-level-label'] != '' ) {
+                        $label = $festival['competitor-individual-study-level-label'];
+                    }
+                    $details[] = array('label'=>$label, 'value'=>$competitor['study_level']); 
+                }
+                if( $competitor['last_exam'] != '' ) { 
+                    $label = 'Last Exam Level';
+                    if( $competitor['ctype'] == 50 && isset($festival['competitor-group-last-exam-label']) && $festival['competitor-group-last-exam-label'] != '' ) {
+                        $label = $festival['competitor-individual-last-exam-label'];
+                    } elseif( $competitor['ctype'] != 50 && isset($festival['competitor-individual-last-exam-label']) && $festival['competitor-individual-last-exam-label'] != '' ) {
+                        $label = $festival['competitor-individual-last-exam-label'];
+                    }
+                    $details[] = array('label'=>$label, 'value'=>$competitor['last_exam']); 
+                }
                 if( $competitor['instrument'] != '' ) { $details[] = array('label'=>'Instrument', 'value'=>$competitor['instrument']); }
-                if( ($competitor['flags']&0x01) == 0x01 ) { $details[] = array('label'=>'Waiver', 'value'=>'Signed'); }
+                if( ($competitor['flags']&0x01) == 0x01 ) { 
+                    $details[] = array(
+                        'label'=>isset($festival['waiver-general-name']) && $festival['waiver-general-name'] != '' ? $festival['waiver-general-name'] : 'Waiver', 
+                        'value'=>'Signed',
+                        ); 
+                }
+                if( ($competitor['flags']&0x20) == 0x20 ) { 
+                    $details[] = array(
+                        'label'=>isset($festival['waiver-second-name']) && $festival['waiver-second-name'] != '' ? $festival['waiver-second-name'] : 'Waiver', 
+                        'value'=>'Signed',
+                        ); 
+                }
+                if( ($competitor['flags']&0x40) == 0x40 ) { 
+                    $details[] = array(
+                        'label'=>isset($festival['waiver-third-name']) && $festival['waiver-third-name'] != '' ? $festival['waiver-third-name'] : 'Waiver', 
+                        'value'=>'Signed',
+                        ); 
+                }
                 if( $competitor['notes'] != '' ) {
                     $details[] = array('label'=>'Notes', 'value'=>$competitor['notes']);
                 }

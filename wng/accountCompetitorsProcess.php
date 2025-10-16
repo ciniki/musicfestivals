@@ -335,7 +335,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         if( isset($festival['competitor-individual-last-exam']) && $festival['competitor-individual-last-exam'] != 'hidden' ) {
             $fields['last_exam'] = array(
                 'id' => 'last_exam',
-                'label' => 'Last Exam',
+                'label' => 'Last Exam Level',
                 'ftype' => 'text',
                 'size' => 'medium',
                 'required' => ($festival['competitor-individual-last-exam'] == 'required' ? 'yes' : 'no'),
@@ -439,6 +439,11 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             'class' => '',
             'value' => (isset($_POST['f-phone_home']) ? trim($_POST['f-phone_home']) : (isset($competitor['phone_home']) ? $competitor['phone_home'] :'')),
             );
+        if( $ctype == 50 && isset($festival['competitor-group-phone-home-label']) && $festival['competitor-group-phone-home-label'] != '' ) {
+            $fields['phone_home']['label'] = $festival['competitor-group-phone-home-label'];
+        } elseif( isset($festival['competitor-individual-phone-home-label']) && $festival['competitor-individual-phone-home-label'] != '' ) {
+            $fields['phone_home']['label'] = $festival['competitor-individual-phone-home-label'];
+        }
     }
     $fields['newline4'] = array(
         'id' => 'newline4',
