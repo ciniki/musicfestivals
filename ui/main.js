@@ -8126,9 +8126,9 @@ function ciniki_musicfestivals_main() {
 //            'flags6':{'label':'3rd Competitor', 'type':'flagtoggle', 'default':'off', 'bit':0x20, 'field':'flags', 'visible':'yes'},
 //            'flags7':{'label':'4th Competitor', 'type':'flagtoggle', 'default':'off', 'bit':0x40, 'field':'flags', 'visible':'yes'},
             'flags3':{'label':'Instrument Required', 'type':'flagtoggle', 'default':'off', 'bit':0x04, 'field':'flags'},
-            'flags13':{'label':'Accompanist', 'type':'flagspiece', 'mask':0x3000, 'field':'flags', 'join':'yes', 'toggle':'yes',
+            'flags13':{'label':'Accompanist', 'type':'flagspiece', 'mask':0x403000, 'field':'flags', 'join':'yes', 'toggle':'yes',
                 'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x8000); },
-                'flags':{'0':{'name':'None'}, '13':{'name':'Required'}, '14':{'name':'Optional'}},
+                'flags':{'0':{'name':'None'}, '13':{'name':'Required'}, '14':{'name':'Optional'}, '23':{'name':'Or Backtrack'}},
                 },
             }},
         'titles':{'label':'Registration Titles', 'aside':'yes', 'fields':{
@@ -8701,7 +8701,12 @@ function ciniki_musicfestivals_main() {
             'customer_field':'accompanist_customer_id',
             'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x8000); },
             'cellClasses':['label', ''],
-            'noData':'No Accompanist',
+            'noData':function(s) {
+                if( M.ciniki_musicfestivals_main.registration.data.accompanist_customer_id == -2 ) {
+                    return 'Will add later';
+                }
+                return 'No Accompanist';
+                },
             },
         '_display_name':{'label':'Duet/Trio/Ensemble Name', 'aside':'yes',
             'visible':function() { return M.ciniki_musicfestivals_main.registration.nameVisible(); },
@@ -9135,7 +9140,7 @@ function ciniki_musicfestivals_main() {
         'accolades':{'label':'Accolades', 'type':'simplegrid', 'num_cols':3, 'panelcolumn':1,
             'visible':function() { return M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'accolades' ? 'yes' : 'hidden'; },
 //            'headerValues':['Accolade', 'Amount'],
-            'noData':'Nothing won',
+            'noData':'No accolades received',
             'cellClasses':['', 'alignright', ''],
             'footerClasses':['', 'alignright', ''],
             'menu':{

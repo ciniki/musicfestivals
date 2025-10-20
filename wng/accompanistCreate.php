@@ -25,8 +25,8 @@ function ciniki_musicfestivals_wng_accompanistCreate(&$ciniki, $tnid, $request, 
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.642', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
 
-    if( !isset($_POST['f-accompanist_name']) 
-        || ($_POST['f-accompanist_name'] == '' && isset($_POST['f-accompanist_email']) && $_POST['f-accompanist_email'] == '')
+    if( !isset($_POST['f-accompanist_first']) || !isset($_POST['f-accompanist_last'])
+        || ($_POST['f-accompanist_first'] == '' && $_POST['f-accompanist_last'] == '' && isset($_POST['f-accompanist_email']) && $_POST['f-accompanist_email'] == '')
         ) {
         return array('stat'=>'ok', 'accompanist_customer_id'=>0);
     }
@@ -57,7 +57,7 @@ function ciniki_musicfestivals_wng_accompanistCreate(&$ciniki, $tnid, $request, 
     //
     // Check if the accompanist_name is found
     //
-    if( isset($_POST['f-accompanist_name']) && $_POST['f-accompanist_name'] != '' ) {
+/*    if( isset($_POST['f-accompanist_name']) && $_POST['f-accompanist_name'] != '' ) {
         $strsql = "SELECT id, display_name "
             . "FROM ciniki_customers "
             . "WHERE (display_name = '" . ciniki_core_dbQuote($ciniki, $_POST['f-accompanist_name']) . "' "
@@ -72,12 +72,14 @@ function ciniki_musicfestivals_wng_accompanistCreate(&$ciniki, $tnid, $request, 
         if( isset($rc['item']) ) {
             return array('stat'=>'ok', 'accompanist_customer_id'=>$rc['item']['id']);
         }
-    }
+    } */
 
     //
     // Check that both name and email were specified
     //
-    if( $_POST['f-accompanist_name'] == '' && isset($_POST['f-accompanist_email']) && $_POST['f-accompanist_email'] != '' ) {
+    if( $_POST['f-accompanist_first'] == '' && $_POST['f-accompanist_last'] == '' 
+        && isset($_POST['f-accompanist_email']) && $_POST['f-accompanist_email'] != '' 
+        ) {
         return array('stat'=>'error', 'err'=>array('code'=>'ciniki.musicfestivals.638', 'msg'=>"You must specify the Accompanist's Name"));
     }
 
@@ -86,7 +88,8 @@ function ciniki_musicfestivals_wng_accompanistCreate(&$ciniki, $tnid, $request, 
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'customerAdd');
     $rc = ciniki_customers_web_customerAdd($ciniki, $tnid, array(
-        'name'=>$_POST['f-accompanist_name'],
+        'name'=>$_POST['f-accompanist_first'],
+        'last'=>$_POST['f-accompanist_last'],
         'email_address'=>$_POST['f-accompanist_email'],
         'phone_label_1'=>'Home',
         'phone_number_1'=>$_POST['f-accompanist_phone'],

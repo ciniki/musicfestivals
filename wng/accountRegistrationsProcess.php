@@ -1123,6 +1123,16 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                         'msg' => 'You must specify how you want to participate.',
                         );
                 }
+                elseif( ($selected_class['flags']&0x400000) == 0x400000 && preg_match("/backtrack([0-9])/", $field['id'], $m) ) {
+                    if( $fields["backtrack_option{$m[1]}"]['value'] == 'on' 
+                        && $field['value'] == '' 
+                        && (!isset($_FILES["file-{$field['id']}"]['name']) || $_FILES["file-{$field['id']}"]['name'] == '') 
+                        ) {
+                        $errors[] = array(
+                            'msg' => 'You must specify the registration ' . (isset($field['error_label']) ? $field['error_label'] : $field['label']) . '.',
+                            );
+                    }
+                }
                 elseif( isset($field['required']) && $field['required'] == 'yes' && $field['ftype'] == 'file' ) {
                     if( $field['value'] == '' && (!isset($_FILES["file-{$field['id']}"]['name']) || $_FILES["file-{$field['id']}"]['name'] == '') ) {
                         $errors[] = array(
@@ -1229,7 +1239,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             }
             if( count($errors) > 0 && isset($accompanist_added) && $accompanist_added == 'yes' ) {
                 $fields['accompanist_customer_id']['value'] = -1;
-                $fields['accompanist_name']['class'] = '';
+                $fields['accompanist_first']['class'] = '';
+                $fields['accompanist_last']['class'] = '';
                 $fields['accompanist_email']['class'] = '';
                 $fields['accompanist_phone']['class'] = '';
             }
@@ -1584,6 +1595,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             }
 
             $update_args = array();
+            $registration_flags = $registration['flags'];
             foreach($fields as $field) {
                 if( $field['ftype'] == 'content' || $field['ftype'] == 'hidden' || $field['ftype'] == 'line' 
                     || strncmp($field['id'], 'section', 7) == 0 
@@ -1591,7 +1603,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     || $field['id'] == 'teacher_last'
                     || $field['id'] == 'teacher_email'
                     || $field['id'] == 'teacher_phone'
-                    || $field['id'] == 'accompanist_name'
+                    || $field['id'] == 'accompanist_first'
+                    || $field['id'] == 'accompanist_last'
                     || $field['id'] == 'accompanist_email'
                     || $field['id'] == 'accompanist_phone'
                     || $field['ftype'] == 'button'
@@ -1630,7 +1643,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 // Skip fields when editing a pending or paid registration
                 //
                 if( isset($registration['status']) && $registration['status'] > 10 
-                    && !preg_match("/(title|composer|movements|perf_time|video_url|music_orgfilename|backtrack|artwork)/", $field['id'])
+                    && !preg_match("/(title|composer|movements|perf_time|video_url|music_orgfilename|backtrack_option|backtrack|artwork)/", $field['id'])
                     ) {
                     continue;
                 }
@@ -1658,9 +1671,17 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 elseif( $field['ftype'] == 'break' ) {
                     // Do nothing
                 }
+                elseif( preg_match("/backtrack_option([0-9])/", $field['id'], $m) && ($selected_class['flags']&0x400000) == 0x400000 ) {
+                    $bit = pow(2, ($m[1]+7));
+                    if( $field['value'] == 'on' ) {
+                        $registration_flags |= $bit;
+                    } else {
+                        $registration_flags &= ~$bit;
+                    }
+                }
                 elseif( !isset($registration[$field['id']]) || $field['value'] != $registration[$field['id']] ) {
                     $update_args[$field['id']] = $field['value'];
-                }
+                } 
             }
             if( !isset($registration['status']) || $registration['status'] < 10 ) {
                 if( $selected_class['id'] != $registration['class_id'] ) {
@@ -1670,6 +1691,10 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     $update_args['fee'] = $new_fee;
                     $registration['fee'] = $new_fee;
                 }
+            }
+            if( $registration_flags != $registration['flags'] ) {
+                $update_args['flags'] = $registration_flags;
+                $registration['flags'] = $registration['flags'];
             }
             if( isset($update_args['participation']) ) {
                 $registration['participation'] = $update_args['participation'];

@@ -487,6 +487,9 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                 return $rc;
             }
             $registration['accompanist_details'] = $rc['details'];
+        } elseif( $registration['accompanist_customer_id'] == -2 ) {
+            $registration['accompanist_details'] = [
+                ];
         } else {
             $registration['accompanist_details'] = array();
         }

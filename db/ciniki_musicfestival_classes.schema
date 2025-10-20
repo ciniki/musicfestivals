@@ -42,7 +42,7 @@
 #                           0x080000 - Schedule Time is total time
 #                           0x100000 - Virtual Entry Music PDF Required **to be deprecated**
 #                           0x200000 - Virtual Entry Music PDF Hidden **to be deprecated**
-#                           0x400000 - 
+#                           0x400000 - Accompanist Optional or Backtrack Required 
 #                           0x800000 - 
 #                           0x01000000 - Backtrack Required **to be deprecated**
 #                           0x02000000 - Backtrack Optional **to be deprecated**

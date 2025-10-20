@@ -61,14 +61,14 @@
 #                           0x20 - 
 #                           0x40 - 
 #                           0x80 - 
-#                           0x0100 - 
-#                           0x0200 - 
-#                           0x0400 - 
-#                           0x0800 - 
-#                           0x1000 - 
-#                           0x2000 - 
-#                           0x4000 - 
-#                           0x8000 - 
+#                           0x0100 - Title 1 use backtrack instead of accompanist
+#                           0x0200 - Title 2 use backtrack instead of accompanist
+#                           0x0400 - Title 3 use backtrack instead of accompanist
+#                           0x0800 - Title 4 use backtrack instead of accompanist
+#                           0x1000 - Title 5 use backtrack instead of accompanist
+#                           0x2000 - Title 6 use backtrack instead of accompanist
+#                           0x4000 - Title 7 use backtrack instead of accompanist
+#                           0x8000 - Title 8 use backtrack instead of accompanist
 #
 # invoice_id:           The ID of the invoice in ciniki.sapos if paid online.
 #
