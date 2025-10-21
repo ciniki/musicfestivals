@@ -1397,7 +1397,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             //
             // Check for backtrack uploads
             //
-            foreach(['backtrack1', 'backtrack2', 'backtrack3', 'backtrack4', 'backtrack5', 'backtrack6', 'backtrack7', 'backtrack8'] as $fid) {
+//            foreach(['backtrack1', 'backtrack2', 'backtrack3', 'backtrack4', 'backtrack5', 'backtrack6', 'backtrack7', 'backtrack8'] as $fid) {
+            for($i = 1; $i <= 8; $i++) {
+                $fid = 'backtrack' . $i;
                 $field = $fields[$fid];
                 if( isset($_POST["f-{$field['id']}"]) && $_POST["f-{$field['id']}"] != '' ) {
                     if( isset($_FILES["file-{$field['id']}"]["name"]) 
@@ -1417,6 +1419,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
 //                        $registration[$field['id']] = $field['value'];
                         $registration[$field['id']] = $_FILES["file-{$field['id']}"]['name'];
                     }
+                }
+                if( ($selected_class['flags']&0x400000) == 0x400000 
+                    && isset($fields["backtrack_option{$i}"]['value']) 
+                    && $fields["backtrack_option{$i}"]['value'] == 'on'
+                    ) {
+                    $registration['flags'] |= pow(2, ($i+7));
                 }
             }
             //
@@ -2234,8 +2242,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             $num_adjudicators = 1;
             $strsql = "SELECT sections.id, "
                 . "sections.flags, "
-                . "divisions.flags AS division_flags, "
-                . "sections.adjudicator1_id "
+                . "divisions.flags AS division_flags "
+//                . "sections.adjudicator1_id "
                 . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
                 . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
                     . "timeslots.sdivision_id = divisions.id "
