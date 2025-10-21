@@ -123,13 +123,15 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
         // Load the schedule sections, divisions, timeslots, classes, registrations
         //
         $strsql = "SELECT ssections.id AS section_id, "
-            . "ssections.name AS section_name, ";
-        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0800) ) {
-            $strsql .= "divisions.adjudicator_id, ";
-        } else {
-            $strsql .= "ssections.adjudicator1_id AS adjudicator_id, ";
-        }
-        $strsql .= "divisions.id AS division_id, "
+            . "ssections.name AS section_name, "
+            . "IFNULL(arefs.adjudicator_id, 0) AS adjudicator_id, "
+//        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0800) ) {
+//            $strsql .= "divisions.adjudicator_id, ";
+//        } else {
+//            $strsql .= "ssections.adjudicator1_id AS adjudicator_id, ";
+//        }
+//        $strsql .= 
+            . "divisions.id AS division_id, "
             . "divisions.name AS division_name, "
             . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, "
             . "IFNULL(DATE_FORMAT(divisions.division_date, '%M %D, %Y'), '') AS timeslot_date_text, "
@@ -164,6 +166,13 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
             . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
                 . "ssections.id = divisions.ssection_id " 
                 . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_adjudicatorrefs AS arefs ON ("
+                . "("
+                    . "(ssections.id = arefs.object_id AND arefs.object = 'ciniki.musicfestivals.schedulesection') "
+                    . "OR (divisions.id = arefs.object_id AND arefs.object = 'ciniki.musicfestivals.scheduledivision') "
+                    . ") "
+                . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
                 . "divisions.id = timeslots.sdivision_id " 
@@ -202,9 +211,9 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
             $strsql .= "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
         }
         if( isset($festival['certificates-sorting']) && $festival['certificates-sorting'] == 'byclass' ) {
-            $strsql .= "ORDER BY classes.code, slot_time, registrations.timeslot_sequence ";
+            $strsql .= "ORDER BY classes.code, slot_time, registrations.timeslot_sequence, registrations.id, adjudicator_id ";
         } else {
-            $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, registrations.timeslot_sequence ";
+            $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, registrations.timeslot_sequence, registrations.id, adjudicator_id ";
         }
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -212,7 +221,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                 'fields'=>array('id'=>'section_id', 'name'=>'section_name', 
                     )),
             array('container'=>'divisions', 'fname'=>'division_id', 
-                'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 'adjudicator_id',
+                'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', //'adjudicator_id',
                     )),
             array('container'=>'timeslots', 'fname'=>'timeslot_id', 
                 'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 'groupname'=>'timeslot_groupname',
@@ -225,15 +234,14 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                     'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 
                     'participation', 'mark', 'flags', 'placement', 'level', 'timeslot_date_text',
                     )),
+            array('container'=>'adjudicators', 'fname'=>'adjudicator_id', 
+                'fields'=>array('id'=>'adjudicator_id',
+                )),
             ));
         if( $rc['stat'] != 'ok' ) {
             return $rc;
         }
-        if( isset($rc['sections']) ) {
-            $sections = $rc['sections'];
-        } else {
-            $sections = array();
-        }
+        $sections = isset($rc['sections']) ? $rc['sections'] : array();
     }
 
     //
@@ -453,19 +461,47 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                                 }
                                 $certificate['fields'][$fid]['text'] = $field_text;
                             }
-                            elseif( $field['field'] == 'adjudicator' && isset($adjudicators[$division['adjudicator_id']]['name']) ) {
-                                $certificate['fields'][$fid]['text'] = $adjudicators[$division['adjudicator_id']]['name'];
+                            elseif( $field['field'] == 'adjudicator' && isset($reg['adjudicators']) ) {
+                                $names = [];
+                                foreach($reg['adjudicators'] as $adjudicator) {
+                                    if( isset($adjudicators[$adjudicator['id']]['name']) ) {
+                                        $names[] = $adjudicators[$adjudicator['id']]['name'];
+                                    }
+                                }
+                                sort($names);
+                                $certificate['fields'][$fid]['text'] = implode(', ', $names);
                             }
-                            elseif( $field['field'] == 'adjudicatorsig' && isset($adjudicators[$division['adjudicator_id']]['sig_image_id']) && $adjudicators[$division['adjudicator_id']]['sig_image_id'] > 0 ) {
-                                $certificate['fields'][$fid]['image_id'] = $adjudicators[$division['adjudicator_id']]['sig_image_id'];
+//                            elseif( $field['field'] == 'adjudicator' && isset($adjudicators[$division['adjudicator_id']]['name']) ) {
+//                                $certificate['fields'][$fid]['text'] = $adjudicators[$division['adjudicator_id']]['name'];
+//                            }
+                            elseif( $field['field'] == 'adjudicator' && isset($reg['adjudicators']) 
+                                && count($reg['adjudicators']) == 1 
+                                && isset($adjudicators[$reg['adjudicators'][0]['id']]['sig_image_id']) 
+                                && $adjudicators[$reg['adjudicators'][0]['id']]['sig_image_id'] > 0
+                                ) {
+                                $certificate['fields'][$fid]['image_id'] = $adjudicators[$reg['adjudicators'][0]['id']]['sig_image_id'];
                             }
+//                            elseif( $field['field'] == 'adjudicatorsig' && isset($adjudicators[$division['adjudicator_id']]['sig_image_id']) && $adjudicators[$division['adjudicator_id']]['sig_image_id'] > 0 ) {
+//                                $certificate['fields'][$fid]['image_id'] = $adjudicators[$division['adjudicator_id']]['sig_image_id'];
+//                            }
                             elseif( $field['field'] == 'adjudicatorsigorname' ) {
-                                if( isset($adjudicators[$division['adjudicator_id']]['sig_image_id']) && $adjudicators[$division['adjudicator_id']]['sig_image_id'] > 0 ) {
-                                    $certificate['fields'][$fid]['image_id'] = $adjudicators[$division['adjudicator_id']]['sig_image_id'];
-                                } elseif( isset($adjudicators[$division['adjudicator_id']]['name']) ) {
-                                    $certificate['fields'][$fid]['text'] = $adjudicators[$division['adjudicator_id']]['name'];
-                                } else {
-                                    $certificate['fields'][$fid]['text'] = '';
+                                if( count($reg['adjudicators']) > 1 ) {
+                                    $names = [];
+                                    foreach($reg['adjudicators'] as $adjudicator) {
+                                        if( isset($adjudicators[$adjudicator['id']]['name']) ) {
+                                            $names[] = $adjudicators[$adjudicator['id']]['name'];
+                                        }
+                                    }
+                                    sort($names);
+                                    $certificate['fields'][$fid]['text'] = implode(', ', $names);
+                                } elseif( isset($reg['adjudicators'][0]['id']) && $reg['adjudicators'][0]['id'] > 0 ) {
+                                    if( isset($adjudicators[$reg['adjudicators'][0]['id']]['sig_image_id']) && $adjudicators[$reg['adjudicators'][0]['id']]['sig_image_id'] > 0 ) {
+                                        $certificate['fields'][$fid]['image_id'] = $adjudicators[$reg['adjudicators'][0]['id']]['sig_image_id'];
+                                    } elseif( isset($adjudicators[$reg['adjudicators'][0]['id']]['name']) ) {
+                                        $certificate['fields'][$fid]['text'] = $adjudicators[$reg['adjudicators'][0]['id']]['name'];
+                                    } else {
+                                        $certificate['fields'][$fid]['text'] = '';
+                                    }
                                 }
                             }
                             elseif( $field['field'] == 'text' ) {

@@ -20,7 +20,7 @@ function ciniki_musicfestivals_scheduleSectionUpdate(&$ciniki) {
         'festival_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Festival'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
-        'adjudicator1_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'First Adjudicator'),
+//        'adjudicator1_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'First Adjudicator'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'top_sponsors_title'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Top Sponsors Title'),
         'top_sponsor_ids'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Top Sponsors'),

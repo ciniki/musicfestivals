@@ -100,7 +100,7 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
             . "divisions.festival_id, "
             . "divisions.ssection_id, "
             . "divisions.location_id, "
-            . "divisions.adjudicator_id, "
+//            . "divisions.adjudicator_id, "
             . "divisions.name, "
             . "divisions.shortname, "
             . "divisions.flags, "
@@ -114,8 +114,8 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'scheduledivisions', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'ssection_id', 'name', 'shortname', 'flags', 'division_date', 
-                    'address', 'adjudicator_id', 'location_id', 'results_notes', 'results_video_url',
+                'fields'=>array('id', 'festival_id', 'ssection_id', 'name', 'shortname', 'flags', 'division_date', 
+                    'address', 'location_id', 'results_notes', 'results_video_url',
                     ),
                 'utctotz'=>array('division_date'=>array('timezone'=>'UTC', 'format'=>$date_format)),                ),
             ));
@@ -126,6 +126,37 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.94', 'msg'=>'Unable to find Schedule Division'));
         }
         $scheduledivision = $rc['scheduledivisions'][0];
+
+        //
+        // Load the adjudicators
+        //
+        $strsql = "SELECT arefs.id, "
+            . "adjudicators.id AS adjudicator_id, "
+            . "customers.display_name AS name "
+            . "FROM ciniki_musicfestival_adjudicatorrefs AS arefs "
+            . "INNER JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
+                . "arefs.adjudicator_id = adjudicators.id "
+                . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "INNER JOIN ciniki_customers AS customers ON ("
+                . "adjudicators.customer_id = customers.id "
+                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE arefs.object_id = '" . ciniki_core_dbQuote($ciniki, $scheduledivision['id']) . "' "
+            . "AND arefs.object = 'ciniki.musicfestivals.scheduledivision' "
+            . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'adjudicators', 'fname'=>'id', 
+                'fields'=>array('id', 'adjudicator_id', 'name'),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1184', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
+        }
+        $scheduledivision['adjudicators'] = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
 
         //
         // Load the timeslots
@@ -304,7 +335,7 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
     //
     // Get the list of adjudicators
     //
-    $strsql = "SELECT adjudicators.id, "
+/*    $strsql = "SELECT adjudicators.id, "
         . "adjudicators.customer_id, "
         . "customers.display_name "
         . "FROM ciniki_musicfestival_adjudicators AS adjudicators "
@@ -324,7 +355,7 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
         return $rc;
     }
     $rsp['adjudicators'] = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
-
+*/
     return $rsp;
 }
 ?>

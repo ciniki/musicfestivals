@@ -51,34 +51,6 @@ function ciniki_musicfestivals_templates_schedulePTBWord(&$ciniki, $tnid, $args)
     }
     $festival = $rc['festival'];
 
-/*    //
-    // Load the adjudicators
-    //
-    if( isset($args['section_adjudicator_bios'])
-        && $args['section_adjudicator_bios'] == 'yes' 
-        ) {
-        $strsql = "SELECT adjudicators.id, "
-            . "customers.display_name AS name, "
-            . "adjudicators.image_id, "
-            . "adjudicators.description "
-            . "FROM ciniki_musicfestival_adjudicators AS adjudicators "
-            . "LEFT JOIN ciniki_customers AS customers ON ("
-                . "adjudicators.customer_id = customers.id "
-                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "WHERE adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-            . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "";
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
-        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-            array('container'=>'adjudicators', 'fname'=>'id', 'fields'=>array('id', 'name', 'image_id', 'description')),
-            ));
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.977', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
-        }
-        $adjudicators = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
-    }
-*/
     //
     // Load the schedule sections, divisions, timeslots, classes, registrations
     //
@@ -88,8 +60,8 @@ function ciniki_musicfestivals_templates_schedulePTBWord(&$ciniki, $tnid, $args)
         . "divisions.name AS division_name, "
         . "DATE_FORMAT(divisions.division_date, '%W, %M %e, %Y') AS division_date_text, "
         . "locations.name AS location_name, "
-        . "divisions.adjudicator_id, "
-        . "customers.display_name AS adjudicator_name, "
+        . "GROUP_CONCAT(arefs.adjudicator_id SEPARATOR ', ') AS adjudicator_ids, "
+        . "GROUP_CONCAT(customers.display_name SEPARATOR ', ') AS adjudicator_names, "
         . "CONCAT_WS(' ', divisions.division_date, timeslots.slot_time) AS division_sort_key, "
         . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
         . "timeslots.id AS timeslot_id, "
@@ -147,9 +119,16 @@ function ciniki_musicfestivals_templates_schedulePTBWord(&$ciniki, $tnid, $args)
             . "divisions.id = timeslots.sdivision_id " 
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
+        . "LEFT JOIN ciniki_musicfestival_adjudicatorrefs AS arefs ON ("
+            . "( "
+                . "(ssections.id = arefs.object_id AND arefs.object = 'ciniki.musicfestivals.schedulesection') "
+                . "OR (divisions.id = arefs.object_id AND arefs.object = 'ciniki.musicfestivals.scheduledivision') "
+                . ") "
+                . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
         . "LEFT JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
-            . "divisions.adjudicator_id = adjudicators.id "
-            ."AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "arefs.adjudicator_id = adjudicators.id "
+            . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_customers AS customers ON ("
             . "adjudicators.customer_id = customers.id "
@@ -193,13 +172,14 @@ function ciniki_musicfestivals_templates_schedulePTBWord(&$ciniki, $tnid, $args)
     } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
         $strsql .= "AND registrations.participation = 1 ";
     }
+    $strsql .= "GROUP BY registrations.id ";
     $strsql .= "ORDER BY divisions.division_date, ssections.sequence, divisions.name, divisions.id, slot_time, timeslots.name, timeslots.id, registrations.timeslot_sequence, class_code, registrations.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'divisions', 'fname'=>'division_id', 
             'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'section_name', 'date'=>'division_date_text', 
-                'location_name', 'adjudicator_id', 'adjudicator_name',
+                'location_name', 'adjudicator_ids', 'adjudicator_names',
                 'sort_key' => 'division_sort_key',
                 ),
             ),
@@ -310,7 +290,11 @@ function ciniki_musicfestivals_templates_schedulePTBWord(&$ciniki, $tnid, $args)
         }
         $sectionWord->addText(htmlspecialchars($division['date']), 'Dates Font', 'Dates');
         $sectionWord->addText(htmlspecialchars($division['location_name']), 'Location Font', 'Locations');
-        $sectionWord->addText(htmlspecialchars("Adjudicator: " . $division['adjudicator_name']), 'Adjudicator Font', 'Adjudicators');
+        if( preg_match("/, /", $division['adjudicator_ids']) ) {
+            $sectionWord->addText(htmlspecialchars("Adjudicators: " . $division['adjudicator_names']), 'Adjudicator Font', 'Adjudicators');
+        } else {
+            $sectionWord->addText(htmlspecialchars("Adjudicator: " . $division['adjudicator_names']), 'Adjudicator Font', 'Adjudicators');
+        }
 
         $prev_time = '';
         foreach($division['timeslots'] as $timeslot) {

@@ -72,44 +72,6 @@ function ciniki_musicfestivals_adjudicatorDelete(&$ciniki) {
     }
 
     //
-    // Add check if adjudicator still connected to division
-    //
-    $strsql = "SELECT 'items', COUNT(*) "
-        . "FROM ciniki_musicfestival_schedule_divisions "
-        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator['festival_id']) . "' "
-        . "AND adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
-    $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
-    if( $rc['stat'] != 'ok' ) { 
-        return $rc;
-    }
-    if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
-        $count = $rc['num']['items'];
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.963', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' schedule division' . ($count==1?'':'s') . ' with this adjudicator.'));
-    }
-
-    //
-    // Add check if adjudicator still connected to sections
-    //
-    $strsql = "SELECT 'items', COUNT(*) "
-        . "FROM ciniki_musicfestival_schedule_sections "
-        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator['festival_id']) . "' "
-        . "AND adjudicator1_id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
-    $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
-    if( $rc['stat'] != 'ok' ) { 
-        return $rc;
-    }
-    if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
-        $count = $rc['num']['items'];
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.962', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' schedule section' . ($count==1?'':'s') . ' with this adjudicator.'));
-    }
-
-    //
     // Add a check for any objects still referencing this adjudicator
     //
     $strsql = "SELECT 'items', COUNT(*) "

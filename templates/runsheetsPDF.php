@@ -60,10 +60,11 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
     //
     $strsql = "SELECT ssections.id AS section_id, "
         . "ssections.name AS section_name, "
-        . "customers.display_name AS adjudicator_name, "
+        . "GROUP_CONCAT(customers.display_name SEPARATOR ', ') AS adjudicator_name, "
+        . "COUNT(adjudicators.id) AS num_adjudicators, "
         . "divisions.id AS division_id, "
         . "divisions.name AS division_name, "
-        . "locations.name AS location_name, ";
+        . "IF(locations.shortname<>'', locations.shortname, locations.name) AS location_name, ";
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) { // Provincials
         $strsql .= "CONCAT_WS(' ', divisions.division_date, divisions.name, timeslots.slot_time) AS division_sort_key, ";
     } else {
@@ -140,10 +141,9 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         . "registrations.runsheet_notes AS runnote, "
         . "";
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x40) ) {
-        $strsql .= "accolades.id AS accolade_id, "
-            . "accolades.name AS accolade_name, ";
+        $strsql .= "GROUP_CONCAT(accolades.name SEPARATOR ', ') AS accolade_name, ";
     } else {
-        $strsql .= "0 AS accolade_id, '' AS accolade_name, ";
+        $strsql .= "'' AS accolade_name, ";
     }
     $strsql .= "classes.code AS class_code, "
         . "classes.name AS class_name, "
@@ -158,11 +158,15 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             . "divisions.location_id = locations.id "
             . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "LEFT JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
+        . "LEFT JOIN ciniki_musicfestival_adjudicatorrefs AS arefs ON ("
             . "( "
-                . "ssections.adjudicator1_id = adjudicators.id "
-                . "OR divisions.adjudicator_id = adjudicators.id "
+                . "(ssections.id = arefs.object_id AND arefs.object = 'ciniki.musicfestivals.schedulesection') "
+                . "OR (divisions.id = arefs.object_id AND arefs.object = 'ciniki.musicfestivals.scheduledivision') "
                 . ") "
+            . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
+            . "arefs.adjudicator_id = adjudicators.id "
             . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_customers AS customers ON ("
@@ -212,18 +216,16 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         $strsql .= "AND divisions.id = '" . ciniki_core_dbQuote($ciniki, $args['scheduledivision_id']) . "' ";
     }
     if( isset($args['adjudicator_id']) && $args['adjudicator_id'] > 0 ) {
-        $strsql .= "AND ("
-            . "ssections.adjudicator1_id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' "
-            . "OR divisions.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' "
-            . ") ";
+        $strsql .= "AND arefs.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' ";
     }
 //    if( isset($args['adjudicator_id']) && $args['adjudicator_id'] > 0 ) {
 //        $strsql .= "ORDER BY divisions.division_date, divisions.name, slot_time, registrations.timeslot_sequence, class_code, registrations.display_name ";
 //    } else {
+    $strsql .= "GROUP BY registrations.id ";
     if( isset($args['sortorder']) && $args['sortorder'] == 'date' ) {
-        $strsql .= "ORDER BY divisions.division_date, ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, registrations.timeslot_sequence, class_code, registrations.display_name ";
+        $strsql .= "ORDER BY divisions.division_date, ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, registrations.timeslot_sequence, class_code, registrations.display_name, registrations.id, adjudicator_name ";
     } else {
-        $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, registrations.timeslot_sequence, class_code, registrations.display_name ";
+        $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, registrations.timeslot_sequence, class_code, registrations.display_name, registrations.id, adjudicator_name ";
     }
 
 //    }
@@ -236,13 +238,13 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             ),
         array('container'=>'divisions', 'fname'=>'division_id', 
             'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 
-                'location_name', 'adjudicator_name', 'sort_key'=>'division_sort_key',
+                'location_name', 'adjudicator_name', 'num_adjudicators', 'sort_key'=>'division_sort_key',
                 ),
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
             'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 'groupname', 'start_num',
                 'description', 'runsheet_notes', 'slot_time', 'slot_seconds', 
-                'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
+                'class_code', 'class_name', 'category_name', 'syllabus_section_name', 'accolade_name',
                 ),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
@@ -257,9 +259,9 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                 'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
                 ),
             ),
-        array('container'=>'accolades', 'fname'=>'accolade_id', 
-            'fields'=>array('id'=>'accolade_id', 'name'=>'accolade_name'),
-            ),
+//        array('container'=>'accolades', 'fname'=>'accolade_id', 
+//            'fields'=>array('id'=>'accolade_id', 'name'=>'accolade_name'),
+//            ),
 
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -601,7 +603,11 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             // Start a new section
             //
             $pdf->header_title = $division['date'];
-            $pdf->header_sub_title = 'Adjudicator: ' . $division['adjudicator_name'];
+            if( $division['num_adjudicators'] > 1 ) {
+                $pdf->header_sub_title = 'Adjudicators: ' . $division['adjudicator_name'];
+            } else {
+                $pdf->header_sub_title = 'Adjudicator: ' . $division['adjudicator_name'];
+            }
             if( $division['location_name'] != '' ) {
                 $pdf->header_msg = 'Location: ' . $division['location_name'];
             }
@@ -722,7 +728,6 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     $pdf->SetFont('', '', 12);
                     $h += $pdf->getStringHeight($cw[1], $timeslot['description']); 
                 }
-                $timeslot['accolades'] = array();
                 if( isset($timeslot['registrations']) && count($timeslot['registrations']) > 0 ) {
                     $pdf->SetFont('', 'B', 12);
                     $h += $pdf->getStringHeight($w[1], $timeslot['registrations'][0]['name']);
@@ -822,14 +827,17 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                             $h += $pdf->getStringHeight($tnw[2], $notes);
                         }
 
-                        if( isset($reg['accolades']) && count($reg['accolades']) > 0 ) {
-                            foreach($reg['accolades'] as $accolade) {
-                                if( $accolade['name'] != '' && !in_array($accolade['name'], $timeslot['accolades']) ) {
-                                    $timeslot['accolades'][] = $accolade['name'];
-                                    $h += $pdf->getStringHeight($trw[1], $accolade['name']);
-                                }
-                            }
+                        if( isset($timeslot['accolade_name']) && $timeslot['accolade_name'] != '' ) {
+                            $h += $pdf->getStringHeight($trw[1], $timeslot['accolade_name']);
                         }
+//                        if( isset($reg['accolades']) && count($reg['accolades']) > 0 ) {
+//                            foreach($reg['accolades'] as $accolade) {
+//                                if( $accolade['name'] != '' && !in_array($accolade['name'], $timeslot['accolades']) ) {
+//                                    $timeslot['accolades'][] = $accolade['name'];
+//                                    $h += $pdf->getStringHeight($trw[1], $accolade['name']);
+//                                }
+//                            }
+//                        }
                     }
                 } else {
                     $h += 5;
@@ -870,13 +878,18 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                 }
                 $pdf->SetFont('', '', '11');
 
-                if( isset($timeslot['accolades']) && count($timeslot['accolades']) > 0 ) {
-                    foreach($timeslot['accolades'] as $tid => $accolade) {
-                        $pdf->MultiCell($cw[0], 0, '', 0, 'L', 0, 0);
-                        $pdf->MultiCell($trw[0], 0, ($tid == 0 ? 'Eligible for: ' : ''), 0, 'L', 0, 0);
-                        $pdf->MultiCell($trw[1], 0, $accolade, 0, 'L', 0, 1);
-                    }
+                if( isset($timeslot['accolade_name']) && $timeslot['accolade_name'] != '' ) {
+                    $pdf->MultiCell($cw[0], 0, '', 0, 'L', 0, 0);
+                    $pdf->MultiCell($trw[0], 0, ($tid == 0 ? 'Eligible for: ' : ''), 0, 'L', 0, 0);
+                    $pdf->MultiCell($cw[1], 0, $timeslot['accolade_name'], 0, 'L', 0, 1);
                 }
+//                if( isset($timeslot['accolades']) && count($timeslot['accolades']) > 0 ) {
+//                    foreach($timeslot['accolades'] as $tid => $accolade) {
+//                        $pdf->MultiCell($cw[0], 0, '', 0, 'L', 0, 0);
+//                        $pdf->MultiCell($trw[0], 0, ($tid == 0 ? 'Eligible for: ' : ''), 0, 'L', 0, 0);
+//                        $pdf->MultiCell($trw[1], 0, $accolade, 0, 'L', 0, 1);
+//                    }
+//                }
                 if( isset($festival['runsheets-timeslot-description']) && $festival['runsheets-timeslot-description'] == 'yes'
                     && isset($timeslot['description']) && $timeslot['description'] != '' 
                     ) {
@@ -957,13 +970,18 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                                 $pdf->MultiCell($cw[1], 0, $name . ' (continued...)', 0, 'L', 0, 1);
                             }
                             $pdf->SetFont('', '', '11');
-                            if( isset($timeslot['accolades']) && count($timeslot['accolades']) > 0 ) {
-                                foreach($timeslot['accolades'] as $tid => $accolade) {
-                                    $pdf->MultiCell($cw[0], 0, '', 0, 'L', 0, 0);
-                                    $pdf->MultiCell($trw[0], 0, ($tid == 0 ? 'Eligible for: ' : ''), 0, 'L', 0, 0);
-                                    $pdf->MultiCell($cw[1], 0, $accolade, 0, 'L', 0, 1);
-                                }
+                            if( isset($timeslot['accolade_name']) && $timeslot['accolade_name'] != '' ) {
+                                $pdf->MultiCell($cw[0] + $cw[1], 0, '', 0, 'L', 0, 0);
+                                $pdf->MultiCell($trw[0], 0, ($tid == 0 ? 'Eligible for: ' : ''), 0, 'L', 0, 0);
+                                $pdf->MultiCell($cw[2], 0, $timeslot['accolade_name'], 0, 'L', 0, 1);
                             }
+//                            if( isset($timeslot['accolades']) && count($timeslot['accolades']) > 0 ) {
+//                                foreach($timeslot['accolades'] as $tid => $accolade) {
+//                                    $pdf->MultiCell($cw[0], 0, '', 0, 'L', 0, 0);
+//                                    $pdf->MultiCell($trw[0], 0, ($tid == 0 ? 'Eligible for: ' : ''), 0, 'L', 0, 0);
+//                                    $pdf->MultiCell($cw[1], 0, $accolade, 0, 'L', 0, 1);
+//                                }
+//                            }
                             if( isset($timeslot['runsheet_notes']) && $timeslot['runsheet_notes'] != '' ) {
                                 $pdf->SetFont('', 'B', 11);
                                 $pdf->MultiCell($cw[0], 0, 'Notes', 0, 'L', 0, 0);

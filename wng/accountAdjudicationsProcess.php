@@ -88,10 +88,15 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.397', 'msg'=>'Unable to load adjudicator', 'err'=>$rc['err']));
     }
-    if( isset($rc['adjudicator']['id']) ) {
-        $adjudicator = 'yes';
-        $adjudicator_id = $rc['adjudicator']['id'];
+    if( !isset($rc['adjudicator']['id']) ) {
+        return array('stat' => 'ok', 'blocks' => [
+            'type' => 'msg',
+            'level' => 'error',
+            'content' => 'No adjudications found',
+            ]);
     }
+    $adjudicator = 'yes';
+    $adjudicator_id = $rc['adjudicator']['id'];
 
     //
     // Default to only allow online adjudications of virtual entries
@@ -106,7 +111,6 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     //
     $strsql = "SELECT ssections.id AS section_id, "
         . "ssections.name AS section_name, "
-        . "ssections.adjudicator1_id, "
         . "divisions.id AS division_id, "
         . "divisions.uuid AS division_uuid, "
         . "divisions.name AS division_name, "
@@ -191,6 +195,14 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             . "ssections.id = divisions.ssection_id " 
             . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
+        . "INNER JOIN ciniki_musicfestival_adjudicatorrefs AS arefs ON ("
+            . "arefs.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
+            . "AND ("
+                . "(ssections.id = arefs.object_id AND arefs.object = 'ciniki.musicfestivals.schedulesection') "
+                . "OR (divisions.id = arefs.object_id AND arefs.object = 'ciniki.musicfestivals.scheduledivision') "
+                . ") "
+            . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
         . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
             . "divisions.id = timeslots.sdivision_id " 
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -214,16 +226,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             . ") "
         . "WHERE ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "AND ssections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
-        . "AND ("
-            . "ssections.adjudicator1_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
-            . "OR divisions.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' "
-            . ") ";
-/*    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0800) ) {
-        $strsql .= "AND divisions.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' ";
-    } else {
-        $strsql .= "AND ssections.adjudicator1_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator_id) . "' ";
-    } */
-    $strsql .= "ORDER BY section_name, divisions.division_date, division_id, slot_time, timeslots.id, registrations.timeslot_sequence, registrations.display_name "
+        . "ORDER BY section_name, divisions.division_date, division_id, slot_time, timeslots.id, registrations.timeslot_sequence, registrations.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(

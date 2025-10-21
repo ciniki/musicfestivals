@@ -331,7 +331,6 @@ function ciniki_musicfestivals_templates_scheduleClassesPDF(&$ciniki, $tnid, $ar
     // Go through the sections, divisions and classes
     //
     $w = array(20, 160);
-    $prev_adjudicator_id = 0;
     foreach($sections as $section) {
 
         $pdf->SetFont('', 'B', '14');

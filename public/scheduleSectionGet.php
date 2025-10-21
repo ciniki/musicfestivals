@@ -71,7 +71,7 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
             'festival_id'=>'',
             'name'=>'',
             'sequence'=>$seq,
-            'adjudicator1_id'=>0,
+//            'adjudicator1_id'=>0,
             'flags'=>0,
             'top_sponsors_title'=>'',
             'top_sponsor_ids'=>0,
@@ -87,22 +87,22 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
     // Get the details for an existing Schedule Section
     //
     else {
-        $strsql = "SELECT ciniki_musicfestival_schedule_sections.id, "
-            . "ciniki_musicfestival_schedule_sections.festival_id, "
-            . "ciniki_musicfestival_schedule_sections.name, "
-            . "ciniki_musicfestival_schedule_sections.sequence, "
-            . "ciniki_musicfestival_schedule_sections.adjudicator1_id, "
-            . "ciniki_musicfestival_schedule_sections.flags, "
-            . "ciniki_musicfestival_schedule_sections.sponsor_settings, "
-            . "ciniki_musicfestival_schedule_sections.provincial_settings "
-            . "FROM ciniki_musicfestival_schedule_sections "
-            . "WHERE ciniki_musicfestival_schedule_sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND ciniki_musicfestival_schedule_sections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' "
+        $strsql = "SELECT ssections.id, "
+            . "ssections.festival_id, "
+            . "ssections.name, "
+            . "ssections.sequence, "
+//            . "ssections.adjudicator1_id, "
+            . "ssections.flags, "
+            . "ssections.sponsor_settings, "
+            . "ssections.provincial_settings "
+            . "FROM ciniki_musicfestival_schedule_sections AS ssections "
+            . "WHERE ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'schedulesections', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'name', 'sequence', 'adjudicator1_id', 'flags',
+                'fields'=>array('id', 'festival_id', 'name', 'sequence', 'flags',
                     'sponsor_settings', 'provincial_settings',
                     ),
                 'json'=>array('sponsor_settings', 'provincial_settings'),
@@ -115,6 +115,37 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.89', 'msg'=>'Unable to find Schedule Section'));
         }
         $schedulesection = $rc['schedulesections'][0];
+
+        //
+        // Load the adjudicators
+        //
+        $strsql = "SELECT arefs.id, "
+            . "adjudicators.id AS adjudicator_id, "
+            . "customers.display_name AS name "
+            . "FROM ciniki_musicfestival_adjudicatorrefs AS arefs "
+            . "INNER JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
+                . "arefs.adjudicator_id = adjudicators.id "
+                . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "INNER JOIN ciniki_customers AS customers ON ("
+                . "adjudicators.customer_id = customers.id "
+                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE arefs.object_id = '" . ciniki_core_dbQuote($ciniki, $schedulesection['id']) . "' "
+            . "AND arefs.object = 'ciniki.musicfestivals.schedulesection' "
+            . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'adjudicators', 'fname'=>'id', 
+                'fields'=>array('id', 'adjudicator_id', 'name'),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1184', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
+        }
+        $schedulesection['adjudicators'] = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
     }
 
     $rsp = array('stat'=>'ok', 'schedulesection'=>$schedulesection);
@@ -122,16 +153,17 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
     //
     // Get the list of adjudicators
     //
-    $strsql = "SELECT ciniki_musicfestival_adjudicators.id, "
-        . "ciniki_musicfestival_adjudicators.customer_id, "
-        . "ciniki_customers.display_name "
-        . "FROM ciniki_musicfestival_adjudicators "
-        . "LEFT JOIN ciniki_customers ON ("
-            . "ciniki_musicfestival_adjudicators.customer_id = ciniki_customers.id "
-            . "AND ciniki_customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+/*    $strsql = "SELECT adjudicators.id, "
+        . "adjudicators.customer_id, "
+        . "customers.display_name "
+        . "FROM ciniki_musicfestival_adjudicators AS adjudicators "
+        . "LEFT JOIN ciniki_customers AS customers ON ("
+            . "adjudicators.customer_id = customers.id "
+            . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-        . "WHERE ciniki_musicfestival_adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND ciniki_musicfestival_adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "WHERE adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "ORDER BY customers.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -141,9 +173,9 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
         return $rc;
     }
     $rsp['adjudicators'] = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
-
+*/
     //
-    // Get the list of adjudicators
+    // Get the list of sponsors
     //
     $strsql = "SELECT ciniki_musicfestival_sponsors.id, "
         . "ciniki_musicfestival_sponsors.name "

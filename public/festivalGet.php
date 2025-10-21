@@ -1642,8 +1642,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "sections.name, "
                 . "sections.sequence, "
                 . "sections.flags, "
-                . "sections.flags AS options, "
-                . "sections.adjudicator1_id "
+                . "sections.flags AS options "
+//                . "sections.adjudicator1_id "
                 . "FROM ciniki_musicfestival_schedule_sections AS sections "
                 . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
@@ -1661,7 +1661,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'schedulesections', 'fname'=>'id', 
                     'fields'=>array('id', 'festival_id', 'name', 'sequence', 'flags', 'options', 
-                        'adjudicator1_id', 
+//                        'adjudicator1_id', 
                         ),
                     'flags' => array('options'=>$maps['schedulesection']['flags']),
                     ),
@@ -2006,11 +2006,16 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "DATE_FORMAT(divisions.division_date, '%a, %b %e, %Y') AS division_date_text, "
 //                    . "divisions.address, "
                     . "IFNULL(IF(locations.shortname <> '', locations.shortname, locations.name), '') AS location_name, "
-                    . "customers.display_name AS adjudicator_name, "
+                    . "GROUP_CONCAT(DISTINCT customers.display_name ORDER BY customers.display_name SEPARATOR ', ') AS adjudicator_name, "
                     . "MIN(timeslots.slot_time) AS first_timeslot "
                     . "FROM ciniki_musicfestival_schedule_divisions AS divisions "
+                    . "LEFT JOIN ciniki_musicfestival_adjudicatorrefs AS arefs ON ("
+                        . "divisions.id = arefs.object_id "
+                        . "AND arefs.object = 'ciniki.musicfestivals.scheduledivision' "
+                        . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
                     . "LEFT JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
-                        . "divisions.adjudicator_id = adjudicators.id "
+                        . "arefs.adjudicator_id = adjudicators.id "
                         . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                         . ") "
                     . "LEFT JOIN ciniki_customers AS customers ON ("
@@ -2220,7 +2225,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "registrations.music_orgfilename1, "
                     . "registrations.music_orgfilename2, "
                     . "registrations.music_orgfilename3, "
-                    . "IFNULL(ssections.adjudicator1_id, 0) AS adjudicator_id, "
+//                    . "IFNULL(ssections.adjudicator1_id, 0) AS adjudicator_id, "
                     . "registrations.mark, "
                     . "registrations.placement, "
                     . "registrations.level, "
@@ -2248,7 +2253,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         . ") "
                     . "WHERE timeslots.sdivision_id = '" . ciniki_core_dbQuote($ciniki, $args['sdivision_id']) . "' "
                         . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . "ORDER BY slot_time, timeslots.name, timeslots.id, registrations.display_name, ssections.adjudicator1_id "
+                    . "ORDER BY slot_time, timeslots.name, timeslots.id, registrations.display_name "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -2262,7 +2267,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             'title'=>'title1', 
                             'participation', 'video_url1', 'video_url2', 'video_url3', 
                             'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3',
-                            'adjudicator_id', 'mark', 'placement', 'level', 'comments',
+//                            'adjudicator_id', 
+                            'mark', 'placement', 'level', 'comments',
                             )),
                     ));
                 if( $rc['stat'] != 'ok' ) {
@@ -2957,11 +2963,19 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "ssections.id = divisions.ssection_id "
                     . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
-                . "INNER JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
+                . "INNER JOIN ciniki_musicfestival_adjudicatorrefs AS arefs ON ("
                     . "("
-                        . "ssections.adjudicator1_id = adjudicators.id "
-                        . "OR divisions.adjudicator_id = adjudicators.id "
+                        . "(ssections.id = arefs.object_id AND arefs.object = 'ciniki.musicfestivals.schedulesection') "
+                        . "OR (divisions.id = arefs.object_id AND arefs.object = 'ciniki.musicfestivals.scheduledivision') "
                         . ")"
+                    . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
+                    . "arefs.adjudicator_id = adjudicators.id "
+//                    . "("
+//                        . "ssections.adjudicator1_id = adjudicators.id "
+//                        . "OR divisions.adjudicator_id = adjudicators.id "
+//                        . ")"
                     . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "LEFT JOIN ciniki_customers AS customers ON ("

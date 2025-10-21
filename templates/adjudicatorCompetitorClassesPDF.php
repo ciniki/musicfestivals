@@ -110,22 +110,20 @@ function ciniki_musicfestivals_templates_adjudicatorCompetitorClassesPDF(&$cinik
         . "INNER JOIN ciniki_customers AS customers ON ("
             . "adjudicators.customer_id = customers.id "
             . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") ";
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0800) ) {
-        $strsql .= "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
-            . "adjudicators.id = divisions.adjudicator_id "
+            . ") "
+        . "INNER JOIN ciniki_musicfestival_adjudicatorrefs AS arefs ON ("
+            . "adjudicators.id = arefs.adjudicator_id "
+            . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+            . "adjudicators.festival_id = divisions.festival_id "
+            . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
+            . "adjudicators.festival_id = ssections.festival_id "
+            . "AND divisions.ssection_id = ssections.id "
             . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") ";
-    } else {
-        $strsql .= "INNER JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
-                . "adjudicators.id = ssections.adjudicator1_id "
-                . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
-                . "ssections.id = divisions.ssection_id "
-                . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") ";
-    }
     $strsql .= "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
             . "divisions.id = timeslots.sdivision_id "
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -135,7 +133,11 @@ function ciniki_musicfestivals_templates_adjudicatorCompetitorClassesPDF(&$cinik
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
+        . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND ("
+            . "(arefs.object = 'ciniki.musicfestivals.schedulesection' AND arefs.object_id = ssections.id) "
+            . "OR (arefs.object = 'ciniki.musicfestivals.scheduledivision' AND arefs.object_id = divisions.id) "
+            . ") ";
     if( isset($args['adjudicator_id']) && $args['adjudicator_id'] > 0 ) {
         $strsql .= "AND adjudicators.id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' ";
     }

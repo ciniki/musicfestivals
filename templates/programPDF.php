@@ -45,63 +45,26 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
     //
     // Load the festival
     //
-    $strsql = "SELECT ciniki_musicfestivals.id, "
-        . "ciniki_musicfestivals.name, "
-        . "ciniki_musicfestivals.permalink, "
-        . "ciniki_musicfestivals.flags, "
-        . "ciniki_musicfestivals.start_date, "
-        . "ciniki_musicfestivals.end_date, "
-        . "ciniki_musicfestivals.primary_image_id, "
-        . "ciniki_musicfestivals.description, "
-        . "ciniki_musicfestivals.document_logo_id, "
-        . "ciniki_musicfestivals.document_header_msg, "
-        . "ciniki_musicfestivals.document_footer_msg "
-        . "FROM ciniki_musicfestivals "
-        . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND ciniki_musicfestivals.id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'festivals', 'fname'=>'id', 
-            'fields'=>array('name', 'permalink', 'flags', 'start_date', 'end_date', 'primary_image_id', 'description', 
-                'document_logo_id', 'document_header_msg', 'document_footer_msg')),
-        ));
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $tnid, $args['festival_id']);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.111', 'msg'=>'Festival not found', 'err'=>$rc['err']));
+        return $rc;
     }
-    if( !isset($rc['festivals'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.112', 'msg'=>'Unable to find Festival'));
-    }
-    $festival = $rc['festivals'][0];
-
-    //
-    // Load the settings for the festival
-    //
-    $strsql = "SELECT detail_key, detail_value "
-        . "FROM ciniki_musicfestival_settings "
-        . "WHERE ciniki_musicfestival_settings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND ciniki_musicfestival_settings.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
-    $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'settings');
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.195', 'msg'=>'Unable to load settings', 'err'=>$rc['err']));
-    }
-    foreach($rc['settings'] as $k => $v) {
-        $festival[$k] = $v;
-    }
+    $festival = $rc['festival'];
 
     //
     // Load the schedule sections, divisions, timeslots, classes, registrations
     //
     $strsql = "SELECT ssections.id AS section_id, "
-        . "ssections.name AS section_name, ";
-    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0800) ) {
-        $strsql .= "divisions.adjudicator_id, ";
-    } else {
-        $strsql .= "ssections.adjudicator1_id AS adjudicator_id, ";
-    }
-    $strsql .= "divisions.id AS division_id, "
+        . "ssections.name AS section_name, "
+        . "arefs.adjudicator_id, "
+//    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0800) ) {
+//        $strsql .= "divisions.adjudicator_id, ";
+//    } else {
+//        $strsql .= "ssections.adjudicator1_id AS adjudicator_id, ";
+//    }
+//    $strsql .= 
+        . "divisions.id AS division_id, "
         . "divisions.name AS division_name, "
         . "locations.name AS address, "
         . "DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y') AS division_date_text, ";
@@ -154,6 +117,13 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
         . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
             . "divisions.id = timeslots.sdivision_id " 
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_adjudicatorrefs AS arefs ON ("
+            . "( "
+                . "(ssections.id = arefs.object_id AND arefs.object = 'ciniki.musicfestivals.schedulesection') "
+                . "OR (divisions.id = arefs.object_id AND arefs.object = 'ciniki.musicfestivals.scheduledivision') "
+                . ") "
+                . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
             . "divisions.location_id = locations.id " 
@@ -387,12 +357,12 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
                             $image = $rc['image'];
                             $height = $image->getImageHeight();
                             $width = $image->getImageWidth();
-                            $this->header_image->setFormat('JPEG');
+//                            $pdf->header_image->setFormat('JPEG');
                             $image_ratio = $width/$height;
                             $img_width = 53; 
                             $h = ($height/$width) * $img_width;
                             $y = $pdf->getY();
-                            $pdf->Image('@'.$image->getImageBlob(), ($fw/2) + $pdf->left_margin + 3, $y, $img_width, 0, 'JPEG', '', 'TL', 2, '150');
+                            $pdf->Image('@'.$image->getImageBlob(), ($fw/2) + $pdf->left_margin + 3, $y, $img_width, 0, '', '', 'TL', 2, '150');
                             $pdf->setPageRegions(array(array('page'=>'', 'xt'=>($fw/2) + $pdf->left_margin, 'yt'=>$y, 'xb'=>($fw/2) + $pdf->left_margin, 'yb'=>$y+$h+2, 'side'=>'R')));
                             $pdf->setY($y-2.5);
                         }
