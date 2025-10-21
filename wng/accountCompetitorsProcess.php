@@ -245,6 +245,22 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             'class' => '',
             'value' => (isset($_POST['f-name']) ? trim($_POST['f-name']) : (isset($competitor['name']) ? $competitor['name'] : '')),
             );
+        if( isset($festival['competitor-group-instrument']) 
+            && in_array($festival['competitor-group-instrument'], ['required', 'optional']) 
+            ) {
+            $fields['instrument'] = array(
+                'id' => 'instrument',
+                'label' => 'Instrument',
+                'ftype' => 'text',
+                'size' => 'small',
+                'required' => ($festival['competitor-group-instrument'] == 'required' ? 'yes' : 'no'),
+                'class' => '',
+                'value' => (isset($_POST['f-instrument']) ? trim($_POST['f-instrument']) : (isset($competitor['instrument']) ? $competitor['instrument'] :'')),
+                );
+            if( isset($festival['competitor-group-age']) && $festival['competitor-group-age'] == 'hidden' ) {
+                $fields['name']['size'] = 'medium';
+            }
+        }
         $fields['conductor'] = array(
             'id' => 'conductor',
             'label' => 'Conductor',
@@ -263,17 +279,26 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             'class' => '',
             'value' => (isset($_POST['f-num_people']) ? trim($_POST['f-num_people']) : (isset($competitor['num_people']) ? $competitor['num_people'] : '')),
             );
-        $fields['age'] = array(
-            'id' => 'age',
-            'label' => 'Age' . (isset($festival['age-restriction-msg']) ? ' ' . $festival['age-restriction-msg'] : ''),
-            'ftype' => 'text',
-            'required' => (!isset($festival['competitor-group-age']) || $festival['competitor-group-age'] == 'required' ? 'yes' : 'no'),
-            'size' => 'small',
-            'class' => '',
-            'value' => (isset($_POST['f-age']) ? trim($_POST['f-age']) : (isset($competitor['age']) ? $competitor['age'] :'')),
-            );
-        if( isset($festival['competitor-group-age-label']) && $festival['competitor-group-age-label'] != '' ) {
-            $fields['age']['label'] = $festival['competitor-group-age-label'];
+        if( !isset($festival['competitor-group-age']) || in_array($festival['competitor-group-age'], ['required', 'optional']) ) {
+            $fields['age'] = array(
+                'id' => 'age',
+                'label' => 'Age' . (isset($festival['age-restriction-msg']) ? ' ' . $festival['age-restriction-msg'] : ''),
+                'ftype' => 'text',
+                'required' => (!isset($festival['competitor-group-age']) || $festival['competitor-group-age'] == 'required' ? 'yes' : 'no'),
+                'size' => 'tiny',
+                'class' => '',
+                'value' => (isset($_POST['f-age']) ? trim($_POST['f-age']) : (isset($competitor['age']) ? $competitor['age'] :'')),
+                );
+            if( isset($festival['competitor-group-age-label']) && $festival['competitor-group-age-label'] != '' ) {
+                $fields['age']['label'] = $festival['competitor-group-age-label'];
+            }
+            if( isset($festival['competitor-group-instrument']) && in_array($festival['competitor-group-instrument'], ['required', 'optional']) ) {
+                $fields['name']['size'] = 'medium';
+//                $fields['instrument']['size'] = 'medium';
+//                $fields['conductor']['size'] = 'medium';
+//                $fields['num_people']['size'] = 'medium';
+                $fields['age']['size'] = 'tiny';
+            }
         }
     } else {
         $fields['first'] = array(
@@ -305,17 +330,32 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                 'value' => (isset($_POST['f-pronoun']) ? trim($_POST['f-pronoun']) : (isset($competitor['pronoun']) ? $competitor['pronoun'] :'')),
                 );
         }
-        $fields['age'] = array(
-            'id' => 'age',
-            'label' => 'Age' . (isset($festival['age-restriction-msg']) ? ' ' . $festival['age-restriction-msg'] : ''),
-            'ftype' => 'text',
-            'required' => (!isset($festival['competitor-individual-age']) || $festival['competitor-individual-age'] == 'required' ? 'yes' : 'no'),
-            'size' => 'small',
-            'class' => '',
-            'value' => (isset($_POST['f-age']) ? trim($_POST['f-age']) : (isset($competitor['age']) ? $competitor['age'] :'')),
+        if( !isset($festival['competitor-individual-age']) || in_array($festival['competitor-individual-age'], ['required', 'optional']) ) {
+            $fields['age'] = array(
+                'id' => 'age',
+                'label' => 'Age' . (isset($festival['age-restriction-msg']) ? ' ' . $festival['age-restriction-msg'] : ''),
+                'ftype' => 'text',
+                'required' => (!isset($festival['competitor-individual-age']) || $festival['competitor-individual-age'] == 'required' ? 'yes' : 'no'),
+                'size' => 'small',
+                'class' => '',
+                'value' => (isset($_POST['f-age']) ? trim($_POST['f-age']) : (isset($competitor['age']) ? $competitor['age'] :'')),
+                    );
+            if( isset($festival['competitor-individual-age-label']) && $festival['competitor-individual-age-label'] != '' ) {
+                $fields['age']['label'] = $festival['competitor-individual-age-label'];
+            }
+        }
+        if( isset($festival['competitor-individual-instrument']) 
+            && in_array($festival['competitor-individual-instrument'], ['required', 'optional']) 
+            ) {
+            $fields['instrument'] = array(
+                'id' => 'instrument',
+                'label' => 'Instrument',
+                'ftype' => 'text',
+                'size' => 'small',
+                'required' => ($festival['competitor-individual-instrument'] == 'required' ? 'yes' : 'no'),
+                'class' => '',
+                'value' => (isset($_POST['f-instrument']) ? trim($_POST['f-instrument']) : (isset($competitor['instrument']) ? $competitor['instrument'] :'')),
                 );
-        if( isset($festival['competitor-individual-age-label']) && $festival['competitor-individual-age-label'] != '' ) {
-            $fields['age']['label'] = $festival['competitor-individual-age-label'];
         }
         if( isset($festival['competitor-individual-study-level']) && $festival['competitor-individual-study-level'] != 'hidden' ) {
             $fields['study_level'] = array(
@@ -458,24 +498,22 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         'class' => '',
         'value' => (isset($_POST['f-email']) ? trim($_POST['f-email']) : (isset($competitor['email']) ? $competitor['email'] :'')),
             );
-    if( $ctype == 50 && isset($festival['competitor-group-instrument']) ) {
-        $ins = $festival['competitor-group-instrument'];
-    } elseif( isset($festival['competitor-individual-instrument']) ) {
-        $ins = $festival['competitor-individual-instrument'];
-    } else {
-        $ins = 'hidden';
-    }
-    if( $ins != 'hidden' ) {
-        $fields['instrument'] = array(
-            'id' => 'instrument',
-            'label' => 'Instrument',
+    if( ($ctype == 50 
+        && isset($festival['competitor-group-email-confirm']) && $festival['competitor-group-email-confirm'] == 'yes' 
+        )
+        || ($ctype != 50 
+        && isset($festival['competitor-individual-email-confirm']) && $festival['competitor-individual-email-confirm'] == 'yes'
+        )) {
+        $fields['email_confirm'] = array(
+            'id' => 'email_confirm',
+            'label' => 'Confirm Email',
             'ftype' => 'text',
-            'size' => 'small',
-            'required' => ($ins == 'required' ? 'yes' : 'no'),
-            'class' => 'hidden',
-            'value' => (isset($_POST['f-instrument']) ? trim($_POST['f-instrument']) : (isset($competitor['instrument']) ? $competitor['instrument'] :'')),
+            'size' => 'small-medium',
+            'required' => 'yes',
+            'class' => '',
+            'value' => (isset($_POST['f-email_confirm']) ? trim($_POST['f-email_confirm']) : (isset($competitor['email']) ? $competitor['email'] :'')),
             );
-    }
+    } 
     if( $ctype == 50 
         && isset($festival['competitor-group-etransfer-email']) 
         && $festival['competitor-group-etransfer-email'] != 'hidden'
@@ -484,7 +522,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             'id' => 'etransfer_email',
             'label' => 'Awards etransfer Email',
             'ftype' => 'email',
-            'size' => 'large',
+            'size' => 'small-medium',
             'required' => $festival['competitor-group-etransfer-email'] == 'required' ? 'yes' : 'no',
             'class' => '',
             'value' => (isset($_POST['f-etransfer_email']) ? trim($_POST['f-etransfer_email']) : (isset($competitor['etransfer_email']) ? $competitor['etransfer_email'] :'')),
@@ -494,6 +532,19 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             ) {
             $fields['etransfer_email']['label'] = $festival['competitor-group-etransfer-email-label'];
         }
+        if( isset($festival['competitor-group-etransfer-email-confirm']) 
+            && $festival['competitor-group-etransfer-email-confirm'] == 'yes' 
+            ) {
+            $fields['etransfer_email_confirm'] = array(
+                'id' => 'etransfer_email_confirm',
+                'label' => 'Confirm Awards etransfer Email',
+                'ftype' => 'text',
+                'size' => 'small-medium',
+                'required' => 'yes',
+                'class' => '',
+                'value' => (isset($_POST['f-etransfer_email_confirm']) ? trim($_POST['f-etransfer_email_confirm']) : (isset($competitor['etransfer_email']) ? $competitor['etransfer_email'] :'')),
+                );
+        }
     } 
     elseif( $ctype != 50
         && isset($festival['competitor-individual-etransfer-email']) 
@@ -501,10 +552,10 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         ) {
         $fields['etransfer_email'] = array(
             'id' => 'etransfer_email',
-            'required' => $festival['competitor-group-etransfer-email'] == 'required' ? 'yes' : 'no',
+            'required' => $festival['competitor-individual-etransfer-email'] == 'required' ? 'yes' : 'no',
             'label' => 'Awards etransfer Email',
             'ftype' => 'email',
-            'size' => 'large',
+            'size' => 'small-medium',
             'required' => $festival['competitor-individual-etransfer-email'] == 'required' ? 'yes' : 'no',
             'class' => '',
             'value' => (isset($_POST['f-etransfer_email']) ? trim($_POST['f-etransfer_email']) : (isset($competitor['etransfer_email']) ? $competitor['etransfer_email'] :'')),
@@ -514,7 +565,27 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             ) {
             $fields['etransfer_email']['label'] = $festival['competitor-individual-etransfer-email-label'];
         }
-
+        if( isset($festival['competitor-individual-etransfer-email-confirm']) 
+            && $festival['competitor-individual-etransfer-email-confirm'] == 'yes' 
+            ) {
+            $fields['etransfer_email_confirm'] = array(
+                'id' => 'etransfer_email_confirm',
+                'label' => 'Confirm Awards etransfer Email',
+                'ftype' => 'text',
+                'size' => 'small-medium',
+                'required' => 'yes',
+                'class' => '',
+                'value' => (isset($_POST['f-etransfer_email_confirm']) ? trim($_POST['f-etransfer_email_confirm']) : (isset($competitor['etransfer_email']) ? $competitor['etransfer_email'] :'')),
+                );
+        }
+    }
+    // 
+    // Check if special formatting when only etransfer confirm
+    //
+    if( !isset($fields['email_confirm']) && isset($fields['etransfer_email_confirm']) ) {
+        $fields['email']['size'] = 'large';
+    } elseif( isset($fields['email_confirm']) && !isset($fields['etransfer_email_confirm']) ) {
+        $fields['etransfer_email']['size'] = 'large';
     }
 /*        if( $ctype != 50
             && isset($festival['competitor-individual-etransfer-email']) 
@@ -719,24 +790,52 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                 && $field['id'] != 'thirdwaiver' 
                 && $field['id'] != 'photowaiver' 
                 && $field['id'] != 'namewaiver' 
+                && $field['id'] != 'email_confirm' 
+                && $field['id'] != 'etransfer_email_confirm' 
                 ) {
                 $errors[] = array(
                     'msg' => 'You must specify the competitor ' . $field['label'] . '.',
                     );
             }
-            elseif( isset($field['id']) && $field['id'] == 'email'
-                && !preg_match("/^[^@ ]+@[A-Za-z0-9\.\-]+\.[a-zA-Z]+$/", $field['value']) 
-                ) {
-                $errors[] = array(
-                    'msg' => 'Invalid email address format.',
-                    );
+            elseif( isset($field['id']) && $field['id'] == 'email' ) {
+                if( !preg_match("/^[^@ ]+@[A-Za-z0-9\.\-]+\.[a-zA-Z]+$/", $field['value']) ) {
+                    $errors[] = array(
+                        'msg' => 'Invalid email address format.',
+                        );
+                }
+                elseif( (($fields['ctype']['value'] == 50
+                        && isset($festival['competitor-group-email-confirm']) 
+                        && $festival['competitor-group-email-confirm'] == 'yes' 
+                    ) || ($fields['ctype']['value'] != 50
+                        && isset($festival['competitor-individual-email-confirm']) 
+                        && $festival['competitor-individual-email-confirm'] == 'yes' 
+                    ))
+                    && $field['value'] != $fields['email_confirm']['value'] 
+                    ) {
+                    $errors[] = array(
+                        'msg' => 'Email address do not match.',
+                        );
+                }
             }
-            elseif( isset($field['id']) && $field['id'] == 'etransfer_email'
-                && !preg_match("/^[^@ ]+@[A-Za-z0-9\.\-]+\.[a-zA-Z]+$/", $field['value']) 
-                ) {
-                $errors[] = array(
-                    'msg' => 'Invalid etransfer email address format.',
-                    );
+            elseif( isset($field['id']) && $field['id'] == 'etransfer_email' ) {
+                if( !preg_match("/^[^@ ]+@[A-Za-z0-9\.\-]+\.[a-zA-Z]+$/", $field['value']) ) {
+                    $errors[] = array(
+                        'msg' => 'Invalid etransfer email address format.',
+                        );
+                }
+                elseif( (($fields['ctype']['value'] == 50
+                        && isset($festival['competitor-group-etransfer-email-confirm']) 
+                        && $festival['competitor-group-etransfer-email-confirm'] == 'yes' 
+                    ) || ($fields['ctype']['value'] != 50
+                        && isset($festival['competitor-individual-etransfer-email-confirm']) 
+                        && $festival['competitor-individual-etransfer-email-confirm'] == 'yes' 
+                    ))
+                    && $field['value'] != $fields['etransfer_email_confirm']['value'] 
+                    ) {
+                    $errors[] = array(
+                        'msg' => 'Etransfer emails address do not match.',
+                        );
+                }
             }
         }
         if( isset($festival['waiver-general-msg']) && $festival['waiver-general-msg'] != '' 
@@ -971,7 +1070,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                 if( $num_items > 0 ) {
                     $blocks[] = array(
                         'type' => 'msg',
-                        'class' => 'limit-width limit-width-60',
+                        'class' => 'limit-width limit-width-70',
                         'level' => 'error',
                         'content' => "There " . ($num_items > 1 ? 'are' : 'is') . " {$num_items} registration" . ($num_items > 1 ? 's' : '') . " for {$competitor['name']}. Please contact us with any changes to competitor information.",
                         );
@@ -1036,7 +1135,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         if( $num_items > 0 ) {
             $blocks[] = array(
                 'type' => 'msg',
-                'class' => 'limit-width limit-width-60',
+                'class' => 'limit-width limit-width-70',
                 'level' => 'error',
                 'content' => "There are still {$num_items} registration" . ($num_items > 1 ? 's' : '') . " for {$competitor['name']}, they cannot be removed.",
                 );
@@ -1162,7 +1261,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             'type' => 'form',
             'guidelines' => $guidelines,
             'title' => ($competitor_id > 0 ? 'Update' : 'Add') . ($ctype == 50 ? ' Group/Ensemble' : " Individual {$festival['competitor-label-singular']}"),
-            'class' => 'limit-width limit-width-60',
+            'class' => 'limit-width limit-width-70',
             'problem-list' => $form_errors,
             'cancel-label' => 'Cancel',
             'submit-label' => ($competitor_id > 0 ? 'Save' : 'Save'),
@@ -1244,7 +1343,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             $blocks[] = array(
                 'type' => 'table',
                 'title' => "{$festival['name']} {$festival['competitor-label-plural']}",
-                'class' => 'musicfestival-competitors limit-width limit-width-60 fold-at-40',
+                'class' => 'musicfestival-competitors limit-width limit-width-70 fold-at-40',
                 'headers' => 'yes',
                 'columns' => $columns,
                 'rows' => $competitors,

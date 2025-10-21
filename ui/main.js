@@ -5994,13 +5994,18 @@ function ciniki_musicfestivals_main() {
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
                 'competitor-individual-phone-home-label':{'label':'Home Phone Label', 'type':'text'},
+                'competitor-individual-email-confirm':{'label':'Email Confirm', 'type':'toggle', 'default':'no', 'separator':'no', 'toggles':{
+                    'no':'No', 'yes':'Yes',
+                    }},
                 'competitor-individual-etransfer-email':{'label':'e-transfer Email', 'type':'toggle', 'default':'hidden', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
                 'competitor-individual-etransfer-email-label':{'label':'e-transfer Email Label', 'type':'text'},
+                'competitor-individual-etransfer-email-confirm':{'label':'e-tranfer Email Confirm', 'type':'toggle', 'default':'no', 'separator':'no', 'toggles':{
+                    'no':'No', 'yes':'Yes',
+                    }},
                 'competitor-individual-notes-enable':{'label':'Notes', 'type':'toggle', 'default':'yes', 'separator':'no', 'toggles':{
-                    'no':'No',
-                    'yes':'Yes',
+                    'no':'No', 'yes':'Yes',
                     }},
             }},
         '_competitor_group_parent_msg':{'label':'Group/Ensemble Competitor Form', 
@@ -6024,10 +6029,16 @@ function ciniki_musicfestivals_main() {
                 'competitor-group-instrument':{'label':'Instrument', 'type':'toggle', 'default':'hidden', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
+                'competitor-group-email-confirm':{'label':'Email Confirm', 'type':'toggle', 'default':'no', 'separator':'no', 'toggles':{
+                    'no':'No', 'yes':'Yes',
+                    }},
                 'competitor-group-etransfer-email':{'label':'e-transfer Email', 'type':'toggle', 'default':'hidden', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
                 'competitor-group-etransfer-email-label':{'label':'e-transfer Email Label', 'type':'text'},
+                'competitor-group-etransfer-email-confirm':{'label':'e-tranfer Email Confirm', 'type':'toggle', 'default':'no', 'separator':'no', 'toggles':{
+                    'no':'No', 'yes':'Yes',
+                    }},
                 'competitor-group-notes-enable':{'label':'Notes', 'type':'toggle', 'default':'yes', 'separator':'no', 'toggles':{
                     'no':'No',
                     'yes':'Yes',
