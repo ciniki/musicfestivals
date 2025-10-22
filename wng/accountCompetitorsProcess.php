@@ -507,7 +507,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         $fields['email_confirm'] = array(
             'id' => 'email_confirm',
             'label' => 'Confirm Email',
-            'ftype' => 'text',
+            'ftype' => 'email',
             'size' => 'small-medium',
             'required' => 'yes',
             'class' => '',
@@ -571,7 +571,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             $fields['etransfer_email_confirm'] = array(
                 'id' => 'etransfer_email_confirm',
                 'label' => 'Confirm Awards etransfer Email',
-                'ftype' => 'text',
+                'ftype' => 'email',
                 'size' => 'small-medium',
                 'required' => 'yes',
                 'class' => '',
@@ -584,7 +584,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     //
     if( !isset($fields['email_confirm']) && isset($fields['etransfer_email_confirm']) ) {
         $fields['email']['size'] = 'large';
-    } elseif( isset($fields['email_confirm']) && !isset($fields['etransfer_email_confirm']) ) {
+    } elseif( isset($fields['email_confirm']) && !isset($fields['etransfer_email_confirm']) && isset($fields['etransfer_emails']) ) {
         $fields['etransfer_email']['size'] = 'large';
     }
 /*        if( $ctype != 50
