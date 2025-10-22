@@ -159,6 +159,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'registration-parent-msg',
         'registration-teacher-msg',
         'registration-adult-msg',
+        'registration-teacher',
         'registration-participation-label',
         'registration-class-participation',
         'registration-title-label',

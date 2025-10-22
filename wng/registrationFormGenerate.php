@@ -667,7 +667,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     //
     // Add teacher
     //
-    if( $customer_type != 20 ) {
+    if( $customer_type != 20 
+        && (!isset($festival['registration-teacher']) || in_array($festival['registration-teacher'], ['optional', 'required'])) 
+        ) {
         $fields["teacher_customer_id"] = array(
             'id' => "teacher_customer_id",
             'ftype' => 'select',
@@ -676,6 +678,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'blank-label' => '',
             'onchange' => "teacherSelected()",
             'options' => $teachers,
+            'required' => (isset($festival['registration-teacher']) && $festival['registration-teacher'] == 'required' ? 'yes' : 'no'),
             'complex_options' => array(
                 'value' => 'id',
                 'name' => 'name',

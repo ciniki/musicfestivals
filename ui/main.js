@@ -5789,6 +5789,9 @@ function ciniki_musicfestivals_main() {
                 'registration-parent-msg':{'label':'Parents Intro', 'type':'textarea', 'size':'medium'},
                 'registration-teacher-msg':{'label':'Teachers Intro', 'type':'textarea', 'size':'medium'},
                 'registration-adult-msg':{'label':'Adult Intro', 'type':'textarea', 'size':'medium'},
+                'registration-teacher':{'label':'Teacher', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
+                    }},
                 'registration-participation-label':{'label':'Participation Label', 'type':'text', 'hint':'I would like to participate'},
                 'registration-class-participation':{'label':'Class Participation', 'type':'toggle', 'default':'none', 
                     'active':function() { return M.modFlagOn('ciniki.musicfestivals', 0x010000) ? 'yes' : 'no'; },
