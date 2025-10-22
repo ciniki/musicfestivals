@@ -247,7 +247,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 ),
             array('container'=>'divisions', 'fname'=>'division_id', 
                 'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'date'=>'division_date_text', 
-                    'location', 'adjudicator_ids', 'adjudicator',
+                    'location', 'adjudicator_ids', 'adjudicator_names',
                     'sort_key' => 'division_sort_key',
                     ),
                 ),
@@ -453,8 +453,8 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                             $division[$field] = 'Date: ' . $division[$field];
                         } elseif( $field == 'name' && $division[$field] != '' ) {
                             $division[$field] = 'Section: ' . $division[$field];
-                        } elseif( $field == 'adjudicator' && $division[$field] != '' ) {
-                            $division[$field] = 'Adjudicator: ' . $division[$field];
+                        } elseif( $field == 'adjudicator' && $division['adjudicator_names'] != '' ) {
+                            $division[$field] = 'Adjudicator: ' . $division['adjudicator_names'];
                         } elseif( $field == 'location' && $division[$field] != '' ) {
                             $division[$field] = 'Location: ' . $division[$field];
                         }
