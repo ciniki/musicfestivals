@@ -1159,7 +1159,19 @@ function ciniki_musicfestivals_main() {
                     'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("videos");',
                     },
                 'notes':{'label':'Notes', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("notes");'},
-                'instrument':{'label':'Instrument', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("instrument");'},
+                'instrument':{'label':'Instrument', 
+                    'visible':function() { 
+                        if( M.ciniki_musicfestivals_main.festival.settingValue('competitor-individual-instrument') == 'required'
+                            || M.ciniki_musicfestivals_main.festival.settingValue('competitor-individual-instrument') == 'optional'
+                            || M.ciniki_musicfestivals_main.festival.settingValue('competitor-group-instrument') == 'required'
+                            || M.ciniki_musicfestivals_main.festival.settingValue('competitor-group-instrument') == 'optional'
+                            ) {
+                            return 'yes';
+                        }
+                        return 'no'; 
+                        },
+                    'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("instrument");',
+                    },
                 'accompanist':{'label':'Accompanist', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("accompanist");'},
                 'schedule':{'label':'Schedule', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("schedule");'},
                 'marks':{'label':'Marks', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("marks");'},
