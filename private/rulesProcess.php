@@ -25,6 +25,7 @@ function ciniki_musicfestivals_rulesProcess(&$ciniki, $tnid, $rules_str) {
                 && is_numeric($section['start']) 
                 ) {
                 $rules['sections'][$sid]['start'] = intval($section['start']);
+                $start = intval($section['start']);
             } else {
                 $rules['sections'][$sid]['start'] = $start;
             }
