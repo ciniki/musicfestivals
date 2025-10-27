@@ -3653,7 +3653,8 @@ function ciniki_musicfestivals_main() {
             }
         }
         if( s == 'recommendation_entries' || s == 'recommendation_member_entries' ) {
-            switch(d.status) {
+            return M.ciniki_musicfestivals_main.recommendationStatusColour(this.data, d);
+/*            switch(d.status) {
                 case '10': 
                     if( d.position == '1st Alt' || d.position == '2nd Alt' || d.position == '3rd Alt' ) {
                         return 'statusyellow';
@@ -3664,7 +3665,7 @@ function ciniki_musicfestivals_main() {
                 case '70': return 'statusred';
                 case '80': return 'statuspurple';
                 case '90': return 'statusgrey';
-            }
+            } */
         }
         if( s == 'ssam_sections' && this.sections.ssam_sections.selected == d.name ) {
             return 'highlight';
@@ -15930,23 +15931,7 @@ function ciniki_musicfestivals_main() {
     }
     this.recommendation.rowClass = function(s, i, d) {
         if( s == 'entries' ) {
-            switch(d.status) {
-                case '10': 
-                    if( d.position == '1st Alt' || d.position == '2nd Alt' || d.position == '3rd Alt' ) {
-                        return 'statusyellow';
-                    }
-                    return '';
-                case '20': return 'statusred';
-                case '30': return 'statusorange';
-                case '35': return 'statuspurple';
-                case '40': return 'statuspurple';
-                case '45': return 'statuspurple';
-                case '50': return 'statusgreen';
-                case '70': return 'statusgrey';
-                case '80': return 'statusgrey';
-                case '85': return 'statusgrey';
-                case '90': return 'statusgrey';
-            }
+            return M.ciniki_musicfestivals_main.recommendationStatusColour(M.ciniki_musicfestivals_main.festival.data, d);
         }
     }
     this.recommendation.rowFn = function(s, i, d) {
@@ -16195,19 +16180,7 @@ function ciniki_musicfestivals_main() {
     }
     this.recommendationentry.liveSearchResultRowClass = function(s, f, i, d) { 
         if( s == 'name_search' ) {
-            switch(d.status) {
-                case '10': 
-                    if( d.position == '1st Alt' || d.position == '2nd Alt' || d.position == '3rd Alt' ) {
-                        return 'statusyellow';
-                    }
-                    return '';
-                case '30': return 'statusorange';
-                case '50': return 'statusgreen';
-                case '70': return 'statusred';
-                case '80': return 'statuspurple';
-                case '85':
-                case '90': return 'statusgrey';
-            }
+            return M.ciniki_musicfestivals_main.recommendationStatusColour(M.ciniki_musicfestivals_main.festival.data, d);
         }
         return '';
     }
@@ -16231,19 +16204,7 @@ function ciniki_musicfestivals_main() {
     }
     this.recommendationentry.rowClass = function(s, i, d) {
         if( s == 'class_recommendations' || s == 'name_search' || s == 'name_recommendations' ) {
-            switch(d.status) {
-                case '10': 
-                    if( d.position == '1st Alt' || d.position == '2nd Alt' || d.position == '3rd Alt' ) {
-                        return 'statusyellow';
-                    }
-                    return '';
-                case '30': return 'statusorange';
-                case '50': return 'statusgreen';
-                case '70': return 'statusred';
-                case '80': return 'statuspurple';
-                case '85': 
-                case '90': return 'statusgrey';
-            }
+            return M.ciniki_musicfestivals_main.recommendationStatusColour(M.ciniki_musicfestivals_main.festival.data, d);
         }
     }
 //    this.recommendationentry.changeStatus = function(s) {
@@ -17098,6 +17059,26 @@ function ciniki_musicfestivals_main() {
             return 'background: ' + festival['provincials-status-a' + reg.provincials_status + '-colour'] + ';';
         }
         return '';
+    }
+
+    this.recommendationStatusColour = function(festival, entry) {
+        switch(entry.status) {
+            case '10': 
+                if( entry.position == '1st Alt' || entry.position == '2nd Alt' || entry.position == '3rd Alt' ) {
+                    return 'statusyellow';
+                }
+                return '';
+            case '20': return 'statusblue';  
+            case '30': 
+            case '35': 
+            case '40': 
+            case '45': return 'statusorange';
+            case '50': return 'statusgreen';
+            case '70': return 'statusred';
+            case '80': return 'statuspurple';
+            case '85': 
+            case '90': return 'statusgrey';
+        }
     }
 
     this.tenantInit = function() {
