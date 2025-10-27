@@ -16205,6 +16205,7 @@ function ciniki_musicfestivals_main() {
                 case '50': return 'statusgreen';
                 case '70': return 'statusred';
                 case '80': return 'statuspurple';
+                case '85':
                 case '90': return 'statusgrey';
             }
         }
@@ -16240,6 +16241,7 @@ function ciniki_musicfestivals_main() {
                 case '50': return 'statusgreen';
                 case '70': return 'statusred';
                 case '80': return 'statuspurple';
+                case '85': 
                 case '90': return 'statusgrey';
             }
         }
