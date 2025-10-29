@@ -21,7 +21,7 @@ function ciniki_musicfestivals_accoladeAdd(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'name'=>array('required'=>'yes', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'),
-        'subcategory_id'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Subcategory'),
+        'subcategory_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Subcategory'),
 //        'typename'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Type'),
 //        'category'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Category'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
@@ -46,6 +46,25 @@ function ciniki_musicfestivals_accoladeAdd(&$ciniki) {
     $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.accoladeAdd');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
+    }
+
+    //
+    // Make sure the subcategory exists
+    //
+    if( !isset($args['subcategory_id']) || $args['subcategory_id'] == '' || $args['subcategory_id'] == 0 ) {
+        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.111', 'msg'=>'You must specify a subcategory'));
+    }
+    $strsql = "SELECT id "
+        . "FROM ciniki_musicfestival_accolade_subcategories "
+        . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['subcategory_id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'subcat');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.112', 'msg'=>'Unable to load subcategory', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['subcat']) ) {
+        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.113', 'msg'=>'Subcategory does not exist'));
     }
 
     //
