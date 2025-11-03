@@ -2049,7 +2049,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 else {
                     $fields[$fid]['value'] = '';
                 }
-            } elseif( preg_match("/(video_|music_|backtrack|artwork)/", $fid) && $fields[$fid]['value'] == '' ) {
+            } elseif( preg_match("/(video_|music_|backtrack[0-9]|artwork)/", $fid) && $fields[$fid]['value'] == '' ) {
                 $fields[$fid]['value'] = 'None';
             } elseif( $fid == 'notes' && $fields[$fid]['value'] == '' ) {
                 $fields[$fid]['value'] = 'None';
@@ -2137,7 +2137,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $fields[$fid]['ftype'] = 'textarea';
             }
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
-                && preg_match("/(title|composer|movements|perf_time|video_url|music_orgfilename|backtrack|artwork)/", $fid)
+                && preg_match("/(title|composer|movements|perf_time|video_url|music_orgfilename|backtrack[0-9]|artwork)/", $fid)
                 && !preg_match("/line-title/", $fid)
                 && isset($selected_member['open']) 
                 && $selected_member['open'] == 'yes'
@@ -2168,7 +2168,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     $fields[$fid]['ftype'] = 'select';
                 }
             }
-            elseif( preg_match("/(title|composer|movements|perf_time|video_url|music_orgfilename|backtrack|artwork)/", $fid)
+            elseif( preg_match("/(title|composer|movements|perf_time|video_url|music_orgfilename|backtrack[0-9]|artwork)/", $fid)
                 && ($festival['edit'] == 'yes' || (isset($selected_section['edit']) && $selected_section['edit'] == 'yes'))
                 && $registration['billing_customer_id'] == $request['session']['customer']['id']
                 ) {
@@ -2192,7 +2192,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $fields[$fid]['editable'] = 'yes';
                 $editable = 'yes';
             } 
-            elseif( preg_match("/backtrack/", $fid) 
+            elseif( preg_match("/backtrack[0-9]/", $fid) 
                 && $festival['upload'] == 'yes' 
                 && $registration['billing_customer_id'] == $request['session']['customer']['id']
                 ) {
