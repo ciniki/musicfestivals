@@ -16108,9 +16108,9 @@ function ciniki_musicfestivals_main() {
             'status':{'label':'', 'hidelabel':'yes', 'type':'toggle', 'join':'no', 'toggles':{
                 '10':'Recommended',
                 '20':'Issues',
-                '30':'Accepted',
+                '30':'Approved',
                 '35':'Invited',
-                '40':'Confirmed',
+                '40':'Accepted',
                 '45':'Instructions Sent',
                 '50':'Registered',
                 '70':'Turned Down',
