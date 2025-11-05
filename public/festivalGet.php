@@ -562,7 +562,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $strsql .= "accolades.name AS accolades, "
                     . "'' AS levels, "
                     . "'' AS provincials_class_name ";
-            } elseif( isset($args['provincials']) && $args['provincials'] == 'yes' ) {
+            } elseif( isset($args['provincials']) && $args['provincials'] == 'yes' 
+                && isset($festival['provincial-festival-id']) && $festival['provincial-festival-id'] > 0 
+                ) {
                 $strsql .= "'' AS accolades, "
                     . "'' AS levels, "
                     . "IFNULL(provincials.name, '??') AS provincials_class_name ";
