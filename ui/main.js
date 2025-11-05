@@ -16119,6 +16119,21 @@ function ciniki_musicfestivals_main() {
                 '90':'Expired',
                 }} 
             }},
+        'np_buttons':{'label':'', 'flexcolumn':1, 'flexBasis':'30em', 'buttons':{
+            'next':{'label':'Next', 
+                'visible':function() { 
+                    var p = M.ciniki_musicfestivals_main.recommendationentry;
+                    return p.nplist != null && p.nplist.indexOf('' + p.entry_id) < (p.nplist.length - 1) ? 'yes' : 'no';
+                    },
+                'fn':'M.ciniki_musicfestivals_main.recommendationentry.next();',
+                },
+            }},
+/*    this.recommendationentry.prevButtonFn = function() {
+        if( this.nplist != null && this.nplist.indexOf('' + this.entry_id) > 0 ) {
+            return 'M.ciniki_musicfestivals_main.recommendationentry.save(\'M.ciniki_musicfestivals_main.recommendationentry.open(null,' + this.nplist[this.nplist.indexOf('' + this.entry_id) - 1] + ');\');';
+        }
+        return null;
+    } */
         'general':{'label':'Recommendation', 'flexcolumn':1, 'flexBasis':'30em', 'fields':{
 // Note: This was added by mistake, can be added back if really needs to change from one submission to another
 //            'recommendation_id':{'label':'Submission', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
@@ -16224,6 +16239,12 @@ function ciniki_musicfestivals_main() {
             return M.ciniki_musicfestivals_main.recommendationStatusColour(M.ciniki_musicfestivals_main.festival.data, d);
         }
         return '';
+    }
+    this.recommendationentry.next = function() {
+        if( this.nplist != null && this.nplist.indexOf('' + this.entry_id) < (this.nplist.length - 1) ) {
+            this.save('M.ciniki_musicfestivals_main.recommendationentry.open(null,' + this.nplist[this.nplist.indexOf('' + this.entry_id) + 1] + ');');
+        }
+        return null;
     }
     this.recommendationentry.cellValue = function(s, i, j, d) {
         if( s == 'class_recommendations' ) {
