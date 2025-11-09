@@ -69,10 +69,11 @@ function ciniki_musicfestivals_sysadminStatus($ciniki) {
             . ") "
         . "LEFT JOIN ciniki_musicfestival_settings AS settings ON ("
             . "festivals.id = settings.festival_id "
+            . "AND festivals.tnid = settings.tnid "
             . "AND detail_key IN ('waiver-general-title', 'waiver-general-msg') "
             . ") "
         . "WHERE festivals.status < 50 "
-        . "ORDER BY festivals.start_date "
+        . "ORDER BY festivals.start_date, festivals.id, settings.detail_key "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -149,6 +150,23 @@ function ciniki_musicfestivals_sysadminStatus($ciniki) {
     $mail = isset($rc['mail']) ? $rc['mail'] : array();
 
     //
+    // Get the replyto settings
+    //
+    $strsql = "SELECT tnid, detail_value "
+        . "FROM ciniki_mail_settings "
+        . "WHERE tnid in (" . ciniki_core_dbQuoteIDs($ciniki, $tnids) . ") "
+        . "AND detail_key = 'smtp-reply-address' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'mail', 'fname'=>'tnid', 'fields'=>array('detail_value')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.752', 'msg'=>'Unable to load mail', 'err'=>$rc['err']));
+    }
+    $replyto = isset($rc['mail']) ? $rc['mail'] : array();
+
+    //
     // Get the wng sites
     //
     $strsql = "SELECT sites.tnid, sites.theme, "
@@ -183,6 +201,9 @@ function ciniki_musicfestivals_sysadminStatus($ciniki) {
         $festivals[$k]['smtp'] = '';
 
 
+        if( $k == 55 ) {
+            error_log(print_r($mail[$v['tnid']],true));
+        }
 
         if( isset($v['settings']['waiver-general-title']['detail_value']) && $v['settings']['waiver-general-title']['detail_value'] != '' 
             && isset($v['settings']['waiver-general-msg']['detail_value']) && $v['settings']['waiver-general-msg']['detail_value'] != '' 
@@ -190,7 +211,11 @@ function ciniki_musicfestivals_sysadminStatus($ciniki) {
             $festivals[$k]['waiver'] = 'yes';
         }
         if( isset($mail[$v['tnid']]['detail_value']) ) {
-            if( $mail[$v['tnid']]['detail_value'] == 'email-smtp.us-east-1.amazonaws.com' ) {
+            if( isset($replyto[$v['tnid']]['detail_value']) && $replyto[$v['tnid']]['detail_value'] == '' 
+                && $mail[$v['tnid']]['detail_value'] == 'email-smtp.us-east-1.amazonaws.com' 
+                ) {
+                $festivals[$k]['smtp'] = 'AWSTenant';
+            } elseif( $mail[$v['tnid']]['detail_value'] == 'email-smtp.us-east-1.amazonaws.com' ) {
                 $festivals[$k]['smtp'] = 'AWS';
             } else {
                 $festivals[$k]['smtp'] = $mail[$v['tnid']]['detail_value'];
