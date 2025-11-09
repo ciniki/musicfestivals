@@ -211,7 +211,7 @@ function ciniki_musicfestivals_sysadminStatus($ciniki) {
             $festivals[$k]['waiver'] = 'yes';
         }
         if( isset($mail[$v['tnid']]['detail_value']) ) {
-            if( isset($replyto[$v['tnid']]['detail_value']) && $replyto[$v['tnid']]['detail_value'] == '' 
+            if( (!isset($replyto[$v['tnid']]['detail_value']) || $replyto[$v['tnid']]['detail_value'] == '')
                 && $mail[$v['tnid']]['detail_value'] == 'email-smtp.us-east-1.amazonaws.com' 
                 ) {
                 $festivals[$k]['smtp'] = 'AWSTenant';
