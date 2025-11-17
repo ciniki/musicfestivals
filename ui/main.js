@@ -17132,9 +17132,9 @@ function ciniki_musicfestivals_main() {
                 return '';
             case '20': return 'statusblue';  
             case '30': 
-            case '35': 
-            case '40': 
-            case '45': return 'statusorange';
+            case '35': return 'statusorange';
+            case '40': return 'statusteal';
+            case '45': return 'statusteal';
             case '50': return 'statusgreen';
             case '70': return 'statusred';
             case '80': return 'statuspurple';
