@@ -3852,6 +3852,7 @@ function ciniki_musicfestivals_main() {
             if( n != 0 && n != '0' && n != '' ) {
                 var args = {
                     'tnid':M.curTenantID, 
+                    'syllabus_id':M.ciniki_musicfestivals_main.festival.syllabus_id,
                     'section_id':sid,
                     'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
                     }; 
@@ -3877,6 +3878,7 @@ function ciniki_musicfestivals_main() {
         M.confirm(msg, "Confirm", function(rsp) {
             var args = {
                 'tnid':M.curTenantID, 
+                'syllabus_id':M.ciniki_musicfestivals_main.festival.syllabus_id,
                 'section_id':sid,
                 'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
                 'instrument':yesno,
@@ -3897,6 +3899,7 @@ function ciniki_musicfestivals_main() {
         M.confirm("Are you sure you want to update Accompanist to " + label + "?", "Confirm", function(rsp) {
             var args = {
                 'tnid':M.curTenantID, 
+                'syllabus_id':M.ciniki_musicfestivals_main.festival.syllabus_id,
                 'section_id':sid,
                 'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
                 'accompanist':label,
@@ -3921,6 +3924,7 @@ function ciniki_musicfestivals_main() {
         M.confirm(msg, "Confirm", function(rsp) {
             var args = {
                 'tnid':M.curTenantID, 
+                'syllabus_id':M.ciniki_musicfestivals_main.festival.syllabus_id,
                 'section_id':sid,
                 'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
                 'multireg':yesno,
@@ -3941,6 +3945,7 @@ function ciniki_musicfestivals_main() {
         M.confirm("Are you sure you want to update Movements to " + label + "?", "Confirm", function(rsp) {
             var args = {
                 'tnid':M.curTenantID, 
+                'syllabus_id':M.ciniki_musicfestivals_main.festival.syllabus_id,
                 'section_id':sid,
                 'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
                 'movements':label,
@@ -3961,6 +3966,7 @@ function ciniki_musicfestivals_main() {
         M.confirm("Are you sure you want to update Composer to " + label + "?", "Confirm", function(rsp) {
             var args = {
                 'tnid':M.curTenantID, 
+                'syllabus_id':M.ciniki_musicfestivals_main.festival.syllabus_id,
                 'section_id':sid,
                 'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
                 'composer':label,
@@ -3981,6 +3987,7 @@ function ciniki_musicfestivals_main() {
         M.confirm("Are you sure you want to update Backtrack to " + label + "?", "Confirm", function(rsp) {
             var args = {
                 'tnid':M.curTenantID, 
+                'syllabus_id':M.ciniki_musicfestivals_main.festival.syllabus_id,
                 'section_id':sid,
                 'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
                 'backtrack':label,
@@ -4001,6 +4008,7 @@ function ciniki_musicfestivals_main() {
         M.confirm("Are you sure you want to update Artwork to " + label + "?", "Confirm", function(rsp) {
             var args = {
                 'tnid':M.curTenantID, 
+                'syllabus_id':M.ciniki_musicfestivals_main.festival.syllabus_id,
                 'section_id':sid,
                 'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
                 'artwork':label,
@@ -4021,6 +4029,7 @@ function ciniki_musicfestivals_main() {
         M.confirm("Are you sure you want to update Virtual Video to " + label + "?", "Confirm", function(rsp) {
             var args = {
                 'tnid':M.curTenantID, 
+                'syllabus_id':M.ciniki_musicfestivals_main.festival.syllabus_id,
                 'section_id':sid,
                 'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
                 'video':label,
@@ -4041,6 +4050,7 @@ function ciniki_musicfestivals_main() {
         M.confirm("Are you sure you want to update Virtual Music to " + label + "?", "Confirm", function(rsp) {
             var args = {
                 'tnid':M.curTenantID, 
+                'syllabus_id':M.ciniki_musicfestivals_main.festival.syllabus_id,
                 'section_id':sid,
                 'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
                 'music':label,
@@ -4063,6 +4073,7 @@ function ciniki_musicfestivals_main() {
             if( f != null && f != '' && r != null ) {
                 var args = {
                     'tnid':M.curTenantID, 
+                    'syllabus_id':M.ciniki_musicfestivals_main.festival.syllabus_id,
                     'section_id':0,
                     'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
                     'find_replace_fields':'description',
@@ -4085,6 +4096,7 @@ function ciniki_musicfestivals_main() {
             if( f != null && f != '' && r != null ) {
                 var args = {
                     'tnid':M.curTenantID, 
+                    'syllabus_id':M.ciniki_musicfestivals_main.festival.syllabus_id,
                     'section_id':sid,
                     'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
                     'find_replace_fields':'synopsis',
@@ -7702,6 +7714,7 @@ function ciniki_musicfestivals_main() {
             if( n != 0 && n != '0' && n != '' ) {
                 var args = {
                     'tnid':M.curTenantID, 
+                    'syllabus_id':M.ciniki_musicfestivals_main.festival.syllabus_id, 
                     'section_id':M.ciniki_musicfestivals_main.classes.section_id, 
                     'festival_id':M.ciniki_musicfestivals_main.classes.festival_id,
                     }; 
@@ -16400,6 +16413,7 @@ function ciniki_musicfestivals_main() {
         M.confirm(question, "Confirm", function(rsp) {
             var args = {
                 'tnid':M.curTenantID, 
+                'syllabus_id':M.ciniki_musicfestivals_main.festival.syllabus_id,
                 'section_id':M.ciniki_musicfestivals_main.marking.section_id,
                 'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
                 'marking':newflags,

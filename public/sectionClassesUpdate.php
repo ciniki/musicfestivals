@@ -22,6 +22,7 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
+        'syllabus_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Syllabus'),
         'section_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Section'),
         'category_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'),
         'earlybird_fee_update'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Earlybird Fee Update'),
@@ -97,6 +98,11 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         . "classes.plus_fee, "
         . "classes.synopsis "
         . "FROM ciniki_musicfestival_categories AS categories "
+        . "INNER JOIN ciniki_musicfestival_sections AS sections ON ("
+            . "categories.section_id = sections.id "
+            . "AND sections.syllabus_id = '" . ciniki_core_dbQuote($ciniki, $args['syllabus_id']) . "' "
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
         . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
             . "categories.id = classes.category_id "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
