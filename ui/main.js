@@ -16284,6 +16284,8 @@ function ciniki_musicfestivals_main() {
             }
             var p = M.ciniki_musicfestivals_main.recommendationentry;
             p.data = rsp.entry;
+            p.sections.class_recommendations.label = 'Recommendations - ' + rsp.entry.class_code;
+            p.sections.name_recommendations.label = 'All Entries - ' + rsp.entry.name;
             p.data.class_recommendations = rsp.class_recommendations;
             p.data.name_recommendations = rsp.name_recommendations;
 //            p.menutabs.selected = rsp.entry.status;

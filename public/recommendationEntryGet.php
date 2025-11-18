@@ -90,15 +90,20 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
             . "entries.position, "
             . "entries.name, "
             . "entries.mark, "
-            . "entries.notes "
+            . "entries.notes, "
+            . "IFNULL(classes.code, '') AS class_code "
             . "FROM ciniki_musicfestival_recommendation_entries AS entries "
+            . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+                . "entries.class_id = classes.id "
+                . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "WHERE entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND entries.id = '" . ciniki_core_dbQuote($ciniki, $args['entry_id']) . "' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'entries', 'fname'=>'id', 
-                'fields'=>array('id', 'status', 'recommendation_id', 'class_id', 'position', 'name', 'mark', 'notes'),
+                'fields'=>array('id', 'status', 'recommendation_id', 'class_id', 'position', 'name', 'mark', 'notes', 'class_code'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -153,8 +158,8 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
         . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "ORDER BY classes.code "
         . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'classes', 'fname'=>'id', 'fields'=>array('id', 'name')),
         ));
     if( $rc['stat'] != 'ok' ) {
