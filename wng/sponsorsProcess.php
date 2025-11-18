@@ -86,7 +86,7 @@ function ciniki_musicfestivals_wng_sponsorsProcess(&$ciniki, $tnid, &$request, $
         //
         // Add the title block
         //
-        if( isset($s['title']) && $s['title'] != '' ) {
+        if( isset($s['title']) && $s['title'] != '' && isset($s['display-fomat']) && $s['display-format'] != 'names' ) {
             $blocks[] = array(
                 'type' => 'title', 
                 'level' => 2,
@@ -126,6 +126,32 @@ function ciniki_musicfestivals_wng_sponsorsProcess(&$ciniki, $tnid, &$request, $
                 'level' => 3,
                 'class' => 'aligncenter musicfestival-sponsors',
                 'items' => $sponsors,
+                );
+        } elseif( isset($s['display-format']) && $s['display-format'] == 'names' ) {
+            $content = '';
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'urlProcess');
+            foreach($sponsors as $sponsor) {
+                $url = '';
+                if( $sponsor['url'] != '' ) {
+                    $rc = ciniki_wng_urlProcess($ciniki, $tnid, $request, 0, $sponsor['url']);
+                    if( $rc['stat'] == 'ok' && isset($rc['url']) ) {
+                        $url = $rc['url'];
+                    }
+                }
+
+                if( $url != '' ) {
+                    $content .= "<a class='link' target='_blank' href='{$url}'>{$sponsor['name']}</a>\n\n";
+                } else {
+                    $content .= "{$sponsor['name']}\n\n";
+                }
+            }
+            $blocks[] = array(
+                'type' => 'text',
+                'level' => 2,
+                'title' => isset($s['title']) ? $s['title'] : '',
+                'class' => 'aligncenter musicfestival-sponsors',
+                'columns' => isset($s['column-size']) ? $s['column-size'] : 'large',
+                'content' => $content,
                 );
 
         } else {

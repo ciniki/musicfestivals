@@ -936,6 +936,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'images' => 'Sponsor Logo Images Only',
                     'contentphoto' => 'Content Photo List',
                     'text' => 'No Images - Text Only',
+                    'names' => 'Name List',
                     )),
                 'image-size'=>array('label'=>'Image Size', 'type'=>'toggle', 'default'=>'medium', 'toggles'=>array(    
                     'xsmall' => 'X-Small',
@@ -944,12 +945,18 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'large' => 'Large',
                     'xlarge' => 'X-Large',
                     )),
-                'level' => array('label'=>'Sponsor Level **deprecated**', 'type'=>'toggle', 'default'=>'1', 
-                    'toggles'=>array('1'=>'1', '2'=>'2'),
-                    ),
+//                'level' => array('label'=>'Sponsor Level **deprecated**', 'type'=>'toggle', 'default'=>'1', 
+//                    'toggles'=>array('1'=>'1', '2'=>'2'),
+//                    ),
                 'tag' => array('label'=>'Sponsor Tag', 'type'=>'select', 
                     'options'=>$sponsor_tags,
                     ),
+                'column-size'=>array('label'=>'Text Columns', 'type'=>'toggle', 'default'=>'large', 'toggles'=>array(    
+                    'none' => 'None',
+                    'small' => 'Small',
+                    'medium' => 'Medium',
+                    'large' => 'Large',
+                    )),
                 ),
             );
     }
