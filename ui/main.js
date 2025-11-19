@@ -5720,6 +5720,7 @@ function ciniki_musicfestivals_main() {
                     'code-category-class':'Code - Category - Class',
                     }},
                 'runsheets-timeslot-description':{'label':'Include Timeslot Descriptions', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'runsheets-accolades-list':{'label':'Include Accolades', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'runsheets-timeslot-singlepage':{'label':'Single Timeslot/Page', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'runsheets-perftime-show':{'label':'Show Performance Time', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'runsheets-mark':{'label':'Include Mark', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},

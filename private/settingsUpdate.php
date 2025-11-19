@@ -80,6 +80,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'runsheets-separate-classes',
         'runsheets-class-format',
         'runsheets-timeslot-description',
+        'runsheets-accolades-list',
         'runsheets-timeslot-singlepage',
         'runsheets-perftime-show',
         'runsheets-mark',
