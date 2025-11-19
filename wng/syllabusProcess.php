@@ -427,7 +427,8 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
                     $sections[$sid]['buttons'] .= ' ';
                 }
                 if( $groupname == '' ) {
-                    $groupname = 'Other';
+                    $groupname = 'other';
+                    $group['groupname'] = 'Other';
                 }
                 $sections[$sid]['buttons'] .= "<a class='button' href='{$request['ssl_domain_base_url']}{$request['page']['path']}/{$section['permalink']}/{$groupname}'>{$group['groupname']}</a>";
             }
