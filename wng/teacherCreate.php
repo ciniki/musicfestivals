@@ -42,8 +42,9 @@ function ciniki_musicfestivals_wng_teacherCreate(&$ciniki, $tnid, $request, $arg
                 . "AND c.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . "AND c.status < 60 "
                 . ") "
-            . "WHERE e.email = '" . ciniki_core_dbQuote($ciniki, $_POST['f-teacher_email']) . "' "
+            . "WHERE e.email = '" . ciniki_core_dbQuote($ciniki, trim($_POST['f-teacher_email'])) . "' "
             . "AND e.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "LIMIT 1 "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
         if( $rc['stat'] != 'ok' ) {
