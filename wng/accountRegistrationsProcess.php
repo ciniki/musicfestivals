@@ -2117,23 +2117,28 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.418', 'msg'=>'Unable to load competitor', 'err'=>$rc['err']));
                 }
-                $competitor = isset($rc['competitor']) ? $rc['competitor'] : array();
-                $address = $competitor['address']
-                    . ($competitor['city'] != '' ? ', ' . $competitor['city'] : '')
-                    . ($competitor['province'] != '' ? ', ' . $competitor['province'] : '')
-                    . ($competitor['postal'] != '' ? ', ' . $competitor['postal'] : '')
-                    . "";
-                $fields[$fid]['value'] = $competitor['name'] . ($competitor['pronoun'] != '' ? ' (' . $competitor['pronoun'] . ')' : '')
-                    . (isset($competitor['parent']) && $competitor['parent'] != '' ? "\nParent: " . $competitor['parent'] : '')
-                    . "\nAddress: " . $address
-                    . "\nCell Phone: " . $competitor['phone_cell']
-                    . ($competitor['phone_home'] != '' ? "\nHome Phone: " . $competitor['phone_home'] : '')
-                    . "\nEmail: " . $competitor['email']
-                    . "\nAge: " . $competitor['age']
-                    . (isset($competitor['study_level']) && $competitor['study_level'] != '' ? "\nLevel: " . $competitor['study_level'] : '')
-                    . (isset($competitor['instrument']) && $competitor['instrument'] != '' ? "\nInstrument: " . $competitor['instrument'] : '')
-                    . (isset($competitor['notes']) && $competitor['notes'] != '' ? "\nNotes: " . $competitor['notes'] : '')
-                    . "";
+                if( isset($rc['competitor']) ) {
+                    $competitor = isset($rc['competitor']) ? $rc['competitor'] : array();
+                    $address = $competitor['address']
+                        . ($competitor['city'] != '' ? ', ' . $competitor['city'] : '')
+                        . ($competitor['province'] != '' ? ', ' . $competitor['province'] : '')
+                        . ($competitor['postal'] != '' ? ', ' . $competitor['postal'] : '')
+                        . "";
+                    $fields[$fid]['value'] = $competitor['name'] . ($competitor['pronoun'] != '' ? ' (' . $competitor['pronoun'] . ')' : '')
+                        . (isset($competitor['parent']) && $competitor['parent'] != '' ? "\nParent: " . $competitor['parent'] : '')
+                        . "\nAddress: " . $address
+                        . "\nCell Phone: " . $competitor['phone_cell']
+                        . ($competitor['phone_home'] != '' ? "\nHome Phone: " . $competitor['phone_home'] : '')
+                        . "\nEmail: " . $competitor['email']
+                        . "\nAge: " . $competitor['age']
+                        . (isset($competitor['study_level']) && $competitor['study_level'] != '' ? "\nLevel: " . $competitor['study_level'] : '')
+                        . (isset($competitor['instrument']) && $competitor['instrument'] != '' ? "\nInstrument: " . $competitor['instrument'] : '')
+                        . (isset($competitor['notes']) && $competitor['notes'] != '' ? "\nNotes: " . $competitor['notes'] : '')
+                        . "";
+                } else {
+                    $competitor = [];
+                    $fields[$fid]['value'] = 'Invalid registration - No Competitor specified';
+                }
                 $fields[$fid]['ftype'] = 'textarea';
             }
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
@@ -2235,7 +2240,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         } elseif( $editable == 'yes' ) {
             $fields['action']['value'] = 'update';
         }
-        if( $registration['timeslot_id'] > 0 ) {
+        if( isset($registration['timeslot_id']) && $registration['timeslot_id'] > 0 ) {
             //
             // Get the timeslot->division->section flags to know if comments have been released
             //
