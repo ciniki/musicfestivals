@@ -86,7 +86,7 @@ function ciniki_musicfestivals_wng_sponsorsProcess(&$ciniki, $tnid, &$request, $
         //
         // Add the title block
         //
-        if( isset($s['title']) && $s['title'] != '' && isset($s['display-fomat']) && $s['display-format'] != 'names' ) {
+        if( isset($s['title']) && $s['title'] != '' && isset($s['display-format']) && $s['display-format'] != 'names' ) {
             $blocks[] = array(
                 'type' => 'title', 
                 'level' => 2,
