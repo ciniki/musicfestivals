@@ -67,6 +67,9 @@ if( isset($argv[4]) && $argv[4] != '' ) {
 if( isset($argv[5]) && $argv[5] != '' ) {
     $end_code = $argv[5];
 }
+if( isset($argv[6]) && $argv[6] != '' ) {
+    $offset = $argv[6];
+}
 
 //
 // Load the old festival schedule times
@@ -111,6 +114,9 @@ $new_classes = isset($rc['classes']) ? $rc['classes'] : array();
 foreach($old_classes as $class) {
     print "{$class['code']} - {$class['name']} - {$class['schedule_seconds']} ";
     
+    if( isset($offset) ) {
+        $class['code'] += $offset;
+    }
     if( isset($new_classes[$class['code']])
         && $new_classes[$class['code']]['schedule_seconds'] == 0 
         && ($new_classes[$class['code']]['name'] == $class['name'] || isset($end_code))
