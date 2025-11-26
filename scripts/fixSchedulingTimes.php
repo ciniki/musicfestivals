@@ -61,6 +61,12 @@ if( isset($argv[3]) && $argv[3] != '' ) {
 } else {
     print_usage($argv);
 }
+if( isset($argv[4]) && $argv[4] != '' ) {
+    $start_code = $argv[4];
+}
+if( isset($argv[5]) && $argv[5] != '' ) {
+    $end_code = $argv[5];
+}
 
 //
 // Load the old festival schedule times
@@ -69,8 +75,12 @@ $strsql = "SELECT code, name, schedule_seconds, schedule_at_seconds, schedule_at
     . "FROM ciniki_musicfestival_classes "
     . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
     . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $old_festival_id) . "' "
-    . "AND schedule_seconds > 0 "
-    . "ORDER BY code, name "
+    . "AND schedule_seconds > 0 ";
+if( isset($end_code) ) {
+    $strsql .= "AND code >= '" . ciniki_core_dbQuote($ciniki, $start_code) . "' ";
+    $strsql .= "AND code <= '" . ciniki_core_dbQuote($ciniki, $end_code) . "' ";
+}
+$strsql .= "ORDER BY code, name "
     . "";
 $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'class');
 if( $rc['stat'] != 'ok' ) {
@@ -103,7 +113,7 @@ foreach($old_classes as $class) {
     
     if( isset($new_classes[$class['code']])
         && $new_classes[$class['code']]['schedule_seconds'] == 0 
-        && $new_classes[$class['code']]['name'] == $class['name']
+        && ($new_classes[$class['code']]['name'] == $class['name'] || isset($end_code))
         ) {
         print "update";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
