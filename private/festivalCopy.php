@@ -256,6 +256,7 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
                 'provincials_code',   
                 'flags', 'feeflags', 'titleflags', 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
                 'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 'keywords', 'options',
+                'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds',
                 )),
         array('container'=>'accolades', 'fname'=>'accolade_id',
             'fields'=>array('accolade_id')),
