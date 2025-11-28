@@ -167,9 +167,9 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
             $accolade['full_description'] .= '<b>Amount:</b> ' . $accolade['amount'] . '<br/>';
         }
         if( $accolade['description'] != '' ) {
-            if( $accolade['full_description'] != '' ) {   
-                $accolade['full_description'] .= '<br/>';
-            }
+//            if( $accolade['full_description'] != '' ) {   
+//                $accolade['full_description'] .= '<br/>';
+//            }
             $accolade['full_description'] .= $accolade['description'];
         }
 
@@ -198,7 +198,6 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
         //
         // Get the list of classes
         //
-//        if( isset($syllabus_id) && $syllabus_id > 0 ) {
         if( isset($s['display-classes']) && $s['display-classes'] == 'yes' ) {
             $strsql = "SELECT classes.id, "
                 . "classes.code AS class_code, "
@@ -431,7 +430,9 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
             $accolades[$tid]['url'] = $base_url . '/' . $subcategory['permalink'] . '/' . urlencode($accolade['permalink']);
             $accolades[$tid]['title-position'] = 'overlay-bottomhalf';
 
-            if( isset($s['display-format']) && $s['display-format'] == 'buttons-list' ) {
+            if( isset($s['display-format']) 
+                && in_array($s['display-format'], ['buttons-list','buttons-textcards'])
+                ) {
                 $accolades[$tid]['full_description'] = '';
                 if( $accolade['donated_by'] != '' ) {
                     $accolades[$tid]['full_description'] .= '<b>Donated By:</b> ' . $accolade['donated_by'] . '<br/>';
@@ -445,12 +446,17 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
                 if( $accolade['amount'] != '' ) {
                     $accolades[$tid]['full_description'] .= '<b>Amount:</b> ' . $accolade['amount'] . '<br/>';
                 }
+                // Synopsis is used in text cards and doesn't display full description
+                $accolades[$tid]['synopsis'] = $accolades[$tid]['full_description'];
                 if( $accolade['description'] != '' ) {
-                    if( $accolades[$tid]['full_description'] != '' ) {   
-                        $accolades[$tid]['full_description'] .= '<br/>';
-                    }
+//                    if( $accolades[$tid]['full_description'] != '' ) {   
+//                        $accolades[$tid]['full_description'] .= '<br/>';
+//                    }
                     $accolades[$tid]['full_description'] .= $accolade['description'];
                 }
+            }
+            if( isset($s['display-format']) && $s['display-format'] == 'buttons-textcards' ) {
+                $accolades[$tid]['link-text'] = 'More info';
             }
         }
 
@@ -507,7 +513,12 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
                 'class' => 'aligncenter',
                 'items' => $accolades,
                 );
-            
+        } elseif( isset($s['display-format']) && $s['display-format'] == 'buttons-textcards' ) {
+            $blocks[] = [
+                'type' => 'textcards',
+                'class' => 'musicfestival-accolades',
+                'items' => $accolades,
+                ];
         } else {
             $blocks[] = array(
                 'type' => 'imagebuttons',
