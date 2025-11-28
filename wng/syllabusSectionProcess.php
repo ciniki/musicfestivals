@@ -392,7 +392,10 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 ];
         }
         for($i = 2; $i <= 5; $i++) {
-            if( isset($s["section-{$tp}-button-{$i}-text"]) && $s["section-{$tp}-button-{$i}-text"] != '' ) {
+            if( isset($s["section-{$tp}-button-{$i}-page"]) 
+                && $s["section-{$tp}-button-{$i}-page"] != '' && $s["section-{$tp}-button-{$i}-page"] > 0 
+                && isset($s["section-{$tp}-button-{$i}-text"]) && $s["section-{$tp}-button-{$i}-text"] != '' 
+                ) {
                 $buttons[$tp][] = [
                     'page' => isset($s["section-{$tp}-button-{$i}-page"]) ? $s["section-{$tp}-button-{$i}-page"] : 0,
                     'url' => isset($s["section-{$tp}-button-{$i}-url"]) ? $s["section-{$tp}-button-{$i}-url"] : '',
