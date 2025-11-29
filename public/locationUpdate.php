@@ -48,30 +48,6 @@ function ciniki_musicfestivals_locationUpdate(&$ciniki) {
     }
 
     //
-    // Check name/permalink
-    //
-    if( isset($args['name']) ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
-        $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['name']);
-        //
-        // Make sure the permalink is unique
-        //
-        $strsql = "SELECT id, name, permalink "
-            . "FROM ciniki_musicfestival_locations "
-            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
-            . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['location_id']) . "' "
-            . "";
-        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
-        if( $rc['stat'] != 'ok' ) {
-            return $rc;
-        }
-        if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.330', 'msg'=>'You already have an location with this name, please choose another.'));
-        }
-    }
-
-    //
     // Get the current section
     //
     $strsql = "SELECT id, "
@@ -90,6 +66,31 @@ function ciniki_musicfestivals_locationUpdate(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.921', 'msg'=>'Unable to find requested location'));
     }
     $location = $rc['location'];
+
+    //
+    // Check name/permalink
+    //
+    if( isset($args['name']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+        $args['permalink'] = ciniki_core_makePermalink($ciniki, $args['name']);
+        //
+        // Make sure the permalink is unique
+        //
+        $strsql = "SELECT id, name, permalink "
+            . "FROM ciniki_musicfestival_locations "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
+            . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $location['festival_id']) . "' "
+            . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['location_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( $rc['num_rows'] > 0 ) {
+            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.330', 'msg'=>'You already have an location with this name, please choose another.'));
+        }
+    }
 
     //
     // Load the festival settings
