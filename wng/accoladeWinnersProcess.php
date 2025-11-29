@@ -62,42 +62,77 @@ function ciniki_musicfestivals_wng_accoladeWinnersProcess(&$ciniki, $tnid, &$req
     //
     // Get the list of winners for the year
     //
-    $strsql = "SELECT accolades.id, "
-        . "subcategories.id AS subcategory_id, "
-        . "subcategories.name AS subcategory_name, "
-        . "accolades.name, "
-        . "accolades.permalink, "
-        . "winners.name AS winner_name "
-        . "FROM ciniki_musicfestival_accolade_subcategories AS subcategories "
-        . "INNER JOIN ciniki_musicfestival_accolades AS accolades ON ("
-            . "subcategories.id = accolades.subcategory_id "
-            . "AND accolades.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "INNER JOIN ciniki_musicfestival_accolade_winners AS winners ON ("
-            . "accolades.id = winners.accolade_id "
-            . "AND winners.year = '" . ciniki_core_dbQuote($ciniki, $s['year']) . "' "
-            . "AND winners.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "WHERE subcategories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "";
-    if( isset($s['category-id']) && $s['category-id'] != '' && $s['category-id'] > 0 ) {
-        $strsql .= "AND subcategories.category_id = '" . ciniki_core_dbQuote($ciniki, $s['category-id']) . "' ";
+    if( isset($s['category-id']) && $s['category-id'] == 'All' ) {
+        $strsql = "SELECT accolades.id, "
+            . "subcategories.name AS subcategory_name, "
+            . "accolades.name, "
+            . "accolades.permalink, "
+            . "winners.name AS winner_name "
+            . "FROM ciniki_musicfestival_accolade_subcategories AS subcategories "
+            . "INNER JOIN ciniki_musicfestival_accolades AS accolades ON ("
+                . "subcategories.id = accolades.subcategory_id "
+                . "AND accolades.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_accolade_winners AS winners ON ("
+                . "accolades.id = winners.accolade_id "
+                . "AND winners.year = '" . ciniki_core_dbQuote($ciniki, $s['year']) . "' "
+                . "AND winners.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE subcategories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "ORDER BY subcategories.name, subcategories.sequence, accolades.name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'subcategories', 'fname'=>'subcategory_name', 
+                'fields'=>array('id' => 'subcategory_id', 'name' => 'subcategory_name'),
+                ),
+            array('container'=>'winners', 'fname'=>'id', 
+                'fields'=>array('id', 'name', 'permalink', 'winner_name'),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.939', 'msg'=>'Unable to load winners', 'err'=>$rc['err']));
+        }
+        $subcategories = isset($rc['subcategories']) ? $rc['subcategories'] : array();
+
+    } else {
+        $strsql = "SELECT accolades.id, "
+            . "subcategories.id AS subcategory_id, "
+            . "subcategories.name AS subcategory_name, "
+            . "accolades.name, "
+            . "accolades.permalink, "
+            . "winners.name AS winner_name "
+            . "FROM ciniki_musicfestival_accolade_subcategories AS subcategories "
+            . "INNER JOIN ciniki_musicfestival_accolades AS accolades ON ("
+                . "subcategories.id = accolades.subcategory_id "
+                . "AND accolades.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_accolade_winners AS winners ON ("
+                . "accolades.id = winners.accolade_id "
+                . "AND winners.year = '" . ciniki_core_dbQuote($ciniki, $s['year']) . "' "
+                . "AND winners.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE subcategories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "";
+        if( isset($s['category-id']) && $s['category-id'] != '' && $s['category-id'] > 0 ) {
+            $strsql .= "AND subcategories.category_id = '" . ciniki_core_dbQuote($ciniki, $s['category-id']) . "' ";
+        }
+        $strsql .= "ORDER BY subcategories.sequence, subcategories.name, accolades.name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'subcategories', 'fname'=>'subcategory_id', 
+                'fields'=>array('id' => 'subcategory_id', 'name' => 'subcategory_name'),
+                ),
+            array('container'=>'winners', 'fname'=>'id', 
+                'fields'=>array('id', 'name', 'permalink', 'winner_name'),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.939', 'msg'=>'Unable to load winners', 'err'=>$rc['err']));
+        }
+        $subcategories = isset($rc['subcategories']) ? $rc['subcategories'] : array();
     }
-    $strsql .= "ORDER BY subcategories.sequence, subcategories.name, accolades.name "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'subcategories', 'fname'=>'subcategory_id', 
-            'fields'=>array('id' => 'subcategory_id', 'name' => 'subcategory_name'),
-            ),
-        array('container'=>'winners', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'permalink', 'winner_name'),
-            ),
-        ));
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.939', 'msg'=>'Unable to load winners', 'err'=>$rc['err']));
-    }
-    $subcategories = isset($rc['subcategories']) ? $rc['subcategories'] : array();
 
     if( $s['title'] != '' ) {
         $blocks[] = array(
