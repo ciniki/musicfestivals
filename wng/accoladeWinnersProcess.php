@@ -84,7 +84,7 @@ function ciniki_musicfestivals_wng_accoladeWinnersProcess(&$ciniki, $tnid, &$req
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'subcategories', 'fname'=>'subcategory_name', 
-                'fields'=>array('id' => 'subcategory_id', 'name' => 'subcategory_name'),
+                'fields'=>array('name' => 'subcategory_name'),
                 ),
             array('container'=>'winners', 'fname'=>'id', 
                 'fields'=>array('id', 'name', 'permalink', 'winner_name'),
