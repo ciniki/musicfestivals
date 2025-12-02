@@ -1226,6 +1226,20 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             ),
         );
 
+    $sections['ciniki.musicfestivals.countdown'] = array(
+        'name' => 'Countdown',
+        'module' => 'Music Festivals',
+        'settings' => array(
+            'open-title' => array('label'=>'Title', 'type'=>'text'),
+            'festival-id' => array('label'=>'Festival', 'type'=>'select', 
+                'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                'options'=>$festivals,
+                ),
+            'closed-title' => array('label'=>'Closed Title', 'type'=>'text'),
+            'closed-content' => array('label'=>'Closed Message', 'type'=>'textarea'),
+            ),
+        );
+
     //
     // Approved Titles Lists
     //
