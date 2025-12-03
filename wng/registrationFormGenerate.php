@@ -973,8 +973,11 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         $artwork_class = 'hidden';
         if( $participation != 1 ) {
             $video_class = 'hidden';
-            $music_class = (($festival['flags']&0x0200) == 0x0200 ? $css_class : 'hidden');
+            $music_class = 'hidden';
             $backtrack_class = 'hidden';
+            if( isset($selected_class['titleflags']) && ($selected_class['titleflags']&0xC00000) > 0 ) {
+                $music_class = $css_class;
+            }
         }
         if( isset($selected_class['flags']) && ($selected_class['flags']&0x020000) > 0 ) {
             $video_class = 'hidden';
@@ -1176,8 +1179,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'size' => 'medium',
             'storage_suffix' => "music{$i}",
             'accept' => 'application/pdf',
-            'label' => 'Music (PDF)',
-            'error_label' => $prefix . ' Music (PDF)',
+            'label' => $prefix . ' Music (PDF)',
+            'error_label' => $prefix . ' Title Music (PDF)',
 //            'value' => isset($_POST["f-music_orgfilename{$i}"]) ? $_POST["f-music_orgfilename{$i}"] : (isset($registration["music_orgfilename{$i}"]) ? $registration["music_orgfilename{$i}"] : ''),
             'value' => (isset($registration["music_orgfilename{$i}"]) ? $registration["music_orgfilename{$i}"] : ''),
             );
@@ -1186,6 +1189,12 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             ) {
             $fields["music_orgfilename{$i}"]['required'] = 'yes';
         }
+        elseif( $participation < 1 
+            && isset($selected_class['titleflags']) && ($selected_class['titleflags']&0xC00000) == 0x400000 
+            && $selected_class['min_titles'] >= $i 
+            ) {
+            $fields["music_orgfilename{$i}"]['required'] = 'yes';
+        } 
         $fields["backtrack_newline{$i}"] = array(
             'id' => "backtrack_newline{$i}",
             'ftype' => 'newline',
@@ -1223,7 +1232,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'size' => 'medium-large',
             'storage_suffix' => "backtrack{$i}",
             'accept' => 'audio/mpeg',
-            'label' => 'Backtrack (MP3)',
+            'label' => "{$prefix} Backtrack (MP3)",
             'error_label' => "{$prefix} Backtrack (MP3)",
 //            'value' => isset($_POST["f-backtrack{$i}"]) ? $_POST["f-backtrack{$i}"] : (isset($registration["backtrack{$i}"]) ? $registration["backtrack{$i}"] : ''),
             'value' => (isset($registration["backtrack{$i}"]) ? $registration["backtrack{$i}"] : ''),
@@ -1329,7 +1338,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 . "sl.classList.remove('hidden');"
             . "}"
             . "video=v;"
-            . "music=" . (($festival['flags']&0x0200) == 0x0200 ? '1' : 'v') . ";"
+            . "music=v;"// . (($festival['flags']&0x0200) == 0x0200 ? '1' : 'v') . ";"
             . "";
     } elseif( ($festival['flags']&0x06) == 0x02 ) {
         $js_prices .=  "var vo=" . json_encode($virtual_only) . ";"; // Virtual only classes
@@ -1355,7 +1364,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             $js .= "var members=" . json_encode($js_members) . ";";
         }
     $js .= "var video=0;"
-        . "var music=" . (($festival['flags']&0x0200) == 0x0200 ? '1' : '0') . ";"
+        . "var music=0;"// . (($festival['flags']&0x0200) == 0x0200 ? '1' : '0') . ";"
         . $js_prices
         . "function sectionSelected(){"
             . "var s=C.gE('f-section').value;"
@@ -1373,7 +1382,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             . "var c=C.gE('f-participation').value;"
             // Live 
             . "video=c;"
-            . "music=" . (($festival['flags']&0x0200) == 0x0200 ? '1' : 'c') . ";"
+            . "music=c;"
+//            . "music=" . (($festival['flags']&0x0200) == 0x0200 ? '1' : 'c') . ";"
             . "sectionSelected();"
         . "};"
         . "function memberSelected(){"
@@ -1516,12 +1526,16 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                         . "}else{"
                             . "C.aC(C.gE('f-video_url'+i).parentNode,'hidden');"
                         . "}"
-                        . "if((classes[c].f&0x100000)==0x100000){"
+                        . "if((music==1&&(classes[c].f&0x100000)==0x100000)"
+                            . "||(music==0&&(classes[c].tf&0x400000)==0x400000)"
+                            . "){"
                             . "C.aC(C.gE('f-music_orgfilename'+i).parentNode,'required');"
                         . "}else{"
                             . "C.rC(C.gE('f-music_orgfilename'+i).parentNode,'required');"
                         . "}"
-                        . "if(music==1&&(classes[c]==null||(classes[c].f&0x200000)==0)){"
+                        . "if((music==1&&(classes[c]==null||(classes[c].f&0x200000)==0))"
+                            . "||(music==0&&(classes[c].tf&0xC00000)>0)"
+                            . "){"
                             . "C.rC(C.gE('f-music_orgfilename'+i).parentNode,'hidden');"
                         . "}else{"
                             . "C.aC(C.gE('f-music_orgfilename'+i).parentNode,'hidden');"
@@ -1550,6 +1564,16 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                         . "}else{"
                             . "C.rC(C.gE('f-artwork'+i).parentNode,'required');"
                         . "}"
+/*                        . "if((classes[c].tf&0xC00000)==0x400000){"
+                            . "C.rC(C.gE('f-music_orgfilename'+i).parentNode,'hidden');"
+                            . "C.aC(C.gE('f-music_orgfilename'+i).parentNode,'required');"
+                        . "}else if((classes[c].tf&0xC00000)==0x800000){"
+                            . "C.rC(C.gE('f-music_orgfilename'+i).parentNode,'required');"
+                            . "C.rC(C.gE('f-music_orgfilename'+i).parentNode,'hidden');"
+                        . "}else{"
+                            . "C.rC(C.gE('f-music_orgfilename'+i).parentNode,'required');"
+                            . "C.aC(C.gE('f-music_orgfilename'+i).parentNode,'hidden');"
+                        . "}" */
                         . "if((classes[c].tf&0x0300)>0){"
                             . "C.rC(C.gE('f-artwork'+i).parentNode,'hidden');"
                             . "C.aC(C.gE('f-perf_time'+i+'-min').parentNode.parentNode,'hidden');"

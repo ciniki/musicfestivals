@@ -8199,13 +8199,14 @@ function ciniki_musicfestivals_main() {
                 'visible':function() { return M.ciniki_musicfestivals_main.festival.isVirtual(); },
                 'flags':{' 18':{'name':'Hidden'}, ' 17':{'name':'Required'}, ' 0':{'name':'Optional'}},
                 },
-            'flags21':{'label':'Virtual - Music', 'type':'flagspiece', 'mask':0x300000, 'field':'flags', 'join':'yes', 'toggle':'yes',
+            'flags21':{'label':'Virtual - Music PDF', 'type':'flagspiece', 'mask':0x300000, 'field':'flags', 'join':'yes', 'toggle':'yes',
                 'visible':function() { return M.ciniki_musicfestivals_main.festival.isVirtual(); },
                 'flags':{' 22':{'name':'Hidden'}, ' 21':{'name':'Required'}, ' 0':{'name':'Optional'}},
                 },
-//            'flags23':{'label':'Live Music PDF', 'type':'flagspiece', 'mask':0xC00000, 'field':'flags', 'join':'yes', 'toggle':'yes',
-//                'flags':{'0':{'name':'Hidden'}, '23':{'name':'Required'}, '24':{'name':'Optional'}},
-//                },
+            'titleflags23':{'label':'Live - Music PDF', 'type':'flagspiece', 'mask':0xC00000, 'field':'titleflags', 'join':'yes', 'toggle':'yes',
+//                'visible':function() { return (M.ciniki_musicfestivals_main.festival.data.flags&0x0200) == 0x0200 ? 'yes' : 'no'; },
+                'flags':{'0':{'name':'Hidden'}, '23':{'name':'Required'}, '24':{'name':'Optional'}},
+                },
             'flags25':{'label':'Backtrack', 'type':'flagspiece', 'mask':0x03000000, 'field':'flags', 'join':'yes', 'toggle':'yes',
 //                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); }, 
                 'flags':{'0':{'name':'None'}, '25':{'name':'Required'}, '26':{'name':'Optional'}},
@@ -8516,6 +8517,12 @@ function ciniki_musicfestivals_main() {
             p.nplists = {};
             if( rsp.nplists != null ) {
                 p.nplists = rsp.nplists;
+            }
+            p.sections.titles.fields.titleflags23.label = 'Music PDF';
+            if( M.ciniki_musicfestivals_main.festival.data.flags != null 
+                && (M.ciniki_musicfestivals_main.festival.data.flags&0x02) == 0x02 // Virtual festival
+                ) {
+                p.sections.titles.fields.titleflags23.label = 'Live - Music PDF';
             }
             p.sections.general.fields.category_id.options = rsp.categories;
             p.sections.general.fields.levels.tags = [];
@@ -9404,7 +9411,11 @@ function ciniki_musicfestivals_main() {
         return this.formValue('participation') == 1 ? 'yes' : 'no';
     }
     this.registration.musicVisible = function(i) {
-        return this.formValue('participation') == 1 ? 'yes' : 'no';
+        var p = this.formValue('participation');
+        if( (p == null || p == 0 || p == 2) && this.selected_class != null && (this.selected_class.titleflags&0xC00000) > 0 ) { 
+            return 'yes';
+        }
+        return p == 1 ? 'yes' : 'no';
     }
     this.registration.backtrackVisible = function(i) {
         return (this.selected_class != null && this.selected_class.flags&0x03000000) > 0 ? 'yes' : 'no';

@@ -89,8 +89,8 @@
 #                           0x080000 - 
 #                           0x100000 - Virtual Entry Music PDF Required **Future move from flags**
 #                           0x200000 - Virtual Entry Music PDF Hidden **Future move from flags**
-#                           0x400000 - Live Entry Music PDF Required **future** **Future move from flags**
-#                           0x800000 - Live Entry Music PDF Optional **future** **Future move from flags**
+#                           0x400000 - Live Entry Music PDF Required 
+#                           0x800000 - Live Entry Music PDF Optional 
 #                           0x01000000 - Backtrack Required **Future move from flags**
 #                           0x02000000 - Backtrack Optional **Future move from flags**
 #                           0x04000000 - Movements/Musical Required **Future move from flags**
