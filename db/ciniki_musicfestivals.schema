@@ -33,7 +33,7 @@
 #                           0x40 - 
 #                           0x80 - 
 #                           0x0100 - Include Section/Category as part of Invoice item description
-#                           0x0200 - Always ask for Music PDF in Registration Form
+#                           0x0200 - 
 #                           0x0400 - Use group names for extra organization layer
 #                           0x0800 - Multiple Syllabi
 #                           0x1000 - 

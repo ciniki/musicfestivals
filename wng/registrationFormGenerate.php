@@ -1338,7 +1338,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 . "sl.classList.remove('hidden');"
             . "}"
             . "video=v;"
-            . "music=v;"// . (($festival['flags']&0x0200) == 0x0200 ? '1' : 'v') . ";"
+            . "music=v;"
             . "";
     } elseif( ($festival['flags']&0x06) == 0x02 ) {
         $js_prices .=  "var vo=" . json_encode($virtual_only) . ";"; // Virtual only classes
@@ -1364,7 +1364,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             $js .= "var members=" . json_encode($js_members) . ";";
         }
     $js .= "var video=0;"
-        . "var music=0;"// . (($festival['flags']&0x0200) == 0x0200 ? '1' : '0') . ";"
+        . "var music=0;"
         . $js_prices
         . "function sectionSelected(){"
             . "var s=C.gE('f-section').value;"
@@ -1383,7 +1383,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             // Live 
             . "video=c;"
             . "music=c;"
-//            . "music=" . (($festival['flags']&0x0200) == 0x0200 ? '1' : 'c') . ";"
             . "sectionSelected();"
         . "};"
         . "function memberSelected(){"

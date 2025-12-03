@@ -5572,7 +5572,6 @@ function ciniki_musicfestivals_main() {
                 },
             'flags5':{'label':'Adjudication Plus', 'type':'flagtoggle', 'default':'off', 'bit':0x10, 'field':'flags',
                 },
-            'flags10':{'label':'Live Music PDF', 'type':'flagtoggle', 'default':'off', 'bit':0x0200, 'field':'flags'},
             }},
         'deadlines':{'label':'Deadlines', 'aside':'yes', 'fields':{
             'earlybird_date':{'label':'Earlybird', 'type':'datetime'},
