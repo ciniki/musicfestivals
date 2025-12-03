@@ -182,7 +182,7 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
             'type' => 'text', 
             'title' => isset($s['title']) ? $s['title'] : 'Adjudicators',
             'level' => $section['sequence'] == 1 ? 1 : 2,
-            'content' => "We don't currently have any adjudicators.",
+            'content' => (isset($s['no-adjudicators-content']) && $s['no-adjudicators-content'] ? $s['no-adjudicators-content'] : "We don't currently have any adjudicators."),
             );
     } 
 

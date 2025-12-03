@@ -422,6 +422,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
 //            'layout' => array('label'=>'Format', 'type'=>'toggle', 'default'=>'contentphoto', 
 //                'toggles'=>array('contentphoto'=>'Bio & Photos', 'imagebutton'=>'Image Buttons'),
 //                ),
+            'no-adjudicators-content' => array('label'=>'No Adjudicators Message', 'type'=>'htmlarea'),
             'layout' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
                 'contentphoto' => 'Content + Photo',
                 'imagebuttons' => 'Image Buttons',
