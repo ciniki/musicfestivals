@@ -9389,7 +9389,7 @@ function ciniki_musicfestivals_main() {
         return 'hidden';
     }
     this.registration.competitorVisible = function(i) {
-        if( (this.selected_class != null && i <= this.selected_class.max_competitors) || this.data['cometitor'+i+'_id'] > 0 ) {
+        if( (this.selected_class != null && i <= this.selected_class.max_competitors) || this.data['competitor'+i+'_id'] > 0 ) {
             return 'yes';
         }
         return 'hidden';
