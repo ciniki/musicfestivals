@@ -2805,7 +2805,7 @@ function ciniki_musicfestivals_main() {
         if( s == 'recommendation_search' ) {
             switch(d.status) {
                 case '10': 
-                    if( d.position == '1st Alt' || d.position == '2nd Alt' || d.position == '3rd Alt' ) {
+                    if( d.position == '1st Alt' || d.position == '2nd Alt' || d.position == '3rd Alt' || d.position == '4th Alt' ) {
                         return 'statusyellow';
                     }
                     return '';
@@ -17153,7 +17153,7 @@ function ciniki_musicfestivals_main() {
     this.recommendationStatusColour = function(festival, entry) {
         switch(entry.status) {
             case '10': 
-                if( entry.position == '1st Alt' || entry.position == '2nd Alt' || entry.position == '3rd Alt' ) {
+                if( entry.position == '1st Alt' || entry.position == '2nd Alt' || entry.position == '3rd Alt' || entry.position == '4th Alt' ) {
                     return 'statusyellow';
                 }
                 return '';
