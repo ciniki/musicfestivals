@@ -10263,7 +10263,7 @@ function ciniki_musicfestivals_main() {
             if( p.festival['waiver-general-name'] != null && p.festival['waiver-general-name'] != '' ) {
                 p.sections._other.fields.flags1.label = p.festival['waiver-general-name'];
             } else {
-                p.sections._other.fields.flags1.label = 'Geneal Waiver';
+                p.sections._other.fields.flags1.label = 'General Waiver';
             }
             if( p.festival['waiver-photo-option-yes'] != null
                 && p.festival['waiver-photo-option-yes'] != ''
