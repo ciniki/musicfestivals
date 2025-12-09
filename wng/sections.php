@@ -1059,8 +1059,9 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'options'=>$festivals,
                 ),
             'display-format' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
-                'category-name' => 'Category, Name, Disciplines',
-                'category-disciplines-name' => 'Category, Disciplines, Name',
+                'category-name' => 'Category, Building',
+                'category-name-rooms' => 'Category, Building, Room - Discipline',
+                'category-disciplines-name' => 'Category, Disciplines, Building - Room',
                 )),
             'image-ratio' => array('label' => 'Image Ratio (Image Buttons Only)', 
                 'type'=>'select', 

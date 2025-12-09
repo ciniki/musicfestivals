@@ -298,7 +298,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'scheduling-division-shortnames',
         'scheduling-timeslot-shortnames',
         'locations-categories',
-        'locations-disciplines',
+//        'locations-disciplines',
         'accolades-footer-msg',
         'accolades-include-descriptions',
         'accolades-include-donatedby',

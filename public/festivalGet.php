@@ -3738,34 +3738,48 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         // Get the list of locations
         //
         if( isset($args['locations']) && $args['locations'] == 'yes' ) {
-            $strsql = "SELECT locations.id, "
-                . "locations.festival_id, "
-                . "locations.category, "
-                . "locations.sequence, "
-                . "IF(locations.shortname <> '', locations.shortname, locations.name) AS name, "
-                . "locations.disciplines, "
-                . "locations.address1, "
-                . "locations.city "
-                . "FROM ciniki_musicfestival_locations AS locations "
-                . "WHERE locations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-                . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "ORDER BY locations.category, locations.sequence, name "
+            $strsql = "SELECT buildings.id, "
+                . "buildings.name, "
+                . "buildings.category, "
+                . "buildings.sequence, "
+                . "buildings.address1, "
+                . "buildings.city, "
+                . "rooms.id AS room_id, "
+                . "rooms.roomname, "
+                . "rooms.disciplines "
+                . "FROM ciniki_musicfestival_buildings AS buildings "
+                . "LEFT JOIN ciniki_musicfestival_locations AS rooms ON ("
+                    . "buildings.id = rooms.building_id "
+                    . "AND buildings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE buildings.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND buildings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "ORDER BY buildings.category, buildings.sequence, buildings.name, rooms.sequence, rooms.roomname "
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-                array('container'=>'locations', 'fname'=>'id', 
-                    'fields'=>array('id', 'festival_id', 'category', 'sequence', 'name', 'disciplines', 'address1', 'city')),
+                array('container'=>'buildings', 'fname'=>'id', 
+                    'fields'=>array('id', 'category', 'sequence', 'name', 'address1', 'city')),
+                array('container'=>'rooms', 'fname'=>'room_id', 
+                    'fields'=>array('id'=>'room_id', 'roomname', 'disciplines')),
                 ));
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
-            if( isset($rc['locations']) ) {
-                $festival['locations'] = $rc['locations'];
-                foreach($festival['locations'] as $iid => $location) {
-                    $nplists['locations'][] = $location['id'];
+            if( isset($rc['buildings']) ) {
+                $festival['buildings'] = $rc['buildings'];
+                foreach($festival['buildings'] as $iid => $building) {
+                    $room_disciplines = '';
+                    foreach($building['rooms'] as $room) {
+                        $room_disciplines .= ($room_disciplines != '' ? "<br/>" : '')
+                            . ($room['roomname'] != '' ? $room['roomname'] : '')
+                            . ($room['disciplines'] != '' ? ($room['roomname'] != '' ? ' - ' : '') . $room['disciplines'] : '');
+                    }
+                    $festival['buildings'][$iid]['room_disciplines'] = $room_disciplines;
+                    $nplists['buildings'][] = $building['id'];
                 }
             } else {
-                $festival['locations'] = array();
+                $festival['buildings'] = array();
             }
         }
 

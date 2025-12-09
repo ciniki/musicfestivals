@@ -1,7 +1,9 @@
 #
 # Description
 # -----------
-# This table stores the locations/venues for the musicfestivals.
+# This table stores the locations/venues rooms for the musicfestivals.
+#
+# Note: This table may be renamed to rooms in the future.
 #
 # Fields
 # ------
@@ -11,20 +13,21 @@
 #
 # festival_id:              The ID of the festival the location is attached to.
 #
-# name:                     The name of the place/venue/location.
+# roomname:                 The name of the room in the building.
+# name:                     The complete name of the building - room (autocreated).
 # permalink:                The permalink of the place/venue/location.
 # shortname:                The short name used for internal purposes.
-# category:                 The category for the location, used on venues page.
+# category:                 The category for the location, used on venues page. **deprecated**
 # sequence:                 The order to display the location in
-# address1:                 The street address of the location.
-# city:                     The city the location is in.
-# province:                 The province the location is in.
-# postal:                   The postal code for the location.
-# latitude:                 The latitude coordinate of the address.
-# longitude:                The longitude coordinate of the address.
+# address1:                 The street address of the location. **deprecated**
+# city:                     The city the location is in. **deprecated**
+# province:                 The province the location is in. **deprecated**
+# postal:                   The postal code for the location. **deprecated**
+# latitude:                 The latitude coordinate of the address. **deprecated**
+# longitude:                The longitude coordinate of the address. **deprecated**
 #
-# image_id:                 The ID of the image for the location.
-# description:              The description of the location to show on the website.
+# image_id:                 The ID of the image for the location. **deprecated**
+# description:              The description of the location to show on the website. **deprecated**
 #
 # date_added:               The UTC date and time the record was added.
 # last_updated:             The UTC date and time the record was last update.
@@ -35,12 +38,15 @@ create table ciniki_musicfestival_locations (
     tnid int not null,
 
     festival_id int not null,
+    building_id int not null,
+    roomname varchar(250) not null,
     name varchar(250) not null,
     permalink varchar(250) not null,
     shortname varchar(250) not null,
-    category varchar(150) not null,
     sequence tinyint unsigned not null,
     disciplines varchar(250) not null,
+
+    category varchar(150) not null,
     address1 varchar(100) not null,
     city varchar(100) not null,
     province varchar(100) not null,
@@ -55,4 +61,4 @@ create table ciniki_musicfestival_locations (
     primary key (id),
     unique index (uuid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.05';
+) ENGINE='InnoDB', COMMENT='v1.06';

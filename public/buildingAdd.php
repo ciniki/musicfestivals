@@ -2,18 +2,18 @@
 //
 // Description
 // -----------
-// This method will add a new location for the tenant.
+// This method will add a new building for the tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// tnid:        The ID of the tenant to add the Location to.
+// tnid:        The ID of the tenant to add the Building to.
 //
 // Returns
 // -------
 //
-function ciniki_musicfestivals_locationAdd(&$ciniki) {
+function ciniki_musicfestivals_buildingAdd(&$ciniki) {
     //
     // Find all the required and optional arguments
     //
@@ -21,11 +21,18 @@ function ciniki_musicfestivals_locationAdd(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
-        'building_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Building'),
-        'roomname'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Name'),
-        'shortname'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Short Name'),
+        'name'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Name'),
+        'permalink'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Permalink'),
+        'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
-        'disciplines'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Disciplines'),
+        'address1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address'),
+        'city'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'City'),
+        'province'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Province'),
+        'postal'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Postal Code'),
+        'latitude'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Latitude'),
+        'longitude'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Longitude'),
+        'image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
+        'description'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Description'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -36,35 +43,17 @@ function ciniki_musicfestivals_locationAdd(&$ciniki) {
     // Check access to tnid as owner
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.locationAdd');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.buildingAdd');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
 
     //
-    // Load the building
-    //
-    $strsql = "SELECT buildings.id, "
-        . "buildings.name "
-        . "FROM ciniki_musicfestival_buildings AS buildings "
-        . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['building_id']) . "' "
-        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'building');
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.978', 'msg'=>'Unable to load building', 'err'=>$rc['err']));
-    }
-    if( !isset($rc['building']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.979', 'msg'=>'Unable to load building'));
-    }
-    $building = $rc['building'];
-
-    //
     // Get the highest room sequence
     //
     $strsql = "SELECT MAX(sequence) AS max_seq "
-        . "FROM ciniki_musicfestival_locations "
-        . "WHERE building_id = '" . ciniki_core_dbQuote($ciniki, $args['building_id']) . "' "
+        . "FROM ciniki_musicfestival_buildings "
+        . "WHERE festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
@@ -75,11 +64,6 @@ function ciniki_musicfestivals_locationAdd(&$ciniki) {
     $args['sequence'] = isset($rc['num']) ? $rc['num'] + 1 : 1;
 
     //
-    // Setup full name for location
-    //
-    $args['name'] = $building['name'] . ($args['roomname'] != '' ? ' - ' . $args['roomname'] : '');
-
-    //
     // Setup permalink
     //
     if( !isset($args['permalink']) || $args['permalink'] == '' ) {
@@ -88,20 +72,19 @@ function ciniki_musicfestivals_locationAdd(&$ciniki) {
     }
 
     //
-    // Make sure permalink is unique
+    // Make sure the permalink is unique
     //
     $strsql = "SELECT id, name, permalink "
-        . "FROM ciniki_musicfestival_locations "
+        . "FROM ciniki_musicfestival_buildings "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
-        . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
     if( $rc['num_rows'] > 0 ) {
-        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.330', 'msg'=>'You already have an location with this name, please choose another.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1209', 'msg'=>'You already have a building with that name, please choose another.'));
     }
 
     //
@@ -117,16 +100,36 @@ function ciniki_musicfestivals_locationAdd(&$ciniki) {
     }
 
     //
-    // Add the location to the database
+    // Add the building to the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.location', $args, 0x04);
+    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.building', $args, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;
     }
-    $location_id = $rc['id'];
+    $building_id = $rc['id'];
 
+    //
+    // Add the default room
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.location', [
+        'festival_id' => $args['festival_id'],
+        'building_id' => $building_id,
+        'roomname' => '',
+        'name' => $args['name'],
+        'permalink' => '',
+        'shortname' => (isset($args['shortname']) ? $args['shortname'] : ''),
+        'sequence' => 1,
+        'disciplines' => (isset($args['disciplines']) ? $args['disciplines'] : ''),
+        ], 0x04);
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+        return $rc;
+    }
+    $building_id = $rc['id'];
+    
     //
     // Commit the transaction
     //
@@ -146,8 +149,8 @@ function ciniki_musicfestivals_locationAdd(&$ciniki) {
     // Update the web index if enabled
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
-    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.musicfestivals.location', 'object_id'=>$location_id));
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.musicfestivals.building', 'object_id'=>$building_id));
 
-    return array('stat'=>'ok', 'id'=>$location_id);
+    return array('stat'=>'ok', 'id'=>$building_id);
 }
 ?>

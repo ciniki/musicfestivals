@@ -70,28 +70,77 @@ function ciniki_musicfestivals_festivalLocationsCopy($ciniki) {
     }
 
     //
-    // Copy over locations
+    // Get the list of buildings and rooms
     //
-    $strsql = "SELECT * "
-        . "FROM ciniki_musicfestival_locations AS locations "
-        . "WHERE locations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['old_festival_id']) . "' "
-        . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+    $strsql = "SELECT buildings.id, "
+        . "buildings.name, "
+        . "buildings.permalink, "
+        . "buildings.category, "
+        . "buildings.sequence, "
+        . "buildings.address1, "
+        . "buildings.city, "
+        . "buildings.province, "
+        . "buildings.postal, "
+        . "buildings.latitude, "
+        . "buildings.longitude, "
+        . "buildings.image_id, "
+        . "buildings.description, "
+        . "rooms.id AS room_id, "
+        . "rooms.roomname, "
+        . "rooms.name AS room_name, "
+        . "rooms.permalink AS room_permalink, "
+        . "rooms.shortname, "
+        . "rooms.sequence AS room_sequence, "
+        . "rooms.disciplines "
+        . "FROM ciniki_musicfestival_buildings AS buildings "
+        . "LEFT JOIN ciniki_musicfestival_locations AS rooms ON ("
+            . "buildings.id = rooms.building_id "
+            . "AND rooms.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "WHERE buildings.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['old_festival_id']) . "' "
+        . "AND buildings.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "ORDER BY buildings.category, buildings.sequence, buildings.name, rooms.sequence, rooms.name "
         . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'location');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'buildings', 'fname'=>'id', 
+            'fields'=>array('id', 'name', 'permalink', 'category', 'sequence', 'address1', 'city', 
+                'province', 'postal', 'latitude', 'longitude', 'image_id', 'description', 
+                ),
+            ),
+        array('container'=>'rooms', 'fname'=>'room_id',
+            'fields'=>array('roomname', 'name'=>'room_name', 'permalink'=>'room_permalink', 'shortname', 
+                'sequence'=>'room_sequence', 'disciplines',
+                ),
+            ),
+        ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1144', 'msg'=>'Unable to load rows', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1220', 'msg'=>'Unable to load buildings', 'err'=>$rc['err']));
     }
-    $locations = isset($rc['rows']) ? $rc['rows'] : array();
-    
-    foreach($locations as $location) {
+    $buildings = isset($rc['buildings']) ? $rc['buildings'] : array();
+
+    foreach($buildings as $building) {
         //
-        // Add the location
+        // Add the building
         //
-        $location['festival_id'] = $args['festival_id'];
-        unset($location['uuid']);
-        $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.location', $location, 0x04);
+        $building['festival_id'] = $args['festival_id'];
+        $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.building', $building, 0x04);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
+        }
+        $building_id = $rc['id'];
+
+        //
+        // Add the rooms
+        //
+        foreach($building['rooms'] as $room) {
+            $room['festival_id'] = $args['festival_id'];
+            $room['building_id'] = $building_id;
+            $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.location', $room, 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $room_id = $rc['id'];
         }
     }
 

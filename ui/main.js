@@ -1961,7 +1961,7 @@ function ciniki_musicfestivals_main() {
                     },
                 },
             },
-        'locations':{'label':'Locations', 'type':'simplegrid', 'num_cols':4,
+        'buildings':{'label':'Locations', 'type':'simplegrid', 'num_cols':4,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'locations'); },
             'headerValues':['Category', 'Name', 'Address', 'City'],
             'sortable':'yes',
@@ -1970,11 +1970,11 @@ function ciniki_musicfestivals_main() {
             'menu':{
                 'add':{
                     'label':'Add Location',
-                    'fn':'M.ciniki_musicfestivals_main.location.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.festival_id,null);',
+                    'fn':'M.ciniki_musicfestivals_main.building.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.festival_id,null);',
                     },
                 'copy':{
                     'label':'Copy Previous Locations',
-                    'visible':function() { return M.ciniki_musicfestivals_main.festival.data.locations.length == 0 ? 'yes' : 'no'; },
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.data.buildings.length == 0 ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.festival.festivalLocationsCopy("previous");',
                     },
                 },
@@ -3233,14 +3233,8 @@ function ciniki_musicfestivals_main() {
                 case 2: return d.options;
             }
         }
-        if( s == 'locations' ) {
+        if( s == 'buildings' ) {
             return d[this.sections[s].dataMaps[j]];
-            switch(j) {
-                case 0: return d.category;
-                case 1: return d.name;
-                case 2: return d.address1;
-                case 3: return d.city;
-            }
         }
         if( s == 'certificates' ) {
             switch(j) {
@@ -3507,7 +3501,7 @@ function ciniki_musicfestivals_main() {
             case 'invoice_statuses': return 'M.ciniki_musicfestivals_main.festival.openInvoiceStatus(\'' + d.typestatus + '\');';
             case 'invoices': return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_musicfestivals_main.festival.open();\',\'mc\',{\'invoice_id\':\'' + d.id + '\'});';
             case 'adjudicators': return 'M.ciniki_musicfestivals_main.adjudicator.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.id + '\',0,M.ciniki_musicfestivals_main.festival.festival_id, M.ciniki_musicfestivals_main.festival.nplists.adjudicators);';
-            case 'locations': return 'M.ciniki_musicfestivals_main.location.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.id + '\',M.ciniki_musicfestivals_main.festival.festival_id, M.ciniki_musicfestivals_main.festival.nplists.locations);';
+            case 'buildings': return 'M.ciniki_musicfestivals_main.building.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.id + '\',M.ciniki_musicfestivals_main.festival.festival_id, M.ciniki_musicfestivals_main.festival.nplists.buildings);';
             case 'certificates': return 'M.ciniki_musicfestivals_main.certificate.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.id + '\');';
             case 'files': return 'M.ciniki_musicfestivals_main.editfile.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.id + '\');';
             case 'message_statuses': return 'M.ciniki_musicfestivals_main.festival.openMessageStatus(' + d.status + ');';
@@ -5100,10 +5094,10 @@ function ciniki_musicfestivals_main() {
             this.size = 'xlarge';
             args['locations'] = 'yes';
             if( this.settingValue('locations-categories') == 'no' ) {
-                this.sections.locations.seqDrop = function(e,from,to) {
-                    M.api.getJSONCb('ciniki.musicfestivals.locationUpdate', {'tnid':M.curTenantID, 
-                        'location_id':M.ciniki_musicfestivals_main.festival.data.locations[from].id,
-                        'sequence':M.ciniki_musicfestivals_main.festival.data.locations[to].sequence,
+                this.sections.buildings.seqDrop = function(e,from,to) {
+                    M.api.getJSONCb('ciniki.musicfestivals.buildingUpdate', {'tnid':M.curTenantID, 
+                        'building_id':M.ciniki_musicfestivals_main.festival.data.buildings[from].id,
+                        'sequence':M.ciniki_musicfestivals_main.festival.data.buildings[to].sequence,
                         }, function(rsp) {
                             if( rsp.stat != 'ok' ) {
                                 M.api.err(rsp);
@@ -5112,8 +5106,8 @@ function ciniki_musicfestivals_main() {
                             M.ciniki_musicfestivals_main.festival.open();
                         });
                     };
-            } else if( this.sections.locations.seqDrop != null ) {
-                delete(this.sections.locations.seqDrop);
+            } else if( this.sections.buildings.seqDrop != null ) {
+                delete(this.sections.buildings.seqDrop);
             }
         } else if( this.isSelected('more', 'files') == 'yes' ) {
             this.size = 'large';
@@ -5376,30 +5370,26 @@ function ciniki_musicfestivals_main() {
                     }
                 }
             }
-            p.sections.locations.num_cols = 1;
-            p.sections.locations.headerValues = ['Name'];
-            p.sections.locations.sortTypes = ['text'];
-            p.sections.locations.dataMaps = ['name'];
+            p.sections.buildings.headerValues = ['Name'];
+            p.sections.buildings.sortTypes = ['text'];
+            p.sections.buildings.dataMaps = ['name'];
             if( M.ciniki_musicfestivals_main.festival.settingValue('locations-categories') == 'yes' ) {
-                p.sections.locations.headerValues.unshift('Category');
-                p.sections.locations.sortTypes.unshift('text');
-                p.sections.locations.dataMaps.unshift('category');
-                p.sections.locations.num_cols++;
+                p.sections.buildings.headerValues.unshift('Category');
+                p.sections.buildings.sortTypes.unshift('text');
+                p.sections.buildings.dataMaps.unshift('category');
             }
-            if( M.ciniki_musicfestivals_main.festival.settingValue('locations-disciplines') == 'yes' ) {
-                p.sections.locations.headerValues.push('Disciplines');
-                p.sections.locations.sortTypes.push('text');
-                p.sections.locations.dataMaps.push('disciplines');
-                p.sections.locations.num_cols++;
-            }
-            p.sections.locations.headerValues.push('Address');
-            p.sections.locations.sortTypes.push('text');
-            p.sections.locations.dataMaps.push('city');
-            p.sections.locations.num_cols++;
-            p.sections.locations.headerValues.push('City');
-            p.sections.locations.sortTypes.push('text');
-            p.sections.locations.dataMaps.push('city');
-            p.sections.locations.num_cols++;
+//            if( M.ciniki_musicfestivals_main.festival.settingValue('locations-disciplines') == 'yes' ) {
+                p.sections.buildings.headerValues.push('Disciplines');
+                p.sections.buildings.sortTypes.push('text');
+                p.sections.buildings.dataMaps.push('room_disciplines');
+//            }
+            p.sections.buildings.headerValues.push('Address');
+            p.sections.buildings.sortTypes.push('text');
+            p.sections.buildings.dataMaps.push('address1');
+            p.sections.buildings.headerValues.push('City');
+            p.sections.buildings.sortTypes.push('text');
+            p.sections.buildings.dataMaps.push('city');
+            p.sections.buildings.num_cols = p.sections.buildings.dataMaps.length;
             p.nplists = {};
             if( rsp.nplists != null ) {
                 p.nplists = rsp.nplists;
@@ -6438,11 +6428,11 @@ function ciniki_musicfestivals_main() {
                         'no':'No',
                         'yes':'Yes',
                     }},
-                'locations-disciplines':{'label':'Disciplines', 'type':'toggle', 'default':'no', 
-                    'toggles':{
-                        'no':'No',
-                        'yes':'Yes',
-                    }},
+//                'locations-disciplines':{'label':'Disciplines', 'type':'toggle', 'default':'no', 
+//                    'toggles':{
+//                        'no':'No',
+//                        'yes':'Yes',
+//                    }},
             }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.edit.save();'},
@@ -12971,15 +12961,224 @@ function ciniki_musicfestivals_main() {
     this.adjudicatorrefs.addClose('Back');
 
     //
+    // The panel to edit Building
+    //
+    this.building = new M.panel('Building', 'ciniki_musicfestivals_main', 'building', 'mc', 'medium mediumaside', 'sectioned', 'ciniki.musicfestivals.main.building');
+    this.building.data = null;
+    this.building.festival_id = 0;
+    this.building.location_id = 0;
+    this.building.nplist = [];
+    this.building.sections = {
+        '_image_id':{'label':'Photo', 'type':'imageform', 'aside':'yes', 'fields':{
+            'image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
+                'addDropImage':function(iid) {
+                    M.ciniki_musicfestivals_main.building.setFieldValue('image_id', iid);
+                    return true;
+                    },
+                'addDropImageRefresh':'',
+                'deleteImage':function(fid) {
+                    M.ciniki_musicfestivals_main.building.setFieldValue(fid, 0);
+                    return true;
+                    },
+             },
+        }},
+        'general':{'label':'Building Information', 'aside':'yes', 'fields':{
+            'name':{'label':'Name', 'required':'yes', 'type':'text'},
+            'category':{'label':'Category', 'type':'text',
+                'visible':function() { return M.ciniki_musicfestivals_main.festival.settingValue('locations-categories') == 'yes' ? 'yes' : 'no'; },
+                },
+//            'disciplines':{'label':'Disciplines', 'type':'text',
+//                'visible':function() { return M.ciniki_musicfestivals_main.festival.settingValue('locations-disciplines') == 'yes' ? 'yes' : 'no'; },
+//                },
+//            'sequence':{'label':'Order', 'type':'text', 'size':'small'},
+            'address1':{'label':'Address', 'type':'text'},
+            'city':{'label':'City', 'type':'text'},
+            'province':{'label':'Province', 'type':'text'},
+            'postal':{'label':'Postal Code', 'type':'text'},
+            'latitude':{'label':'Latitude', 'type':'text'},
+            'longitude':{'label':'Longitude', 'type':'text'},
+            }},
+        'rooms':{'label':'Rooms/Disciplines', 'type':'simplegrid', 'num_cols':3,
+            'headerValues':['Shortname', 'Room', 'Disciplines'],
+            'noData':'No rooms/disciplines',
+            'seqDrop':function(e,from,to) {
+                M.api.getJSONCb('ciniki.musicfestivals.locationUpdate', {'tnid':M.curTenantID, 
+                    'location_id':M.ciniki_musicfestivals_main.building.data.rooms[from].id,
+                    'sequence':M.ciniki_musicfestivals_main.building.data.rooms[to].sequence,
+                    }, function(rsp) {
+                        if( rsp.stat != 'ok' ) {
+                            M.api.err(rsp);
+                            return false;
+                        }
+                        M.ciniki_musicfestivals_main.building.updateRooms();
+                    });
+                },
+            'menu':{
+                'add':{
+                    'label':'Add Room/Discipline',
+                    'fn':'M.ciniki_musicfestivals_main.building.save("M.ciniki_musicfestivals_main.building.roomAdd();");',
+                    },
+                },
+            },
+        '_lookup':{'label':'', 'aside':'yes', 'buttons':{
+            'lookup':{'label':'Lookup Lat/Long', 'fn':'M.ciniki_musicfestivals_main.building.lookupLatLong();'},
+            }},
+        '_description':{'label':'Description', 
+            'fields':{
+                'description':{'label':'', 'hidelabel':'yes', 'type':'htmlarea', 'size':'large'},
+            }},
+        '_buttons':{'label':'', 'buttons':{
+            'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.building.save();'},
+            'delete':{'label':'Delete', 
+                'visible':function() {return M.ciniki_musicfestivals_main.building.building_id > 0 ? 'yes' : 'no'; },
+                'fn':'M.ciniki_musicfestivals_main.building.remove();'},
+            }},
+        };
+    this.building.fieldValue = function(s, i, d) { return this.data[i]; }
+    this.building.fieldHistoryArgs = function(s, i) {
+        return {'method':'ciniki.musicfestivals.buildingHistory', 'args':{'tnid':M.curTenantID, 'building_id':this.building_id, 'field':i}};
+    }
+    this.building.cellValue = function(s, i, j, d) {
+        if( s == 'rooms' ) {
+            switch(j) {
+                case 0: return d.shortname;
+                case 1: return d.roomname;
+                case 2: return d.disciplines;
+                }
+        }
+    }
+    this.building.rowFn = function(s, i, d) {
+        if( s == 'rooms' ) {
+            return 'M.ciniki_musicfestivals_main.building.save("M.ciniki_musicfestivals_main.room.open(\'M.ciniki_musicfestivals_main.building.open();\',\'' + d.id + '\',0,M.ciniki_musicfestivals_main.building.festival_id,null);");';
+        }
+    }
+    this.building.roomAdd = function() {
+        if( this.data.add_id != null && this.data.add_id > 0 ) {
+            M.ciniki_musicfestivals_main.room.open('M.ciniki_musicfestivals_main.building.open();',this.data.add_id,0,M.ciniki_musicfestivals_main.building.festival_id,null);
+        } else {
+            M.ciniki_musicfestivals_main.room.open('M.ciniki_musicfestivals_main.building.open();',0,this.building_id,M.ciniki_musicfestivals_main.building.festival_id,null);
+        }
+    }
+    this.building.updateRooms = function() {
+        M.api.getJSONCb('ciniki.musicfestivals.buildingGet', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'building_id':this.building_id}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_musicfestivals_main.building;
+            p.data.rooms = rsp.building.rooms;
+            p.refreshSection('rooms');
+        });
+    }
+    this.building.open = function(cb, lid, fid, list) {
+        if( lid != null ) { this.building_id = lid; }
+        if( fid != null ) { this.festival_id = fid; }
+        if( list != null ) { this.nplist = list; }
+        M.api.getJSONCb('ciniki.musicfestivals.buildingGet', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'building_id':this.building_id}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_musicfestivals_main.building;
+            p.data = rsp.building;
+            p.refresh();
+            p.show(cb);
+        });
+    }
+    this.building.save = function(cb) {
+        if( cb == null ) { cb = 'M.ciniki_musicfestivals_main.building.close();'; }
+        if( !this.checkForm() ) { return false; }
+        if( this.building_id > 0 ) {
+            var c = this.serializeForm('no');
+            if( c != '' ) {
+                M.api.postJSONCb('ciniki.musicfestivals.buildingUpdate', {'tnid':M.curTenantID, 'building_id':this.building_id}, c, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    eval(cb);
+                });
+            } else {
+                eval(cb);
+            }
+        } else {
+            var c = this.serializeForm('yes');
+            M.api.postJSONCb('ciniki.musicfestivals.buildingAdd', {'tnid':M.curTenantID, 'festival_id':this.festival_id}, c, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_musicfestivals_main.building.building_id = rsp.id;
+                eval(cb);
+            });
+        }
+    }
+    this.building.remove = function() {
+        M.confirm('Are you sure you want to remove building?', null, function(rsp) {
+            M.api.getJSONCb('ciniki.musicfestivals.buildingDelete', {'tnid':M.curTenantID, 'building_id':M.ciniki_musicfestivals_main.building.building_id}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_musicfestivals_main.building.close();
+            });
+        });
+    }
+    this.building.lookupLatLong = function() {
+        M.startLoad();
+        if( document.getElementById('googlemaps_js') == null) {
+            var script = document.createElement("script");
+            script.id = 'googlemaps_js';
+            script.type = "text/javascript";
+            script.src = "https://maps.googleapis.com/maps/api/js?key=" + M.curTenant.settings['googlemapsapikey'] + "&sensor=false&callback=M.ciniki_musicfestivals_main.building.lookupGoogleLatLong";
+            document.body.appendChild(script);
+        } else {
+            this.lookupGoogleLatLong();
+        }
+    }
+    this.building.lookupGoogleLatLong = function() {
+        var address = this.formValue('address1')
+            + ', ' + this.formValue('city')
+            + ', ' + this.formValue('province')
+            + ', ' + this.formValue('country');
+        var geocoder = new google.maps.Geocoder();
+        geocoder.geocode( { 'address': address}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                M.ciniki_musicfestivals_main.building.setFieldValue('latitude', results[0].geometry.location.lat());
+                M.ciniki_musicfestivals_main.building.setFieldValue('longitude', results[0].geometry.location.lng());
+            } else {
+                M.alert('Geocode was not successful for the following reason: ' + status);
+            }
+        }); 
+        M.stopLoad();
+    }
+    this.building.nextButtonFn = function() {
+        if( this.nplist != null && this.nplist.indexOf('' + this.building_id) < (this.nplist.length - 1) ) {
+            return 'M.ciniki_musicfestivals_main.building.save(\'M.ciniki_musicfestivals_main.building.open(null,' + this.nplist[this.nplist.indexOf('' + this.building_id) + 1] + ');\');';
+        }
+        return null;
+    }
+    this.building.prevButtonFn = function() {
+        if( this.nplist != null && this.nplist.indexOf('' + this.building_id) > 0 ) {
+            return 'M.ciniki_musicfestivals_main.building.save(\'M.ciniki_musicfestivals_main.building.open(null,' + this.nplist[this.nplist.indexOf('' + this.building_id) - 1] + ');\');';
+        }
+        return null;
+    }
+    this.building.addButton('save', 'Save', 'M.ciniki_musicfestivals_main.building.save();');
+    this.building.addClose('Cancel');
+//    this.building.addButton('next', 'Next');
+//    this.building.addLeftButton('prev', 'Prev');
+
+    //
     // The panel to edit Location
     //
-    this.location = new M.panel('Location', 'ciniki_musicfestivals_main', 'location', 'mc', 'medium mediumaside', 'sectioned', 'ciniki.musicfestivals.main.location');
-    this.location.data = null;
-    this.location.festival_id = 0;
-    this.location.location_id = 0;
-    this.location.nplist = [];
-    this.location.sections = {
-        '_image_id':{'label':'Location Photo', 'type':'imageform', 'aside':'yes', 'fields':{
+    this.room = new M.panel('Room', 'ciniki_musicfestivals_main', 'room', 'mc', 'medium', 'sectioned', 'ciniki.musicfestivals.main.room');
+    this.room.data = null;
+    this.room.festival_id = 0;
+    this.room.location_id = 0;
+    this.room.nplist = [];
+    this.room.sections = {
+/*        '_image_id':{'label':'Location Photo', 'type':'imageform', 'aside':'yes', 'fields':{
             'image_id':{'label':'', 'type':'image_id', 'hidelabel':'yes', 'controls':'all', 'history':'no',
                 'addDropImage':function(iid) {
                     M.ciniki_musicfestivals_main.location.setFieldValue('image_id', iid);
@@ -12991,59 +13190,65 @@ function ciniki_musicfestivals_main() {
                     return true;
                     },
              },
-        }},
+        }}, */
         'general':{'label':'Location Information', 'aside':'yes', 'fields':{
-            'name':{'label':'Name', 'required':'yes', 'type':'text'},
+            'building_id':{'label':'Building', 'required':'yes', 'type':'select',
+                'complex_options':{'value':'id', 'name':'name'},
+                'options':[],
+                },
+            'roomname':{'label':'Room', 'required':'yes', 'type':'text'},
             'shortname':{'label':'Short Name', 'type':'text'},
-            'category':{'label':'Category', 'type':'text',
+/*            'category':{'label':'Category', 'type':'text',
                 'visible':function() { return M.ciniki_musicfestivals_main.festival.settingValue('locations-categories') == 'yes' ? 'yes' : 'no'; },
-                },
+                }, */
             'disciplines':{'label':'Disciplines', 'type':'text',
-                'visible':function() { return M.ciniki_musicfestivals_main.festival.settingValue('locations-disciplines') == 'yes' ? 'yes' : 'no'; },
+//                'visible':function() { return M.ciniki_musicfestivals_main.festival.settingValue('locations-disciplines') == 'yes' ? 'yes' : 'no'; },
                 },
-            'sequence':{'label':'Order', 'type':'text', 'size':'small'},
-            'address1':{'label':'Address', 'type':'text'},
-            'city':{'label':'City', 'type':'text'},
-            'province':{'label':'Province', 'type':'text'},
-            'postal':{'label':'Postal Code', 'type':'text'},
-            'latitude':{'label':'Latitude', 'type':'text'},
-            'longitude':{'label':'Longitude', 'type':'text'},
+//            'sequence':{'label':'Order', 'type':'text', 'size':'small'},
+//            'address1':{'label':'Address', 'type':'text'},
+//            'city':{'label':'City', 'type':'text'},
+//            'province':{'label':'Province', 'type':'text'},
+//            'postal':{'label':'Postal Code', 'type':'text'},
+//            'latitude':{'label':'Latitude', 'type':'text'},
+//            'longitude':{'label':'Longitude', 'type':'text'},
             }},
-        '_lookup':{'label':'', 'aside':'yes', 'buttons':{
-            'lookup':{'label':'Lookup Lat/Long', 'fn':'M.ciniki_musicfestivals_main.location.lookupLatLong();'},
-            }},
-        '_description':{'label':'Description', 
-            'fields':{
-                'description':{'label':'', 'hidelabel':'yes', 'type':'htmlarea', 'size':'large'},
-            }},
+//        '_lookup':{'label':'', 'aside':'yes', 'buttons':{
+//            'lookup':{'label':'Lookup Lat/Long', 'fn':'M.ciniki_musicfestivals_main.location.lookupLatLong();'},
+//            }},
+//        '_description':{'label':'Description', 
+//            'fields':{
+//                'description':{'label':'', 'hidelabel':'yes', 'type':'htmlarea', 'size':'large'},
+//            }},
         '_buttons':{'label':'', 'buttons':{
-            'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.location.save();'},
+            'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.room.save();'},
             'delete':{'label':'Delete', 
-                'visible':function() {return M.ciniki_musicfestivals_main.location.location_id > 0 ? 'yes' : 'no'; },
-                'fn':'M.ciniki_musicfestivals_main.location.remove();'},
+                'visible':function() {return M.ciniki_musicfestivals_main.room.location_id > 0 ? 'yes' : 'no'; },
+                'fn':'M.ciniki_musicfestivals_main.room.remove();'},
             }},
         };
-    this.location.fieldValue = function(s, i, d) { return this.data[i]; }
-    this.location.fieldHistoryArgs = function(s, i) {
+    this.room.fieldValue = function(s, i, d) { return this.data[i]; }
+    this.room.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.musicfestivals.locationHistory', 'args':{'tnid':M.curTenantID, 'location_id':this.location_id, 'field':i}};
     }
-    this.location.open = function(cb, lid, fid, list) {
+    this.room.open = function(cb, lid, bid, fid, list) {
         if( lid != null ) { this.location_id = lid; }
+        if( bid != null ) { this.building_id = bid; }
         if( fid != null ) { this.festival_id = fid; }
         if( list != null ) { this.nplist = list; }
-        M.api.getJSONCb('ciniki.musicfestivals.locationGet', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'location_id':this.location_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.musicfestivals.locationGet', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'building_id':this.building_id, 'location_id':this.location_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
             }
-            var p = M.ciniki_musicfestivals_main.location;
+            var p = M.ciniki_musicfestivals_main.room;
             p.data = rsp.location;
+            p.sections.general.fields.building_id.options = rsp.buildings;
             p.refresh();
             p.show(cb);
         });
     }
-    this.location.save = function(cb) {
-        if( cb == null ) { cb = 'M.ciniki_musicfestivals_main.location.close();'; }
+    this.room.save = function(cb) {
+        if( cb == null ) { cb = 'M.ciniki_musicfestivals_main.room.close();'; }
         if( !this.checkForm() ) { return false; }
         if( this.location_id > 0 ) {
             var c = this.serializeForm('no');
@@ -13065,66 +13270,38 @@ function ciniki_musicfestivals_main() {
                     M.api.err(rsp);
                     return false;
                 }
-                M.ciniki_musicfestivals_main.location.location_id = rsp.id;
+                M.ciniki_musicfestivals_main.room.location_id = rsp.id;
                 eval(cb);
             });
         }
     }
-    this.location.remove = function() {
-        M.confirm('Are you sure you want to remove location?', null, function(rsp) {
-            M.api.getJSONCb('ciniki.musicfestivals.locationDelete', {'tnid':M.curTenantID, 'location_id':M.ciniki_musicfestivals_main.location.location_id}, function(rsp) {
+    this.room.remove = function() {
+        M.confirm('Are you sure you want to remove room?', null, function(rsp) {
+            M.api.getJSONCb('ciniki.musicfestivals.locationDelete', {'tnid':M.curTenantID, 'location_id':M.ciniki_musicfestivals_main.room.location_id}, function(rsp) {
                 if( rsp.stat != 'ok' ) {
                     M.api.err(rsp);
                     return false;
                 }
-                M.ciniki_musicfestivals_main.location.close();
+                M.ciniki_musicfestivals_main.room.close();
             });
         });
     }
-    this.location.lookupLatLong = function() {
-        M.startLoad();
-        if( document.getElementById('googlemaps_js') == null) {
-            var script = document.createElement("script");
-            script.id = 'googlemaps_js';
-            script.type = "text/javascript";
-            script.src = "https://maps.googleapis.com/maps/api/js?key=" + M.curTenant.settings['googlemapsapikey'] + "&sensor=false&callback=M.ciniki_musicfestivals_main.location.lookupGoogleLatLong";
-            document.body.appendChild(script);
-        } else {
-            this.lookupGoogleLatLong();
-        }
-    }
-    this.location.lookupGoogleLatLong = function() {
-        var address = this.formValue('address1')
-            + ', ' + this.formValue('city')
-            + ', ' + this.formValue('province')
-            + ', ' + this.formValue('country');
-        var geocoder = new google.maps.Geocoder();
-        geocoder.geocode( { 'address': address}, function(results, status) {
-            if (status == google.maps.GeocoderStatus.OK) {
-                M.ciniki_musicfestivals_main.location.setFieldValue('latitude', results[0].geometry.location.lat());
-                M.ciniki_musicfestivals_main.location.setFieldValue('longitude', results[0].geometry.location.lng());
-            } else {
-                M.alert('Geocode was not successful for the following reason: ' + status);
-            }
-        }); 
-        M.stopLoad();
-    }
-    this.location.nextButtonFn = function() {
+    this.room.nextButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.location_id) < (this.nplist.length - 1) ) {
-            return 'M.ciniki_musicfestivals_main.location.save(\'M.ciniki_musicfestivals_main.location.open(null,' + this.nplist[this.nplist.indexOf('' + this.location_id) + 1] + ');\');';
+            return 'M.ciniki_musicfestivals_main.room.save(\'M.ciniki_musicfestivals_main.room.open(null,' + this.nplist[this.nplist.indexOf('' + this.location_id) + 1] + ');\');';
         }
         return null;
     }
-    this.location.prevButtonFn = function() {
+    this.room.prevButtonFn = function() {
         if( this.nplist != null && this.nplist.indexOf('' + this.location_id) > 0 ) {
-            return 'M.ciniki_musicfestivals_main.location.save(\'M.ciniki_musicfestivals_main.location.open(null,' + this.nplist[this.nplist.indexOf('' + this.location_id) - 1] + ');\');';
+            return 'M.ciniki_musicfestivals_main.room.save(\'M.ciniki_musicfestivals_main.room.open(null,' + this.nplist[this.nplist.indexOf('' + this.location_id) - 1] + ');\');';
         }
         return null;
     }
-    this.location.addButton('save', 'Save', 'M.ciniki_musicfestivals_main.location.save();');
-    this.location.addClose('Cancel');
-//    this.location.addButton('next', 'Next');
-//    this.location.addLeftButton('prev', 'Prev');
+    this.room.addButton('save', 'Save', 'M.ciniki_musicfestivals_main.room.save();');
+    this.room.addClose('Cancel');
+//    this.room.addButton('next', 'Next');
+//    this.room.addLeftButton('prev', 'Prev');
 
 
     //
