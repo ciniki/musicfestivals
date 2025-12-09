@@ -1,0 +1,10 @@
+ALTER TABLE ciniki_musicfestival_locations DROP COLUMN category;
+ALTER TABLE ciniki_musicfestival_locations DROP COLUMN address1;
+ALTER TABLE ciniki_musicfestival_locations DROP COLUMN city;
+ALTER TABLE ciniki_musicfestival_locations DROP COLUMN province;
+ALTER TABLE ciniki_musicfestival_locations DROP COLUMN postal;
+ALTER TABLE ciniki_musicfestival_locations DROP COLUMN latitude;
+ALTER TABLE ciniki_musicfestival_locations DROP COLUMN longitude;
+ALTER TABLE ciniki_musicfestival_locations DROP COLUMN image_id;
+ALTER TABLE ciniki_musicfestival_locations DROP COLUMN description;
+ALTER TABLE ciniki_musicfestival_locations COMMENT='v1.07';
