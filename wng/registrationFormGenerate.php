@@ -1109,7 +1109,10 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 );
         } */
 
-        if( isset($selected_class) && ($selected_class['flags']&0x10) == 0x10 && isset($selected_class['options']["perf_time{$i}"]) ) {
+        if( isset($selected_class) && ($selected_class['flags']&0x10) == 0x10 
+            && isset($selected_class['options']["perf_time{$i}"]) 
+            && $selected_class['options']["perf_time{$i}"] > 0
+            ) {
             $perf_time = $selected_class['options']["perf_time{$i}"];
         } elseif( isset($_POST["f-perf_time{$i}-min"]) || isset($_POST["f-perf_time{$i}-sec"]) ) {
             if( isset($_POST["f-perf_time{$i}-min"]) ) {
