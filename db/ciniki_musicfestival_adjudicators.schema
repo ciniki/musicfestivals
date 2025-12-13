@@ -24,6 +24,8 @@
 #
 # discipline:           The discipline they will be adjudicating.
 #
+# category:             The category for the adjudicator, not always used.
+#
 # description:          The full bio for the adjudicator.
 #
 # sig_image_id:         The ID of the signature image for the adjudicator.
@@ -39,6 +41,7 @@ create table ciniki_musicfestival_adjudicators (
     customer_id int not null,
     flags tinyint unsigned not null,
     image_id int not null,
+    category varchar(250) not null,
     discipline varchar(250) not null,
     description text not null,
     sig_image_id int not null,
@@ -48,4 +51,4 @@ create table ciniki_musicfestival_adjudicators (
     unique index (uuid),
     unique index (festival_id, customer_id),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.04';
+) ENGINE='InnoDB', COMMENT='v1.05';

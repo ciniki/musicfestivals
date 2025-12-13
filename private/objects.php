@@ -67,6 +67,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'flags'=>array('name'=>'Options', 'default'=>0),
             'image_id'=>array('name'=>'Image', 'ref'=>'ciniki.images.image', 'default'=>0),
             'discipline'=>array('name'=>'Discipline', 'default'=>''),
+            'category'=>array('name'=>'Category', 'default'=>''),
             'description'=>array('name'=>'Bio', 'default'=>''),
             'sig_image_id'=>array('name'=>'Signature Image', 'ref'=>'ciniki.images.image', 'default'=>0),
             ),

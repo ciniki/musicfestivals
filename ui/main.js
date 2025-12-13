@@ -6280,6 +6280,15 @@ function ciniki_musicfestivals_main() {
                     }},
                 'adjudications-online-intro':{'label':'Online Intro', 'type':'htmlarea'},
             }},
+        '_adjudicator_options':{'label':'Adjudicator Options', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('adjudications', 'settings'); },
+            'fields':{
+                'adjudicators-categories':{'label':'Categories', 'type':'toggle', 'default':'no', 
+                    'toggles':{
+                        'no':'No',
+                        'yes':'Yes',
+                    }},
+            }},
         '_adjudications_live_instructions':{'label':'Live Instructions', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('adjudications', 'liveinstructions'); },
             'fields':{
@@ -6464,6 +6473,7 @@ function ciniki_musicfestivals_main() {
             '_adjudications_level', 
             '_adjudications_pdf', 
             '_adjudications_online', 
+            '_adjudicator_options', 
             '_adjudications_live_instructions', 
             '_adjudications_virtual_instructions',
             '_schedule_pdf',
@@ -6499,7 +6509,7 @@ function ciniki_musicfestivals_main() {
     }
     this.edit.switchAdjudicationsTab = function(tab) {
         this.sections._adjudications_tabs.selected = tab;
-        this.showHideSections(['_adjudications_tabs', '_adjudications_options', '_adjudications_mark', '_adjudications_placement', '_adjudications_level', '_adjudications_pdf', '_adjudications_online', '_adjudications_live_instructions', '_adjudications_virtual_instructions']);
+        this.showHideSections(['_adjudications_tabs', '_adjudications_options', '_adjudications_mark', '_adjudications_placement', '_adjudications_level', '_adjudications_pdf', '_adjudicator_options', '_adjudications_online', '_adjudications_live_instructions', '_adjudications_virtual_instructions']);
         this.refreshSection('_adjudications_tabs');
         this.updateForm();
     }
@@ -12771,6 +12781,10 @@ function ciniki_musicfestivals_main() {
             'noData':'No Customer Account',
             },
         '_details':{'label':'Adjudicator Details', 'aside':'yes', 'fields':{
+            'category':{'label':'Category', 'type':'text',
+                'livesearch':'yes', 'livesearchempty':'yes',
+                'visible':function() { return M.ciniki_musicfestivals_main.festival.settingValue('adjudicators-categories') == 'yes' ? 'yes' : 'no'; },
+                },
             'discipline':{'label':'Discipline', 'type':'text'},
             'flags1':{'label':'Festivals', 'type':'flagspiece', 'mask':0x03, 'field':'flags', 'join':'yes', 'toggle':'yes',
                 'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x020000); },   // Split live/virtual festivals
@@ -12810,6 +12824,24 @@ function ciniki_musicfestivals_main() {
     this.adjudicator.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.musicfestivals.adjudicatorHistory', 'args':{'tnid':M.curTenantID, 'adjudicator_id':this.adjudicator_id, 'field':i}};
     }
+    this.adjudicator.liveSearchCb = function(s, i, value) {
+        if( i == 'category' ) {
+            M.api.getJSONBgCb('ciniki.musicfestivals.fieldSearch', 
+                {'tnid':M.curTenantID, 'table':'adjudicators', 'field':i, 'festival_id':this.festival_id, 'start_needle':value, 'limit':25}, function(rsp) { 
+                    M.ciniki_musicfestivals_main.adjudicator.liveSearchShow(s, i, M.gE(M.ciniki_musicfestivals_main.adjudicator.panelUID + '_' + i), rsp.results); 
+                });
+        }
+    }
+    this.adjudicator.liveSearchResultValue = function(s, f, i, j, d) {
+        return d.value;
+    }
+    this.adjudicator.liveSearchResultRowFn = function(s, f, i, j, d) {
+        return 'M.ciniki_musicfestivals_main.adjudicator.updateField(\'' + s + '\',\'' + f + '\',\'' + escape(d.value) + '\');';
+    }
+    this.adjudicator.updateField = function(s, fid, result) {
+        M.gE(this.panelUID + '_' + fid).value = unescape(result);
+        this.removeLiveSearch(s, fid);
+    };
     this.adjudicator.cellValue = function(s, i, j, d) {
         if( s == 'customer_details' && j == 0 ) { return d.label; }
         if( s == 'customer_details' && j == 1 ) {

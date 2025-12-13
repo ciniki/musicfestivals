@@ -46,6 +46,7 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
         . "adjudicators.image_id, "
         . "adjudicators.flags, "
         . "adjudicators.description, "
+        . "adjudicators.category, "
         . "adjudicators.discipline "
         . "FROM ciniki_musicfestival_adjudicators AS adjudicators "
         . "INNER JOIN ciniki_customers AS customers ON ("
@@ -65,10 +66,11 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
         $strsql .= "AND ((adjudicators.flags&0x02) = 0x02 OR (adjudicators.flags&0x03) = 0) ";
     }
     $strsql .= "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "ORDER BY customers.sort_name "
+        . "ORDER BY adjudicators.category, customers.sort_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'categories', 'fname'=>'category', 'fields'=>array('name'=>'category')),
         array('container'=>'adjudicators', 'fname'=>'permalink', 
             'fields'=>array('id', 'customer_id', 'display_name', 'flags', 'discipline', 
                 'image-id'=>'image_id', 'description', 'sort_name', 'permalink',
@@ -80,9 +82,9 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.221', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
     }
-    $adjudicators = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
+    $categories = isset($rc['categories']) ? $rc['categories'] : array();
 
-    if( count($adjudicators) > 0 ) {
+    if( count($categories) > 0 ) {
         //
         // Add the title block
         //
@@ -91,91 +93,101 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
             'level' => $section['sequence'] == 1 ? 1 : 2,
             'title' => isset($s['title']) ? $s['title'] : 'Adjudicators',
             );
-        //
-        // Add the adjudicators
-        //
-        if( isset($request['uri_split'][($request['cur_uri_pos']+1)]) ) {
-            if( isset($adjudicators[$request['uri_split'][($request['cur_uri_pos']+1)]]) ) {
-                $adjudicator = $adjudicators[$request['uri_split'][($request['cur_uri_pos']+1)]];
-                $block = array(
-                    'type' => 'contentphoto',
-                    'title' => $adjudicator['display_name'],
-                    'subtitle' => $adjudicator['discipline'],
-                    'image-id' => $adjudicator['image-id'],
-                    'content' => $adjudicator['description'],
-                    'image-position' => (isset($s['image-position']) && $s['image-position'] != '' ? $s['image-position'] : ''),
-                    'image-size' => (isset($s['image-size']) && $s['image-size'] != '' ? $s['image-size'] : ''),
+        foreach($categories as $category) {
+            $adjudicators = $category['adjudicators'];
+            if( isset($category['name']) && $category['name'] != '' ) {
+                $blocks[] = array(
+                    'type' => 'title', 
+                    'level' => 2,
+                    'title' => $category['name'],
                     );
-                if( ($adjudicator['flags']&0x04) == 0x04 && isset($adjudicator['links']) ) {
-                    $btn = 1;
-                    foreach($adjudicator['links'] as $link) {
-                        if( trim($link['url']) == '' ) {
-                            continue;
+            }
+            //
+            // Add the adjudicators
+            //
+            if( isset($request['uri_split'][($request['cur_uri_pos']+1)]) ) {
+                if( isset($adjudicators[$request['uri_split'][($request['cur_uri_pos']+1)]]) ) {
+                    $adjudicator = $adjudicators[$request['uri_split'][($request['cur_uri_pos']+1)]];
+                    $block = array(
+                        'type' => 'contentphoto',
+                        'title' => $adjudicator['display_name'],
+                        'subtitle' => $adjudicator['discipline'],
+                        'image-id' => $adjudicator['image-id'],
+                        'content' => $adjudicator['description'],
+                        'image-position' => (isset($s['image-position']) && $s['image-position'] != '' ? $s['image-position'] : ''),
+                        'image-size' => (isset($s['image-size']) && $s['image-size'] != '' ? $s['image-size'] : ''),
+                        );
+                    if( ($adjudicator['flags']&0x04) == 0x04 && isset($adjudicator['links']) ) {
+                        $btn = 1;
+                        foreach($adjudicator['links'] as $link) {
+                            if( trim($link['url']) == '' ) {
+                                continue;
+                            }
+                            $block["button-{$btn}-target"] = '_blank';
+                            $block["button-{$btn}-page"] = 0;
+                            $block["button-{$btn}-url"] = $link['url'];
+                            $block["button-{$btn}-text"] = $link['name'] != '' ? $link['name'] : $link['url'];
+                            $btn++;
                         }
-                        $block["button-{$btn}-target"] = '_blank';
-                        $block["button-{$btn}-page"] = 0;
-                        $block["button-{$btn}-url"] = $link['url'];
-                        $block["button-{$btn}-text"] = $link['name'] != '' ? $link['name'] : $link['url'];
-                        $btn++;
                     }
+
+                    $blocks[] = $block;
+                    return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
+                } else {
+                    $blocks[] = array(
+                        'type' => 'msg', 
+                        'level' => 'error',
+                        'content' => 'Could not find the adjudicator you requested.', 
+                        );
                 }
+            }
 
-                $blocks[] = $block;
-                return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
-            } else {
+            if( isset($s['layout']) && $s['layout'] == 'imagebuttons' ) {
+                foreach($adjudicators as $aid => $adjudicator) {
+                    $adjudicators[$aid]['title'] = $adjudicator['display_name'];
+                    $adjudicators[$aid]['subtitle'] = $adjudicator['discipline'];
+                    $adjudicators[$aid]['image-ratio'] = '1-1';
+                    $adjudicators[$aid]['title-position'] = 'overlay-bottomhalf';
+                    $adjudicators[$aid]['url'] = $request['page']['path'] . '/' . $adjudicator['permalink'];
+                }
                 $blocks[] = array(
-                    'type' => 'msg', 
-                    'level' => 'error',
-                    'content' => 'Could not find the adjudicator you requested.', 
+                    'type' => 'imagebuttons',
+                    'items' => $adjudicators,
                     );
-            }
-        }
-
-        if( isset($s['layout']) && $s['layout'] == 'imagebuttons' ) {
-            foreach($adjudicators as $aid => $adjudicator) {
-                $adjudicators[$aid]['title'] = $adjudicator['display_name'];
-                $adjudicators[$aid]['subtitle'] = $adjudicator['discipline'];
-                $adjudicators[$aid]['image-ratio'] = '1-1';
-                $adjudicators[$aid]['title-position'] = 'overlay-bottomhalf';
-                $adjudicators[$aid]['url'] = $request['page']['path'] . '/' . $adjudicator['permalink'];
-            }
-            $blocks[] = array(
-                'type' => 'imagebuttons',
-                'items' => $adjudicators,
-                );
-        } 
-        elseif( isset($s['layout']) && $s['layout'] == 'tradingcards' ) {
-            foreach($adjudicators as $aid => $adjudicator) {
-                $adjudicators[$aid]['title'] = $adjudicator['display_name'];
-                $adjudicators[$aid]['subtitle'] = $adjudicator['discipline'];
-//                $adjudicators[$aid]['image-position'] = 'top center';
-                $adjudicators[$aid]['button-class'] = isset($s['button-class']) && $s['button-class'] != '' ? $s['button-class'] : 'button';
-                $adjudicators[$aid]['button-1-text'] = 'Read Bio';
-                $adjudicators[$aid]['button-1-url'] = $request['page']['path'] . '/' . $adjudicator['permalink'];
-                $adjudicators[$aid]['url'] = $request['page']['path'] . '/' . $adjudicator['permalink'];
-            }
-            $blocks[] = array(
-                'type' => 'tradingcards',
-                'class' => 'musicfestival-adjudicators',
-                'size' => '25',
-                'items' => $adjudicators,
-                );
-        } 
-        else {
-            $side = 'right';
-            foreach($adjudicators as $adjudicator) {
-                $blocks[] = array(
-                    'type' => 'contentphoto', 
-                    'image-position' => 'top-' . $side,
-                    'title' => $adjudicator['display_name'],
-                    'subtitle' => $adjudicator['discipline'], 
-                    'image-id' => (isset($adjudicator['image-id']) && $adjudicator['image-id'] > 0  ? $adjudicator['image-id'] : 0),
-                    'image-position' => (isset($s['image-position']) && $s['image-position'] != '' ? $s['image-position'] : ''),
-                    'image-size' => (isset($s['image-size']) && $s['image-size'] != '' ? $s['image-size'] : ''),
-                    'content' => $adjudicator['description'],
-                    );
-                $side = $side == 'right' ? 'left' : 'right';
             } 
+            elseif( isset($s['layout']) && $s['layout'] == 'tradingcards' ) {
+                foreach($adjudicators as $aid => $adjudicator) {
+                    $adjudicators[$aid]['title'] = $adjudicator['display_name'];
+                    $adjudicators[$aid]['subtitle'] = $adjudicator['discipline'];
+    //                $adjudicators[$aid]['image-position'] = 'top center';
+                    $adjudicators[$aid]['button-class'] = isset($s['button-class']) && $s['button-class'] != '' ? $s['button-class'] : 'button';
+                    $adjudicators[$aid]['button-1-text'] = 'Read Bio';
+                    $adjudicators[$aid]['button-1-url'] = $request['page']['path'] . '/' . $adjudicator['permalink'];
+                    $adjudicators[$aid]['url'] = $request['page']['path'] . '/' . $adjudicator['permalink'];
+                }
+                $blocks[] = array(
+                    'type' => 'tradingcards',
+                    'class' => 'musicfestival-adjudicators',
+                    'size' => '25',
+                    'items' => $adjudicators,
+                    );
+            } 
+            else {
+                $side = 'right';
+                foreach($adjudicators as $adjudicator) {
+                    $blocks[] = array(
+                        'type' => 'contentphoto', 
+                        'image-position' => 'top-' . $side,
+                        'title' => $adjudicator['display_name'],
+                        'subtitle' => $adjudicator['discipline'], 
+                        'image-id' => (isset($adjudicator['image-id']) && $adjudicator['image-id'] > 0  ? $adjudicator['image-id'] : 0),
+                        'image-position' => (isset($s['image-position']) && $s['image-position'] != '' ? $s['image-position'] : ''),
+                        'image-size' => (isset($s['image-size']) && $s['image-size'] != '' ? $s['image-size'] : ''),
+                        'content' => $adjudicator['description'],
+                        );
+                    $side = $side == 'right' ? 'left' : 'right';
+                } 
+            }
         }
     } else {
         $blocks[] = array(
