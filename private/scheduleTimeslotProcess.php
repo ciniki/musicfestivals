@@ -31,6 +31,7 @@ function ciniki_musicfestivals_scheduleTimeslotProcess(&$ciniki, $tnid, &$timesl
     $schedule_ata_seconds = 0;
     $num_reg = 0;
 
+    error_log(print_r($timeslot,true));
     //
     // Check if class is set, then use class name
     //
@@ -84,6 +85,12 @@ function ciniki_musicfestivals_scheduleTimeslotProcess(&$ciniki, $tnid, &$timesl
                     }
                 }
                 $timeslot['description'] .= ($timeslot['description'] != '' ? "\n":'') . $individual_time_text . $reg['class_code'] . ' - ' . $reg['name'] . $ptime_text;
+                if( isset($reg['schedule_at_seconds']) && $reg['schedule_at_seconds'] > $schedule_at_seconds ) {   
+                    $schedule_at_seconds = $reg['schedule_at_seconds'];
+                }
+                if( isset($reg['schedule_ata_seconds']) && $reg['schedule_ata_seconds'] > $schedule_ata_seconds ) {   
+                    $schedule_ata_seconds = $reg['schedule_ata_seconds'];
+                }
             }
         }
     }
