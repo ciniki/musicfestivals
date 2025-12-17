@@ -914,11 +914,34 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                         'content' => 'Unable to submit change request, please try again or contact us for help.',
                         ];
                 } else {
+                    //
+                    // Send the email to the admin
+                    //
+                    if( isset($festival['registration-crs-notify-emails']) && $festival['registration-crs-notify-emails'] != '' ) {
+                        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'crEmail');
+                        $rc = ciniki_musicfestivals_crEmail($ciniki, $tnid, [
+                            'cr' => [
+                                'cr_number' => $cr_number,
+                                'status' => 20,
+                                'customer_id' => $request['session']['customer']['id'],
+                                'object' => 'ciniki.musicfestivals.registration',
+                                'object_id' => $registration['registration_id'],
+                                'dt_submitted' => $dt->format('Y-m-d H:i:s'),
+                                'content' => $_POST['f-cr'],
+                                ],
+                            'registration' => $registration,
+                            'notify-emails' => $festival['registration-crs-notify-emails'],
+                            ]);
+                        if( $rc['stat'] != 'ok' ) {
+                            error_log("ERR: " . print_r($rc, true));
+                        }
+                    }
                     $request['session']['redirect-message'] = 'Your request has been submitted and will be reviewed.';
 
                     header("Location: {$base_url}");
                     return array('stat'=>'exit');
                 }
+
             }
         } 
     }
@@ -2298,7 +2321,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
 //                    . "</form>"
                     . "</div></div></div>";
         }
-        if( $editable == 'no' 
+        if( $display == 'view' 
             && isset($festival['registration-crs-enable']) && $festival['registration-crs-enable'] == 'yes' 
             ) {
             if( isset($festival['registration-crs-open']) && $festival['registration-crs-open'] == 'yes' ) {
@@ -2329,11 +2352,15 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                         . "C.rC(C.gE('f-cr').parentNode, 'hidden');"
                         . "C.rC(C.gE('f-cr-button').parentNode, 'hidden');"
                         . "C.aC(e.srcElement.parentNode, 'hidden');"
-                        . "e.srcElement.parentNode.previousSibling.firstChild.innerHTML='Cancel';"
+                        . "if(e.srcElement.parentNode.previousSibling != null){"
+                            . "e.srcElement.parentNode.previousSibling.firstChild.innerHTML='Cancel';"
+                        . "}else{"
+                            . "C.gE('registration-form_submit_buttons').lastChild.style.display='none';"
+                        . "}"
                     . '};'
                     . 'function submitCR() {'
                         . "C.gE('f-action').value = 'crsubmit';"
-                        . "C.gE('registration-form').submit();"
+                        . ($editable == 'no' ? "C.gE('registration-form').submit();" : "C.gE('submit-button').click();")
                     . '};';
             }
             //
@@ -2419,6 +2446,14 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             if( isset($festival['registration-crs-open']) && $festival['registration-crs-open'] == 'yes' ) {
                 $buttons[] = ['js' => 'showChangeRequest(event);', 'text' => 'Request Change'];
             }
+            $blocks[] = [
+                'id' => 'form-buttons',
+                'type' => 'buttons',
+                'class' => 'limit-width limit-width-80 alignapart',
+                'items' => $buttons,
+                ];
+        } elseif( isset($festival['registration-crs-open']) && $festival['registration-crs-open'] == 'yes' ) {
+            $buttons = [['js' => 'showChangeRequest(event);', 'text' => 'Request Change']];
             $blocks[] = [
                 'id' => 'form-buttons',
                 'type' => 'buttons',

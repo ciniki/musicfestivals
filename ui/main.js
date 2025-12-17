@@ -5826,6 +5826,7 @@ function ciniki_musicfestivals_main() {
                     'yes':'Yes',
                     }},
                 'registration-crs-deadline':{'label':'Deadline', 'type':'datetime'},
+                'registration-crs-notify-emails':{'label':'Notify Emails', 'type':'text'},
             }},
         '_registration_options':{'label':'Registration Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('registrations'); },

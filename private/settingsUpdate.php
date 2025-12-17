@@ -205,6 +205,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'registration-notes-enable',
         'registration-crs-enable',
         'registration-crs-deadline',
+        'registration-crs-notify-emails',
         'registration-scrutineers-enable',
         'registration-scrutineers-status-10',
         'registration-scrutineers-status-31',
