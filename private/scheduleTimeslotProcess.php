@@ -31,7 +31,6 @@ function ciniki_musicfestivals_scheduleTimeslotProcess(&$ciniki, $tnid, &$timesl
     $schedule_ata_seconds = 0;
     $num_reg = 0;
 
-    error_log(print_r($timeslot,true));
     //
     // Check if class is set, then use class name
     //
