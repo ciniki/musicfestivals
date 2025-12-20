@@ -49,7 +49,8 @@ function ciniki_musicfestivals_festivalHistory($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryReformat');
         return ciniki_core_dbGetModuleHistoryReformat($ciniki, 'ciniki.musicfestival', 'ciniki_musicfestivals_history', $args['tnid'], 'ciniki_musicfestivals', $args['festival_id'], $args['field'], 'date');
     } 
-    elseif( $args['field'] == 'live_date' 
+    elseif( $args['field'] == 'earlybird_date' 
+        || $args['field'] == 'live_date' 
         || $args['field'] == 'virtual_date' 
         || $args['field'] == 'titles_end_dt' 
         || $args['field'] == 'accompanist_end_dt' 
