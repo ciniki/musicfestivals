@@ -26,7 +26,6 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
-        'schedule'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule'),
         'syllabus_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus'),
 //        'syllabus'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus'),
         'sections'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sections'),

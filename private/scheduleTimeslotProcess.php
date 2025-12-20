@@ -126,25 +126,35 @@ function ciniki_musicfestivals_scheduleTimeslotProcess(&$ciniki, $tnid, &$timesl
         $perf_time_str = $slot_length;
     }
 
+    $start_dt = new DateTime('now', new DateTimezone($intl_timezone));
+    $start_dt = new DateTime($start_dt->format('Y-m-d ') . $timeslot['slot_time'], new DateTimezone($intl_timezone));
+    $end_dt = clone $start_dt;
+    if( isset($timeslot['slot_seconds']) && $timeslot['slot_seconds'] > 0 ) {
+        $end_dt->add(new DateInterval('PT' . $timeslot['slot_seconds'] . 'S'));
+    } elseif( $perf_time > 0 ) {
+        $end_dt->add(new DateInterval('PT' . ceil($perf_time/60)*60 . 'S'));
+    }
+
     if( $perf_time_str != '' ) {
         $timeslot['perf_time_text'] = '[' . $perf_time_str . ']';
+        $timeslot['end_time_text'] = $end_dt->format('g:i a');
     } else {
         $timeslot['perf_time_text'] = '';
     }
 
     //
-    // Run any subsctitutions on the description
+    // Run any substitutions on the description
     //
     if( isset($timeslot['slot_time']) ) {
-        $dt = new DateTime('now', new DateTimezone($intl_timezone));
-        $dt = new DateTime($dt->format('Y-m-d ') . $timeslot['slot_time'], new DateTimezone($intl_timezone));
-        $timeslot['start_time'] = $dt;
-        $timeslot['description'] = str_replace("{_start_time_}", $dt->format('g:i a'), $timeslot['description']);
-        $end_dt = clone $dt;
-        if( isset($timeslot['slot_seconds']) && $timeslot['slot_seconds'] > 0 ) {
-            $end_dt->add(new DateInterval('PT' . $timeslot['slot_seconds'] . 'S'));
+//        $dt = new DateTime('now', new DateTimezone($intl_timezone));
+//        $dt = new DateTime($dt->format('Y-m-d ') . $timeslot['slot_time'], new DateTimezone($intl_timezone));
+        $timeslot['start_time'] = $start_dt;
+        $timeslot['description'] = str_replace("{_start_time_}", $start_dt->format('g:i a'), $timeslot['description']);
+//        $end_dt = clone $dt;
+//        if( isset($timeslot['slot_seconds']) && $timeslot['slot_seconds'] > 0 ) {
+//            $end_dt->add(new DateInterval('PT' . $timeslot['slot_seconds'] . 'S'));
             $timeslot['description'] = str_replace("{_end_time_}", $end_dt->format('g:i a'), $timeslot['description']);
-        }
+//        }
     } elseif( isset($timeslot['slot_time_text']) ) {
         $timeslot['description'] = str_replace("{_start_time_}", $timeslot['slot_time_text'], $timeslot['description']);
     }
