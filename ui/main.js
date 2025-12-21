@@ -13028,6 +13028,7 @@ function ciniki_musicfestivals_main() {
 //                'visible':function() { return M.ciniki_musicfestivals_main.festival.settingValue('locations-disciplines') == 'yes' ? 'yes' : 'no'; },
 //                },
 //            'sequence':{'label':'Order', 'type':'text', 'size':'small'},
+            'shortname':{'label':'Short Name', 'required':'no', 'type':'text'},
             'address1':{'label':'Address', 'type':'text'},
             'city':{'label':'City', 'type':'text'},
             'province':{'label':'Province', 'type':'text'},

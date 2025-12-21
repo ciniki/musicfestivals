@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_buildings ADD COLUMN shortname varchar(150) not null AFTER permalink;
+ALTER TABLE ciniki_musicfestival_buildings COMMENT='v1.02';

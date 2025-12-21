@@ -59,6 +59,7 @@ function ciniki_musicfestivals_buildingGet($ciniki) {
             'festival_id'=>'',
             'name'=>'',
             'permalink'=>'',
+            'shortname'=>'',
             'category'=>'',
             'sequence'=>'1',
             'address1'=>'',
@@ -80,6 +81,7 @@ function ciniki_musicfestivals_buildingGet($ciniki) {
             . "buildings.festival_id, "
             . "buildings.name, "
             . "buildings.permalink, "
+            . "buildings.shortname, "
             . "buildings.category, "
             . "buildings.sequence, "
             . "buildings.address1, "
@@ -97,7 +99,9 @@ function ciniki_musicfestivals_buildingGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'buildings', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'name', 'permalink', 'category', 'sequence', 'address1', 'city', 'province', 'postal', 'latitude', 'longitude', 'image_id', 'description'),
+                'fields'=>array('festival_id', 'name', 'permalink', 'shortname', 'category', 'sequence', 
+                    'address1', 'city', 'province', 'postal', 'latitude', 'longitude', 'image_id', 'description',
+                    ),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

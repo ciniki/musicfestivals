@@ -20,6 +20,7 @@ function ciniki_musicfestivals_buildingUpdate(&$ciniki) {
         'festival_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Festival'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
         'permalink'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Permalink'),
+        'shortname'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Short Name'),
         'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
         'address1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address'),
