@@ -71,7 +71,7 @@ function ciniki_musicfestivals_sponsorAdd(&$ciniki) {
     //
     if( isset($args['tags']) ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
-        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.musicfestivals', 'tag', $args['tnid'],
+        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.musicfestivals', 'sponsortag', $args['tnid'],
             'ciniki_musicfestival_sponsor_tags', 'ciniki_musicfestivals_history',
             'sponsor_id', $sponsor_id, 10, $args['tags']);
         if( $rc['stat'] != 'ok' ) {
