@@ -4866,6 +4866,17 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
 
             $strsql = "SELECT participation, COUNT(*) AS num "
                 . "FROM ciniki_musicfestival_registrations AS registrations "
+                . "INNER JOIN ciniki_sapos_invoice_items AS items ON ("
+                    . "registrations.invoice_id = items.invoice_id "
+                    . "AND registrations.id = items.object_id "
+                    . "AND items.object = 'ciniki.musicfestivals.registration' "
+                    . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_sapos_invoices AS invoices ON ("
+                    . "items.invoice_id = invoices.id "
+                    . "AND invoices.invoice_type = 10 "
+                    . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
                 . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "GROUP BY participation "
@@ -5047,16 +5058,22 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $festival['statistics']['num_titles'] = array('label'=>'Number of Titles', 'value'=>$rc['num']);
 
             //
-            // Get the amount of registration fees
+            // Get the amount of paid registration fees
             //
             $strsql = "SELECT registrations.participation, "
                 . "SUM(items.total_amount) AS total_fees "
                 . "FROM ciniki_musicfestival_registrations AS registrations "
-                . "LEFT JOIN ciniki_sapos_invoice_items AS items ON ("
+                . "INNER JOIN ciniki_sapos_invoice_items AS items ON ("
                     . "registrations.invoice_id = items.invoice_id "
                     . "AND registrations.id = items.object_id "
                     . "AND items.object = 'ciniki.musicfestivals.registration' "
                     . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_sapos_invoices AS invoices ON ("
+                    . "items.invoice_id = invoices.id "
+                    . "AND invoices.invoice_type = 10 "
+                    . "AND invoices.status = 50 "
+                    . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -5075,8 +5092,51 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             }
             if( isset($rc['fees']) ) {
                 foreach($rc['fees'] as $row) {
-                    $festival['statistics'][$row['participation'] . '_fees'] = array(
-                        'label'=>$row['participation'] . ' Fees', 
+                    $festival['statistics'][$row['participation'] . '_paid_fees'] = array(
+                        'label'=>'Paid ' . $row['participation'] . ' Fees', 
+                        'value'=>'$' . number_format($row['total_fees'], 2),
+                        );
+                }
+            }
+
+            //
+            // Get the amount of pending registration fees
+            //
+            $strsql = "SELECT registrations.participation, "
+                . "SUM(items.total_amount) AS total_fees "
+                . "FROM ciniki_musicfestival_registrations AS registrations "
+                . "INNER JOIN ciniki_sapos_invoice_items AS items ON ("
+                    . "registrations.invoice_id = items.invoice_id "
+                    . "AND registrations.id = items.object_id "
+                    . "AND items.object = 'ciniki.musicfestivals.registration' "
+                    . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_sapos_invoices AS invoices ON ("
+                    . "items.invoice_id = invoices.id "
+                    . "AND invoices.invoice_type = 10 "
+                    . "AND invoices.status > 30 "
+                    . "AND invoices.status < 50 "
+                    . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "GROUP BY participation "
+                . "ORDER BY participation "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'fees', 'fname'=>'participation', 
+                    'fields'=>array('participation', 'total_fees'),
+                    'maps'=>array('participation'=>$maps['registration']['participation']),
+                    ),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1081', 'msg'=>'Unable to load fees', 'err'=>$rc['err']));
+            }
+            if( isset($rc['fees']) ) {
+                foreach($rc['fees'] as $row) {
+                    $festival['statistics'][$row['participation'] . '_pending_fees'] = array(
+                        'label'=>'Pending ' . $row['participation'] . ' Fees', 
                         'value'=>'$' . number_format($row['total_fees'], 2),
                         );
                 }
@@ -5148,24 +5208,29 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "COUNT(registrations.id) AS num_reg, "
                 . "IFNULL(SUM(items.total_amount), 0) AS fees "
                 . "FROM ciniki_musicfestival_sections AS sections "
-                . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
+                . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
                     . "sections.id = categories.section_id "
                     . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
-                . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+                . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
                     . "categories.id = classes.category_id "
                     . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
-                . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
                     . "classes.id = registrations.class_id "
                     . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
-                . "LEFT JOIN ciniki_sapos_invoice_items AS items ON ("
+                . "INNER JOIN ciniki_sapos_invoice_items AS items ON ("
                     . "registrations.invoice_id = items.invoice_id "
                     . "AND registrations.id = items.object_id "
                     . "AND items.object = 'ciniki.musicfestivals.registration' "
                     . "AND items.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
+                . "INNER JOIN ciniki_sapos_invoices AS invoices ON ("
+                    . "items.invoice_id = invoices.id "
+                    . "AND invoices.invoice_type = 10 "
+                    . "AND invoices.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") " 
                 . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . "GROUP BY sections.id, _p "
