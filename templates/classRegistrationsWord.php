@@ -238,7 +238,7 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
     //
     // Build word document
     //
-    require_once($ciniki['config']['core']['lib_dir'] . '/PHPWord/bootstrap.php');
+    require_once($ciniki['config']['core']['lib_dir'] . '/vendor/autoload.php');
 
     $PHPWord = new \PhpOffice\PhpWord\PhpWord();
     $PHPWord->addTitleStyle(1, array('bold'=>true, 'size'=>12), array('spaceBefore'=>240, 'spaceAfter'=>120));

@@ -962,13 +962,13 @@ function ciniki_musicfestivals_main() {
                 'excel':{'label':'Export to Excel', 
                     'fn':'M.ciniki_musicfestivals_main.festival.downloadExcel(M.ciniki_musicfestivals_main.festival.festival_id);',
                     },
-                'pdf':{'label':'Registrations PDF ', 
+                'pdf':{'label':'Registrations PDF', 
                     'visible':function() {return M.ciniki_musicfestivals_main.festival.sections.registration_tabs.selected=='sections'?'yes':'no';},
                     'fn':'M.ciniki_musicfestivals_main.festival.downloadPDF(M.ciniki_musicfestivals_main.festival.festival_id);',
                     },
-                'word':{'label':'Registrations Word ', 
+                'word':{'label':'Registrations Word', 
                     'visible':function() {return M.modFlagOn('ciniki.musicfestivals', 0x4000) && M.ciniki_musicfestivals_main.festival.sections.registration_tabs.selected=='sections'?'yes':'no';},
-                    'fn':'M.ciniki_musicfestivals_main.festival.downloadWord(M.ciniki_musicfestivals_main.festival.festival_id);',
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadRegistrationsWord(M.ciniki_musicfestivals_main.festival.festival_id);',
                     },
                 'accoladespdf':{'label':'Accolade Registrations PDF ', 
                     'visible':function() {return M.ciniki_musicfestivals_main.festival.sections.registration_tabs.selected=='sections' && M.modFlagOn('ciniki.musicfestivals', 0x40) ?'yes':'no';},
@@ -4484,6 +4484,14 @@ function ciniki_musicfestivals_main() {
             M.api.openFile('ciniki.musicfestivals.registrationsPDF', {'tnid':M.curTenantID, 'festival_id':fid, 'section_id':this.section_id});
         } else {
             M.api.openFile('ciniki.musicfestivals.registrationsPDF', {'tnid':M.curTenantID, 'festival_id':fid});
+        }
+    }
+    this.festival.downloadRegistrationsWord = function(fid) {
+        this.popupMenuClose('registration_sections');
+        if( this.sections.registration_tabs.selected == 'sections' && this.section_id > 0 ) {
+            M.api.openFile('ciniki.musicfestivals.registrationsWord', {'tnid':M.curTenantID, 'festival_id':fid, 'section_id':this.section_id});
+        } else {
+            M.api.openFile('ciniki.musicfestivals.registrationsWord', {'tnid':M.curTenantID, 'festival_id':fid});
         }
     }
     this.festival.downloadAccoladesPDF = function(fid) {
