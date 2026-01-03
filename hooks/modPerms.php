@@ -18,6 +18,7 @@ function ciniki_musicfestivals_hooks_modPerms(&$ciniki, $tnid, $args) {
         'label' => 'Music Festivals',
         'perms' => array(
             'ciniki.musicfestivals' => 'Full Access',
+            'ciniki.musicfestivals.volunteers' => 'Manage Volunteers',
             ),
         );
 

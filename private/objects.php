@@ -586,6 +586,20 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );
+    $objects['sponsortag'] = array(
+        'name'=>'Sponsor Tag',
+        'o_name'=>'tag',
+        'o_container'=>'tags',
+        'sync'=>'yes',
+        'table'=>'ciniki_musicfestival_sponsor_tags',
+        'fields'=>array(
+            'sponsor_id'=>array('name'=>'Sponsor', 'ref'=>'ciniki.musicfestivals.sponsor'),
+            'tag_type'=>array('name'=>'Tag Type'),
+            'tag_name'=>array('name'=>'Tag Name'),
+            'permalink'=>array('name'=>'Permalink'),
+            ),
+        'history_table'=>'ciniki_musicfestivals_history',
+        );
     $objects['list'] = array(
         'name' => 'List',
         'sync' => 'yes',
@@ -964,6 +978,84 @@ function ciniki_musicfestivals_objects($ciniki) {
             'movements' => array('name'=>'Movements/Musical', 'default'=>''),
             'composer' => array('name'=>'Composer', 'default'=>''),
             'source_type' => array('name'=>'Source Type', 'default'=>''),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
+    $objects['volunteer'] = array(
+        'name' => 'Volunteer',
+        'sync' => 'yes',
+        'o_name' => 'volunteer',
+        'o_container' => 'volunteers',
+        'table' => 'ciniki_musicfestival_volunteers',
+        'fields' => array(
+            'festival_id' => array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'customer_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
+            'status' => array('name'=>'Status', 'default'=>'10'),
+            'shortname' => array('name'=>'Short Name', 'default'=>''),
+            'local_festival_id' => array('name'=>'Local Festival', 'ref'=>'ciniki.musicfestivals.festival', 'default'=>'0'),
+            'notes' => array('name'=>'Notes', 'default'=>''),
+            'internal_notes' => array('name'=>'Information', 'default'=>''),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
+    $objects['volunteertag'] = array(
+        'name'=>'Volunteer Tag',
+        'o_name'=>'tag',
+        'o_container'=>'tags',
+        'sync'=>'yes',
+        'table'=>'ciniki_musicfestival_volunteer_tags',
+        'fields'=>array(
+            'volunteer_id'=>array('name'=>'Volunteer', 'ref'=>'ciniki.musicfestivals.volunteer'),
+            'tag_type'=>array('name'=>'Tag Type'),
+            'tag_name'=>array('name'=>'Tag Name'),
+            'permalink'=>array('name'=>'Permalink'),
+            ),
+        'history_table'=>'ciniki_musicfestivals_history',
+        );
+    $objects['volunteershift'] = array(
+        'name' => 'Shift',
+        'sync' => 'yes',
+        'o_name' => 'shift',
+        'o_container' => 'shifts',
+        'table' => 'ciniki_musicfestival_volunteer_shifts',
+        'fields' => array(
+            'festival_id' => array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'shift_date' => array('name'=>'Date'),
+            'start_time' => array('name'=>'Start'),
+            'end_time' => array('name'=>'End'),
+            'object' => array('name'=>'Location Type'),
+            'object_id' => array('name'=>'Location'),
+            'role' => array('name'=>'Role'),
+            'flags' => array('name'=>'Options', 'default' => 0),
+            'min_volunteers' => array('name'=>'Minimum Volunteers', 'default'=>1),
+            'max_volunteers' => array('name'=>'Maximum Volunteers', 'default'=>1),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
+    $objects['volunteerassignment'] = array(
+        'name' => 'Assignment',
+        'sync' => 'yes',
+        'o_name' => 'assignment',
+        'o_container' => 'assignments',
+        'table' => 'ciniki_musicfestival_volunteer_assignments',
+        'fields' => array(
+            'festival_id' => array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'shift_id' => array('name'=>'Shift', 'ref'=>'ciniki.musicfestivals.volunteershift'),
+            'volunteer_id' => array('name'=>'Volunteer', 'ref'=>'ciniki.musicfestivals.volunteer'),
+            'status' => array('name'=>'Status', 'default'=>'10'),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
+    $objects['volunteernotification'] = array(
+        'name' => 'Notification',
+        'sync' => 'yes',
+        'o_name' => 'notification',
+        'o_container' => 'notifications',
+        'table' => 'ciniki_musicfestival_volunteer_notifications',
+        'fields' => array(
+            'scheduled_dt' => array('name'=>'Schedule Date/Time'),
+            'assignment_id' => array('name'=>'Assignment', 'ref'=>'ciniki.musicfestivals.volunteerassignment'),
+            'template' => array('name'=>'Template'),
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );

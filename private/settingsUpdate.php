@@ -305,6 +305,21 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'accolades-include-descriptions',
         'accolades-include-donatedby',
         'accolades-include-amount',
+        'volunteers-roles',                 // comma delimited list
+        'volunteers-skills',                // comma delimited list
+        'volunteers-availability-days',     // comma delimited list of days
+        'volunteers-availability-times',    // comma delimited list of times
+        'volunteers-default-shifts',    // json object with default shifts to add when adding division
+        'volunteers-account-menu',          // Enable the account menu for logins
+        'volunteers-applied-msg',           // The message to display when a volunteer has applied.
+        'volunteers-email-approved-subject',
+        'volunteers-email-approved-message',
+        'volunteers-email-shift-assigned-subject',
+        'volunteers-email-shift-assigned-message',
+        'volunteers-email-reminder-7day-subject',
+        'volunteers-email-reminder-7day-message',
+        'volunteers-email-reminder-24hour-subject',
+        'volunteers-email-reminder-24hour-message',
         );
     foreach($valid_settings as $field) {
         if( isset($args[$field]) ) {

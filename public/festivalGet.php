@@ -2661,6 +2661,87 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 }
                 $festival['schedule_timeslots'] = $rc['timeslots'];
                 $nplists['schedule_timeslots'] = $rc['nplist'];
+
+                //
+                // Check if volunteer shifts should be loaded
+                //
+                if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x01) ) {
+                    $strsql = "SELECT divisions.id, "
+                        . "DATE_FORMAT(divisions.division_date, '%Y-%m-%d') AS division_date, "
+                        . "divisions.location_id, "
+                        . "IFNULL(locations.building_id, 0) AS building_id "
+                        . "FROM ciniki_musicfestival_schedule_divisions AS divisions "
+                        . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
+                            . "divisions.location_id = locations.id "
+                            . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                            . ") "
+                        . "WHERE divisions.id = '" . ciniki_core_dbQuote($ciniki, $args['sdivision_id']) . "' "
+                        . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . "";
+                    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'division');
+                    if( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1255', 'msg'=>'Unable to load division', 'err'=>$rc['err']));
+                    }
+                    if( !isset($rc['division']) ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1256', 'msg'=>'Unable to find requested division'));
+                    }
+                    $division = $rc['division'];
+
+                    $strsql = "SELECT shifts.id, "
+                        . "TIME_FORMAT(shifts.start_time, '%l:%i %p') as start_time, "
+                        . "TIME_FORMAT(shifts.end_time, '%l:%i %p') AS end_time, "
+                        . "TIME_FORMAT(shifts.start_time, '%H%i') as sort_start_time, "
+                        . "TIME_FORMAT(shifts.end_time, '%H%i') as sort_end_time, "
+                        . "shifts.role, "
+                        . "shifts.min_volunteers, "
+                        . "shifts.max_volunteers, "
+                        . "volunteers.id AS volunteer_id, "
+                        . "IF(volunteers.shortname <> '', volunteers.shortname, customers.display_name) AS names "
+                        . "FROM ciniki_musicfestival_volunteer_shifts AS shifts "
+                        . "LEFT JOIN ciniki_musicfestival_volunteer_assignments AS assignments ON ("
+                            . "shifts.id = assignments.shift_id "
+                            . "AND assignments.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                            . ") "
+                        . "LEFT JOIN ciniki_musicfestival_volunteers AS volunteers ON ("
+                            . "assignments.volunteer_id = volunteers.id "
+                            . "AND volunteers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                            . ") "
+                        . "LEFT JOIN ciniki_customers AS customers ON ("
+                            . "volunteers.customer_id = customers.id "
+                            . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                            . ") "
+                        . "WHERE shifts.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                        . "AND shifts.shift_date = '" . ciniki_core_dbQuote($ciniki, $division['division_date']) . "' "
+                        . "AND ("
+                            . "(object = 'ciniki.musicfestivals.location' "
+                            . "AND object_id = '" . ciniki_core_dbQuote($ciniki, $division['location_id']) . "' "
+                            . ") OR ("
+                            . "object = 'ciniki.musicfestivals.building' "
+                            . "AND object_id = '" . ciniki_core_dbQuote($ciniki, $division['building_id']) . "' "
+                            . "))"
+                        . "ORDER BY shifts.role, shifts.start_time, names "
+                        . "";
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                        array('container'=>'shifts', 'fname'=>'id', 
+                            'fields'=>array('id', 'start_time', 'end_time', 
+                                'sort_start_time', 'sort_end_time', 
+                                'role', 
+                                'min_volunteers', 'max_volunteers', 'names'),
+                            'dlists'=>array('names'=>'<br>'),
+                            ),
+                        array('container'=>'volunteers', 'fname'=>'volunteer_id', 
+                            'fields'=>array('id'=>'volunteer_id', 'name'=>'names'),
+                            ),
+                        ));
+                    if( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1241', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
+                    }
+                    $festival['schedule_vshifts'] = isset($rc['shifts']) ? $rc['shifts'] : array();
+                    foreach($festival['schedule_vshifts'] as $sid => $shift) {
+                        $festival['schedule_vshifts'][$sid]['num_volunteers'] = isset($shift['volunteers']) ? count($shift['volunteers']) : 0;
+                    }
+                }
             }
         }
 

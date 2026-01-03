@@ -110,7 +110,7 @@ foreach($tnids as $tnid) {
                 ], 0x04);
             if( $rc['stat'] != 'ok' ) {
                 error_log(print_r($rc,true));
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1096', 'msg'=>'Unable to add the trophy category', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1316', 'msg'=>'Unable to add the trophy category', 'err'=>$rc['err']));
             }
             $categories[$trophy['typename']] = [
                 'id' => $rc['id'],
@@ -154,7 +154,7 @@ foreach($tnids as $tnid) {
                 ], 0x04);
             if( $rc['stat'] != 'ok' ) {
                 error_log(print_r($rc,true));
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1097', 'msg'=>'Unable to update the trophy', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1317', 'msg'=>'Unable to update the trophy', 'err'=>$rc['err']));
             }
         }
     }

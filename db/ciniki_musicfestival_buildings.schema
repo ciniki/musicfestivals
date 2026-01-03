@@ -13,7 +13,7 @@
 # location_id:              The ID of the location
 # name:                     The name of the place/venue/location.
 # permalink:                The permalink of the place/venue/location.
-# shortname:                The short name of the place/venue/location.
+# shortname:                The short name of the place/venue/location for internal use.
 # category:                 The category for the location, used on venues page.
 # sequence:                 The order to display the location in
 # address1:                 The street address of the location.

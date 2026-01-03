@@ -84,6 +84,41 @@ function ciniki_musicfestivals_cron_jobs(&$ciniki) {
             )); 
     }
 
+    //
+    // Check for volunteer email reminders
+    //
+    error_log('checking');
+    $end_dt = new DateTime('now', new DateTimezone('UTC'));
+    $start_dt = clone $end_dt;
+    $start_dt->sub(new DateInterval('PT1H'));
+    $end_dt->add(new DateInterval('PT5M'));
+    $strsql = "SELECT notifications.id AS notification_id, "   
+        . "notifications.uuid, "
+        . "notifications.tnid, "
+        . "notifications.assignment_id, "
+        . "notifications.template "
+        . "FROM ciniki_musicfestival_volunteer_notifications AS notifications "
+        . "WHERE notifications.scheduled_dt > '" . ciniki_core_dbQuote($ciniki, $start_dt->format('Y-m-d H:i:s')) . "' "
+        . "AND notifications.scheduled_dt < '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d H:i:s')) . "' "
+        . "";
+        error_log(print_r($strsql,true));
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.sapos', 'item');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1299', 'msg'=>'Unable to get music festival volunteer notifications', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['rows']) ) {
+        return array('stat'=>'ok');
+    }
+    $notifications = $rc['rows'];
+
+    foreach($notifications as $notification) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'volunteerEmail');
+        $rc = ciniki_musicfestivals_volunteerEmail($ciniki, $notification['tnid'], $notification);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1300', 'msg'=>'Unable to send music festival volunteer message', 'err'=>$rc['err']));
+        }
+    }
+
     return array('stat'=>'ok');
 }
 ?>

@@ -16,7 +16,7 @@ function ciniki_musicfestivals_flags(&$ciniki) {
     //
     $flags = array(
         // 0x01
-//        array('flag'=>array('bit'=>'1', 'name'=>'Earlybird **deprecated**')), // now festival flag
+        array('flag'=>array('bit'=>'1', 'name'=>'Volunteer Manager')), 
         array('flag'=>array('bit'=>'2', 'name'=>'Provincials Manager')),    // Will be removed someday
         array('flag'=>array('bit'=>'3', 'name'=>'Timeslot Photos')),
         array('flag'=>array('bit'=>'4', 'name'=>'Results By Date')),   // Temp feature to be better integrated in future
@@ -36,7 +36,7 @@ function ciniki_musicfestivals_flags(&$ciniki) {
         array('flag'=>array('bit'=>'15', 'name'=>'Advanced Scheduler')),  
         array('flag'=>array('bit'=>'16', 'name'=>'Accompanists')),
         // 0x010000
-        array('flag'=>array('bit'=>'17', 'name'=>'Provincials')), // Name may change
+        array('flag'=>array('bit'=>'17', 'name'=>'Provincials')), // When festival is provincial festival
         array('flag'=>array('bit'=>'18', 'name'=>'Split Virtual/Live Syllabus **deprecated**')), // Can now be done with syllabuses table
         array('flag'=>array('bit'=>'19', 'name'=>'Program Document')), // 5.5x8.5 program
         array('flag'=>array('bit'=>'20', 'name'=>'Schedule Individual Times')),   // each registration has a scheduled time

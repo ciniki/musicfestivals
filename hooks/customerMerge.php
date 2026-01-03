@@ -184,6 +184,29 @@ function ciniki_musicfestivals_hooks_customerMerge($ciniki, $tnid, $args) {
         ciniki_tenants_updateModuleChangeDate($ciniki, $tnid, 'ciniki', 'musicfestivals');
     }
 
+    //
+    // Get the list of volunteers to update
+    //
+    $strsql = "SELECT id, customer_id "
+        . "FROM ciniki_musicfestival_volunteers "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'items');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1248', 'msg'=>'Unable to find adjudicators', 'err'=>$rc['err']));
+    }
+    $items = $rc['rows'];
+    foreach($items as $i => $row) {
+        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.volunteer', $row['id'], [
+            'customer_id' => $args['primary_customer_id'],
+            ], 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1249', 'msg'=>'Unable to find volunteers.', 'err'=>$rc['err']));
+        }
+        $updated++;
+    }
+
     return array('stat'=>'ok', 'updated'=>$updated);
 }
 ?>

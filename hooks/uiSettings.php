@@ -156,6 +156,22 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
         $rsp['menu_items'][] = $menu_item;
     }
 
+    if( isset($ciniki['tenant']['modules']['ciniki.musicfestivals'])
+        && ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x01)
+        && (isset($args['permissions']['owners'])
+            || isset($args['permissions']['ciniki.musicfestivals.volunteers'])
+            || isset($args['permissions']['resellers'])
+            || ($ciniki['session']['user']['perms']&0x01) == 0x01
+            )
+        ) {
+        $menu_item = array(
+            'priority'=>2803,
+            'label'=>$festival['name'] . ' - Volunteers',
+            'edit'=>array('app'=>'ciniki.musicfestivals.main', 'args'=>array('volunteers'=>1, 'festival_id'=>$festival['id'])),
+            );
+        $rsp['menu_items'][] = $menu_item;
+    } 
+
     return $rsp;
 }
 ?>

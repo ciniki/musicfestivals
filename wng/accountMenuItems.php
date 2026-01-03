@@ -246,6 +246,21 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
 //    }
 
     //
+    // Check if volunteers are enabled
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x01) 
+        && (!isset($festival['volunteers-account-menu']) || $festival['volunteers-account-menu'] == 'yes') 
+        ) {
+        $items[] = array(
+            'title' => 'Volunteer', 
+            'priority' => 3746, 
+            'selected' => isset($args['selected']) && $args['selected'] == 'musicfestival/volunteer' ? 'yes' : 'no',
+            'ref' => 'ciniki.musicfestivals.volunteer',
+            'url' => $base_url . '/musicfestival/volunteer',
+            );
+    }
+
+    //
     // Check for past festival registrations
     //
     $strsql = "SELECT DISTINCT registrations.festival_id "

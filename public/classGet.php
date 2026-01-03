@@ -403,7 +403,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
             . "ORDER BY tags.tag_type, tags.tag_sort_name, tags.tag_name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.ags', array(
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'tags', 'fname'=>'tag_type', 'fields'=>array('type'=>'tag_type', 'names'), 
                 'dlists'=>array('names'=>'::')),
             ));

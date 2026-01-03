@@ -1,0 +1,39 @@
+#
+# Description
+# -----------
+# This table stores the volunteer assignments to shifts
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# festival_id:              The ID of the festival.
+# shift_id:                 The ID of the schedule shift.
+# volunteer_id:             The ID of the volunteer.
+# status:                   The current status of the volunteer.
+#
+#                               10 - Pending
+#                               30 - Approved
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_musicfestival_volunteer_assignments (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    festival_id int not null,
+    shift_id int not null,
+    volunteer_id int not null,
+    status tinyint unsigned not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    unique index (festival_id, shift_id, volunteer_id),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

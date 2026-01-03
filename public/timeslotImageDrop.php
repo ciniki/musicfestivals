@@ -107,7 +107,7 @@ function ciniki_musicfestivals_timeslotImageDrop(&$ciniki) {
         . "AND timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' "
         . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
         . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.ags', 'item');
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }

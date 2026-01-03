@@ -178,6 +178,12 @@ function ciniki_musicfestivals_maps($ciniki) {
             90 => 'Cancelled',
         ),
     );
+    $maps['volunteerassignment'] = array(
+        'status'=>array(
+            10 => 'Pending',
+            30 => 'Assigned',
+        ),
+    );
 
     return array('stat'=>'ok', 'maps'=>$maps);
 }

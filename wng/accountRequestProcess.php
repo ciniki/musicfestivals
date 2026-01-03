@@ -44,8 +44,10 @@ function ciniki_musicfestivals_wng_accountRequestProcess(&$ciniki, $tnid, &$requ
     } elseif( $item['ref'] == 'ciniki.musicfestivals.past' ) {   
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountPastProcess');
         return ciniki_musicfestivals_wng_accountPastProcess($ciniki, $tnid, $request, $item);
+    } elseif( $item['ref'] == 'ciniki.musicfestivals.volunteer' ) {   
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountVolunteerProcess');
+        return ciniki_musicfestivals_wng_accountVolunteerProcess($ciniki, $tnid, $request, $item);
     }
-    
 
     return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.258', 'msg'=>'Account page not found'));
 }

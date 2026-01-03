@@ -43,9 +43,9 @@ function ciniki_musicfestivals_status() {
             var p = M.ciniki_musicfestivals_status.menu;
             p.data = rsp;
             // Main festivals list
-            p.sections.festivals.headerValues = ['tnid', 'Festival', 'Status', 'Start', 'End', 'Tenant', 'SMTP', 'Theme', 'Matomo', 'etrans', 'Waiver', 'Stripe', '# Reg'];
-            p.sections.festivals.sortTypes = ['number', 'text', 'status', 'date', 'date', 'text', 'text', 'text', 'number', 'text', 'text', 'text', 'number'];
-            p.sections.festivals.dataMaps = ['tnid', 'festival_name', 'status_text', 'start_date', 'end_date', 'tenant_name', 'smtp', 'theme', 'matomo_id', 'etransfer', 'waiver', 'stripe', 'num_reg'];
+            p.sections.festivals.headerValues = ['tnid', 'Festival', 'Status', 'Deadline', 'Start', 'End', 'Tenant', 'SMTP', 'Theme', 'Matomo', 'etrans', 'Waiver', 'Stripe', '# Reg'];
+            p.sections.festivals.sortTypes = ['number', 'text', 'status', 'date','date', 'date', 'text', 'text', 'text', 'number', 'text', 'text', 'text', 'number'];
+            p.sections.festivals.dataMaps = ['tnid', 'festival_name', 'status_text', 'live_date', 'start_date', 'end_date', 'tenant_name', 'smtp', 'theme', 'matomo_id', 'etransfer', 'waiver', 'stripe', 'num_reg'];
             p.sections.festivals.num_cols = p.sections.festivals.dataMaps.length;
             p.sections.festivals.label = 'Festivals (' + rsp.nplist.length + ')';
             p.refresh();

@@ -60,7 +60,7 @@ function ciniki_musicfestivals_buildingAdd(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
     $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1202', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1318', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
     }
     $args['sequence'] = isset($rc['num']) ? $rc['num'] + 1 : 1;
 

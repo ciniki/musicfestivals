@@ -57,6 +57,7 @@ function ciniki_musicfestivals_sysadminStatus($ciniki) {
         . "festivals.status AS status_text, "
         . "DATE_FORMAT(festivals.start_date, '%b %d, %Y') AS start_date, "
         . "DATE_FORMAT(festivals.end_date, '%b %d, %Y') AS end_date, "
+        . "DATE_FORMAT(festivals.live_date, '%b %d, %Y') AS live_date, "
         . "(SELECT COUNT(*) "
             . "FROM ciniki_musicfestival_registrations AS registrations "
             . "WHERE festivals.id = registrations.festival_id "
@@ -79,7 +80,7 @@ function ciniki_musicfestivals_sysadminStatus($ciniki) {
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'festivals', 'fname'=>'id', 
             'fields'=>array('id', 'tnid', 'festival_name', 'tenant_name', 'flags', 'status_text',
-                'start_date', 'end_date', 'num_reg',
+                'live_date', 'start_date', 'end_date', 'num_reg',
                 ),
             'maps'=>array('status_text'=>$maps['festival']['status']),
             ),
