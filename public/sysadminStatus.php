@@ -71,7 +71,7 @@ function ciniki_musicfestivals_sysadminStatus($ciniki) {
         . "LEFT JOIN ciniki_musicfestival_settings AS settings ON ("
             . "festivals.id = settings.festival_id "
             . "AND festivals.tnid = settings.tnid "
-            . "AND detail_key IN ('waiver-general-title', 'waiver-general-msg') "
+            . "AND detail_key IN ('waiver-general-title', 'waiver-general-msg', 'provincial-festival-id') "
             . ") "
         . "WHERE festivals.status < 50 "
         . "ORDER BY festivals.start_date, festivals.id, settings.detail_key "
@@ -197,20 +197,21 @@ function ciniki_musicfestivals_sysadminStatus($ciniki) {
     //
     // Process the festivals
     //
+    $totals['num_reg'] = 0;
     foreach($festivals as $k => $v) {
         $festivals[$k]['waiver'] = '';
         $festivals[$k]['smtp'] = '';
-
-
-        if( $k == 55 ) {
-            error_log(print_r($mail[$v['tnid']],true));
-        }
+        $festivals[$k]['provincials'] = '';
 
         if( isset($v['settings']['waiver-general-title']['detail_value']) && $v['settings']['waiver-general-title']['detail_value'] != '' 
             && isset($v['settings']['waiver-general-msg']['detail_value']) && $v['settings']['waiver-general-msg']['detail_value'] != '' 
             ) {
             $festivals[$k]['waiver'] = 'yes';
         }
+        if( isset($v['settings']['provincial-festival-id']['detail_value']) ) {
+            $festivals[$k]['provincials'] = $v['settings']['provincial-festival-id']['detail_value'];
+        }
+
         if( isset($mail[$v['tnid']]['detail_value']) ) {
             if( (!isset($replyto[$v['tnid']]['detail_value']) || $replyto[$v['tnid']]['detail_value'] == '')
                 && $mail[$v['tnid']]['detail_value'] == 'email-smtp.us-east-1.amazonaws.com' 
@@ -244,12 +245,9 @@ function ciniki_musicfestivals_sysadminStatus($ciniki) {
         } else {
             $festivals[$k]['stripe'] = '-';
         }
+        $totals['num_reg'] += $festivals[$k]['num_reg'];
     }
 
-
-
-
-
-    return array('stat'=>'ok', 'festivals'=>array_values($festivals), 'nplist'=>$festivals_ids);
+    return array('stat'=>'ok', 'festivals'=>array_values($festivals), 'totals'=>$totals, 'nplist'=>$festivals_ids);
 }
 ?>
