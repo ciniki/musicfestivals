@@ -87,7 +87,6 @@ function ciniki_musicfestivals_cron_jobs(&$ciniki) {
     //
     // Check for volunteer email reminders
     //
-    error_log('checking');
     $end_dt = new DateTime('now', new DateTimezone('UTC'));
     $start_dt = clone $end_dt;
     $start_dt->sub(new DateInterval('PT1H'));
@@ -101,7 +100,6 @@ function ciniki_musicfestivals_cron_jobs(&$ciniki) {
         . "WHERE notifications.scheduled_dt > '" . ciniki_core_dbQuote($ciniki, $start_dt->format('Y-m-d H:i:s')) . "' "
         . "AND notifications.scheduled_dt < '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d H:i:s')) . "' "
         . "";
-        error_log(print_r($strsql,true));
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.sapos', 'item');
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1299', 'msg'=>'Unable to get music festival volunteer notifications', 'err'=>$rc['err']));
