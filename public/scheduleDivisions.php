@@ -246,6 +246,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                 . "IFNULL(competitors.ctype, 0) AS ctype, "
                 . "IFNULL(competitors.notes, '') AS competitor_notes, "
                 . "IFNULL(competitors.age, '') AS competitor_age, "
+                . "IFNULL(competitors.city, '') AS competitor_city, "
                 . "IFNULL(competitors.num_people, '') AS competitor_num_people, "
 //                . "GROUP_CONCAT(' ', competitors.notes) AS competitor_notes, "
                 . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
@@ -350,7 +351,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                     ),
                 array('container'=>'competitors', 'fname'=>'competitor_id', 
                     'fields'=>array('ctype', 'notes'=>'competitor_notes', 
-                        'age'=>'competitor_age', 'num_people'=>'competitor_num_people',
+                        'age'=>'competitor_age', 'num_people'=>'competitor_num_people', 'city'=>'competitor_city',
                     )),
                 ));
             if( $rc['stat'] != 'ok' ) {
@@ -387,10 +388,12 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                         $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['titles'] = $rc['titles'];
                         $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['perf_time'] = $rc['perf_time'];
                         $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['org_time'] = $rc['org_time'];
+                        $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['city'] = '';
                         $perf_time += $rc['perf_time_seconds'];
                         if( isset($reg['competitors']) ) {
                             $ra = '';
                             $gs = '';
+                            $city = '';
                             foreach($reg['competitors'] as $competitor) {
                                 if( $competitor['notes'] != '' ) {
                                     $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['notes'] .= ($rsp["timeslots{$i}"][$tid]["registrations"][$rid]['notes'] != '' ? ' ' : '') . $competitor['notes'];
@@ -399,12 +402,24 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                                 if( $competitor['ctype'] == 50 ) {
                                     $gs .= ($gs != '' ? ',' : '') . $competitor['num_people'];
                                 }
+                                if( !preg_match("/{$competitor['city']}/", $city) ) {
+                                    $city .= ($city != '' ? ', ' : '') . $competitor['city'];
+                                }
+                            }
+                            if( $city != '' && isset($festival['scheduling-city-show']) && $festival['scheduling-city-show'] == 'yes' ) {
+                                $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['city'] = $city;
                             }
                             if( $gs != '' && isset($festival['scheduling-group-size-show']) && $festival['scheduling-group-size-show'] == 'yes' ) {
                                 $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['display_name'] .= " ({$gs})";
                             }
                             if( $ra != '' && isset($festival['scheduling-age-show']) && $festival['scheduling-age-show'] == 'yes' ) {
-                                $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['display_name'] .= " [{$ra}]";
+                                if( $city != '' && isset($festival['scheduling-city-show']) && $festival['scheduling-city-show'] == 'yes' ) {
+                                    $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['display_name'] .= " [{$ra}/{$city}]";
+                                } else {
+                                    $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['display_name'] .= " [{$ra}]";
+                                }
+                            } elseif( $city != '' && isset($festival['scheduling-city-show']) && $festival['scheduling-city-show'] == 'yes' ) {
+                                $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['display_name'] .= " [{$city}]";
                             }
                             unset($rsp["timeslots{$i}"][$tid]["registrations"][$rid]['competitors']);
                         }

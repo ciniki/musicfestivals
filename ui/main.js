@@ -6379,11 +6379,11 @@ function ciniki_musicfestivals_main() {
                         'no':'No',
                         'yes':'Yes',
                     }},
-//                'scheduling-city-show':{'label':'Show Competitor City', 'type':'toggle', 'default':'no', 
-//                    'toggles':{
-//                        'no':'No',
-//                        'yes':'Yes',
-//                    }},
+                'scheduling-city-show':{'label':'Show Competitor City', 'type':'toggle', 'default':'no', 
+                    'toggles':{
+                        'no':'No',
+                        'yes':'Yes',
+                    }},
                 'scheduling-teacher-show':{'label':'Show Teacher', 'type':'toggle', 'default':'no', 
                     'toggles':{
                         'no':'No',
