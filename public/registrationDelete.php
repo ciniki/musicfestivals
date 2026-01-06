@@ -55,6 +55,18 @@ function ciniki_musicfestivals_registrationDelete(&$ciniki) {
     $registration = $rc['registration'];
 
     //
+    // Remove this submission from any mail entries
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'objectMessagesDetach');
+    $rc = ciniki_mail_hooks_objectMessagesDetach($ciniki, $args['tnid'], array(
+        'object' => 'ciniki.musicfestivals.registration',
+        'object_id' => $args['registration_id'],
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1319', 'msg'=>'Unable to detach from mail messages.', 'err'=>$rc['err']));
+    }
+
+    //
     // Check for an invoice, and remove from the sapos module, which will hook back and remove registration
     //
     if( $registration['invoice_id'] > 0 ) {
