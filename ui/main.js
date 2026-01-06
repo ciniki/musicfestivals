@@ -5244,6 +5244,11 @@ function ciniki_musicfestivals_main() {
             if( rsp.festival.provincial_class_codes != null ) {
                 p.sections._provincials_class_code.fields.provincials_class_code.options = rsp.festival.provincial_class_codes;
             }
+            p.sections.registration_classes.label = 'Classes';
+            if( rsp.festival.section_perf_time_text != null && rsp.festival.section_perf_time_text != '' ) {
+                p.sections.registration_classes.label += ' [' + rsp.festival.section_perf_time_text + ']';
+
+            }
             // Set the syllabus ID if none specified
             if( rsp.festival.syllabus_id != null ) {
                 p.syllabus_id = rsp.festival.syllabus_id;
@@ -6374,6 +6379,11 @@ function ciniki_musicfestivals_main() {
                         'no':'No',
                         'yes':'Yes',
                     }},
+//                'scheduling-city-show':{'label':'Show Competitor City', 'type':'toggle', 'default':'no', 
+//                    'toggles':{
+//                        'no':'No',
+//                        'yes':'Yes',
+//                    }},
                 'scheduling-teacher-show':{'label':'Show Teacher', 'type':'toggle', 'default':'no', 
                     'toggles':{
                         'no':'No',

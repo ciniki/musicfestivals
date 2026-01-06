@@ -953,6 +953,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.597', 'msg'=>'Unable to load classes', 'err'=>$rc['err']));
                 }
                 $festival['registration_classes'] = isset($rc['classes']) ? $rc['classes'] : array();
+                $section_perf_time = 0;
                 foreach($festival['registration_classes'] as $cid => $class) {
                     $festival['registration_classes'][$cid]['num_registrations'] = 0;
                     $total_perf_time = 0;
@@ -965,6 +966,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                                 ]);
                             if( $rc['stat'] == 'ok' ) {
                                 $total_perf_time += $rc['perf_time_seconds'];
+                                $section_perf_time += $rc['perf_time_seconds'];
                             }
                         }
                     }
@@ -976,6 +978,16 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         } else {
                             $festival['registration_classes'][$cid]['total_perf_time_display'] = "{$minutes} minutes";
                         }
+                    }
+                }
+                $festival['section_perf_time_text'] = '';
+                if( $section_perf_time > 0 ) {
+                    $hours = intval($section_perf_time/3600);
+                    $minutes = round(($section_perf_time%3600)/60, 0);
+                    if( $hours > 0 ) {
+                        $festival['section_perf_time_text'] = "{$hours} hours {$minutes} minutes";
+                    } else {
+                        $festival['section_perf_time_text'] = "{$minutes} minutes";
                     }
                 }
             }

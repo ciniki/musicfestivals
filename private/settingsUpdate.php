@@ -283,6 +283,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'scheduling-disqualified-show',
         'scheduling-withdrawn-show',
         'scheduling-cancelled-show',
+        'scheduling-city-show',
         'scheduling-teacher-show',
         'scheduling-accompanist-show',
         'scheduling-at-times',
