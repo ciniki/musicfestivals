@@ -244,6 +244,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                 . "CONCAT_WS(' ', registrations.notes, registrations.runsheet_notes, registrations.internal_notes) AS notes, "
                 . "IFNULL(competitors.id, 0) AS competitor_id, "
                 . "IFNULL(competitors.ctype, 0) AS ctype, "
+                . "IFNULL(competitors.name, 0) AS competitor_name, "
                 . "IFNULL(competitors.notes, '') AS competitor_notes, "
                 . "IFNULL(competitors.age, '') AS competitor_age, "
                 . "IFNULL(competitors.city, '') AS competitor_city, "
@@ -350,7 +351,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                         ),
                     ),
                 array('container'=>'competitors', 'fname'=>'competitor_id', 
-                    'fields'=>array('ctype', 'notes'=>'competitor_notes', 
+                    'fields'=>array('ctype', 'notes'=>'competitor_notes', 'name'=>'competitor_name',
                         'age'=>'competitor_age', 'num_people'=>'competitor_num_people', 'city'=>'competitor_city',
                     )),
                 ));
@@ -390,6 +391,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                         $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['org_time'] = $rc['org_time'];
                         $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['city'] = '';
                         $perf_time += $rc['perf_time_seconds'];
+                        $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['competitor_names'] = [];
                         if( isset($reg['competitors']) ) {
                             $ra = '';
                             $gs = '';
@@ -398,6 +400,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                                 if( $competitor['notes'] != '' ) {
                                     $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['notes'] .= ($rsp["timeslots{$i}"][$tid]["registrations"][$rid]['notes'] != '' ? ' ' : '') . $competitor['notes'];
                                 }
+                                $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['competitor_names'][] = $competitor['name'];
                                 $ra .= ($ra != '' ? ',' : '') . $competitor['age'];
                                 if( $competitor['ctype'] == 50 ) {
                                     $gs .= ($gs != '' ? ',' : '') . $competitor['num_people'];
@@ -697,7 +700,8 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
                     'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
-                    'class_code', 'class_name', 'category_name', 'section_name', 'participation', 'notes', 'competitor_notes',
+                    'class_code', 'class_name', 'category_name', 'section_name', 'participation', 
+                    'notes', 'competitor_notes', 
                     ),
                 'maps'=>array(
                     'participation'=>$participation_maps,
@@ -724,6 +728,52 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
     } else {
         $rsp['unschedule_registrations'] = array();
     }
+
+    //
+    // Get the competitors schedules
+    //
+    $strsql = "SELECT competitors.id, "
+        . "competitors.name, "
+        . "timeslots.id AS timeslot_id, "
+        . "timeslots.name AS timeslot_name, "
+        . "timeslots.groupname, "
+        . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time, "
+        . "DATE_FORMAT(divisions.division_date, '%b %e, %Y') AS division_date "
+        . "FROM ciniki_musicfestival_competitors AS competitors "
+        . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+            . "("
+                . "competitors.id = registrations.competitor1_id "
+                . "OR competitors.id = registrations.competitor2_id "
+                . "OR competitors.id = registrations.competitor3_id "
+                . "OR competitors.id = registrations.competitor4_id "
+                . "OR competitors.id = registrations.competitor5_id "
+                . ") "
+            . "AND registrations.participation <> 1 "
+            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+            . "registrations.timeslot_id = timeslots.id "
+            . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+            . "timeslots.sdivision_id = divisions.id "
+            . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+        . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "ORDER BY competitors.name, divisions.division_date, timeslots.slot_time "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'competitors', 'fname'=>'name', 'fields'=>array('name')),
+        array('container'=>'timeslots', 'fname'=>'timeslot_id', 
+            'fields'=>array('name'=>'timeslot_name', 'groupname', 'slot_time', 'division_date'),
+            ),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1272', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
+    }
+    $rsp['competitors'] = isset($rc['competitors']) ? $rc['competitors'] : array();
 
     return $rsp;
 }
