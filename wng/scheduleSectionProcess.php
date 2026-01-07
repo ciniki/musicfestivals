@@ -616,7 +616,9 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             //
             $videos = 'no';
             foreach($division['timeslots'] as $tid => $timeslot) {
-                $rc = ciniki_musicfestivals_scheduleTimeslotProcess($ciniki, $tnid, $timeslot, $festival);
+                $rc = ciniki_musicfestivals_scheduleTimeslotProcess($ciniki, $tnid, $timeslot, [
+                    'festival' => $festival,
+                    ]);
                 $division['timeslots'][$tid] = $timeslot;
                 $name = $timeslot['title'];
                 if( $name == '' && $timeslot['class_name'] != '' 

@@ -12,7 +12,7 @@
 // Returns
 // ---------
 // 
-function ciniki_musicfestivals_scheduleTimeslotProcess(&$ciniki, $tnid, &$timeslot, $festival) {
+function ciniki_musicfestivals_scheduleTimeslotProcess(&$ciniki, $tnid, &$timeslot, $args) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
 
@@ -60,7 +60,7 @@ function ciniki_musicfestivals_scheduleTimeslotProcess(&$ciniki, $tnid, &$timesl
                 $rc = ciniki_musicfestivals_titlesMerge($ciniki, $tnid, $reg, [
                     'times' => 'startorgcalcsum',
                     'numbers' => 'yes',
-                    'rounding' => isset($festival['scheduling-perftime-rounding']) ? $festival['scheduling-perftime-rounding'] : '',
+                    'rounding' => isset($args['festival']['scheduling-perftime-rounding']) ? $args['festival']['scheduling-perftime-rounding'] : '',
                     ]);
                 $timeslot['registrations'][$rid]['titles'] = $rc['titles'];
                 $timeslot['registrations'][$rid]['perf_time'] = $rc['perf_time'];
@@ -68,8 +68,8 @@ function ciniki_musicfestivals_scheduleTimeslotProcess(&$ciniki, $tnid, &$timesl
                 $perf_time += $rc['perf_time_seconds'];
                 $ptime_text = ' [' . $rc['perf_time'] . ']';
                 $individual_time_text = '';
-                if( isset($festival['scheduling-timeslot-startnum']) 
-                    && $festival['scheduling-timeslot-startnum'] == 'yes' 
+                if( isset($args['festival']['scheduling-timeslot-startnum']) 
+                    && $args['festival']['scheduling-timeslot-startnum'] == 'yes' 
                     ) {
                     $individual_time_text = $num . '. ';
                     $num++;

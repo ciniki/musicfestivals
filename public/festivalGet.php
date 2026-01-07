@@ -2675,6 +2675,21 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $nplists['schedule_timeslots'] = $rc['nplist'];
 
                 //
+                // Check if competitor schedules should be loaded
+                // NOTE: This is for adding hoverinfo in schedule
+                //
+/*                if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x2000) ) {
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'competitorsSchedules');
+                    $rc = ciniki_musicfestivals_competitorsSchedules($ciniki, $args['tnid'], [  
+                        'festival_id' => $args['festival_id'],
+                        ]);
+                    if( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1273', 'msg'=>'', 'err'=>$rc['err']));
+                    }
+                    $festival['competitors_schedules'] = $rc['competitors'];
+                } */
+
+                //
                 // Check if volunteer shifts should be loaded
                 //
                 if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x01) ) {

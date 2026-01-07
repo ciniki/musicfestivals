@@ -128,7 +128,9 @@ function ciniki_musicfestivals_scheduleTimeslotsLoad(&$ciniki, $tnid, $args) {
     foreach($timeslots as $tid => $timeslot) {
         $nplist[] = $timeslot['id'];
 
-        $rc = ciniki_musicfestivals_scheduleTimeslotProcess($ciniki, $tnid, $timeslot, $args['festival']);
+        $rc = ciniki_musicfestivals_scheduleTimeslotProcess($ciniki, $tnid, $timeslot, [
+            'festival' => $args['festival'],
+            ]);
         $timeslots[$tid] = $timeslot;
 
         if( isset($timeslot['registrations']) ) {
