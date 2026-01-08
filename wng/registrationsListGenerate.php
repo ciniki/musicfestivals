@@ -151,6 +151,8 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
         $strsql .= "WHERE ("
             . "registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
                 . "OR registrations.parent_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+                . "OR registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+                . "OR registrations.teacher2_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
                 . "OR registrations.accompanist_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
             . ") ";
     } elseif( $customer_type == 20 ) {
@@ -163,6 +165,8 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
     } else {
         $strsql .= "WHERE ("
             . "registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+                . "OR registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+                . "OR registrations.teacher2_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
                 . "OR registrations.accompanist_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
             . ") ";
     }
