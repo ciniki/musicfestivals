@@ -3472,6 +3472,56 @@ function ciniki_musicfestivals_main() {
         }
         return '';
     }
+    this.festival.cellDragStart = function(s, i, j, d) {
+        if( s == 'classes' && this.sections._stabs.selected == 'scheduling' && j == 4 && d.schedule_seconds > 0 ) {
+            return 'M.ciniki_musicfestivals_main.festival.dragstart(\'' + s + '\',' + i + ',' + d.id + ');';
+        }
+        return null;
+    }
+    this.festival.cellDrag = function(s, i, j, d) {
+        return 'M.ciniki_musicfestivals_main.festival.drag(event,\'' + s + '\',' + i + ',' + d.id + ');';
+    }
+    this.festival.cellDrop = function(s, i, j, d) {
+        if( s == 'classes' && this.sections._stabs.selected == 'scheduling' && j == 4 ) {
+            return 'M.ciniki_musicfestivals_main.festival.celldrop(\'' + s + '\',' + i + ',' + d.id + ');';
+        }
+    }
+    this.festival.dragstart = function(s,i,cid) {
+        this.lastY = 0;
+        this.drag_class_num = -1;
+        if( s == 'classes' ) {
+            this.drag_class_num = i;
+        }
+    }
+    this.festival.drag = function(e,s,i,d) {
+        if( e.clientY < 100 ) {
+            window.scrollTo(0, window.scrollY-10);
+        }
+        if( e.clientY > (window.innerHeight - 100) ) {
+            window.scrollTo(0, window.scrollY+10);
+        }
+    }
+    this.festival.dragstop = function(rid) {
+//        console.log('drag stop: ' + rid);
+    }
+    this.festival.celldrop = function(s, i, to) {
+        this.savePos();
+        var args = {'tnid':M.curTenantID};
+        if( s == 'classes' && this.drag_class_num >= 0 ) {
+            args['flags'] = this.data.classes[i].flags|(this.data.classes[this.drag_class_num].flags&0x0C0000);
+            args['class_id'] = this.data.classes[i].id;
+            args['schedule_seconds'] = this.data.classes[this.drag_class_num].schedule_seconds;
+            args['schedule_at_seconds'] = this.data.classes[this.drag_class_num].schedule_at_seconds;
+            args['schedule_ata_seconds'] = this.data.classes[this.drag_class_num].schedule_ata_seconds;
+            M.api.getJSONCb('ciniki.musicfestivals.classUpdate', args, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_musicfestivals_main.festival.open();
+            });
+        }
+    }
     this.festival.rowFn = function(s, i, d) {
         switch(s) {
             case 'syllabuses': return 'M.ciniki_musicfestivals_main.festival.switchSyllabus(\'' + d.id + '\');'; 
