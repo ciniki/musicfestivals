@@ -5769,6 +5769,7 @@ function ciniki_musicfestivals_main() {
                     '':'None', 
                     'HMT':'Template H - 1 Column', 
                     'LDN':'Template L - 3 Column', 
+                    'OPF':'Template O - Timeslot List', 
                     'PTB':'Template P - 2 Column', 
                     'SSA':'Template S - 1 Column, 5.5 x 8.5', 
                     'TMS':'Template T - 1 Column, 5.5 x 8.5', 

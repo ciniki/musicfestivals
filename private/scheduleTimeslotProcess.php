@@ -26,7 +26,7 @@ function ciniki_musicfestivals_scheduleTimeslotProcess(&$ciniki, $tnid, &$timesl
     }
     $intl_timezone = $rc['settings']['intl-default-timezone'];
     
-    $perf_time = '';
+    $perf_time = 0;
     $schedule_at_seconds = 0;
     $schedule_ata_seconds = 0;
     $num_reg = 0;
