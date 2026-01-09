@@ -50,6 +50,9 @@ function ciniki_musicfestivals_volunteerShiftAdd(&$ciniki) {
     if( isset($args['location']) && preg_match("/^(.*):(.*)$/", $args['location'], $m) ) {
         $args['object'] = $m[1];
         $args['object_id'] = $m[2];
+    } else {
+        $args['object'] = '';
+        $args['object_id'] = 0;
     }
 
     //
