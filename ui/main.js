@@ -17918,6 +17918,7 @@ function ciniki_musicfestivals_main() {
                     M.api.err(rsp);
                     return false;
                 }
+                M.ciniki_musicfestivals_main.volunteers.volunteer_id = 0;
                 M.ciniki_musicfestivals_main.volunteer.close();
             });
         });

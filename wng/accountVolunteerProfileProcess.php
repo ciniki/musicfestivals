@@ -344,6 +344,38 @@ function ciniki_musicfestivals_wng_accountVolunteerProfileProcess(&$ciniki, $tni
     }
 
     //
+    // Add notes field
+    //
+    $update_args = [];
+    $fields['notesbreak'] = [
+        'id' => 'notesbreak',
+        'ftype' => 'break',
+        'label' => 'Notes',
+        ];
+    $fields['notes'] = [
+        'id' => 'notes',
+        'ftype' => 'textarea',
+        'label' => '',
+        'size' => 'small',
+        'editable' => isset($args['editable']) && $args['editable'] == 'yes' ? 'yes' : 'no',
+        'value' => $args['volunteer']['notes'],
+        ];
+    if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' && isset($_POST['f-notes']) ) {
+        $fields['notes']['value'] = $_POST['f-notes'];
+        if( $_POST['f-notes'] != $args['volunteer']['notes'] ) {
+            $update_args['notes'] = $_POST['f-notes'];
+        }
+    }
+
+    if( count($update_args) > 0 ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.volunteer', $args['volunteer']['id'], $update_args, 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1274', 'msg'=>'Unable to update the volunteer', 'err'=>$rc['err']));
+        }
+    }
+
+    //
     // Check what to do with form
     //
     if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' && $problem_list == '' ) {
