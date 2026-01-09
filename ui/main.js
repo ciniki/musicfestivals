@@ -6551,6 +6551,7 @@ function ciniki_musicfestivals_main() {
             'fields':{
                 'volunteers-roles':{'label':'Roles', 'type':'text'},
                 'volunteers-skills':{'label':'Skills', 'type':'text'},
+                'volunteers-disciplines':{'label':'Disciplines', 'type':'text'},
                 'volunteers-availability-days':{'label':'Available Days', 'type':'textarea', 'size':'medium'},
                 'volunteers-availability-times':{'label':'Available Times', 'type':'textarea', 'size':'medium'},
 //                'volunteers-default-shifts':{'label':'Default Shifts', 'type':'textarea'},
@@ -17804,7 +17805,10 @@ function ciniki_musicfestivals_main() {
             'available_times':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new time:'},
             }},
         '_skills':{'label':'Skills', 'aside':'yes', 'fields':{
-            'skills':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new role:'},
+            'skills':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new skill:'},
+            }},
+        '_disciplines':{'label':'Preferred Disciplines', 'aside':'yes', 'fields':{
+            'disciplines':{'label':'', 'hidelabel':'yes', 'type':'tags', 'tags':[], 'hint':'Enter a new discipline:'},
             }},
         '_notes':{'label':'Notes', 'aside':'no', 'fields':{
             'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea', 'size':'medium'},
@@ -17868,6 +17872,7 @@ function ciniki_musicfestivals_main() {
             p.sections._available_days.fields.available_days.tags = rsp.available_days;
             p.sections._available_times.fields.available_times.tags = rsp.available_times;
             p.sections._skills.fields.skills.tags = rsp.skills;
+            p.sections._disciplines.fields.disciplines.tags = rsp.disciplines;
             p.sections._approved_roles.fields.approved_roles.tags = rsp.roles;
             p.sections.customer_details.customer_id = rsp.volunteer.customer_id;
             p.sections._details.fields.local_festival_id.options = rsp.members != null ? rsp.members : [];

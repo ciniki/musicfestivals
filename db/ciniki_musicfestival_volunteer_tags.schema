@@ -18,6 +18,7 @@
 #                   10 - Available Days
 #                   20 - Available Times
 #                   30 - Skills
+#                   35 - Preferred Disciplines
 #                   50 - Approved Roles
 #
 # tag_name:         The name of the tag, list or category.

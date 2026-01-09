@@ -30,6 +30,7 @@ function ciniki_musicfestivals_volunteerAdd(&$ciniki) {
         'available_days'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Available Days'),
         'available_times'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Available Times'),
         'skills'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Skills'),
+        'disciplines'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Disciplines'),
         'approved_roles'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Approved Roles'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -122,6 +123,16 @@ function ciniki_musicfestivals_volunteerAdd(&$ciniki) {
         $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.musicfestivals', 'volunteertag', $args['tnid'],
             'ciniki_musicfestival_volunteer_tags', 'ciniki_musicfestivals_history',
             'volunteer_id', $volunteer_id, 30, $args['skills']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
+    }
+    if( isset($args['disciplines']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
+        $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.musicfestivals', 'volunteertag', $args['tnid'],
+            'ciniki_musicfestival_volunteer_tags', 'ciniki_musicfestivals_history',
+            'volunteer_id', $volunteer_id, 35, $args['disciplines']);
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
             return $rc;

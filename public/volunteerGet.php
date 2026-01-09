@@ -153,6 +153,10 @@ function ciniki_musicfestivals_volunteerGet($ciniki) {
     if( isset($festival['volunteers-skills']) && $festival['volunteers-skills'] != '' ) {
         $rsp['skills'] = preg_split('/\s*,\s*/', trim($festival['volunteers-skills']));
     }
+    $rsp['disciplines'] = [];
+    if( isset($festival['volunteers-disciplines']) && $festival['volunteers-disciplines'] != '' ) {
+        $rsp['disciplines'] = preg_split('/\s*,\s*/', trim($festival['volunteers-disciplines']));
+    }
     if( isset($rc['tags']) ) {
         foreach($rc['tags'] as $type) {
             $names = explode('::', $type['names']);
@@ -163,6 +167,8 @@ function ciniki_musicfestivals_volunteerGet($ciniki) {
                     $rsp['available_times'][] = $name;
                 } else if( $type['type'] == 30 && !in_array($name, $rsp['skills']) ) {
                     $rsp['skills'][] = $name;
+                } else if( $type['type'] == 35 && !in_array($name, $rsp['disciplines']) ) {
+                    $rsp['disciplines'][] = $name;
                 } else if( $type['type'] == 50 && !in_array($name, $rsp['roles']) ) {
                     $rsp['roles'][] = $name;
                 }
@@ -170,6 +176,7 @@ function ciniki_musicfestivals_volunteerGet($ciniki) {
         }
     }
     sort($rsp['skills']);
+    sort($rsp['disciplines']);
     sort($rsp['roles']);
 
     //

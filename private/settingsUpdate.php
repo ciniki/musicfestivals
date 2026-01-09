@@ -308,6 +308,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'accolades-include-amount',
         'volunteers-roles',                 // comma delimited list
         'volunteers-skills',                // comma delimited list
+        'volunteers-disciplines',           // comma delimited list
         'volunteers-availability-days',     // comma delimited list of days
         'volunteers-availability-times',    // comma delimited list of times
         'volunteers-default-shifts',    // json object with default shifts to add when adding division

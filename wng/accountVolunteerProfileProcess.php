@@ -276,9 +276,73 @@ function ciniki_musicfestivals_wng_accountVolunteerProfileProcess(&$ciniki, $tni
                     ];
             }
         }
-
     }
     
+    if( isset($festival['volunteers-disciplines']) && $festival['volunteers-disciplines'] != '' ) {
+        $disciplines = preg_split('/\s*,\s*/', trim($festival['volunteers-disciplines']));
+        $volunteer_disciplines = isset($args['volunteer']['disciplines']) ? explode('::', $args['volunteer']['disciplines']) : [];
+        if( count($disciplines) > 0 && $args['editable'] == 'yes' ) {
+            $fields['disciplines'] = [
+                'id' => 'disciplines',
+                'ftype' => 'break',
+                'label' => 'Preferred Disciplines',
+                ];
+            $updated = 'no';
+            foreach($disciplines as $discipline) {
+                $id = 'discipline-' . preg_replace("/[^a-zA-Z0-9_\-]/", '', $discipline);
+                $fields[$id] = [
+                    'id' => $id,
+                    'ftype' => 'checkbox',
+                    'label' => $discipline,
+                    'class' => 'small',
+                    'value' => (in_array($discipline, $volunteer_disciplines) ? 'on' : ''),
+                    ];
+                if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' ) {
+                    if( isset($_POST["f-{$id}"]) && $_POST["f-{$id}"] == 'on' ) {
+                        $fields[$id]['value'] = 'on';
+                        if( !in_array($discipline, $volunteer_disciplines) ) {
+                            $volunteer_disciplines[] = $discipline;
+                            $updated = 'yes';
+                        }
+                    }
+                    elseif( (!isset($_POST["f-{$id}"]) || $_POST["f-{$id}"] != 'on') ) {
+                        $fields[$id]['value'] = '';
+                        if( in_array($discipline, $volunteer_disciplines) ) {
+                            unset($volunteer_disciplines[array_search($discipline, $volunteer_disciplines)]);
+                            $updated = 'yes';
+                        }
+                    }
+                }
+            }
+            if( $updated == 'yes' ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
+                $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.musicfestivals', 'volunteertag', $tnid,
+                    'ciniki_musicfestival_volunteer_tags', 'ciniki_musicfestivals_history',
+                    'volunteer_id', $args['volunteer']['id'], 35, $volunteer_disciplines);
+                if( $rc['stat'] != 'ok' ) {
+                    $problem_list = "Unable to update disciplines";
+                }
+            }
+        } elseif( count($disciplines) > 0 ) {
+            $discipline_list = '';
+            foreach($disciplines as $discipline) {
+                if( in_array($discipline, $volunteer_disciplines) ) {
+                    $discipline_list .= ($discipline_list != '' ? ', ' : '') . $discipline;
+                }
+            }
+            if( $discipline_list != '' ) {
+                $fields['disciplines'] = [
+                    'id' => 'disciplines',
+                    'ftype' => 'text',
+                    'label' => 'Preferred Disciplines',
+                    'size' => 'large',
+                    'editable' => 'no',
+                    'value' => $discipline_list,
+                    ];
+            }
+        }
+    }
+
     //
     // Check what to do with form
     //

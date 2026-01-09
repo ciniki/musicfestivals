@@ -104,6 +104,8 @@ function ciniki_musicfestivals_volunteerLoad($ciniki, $tnid, $args) {
                 $volunteer['available_times'] = $tags['lists'];
             } elseif( $tags['tag_type'] == 30 ) {
                 $volunteer['skills'] = $tags['lists'];
+            } elseif( $tags['tag_type'] == 35 ) {
+                $volunteer['disciplines'] = $tags['lists'];
             } elseif( $tags['tag_type'] == 50 ) {
                 $volunteer['approved_roles'] = $tags['lists'];
             }
