@@ -28,7 +28,7 @@ function ciniki_musicfestivals_volunteers($ciniki) {
         'schedule'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule'),
         'ssection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Section'),
         'sdivision_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Division'),
-        'shifts'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule'),
+        'shifts'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Shifts'),
         'shift_dates'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Shift Dates'),
         'shift_date'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Shift Date'),
         'locations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Locations'),
@@ -98,6 +98,16 @@ function ciniki_musicfestivals_volunteers($ciniki) {
         return $rc;
     }
     $locations = isset($rc['locations']) ? $rc['locations'] : array();
+
+    //
+    // Check if location specified
+    //
+    if( isset($args['location']) && $args['location'] != '' 
+        && preg_match("/^(.*):(.*)$/", $args['location'], $m)
+        ) {
+        $args['object'] = $m[1];
+        $args['object_id'] = $m[2];
+    }
 
     //
     // Load volunteers
@@ -274,6 +284,8 @@ function ciniki_musicfestivals_volunteers($ciniki) {
             // Load the shifts
             //
             $strsql = "SELECT shifts.id, "
+                . "DATE_FORMAT(shifts.shift_date, '%a, %b %e, %Y') AS shift_date, "
+                . "DATE_FORMAT(shifts.shift_date, 'Ymd') AS sort_shift_date, "
                 . "TIME_FORMAT(shifts.start_time, '%l:%i %p') as start_time, "
                 . "TIME_FORMAT(shifts.end_time, '%l:%i %p') AS end_time, "
                 . "TIME_FORMAT(shifts.start_time, '%H%i') as sort_start_time, "
@@ -312,10 +324,10 @@ function ciniki_musicfestivals_volunteers($ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'shifts', 'fname'=>'id', 
-                    'fields'=>array('id', 'start_time', 'end_time', 
-                        'sort_start_time', 'sort_end_time', 
-                        'role', 
-                        'min_volunteers', 'max_volunteers'),
+                    'fields'=>array('id', 'shift_date', 'sort_shift_date', 
+                        'start_time', 'end_time', 'sort_start_time', 'sort_end_time', 
+                        'role', 'min_volunteers', 'max_volunteers',
+                        ),
                     ),
                 array('container'=>'volunteers', 'fname'=>'volunteer_id', 
                     'fields'=>array('id'=>'volunteer_id', 'name'=>'names', 'assignment_status', 'assignment_status_text'),
@@ -340,6 +352,102 @@ function ciniki_musicfestivals_volunteers($ciniki) {
 
             }
         }
+    }
+
+    //
+    // Load the shifts
+    //
+    if( isset($args['shifts']) && $args['shifts'] == 'yes' ) {
+        $strsql = "SELECT shifts.id, "
+            . "DATE_FORMAT(shifts.shift_date, '%a, %b %e, %Y') AS shift_date, "
+            . "DATE_FORMAT(shifts.shift_date, 'Ymd') AS sort_shift_date, "
+            . "TIME_FORMAT(shifts.start_time, '%l:%i %p') as start_time, "
+            . "TIME_FORMAT(shifts.end_time, '%l:%i %p') AS end_time, "
+            . "TIME_FORMAT(shifts.start_time, '%H%i') as sort_start_time, "
+            . "TIME_FORMAT(shifts.end_time, '%H%i') as sort_end_time, "
+            . "shifts.object, "
+            . "shifts.object_id, "
+            . "shifts.role, "
+            . "shifts.min_volunteers, "
+            . "shifts.max_volunteers, "
+            . "volunteers.id AS volunteer_id, "
+            . "assignments.status AS assignment_status, "
+            . "assignments.status AS assignment_status_text, "
+            . "IF(volunteers.shortname <> '', volunteers.shortname, customers.display_name) AS names "
+            . "FROM ciniki_musicfestival_volunteer_shifts AS shifts "
+            . "LEFT JOIN ciniki_musicfestival_volunteer_assignments AS assignments ON ("
+                . "shifts.id = assignments.shift_id "
+                . "AND assignments.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_volunteers AS volunteers ON ("
+                . "assignments.volunteer_id = volunteers.id "
+                . "AND volunteers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_customers AS customers ON ("
+                . "volunteers.customer_id = customers.id "
+                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE shifts.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "";
+        if( isset($args['shift_date']) && $args['shift_date'] != '' ) {
+            $strsql .= "AND shifts.shift_date = '" . ciniki_core_dbQuote($ciniki, $args['shift_date']) . "' ";
+        }
+        if( isset($args['object']) && $args['object'] != '' && isset($args['object_id']) && $args['object_id'] != '' ) {
+            $strsql .= "AND shifts.object = '" . ciniki_core_dbQuote($ciniki, $args['object']) . "' "
+                . "AND shifts.object_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' ";
+        }
+        if( isset($args['role']) && $args['role'] != '' ) {
+            $strsql .= "AND shifts.role = '" . ciniki_core_dbQuote($ciniki, $args['role']) . "' ";
+        }
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'shifts', 'fname'=>'id', 
+                'fields'=>array('id', 'shift_date', 'sort_shift_date', 
+                    'start_time', 'end_time', 'sort_start_time', 'sort_end_time', 
+                    'object', 'object_id', 'role', 'min_volunteers', 'max_volunteers',
+                    ),
+                ),
+            array('container'=>'volunteers', 'fname'=>'volunteer_id', 
+                'fields'=>array('id'=>'volunteer_id', 'name'=>'names', 'assignment_status', 'assignment_status_text'),
+                'maps'=>array('assignment_status_text'=>$maps['volunteerassignment']['status']),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1309', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
+        }
+        $rsp['shifts'] = isset($rc['shifts']) ? $rc['shifts'] : array();
+
+        foreach($rsp['shifts'] as $sid => $shift) {
+            if( isset($locations["{$shift['object']}:{$shift['object_id']}"]) ) {
+                $rsp['shifts'][$sid]['location_shortname'] = $locations["{$shift['object']}:{$shift['object_id']}"]['shortname'];
+                $rsp['shifts'][$sid]['location_name'] = $locations["{$shift['object']}:{$shift['object_id']}"]['name'];
+            }
+            $rsp['shifts'][$sid]['num_volunteers'] = isset($shift['volunteers']) ? count($shift['volunteers']) : 0;
+            $rsp['shifts'][$sid]['names'] = '';
+            if( isset($shift['volunteers']) ) {
+                foreach($shift['volunteers'] as $volunteer) {
+                    $rsp['shifts'][$sid]['names'] .= ($rsp['shifts'][$sid]['names'] != '' ? '<br>' : '')
+                        . $volunteer['name']
+                        . ($volunteer['assignment_status'] != 30 ? ' [' . $volunteer['assignment_status_text'] . ']' : '');
+                }
+            }
+        }
+        uasort($rsp['shifts'], function($a, $b) {
+            if( $a['sort_shift_date'] != $b['sort_shift_date'] ) {    
+                return strnatcasecmp($a['sort_shift_date'], $b['sort_shift_date']);
+            }
+            if( $a['location_name'] != $b['location_name'] ) {    
+                return strnatcasecmp($a['location_name'], $b['location_name']);
+            }
+            if( $a['role'] != $b['role'] ) {    
+                return strnatcasecmp($a['role'], $b['role']);
+            }
+            if( $a['sort_start_time'] == $b['sort_start_time'] ) {
+                return 0;
+            }
+            return $a['sort_start_time'] < $b['sort_start_time'] ? -1 : 1;
+            });
+        $rsp['shifts'] = array_values($rsp['shifts']);
     }
 
     //
@@ -536,7 +644,7 @@ function ciniki_musicfestivals_volunteers($ciniki) {
         if( isset($args['role']) && $args['role'] != '' ) {
             $strsql = "SELECT shifts.id, "
                 . "shifts.shift_date, "
-                . "DATE_FORMAT(shifts.shift_date, 'Ymd') AS sort_shift_date, "
+                . "DATE_FORMAT(shifts.shift_date, '%Y%m%d') AS sort_shift_date, "
                 . "TIME_FORMAT(shifts.start_time, '%l:%i %p') as start_time, "
                 . "TIME_FORMAT(shifts.end_time, '%l:%i %p') AS end_time, "
                 . "TIME_FORMAT(shifts.start_time, '%H%i') as sort_start_time, "

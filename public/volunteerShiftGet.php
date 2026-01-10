@@ -24,6 +24,9 @@ function ciniki_musicfestivals_volunteerShiftGet($ciniki) {
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'shift_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Shift'),
         'division_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Division'),
+        'shift_date'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Shift Date'),
+        'location'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Location'),
+        'role'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Role'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -57,14 +60,19 @@ function ciniki_musicfestivals_volunteerShiftGet($ciniki) {
     // Return default for new Shift
     //
     if( $args['shift_id'] == 0 ) {
+        if( isset($args['shift_date']) && $args['shift_date'] != '' && $args['shift_date'] != 'All' ) {
+            $dt = new DateTime($args['shift_date'] . ' 12:00', new DateTimezone($intl_timezone));
+            $args['shift_date'] = $dt->format($date_format);
+        }
         $shift = array('id'=>0,
             'festival_id'=>'',
-            'shift_date'=>'',
+            'shift_date' => (isset($args['shift_date']) && $args['shift_date'] != 'All' ? $args['shift_date'] : ''),
             'start_time'=>'',
             'end_time'=>'',
             'object'=>'',
             'object_id'=>'',
-            'role'=>'',
+            'location' => (isset($args['location']) && $args['location'] != 'All' ? $args['location'] : ''),
+            'role' => (isset($args['role']) && $args['role'] != 'All' ? $args['role'] : ''),
             'flags'=>0x01,
             'min_volunteers'=>'1',
             'max_volunteers'=>'1',
