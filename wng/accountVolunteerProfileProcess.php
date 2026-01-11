@@ -45,6 +45,7 @@ function ciniki_musicfestivals_wng_accountVolunteerProfileProcess(&$ciniki, $tni
         'redirect-url' => '',
         'business-name' => 'no',
         'phone-labels' => 'Cell,Home',
+        'required' => ['Cell','Mailing'],
         ]);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -358,16 +359,16 @@ function ciniki_musicfestivals_wng_accountVolunteerProfileProcess(&$ciniki, $tni
         'label' => '',
         'size' => 'small',
         'editable' => isset($args['editable']) && $args['editable'] == 'yes' ? 'yes' : 'no',
-        'value' => $args['volunteer']['notes'],
+        'value' => isset($args['volunteer']['notes']) ? $args['volunteer']['notes'] : '',
         ];
     if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' && isset($_POST['f-notes']) ) {
         $fields['notes']['value'] = $_POST['f-notes'];
-        if( $_POST['f-notes'] != $args['volunteer']['notes'] ) {
+        if( !isset($args['volunteer']['notes']) || $_POST['f-notes'] != $args['volunteer']['notes'] ) {
             $update_args['notes'] = $_POST['f-notes'];
         }
     }
 
-    if( count($update_args) > 0 ) {
+    if( isset($args['volunteer']['id']) && count($update_args) > 0 ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
         $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.volunteer', $args['volunteer']['id'], $update_args, 0x04);
         if( $rc['stat'] != 'ok' ) {
