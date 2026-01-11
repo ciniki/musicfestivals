@@ -140,8 +140,13 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
             . ") "
         . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "classes.id = registrations.class_id "
-            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
+    if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
+        $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";
+    } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
+        $strsql .= "AND registrations.participation = 1 ";
+    }
+    $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ("
             . "(registrations.competitor1_id = competitors.id "

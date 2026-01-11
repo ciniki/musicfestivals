@@ -4560,11 +4560,15 @@ function ciniki_musicfestivals_main() {
     }
     this.festival.downloadRegistrationsWord = function(fid) {
         this.popupMenuClose('registration_sections');
+        var args = {
+            'tnid':M.curTenantID, 
+            'festival_id':fid,
+            'ipv':this.sections.ipv_tabs.selected
+            };
         if( this.sections.registration_tabs.selected == 'sections' && this.section_id > 0 ) {
-            M.api.openFile('ciniki.musicfestivals.registrationsWord', {'tnid':M.curTenantID, 'festival_id':fid, 'section_id':this.section_id});
-        } else {
-            M.api.openFile('ciniki.musicfestivals.registrationsWord', {'tnid':M.curTenantID, 'festival_id':fid});
+            args['section_id'] = this.section_id;
         }
+        M.api.openFile('ciniki.musicfestivals.registrationsWord', args);
     }
     this.festival.downloadAccoladesPDF = function(fid) {
         M.api.openFile('ciniki.musicfestivals.accoladeRegistrationsPDF', {'tnid':M.curTenantID, 'festival_id':fid});
