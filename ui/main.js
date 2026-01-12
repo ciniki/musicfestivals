@@ -12135,6 +12135,13 @@ function ciniki_musicfestivals_main() {
     }
     this.scheduledivisions.cellStyle = function(s, i, j, d) {
         if( s.match(/^timeslot/) && j == 1 && d.bgcolor != null  ) {
+            if( this.competitor_names.length > 0 ) {
+                for(var k in d.competitor_names) {
+                    if( this.competitor_names.includes(d.competitor_names[k]) ) {
+                        return '#ffa';
+                    }
+                }
+            }
             return 'background: ' + d.bgcolor + ';'; 
         }
         return '';

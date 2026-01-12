@@ -182,6 +182,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
     //
     $rgb = [255,255,255];
     $competitor_colors = [];
+    $competitor_numreg = [];
     for($i = 1; $i <= 9; $i++) {
         $rsp["timeslots{$i}"] = array();
         if( isset($args["division{$i}_id"]) && $args["division{$i}_id"] > 0 ) {
@@ -401,8 +402,8 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                             $gs = '';
                             $city = '';
                             foreach($reg['competitors'] as $competitor) {
-                                if( isset($competitor_colors[$competitor['name']]) ) {
-                                    $rgb[0] -= 32;
+                                if( isset($competitor_numreg[$competitor['name']]) ) {
+/*                                    $rgb[0] -= 32;
                                     if( $rgb[0] < 64 ) {
                                         $rgb[0] = 255;
                                         $rgb[1] -= 32;
@@ -411,9 +412,11 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                                             $rgb[2] -= 32;
                                         }
                                     }
-                                    $competitor_colors[$competitor['name']] = sprintf("%02x%02x%02x", $rgb[0], $rgb[1], $rgb[2]);
+                                    $competitor_colors[$competitor['name']] = sprintf("%02x%02x%02x", $rgb[0], $rgb[1], $rgb[2]); */
+                                    $competitor_numreg[$competitor['name']] += 1;
                                 } else {
-                                    $competitor_colors[$competitor['name']] = '';
+//                                    $competitor_colors[$competitor['name']] = '';
+                                    $competitor_numreg[$competitor['name']] = 1;
                                 }
                                 if( $competitor['notes'] != '' ) {
                                     $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['notes'] .= ($rsp["timeslots{$i}"][$tid]["registrations"][$rid]['notes'] != '' ? ' ' : '') . $competitor['notes'];
@@ -500,6 +503,21 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
     // Check if coloring should be enabled for competitors
     //
     if( isset($festival['scheduling-competitor-colors']) && $festival['scheduling-competitor-colors'] == 'yes' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'schedulingColors');
+        $rc = ciniki_musicfestivals_schedulingColors($ciniki, $args['tnid'], []);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1275', 'msg'=>'', 'err'=>$rc['err']));
+        }
+        $competitor_colors = [];
+        $colors = $rc['colors'];
+        $color_idx = 0;
+        foreach($competitor_numreg as $name => $num) {
+            if( $num > 1 ) {
+                $competitor_colors[$name] = $colors[$color_idx++];
+            } else {
+                $competitor_colors[$name] = 'ffffff';
+            }
+        }
         for($i = 1; $i <= 9; $i++) {
             if( isset($rsp["timeslots{$i}"]) ) {
                 foreach($rsp["timeslots{$i}"] as $tid => $timeslot) {
