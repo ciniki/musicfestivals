@@ -3508,7 +3508,7 @@ function ciniki_musicfestivals_main() {
         this.savePos();
         var args = {'tnid':M.curTenantID};
         if( s == 'classes' && this.drag_class_num >= 0 ) {
-            args['flags'] = this.data.classes[i].flags|(this.data.classes[this.drag_class_num].flags&0x0C0000);
+            args['flags'] = (this.data.classes[i].flags&0xFFF3FFFF)|(this.data.classes[this.drag_class_num].flags&0x0C0000);
             args['class_id'] = this.data.classes[i].id;
             args['schedule_seconds'] = this.data.classes[this.drag_class_num].schedule_seconds;
             args['schedule_at_seconds'] = this.data.classes[this.drag_class_num].schedule_at_seconds;
