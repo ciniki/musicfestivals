@@ -11881,6 +11881,7 @@ function ciniki_musicfestivals_main() {
     this.scheduledivisions.showtitles = '';
     this.scheduledivisions.shownotes = 'yes';
     this.scheduledivisions.participation = 'all';
+    this.scheduledivisions.competitor_names = [];
     this.scheduledivisions.accompanist = '';
     this.scheduledivisions.member_name = '';
     this.scheduledivisions.unscheduled_registrations = {};
@@ -11985,7 +11986,7 @@ function ciniki_musicfestivals_main() {
                         return M.multiline((this.showtitles == 'no' ? '<span class="subdue">[' + ptime + ']</span> ': '') 
                         + d.class_code + ' - ' 
     //                    + (d.participation != '' ? '[' + d.participation + '] ' : '')
-                        + '<span onmouseover="M.ciniki_musicfestivals_main.scheduledivisions.showCompetitorSchedule(\'' + s + '\',\'' + i + '\');" onmouseleave="M.ciniki_musicfestivals_main.scheduledivisions.hideCompetitorSchedule(\'' + s + '\',\'' + i + '\');">' + d.display_name + '</span>'
+                        + '<span onclick="event.stopPropagation(); M.ciniki_musicfestivals_main.scheduledivisions.setCompetitor(\'' + s + '\',\'' + i + '\');" onmouseover="M.ciniki_musicfestivals_main.scheduledivisions.showCompetitorSchedule(\'' + s + '\',\'' + i + '\');" onmouseleave="M.ciniki_musicfestivals_main.scheduledivisions.hideCompetitorSchedule(\'' + s + '\',\'' + i + '\');">' + d.display_name + '</span>'
                         + member + accompanist + teacher + teacher2,
                         (this.showtitles == 'yes' ? '' + d.titles.replace(/\n/g, '<br/>') : '')) 
                         + (this.shownotes == 'yes' && d.notes != '' ? (this.showtitles == 'no' ? '<br/>' : '') + '<br/><b><i>' + d.notes + '</i></b>' : '');
@@ -12082,7 +12083,14 @@ function ciniki_musicfestivals_main() {
     }
     this.scheduledivisions.rowClass = function(s, i, d) {
         if( s.match(/^timeslot/) || s == 'unscheduled_registrations') {
-            if( this.accompanist != '' && this.accompanist == d.accompanist_name ) {
+            if( this.competitor_names.length > 0 ) {
+                for(var k in d.competitor_names) {
+                    if( this.competitor_names.includes(d.competitor_names[k]) ) {
+                        return 'highlight';
+                    }
+                }
+            }
+            else if( this.accompanist != '' && this.accompanist == d.accompanist_name ) {
                 return 'highlight';
             }
             else if( this.member_name != '' && this.member_name == d.member_name ) {
@@ -12101,7 +12109,14 @@ function ciniki_musicfestivals_main() {
     }
     this.scheduledivisions.rowStyle = function(s, i, d) {
         if( s.match(/^timeslot/) || s == 'unscheduled_registrations') {
-            if( this.accompanist != '' && this.accompanist == d.accompanist_name ) {
+            if( this.competitor_names.length > 0 ) {
+                for(var k in d.competitor_names) {
+                    if( this.competitor_names.includes(d.competitor_names[k]) ) {
+                        return 'highlight';
+                    }
+                }
+            }
+            else if( this.accompanist != '' && this.accompanist == d.accompanist_name ) {
                 return '';
             }
             else if( this.member_name != '' && this.member_name == d.member_name ) {
@@ -12192,7 +12207,15 @@ function ciniki_musicfestivals_main() {
                 M.ciniki_musicfestivals_main.scheduledivisions.updateRegistrations();
             });
     }
+    this.scheduledivisions.setCompetitor = function(s, i) {
+        this.competitor_names = M.ciniki_musicfestivals_main.scheduledivisions.data[s][i]['competitor_names'];
+        this.accompanist = '';
+        this.member_name = '';
+        this.refresh();
+        this.show();
+    }
     this.scheduledivisions.setAccompanist = function(a) {
+        this.competitor_names = [];
         this.accompanist = unescape(a);
         this.member_name = '';
         this.refresh();
@@ -12200,6 +12223,7 @@ function ciniki_musicfestivals_main() {
     }
     this.scheduledivisions.setMember = function(m) {
         this.member_name = unescape(m);
+        this.competitor_names = [];
         this.accompanist = '';
         this.refresh();
         this.show();
