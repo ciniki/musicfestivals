@@ -180,6 +180,8 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
     //
     // Get the timeslots and registrations for each division
     //
+    $rgb = [255,255,255];
+    $competitor_colors = [];
     for($i = 1; $i <= 9; $i++) {
         $rsp["timeslots{$i}"] = array();
         if( isset($args["division{$i}_id"]) && $args["division{$i}_id"] > 0 ) {
@@ -399,6 +401,20 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                             $gs = '';
                             $city = '';
                             foreach($reg['competitors'] as $competitor) {
+                                if( isset($competitor_colors[$competitor['name']]) ) {
+                                    $rgb[0] -= 32;
+                                    if( $rgb[0] < 64 ) {
+                                        $rgb[0] = 255;
+                                        $rgb[1] -= 32;
+                                        if( $rgb[1] < 64 ) {
+                                            $rgb[1] = 255;
+                                            $rgb[2] -= 32;
+                                        }
+                                    }
+                                    $competitor_colors[$competitor['name']] = sprintf("%02x%02x%02x", $rgb[0], $rgb[1], $rgb[2]);
+                                } else {
+                                    $competitor_colors[$competitor['name']] = '';
+                                }
                                 if( $competitor['notes'] != '' ) {
                                     $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['notes'] .= ($rsp["timeslots{$i}"][$tid]["registrations"][$rid]['notes'] != '' ? ' ' : '') . $competitor['notes'];
                                 }
@@ -476,6 +492,27 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                 } else {
                     $rsp["timeslots{$i}"][$tid]['perf_time_text'] = '';
                 } 
+            }
+        }
+    }
+
+    //
+    // Check if coloring should be enabled for competitors
+    //
+    if( isset($festival['scheduling-competitor-colors']) && $festival['scheduling-competitor-colors'] == 'yes' ) {
+        for($i = 1; $i <= 9; $i++) {
+            if( isset($rsp["timeslots{$i}"]) ) {
+                foreach($rsp["timeslots{$i}"] as $tid => $timeslot) {
+                    if( isset($timeslot['registrations']) ) {
+                        foreach($timeslot['registrations'] as $rid => $reg) {
+                            foreach($reg['competitor_names'] as $name) {
+                                if( isset($competitor_colors[$name]) && $competitor_colors[$name] != '' ) {
+                                    $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['bgcolor'] = '#' . $competitor_colors[$name];
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
