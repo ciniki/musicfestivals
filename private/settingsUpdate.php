@@ -312,9 +312,11 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'volunteers-disciplines',           // comma delimited list
         'volunteers-availability-days',     // comma delimited list of days
         'volunteers-availability-times',    // comma delimited list of times
-        'volunteers-default-shifts',    // json object with default shifts to add when adding division
+        'volunteers-default-shifts',        // json object with default shifts to add when adding division **future**
         'volunteers-account-menu',          // Enable the account menu for logins
         'volunteers-applied-msg',           // The message to display when a volunteer has applied.
+        'volunteers-account-cancel',        // Is customer allowed to cancel
+        'volunteers-cancel-emails',         // The emails to notify when a person cancels a shift
         'volunteers-email-approved-subject',
         'volunteers-email-approved-message',
         'volunteers-email-shift-assigned-subject',

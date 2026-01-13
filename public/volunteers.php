@@ -117,6 +117,8 @@ function ciniki_musicfestivals_volunteers($ciniki) {
         // Get the list of volunteers
         //
         $strsql = "SELECT volunteers.id, "
+            . "volunteers.status, "
+            . "volunteers.status AS status_text, "
             . "volunteers.customer_id, "
             . "customers.display_name AS customer_name, "
             . "IF(volunteers.shortname <> '', volunteers.shortname, customers.display_name) AS display_name "
@@ -131,7 +133,9 @@ function ciniki_musicfestivals_volunteers($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'volunteers', 'fname'=>'id', 
-                'fields'=>array('id', 'customer_id', 'display_name', 'customer_name')),
+                'fields'=>array('id', 'status', 'status_text', 'customer_id', 'display_name', 'customer_name'),
+                'maps'=>array('status_text'=>$maps['volunteer']['status']),
+                ),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1144', 'msg'=>'Unable to load volunteers', 'err'=>$rc['err']));

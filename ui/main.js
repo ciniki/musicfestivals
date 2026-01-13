@@ -5475,7 +5475,7 @@ function ciniki_musicfestivals_main() {
                 p.sections.buildings.dataMaps.unshift('category');
             }
 //            if( M.ciniki_musicfestivals_main.festival.settingValue('locations-disciplines') == 'yes' ) {
-                p.sections.buildings.headerValues.push('Disciplines');
+                p.sections.buildings.headerValues.push('Rooms/Disciplines');
                 p.sections.buildings.sortTypes.push('text');
                 p.sections.buildings.dataMaps.push('room_disciplines');
 //            }
@@ -17497,6 +17497,7 @@ function ciniki_musicfestivals_main() {
                 'shifts':{'label':'Shifts', 'fn':'M.ciniki_musicfestivals_main.volunteers.switchTab("shifts");'},
                 'schedule':{'label':'Schedule', 'fn':'M.ciniki_musicfestivals_main.volunteers.switchTab("schedule");'},
                 'volunteers':{'label':'Volunteers', 'fn':'M.ciniki_musicfestivals_main.volunteers.switchTab("volunteers");'},
+                'pending':{'label':'Pending', 'fn':'M.ciniki_musicfestivals_main.volunteers.switchTab("pending");'},
 //                'dates':{'label':'Dates', 'fn':'M.ciniki_musicfestivals_main.volunteers.switchTab("dates");'},
 //                'locations':{'label':'Locations', 'fn':'M.ciniki_musicfestivals_main.volunteers.switchTab("locations");'},
 //                'roles':{'label':'Roles', 'fn':'M.ciniki_musicfestivals_main.volunteers.switchTab("roles");'},
@@ -17677,7 +17678,7 @@ function ciniki_musicfestivals_main() {
     this.volunteers.cellValue = function(s, i, j, d) {
         if( s == 'volunteers' ) {
             switch(j) {
-                case 0: return d.display_name;
+                case 0: return d.display_name + (d.status != 30 ? M.subdue(' [', d.status_text, ']') : '');
             }
         }
         if( s == 'volunteer_shifts' ) {
