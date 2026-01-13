@@ -515,9 +515,10 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
             if( $num > 1 ) {
                 $competitor_colors[$name] = $colors[$color_idx++];
             } else {
-                $competitor_colors[$name] = 'ffffff';
+                $competitor_colors[$name] = '#ffffff';
             }
         }
+        $color_idx = 0;
         for($i = 1; $i <= 9; $i++) {
             if( isset($rsp["timeslots{$i}"]) ) {
                 foreach($rsp["timeslots{$i}"] as $tid => $timeslot) {
@@ -525,7 +526,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                         foreach($timeslot['registrations'] as $rid => $reg) {
                             foreach($reg['competitor_names'] as $name) {
                                 if( isset($competitor_colors[$name]) && $competitor_colors[$name] != '' ) {
-                                    $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['bgcolor'] = '#' . $competitor_colors[$name];
+                                    $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['bgcolor'] = $competitor_colors[$name];
                                 }
                             }
                         }
