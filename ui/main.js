@@ -18343,14 +18343,14 @@ function ciniki_musicfestivals_main() {
     this.addshifts.open = function(cb, f) {
         this.festival_id = f;
         this.data = {
-            'dates':"jan 25, 2026\nJan 26, 2026",
-            'start_time1':'9am',
-            'end_time1':'1pm',
-            'start_time2':'1pm',
-            'end_time2':'5pm',
+            'dates':'', //"Apr 7, 2026\nApr 8, 2026\nApr 9, 2026",
+            'start_time1':'', //'8:30 am',
+            'end_time1':'', //'1pm',
+            'start_time2':'', //'12:30pm',
+            'end_time2':'', //'6pm',
             'min_volunteers':'1',
             'max_volunteers':'1',
-            };
+            }; 
         M.api.getJSONCb('ciniki.musicfestivals.volunteers', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'locations':'yes', 'roles':'yes'}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
@@ -18431,6 +18431,7 @@ function ciniki_musicfestivals_main() {
                             'shift_date':dates[d],
                             'start_time':times[t].start,
                             'end_time':times[t].end,
+                            'flags':flags,
                             'location':locations[l],
                             'role':roles[r],
                             'min_volunteers':this.formValue('min_volunteers'),
