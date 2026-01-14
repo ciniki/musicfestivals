@@ -95,6 +95,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
         . "shifts.role, "
         . "shifts.min_volunteers, "
         . "shifts.max_volunteers, "
+        . "IFNULL(assigned.id, 0) AS assignment_id, "
         . "COUNT(assigned.volunteer_id) AS num_volunteers "
         . "FROM ciniki_musicfestival_volunteer_shifts AS shifts "
         . "LEFT JOIN ciniki_musicfestival_volunteer_assignments AS assigned ON ("
@@ -123,7 +124,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             'fields'=>array('name'=>'role'),
             ),
         array('container'=>'shifts', 'fname'=>'uuid', 
-            'fields'=>array('id', 'uuid', 'shift_date', 'start_time', 'end_time', 
+            'fields'=>array('id', 'uuid', 'shift_date', 'start_time', 'end_time', 'assignment_id',
                 'sort_start_time', 'sort_end_time', 
                 'object', 'object_id', 'role', 
                 'min_volunteers', 'max_volunteers', 'num_volunteers'),
@@ -240,8 +241,70 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             'content' => $content,
             ];
         $buttons = [];
+        // Cancelling a shift
+        if( isset($args['volunteer']['shifts'][$shift['id']]) 
+            && isset($action) && $action == 'cancel' && isset($confirm) && $confirm == 'confirm' 
+            ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
+            $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.musicfestivals.volunteerassignment', $shift['assignment_id'], null, 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                $blocks[] = [
+                    'type' => 'msg',
+                    'level' => 'error',
+                    'content' => "We are unable to cancel your shift, please contact us for help.",
+                    ];
+            } else {
+                if( isset($festival['volunteers-cancel-notify-emails']) && $festival['volunteers-cancel-notify-emails'] != '' ) {
+                    $emails = explode(',', $festival['volunteers-cancel-notify-emails']);
+                    foreach($emails as $email) {
+                        $email = trim($email);
+                        ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
+                        $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
+                            'object' => 'ciniki.musicfestivals.volunteershift',
+                            'object_id' => $shift['id'],
+                            'subject' => 'Volunteer Cancelled - ' . $volunteer['name'] . ' - ' . $shift['shift_date_text'] . ' - ' . $shift['start_time'],
+                            'html_content' => $content,
+                            'customer_email' => $email,
+                            ));
+                        if( $rc['stat'] != 'ok' ) {
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1234', 'msg'=>'Unable to email change request', 'err'=>$rc['err']));
+                        } else {
+                            $ciniki['emailqueue'][] = array('mail_id' => $rc['id'], 'tnid'=>$tnid);
+                        }
+                    }
+                }
+                $blocks[] = [
+                    'type' => 'msg',
+                    'level' => 'success',
+                    'content' => "Your shift has been cancelled.",
+                    ];
+            }
+            if( isset($_GET['back']) && $_GET['back'] == 'profile' ) {
+                $buttons = [
+                    ['url' => "{$base_url}", 'text' => 'Back'],
+                    ];
+            } else {
+                $buttons = [
+                    ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}", 'text' => 'Back'],
+                    ];
+            }
+        }
+        // Confirm a cancellation
+        elseif( isset($args['volunteer']['shifts'][$shift['id']]) && isset($action) && $action == 'cancel' ) {
+            $blocks[] = [
+                'type' => 'msg',
+                'level' => 'error',
+                'content' => "Are you sure you want to cancel your shift?",
+                ];
+            $back = '';
+            if( isset($_GET['back']) && $_GET['back'] == 'profile' ) {
+                $back = '?back=profile';
+            }
+            $buttons[] = ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}/{$selected_shift}{$back}", 'text' => 'Back'];
+            $buttons[] = ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}/{$selected_shift}/cancel/confirm{$back}", 'text' => 'Yes, cancel my shift'];
+        }
         // Already signed up for this shift
-        if( isset($args['volunteer']['shifts'][$shift['id']]) ) {
+        elseif( isset($args['volunteer']['shifts'][$shift['id']]) ) {
             if( $args['volunteer']['shifts'][$shift['id']]['assignment_status'] == 30 ) {
                 $blocks[] = [
                     'type' => 'msg',
@@ -255,9 +318,20 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
                     'content' => "Thank you for requesting this shift, we will email when with confirmation.",
                     ];
             }
-            $buttons = [
-                ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}", 'text' => 'Back'],
-                ];
+            $back = '';
+            if( isset($_GET['back']) && $_GET['back'] == 'profile' ) {
+                $buttons = [
+                    ['url' => "{$base_url}", 'text' => 'Back'],
+                    ];
+                $back = '?back=profile';
+            } else {
+                $buttons = [
+                    ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}", 'text' => 'Back'],
+                    ];
+            }
+            if( isset($festival['volunteers-account-cancel']) && $festival['volunteers-account-cancel'] == 'yes' ) {
+                $buttons[] = ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}/{$selected_shift}/cancel{$back}", 'text' => 'Cancel my shift'];
+            }
         } 
         // Shift is full
         elseif( $shift['num_volunteers'] >= $shift['max_volunteers'] ) {
@@ -297,6 +371,12 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
                 ];
         }
         elseif( isset($action) && $action == 'signup' ) {
+            $blocks[] = [
+                'type' => 'msg',
+                'level' => 'warning',
+                'content' => "Please confirm you would like to sign up for this shift.",
+                ];
+            
             $buttons = [
                 ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}/{$selected_shift}", 'text' => 'Cancel'],
                 ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}/{$selected_shift}/signup/confirm", 'text' => 'Confirm'],

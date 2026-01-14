@@ -5938,7 +5938,7 @@ function ciniki_musicfestivals_main() {
                     },
                 }},
         '_scrutineer_options':{'label':'Scrutineer Options', 
-            'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('registrations') && M.ciniki_musicfestivals_main.edit.formValue('registration-scrutineers-enable') == 'yes' ? 'yes' : 'hidden'; },
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('registrations') == 'yes' && M.ciniki_musicfestivals_main.edit.formValue('registration-scrutineers-enable') == 'yes' ? 'yes' : 'hidden'; },
             'fields':{
                 'registration-scrutineers-status-10':{'label':'Registered', 'type':'toggle', 'default':'yes', 
                     'toggles':{'no':'No', 'yes':'Yes'},
@@ -6565,11 +6565,16 @@ function ciniki_musicfestivals_main() {
                 'volunteers-availability-days':{'label':'Available Days', 'type':'textarea', 'size':'medium'},
                 'volunteers-availability-times':{'label':'Available Times', 'type':'textarea', 'size':'medium'},
 //                'volunteers-default-shifts':{'label':'Default Shifts', 'type':'textarea'},
+                'volunteers-applied-msg':{'label':'Applied Message', 'type':'textarea', 'size':'small'},
                 'volunteers-account-menu':{'label':'Account Menu', 'type':'toggle', 'default':'yes', 'toggles':{
                     'no':'No',
                     'yes':'Yes',
                     }},
-                'volunteers-applied-msg':{'label':'Applied Message', 'type':'textarea', 'size':'small'},
+                'volunteers-account-cancel':{'label':'Allow Cancels', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+                'volunteers-cancel-notify-emails':{'label':'Cancel Notifications', 'type':'text'},
             }},
         '_volunteers_email1':{'label':'Volunteer Approved Email',
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('volunteers'); },

@@ -46,12 +46,17 @@ function ciniki_musicfestivals_volunteerLoad($ciniki, $tnid, $args) {
     $strsql = "SELECT volunteers.id, "
         . "volunteers.festival_id, "
         . "volunteers.customer_id, "
+        . "IF(volunteers.shortname <> '', volunteers.shortname, customers.display_name) AS name, "
         . "volunteers.status, "
         . "volunteers.shortname, "
         . "volunteers.local_festival_id, "
         . "volunteers.notes, "
         . "volunteers.internal_notes "
         . "FROM ciniki_musicfestival_volunteers AS volunteers "
+        . "LEFT JOIN ciniki_customers AS customers ON ("
+            . "volunteers.customer_id = customers.id "
+            . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
         . "WHERE volunteers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
     if( isset($args['volunteer_id']) && is_numeric($args['volunteer_id']) ) {
         $strsql .= "AND volunteers.id = '" . ciniki_core_dbQuote($ciniki, $args['volunteer_id']) . "' ";
@@ -68,7 +73,7 @@ function ciniki_musicfestivals_volunteerLoad($ciniki, $tnid, $args) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'volunteers', 'fname'=>'id', 
-            'fields'=>array('id', 'festival_id', 'customer_id', 'status', 'shortname', 'local_festival_id', 'notes', 'internal_notes'),
+            'fields'=>array('id', 'festival_id', 'customer_id', 'name', 'status', 'shortname', 'local_festival_id', 'notes', 'internal_notes'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -130,10 +135,12 @@ function ciniki_musicfestivals_volunteerLoad($ciniki, $tnid, $args) {
         // Load the shifts and get the other volunteers
         //
         $strsql = "SELECT shifts.id, "
+            . "shifts.uuid, "
             . "assignments.id AS assignment_id, "
             . "assignments.status AS assignment_status, "
             . "assignments.status AS assignment_status_text, "
             . "shifts.shift_date, "
+            . "shifts.shift_date AS shift_date_ymd, "
             . "TIME_FORMAT(shifts.start_time, '%l:%i %p') as start_time, "
             . "TIME_FORMAT(shifts.end_time, '%l:%i %p') AS end_time, "
             . "TIME_FORMAT(shifts.start_time, '%H%i') as sort_start_time, "
@@ -173,8 +180,8 @@ function ciniki_musicfestivals_volunteerLoad($ciniki, $tnid, $args) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'shifts', 'fname'=>'id', 
-                'fields'=>array('id', 'assignment_id', 'assignment_status', 'assignment_status_text',
-                    'shift_date', 'start_time', 'end_time', 'sort_start_time', 'sort_end_time', 
+                'fields'=>array('id', 'uuid', 'assignment_id', 'assignment_status', 'assignment_status_text',
+                    'shift_date', 'shift_date_ymd', 'start_time', 'end_time', 'sort_start_time', 'sort_end_time', 
                     'object', 'object_id', 'role', 
                     'min_volunteers', 'max_volunteers', 'names'),
                 'utctotz'=>array('shift_date'=>array('timezone'=>'UTC', 'format'=>$date_format)),

@@ -106,6 +106,10 @@ function ciniki_musicfestivals_wng_accountVolunteerProcess(&$ciniki, $tnid, &$re
                 'content' => 'No upcoming shifts',
                 ];
         } else {
+            foreach($volunteer['shifts'] as $sid => $shift) {
+                $permalink = ciniki_core_makePermalink($ciniki, $shift['role']);
+                $volunteer['shifts'][$sid]['buttons'] = "<a class='button' href='{$base_url}/shifts/{$shift['shift_date_ymd']}/{$permalink}/{$shift['uuid']}?back=profile'>Open</a>";
+            }
             $blocks[] = [
                 'type' => 'table',
                 'title' => 'My Upcoming Shifts',
@@ -115,6 +119,7 @@ function ciniki_musicfestivals_wng_accountVolunteerProcess(&$ciniki, $tnid, &$re
                     ['label' => 'Location', 'field' => 'location'],
                     ['label' => 'Role', 'field' => 'role'],
                     ['label' => 'Status', 'field' => 'assignment_status_text'],
+                    ['label' => '', 'field' => 'buttons'],
                     ],
                 'rows' => $volunteer['shifts'],
                 ];
