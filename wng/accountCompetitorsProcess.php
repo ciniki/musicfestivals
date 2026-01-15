@@ -647,7 +647,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     if( isset($festival['waiver-second-msg']) && $festival['waiver-second-msg'] != '' ) {
         $fields['secondwaivertitle'] = array(
             'id' => "secondwaivertitle",
-            'label' => $festival['waiver-second-title'],
+            'label' => isset($festival['waiver-second-title']) ? $festival['waiver-second-title'] : '',
             'ftype' => 'content',
             'required' => 'yes',
             'size' => 'large',
@@ -672,7 +672,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     if( isset($festival['waiver-third-msg']) && $festival['waiver-third-msg'] != '' ) {
         $fields['thirdwaivertitle'] = array(
             'id' => "thirdwaivertitle",
-            'label' => $festival['waiver-third-title'],
+            'label' => isset($festival['waiver-third-title']) ? $festival['waiver-third-title'] : '',
             'ftype' => 'content',
             'required' => 'yes',
             'size' => 'large',
