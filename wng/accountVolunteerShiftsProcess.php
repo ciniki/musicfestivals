@@ -53,15 +53,18 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
         $roles = explode('::', $volunteer['approved_roles']);
     }
 
+    $css_width_limit = 'limit-width limit-width-60';
+
     if( count($roles) <= 0 ) {
         $blocks[] = [
             'type' => 'msg',
             'level' => 'error',
+            'class' => $css_width_limit,
             'content' => 'No shifts available',
             ];
         $blocks[] = [
             'type' => 'buttons',
-            'class' => 'aligncenter',
+            'class' => 'aligncenter ' . $css_width_limit,
             'items' => [
                 ['url' => $base_url, 'text' => 'Back'],
                 ],
@@ -139,11 +142,12 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
         $blocks[] = [
             'type' => 'msg',
             'level' => 'error',
+            'class' => $css_width_limit,
             'content' => "No upcoming volunteer shifts",
             ];
         $blocks[] = [
             'type' => 'buttons',
-            'class' => 'aligncenter',
+            'class' => 'aligncenter ' . $css_width_limit,
             'items' => [
                 ['url' => $base_url, 'text' => 'Back'],
                 ],
@@ -235,9 +239,14 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             . "<b>Location</b>: {$shift['location']}<br/>"
             . "<b>Role</b>: {$shift['role']}<br/>"
             . "";
+        if( isset($festival["volunteers-role-{$selected_role}-description"]) 
+            && $festival["volunteers-role-{$selected_role}-description"] != '' ) {
+            $content .= $festival["volunteers-role-{$selected_role}-description"];
+        }
         $blocks[] = [
             'type' => 'text',
             'title' => 'Volunteer Shift',
+            'class' => $css_width_limit,
             'content' => $content,
             ];
         $buttons = [];
@@ -251,6 +260,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
                 $blocks[] = [
                     'type' => 'msg',
                     'level' => 'error',
+                    'class' => $css_width_limit,
                     'content' => "We are unable to cancel your shift, please contact us for help.",
                     ];
             } else {
@@ -276,6 +286,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
                 $blocks[] = [
                     'type' => 'msg',
                     'level' => 'success',
+                    'class' => $css_width_limit,
                     'content' => "Your shift has been cancelled.",
                     ];
             }
@@ -294,6 +305,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             $blocks[] = [
                 'type' => 'msg',
                 'level' => 'error',
+                'class' => $css_width_limit,
                 'content' => "Are you sure you want to cancel your shift?",
                 ];
             $back = '';
@@ -309,12 +321,14 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
                 $blocks[] = [
                     'type' => 'msg',
                     'level' => 'success',
+                    'class' => $css_width_limit,
                     'content' => "You are signed up for this shift.",
                     ];
             } else {
                 $blocks[] = [
                     'type' => 'msg',
                     'level' => 'success',
+                    'class' => $css_width_limit,
                     'content' => "Thank you for requesting this shift, we will email when with confirmation.",
                     ];
             }
@@ -338,6 +352,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             $blocks[] = [
                 'type' => 'msg',
                 'level' => 'warning',
+                'class' => $css_width_limit,
                 'content' => "This shift is full",
                 ];
             $buttons = [
@@ -357,6 +372,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
                 $blocks[] = [
                     'type' => 'msg',
                     'level' => 'error',
+                    'class' => $css_width_limit,
                     'content' => "Unable to signup for shift, please contact us for help."
                     ];
                 return array('stat'=>'ok', 'blocks'=>$blocks);
@@ -374,6 +390,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             $blocks[] = [
                 'type' => 'msg',
                 'level' => 'warning',
+                'class' => $css_width_limit,
                 'content' => "Please confirm you would like to sign up for this shift.",
                 ];
             
@@ -390,7 +407,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
         }
         $blocks[] = [
             'type' => 'buttons',
-            'class' => 'aligncenter',
+            'class' => 'aligncenter ' . $css_width_limit,
             'items' => $buttons,
             ];
     } 
@@ -400,6 +417,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
         $blocks[] = [
             'type' => 'table',
             'title' => $date['shift_date_text'] . ' - ' . $role['name'],
+            'class' => $css_width_limit,
             'columns' => [
                 ['label' => 'Location', 'field' => 'location'],
                 ['label' => 'Times', 'field' => 'times'],
@@ -410,6 +428,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
         $blocks[] = [
             'type' => 'buttons',
             'class' => 'aligncenter',
+            'class' => $css_width_limit,
             'items' => [
                 ['url' => $base_url . '/shifts/' . $selected_date, 'text' => 'Back'],
                 ],
@@ -420,6 +439,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
         $blocks[] = [
             'type' => 'table',
             'title' => $date['shift_date_text'],
+            'class' => $css_width_limit,
             'columns' => [
                 ['label' => 'Role', 'field' => 'name'],
                 ['label' => 'Unfilled Shifts', 'field' => 'num_open_text'],
@@ -429,7 +449,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             ];
         $blocks[] = [
             'type' => 'buttons',
-            'class' => 'aligncenter',
+            'class' => 'aligncenter ' . $css_width_limit,
             'items' => [
                 ['url' => $base_url . '/shifts', 'text' => 'Back'],
                 ],
@@ -442,6 +462,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
         $blocks[] = [
             'type' => 'table',
             'title' => 'Dates',
+            'class' => $css_width_limit,
             'columns' => [
                 ['label' => 'Date', 'field' => 'shift_date_text'],
                 ['label' => 'Unfilled Shifts', 'field' => 'num_open_text'],
@@ -451,7 +472,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             ];
         $blocks[] = [
             'type' => 'buttons',
-            'class' => 'aligncenter',
+            'class' => 'aligncenter ' . $css_width_limit,
             'items' => [
                 ['url' => $base_url, 'text' => 'Back'],
                 ],

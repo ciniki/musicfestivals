@@ -327,6 +327,18 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'volunteers-email-reminder-24hour-subject',
         'volunteers-email-reminder-24hour-message',
         );
+
+    //
+    // Setup the allow role descriptions
+    //
+    if( isset($settings['volunteers-roles']['detail_value']) && $settings['volunteers-roles']['detail_value'] != '' ) {
+        $roles = preg_split('/\s*,\s*/', trim($settings['volunteers-roles']['detail_value']));
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+        foreach($roles as $role) {
+            $role = ciniki_core_makePermalink($ciniki, $role);
+            $valid_settings[] = 'volunteers-role-' . $role . '-description';
+        }
+    }
     foreach($valid_settings as $field) {
         if( isset($args[$field]) ) {
             if( $field == 'registration-crs-deadline' ) {

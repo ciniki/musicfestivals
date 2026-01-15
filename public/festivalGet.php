@@ -16,6 +16,7 @@
 //
 function ciniki_musicfestivals_festivalGet($ciniki) {
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
 
@@ -293,6 +294,16 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             }
             $dt->setTimezone(new DateTimezone($intl_timezone));
             $festival['registration-crs-deadline'] = $dt->format($datetime_format);
+        }
+        //
+        // Build volunteer roles array
+        //
+        if( isset($festival['volunteers-roles']) && $festival['volunteers-roles'] != '' ) {
+            $festival['volunteers-roles-array'] = preg_split('/\s*,\s*/', trim($festival['volunteers-roles']));
+            $festival['volunteers-roles-permalinks'] = preg_split('/\s*,\s*/', trim($festival['volunteers-roles']));
+            foreach($festival['volunteers-roles-permalinks'] as $pid => $permalink) {
+                $festival['volunteers-roles-permalinks'][$pid] = ciniki_core_makePermalink($ciniki, $permalink);
+            }
         }
 
 /*        //

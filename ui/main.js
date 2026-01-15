@@ -6600,6 +6600,10 @@ function ciniki_musicfestivals_main() {
                 'volunteers-email-reminder-24hour-subject':{'label':'Subject', 'type':'text'},
                 'volunteers-email-reminder-24hour-message':{'label':'Message', 'type':'htmlarea', 'size':'medium'},
             }},
+        '_volunteers_role_descriptions':{'label':'Role Descriptions',
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('volunteers'); },
+            'fields':{
+            }},
         '_buttons':{'label':'', 'buttons':{
             'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.edit.save();'},
             'updatename':{'label':'Update Public Names', 
@@ -6660,7 +6664,7 @@ function ciniki_musicfestivals_main() {
             '_waiver', '_waiver_second', '_waiver_third',
             '_scheduleoptions',
             '_locationoptions',
-            '_volunteers', '_volunteers_email1', '_volunteers_email2', '_volunteers_email3', '_volunteers_email4',
+            '_volunteers', '_volunteers_email1', '_volunteers_email2', '_volunteers_email3', '_volunteers_email4', '_volunteers_role_descriptions',
             ]);
         this.refreshSection('_tabs');
         this.updateForm();
@@ -6755,6 +6759,20 @@ function ciniki_musicfestivals_main() {
                 this.sections._scrutineer_options.fields['registration-scrutineers-status-'+i].label = '';
             }
             this.showHideFormField('_scrutineer_options', 'registration-scrutineers-status-' + i);
+        }
+        this.sections._volunteers_role_descriptions.fields = {};
+        if( this.data['volunteers-roles-array'] != null ) {
+            const roles = this.data['volunteers-roles'].split(',').map(item => item.trim());
+            for(var i in this.data['volunteers-roles-array']) {
+                var role = this.data['volunteers-roles-array'][i]; 
+                var permalink = this.data['volunteers-roles-permalinks'][i]; 
+                this.sections._volunteers_role_descriptions.fields['volunteers-role-' + permalink + '-description'] = {
+                    'label':role,
+                    'type':'htmlarea',
+                    };
+            }
+            this.refreshSection('_volunteers_role_descriptions');
+            this.refreshHTMLEditor();
         }
     }
     this.edit.open = function(cb, fid, list) {
