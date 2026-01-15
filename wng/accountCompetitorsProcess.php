@@ -849,14 +849,18 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             && (!isset($fields['secondwaiver']['value']) || $fields['secondwaiver']['value'] != 'on') 
             ) {
             $errors[] = array(
-                'msg' => "You must accept the {$festival['waiver-second-title']} for the competitor.",
+                'msg' => "You must accept the " 
+                    . (isset($festival['waiver-second-title']) ? $festival['waiver-second-title'] : "waiver")
+                    . " for the competitor.",
                 );
         }
         if( isset($festival['waiver-third-msg']) && $festival['waiver-third-msg'] != '' 
             && (!isset($fields['thirdwaiver']['value']) || $fields['thirdwaiver']['value'] != 'on') 
             ) {
             $errors[] = array(
-                'msg' => "You must accept the {$festival['waiver-third-title']} for the competitor.",
+                'msg' => "You must accept the "
+                    . (isset($festival['waiver-third-title']) ? $festival['waiver-third-title'] : "waiver")
+                    . " for the competitor.",
                 );
         }
         if( isset($festival['waiver-photo-status']) && $festival['waiver-photo-status'] == 'on' 
