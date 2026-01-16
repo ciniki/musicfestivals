@@ -940,9 +940,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                         . ") "
                     . "WHERE categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
-                    . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
+                if( isset($args['category_id']) && $args['category_id'] > 0 ) {
+                    $strsql .= "AND categories.id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' ";
+                }
 //                    . "GROUP BY classes.id "
-                    . "ORDER BY categories.sequence, categories.name, classes.sequence, classes.code, classes.name "
+                $strsql .= "ORDER BY categories.sequence, categories.name, classes.sequence, classes.code, classes.name "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
