@@ -83,6 +83,7 @@ function ciniki_musicfestivals_recommendationsPDF(&$ciniki) {
     //
     $strsql = "SELECT entries.id, "
         . "CONCAT_WS(' - ', classes.code, classes.name) AS class, "
+        . "entries.status, "
         . "entries.position, "
         . "entries.name, "
         . "entries.mark, "
@@ -104,7 +105,7 @@ function ciniki_musicfestivals_recommendationsPDF(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'recommendations', 'fname'=>'id', 
-            'fields'=>array( 'id', 'class', 'position', 'name', 'mark', 'adjudicator_name'),
+            'fields'=>array( 'id', 'class', 'status', 'position', 'name', 'mark', 'adjudicator_name'),
             'maps'=>array('position'=>$maps['recommendationentry']['position']),
             ),
         ));
@@ -112,6 +113,25 @@ function ciniki_musicfestivals_recommendationsPDF(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.755', 'msg'=>'Unable to load recommendations', 'err'=>$rc['err']));
     }
     $recommendations = isset($rc['recommendations']) ? $rc['recommendations'] : array();
+
+    foreach($recommendations as $rid => $recommendation) {
+        $recommendations[$rid]['cssclass'] = 'statuswhite';
+        if( $recommendation['status'] == 10 ) {
+            if( preg_match("/Alt/", $recommendation['position']) ) {
+                $recommendations[$rid]['cssclass'] = 'statusyellow';
+            }
+        } elseif( $recommendation['status'] == 30 ) {
+            $recommendations[$rid]['cssclass'] = 'statusorange';
+        } elseif( $recommendation['status'] == 50 ) {
+            $recommendations[$rid]['cssclass'] = 'statusgreen';
+        } elseif( $recommendation['status'] == 70 ) {
+            $recommendations[$rid]['cssclass'] = 'statusred';
+        } elseif( $recommendation['status'] == 80 ) {
+            $recommendations[$rid]['cssclass'] = 'statuspurple';
+        } elseif( $recommendation['status'] == 90 ) {
+            $recommendations[$rid]['cssclass'] = 'statusgrey';
+        }
+    }
    
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'memberRecommendationsPDF');
     $rc = ciniki_musicfestivals_templates_memberRecommendationsPDF($ciniki, $args['tnid'], [
