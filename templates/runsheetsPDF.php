@@ -632,10 +632,25 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             $fill = 0;
             $border = 'T';
             if( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
+                && (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
+                && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes') 
+                ) {
+                $w = array(10, 85, 15, 15, 15, 40);
+            } elseif( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
                 && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes') 
                 ) {
                 $w = array(10, 100, 15, 15, 40);
+            } elseif( (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
+                && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes') 
+                ) {
+                $w = array(10, 100, 15, 15, 40);
+            } elseif( (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
+                && (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
+                ) {
+                $w = array(10, 140, 15, 15, 15);
             } elseif( !isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes' ) {
+                $w = array(10, 140, 15, 15);
+            } elseif( isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes' ) {
                 $w = array(10, 140, 15, 15);
             } elseif( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
                 $w = array(10, 115, 15, 40);
@@ -924,14 +939,37 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     }
                     $pdf->MultiCell($w[1], 0, 'Name', 1, 'L', 1, 0);
                     if( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
+                        && (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
+                        && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
+                        ) {
+                        $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
+                        $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 0);
+                        $pdf->MultiCell($w[4], 0, 'Level', 1, 'C', 1, 0);
+                        $pdf->MultiCell($w[5], 0, 'Advanced to', 1, 'C', 1, 1);
+                    } elseif( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
                         && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
                         ) {
                         $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
                         $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 0);
                         $pdf->MultiCell($w[4], 0, 'Advanced to', 1, 'C', 1, 1);
+                    } elseif( (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
+                        && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
+                        ) {
+                        $pdf->MultiCell($w[2], 0, 'Place', 1, 'C', 1, 0);
+                        $pdf->MultiCell($w[3], 0, 'Level', 1, 'C', 1, 0);
+                        $pdf->MultiCell($w[4], 0, 'Advanced to', 1, 'C', 1, 1);
+                    } elseif( (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
+                        && (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
+                        ) {
+                        $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
+                        $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 0);
+                        $pdf->MultiCell($w[4], 0, 'Level', 1, 'C', 1, 0);
                     } elseif( !isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes' ) {
                         $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
                         $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 1);
+                    } elseif( isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes' ) {
+                        $pdf->MultiCell($w[2], 0, 'Place', 1, 'C', 1, 1);
+                        $pdf->MultiCell($w[3], 0, 'Level', 1, 'C', 1, 0);
                     } elseif( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
                         $pdf->MultiCell($w[2], 0, 'Place', 1, 'C', 1, 0);
                         $pdf->MultiCell($w[3], 0, 'Advanced to', 1, 'C', 1, 1);
@@ -1006,6 +1044,44 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                             }
                             $pdf->MultiCell($w[1], 0, 'Name', 1, 'L', 1, 0);
                             if( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
+                                && (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
+                                && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
+                                ) {
+                                $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
+                                $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 0);
+                                $pdf->MultiCell($w[4], 0, 'Level', 1, 'C', 1, 0);
+                                $pdf->MultiCell($w[5], 0, 'Advanced to', 1, 'C', 1, 1);
+                            } elseif( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
+                                && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
+                                ) {
+                                $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
+                                $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 0);
+                                $pdf->MultiCell($w[4], 0, 'Advanced to', 1, 'C', 1, 1);
+                            } elseif( (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
+                                && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
+                                ) {
+                                $pdf->MultiCell($w[2], 0, 'Place', 1, 'C', 1, 0);
+                                $pdf->MultiCell($w[3], 0, 'Level', 1, 'C', 1, 0);
+                                $pdf->MultiCell($w[4], 0, 'Advanced to', 1, 'C', 1, 1);
+                            } elseif( (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
+                                && (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
+                                ) {
+                                $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
+                                $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 0);
+                                $pdf->MultiCell($w[4], 0, 'Level', 1, 'C', 1, 0);
+                            } elseif( !isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes' ) {
+                                $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
+                                $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 1);
+                            } elseif( isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes' ) {
+                                $pdf->MultiCell($w[2], 0, 'Place', 1, 'C', 1, 1);
+                                $pdf->MultiCell($w[3], 0, 'Level', 1, 'C', 1, 0);
+                            } elseif( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
+                                $pdf->MultiCell($w[2], 0, 'Place', 1, 'C', 1, 0);
+                                $pdf->MultiCell($w[3], 0, 'Advanced to', 1, 'C', 1, 1);
+                            } else {
+                                $pdf->MultiCell($w[2], 0, 'Place', 1, 'C', 1, 1);
+                            }
+/*                            if( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
                                 && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
                                 ) {
                                 $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
@@ -1019,7 +1095,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                                 $pdf->MultiCell($w[3], 0, 'Advanced to', 1, 'C', 1, 1);
                             } else {
                                 $pdf->MultiCell($w[2], 0, 'Place', 1, 'C', 1, 1);
-                            }
+                            } */
                         }
                         $pdf->SetCellPaddings(2,2,2,2);
                         $pdf->SetFont('', 'B', 12);
@@ -1045,12 +1121,35 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                             $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 1);
                         } */
                         if( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
+                            && (isset($festival['runsheets-mark']) && $festival['runsheets-mark'] == 'yes')
+                            && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
+                            ) {
+                            $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 0);
+                            $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 0);
+                            $pdf->MultiCell($w[4], $h, '', 1, 'L', 0, 0);
+                            $pdf->MultiCell($w[5], $h, '', 1, 'L', 0, 1);
+                        } elseif( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
                             && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
                             ) {
                             $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 0);
                             $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 0);
                             $pdf->MultiCell($w[4], $h, '', 1, 'L', 0, 1);
+                        } elseif( (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
+                            && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
+                            ) {
+                            $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 0);
+                            $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 0);
+                            $pdf->MultiCell($w[4], $h, '', 1, 'L', 0, 1);
+                        } elseif( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
+                            && (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
+                            ) {
+                            $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 0);
+                            $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 0);
+                            $pdf->MultiCell($w[4], $h, '', 1, 'L', 0, 1);
                         } elseif( !isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes' ) {
+                            $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 0);
+                            $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 1);
+                        } elseif( isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes' ) {
                             $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 0);
                             $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 1);
                         } elseif( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
