@@ -86,7 +86,7 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
         // Check if virtual entries
         //
         $num_virtual = 0;
-        if( isset($festival['comments-live-adjudication-online']) && $festival['comments-live-adjudication-online'] == 'no' ) {
+        if( !isset($festival['comments-live-adjudication-online']) || $festival['comments-live-adjudication-online'] == 'no' ) {
             $strsql = "SELECT COUNT(registrations.id) AS num "
                 . "FROM ciniki_musicfestival_schedule_sections AS ssections "
                 . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
@@ -121,7 +121,7 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
             $num_virtual = isset($rc['num']) ? $rc['num'] : '';
         }
         if( (isset($festival['comments-live-adjudication-online']) && $festival['comments-live-adjudication-online'] == 'yes')
-            || (($festival['flags']&0x06) > 0 && $num_virtual > 0)
+            || (($festival['flags']&0x02) > 0 && $num_virtual > 0)
             ) {
             $items[] = array(
                 'title' => 'Adjudications', 
