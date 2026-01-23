@@ -129,7 +129,7 @@ function ciniki_musicfestivals_buildingAdd(&$ciniki) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;
     }
-    $building_id = $rc['id'];
+    $room_id = $rc['id'];
     
     //
     // Commit the transaction
@@ -152,6 +152,6 @@ function ciniki_musicfestivals_buildingAdd(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
     ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.musicfestivals.building', 'object_id'=>$building_id));
 
-    return array('stat'=>'ok', 'id'=>$building_id);
+    return array('stat'=>'ok', 'id'=>$building_id, 'room_id'=>$room_id);
 }
 ?>

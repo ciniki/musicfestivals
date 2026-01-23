@@ -13411,6 +13411,7 @@ function ciniki_musicfestivals_main() {
                     return false;
                 }
                 M.ciniki_musicfestivals_main.building.building_id = rsp.id;
+                M.ciniki_musicfestivals_main.building.data.add_id = rsp.room_id;
                 eval(cb);
             });
         }
