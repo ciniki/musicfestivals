@@ -103,8 +103,8 @@ function ciniki_musicfestivals_volunteerShiftAdd(&$ciniki) {
         $status_key = array_search($volunteer_id, $assigned_ids);
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
         $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.volunteerassignment', [
-            'festival_id' => $shift['festival_id'],
-            'shift_id' => $args['shift_id'],
+            'festival_id' => $args['festival_id'],
+            'shift_id' => $shift_id,
             'volunteer_id' => $volunteer_id,
             'status' => $status_key !== false ? $assigned_id_status[$status_key] : 30,
             ], 0x04);
