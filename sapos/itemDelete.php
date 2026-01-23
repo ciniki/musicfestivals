@@ -52,7 +52,7 @@ function ciniki_musicfestivals_sapos_itemDelete($ciniki, $tnid, $invoice_id, $it
             'invoice_id' => $invoice_id,
             'ignore_registration_id' => $item['object_id'],
             ]);
-        if( $rc['stat'] != 'ok' ) {
+        if( $rc['stat'] != 'ok' && $rc['stat'] != 'updated' ) {
             return $rc;
         }
 

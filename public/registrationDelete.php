@@ -67,79 +67,6 @@ function ciniki_musicfestivals_registrationDelete(&$ciniki) {
     }
 
     //
-    // Check for an invoice, and remove from the sapos module, which will hook back and remove registration
-    //
-    if( $registration['invoice_id'] > 0 ) {
-        //
-        // Get the status of the invoice
-        //
-        $strsql = "SELECT id, invoice_type, status "
-            . "FROM ciniki_sapos_invoices "
-            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $registration['invoice_id']) . "' "
-            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "";
-        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'invoice');
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.83', 'msg'=>'Unable to load invoice', 'err'=>$rc['err']));
-        }
-        if( !isset($rc['invoice']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.185', 'msg'=>'Unable to find requested invoice'));
-        }
-        $invoice = $rc['invoice'];
-
-        //
-        // Get the invoice item
-        //
-        $strsql = "SELECT id, description, object, object_id "
-            . "FROM ciniki_sapos_invoice_items "
-            . "WHERE invoice_id = '" . ciniki_core_dbQuote($ciniki, $registration['invoice_id']) . "' "
-            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND object = 'ciniki.musicfestivals.registration' "
-            . "AND object_id = '" . ciniki_core_dbQuote($ciniki, $registration['id']) . "' "
-            . "";
-        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.127', 'msg'=>'Unable to load invoice item', 'err'=>$rc['err']));
-        }
-//        if( !isset($rc['item']) ) {
-//            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.128', 'msg'=>'Unable to find requested invoice item'));
-//        }
-        if( isset($rc['item']) ) {
-            $invoice_item = $rc['item'];
-        }
-
-        //
-        // Remove invoice item, the callback from sapos will remove the registration.
-        //
-        if( $invoice['status'] < 15 ) {
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemDelete');
-            $rc = ciniki_sapos_hooks_invoiceItemDelete($ciniki, $args['tnid'], array(
-                'invoice_id' => $invoice['id'],
-                'object' => 'ciniki.musicfestivals.registration',
-                'object_id' => $registration['id'],
-//                'deleteinvoice' => 'yes',
-                ));
-            if( $rc['stat'] != 'ok' && $rc['stat'] != 'updated' && $rc['stat'] != 'blocked' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.154', 'msg'=>'Unable to remove item from invoice', 'err'=>$rc['err']));
-            }
-            return array('stat'=>'ok');
-        } elseif( !preg_match("/Cancelled/", $invoice_item['description']) ) {
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemUpdate');
-            $rc = ciniki_sapos_hooks_invoiceItemUpdate($ciniki, $args['tnid'], array(
-                'item_id' => $invoice_item['id'],
-                'description' => $invoice_item['description'] . ' (Cancelled)',
-                ));
-            if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.425', 'msg'=>'Unable to update invoice', 'err'=>$rc['err']));
-            }
-        }
-    }
-
-    //
-    // Check for any dependencies before deleting
-    //
-
-    //
     // Check if any modules are currently using this object
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectCheckUsed');
@@ -164,6 +91,91 @@ function ciniki_musicfestivals_registrationDelete(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
+
+    //
+    // Check for an invoice, and remove from the sapos module, which will hook back and remove registration
+    //
+    if( $registration['invoice_id'] > 0 ) {
+        //
+        // Get the status of the invoice
+        //
+        $strsql = "SELECT id, invoice_type, status "
+            . "FROM ciniki_sapos_invoices "
+            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $registration['invoice_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'invoice');
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.83', 'msg'=>'Unable to load invoice', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['invoice']) ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.185', 'msg'=>'Unable to find requested invoice'));
+        }
+        $invoice = $rc['invoice'];
+
+        //
+        // Get the invoice item
+        //
+        $strsql = "SELECT id, description, object, object_id "
+            . "FROM ciniki_sapos_invoice_items "
+            . "WHERE invoice_id = '" . ciniki_core_dbQuote($ciniki, $registration['invoice_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND object = 'ciniki.musicfestivals.registration' "
+            . "AND object_id = '" . ciniki_core_dbQuote($ciniki, $registration['id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.127', 'msg'=>'Unable to load invoice item', 'err'=>$rc['err']));
+        }
+//        if( !isset($rc['item']) ) {
+//            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.128', 'msg'=>'Unable to find requested invoice item'));
+//        }
+        if( isset($rc['item']) ) {
+            $invoice_item = $rc['item'];
+        }
+
+        //
+        // Remove invoice item, the callback from sapos will remove the registration.
+        //
+        if( $invoice['status'] < 15 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemDelete');
+            $rc = ciniki_sapos_hooks_invoiceItemDelete($ciniki, $args['tnid'], array(
+                'invoice_id' => $invoice['id'],
+                'object' => 'ciniki.musicfestivals.registration',
+                'object_id' => $registration['id'],
+//                'deleteinvoice' => 'yes',
+                ));
+            if( $rc['stat'] != 'ok' && $rc['stat'] != 'updated' && $rc['stat'] != 'blocked' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.154', 'msg'=>'Unable to remove item from invoice', 'err'=>$rc['err']));
+            }
+            //
+            // Commit the transaction
+            //
+            $rc = ciniki_core_dbTransactionCommit($ciniki, 'ciniki.musicfestivals');
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            return array('stat'=>'ok');
+        } elseif( !preg_match("/Cancelled/", $invoice_item['description']) ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemUpdate');
+            $rc = ciniki_sapos_hooks_invoiceItemUpdate($ciniki, $args['tnid'], array(
+                'item_id' => $invoice_item['id'],
+                'description' => $invoice_item['description'] . ' (Cancelled)',
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.425', 'msg'=>'Unable to update invoice', 'err'=>$rc['err']));
+            }
+        }
+    }
+
+    //
+    // Check for any dependencies before deleting
+    //
 
     //
     // If the invoice item is specified
