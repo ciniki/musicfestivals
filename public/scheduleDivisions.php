@@ -477,7 +477,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                 if( $perf_time != '' && $perf_time > 0 ) {
                     if( $perf_time > 3600 ) {
 //                        $perf_time_str = intval($perf_time/3600) . ':' . ceil(($perf_time%3600)/60) . '';
-                        $perf_time_str = '' . intval($perf_time/3600) . ':' . str_pad(($perf_time%3600)/60, 2, '0', STR_PAD_LEFT) . '';
+                        $perf_time_str = '' . intval($perf_time/3600) . ':' . str_pad(ceil(($perf_time%3600)/60), 2, '0', STR_PAD_LEFT) . '';
                     } else {
                         $perf_time_str = '' . intval($perf_time/60) . ':' . str_pad(($perf_time%60), 2, '0', STR_PAD_LEFT) . '';
                     }
