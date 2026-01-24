@@ -1121,7 +1121,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                             $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 1);
                         } */
                         if( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
-                            && (isset($festival['runsheets-mark']) && $festival['runsheets-mark'] == 'yes')
+                            && (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
                             && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
                             ) {
                             $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 0);
