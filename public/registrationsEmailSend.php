@@ -39,6 +39,19 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
         return $rc;
     }
 
+    //
+    // Load the festival
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $args['festival_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $festival = $rc['festival'];
+
+    //
+    // Load the registrations
+    //
     $strsql = "SELECT registrations.id, "
         . "registrations.festival_id, "
         . "sections.id AS section_id, "
@@ -129,7 +142,11 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
         $festival['registrations'] = $rc['registrations'];
         $total = 0;
         $html = "<table cellpadding=5 cellspacing=0>";
-        $html .= "<tr><th>Class</th><th>Competitor</th><th>Title</th><th>Time</th><th>Virtual</th></tr>";
+        if( ($festival['flags']&0x02) == 0x02 ) {
+            $html .= "<tr><th>Class</th><th>Competitor</th><th>Title</th><th>Length</th><th>Participation</th></tr>";
+        } else {
+            $html .= "<tr><th>Class</th><th>Competitor</th><th>Title</th><th>Length</th></tr>";
+        }
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
         foreach($festival['registrations'] as $iid => $registration) {
             $titles = '';
@@ -150,8 +167,11 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
             }
             $html .= '<tr><td>' . $registration['class_code'] . '</td><td>' . $registration['display_name'] . '</td>'
                 . '<td>' . $titles . '</td>'
-                . '<td>' . $perf_times . '</td>'
-                . '<td>' . $registration['participation'] . "</td></tr>\n";
+                . '<td>' . $perf_times . '</td>';
+            if( ($festival['flags']&0x02) == 0x02 ) {
+                $html .= '<td>' . $registration['participation'] . "</td>";
+            }
+            $html .= "</tr>\n";
             $text .= $registration['class_code'] 
                 . ' - ' . $registration['display_name']  . "\n"
                 . $text_titles
