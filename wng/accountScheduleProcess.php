@@ -160,7 +160,7 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' ";
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
-            $strsql .= "ORDER BY divisions.division_date, registrations.timeslot_time, registrations.display_name, registrations.status, registrations.display_name ";
+            $strsql .= "ORDER BY divisions.division_date, registrations.timeslot_time, registrations.display_name, registrations.status, registrations.display_name, registrations.id ";
         } else {
             $strsql .= "ORDER BY divisions.division_date, timeslots.slot_time, registrations.display_name, registrations.status, registrations.display_name ";
         }
