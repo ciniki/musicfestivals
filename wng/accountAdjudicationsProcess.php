@@ -480,8 +480,8 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
         // Check for artwork download
         //
         if( isset($request['uri_split'][($request['cur_uri_pos']+6)]) 
-            && isset($timeslot['registrations'][$request['uri_split'][($request['cur_uri_pos']+6)]])
-            && in_array($request['uri_split'][($request['cur_uri_pos']+5)], ['artwork1','artwork2','artwork3','artwork4','artwork5','artwork6','artwork7','artwork8'])
+            && isset($timeslot['registrations'][$request['uri_split'][($request['cur_uri_pos']+5)]])
+            && in_array($request['uri_split'][($request['cur_uri_pos']+6)], ['artwork1','artwork2','artwork3','artwork4','artwork5','artwork6','artwork7','artwork8'])
             ) {
             $registration = $timeslot['registrations'][$request['uri_split'][($request['cur_uri_pos']+5)]];
 
@@ -585,7 +585,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             $timeslot['registrations'][$rid]['class_name'] = $class_name;
             $update_args = [];
             if( isset($festival['comments-mark-adjudicator']) && $festival['comments-mark-adjudicator'] == 'yes' 
-                && ($registration['class_flags']&0x0100) == 0x0100
+                && ($reg['class_flags']&0x0100) == 0x0100
                 ) {
                 $timeslot['registrations'][$rid]['mark_input'] = "<input class='small aligncenter'"
                     . " name='f-{$reg['id']}-mark'"
@@ -623,12 +623,12 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 $timeslot['registrations'][$rid]['placement_input'] = "n/a";
             }
             if( isset($festival['comments-level-adjudicator']) && $festival['comments-level-adjudicator'] == 'yes' 
-                && ($registration['class_flags']&0x0400) == 0x0400
+                && ($reg['class_flags']&0x0400) == 0x0400
                 ) {
                 $timeslot['registrations'][$rid]['level_input'] = "<input class=''"
                     . " name='f-{$reg['id']}-level'"
                     . " id='f-{$reg['id']}-level'"
-                    . " value='{$reg['mark']}'>";
+                    . " value='{$reg['level']}'>";
             } else {
                 $timeslot['registrations'][$rid]['level_input'] = "n/a";
             }
@@ -757,7 +757,6 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                     if( ($registration['class_flags']&0x300000) != 0x200000 ) {
                         if( $registration["music_orgfilename{$i}"] != '' ) {
                             $download_url = "{$base_url}"
-                                . '/' . $request['uri_split'][($request['cur_uri_pos']+2)]
                                 . '/' . $request['uri_split'][($request['cur_uri_pos']+3)]
                                 . '/' . $request['uri_split'][($request['cur_uri_pos']+4)]
                                 . '/' . $registration['uuid']
@@ -785,7 +784,6 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                     if( ($registration['titleflags']&0x0300) > 0 ) {
                         if( $registration["artwork{$i}"] != '' ) {
                             $download_url = "{$base_url}"
-                                . '/' . $request['uri_split'][($request['cur_uri_pos']+2)]
                                 . '/' . $request['uri_split'][($request['cur_uri_pos']+3)]
                                 . '/' . $request['uri_split'][($request['cur_uri_pos']+4)]
                                 . '/' . $registration['uuid']

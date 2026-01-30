@@ -209,7 +209,7 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
         $strsql .= "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
     }
     if( isset($args['adjudicator_id']) && $args['adjudicator_id'] > 0 ) {
-        $strsql .= "arefs.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' ";
+        $strsql .= "AND arefs.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' ";
 //        $strsql .= "AND ("
 //           . "ssections.adjudicator1_id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' "
 //           . "OR divisions.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' "
