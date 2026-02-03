@@ -67,6 +67,7 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
         'id' => 'adjudicator_name',
         'label' => "Adjudicator's Name",
         'ftype' => 'text',
+        'size' => 'large',
         'required' => 'yes',
         'value' => '',
         ];
@@ -286,13 +287,20 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
     if( isset($args['save-draft']) && $args['save-draft'] == 'yes' ) {
         $form_sections['save'] = array(
             'id' => 'save',
-            'label' => '',
+            'label' => 'Save Draft',
             'fields' => array(
-                'cancel' => array(
-                    'id' => 'cancel',
-                    'ftype' => 'cancel', 
-                    'label' => 'Cancel',
-                    'url' => $args['cancel-url'], //"{$request['ssl_domain_base_url']}{$request['page']['path']}",
+//                'cancel' => array(
+//                    'id' => 'cancel',
+//                    'ftype' => 'cancel', 
+//                    'label' => 'Cancel',
+//                    'url' => $args['cancel-url'], //"{$request['ssl_domain_base_url']}{$request['page']['path']}",
+//                    ),
+                'save_label' => array(
+                    'id' => 'save_label',
+                    'ftype' => 'content', 
+                    'label' => 'Save Draft',
+                    'description' => 'You can save your recommendations and come back to finish it later.<br><br><b>This will NOT submit to Provincials</b>. Click Next to submit to provincials.',
+                    'required' => 'yes',
                     ),
                 'save' => array(
                     'id' => 'save',

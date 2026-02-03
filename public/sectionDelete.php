@@ -91,6 +91,24 @@ function ciniki_musicfestivals_sectionDelete(&$ciniki) {
     }
 
     //
+    // Check for any dependencies before deleting
+    //
+    $strsql = "SELECT 'items', COUNT(*) "
+        . "FROM ciniki_musicfestival_recommendations "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
+    $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
+    if( $rc['stat'] != 'ok' ) { 
+        return $rc;
+    }
+    if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
+        $count = $rc['num']['items'];
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1320', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' recommendation' . ($count==1?'':'s') . ' in that section.'));
+    }
+
+    //
     // Check if any modules are currently using this object
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectCheckUsed');

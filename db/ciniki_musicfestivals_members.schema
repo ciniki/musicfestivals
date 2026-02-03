@@ -16,7 +16,7 @@
 # flags:                    The options for the member.
 #
 #                               0x01 - Force recommendations local festival Ciniki website
-#                               0x02 - 
+#                               0x02 - Force registrations via local festival
 #                               0x04 - 
 #                               0x08 - 
 #

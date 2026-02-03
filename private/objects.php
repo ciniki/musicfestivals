@@ -891,6 +891,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'provincials_reg_id' => array('name'=>'Provincials Registration', 'default'=>0),
             'local_reg_id' => array('name'=>'Local Registration', 'default'=>0),
             'notes' => array('name'=>'Notes', 'default'=>''),
+            'dt_invite_sent' => array('name'=>'Date Invite Send', 'default'=>''),
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         'history_customer' => 'yes',

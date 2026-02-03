@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_recommendation_entries ADD COLUMN dt_invite_sent datetime not null AFTER notes;
+ALTER TABLE ciniki_musicfestival_recommendation_entries COMMENT='v1.05';

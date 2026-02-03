@@ -91,6 +91,32 @@ function ciniki_musicfestivals__registrationDelete(&$ciniki, $tnid, $reg_id) {
     }
 
     //
+    // Check if a provincials recommendation entry
+    //
+    $strsql = "SELECT entries.id, "
+        . "entries.status, "
+        . "entries.provincials_reg_id "
+        . "FROM ciniki_musicfestival_recommendation_entries AS entries "
+        . "WHERE entries.provincials_reg_id = '" . ciniki_core_dbQuote($ciniki, $reg_id) . "' "
+        . "AND entries.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'entry');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1377', 'msg'=>'Unable to load entry', 'err'=>$rc['err']));
+    }
+    if( isset($rc['entry']) && $rc['entry']['status'] == 50 ) {
+        $entry = $rc['entry'];
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.recommendationentry', $entry['id'], [
+            'status' => 45,
+            'provincials_reg_id' => 0,
+            ], 0x04);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1377', 'msg'=>'Unable to update the recommendationentry', 'err'=>$rc['err']));
+        }
+    }
+
+    //
     // Remove the registration
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');

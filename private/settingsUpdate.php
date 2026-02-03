@@ -159,6 +159,9 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'customer-type-parent-button-label',
         'customer-type-teacher-button-label',
         'customer-type-adult-button-label',
+        'recommendation-registration-parent-msg',
+        'recommendation-registration-teacher-msg',
+        'recommendation-registration-adult-msg',
         'registration-parent-msg',
         'registration-teacher-msg',
         'registration-adult-msg',
@@ -244,6 +247,12 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'provincials-status-a60-colour',
         'provincials-status-a70-colour',
         'provincials-status-a90-colour',
+        'provincials-email-invite-subject',
+        'provincials-email-invite-message',
+        'provincials-invite-confirm-message',
+        'provincials-invite-decline-message',
+        'provincials-email-register-subject',
+        'provincials-email-register-message',
         'competitor-label-singular',
         'competitor-label-plural',
         'competitor-parent-msg',
@@ -327,6 +336,8 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'volunteers-email-reminder-7day-message',
         'volunteers-email-reminder-24hour-subject',
         'volunteers-email-reminder-24hour-message',
+        'site-base-url',                    // The base url of the website hosted on Ciniki, including https://
+        'multiple-adjudicator-documents',   // Admin option to enable documents that support multiple adjudicators
         );
 
     //

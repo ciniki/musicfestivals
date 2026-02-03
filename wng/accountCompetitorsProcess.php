@@ -215,6 +215,19 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     //
     // Setup the fields for the competitor
     //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'competitorFormGenerate');
+    $rc = ciniki_musicfestivals_wng_competitorFormGenerate($ciniki, $tnid, $request, [
+        'ctype' => $ctype,
+        'customer_type' => $customer_type,
+        'festival' => $festival,
+        'competitor' => isset($competitor) ? $competitor : null,
+        ]); 
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1355', 'msg'=>'Unable to generate form', 'err'=>$rc['err']));
+    }
+    $fields = $rc['fields'];
+
+/* {
     $fields = array(
         'competitor_id' => array(
             'id' => 'competitor_id',
@@ -587,19 +600,6 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     } elseif( isset($fields['email_confirm']) && !isset($fields['etransfer_email_confirm']) && isset($fields['etransfer_emails']) ) {
         $fields['etransfer_email']['size'] = 'large';
     }
-/*        if( $ctype != 50
-            && isset($festival['competitor-individual-etransfer-email']) 
-            && $festival['competitor-individual-etransfer-email'] == 'required'
-            ) {
-            $fields['etransfer_email']['required'] = 'yes';
-        } 
-        if( $ctype == 50
-            && isset($festival['competitor-group-etransfer-email']) 
-            && $festival['competitor-group-etransfer-email'] == 'required'
-            ) {
-            $fields['etransfer_email']['required'] = 'yes';
-        }
-    } */
     if( ($ctype != 50
             && (!isset($festival['competitor-individual-notes-enable']) 
             || $festival['competitor-individual-notes-enable'] == 'yes')
@@ -749,36 +749,40 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                 $fields['namewaiver']['value'] = $_POST['f-namewaiver'];
             }
         }
-/*        $fields['namewaivertitle'] = array(
-            'id' => "namewaivertitle",
-            'label' => $festival['waiver-name-title'],
-            'ftype' => 'content',
-            'size' => 'large',
-            'value' => '',
-            );
-        $fields['namewaiver'] = array(
-            'id' => "namewaiver",
-            'label' => $festival['waiver-name-msg'],
-            'ftype' => 'checkbox',
-            'size' => 'large',
-            'value' => (isset($competitor['flags']) && ($competitor['flags']&0x04) == 0x04 ? 'on' : ''),
-            );
-        if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' ) {
-            if( isset($_POST['f-namewaiver']) && $_POST['f-namewaiver'] == 'on' ) {
-                $fields['namewaiver']['value'] = 'on';
-            } else {
-                $fields['namewaiver']['value'] = '';
-            }
-        } */
     }
+} */
 
     //
     // Check if the form is submitted
     //
     if( isset($_POST['f-competitor_id']) && isset($_POST['f-action']) && $_POST['f-action'] == 'update' && count($errors) == 0 ) {
+        $display = 'form';
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'competitorFormUpdateProcess');
+        $rc = ciniki_musicfestivals_wng_competitorFormUpdateProcess($ciniki, $tnid, $request, [
+            'ctype' => $ctype,
+            'customer_type' => $customer_type,
+            'festival' => $festival,
+            'fields' => $fields,
+            'competitor_id' => $_POST['f-competitor_id'],
+            'competitor' => isset($competitor) ? $competitor : null,
+            ]);
+        if( $rc['stat'] == 'exit' ) {
+            return $rc;
+        } elseif( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'ok', 'blocks'=>[[
+                'type' => 'msg',
+                'level' => 'error',
+                'content' => 'Internal Error, please try again or contact us for help.',
+                ]]);
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1365', 'msg'=>'Unable to process form', 'err'=>$rc['err']));
+        }
+        if( isset($rc['errors']) ) {
+            $errors = $rc['errors'];
+        }
+
+/* {
         $competitor_id = $_POST['f-competitor_id'];
         $fields['competitor_id']['value'] = $_POST['f-competitor_id'];
-        $display = 'form';
         foreach($fields as $field) {
             if( isset($field['required']) && $field['required'] == 'yes' 
                 && $field['value'] == '' 
@@ -1113,6 +1117,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                 }
             }
         }
+} */
     }
     elseif( isset($_POST['f-delete']) && $_POST['f-delete'] == 'Remove' && isset($competitor) ) {
         //

@@ -312,7 +312,7 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
         } else {
             $recommendation = $rc['recommendation'];
             //
-            // Email submission
+            // Email submission to adjudicator and members
             //
             ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'recommendationEmail');
             $rc = ciniki_musicfestivals_recommendationEmail($ciniki, $args['provincials']['tnid'], [
@@ -360,7 +360,7 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
         'guidelines' => 'Please submit all your recommendations for ' . $section['name'] . ' at once.',
         'class' => 'limit-width limit-width-90 musicfestival-recommendations',
         'problem-list' => $form_errors,
-        'section-selector' => 'no',
+        'section-selector' => 'yes',
         'form-sections' => $form_sections,
         );
 
