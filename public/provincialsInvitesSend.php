@@ -104,7 +104,10 @@ function ciniki_musicfestivals_provincialsInvitesSend(&$ciniki) {
     $strsql = "SELECT entries.id, " 
         . "entries.uuid, "
         . "entries.status, "
-        . "entries.local_reg_id "
+        . "entries.local_reg_id, "
+        . "classes.feeflags AS feeflags, "
+        . "classes.code AS class_code, "
+        . "classes.name AS class_name "
         . "FROM ciniki_musicfestival_recommendation_entries AS entries "
         . "INNER JOIN ciniki_musicfestival_recommendations AS recommendations ON ("
             . "entries.recommendation_id = recommendations.id "
@@ -112,6 +115,10 @@ function ciniki_musicfestivals_provincialsInvitesSend(&$ciniki) {
             . "AND recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $provincials_festival_id) . "' "
             . $recommendation_sql
             . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
+            . "entries.class_id = classes.id "
+            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
             . ") "
         . "WHERE entries.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
         . "AND entries.status = 30 " // Approved entries
@@ -123,7 +130,7 @@ function ciniki_musicfestivals_provincialsInvitesSend(&$ciniki) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'entries', 'fname'=>'id', 
             'fields'=>array(
-                'id', 'uuid', 'status', 'local_reg_id'),
+                'id', 'uuid', 'status', 'local_reg_id', 'class_code', 'class_name', 'feeflags'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {

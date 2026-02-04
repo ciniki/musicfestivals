@@ -101,14 +101,36 @@ function ciniki_musicfestivals_provincialsInviteSend(&$ciniki, $tnid, $args) {
     $message = $festival['provincials-email-invite-message'];
 
     //
+    // Prepare substitutions
+    //
+    $class_live_virtual = 'Live';
+    if( ($entry['feeflags']&0x0a) == 0x08 ) {
+        $class_live_virtual = 'Virtual';
+    } elseif( ($entry['feeflags']&0x0a) == 0x02 ) {
+        $class_live_virtual = 'Live';
+    } elseif( ($entry['feeflags']&0x0a) == 0x0a ) {
+        $class_live_virtual = 'Live OR Virtual';
+    }
+
+    //
     // run substitutions
     //
     $subject = str_replace('{_name_}', $registration_name, $subject);
     $message = str_replace('{_name_}', $registration_name, $message);
+    $subject = str_replace('{_livevirtual_}', $class_live_virtual, $subject);
+    $message = str_replace('{_livevirtual_}', $class_live_virtual, $message);
+    $subject = str_replace('{_provincialsclass_}', $entry['class_code'] . ' - ' . $entry['class_name'], $subject);
+    $message = str_replace('{_provincialsclass_}', $entry['class_code'] . ' - ' . $entry['class_name'], $message);
+    $subject = str_replace('{_provincialsclasscode_}', $entry['class_code'], $subject);
+    $message = str_replace('{_provincialsclasscode_}', $entry['class_code'], $message);
+    $subject = str_replace('{_provincialsclassname}', $entry['class_name'], $subject);
+    $message = str_replace('{_provincialsclassname}', $entry['class_name'], $message);
     $subject = str_replace('{_acceptlink_}', $accept_url, $subject);
     $message = str_replace('{_acceptlink_}', $accept_url, $message);
     $subject = str_replace('{_declinelink_}', $decline_url, $subject);
     $message = str_replace('{_declinelink_}', $decline_url, $message);
+    $subject = str_replace('{_deadline_}', $member['deadline'], $subject);
+    $message = str_replace('{_deadline_}', $member['deadline'], $message);
 
     //
     // Build a list of email addresses
