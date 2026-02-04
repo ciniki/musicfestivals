@@ -304,7 +304,7 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
                     'id' => 'save_label',
                     'ftype' => 'content', 
                     'label' => 'Save Draft',
-                    'description' => 'You can save your recommendations and come back to finish it later.<br><br><b>This will NOT submit to Provincials</b>. Click Next to submit to provincials.',
+                    'description' => 'You can save your recommendations and come back to finish it later.<br><br><b>This will NOT submit to Provincials</b>.',
                     'required' => 'yes',
                     ),
                 'save' => array(
