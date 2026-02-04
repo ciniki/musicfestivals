@@ -2599,8 +2599,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "registrations.provincials_position, "
                     . "IF(registrations.provincials_position=0, 999, registrations.provincials_position) AS position_sort, "
                     . "classes.code AS class_code, "
-                    . "IF(registrations.provincials_code <> '', registrations.provincials_code, classes.provincials_code) AS provincials_code, "
-                    . "IF(registrations.provincials_code <> '', registrations.provincials_code, IF(classes.provincials_code='', 'z', classes.provincials_code)) AS sort_code, "
+                    . "classes.provincials_code AS provincials_code, "
+//                    . "IF(registrations.provincials_code <> '', registrations.provincials_code, classes.provincials_code) AS provincials_code, "
+                    . "IF(classes.provincials_code='', 'z', classes.provincials_code) AS sort_code, "
                     . "classes.name AS class_name, "
                     . "categories.name AS category_name, "
                     . "sections.name AS section_name "
@@ -3242,7 +3243,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "registrations.mark, "
                 . "registrations.placement, "
                 . "registrations.level, "
-                . "registrations.provincials_code, "
+//                . "registrations.provincials_code, "
                 . "registrations.provincials_status, "
                 . "registrations.provincials_status AS provincials_status_text, "
                 . "registrations.provincials_position, "
@@ -3256,7 +3257,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
 //                    . "pcategories.name, "
                     . "pclasses.name) AS provincials_class_name ";
             } else {
-                $strsql .= "registrations.provincials_code AS provincials_class_name "; 
+                $strsql .= "classes.provincials_code AS provincials_class_name "; 
             }
             $strsql .= "FROM ciniki_musicfestival_sections AS sections "
                 . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
@@ -3264,8 +3265,11 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
-                    . "categories.id = classes.category_id "
-                    . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "categories.id = classes.category_id ";
+            if( isset($args['provincials_class_code']) && $args['provincials_class_code'] != 0 && $args['provincials_class_code'] != '' ) {
+                $strsql .= "AND classes.provincials_code = '" . ciniki_core_dbQuote($ciniki, $args['provincials_class_code']) . "' "; 
+            }
+            $strsql .= "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") "
                 . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
                     . "classes.id = registrations.class_id "
@@ -3275,14 +3279,11 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 ) {
                 $strsql .= "AND registrations.provincials_status = '" . ciniki_core_dbQuote($ciniki, $args['provincials_status']) . "' ";
             }
-            if( isset($args['provincials_class_code']) && $args['provincials_class_code'] != 0 && $args['provincials_class_code'] != '' ) {
-                $strsql .= "AND registrations.provincials_code = '" . ciniki_core_dbQuote($ciniki, $args['provincials_class_code']) . "' "; 
-            }
                 $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") ";
             if( isset($festival['provincial-festival-id']) && $festival['provincial-festival-id'] > 0 ) {
                 $strsql .= "LEFT JOIN ciniki_musicfestival_classes AS pclasses ON ("
-                        . "registrations.provincials_code = pclasses.code "
+                        . "classes.provincials_code = pclasses.code "
                         . "AND pclasses.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['provincial-festival-id']) . "' "
                     . ") "
                     . "LEFT JOIN ciniki_musicfestival_categories AS pcategories ON ("
@@ -3301,7 +3302,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 
             }
             if( isset($args['provincials_class_code']) && $args['provincials_class_code'] != 0 && $args['provincials_class_code'] != '' ) {
-                $strsql .= "ORDER BY registrations.provincials_code, position_sort ";
+                $strsql .= "ORDER BY classes.provincials_code, position_sort ";
             } else {
                 $strsql .= "ORDER BY sections.sequence, sections.name, categories.sequence, categories.name, classes.sequence, classes.code, classes.name, position_sort ";
             }

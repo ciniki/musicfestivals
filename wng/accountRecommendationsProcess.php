@@ -125,7 +125,7 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
                 . "OR (arefs.object_id = divisions.id AND arefs.object = 'ciniki.musicfestivals.scheduledivision') "
             . ") "
         . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "ORDER BY registrations.class_id, registrations.display_name "
+        . "ORDER BY registrations.class_id, registrations.display_name, registrations.id "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(

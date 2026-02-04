@@ -67,7 +67,8 @@ function ciniki_musicfestivals_templates_recommendationsPDF(&$ciniki, $tnid, $ar
         . "classes.name AS class_name, "
         . "categories.name AS category_name, "
         . "sections.name AS section_name, "
-        . "IF(registrations.provincials_code <> '',registrations.provincials_code, classes.provincials_code) AS provincials_code, "
+//        . "IF(registrations.provincials_code <> '',registrations.provincials_code, classes.provincials_code) AS provincials_code, "
+        . "classes.provincials_code AS provincials_code, "
         . "registrations.id AS registration_id, "
         . "registrations.display_name, "
         . "registrations.provincials_position, "
@@ -80,7 +81,8 @@ function ciniki_musicfestivals_templates_recommendationsPDF(&$ciniki, $tnid, $ar
             . "pcategories.name, "
             . "pclasses.name) AS provincials_class_name ";
     } else {
-        $strsql .= "IF(registrations.provincials_code <> '',registrations.provincials_code, classes.provincials_code) AS provincials_class_name ";
+//        $strsql .= "IF(registrations.provincials_code <> '',registrations.provincials_code, classes.provincials_code) AS provincials_class_name ";
+        $strsql .= "classes.provincials_code AS provincials_class_name ";
     }
     $strsql .= "FROM ciniki_musicfestival_registrations AS registrations "
         . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
@@ -100,7 +102,7 @@ function ciniki_musicfestivals_templates_recommendationsPDF(&$ciniki, $tnid, $ar
             . ") ";
         if( isset($festival['provincial-festival-id']) && $festival['provincial-festival-id'] > 0 ) {
             $strsql .= "LEFT JOIN ciniki_musicfestival_classes AS pclasses ON ("
-                    . "registrations.provincials_code = pclasses.code "
+                    . "classes.provincials_code = pclasses.code "
                     . "AND pclasses.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['provincial-festival-id']) . "' "
                 . ") "
                 . "LEFT JOIN ciniki_musicfestival_categories AS pcategories ON ("
