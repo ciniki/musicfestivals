@@ -69,6 +69,7 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
         'ftype' => 'text',
         'size' => 'large',
         'required' => 'yes',
+        'editable' => isset($args['edit-name']) ? $args['edit-name'] : 'yes',
         'value' => '',
         ];
     if( isset($_POST['f-adjudicator_name']) ) {
@@ -89,6 +90,8 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
         ];
     if( isset($_POST['f-adjudicator_phone']) ) {
         $form_sections['adjudicator']['fields']['adjudicator_phone']['value'] = $_POST['f-adjudicator_phone'];
+    } elseif( isset($args['recommendation']['adjudicator_phone']) && $args['recommendation']['adjudicator_phone'] != '' ) {
+        $form_sections['adjudicator']['fields']['adjudicator_phone']['value'] = $args['recommendation']['adjudicator_phone'];
     } elseif( isset($request['session']['ciniki.musicfestivals']['adjudicator_phone']) ) {
         $form_sections['adjudicator']['fields']['adjudicator_phone']['value'] = $request['session']['ciniki.musicfestivals']['adjudicator_phone'];
     } elseif( isset($args['adjudicator']) ) {
@@ -105,6 +108,8 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
         ];
     if( isset($_POST['f-adjudicator_email']) ) {
         $form_sections['adjudicator']['fields']['adjudicator_email']['value'] = $_POST['f-adjudicator_email'];
+    } elseif( isset($args['recommendation']['adjudicator_email']) && $args['recommendation']['adjudicator_email'] != '' ) {
+        $form_sections['adjudicator']['fields']['adjudicator_email']['value'] = $args['recommendation']['adjudicator_email'];
     } elseif( isset($request['session']['ciniki.musicfestivals']['adjudicator_email']) ) {
         $form_sections['adjudicator']['fields']['adjudicator_email']['value'] = $request['session']['ciniki.musicfestivals']['adjudicator_email'];
     } elseif( isset($args['adjudicator']) ) {

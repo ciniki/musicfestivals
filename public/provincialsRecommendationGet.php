@@ -280,9 +280,9 @@ function ciniki_musicfestivals_provincialsRecommendationGet($ciniki) {
         }
         $rsp['registrations'] = isset($rc['registrations']) ? $rc['registrations'] : array();
         
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
         foreach($rsp['registrations'] as $rid => $reg) {
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
-            $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $reg, 1);
+           $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $reg, 1);
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }

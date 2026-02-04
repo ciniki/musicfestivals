@@ -235,6 +235,7 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
             'adjudicator' => $args['adjudicator'],
             'cancel-url' => $base_url,
             'save-draft' => 'yes',
+            'edit-name' => 'no',
             ]);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1036', 'msg'=>'Unable to generate form', 'err'=>$rc['err']));
@@ -300,7 +301,7 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
             'form_sections' => $form_sections,
             'existing' => $existing,
             'classes' => $classes,
-            'members' => [$recommendation['member_id'] => []],
+            'members' => [$recommendation['member_id'] => ['id'=>$recommendation['member_id']]],
             'save-draft' => isset($_POST['submit']) && $_POST['submit'] == 'Save Draft' ? 'yes' : 'no',
             ]);
         if( $rc['stat'] != 'ok' ) {

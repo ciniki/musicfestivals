@@ -78,7 +78,7 @@ function ciniki_musicfestivals_wng_recommendationSave(&$ciniki, $tnid, $request,
             )) {
             $recommendation_args[$field] = $form_sections['adjudicator']['fields'][$field]['value'];
         }
-        elseif( isset($recommendation[$field]) && $recommendation['id'] == 0 ) {
+        elseif( isset($recommendation[$field]) ) {
             $recommendation_args[$field] = $recommendation[$field];
         }
     }
