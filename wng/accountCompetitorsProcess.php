@@ -757,6 +757,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     //
     if( isset($_POST['f-competitor_id']) && isset($_POST['f-action']) && $_POST['f-action'] == 'update' && count($errors) == 0 ) {
         $display = 'form';
+        $competitor_id = $_POST['f-competitor_id'];
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'competitorFormUpdateProcess');
         $rc = ciniki_musicfestivals_wng_competitorFormUpdateProcess($ciniki, $tnid, $request, [
             'ctype' => $ctype,
