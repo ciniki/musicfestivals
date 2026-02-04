@@ -85,7 +85,7 @@ function ciniki_musicfestivals_wng_accountScrutinizeRegistrationProcess(&$ciniki
     // Check registration status
     //
     $editable = 'no';
-    if( $registration['status'] == 10 ) {
+    if( $registration['status'] >= 10 ) {
         $editable = 'yes';
     }
 
@@ -99,7 +99,7 @@ function ciniki_musicfestivals_wng_accountScrutinizeRegistrationProcess(&$ciniki
         // check for updates 
         //
         $update_args = [];
-        if( isset($_POST['f-status']) && $_POST['f-status'] > $registration['status'] ) {
+        if( isset($_POST['f-status']) && $_POST['f-status'] != $registration['status'] ) {
             $update_args['status'] = $_POST['f-status'];
         }
         if( isset($_POST['f-internal_notes']) && $_POST['f-internal_notes'] > $registration['internal_notes'] ) {
@@ -237,6 +237,10 @@ function ciniki_musicfestivals_wng_accountScrutinizeRegistrationProcess(&$ciniki
         }
 
         if( $editable == 'yes' ) {
+            $fields["line-title-{$i}"] = [
+                'id' => "line-title-{$i}",
+                'ftype' => 'line',
+                ];
             $fields["title{$i}"] = [
                 'id' => "title{$i}",
                 'ftype' => 'text',
@@ -277,24 +281,26 @@ function ciniki_musicfestivals_wng_accountScrutinizeRegistrationProcess(&$ciniki
                 'value' => isset($_POST["f-perf_time{$i}"]) ? $_POST["f-perf_time{$i}"] : $registration["perf_time{$i}"],
                 );
         } else {
-            $rc = ciniki_musicfestivals_titlesMerge($ciniki, $tnid, $registration);
-            $fields["title{$i}"] = [
-                'id' => "title{$i}",
-                'ftype' => 'content',
-                'label' => 'Title',
-                'flex-basis' => '50%',
-                'description' => $rc['titles'],
-                ];
-            $min = floor($registration["perf_time{$i}"]/60);
-            $sec = ($registration["perf_time{$i}"]%60);
-            $fields["perf_time{$i}"] = [
-                'id' => "perf_time{$i}",
-                'ftype' => 'content',
-                'label' => (isset($festival['registration-length-label']) && $festival['registration-length-label'] != '' ? $festival['registration-length-label'] : 'Piece Length'),
-                'flex-basis' => '50%',
-                'description' => "{$min} minute" . ($min > 1 ? 's' : '')
-                    . ($sec > 0 ? " {$sec} second" . ($sec > 1 ? 's' : '') : ''),
-                ];
+            if( $registration["title{$i}"] != '' ) {
+                $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $registration, $i);
+                $fields["title{$i}"] = [
+                    'id' => "title{$i}",
+                    'ftype' => 'content',
+                    'label' => 'Title',
+                    'flex-basis' => '50%',
+                    'description' => $rc['title'],
+                    ];
+                $min = floor($registration["perf_time{$i}"]/60);
+                $sec = ($registration["perf_time{$i}"]%60);
+                $fields["perf_time{$i}"] = [
+                    'id' => "perf_time{$i}",
+                    'ftype' => 'content',
+                    'label' => (isset($festival['registration-length-label']) && $festival['registration-length-label'] != '' ? $festival['registration-length-label'] : 'Piece Length'),
+                    'flex-basis' => '50%',
+                    'description' => "{$min} minute" . ($min > 1 ? 's' : '')
+                        . ($sec > 0 ? " {$sec} second" . ($sec > 1 ? 's' : '') : ''),
+                    ];
+            }
         }
     }
 
@@ -308,6 +314,10 @@ function ciniki_musicfestivals_wng_accountScrutinizeRegistrationProcess(&$ciniki
     }
 
     if( $editable == 'yes' ) {
+        $fields["line-notes"] = [
+            'id' => "line-notes",
+            'ftype' => 'line',
+            ];
         $fields['internal_notes'] = [
             'id' => 'internal_notes',
             'label' => 'Internal Notes',
@@ -350,20 +360,18 @@ function ciniki_musicfestivals_wng_accountScrutinizeRegistrationProcess(&$ciniki
             ];
     }
 
-
-
-   
-
     $blocks[] = array(
         'type' => 'form',
         'form-id' => 'addregform',
         'title' => 'Registration',
         'class' => 'limit-width limit-width-80',
         'problem-list' => $form_errors,
-        'cancel-label' => ($registration['status'] == 10 ? 'Cancel' : ''),
+//        'cancel-label' => ($registration['status'] == 10 ? 'Cancel' : ''),
+        'cancel-label' => 'Cancel',
 //        'js-submit' => 'formSubmit();',
 //        'js-cancel' => 'formCancel();',
-        'submit-label' => ($registration['status'] == 10 ? 'Save' : 'Back'),
+//        'submit-label' => ($registration['status'] == 10 ? 'Save' : 'Back'),
+        'submit-label' => 'Save',
 //        'submit-label' => 'Save',
         'fields' => $fields,
         );
