@@ -93,7 +93,11 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
         . "classes.name AS class_name, "
         . "registrations.id, "
         . "registrations.mark, "
-        . "registrations.display_name "
+        . "registrations.display_name, "
+        . "registrations.title1, "
+        . "registrations.movements1, "
+        . "registrations.composer1, "
+        . "registrations.perf_time1 "
         . "FROM ciniki_musicfestival_adjudicatorrefs AS arefs "
         . "INNER JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
             . "ssections.festival_id = '" . ciniki_core_dbQuote($ciniki, $local['id']) . "' "
@@ -127,7 +131,8 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'classes', 'fname'=>'provincials_code', 'fields'=>array()),
         array('container'=>'registrations', 'fname'=>'id', 
-            'fields'=>array('id', 'class_code', 'class_name', 'mark', 'display_name'),
+            'fields'=>array('id', 'class_code', 'class_name', 'mark', 'display_name', 
+                'title1', 'movements1', 'composer1', 'perf_time1'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -135,9 +140,15 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
     }
     $adjudicator['registrations'] = isset($rc['classes']) ? $rc['classes'] : array();
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
     foreach($adjudicator['registrations'] as $cid => $class) {
         foreach($class['registrations'] as $rid => $reg) {
-            $adjudicator['registrations'][$cid]['registrations'][$rid]['name'] = $reg['display_name'] . ' - ' . $reg['class_code'] . ' - ' . $reg['class_name'];
+            $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, 1);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $title = $rc['title'];
+            $adjudicator['registrations'][$cid]['registrations'][$rid]['name'] = $reg['display_name'] . ' - ' . $reg['class_code'] . ' - ' . $reg['class_name'] . ' - ' . $title;
         }
     }
 
