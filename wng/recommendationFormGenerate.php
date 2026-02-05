@@ -148,8 +148,8 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
 //        } 
         $num_recommendations = 3;
         $num_alternates = 3;
+        $registrations = [];
         if( isset($args['adjudicator']['registrations']) ) {
-            $registrations = [];
             if( isset($args['adjudicator']['registrations'][$class['code']]['registrations']) ) {
                 $registrations = $args['adjudicator']['registrations'][$class['code']]['registrations'];
             }
