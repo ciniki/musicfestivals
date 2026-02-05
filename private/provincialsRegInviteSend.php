@@ -192,7 +192,6 @@ function ciniki_musicfestivals_provincialsRegInviteSend(&$ciniki, $tnid, $args) 
     $num_sent = 0;
     ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
     foreach($emails as $email) {
-        error_log(' - Emailing: ' . $email['customer_name'] . ' - ' . $email['customer_email']);
         $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, $email);
         if( $rc['stat'] != 'ok' ) {
             $errors .= $rc['err']['code'] . ' - ' . $rc['err']['msg'];
