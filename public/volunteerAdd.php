@@ -73,6 +73,16 @@ function ciniki_musicfestivals_volunteerAdd(&$ciniki) {
         . "";
     
     //
+    // Load the festival settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $args['festival_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $festival = $rc['festival'];
+
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
@@ -148,6 +158,27 @@ function ciniki_musicfestivals_volunteerAdd(&$ciniki) {
             return $rc;
         }
     }
+
+    //
+    // Check if approved email should be sent
+    //
+    if( isset($args['status']) && $args['status'] == 30 
+        && isset($festival["volunteers-email-approved-subject"])
+        && $festival["volunteers-email-approved-subject"] != ''
+        && isset($festival["volunteers-email-approved-message"])
+        && $festival["volunteers-email-approved-message"] != ''
+        ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'volunteerEmail');
+        $rc = ciniki_musicfestivals_volunteerEmail($ciniki, $args['tnid'], [
+            'volunteer_id' => $volunteer_id,
+            'festival' => $festival,
+            'template' => 'volunteers-email-approved',
+            ]);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1378', 'msg'=>'Unable to email volunteer', 'err'=>$rc['err']));
+        }
+    }
+
     //
     // Commit the transaction
     //
