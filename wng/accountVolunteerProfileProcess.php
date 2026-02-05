@@ -78,6 +78,22 @@ function ciniki_musicfestivals_wng_accountVolunteerProfileProcess(&$ciniki, $tni
             return $rc;
         }
         $args['volunteer']['id'] = $rc['id'];
+
+        //
+        // Check if auto assign roles
+        //
+        if( isset($festival['volunteers-default-roles']) && $festival['volunteers-default-roles'] != '' ) {
+            $skills = preg_split('/\s*,\s*/', trim($festival['volunteers-default-roles']));
+            if( is_array($skills) && count($skills) > 0 ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsUpdate');
+                $rc = ciniki_core_tagsUpdate($ciniki, 'ciniki.musicfestivals', 'volunteertag', $tnid,
+                    'ciniki_musicfestival_volunteer_tags', 'ciniki_musicfestivals_history',
+                    'volunteer_id', $args['volunteer']['id'], 50, $skills);
+                if( $rc['stat'] != 'ok' ) {
+                    $problem_list = "Unable to update availability profile";
+                }
+            }
+        }
     }
 
     //

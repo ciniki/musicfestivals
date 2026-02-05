@@ -318,6 +318,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'accolades-include-donatedby',
         'accolades-include-amount',
         'volunteers-roles',                 // comma delimited list
+        'volunteers-default-roles',         // comma delimited list of default roles to assign 
         'volunteers-skills',                // comma delimited list
         'volunteers-disciplines',           // comma delimited list
         'volunteers-availability-days',     // comma delimited list of days

@@ -6647,6 +6647,7 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('volunteers'); },
             'fields':{
                 'volunteers-roles':{'label':'Roles', 'type':'text'},
+                'volunteers-default-roles':{'label':'Auto-Assigned Roles', 'type':'text'},
                 'volunteers-skills':{'label':'Skills', 'type':'text'},
                 'volunteers-disciplines':{'label':'Disciplines', 'type':'text'},
                 'volunteers-availability-days':{'label':'Available Days', 'type':'textarea', 'size':'medium'},
