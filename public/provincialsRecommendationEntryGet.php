@@ -96,6 +96,7 @@ function ciniki_musicfestivals_provincialsRecommendationEntryGet($ciniki) {
             . "entries.name, "
             . "entries.mark, "
             . "entries.notes, "
+            . "entries.dt_invite_sent, "
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
             . "recommendations.id AS recommendation_id, "
@@ -157,6 +158,11 @@ function ciniki_musicfestivals_provincialsRecommendationEntryGet($ciniki) {
                 'label' => 'Local Class', 
                 'value' => $entry['local_class_code'] . ' - ' . $entry['local_category_name'] . ' - ' . $entry['local_class_name'],
                 ];
+        }
+        if( $entry['status'] > 30 && $entry['dt_invite_sent'] != '' && $entry['dt_invite_sent'] != '0000-00-00 00:00:00' ) {
+            $dt = new DateTime($entry['dt_invite_sent'], new DateTimezone('UTC'));
+            $dt->setTimezone(new DateTimezone($intl_timezone));
+            $entry['details'][] = ['label' => 'Invite Sent', 'value' => $dt->format("l, F j, Y g:i A")];
         }
         if( isset($entry['notes']) && $entry['notes'] != '' ) {
             $entry['details'][] = ['label' => 'Notes', 'value' => $entry['notes']];
