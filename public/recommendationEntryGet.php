@@ -240,6 +240,7 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
             . "FROM ciniki_musicfestival_recommendation_entries AS entries "
             . "INNER JOIN ciniki_musicfestival_recommendations AS recommendations ON ("
                 . "entries.recommendation_id = recommendations.id "
+                . "AND recommendations.status > 10 "
                 . "AND recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
