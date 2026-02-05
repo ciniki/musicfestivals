@@ -6637,11 +6637,17 @@ function ciniki_musicfestivals_main() {
                 'provincials-invite-confirm-message':{'label':'Accept Confirm Message', 'type':'htmlarea', 'size':'medium'},
                 'provincials-invite-decline-message':{'label':'Decline Confirm Message', 'type':'htmlarea', 'size':'medium'},
             }},
-        '_provincials_email2':{'label':'Registration Instructions Email',
+        '_provincials_email2':{'label':'Live Registration Instructions Email',
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('provincials'); },
             'fields':{
-                'provincials-email-register-subject':{'label':'Subject', 'type':'text'},
-                'provincials-email-register-message':{'label':'Message', 'type':'htmlarea', 'size':'medium'},
+                'provincials-email-register-live-subject':{'label':'Subject', 'type':'text'},
+                'provincials-email-register-live-message':{'label':'Message', 'type':'htmlarea', 'size':'medium'},
+            }},
+        '_provincials_email3':{'label':'Virtual Registration Instructions Email',
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('provincials'); },
+            'fields':{
+                'provincials-email-register-virtual-subject':{'label':'Subject', 'type':'text'},
+                'provincials-email-register-virtual-message':{'label':'Message', 'type':'htmlarea', 'size':'medium'},
             }},
         '_volunteers':{'label':'Volunteer Options',
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('volunteers'); },
@@ -6753,7 +6759,7 @@ function ciniki_musicfestivals_main() {
             '_waiver', '_waiver_second', '_waiver_third',
             '_scheduleoptions',
             '_locationoptions',
-            '_provincials_email1', '_provincials_email2', 
+            '_provincials_email1', '_provincials_email2', '_provincials_email3',
             '_volunteers', '_volunteers_email1', '_volunteers_email2', '_volunteers_email3', '_volunteers_email4', '_volunteers_role_descriptions',
             ]);
         this.refreshSection('_tabs');

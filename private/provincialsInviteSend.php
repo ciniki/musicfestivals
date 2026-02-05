@@ -86,6 +86,18 @@ function ciniki_musicfestivals_provincialsInviteSend(&$ciniki, $tnid, $args) {
     }
 
     //
+    // Prepare substitutions
+    //
+    $class_live_virtual = 'Live';
+    if( ($entry['feeflags']&0x0a) == 0x08 ) {
+        $class_live_virtual = 'Virtual';
+    } elseif( ($entry['feeflags']&0x0a) == 0x02 ) {
+        $class_live_virtual = 'Live';
+    } elseif( ($entry['feeflags']&0x0a) == 0x0a ) {
+        $class_live_virtual = 'Live OR Virtual';
+    }
+
+    //
     // Prepare the message
     // Note: in the message template, clickable links can be added <a href="{_acceptlink_}">Yes, I accept</a>
     //
@@ -99,18 +111,6 @@ function ciniki_musicfestivals_provincialsInviteSend(&$ciniki, $tnid, $args) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1333', 'msg'=>'No message specified'));
     }
     $message = $festival['provincials-email-invite-message'];
-
-    //
-    // Prepare substitutions
-    //
-    $class_live_virtual = 'Live';
-    if( ($entry['feeflags']&0x0a) == 0x08 ) {
-        $class_live_virtual = 'Virtual';
-    } elseif( ($entry['feeflags']&0x0a) == 0x02 ) {
-        $class_live_virtual = 'Live';
-    } elseif( ($entry['feeflags']&0x0a) == 0x0a ) {
-        $class_live_virtual = 'Live OR Virtual';
-    }
 
     //
     // run substitutions

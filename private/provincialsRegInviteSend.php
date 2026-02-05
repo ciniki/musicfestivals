@@ -96,24 +96,40 @@ function ciniki_musicfestivals_provincialsRegInviteSend(&$ciniki, $tnid, $args) 
     }
 
     //
+    // Prepare substitutions
+    //
+    $class_live_virtual = 'Live';
+    $template = 'provincials-email-register-live';
+    if( ($entry['feeflags']&0x0a) == 0x08 ) {
+        $class_live_virtual = 'Virtual';
+        $template = 'provincials-email-register-virtual';
+    } elseif( ($entry['feeflags']&0x0a) == 0x02 ) {
+        $class_live_virtual = 'Live';
+    } elseif( ($entry['feeflags']&0x0a) == 0x0a ) {
+        $class_live_virtual = 'Live OR Virtual';
+    }
+
+    //
     // Prepare the message
     // Note: in the message template, clickable links can be added <a href="{_acceptlink_}">Yes, I accept</a>
     //
     $register_url = $base_url . "/ahk/musicfestival/register/{$entry['uuid']}/{$registration['uuid']}";
-    if( !isset($festival['provincials-email-register-subject']) || $festival['provincials-email-register-subject'] == '' ) {
+    if( !isset($festival["{$template}-subject"]) || $festival["{$template}-subject"] == '' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1350', 'msg'=>'No subject specified'));
     }
-    $subject = $festival['provincials-email-register-subject'];
-    if( !isset($festival['provincials-email-register-message']) || $festival['provincials-email-register-message'] == '' ) {
+    $subject = $festival["{$template}-subject"];
+    if( !isset($festival["{$template}-message"]) || $festival["{$template}-message"] == '' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1351', 'msg'=>'No message specified'));
     }
-    $message = $festival['provincials-email-register-message'];
+    $message = $festival["{$template}-message"];
 
     //
     // run substitutions
     //
     $subject = str_replace('{_name_}', $registration_name, $subject);
     $message = str_replace('{_name_}', $registration_name, $message);
+    $subject = str_replace('{_livevirtual_}', $class_live_virtual, $subject);
+    $message = str_replace('{_livevirtual_}', $class_live_virtual, $message);
     $subject = str_replace('{_registerlink_}', $register_url, $subject);
     $message = str_replace('{_registerlink_}', $register_url, $message);
 
