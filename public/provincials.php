@@ -241,8 +241,8 @@ function ciniki_musicfestivals_provincials($ciniki) {
             . "WHERE recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $provincials_festival_id) . "' "
             . "AND recommendations.member_id = '" . ciniki_core_dbQuote($ciniki, $member['id']) . "' "
             . $section_sql
-            . "GROUP BY entries.status "
-            . "ORDER BY entries.status "
+            . "GROUP BY status "
+            . "ORDER BY status "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQueryList2');
         $rc = ciniki_core_dbQueryList2($ciniki, $strsql, 'ciniki.musicfestivals', 'num_items');
