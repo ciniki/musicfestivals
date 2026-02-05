@@ -18503,7 +18503,7 @@ function ciniki_musicfestivals_main() {
     this.provincials.status = 0;
     this.provincials.menutabs = null;
     this.provincials.sections = {
-        '_tabs':{'label':'', 'type':'menutabs', 'selected':'recommendations',
+        '_tabs':{'label':'', 'type':'menutabs', 'selected':'entries',
             'tabs':{
                 'entries':{'label':'Recommendations', 'fn':'M.ciniki_musicfestivals_main.provincials.switchTab("entries");'},
                 'recommendations':{'label':'Submissions', 'fn':'M.ciniki_musicfestivals_main.provincials.switchTab("recommendations");'},
@@ -19377,6 +19377,7 @@ function ciniki_musicfestivals_main() {
             case '80': return 'statuspurple';
             case '85': 
             case '90': return 'statusgrey statuslinethrough';
+            case '999': return 'statusgreyfade';
         }
     }
 
