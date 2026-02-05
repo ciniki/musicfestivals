@@ -611,7 +611,10 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.653', 'msg'=>'Unable to load teachers', 'err'=>$rc['err']));
     }
     $teachers = isset($rc['teachers']) ? $rc['teachers'] : array();
-    if( !isset($teachers[$request['session']['musicfestival-registration']['teacher_customer_id']]) ) {
+    if( isset($request['session']['musicfestival-registration']['teacher_customer_id']) 
+        && $request['session']['musicfestival-registration']['teacher_customer_id'] > 0
+        && !isset($teachers[$request['session']['musicfestival-registration']['teacher_customer_id']]) 
+        ) {
         $teachers[$request['session']['musicfestival-registration']['teacher_customer_id']] = [
             'id' => $request['session']['musicfestival-registration']['teacher_customer_id'],
             'name' => trim($teacher_first . ' ' . $teacher_last),
@@ -702,7 +705,20 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
             'customer_id' => $request['session']['customer']['id'],
             ]);
         if( $rc['stat'] == 'exit' ) {
-            return $rc;
+            //
+            // Update the recommendation with the registration
+            //
+            if( isset($rc['id']) ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.recommendationentry', $entry['id'], [
+                    'status' => 50,
+                    'provincials_reg_id' => $rc['id'],
+                    ], 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1376', 'msg'=>'Unable to update the recommendationentry', 'err'=>$rc['err']));
+                }
+            }
+            return array('stat'=>'exit');
         } elseif( $rc['stat'] != 'ok' ) {
             return array('stat'=>'ok', 'blocks'=>[[
                 'type' => 'msg',
@@ -712,19 +728,6 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
         }
         $errors = $rc['errors'];
 
-        //
-        // Update the recommendation with the registration
-        //
-        if( count($errors) == 0 ) {
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.recommendationentry', $entry['id'], [
-                'status' => 50,
-                'provincials_reg_id' => $rc['id'],
-                ], 0x04);
-            if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1376', 'msg'=>'Unable to update the recommendationentry', 'err'=>$rc['err']));
-            }
-        }
     }
 
     $form_errors = '';

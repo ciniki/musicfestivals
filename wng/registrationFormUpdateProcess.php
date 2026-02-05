@@ -617,11 +617,11 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
         if( isset($request['session']['account-musicfestivals-registration-return-url']) ) {
             header("Location: {$request['session']['account-musicfestivals-registration-return-url']}");
             unset($request['session']['account-musicfestivals-registration-return-url']);
-            return array('stat'=>'exit');
+            return array('stat'=>'exit', 'id'=>$registration_id);
         }
 
         header("Location: {$request['ssl_domain_base_url']}/account/musicfestival/registrations");
-        return array('stat'=>'exit');
+        return array('stat'=>'exit', 'id'=>$registration_id);
     }
     elseif( count($errors) == 0 ) {
         //
