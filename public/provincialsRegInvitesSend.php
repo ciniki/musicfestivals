@@ -87,8 +87,8 @@ function ciniki_musicfestivals_provincialsRegInvitesSend(&$ciniki) {
     //
     // Check if instruction message configured
     //
-    if( !isset($festival['provincials-email-register-subject']) || $festival['provincials-email-register-subject'] == '' 
-        || !isset($festival['provincials-email-register-message']) || $festival['provincials-email-register-message'] == '' 
+    if( !isset($festival['provincials-email-register-live-subject']) || $festival['provincials-email-register-live-subject'] == '' 
+        || !isset($festival['provincials-email-register-live-message']) || $festival['provincials-email-register-live-message'] == '' 
         ) {
         return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1343', 'msg'=>'No template configured'));
     }
