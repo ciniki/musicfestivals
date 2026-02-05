@@ -748,7 +748,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                                 $height = $rc['image']->getImageHeight();
                                 $width = $rc['image']->getImageWidth();
                                 if( $width > 800 ) {
-                                    $this->header_image->scaleImage(800, 0);
+                                    $pdf->header_image->scaleImage(800, 0);
                                 }
                                 $image_ratio = $width/$height;
                                 $available_ratio = $wa[1]/20;
