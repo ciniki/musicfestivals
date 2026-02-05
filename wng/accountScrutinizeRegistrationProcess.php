@@ -160,6 +160,14 @@ function ciniki_musicfestivals_wng_accountScrutinizeRegistrationProcess(&$ciniki
             'description' => $class['code'] . ' - ' . $class['name'],
             ],
         ];
+    if( isset($registration['instrument']) && $registration['instrument'] != '' ) {
+        $fields['instrument'] = [
+            'id' => 'instrument',
+            'label' => 'Instrument',
+            'ftype' => 'content',
+            'description' => $registration['instrument'],
+            ];
+    }
 
     //
     // Lookup competitor information
