@@ -519,8 +519,6 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         return $a['sort_key'] < $b['sort_key'] ? -1 : 1;
         });
 
-
-    
     $s['title'] .= ($s['title'] != '' ? ' - ' : '') . $schedulesection['name'];
 
     //
