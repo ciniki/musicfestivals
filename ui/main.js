@@ -1481,7 +1481,7 @@ function ciniki_musicfestivals_main() {
                 'competitors':{'label':'All Daily Venue Competitors', 'fn':'M.ciniki_musicfestivals_main.festival.downloadDailyVenueCompetitorsPDF(0);'},
                 'accolades':{'label':'Accolade Registrations', 'fn':'M.ciniki_musicfestivals_main.festival.downloadAccoladeMarksPDF();'},
                 'classes':{'label':'Scheduled Classes', 'fn':'M.ciniki_musicfestivals_main.festival.downloadScheduleClassesPDF();'},
-                'classlabels':{'label':'Scheduled Class Label', 'fn':'M.ciniki_musicfestivals_main.festival.downloadScheduleClassLabelsPDF();'},
+                'classlabels':{'label':'Scheduled Class Labels', 'fn':'M.ciniki_musicfestivals_main.festival.downloadScheduleClassLabelsPDF();'},
                 'resultsexcel':{'label':'Results Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadResultsExcel(0);'},
                 'resultsexcel':{'label':'Provincial Recommendations Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadProvincialsExcel(0);'},
                 'recommendations':{'label':'Provincial Recommendations', 'fn':'M.ciniki_musicfestivals_main.festival.downloadProvincialRecommendations(0);'},
