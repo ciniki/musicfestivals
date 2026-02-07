@@ -2,6 +2,7 @@
 //
 // Description
 // ===========
+// This method will return all the information about an section.
 //
 // Arguments
 // ---------
@@ -13,7 +14,7 @@
 // Returns
 // -------
 //
-function ciniki_musicfestivals_multiAdjudicatorDocument($ciniki) {
+function ciniki_musicfestivals_scheduleClassLabelsPDF($ciniki) {
     //
     // Find all the required and optional arguments
     //
@@ -22,8 +23,6 @@ function ciniki_musicfestivals_multiAdjudicatorDocument($ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'schedulesection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Section'),
-        'document'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Document'),
-//        'ipv'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'In Person/Virtual'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -35,7 +34,7 @@ function ciniki_musicfestivals_multiAdjudicatorDocument($ciniki) {
     // check permission to run this function for this tenant
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.multiAdjudicatorMarksSlipsPDF');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.scheduleClassLabelsPDF');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -56,9 +55,8 @@ function ciniki_musicfestivals_multiAdjudicatorDocument($ciniki) {
     //
     // Run the template
     //
-    $rc = ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'multiAdjudicator' . $args['document']);
-    $fn = $rc['function_call'];
-    $rc = $fn($ciniki, $args['tnid'], $args);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'scheduleClassLabelsPDF');
+    $rc = ciniki_musicfestivals_templates_scheduleClassLabelsPDF($ciniki, $args['tnid'], $args);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -68,16 +66,6 @@ function ciniki_musicfestivals_multiAdjudicatorDocument($ciniki) {
     //
     if( isset($rc['pdf']) ) {
         $rc['pdf']->Output($rc['filename'], 'I');
-    }
-    elseif( isset($rc['excel']) ) {
-        header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="' . $rc['filename'] . '.xls"');
-        header('Cache-Control: max-age=0');
-        
-        $xlsxWriter = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($rc['excel']);
-
-        $xlsxWriter->save('php://output');
-        return array('stat'=>'exit');
     }
 
     return array('stat'=>'exit');
