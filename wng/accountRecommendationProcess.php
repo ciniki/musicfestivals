@@ -234,7 +234,7 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
             'existing' => $existing,
             'adjudicator' => $args['adjudicator'],
             'cancel-url' => $base_url,
-//            'save-draft' => 'yes',
+            'save-draft' => 'yes',
             'edit-name' => 'no',
             ]);
         if( $rc['stat'] != 'ok' ) {
@@ -302,7 +302,7 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
             'existing' => $existing,
             'classes' => $classes,
             'members' => [$recommendation['member_id'] => ['id'=>$recommendation['member_id']]],
-//            'save-draft' => isset($_POST['submit']) && $_POST['submit'] == 'Save Draft' ? 'yes' : 'no',
+            'save-draft' => isset($_POST['submit']) && $_POST['submit'] == 'Save Draft' ? 'yes' : 'no',
             ]);
         if( $rc['stat'] != 'ok' ) {
             if( isset($rc['form_errors']) ) {

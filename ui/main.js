@@ -19090,7 +19090,7 @@ function ciniki_musicfestivals_main() {
                     'visible':function() { return M.ciniki_musicfestivals_main.pre.data.status == 40 ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.pre.sendInstructionsEmail();',
                     },
-                'emailinstructions':{
+                'emailinstructionsagain':{
                     'label':'Resend Registration Instructions Email',
                     'visible':function() { return M.ciniki_musicfestivals_main.pre.data.status == 45 ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.pre.resendInstructionsEmail();',

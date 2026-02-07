@@ -259,6 +259,9 @@ function ciniki_musicfestivals_wng_recommendationSave(&$ciniki, $tnid, $request,
                     if( isset($entry['mark']) && $entry['mark'] != $recommendation['entries'][$cid][$i]['mark'] ) {
                         $update_args['mark'] = $entry['mark'];
                     }
+                    if( isset($entry['local_reg_id']) && $entry['local_reg_id'] != $recommendation['entries'][$cid][$i]['local_reg_id'] ) {
+                        $update_args['local_reg_id'] = $entry['local_reg_id'];
+                    }
                     if( count($update_args) > 0 ) {
                         $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.recommendationentry', $recommendation['entries'][$cid][$i]['id'], $update_args, 0x04);
                         if( $rc['stat'] != 'ok' ) {
