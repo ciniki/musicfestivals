@@ -23,6 +23,7 @@ function ciniki_musicfestivals_provincialsInvitesSend(&$ciniki) {
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'recommendation_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Submissions'),
         'entry_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Recommendation'),
+        'resend'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Resend'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -120,9 +121,12 @@ function ciniki_musicfestivals_provincialsInvitesSend(&$ciniki) {
             . "entries.class_id = classes.id "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
             . ") "
-        . "WHERE entries.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
-        . "AND entries.status = 30 " // Approved entries
-        . "";
+        . "WHERE entries.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' ";
+    if( isset($args['resend']) && $args['resend'] == 'yes' && isset($args['entry_id']) ) {
+        $strsql .= "AND entries.status = 35 "; // Invite Sent entries
+    } else {
+        $strsql .= "AND entries.status = 30 "; // Approved entries
+    }
     if( isset($args['entry_id']) && $args['entry_id'] > 0 ) {
         $strsql .= "AND entries.id = '" . ciniki_core_dbQuote($ciniki, $args['entry_id']) . "' ";
     }
