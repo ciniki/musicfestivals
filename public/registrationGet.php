@@ -244,6 +244,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "IFNULL(finals_divisions.name, '') AS finals_division_name, "
             . "IFNULL(DATE_FORMAT(divisions.division_date, '%W, %M %D, %Y'), '') AS division_date, "
             . "IFNULL(DATE_FORMAT(finals_divisions.division_date, '%W, %M %D, %Y'), '') AS finals_division_date, "
+            . "IFNULL(timeslots.groupname, '') AS groupname, "
             . "IFNULL(IF(locations.shortname <> '', locations.shortname, locations.name), '') AS location_name, "
             . "IFNULL(IF(finals_locations.shortname <> '', finals_locations.shortname, finals_locations.name), '') AS finals_location_name, "
             . "IFNULL(ssections.name, '') AS section_name, "
@@ -339,7 +340,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                 'fields'=>array('id', 'festival_id', 'teacher_customer_id', 'teacher2_customer_id',
                     'billing_customer_id', 'parent_customer_id',
                     'accompanist_customer_id', 'member_id',
-                    'slot_time', 'division_date', 'division_name', 'location_name', 'section_name',
+                    'slot_time', 'groupname', 'division_date', 'division_name', 'location_name', 'section_name',
                     'finals_slot_time', 'finals_division_date', 'finals_division_name', 'finals_location_name', 'finals_section_name',
                     'rtype', 'status', 'flags', 'invoice_id', 'display_name', 
                     'competitor1_id', 'competitor2_id', 'competitor3_id', 
@@ -396,6 +397,9 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         }
         if( $registration['slot_time'] != '' && $registration['slot_time'] != '12:00 AM' ) {
             $registration['scheduled'] .= ($registration['scheduled'] != '' ? ' - ' : '') . $registration['slot_time'];
+        }
+        if( $registration['groupname'] != '' ) {
+            $registration['scheduled'] .= ($registration['scheduled'] != '' ? ' - ' : '') . $registration['groupname'];
         }
         if( $registration['location_name'] != '' ) {
             $registration['scheduled'] .= ($registration['scheduled'] != '' ? ' - ' : '') . $registration['location_name'];
