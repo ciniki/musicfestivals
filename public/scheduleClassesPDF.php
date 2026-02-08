@@ -23,6 +23,7 @@ function ciniki_musicfestivals_scheduleClassesPDF($ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'schedulesection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Section'),
+        'names'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Include Names'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

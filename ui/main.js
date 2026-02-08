@@ -1481,6 +1481,7 @@ function ciniki_musicfestivals_main() {
                 'competitors':{'label':'All Daily Venue Competitors', 'fn':'M.ciniki_musicfestivals_main.festival.downloadDailyVenueCompetitorsPDF(0);'},
                 'accolades':{'label':'Accolade Registrations', 'fn':'M.ciniki_musicfestivals_main.festival.downloadAccoladeMarksPDF();'},
                 'classes':{'label':'Scheduled Classes', 'fn':'M.ciniki_musicfestivals_main.festival.downloadScheduleClassesPDF();'},
+                'classesnames':{'label':'Scheduled Classes Participants', 'fn':'M.ciniki_musicfestivals_main.festival.downloadScheduleClassesNamesPDF();'},
                 'classlabels':{'label':'Scheduled Class Labels', 'fn':'M.ciniki_musicfestivals_main.festival.downloadScheduleClassLabelsPDF();'},
                 'resultsexcel':{'label':'Results Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadResultsExcel(0);'},
                 'resultsexcel':{'label':'Provincial Recommendations Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadProvincialsExcel(0);'},
@@ -4646,6 +4647,13 @@ function ciniki_musicfestivals_main() {
         M.api.openFile('ciniki.musicfestivals.scheduleClassesPDF', {
             'tnid':M.curTenantID, 
             'festival_id':M.ciniki_musicfestivals_main.festival.festival_id, 
+            });
+    }
+    this.festival.downloadScheduleClassesNamesPDF = function() {
+        M.api.openFile('ciniki.musicfestivals.scheduleClassesPDF', {
+            'tnid':M.curTenantID, 
+            'festival_id':M.ciniki_musicfestivals_main.festival.festival_id, 
+            'names':'yes',
             });
     }
     this.festival.downloadScheduleClassLabelsPDF = function() {

@@ -64,10 +64,11 @@ function ciniki_musicfestivals_templates_scheduleClassesPDF(&$ciniki, $tnid, $ar
         . "timeslots.id AS timeslot_id, "
         . "timeslots.groupname, "
         . "IFNULL(locations.id, 0) AS location_id, "
-        . "IFNULL(locations.name, '') AS location_name, "
+        . "IFNULL(IF(locations.shortname <> '', locations.shortname, locations.name), '') AS location_name, "
         . "DATE_FORMAT(divisions.division_date, '" . ciniki_core_dbQuote($ciniki, $division_date_format) . "') AS division_date_text, "
         . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
-        . "registrations.id AS registration_id "
+        . "registrations.id AS registration_id, "
+        . "registrations.private_name "
         . "FROM ciniki_musicfestival_schedule_sections AS ssections "
         . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
             . "ssections.id = divisions.ssection_id " 
@@ -125,7 +126,7 @@ function ciniki_musicfestivals_templates_scheduleClassesPDF(&$ciniki, $tnid, $ar
             'fields'=>array('location_name', 'division_date_text', 'slot_time_text', 'groupname'),
             ),
         array('container'=>'registrations', 'fname'=>'registration_id', 
-            'fields'=>array('id'=>'registration_id'),
+            'fields'=>array('id'=>'registration_id', 'private_name'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -140,8 +141,8 @@ function ciniki_musicfestivals_templates_scheduleClassesPDF(&$ciniki, $tnid, $ar
 
     class MYPDF extends TCPDF {
         //Page header
-        public $left_margin = 18;
-        public $right_margin = 18;
+        public $left_margin = 15;
+        public $right_margin = 15;
         public $top_margin = 15;
         public $header_visible = 'yes';
         public $header_image = null;
@@ -321,7 +322,7 @@ function ciniki_musicfestivals_templates_scheduleClassesPDF(&$ciniki, $tnid, $ar
     // add a page
     $pdf->SetFillColor(246);
     $pdf->SetTextColor(0);
-    $pdf->SetDrawColor(232);
+    $pdf->SetDrawColor(200);
     $pdf->SetLineWidth(0.1);
 
     $filename = 'Schedule Classes';
@@ -330,7 +331,7 @@ function ciniki_musicfestivals_templates_scheduleClassesPDF(&$ciniki, $tnid, $ar
     //
     // Go through the sections, divisions and classes
     //
-    $w = array(20, 160);
+    $w = array(20, 166);
     foreach($sections as $section) {
 
         $pdf->SetFont('', 'B', '14');
@@ -341,20 +342,32 @@ function ciniki_musicfestivals_templates_scheduleClassesPDF(&$ciniki, $tnid, $ar
             
             foreach($class['timeslots'] as $timeslot) {
                 $num_reg = 0;
+                $names = '';
                 foreach($timeslot['registrations'] as $reg) {
                     $num_reg++;
+                    $names .= ($names != '' ? ', ' : '') . $reg['private_name'];
+                }
+                if( $names != '' ) {
+                    $names = "[$num_reg] " . $names;
                 }
                 $txt = "{$class['category_name']} - {$class['name']} - "
                     . ($timeslot['groupname'] != '' ? "{$timeslot['groupname']} - " : '')
                     . "{$timeslot['location_name']} - {$timeslot['division_date_text']} - {$timeslot['slot_time_text']}";
 //                $txt .= " - {$num_reg}";
                 $lh = $pdf->getStringHeight($w[1], $txt);
-                if( $pdf->getY() > $pdf->getPageHeight() - $lh - 20 ) {
+                $nlh = 0;
+                if( isset($args['names']) && $args['names'] == 'yes' && $names != '' ) {
+                    $nlh = $pdf->getStringHeight($w[1], $names);
+                }
+                if( $pdf->getY() > $pdf->getPageHeight() - $lh - $nlh - 20 ) {
                     $pdf->AddPage();
                 }
                 $pdf->MultiCell($w[0], $lh, $class['code'], 0, 'L', 0, 0);
                 $pdf->MultiCell($w[1], $lh, $txt, 0, 'L', 0, 1);
-                
+                if( isset($args['names']) && $args['names'] == 'yes' && $names != '' ) {
+                    $pdf->MultiCell($w[0], $nlh, '', 'B', 'L', 0, 0);
+                    $pdf->MultiCell($w[1], $nlh, $names, 'B', 'L', 0, 1);
+                }
             }
         }
     }
