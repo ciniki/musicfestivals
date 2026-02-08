@@ -71,7 +71,7 @@ function ciniki_musicfestivals_multiAdjudicatorDocument($ciniki) {
     }
     elseif( isset($rc['excel']) ) {
         header('Content-Type: application/vnd.ms-excel');
-        header('Content-Disposition: attachment;filename="' . $rc['filename'] . '.xls"');
+        header('Content-Disposition: attachment;filename="' . $rc['filename'] . '.xlsx"');
         header('Cache-Control: max-age=0');
         
         $xlsxWriter = new \PhpOffice\PhpSpreadsheet\Writer\Xlsx($rc['excel']);
