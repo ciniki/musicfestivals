@@ -6679,6 +6679,10 @@ function ciniki_musicfestivals_main() {
                     'no':'No',
                     'yes':'Yes',
                     }},
+                'volunteers-shift-signup-review':{'label':'Review Shift Signups', 'type':'toggle', 'default':'yes', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
                 'volunteers-account-cancel':{'label':'Allow Cancels', 'type':'toggle', 'default':'no', 'toggles':{
                     'no':'No',
                     'yes':'Yes',

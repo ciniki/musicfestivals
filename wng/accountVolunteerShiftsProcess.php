@@ -366,7 +366,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
                 'festival_id' => $volunteer['festival_id'],
                 'shift_id' => $shift['id'],
                 'volunteer_id' => $volunteer['id'],
-                'status' => 10,
+                'status' => (isset($festival['volunteers-shift-signup-review']) && $festival['volunteers-shift-signup-review'] == 'no' ? 30 : 10),
                 ], 0x04);
             if( $rc['stat'] != 'ok' ) {
                 $blocks[] = [
@@ -377,10 +377,21 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
                     ];
                 return array('stat'=>'ok', 'blocks'=>$blocks);
             }
+            $assignment_id = $rc['id'];
+            if( isset($festival['volunteers-shift-signup-review']) && $festival['volunteers-shift-signup-review'] == 'no' ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'volunteerEmail');
+                $rc = ciniki_musicfestivals_volunteerEmail($ciniki, $tnid, [
+                    'assignment_id' => $assignment_id,
+                    'template' => 'volunteers-email-shift-assigned',
+                    ]);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1384', 'msg'=>'Unable to email volunteer', 'err'=>$rc['err']));
+                }
+            }
             $blocks[] = [
                 'type' => 'msg',
                 'level' => 'success',
-                'content' => "Thank you for requesting this shift, we will email when with confirmation.",
+                'content' => "Thank you for requesting this shift, we will email with your confirmation.",
                 ];
             $buttons = [
                 ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}", 'text' => 'Back'],
