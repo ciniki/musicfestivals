@@ -35,6 +35,7 @@ function ciniki_musicfestivals_volunteers($ciniki) {
         'location'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Location'),
         'roles'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Roles'),
         'role'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Role'),
+        'pending'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Pending'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -128,7 +129,11 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                 . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE volunteers.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-            . "AND volunteers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND volunteers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
+        if( isset($args['pending']) && $args['pending'] == 'yes' ) {
+            $strsql .= "AND volunteers.status = 10 ";
+        }
+        $strsql .= "ORDER BY customer_name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -380,12 +385,20 @@ function ciniki_musicfestivals_volunteers($ciniki) {
             . "assignments.status AS assignment_status, "
             . "assignments.status AS assignment_status_text, "
             . "IF(volunteers.shortname <> '', volunteers.shortname, customers.display_name) AS names "
-            . "FROM ciniki_musicfestival_volunteer_shifts AS shifts "
-            . "LEFT JOIN ciniki_musicfestival_volunteer_assignments AS assignments ON ("
+            . "FROM ciniki_musicfestival_volunteer_shifts AS shifts ";
+        if( isset($args['pending']) && $args['pending'] == 'yes' ) {
+            $strsql .= "INNER JOIN ciniki_musicfestival_volunteer_assignments AS assignments ON ("
+                . "shifts.id = assignments.shift_id "
+                . "AND assignments.status = 10 "
+                . "AND assignments.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") ";
+        } else {
+            $strsql .= "LEFT JOIN ciniki_musicfestival_volunteer_assignments AS assignments ON ("
                 . "shifts.id = assignments.shift_id "
                 . "AND assignments.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . ") "
-            . "LEFT JOIN ciniki_musicfestival_volunteers AS volunteers ON ("
+                . ") ";
+        }
+        $strsql .= "LEFT JOIN ciniki_musicfestival_volunteers AS volunteers ON ("
                 . "assignments.volunteer_id = volunteers.id "
                 . "AND volunteers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
@@ -405,6 +418,7 @@ function ciniki_musicfestivals_volunteers($ciniki) {
         if( isset($args['role']) && $args['role'] != '' ) {
             $strsql .= "AND shifts.role = '" . ciniki_core_dbQuote($ciniki, $args['role']) . "' ";
         }
+        // Sort done in php
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'shifts', 'fname'=>'id', 
