@@ -393,13 +393,23 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
         //
         $total = 0;
         foreach($paymentrequired_registrations as $rid => $registration) {
-            $etransfer_registrations[$rid]['viewbutton'] = "<form action='{$base_url}' method='POST'>"
+            $paymentrequired_registrations[$rid]['viewbutton'] = "<form action='{$base_url}' method='POST'>"
                 . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
                 . "<input type='hidden' name='action' value='view' />"
                 . "<input class='button' type='submit' name='submit' value='View'>"
                 . "</form>";
             $paymentrequired_registrations[$rid]['fee'] = '$' . number_format($registration['fee'], 2);
             $total += $registration['fee'];
+            if( (($registration['ssection_flags']&0x02) == 0x02 || ($registration['division_flags']&0x02) == 0x02)
+                && $registration['comments'] != '' 
+                ) {
+                $paymentrequired_registrations[$rid]['viewbutton'] .= " <a class='button' target='_blank' href='{$base_url}/{$registration['uuid']}/comments'>Comments</a>";
+            }
+            if( (($registration['ssection_flags']&0x04) == 0x04 || ($registration['division_flags']&0x04) == 0x04)
+                && $registration['comments'] != '' 
+                ) {
+                $paymentrequired_registrations[$rid]['viewbutton'] .= " <a class='button' target='_blank' href='{$base_url}/{$registration['uuid']}/certificate'>Certificate</a>";
+            }
         }
         $blocks[] = array(
             'type' => 'table',
