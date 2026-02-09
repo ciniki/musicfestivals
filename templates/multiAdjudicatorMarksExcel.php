@@ -297,13 +297,14 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksExcel(&$ciniki, $t
             
             // Row 2 - mark thresholds
             $cur_row++;
-            $cur_col = 9;
+            $cur_col = 8;
+            $spreadsheet->setCellValue([$cur_col++, $cur_row], '2');
             $spreadsheet->setCellValue([$cur_col++, $cur_row], '86.5');
             $spreadsheet->setCellValue([$cur_col++, $cur_row], '83.5');
             $spreadsheet->setCellValue([$cur_col++, $cur_row], '79.5');
             $spreadsheet->setCellValue([$cur_col++, $cur_row], '74.5');
-            $spreadsheet->getStyle("I{$cur_row}:L{$cur_row}")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
-            $spreadsheet->getStyle("I{$cur_row}:L{$cur_row}")->applyFromArray($yellowbg);
+            $spreadsheet->getStyle("H{$cur_row}:L{$cur_row}")->getAlignment()->setHorizontal(\PhpOffice\PhpSpreadsheet\Style\Alignment::HORIZONTAL_CENTER);
+            $spreadsheet->getStyle("H{$cur_row}:L{$cur_row}")->applyFromArray($yellowbg);
 
             //
             // Go through the timeslots
@@ -363,11 +364,13 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksExcel(&$ciniki, $t
                             if( $i == 1 ) {
                                 $avg_row = $cur_row;
                             }
+                            $last_row = $cur_row;
                             $cur_row++;
                             $cur_col = 2;
                         }
                     }
-                    $spreadsheet->setCellValue([8, $avg_row], "=IF(G{$avg_row}<>\"\",ROUND(AVERAGE(G{$avg_row}:G{$cur_row}),2), \"\")");
+                    $spreadsheet->setCellValue([8, $avg_row], "=IF(COUNT(G{$avg_row}:G{$last_row})>=H2,ROUND(AVERAGE(G{$avg_row}:G{$last_row}),2), \"\")");
+//                    =IF(COUNT($G$7:$G$8)>=2,AVERAGE($G$7:$G$8),"")
                     $spreadsheet->setCellValue([9, $avg_row], "=IF(AND(H{$avg_row}<>\"\",H{$avg_row}>=I2),\"G\",\"\")");
                     $spreadsheet->setCellValue([10, $avg_row], "=IF(AND(H{$avg_row}>=J2,H{$avg_row}<I2),\"S\",\"\")");
                     $spreadsheet->setCellValue([11, $avg_row], "=IF(AND(H{$avg_row}>=K2,H{$avg_row}<J2),\"B\",\"\")");
