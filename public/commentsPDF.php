@@ -23,6 +23,7 @@ function ciniki_musicfestivals_commentsPDF($ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'schedulesection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Section'),
+        'division_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Division'),
         'timeslot_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Timeslot'),
         'teacher_customer_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Teacher'),
         'names'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name Format'),

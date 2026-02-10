@@ -314,6 +314,9 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
         if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
             $strsql .= "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
         }
+        if( isset($args['division_id']) && $args['division_id'] > 0 ) {
+            $strsql .= "AND divisions.id = '" . ciniki_core_dbQuote($ciniki, $args['division_id']) . "' ";
+        }
         if( isset($args['timeslot_id']) && $args['timeslot_id'] > 0 ) {
             $strsql .= "AND timeslots.id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' ";
         }
