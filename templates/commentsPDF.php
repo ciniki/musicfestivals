@@ -268,11 +268,11 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "registrations.level, "
             . "registrations.comments "
             . "FROM ciniki_musicfestival_schedule_sections AS ssections "
-            . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+            . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
                 . "ssections.id = divisions.ssection_id " 
                 . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
-            . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+            . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
                 . "divisions.id = timeslots.sdivision_id " 
                 . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
@@ -313,6 +313,9 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "";
         if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
             $strsql .= "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
+        }
+        if( isset($args['timeslot_id']) && $args['timeslot_id'] > 0 ) {
+            $strsql .= "AND timeslots.id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' ";
         }
         if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
             $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";

@@ -2486,10 +2486,11 @@ function ciniki_musicfestivals_main() {
             };
         M.api.openFile('ciniki.musicfestivals.certificatesPDF',args);
     }
-    this.festival.downloadCommentsPDF = function(s) {
+    this.festival.downloadCommentsPDF = function(s,tid) {
         var args = {'tnid':M.curTenantID,
             'festival_id':this.festival_id,
             'schedulesection_id':(s==null ? this.schedulesection_id : s),
+            'timeslot_id':(tid!=null?tid:0),
             'ipv':this.formValue('ipv'),
             };
         M.api.openPDF('ciniki.musicfestivals.commentsPDF',args);
@@ -11488,7 +11489,11 @@ function ciniki_musicfestivals_main() {
                 'split':{
                     'label':'Split Class',
                     'fn':'M.ciniki_musicfestivals_main.scheduletimeslot.save("M.ciniki_musicfestivals_main.scheduletimeslot.splitclass();");',
-                    }
+                    },
+                'comments':{
+                    'label':'Comments PDF',
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadCommentsPDF(0,M.ciniki_musicfestivals_main.scheduletimeslot.scheduletimeslot_id);',
+                    },
                 },
             },
         'registrations':{'label':'Registrations', 'type':'simplegrid', 'num_cols':4, 'aside':'yes', 
