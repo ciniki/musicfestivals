@@ -382,7 +382,7 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksExcel(&$ciniki, $t
 //            $spreadsheet->setCellValue([14,2], "=SORT(FILTER(CHOOSECOLS(A2:H{$cur_row},1,8), H2:H{$cur_row}<>\"\"),2,-1)");
 //            $spreadsheet->setCellValue([14,2], "=IF(D7<>\"\",SORT(FILTER(CHOOSECOLS(A2:H{$cur_row},1,8), H2:H{$cur_row}<>\"\"),2,-1),\"\")");
             // =ARRAY_CONSTRAIN(ARRAYFORMULA(SORT(FILTER(CHOOSECOLS(A2:H300,1,8), H2:H300<>""),2,0)), 300, 8)
-            $spreadsheet->setCellValue([14,2], "ARRAY_CONSTRAIN(ARRAYFORMULA(SORT(FILTER(CHOOSECOLS(A7:H300,1,8), H7:H300<>\"\"),2,0)), 300, 8)");
+            $spreadsheet->setCellValue([14,2], "ARRAY_CONSTRAIN(ARRAYFORMULA(SORT(FILTER(CHOOSECOLS(A7:H{$last_row},1,8), H7:H{$last_row}<>\"\"),2,0)), {$last_row}, 8)");
 //            $spreadsheet->setCellValue([14,2], "=SORT(FILTER(A2:H{$cur_row}, H2:H{$cur_row}<>\"\"),1,-1)");
             
             $cur_row++;
@@ -393,7 +393,6 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksExcel(&$ciniki, $t
             $spreadsheet->getColumnDimension("A")->setAutoSize(true);
             $spreadsheet->getColumnDimension("B")->setAutoSize(true);
             $spreadsheet->getColumnDimension("C")->setAutoSize(true);
-            $spreadsheet->getColumnDimension("N")->setAutoSize(true);
             $spreadsheet->getStyle("A1:L{$cur_row}")->applyFromArray($borders);
 
             $sheet_num++;
