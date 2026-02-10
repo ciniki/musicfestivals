@@ -23,8 +23,11 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'schedulesection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Section'),
+        'division_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Division'),
+        'timeslot_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Timeslot'),
         'names'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name Format'),
         'ipv'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'In Person/Virtual'),
+        'background'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Background'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -210,6 +213,12 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
         if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
             $strsql .= "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
         }
+        if( isset($args['division_id']) && $args['division_id'] > 0 ) {
+            $strsql .= "AND division_id.id = '" . ciniki_core_dbQuote($ciniki, $args['division_id']) . "' ";
+        }
+        if( isset($args['timeslot_id']) && $args['timeslot_id'] > 0 ) {
+            $strsql .= "AND timeslots.id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' ";
+        }
         if( isset($festival['certificates-sorting']) && $festival['certificates-sorting'] == 'byclass' ) {
             $strsql .= "ORDER BY classes.code, slot_time, registrations.timeslot_sequence, registrations.id, adjudicator_id ";
         } else {
@@ -384,6 +393,9 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                         $num_copies++;
                     }
                     for($i=0;$i<$num_copies;$i++) {
+                        if( isset($args['background']) && $args['background'] == 'no' ) {
+                            $certificate['image_id'] = 0;
+                        }
                         if( !isset($certificate['fields']) ) {
                             continue;
                         }
@@ -526,6 +538,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
     $rc = ciniki_musicfestivals_templates_certificatesPDF($ciniki, $args['tnid'], array(
         'festival_id' => $args['festival_id'],
         'certificates' => $certificates,
+        'background' => isset($args['background']) ? $args['background'] : 'yes',
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
