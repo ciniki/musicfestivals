@@ -381,7 +381,8 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksExcel(&$ciniki, $t
             }
 //            $spreadsheet->setCellValue([14,2], "=SORT(FILTER(CHOOSECOLS(A2:H{$cur_row},1,8), H2:H{$cur_row}<>\"\"),2,-1)");
 //            $spreadsheet->setCellValue([14,2], "=IF(D7<>\"\",SORT(FILTER(CHOOSECOLS(A2:H{$cur_row},1,8), H2:H{$cur_row}<>\"\"),2,-1),\"\")");
-            $spreadsheet->setCellValue([14,2], "=CHOOSECOLS(SORT(FILTER(A2:H{$cur_row}, H2:H{$cur_row}<>\"\"),8,-1),1,8)");
+            // =ARRAY_CONSTRAIN(ARRAYFORMULA(SORT(FILTER(CHOOSECOLS(A2:H300,1,8), H2:H300<>""),2,0)), 300, 8)
+            $spreadsheet->setCellValue([14,2], "ARRAY_CONSTRAIN(ARRAYFORMULA(SORT(FILTER(CHOOSECOLS(A7:H300,1,8), H7:H300<>\"\"),2,0)), 300, 8)");
 //            $spreadsheet->setCellValue([14,2], "=SORT(FILTER(A2:H{$cur_row}, H2:H{$cur_row}<>\"\"),1,-1)");
             
             $cur_row++;
