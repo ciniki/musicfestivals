@@ -255,6 +255,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'provincials-email-register-live-message',
         'provincials-email-register-virtual-subject',
         'provincials-email-register-virtual-message',
+        'provincials-recommendation-sheets-intro',
         'competitor-label-singular',
         'competitor-label-plural',
         'competitor-parent-msg',
