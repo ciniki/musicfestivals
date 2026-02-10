@@ -370,6 +370,18 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                     ),
                 ),
             );
+        for($i = 2; $i <= 5; $i++) {
+            if( isset($s["complete-button-{$i}-page"]) 
+                && $s["complete-button-{$i}-page"] != '' && $s["complete-button-{$i}-page"] > 0 
+                && isset($s["complete-button-{$i}-text"]) && $s["complete-button-{$i}-text"] != '' 
+                ) {
+                $top_download_block['list'][] = [
+                    'page' => isset($s["complete-button-{$i}-page"]) ? $s["complete-button-{$i}-page"] : 0, 
+                    'url' => isset($s["complete-button-{$i}-url"]) ? $s["complete-button-{$i}-url"] : '',
+                    'text' => $s["complete-button-{$i}-text"],
+                    ];
+            }
+        }
     }
 
     //
@@ -639,7 +651,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
     // Check if download button
     //
     if( isset($s['complete-pdf']) && ($s['complete-pdf'] == 'bottom' || $s['complete-pdf'] == 'both') ) {
-        $blocks[] = array(
+        $bottom_buttons = array(
             'type' => 'buttons',
             'list' => array(
                 array(
@@ -649,6 +661,19 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                     ),
                 ),
             );
+        for($i = 2; $i <= 5; $i++) {
+            if( isset($s["complete-button-{$i}-page"]) 
+                && $s["complete-button-{$i}-page"] != '' && $s["complete-button-{$i}-page"] > 0 
+                && isset($s["complete-button-{$i}-text"]) && $s["complete-button-{$i}-text"] != '' 
+                ) {
+                $bottom_buttons['list'][] = [
+                    'page' => isset($s["complete-button-{$i}-page"]) ? $s["complete-button-{$i}-page"] : 0, 
+                    'url' => isset($s["complete-button-{$i}-url"]) ? $s["complete-button-{$i}-url"] : '',
+                    'text' => $s["complete-button-{$i}-text"],
+                    ];
+            }
+        }
+        $blocks[] = $bottom_buttons;
     }
 
     return array('stat'=>'ok', 'blocks'=>$blocks);

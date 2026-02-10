@@ -580,6 +580,9 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'bottom' => 'Bottom',
                 'both' => 'Both',
                 )),
+            'complete-button-2-page' => array('label'=>'Button 2', 'type'=>'select', 'pages'=>'yes'),
+            'complete-button-2-text' => array('label'=>'Text', 'type'=>'text'),
+            'complete-button-2-url' => array('label'=>'URL', 'type'=>'text'),
             'division_header_format' => array('label'=>'PDF Division Header Format', 'type'=>'select', 'default'=>'default', 
                 'options'=>array(
                     'default' => 'Date-Division, Address', 
