@@ -167,6 +167,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         . "competitors.name AS competitor_name, "
         . "competitors.first AS competitor_first, "
         . "competitors.last AS competitor_last, "
+        . "competitors.flags AS competitor_flags, "
         . "competitors.pronoun, "
         . "competitors.parent, "
         . "competitors.address, "
@@ -246,7 +247,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
                 'fields'=>array('id'=>'competitor_id', 'ctype', 'name'=>'competitor_name', 
-                    'first'=>'competitor_first', 'last'=>'competitor_last',
+                    'first'=>'competitor_first', 'last'=>'competitor_last', 'flags'=>'competitor_flags',
                     'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
                     'phone_home', 'phone_cell', 'email', 'etransfer_email', 'cage', 'study_level', 'instrument', 'notes'),
                 ),
@@ -324,7 +325,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
                 'fields'=>array('id'=>'competitor_id', 'ctype', 'name'=>'competitor_name', 
-                    'first'=>'competitor_first', 'last'=>'competitor_last',
+                    'first'=>'competitor_first', 'last'=>'competitor_last', 'flags'=>'competitor_flags',
                     'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
                     'phone_home', 'phone_cell', 'email', 'etransfer_email', 'cage', 'study_level', 'instrument', 'notes'),
                 ),
@@ -418,7 +419,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
                 'fields'=>array('id'=>'competitor_id', 'ctype', 'name'=>'competitor_name', 
-                    'first'=>'competitor_first', 'last'=>'competitor_last',
+                    'first'=>'competitor_first', 'last'=>'competitor_last', 'flags'=>'competitor_flags',
                     'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
                     'phone_home', 'phone_cell', 'email', 'etransfer_email', 'cage', 'study_level', 'instrument', 'notes'),
                 ),
@@ -515,7 +516,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
                 'fields'=>array('id'=>'competitor_id', 'ctype', 'name'=>'competitor_name', 
-                    'first'=>'competitor_first', 'last'=>'competitor_last',
+                    'first'=>'competitor_first', 'last'=>'competitor_last', 'flags'=>'competitor_flags',
                     'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
                     'phone_home', 'phone_cell', 'email', 'etransfer_email', 'cage', 'study_level', 'instrument', 'notes'),
                 ),
@@ -615,7 +616,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 ),
             array('container'=>'competitors', 'fname'=>'competitor_id', 
                 'fields'=>array('id'=>'competitor_id', 'ctype', 'name'=>'competitor_name', 
-                    'first'=>'competitor_first', 'last'=>'competitor_last',
+                    'first'=>'competitor_first', 'last'=>'competitor_last', 'flags'=>'competitor_flags',
                     'pronoun', 'parent', 'address', 'city', 'province', 'postal', 
                     'phone_home', 'phone_cell', 'email', 'etransfer_email', 'cage', 'study_level', 'instrument', 'notes'),
                 ),
@@ -744,6 +745,41 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Age', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Etransfer Email', false);
+        if( isset($festival['waiver-general-title']) && $festival['waiver-general-title'] != '' ) {
+            if( isset($festival['waiver-general-name']) && $festival['waiver-general-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-general-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Waiver', false);
+            }
+        }
+        if( isset($festival['waiver-second-title']) && $festival['waiver-second-title'] != '' ) {
+            if( isset($festival['waiver-second-name']) && $festival['waiver-second-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-second-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
+        if( isset($festival['waiver-third-title']) && $festival['waiver-third-title'] != '' ) {
+            if( isset($festival['waiver-third-name']) && $festival['waiver-third-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-third-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
+        if( isset($festival['waiver-photo-title']) && $festival['waiver-photo-title'] != '' ) {
+            if( isset($festival['waiver-photo-name']) && $festival['waiver-photo-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-photo-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Photos', false);
+            }
+        }
+        if( isset($festival['waiver-name-title']) && $festival['waiver-name-title'] != '' ) {
+            if( isset($festival['waiver-name-name']) && $festival['waiver-name-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-name-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Name', false);
+            }
+        }
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor 2', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Last', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Pronoun', false);
@@ -755,6 +791,41 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Age', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Etransfer Email', false);
+        if( isset($festival['waiver-general-title']) && $festival['waiver-general-title'] != '' ) {
+            if( isset($festival['waiver-general-name']) && $festival['waiver-general-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-general-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
+        if( isset($festival['waiver-second-title']) && $festival['waiver-second-title'] != '' ) {
+            if( isset($festival['waiver-second-name']) && $festival['waiver-second-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-second-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
+        if( isset($festival['waiver-third-title']) && $festival['waiver-third-title'] != '' ) {
+            if( isset($festival['waiver-third-name']) && $festival['waiver-third-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-third-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
+        if( isset($festival['waiver-photo-title']) && $festival['waiver-photo-title'] != '' ) {
+            if( isset($festival['waiver-photo-name']) && $festival['waiver-photo-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-photo-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
+        if( isset($festival['waiver-name-title']) && $festival['waiver-name-title'] != '' ) {
+            if( isset($festival['waiver-name-name']) && $festival['waiver-name-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-name-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor 3', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Last', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Pronoun', false);
@@ -766,6 +837,41 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Age', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Etransfer Email', false);
+        if( isset($festival['waiver-general-title']) && $festival['waiver-general-title'] != '' ) {
+            if( isset($festival['waiver-general-name']) && $festival['waiver-general-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-general-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
+        if( isset($festival['waiver-second-title']) && $festival['waiver-second-title'] != '' ) {
+            if( isset($festival['waiver-second-name']) && $festival['waiver-second-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-second-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
+        if( isset($festival['waiver-third-title']) && $festival['waiver-third-title'] != '' ) {
+            if( isset($festival['waiver-third-name']) && $festival['waiver-third-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-third-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
+        if( isset($festival['waiver-photo-title']) && $festival['waiver-photo-title'] != '' ) {
+            if( isset($festival['waiver-photo-name']) && $festival['waiver-photo-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-photo-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
+        if( isset($festival['waiver-name-title']) && $festival['waiver-name-title'] != '' ) {
+            if( isset($festival['waiver-name-name']) && $festival['waiver-name-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-name-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor 4', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Last', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Pronoun', false);
@@ -777,6 +883,41 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Age', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Etransfer Email', false);
+        if( isset($festival['waiver-general-title']) && $festival['waiver-general-title'] != '' ) {
+            if( isset($festival['waiver-general-name']) && $festival['waiver-general-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-general-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
+        if( isset($festival['waiver-second-title']) && $festival['waiver-second-title'] != '' ) {
+            if( isset($festival['waiver-second-name']) && $festival['waiver-second-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-second-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
+        if( isset($festival['waiver-third-title']) && $festival['waiver-third-title'] != '' ) {
+            if( isset($festival['waiver-third-name']) && $festival['waiver-third-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-third-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
+        if( isset($festival['waiver-photo-title']) && $festival['waiver-photo-title'] != '' ) {
+            if( isset($festival['waiver-photo-name']) && $festival['waiver-photo-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-photo-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
+        if( isset($festival['waiver-name-title']) && $festival['waiver-name-title'] != '' ) {
+            if( isset($festival['waiver-name-name']) && $festival['waiver-name-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-name-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor 5', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Last', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Pronoun', false);
@@ -786,6 +927,42 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Cell', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Age', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Etransfer Email', false);
+        if( isset($festival['waiver-general-title']) && $festival['waiver-general-title'] != '' ) {
+            if( isset($festival['waiver-general-name']) && $festival['waiver-general-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-general-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
+        if( isset($festival['waiver-second-title']) && $festival['waiver-second-title'] != '' ) {
+            if( isset($festival['waiver-second-name']) && $festival['waiver-second-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-second-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
+        if( isset($festival['waiver-third-title']) && $festival['waiver-third-title'] != '' ) {
+            if( isset($festival['waiver-third-name']) && $festival['waiver-third-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-third-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
+        if( isset($festival['waiver-photo-status']) && $festival['waiver-photo-status'] != 'off' ) {
+            if( isset($festival['waiver-photo-name']) && $festival['waiver-photo-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-photo-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
+        if( isset($festival['waiver-name-status']) && $festival['waiver-name-status'] != 'off' ) {
+            if( isset($festival['waiver-name-name']) && $festival['waiver-name-name'] != '' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-name-name'], false);
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+        }
 
         $objPHPExcelWorksheet->getStyle('A1:AG1')->getFont()->setBold(true);
 
@@ -968,6 +1145,49 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['cage'], false);
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['email'], false);
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['etransfer_email'], false);
+                    if( isset($festival['waiver-general-title']) && $festival['waiver-general-title'] != '' ) {
+                        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, ($competitor['flags']&0x01) == 0x01 ? 'Yes' : 'No', false);
+                    }
+                    if( isset($festival['waiver-second-title']) && $festival['waiver-second-title'] != '' ) {
+                        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, ($competitor['flags']&0x20) == 0x20 ? 'Yes' : 'No', false);
+                    }
+                    if( isset($festival['waiver-third-title']) && $festival['waiver-third-title'] != '' ) {
+                        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, ($competitor['flags']&0x40) == 0x40 ? 'Yes' : 'No', false);
+                    }
+                    if( isset($festival['waiver-photo-status']) && $festival['waiver-photo-status'] != 'off' ) {
+                        $flag_value = '';
+                        if( ($competitor['flags']&0x02) == 0x02 ) {
+                            if( isset($festival['waiver-photo-option-yes']) && $festival['waiver-photo-option-yes'] != '' ) {
+                                $flag_value = $festival['waiver-photo-option-yes'];
+                            } else {
+                                $flag_value = 'Publish';
+                            }
+                        } else {
+                            if( isset($festival['waiver-photo-option-no']) && $festival['waiver-photo-option-no'] != '' ) {
+                                $flag_value = $festival['waiver-photo-option-no'];
+                            } else {
+                                $flag_value = 'No';
+                            }
+                        }
+                        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $flag_value, false);
+                    }
+                    if( isset($festival['waiver-name-status']) && $festival['waiver-name-status'] != 'off' ) {
+                        $flag_value = '';
+                        if( ($competitor['flags']&0x04) == 0x04 ) {
+                            if( isset($festival['waiver-name-option-yes']) && $festival['waiver-name-option-yes'] != '' ) {
+                                $flag_value = $festival['waiver-name-option-yes'];
+                            } else {
+                                $flag_value = 'Publish';
+                            }
+                        } else {
+                            if( isset($festival['waiver-name-option-no']) && $festival['waiver-name-option-no'] != '' ) {
+                                $flag_value = $festival['waiver-name-option-no'];
+                            } else {
+                                $flag_value = 'Hide';
+                            }
+                        }
+                        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $flag_value, false);
+                    }
                 }
             }
 
