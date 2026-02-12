@@ -5964,6 +5964,7 @@ function ciniki_musicfestivals_main() {
                     'default':'Class', 
                     'section-category-class':'Section - Category - Class',
                     'category-class':'Category - Class',
+                    'section-class':'Section - Class',
                     'code-section-category-class':'Code - Section - Category - Class',
                     'code-category-class':'Code - Category - Class',
                     }},
