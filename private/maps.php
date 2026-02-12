@@ -106,6 +106,7 @@ function ciniki_musicfestivals_maps($ciniki) {
             0x04 => 'Certificates Released',
             0x10 => 'Schedule Published',
             0x20 => 'Results Published',
+            0x80 => 'Overview Published',
         ),
     );
     $maps['scheduledivision'] = array(

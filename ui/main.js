@@ -10829,6 +10829,7 @@ function ciniki_musicfestivals_main() {
         '_schedule':{'label':'Schedule', 'aside':'yes', 'fields':{
             'flags1':{'label':'Release Schedule to Competitors', 'type':'flagtoggle', 'bit':0x01, 'field':'flags'},
             'flags5':{'label':'Publish Schedule on Website', 'type':'flagtoggle', 'bit':0x10, 'field':'flags'},
+            'flags8':{'label':'Publish Schedule Overview', 'type':'flagtoggle', 'bit':0x80, 'field':'flags'},
             }},
         '_results':{'label':'Results', 'aside':'yes', 'fields':{
             'flags2':{'label':'Release Comments to Competitors', 'type':'flagtoggle', 'bit':0x02, 'field':'flags'},

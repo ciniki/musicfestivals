@@ -472,6 +472,24 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         );
 
     //
+    // Overview days only available to provincials for now
+    //
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+        $sections['ciniki.musicfestivals.scheduleoverviewdays'] = array(
+            'name' => 'Schedule Overview Days',
+            'module' => 'Music Festivals',
+            'settings' => array(
+                'title' => array('label'=>'Title', 'type'=>'text'),
+                'content' => array('label'=>'Intro', 'type'=>'htmlarea'),
+                'festival-id' => array('label'=>'Festival', 'type'=>'select', 
+                    'complex_options'=>array('value'=>'id', 'name'=>'name'),
+                    'options'=>$festivals,
+                    ),
+                ),
+            );
+    }
+
+    //
     // Section to display the schedules for a festival
     //
     $sections['ciniki.musicfestivals.schedules'] = array(
