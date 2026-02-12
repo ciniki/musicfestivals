@@ -10835,7 +10835,7 @@ function ciniki_musicfestivals_main() {
             'flags6':{'label':'Publish Results on Website', 'type':'flagtoggle', 'bit':0x20, 'field':'flags'},
             }},
         '_photos':{'label':'Photos', 'aside':'yes', 'fields':{
-            'flags7':{'label':'Daily Photos', 'type':'flagtoggle', 'reverse':'yes', 'bit':0x40, 'field':'flags'},
+            'flags7':{'label':'Daily Photos', 'type':'flagtoggle', 'bit':0x40, 'field':'flags'},
             }},
 /*        '_tabs':{'label':'', 'type':'paneltabs', 'selected':'sponsors', 'visible':'yes',
             'tabs':{
