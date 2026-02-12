@@ -68,6 +68,13 @@ function ciniki_musicfestivals_messageSend(&$ciniki) {
     }
     $message = isset($rc['message']) ? $rc['message'] : array();
 
+    if( $message['subject'] == '' ) {
+        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1389', 'msg'=>'Email has no subject'));
+    }
+    if( $message['content'] == '' ) {
+        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1390', 'msg'=>'Email has no message'));
+    }
+
     //
     // Make sure the message has the correct status
     //
