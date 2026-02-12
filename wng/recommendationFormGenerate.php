@@ -148,8 +148,8 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
 //        } 
         $num_recommendations = 3;
         $num_alternates = 3;
-        $registrations = [];
         if( isset($args['adjudicator']['registrations']) ) {
+            $registrations = [];
             if( isset($args['adjudicator']['registrations'][$class['code']]['registrations']) ) {
                 $registrations = $args['adjudicator']['registrations'][$class['code']]['registrations'];
             }
@@ -165,15 +165,15 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
         foreach($positions as $i => $position) {
 //            $label = ($i == 1 ? '1st' : ($i == 2 ? '2nd' : ($i == 3 ? '3rd' : $i . 'th')));
 
-                if( $i == 101 ) {
-                    $form_sections[$cid]['fields']["break_{$i}_{$cid}"] = array(
-                        'id' => "break_{$i}_{$cid}",
-                        'ftype' => 'break',
-                        'class' => 'break',
-                        'label' => 'Alternates',
-                        );
-                }
-                if( isset($args['existing'][$cid][$i]) ) {
+            if( $i == 101 ) {
+                $form_sections[$cid]['fields']["break_{$i}_{$cid}"] = array(
+                    'id' => "break_{$i}_{$cid}",
+                    'ftype' => 'break',
+                    'class' => 'break',
+                    'label' => 'Alternates',
+                    );
+            }
+            if( isset($args['existing'][$cid][$i]) ) {
                 $form_sections[$cid]['fields']["recommendation_{$i}_{$cid}"] = array(
                     'id' => "recommendation_{$i}_{$cid}",
                     'label' => $position['label'],
