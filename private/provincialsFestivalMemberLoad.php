@@ -96,6 +96,8 @@ function ciniki_musicfestivals_provincialsFestivalMemberLoad(&$ciniki, $tnid, $a
     $member['reg_status'] = 'closed';
     if( isset($reg_start_dt) && isset($reg_final_dt) && $reg_start_dt <= $dt && $dt <= $reg_final_dt ) {
         $member['reg_status'] = 'open';
+    } elseif( isset($reg_start_dt) && isset($reg_final_dt) && $dt <= $reg_final_dt ) {
+        $member['reg_status'] = 'drafts';
     }
     
     return array('stat'=>'ok', 'festival'=>$festival, 'member'=>$member);

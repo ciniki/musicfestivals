@@ -53,7 +53,7 @@ function ciniki_musicfestivals_provincialsRecommendationAdd(&$ciniki) {
     $member = $rc['member'];
     $provincials_tnid = $member['tnid'];
 
-    if( !isset($member['reg_status']) || $member['reg_status'] != 'open' ) {
+    if( !isset($member['reg_status']) || ($member['reg_status'] != 'open' && $member['reg_status'] != 'drafts') ) {
         return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1330', 'msg'=>'Recommendation submissions are closed for your festival'));
     }
 

@@ -1236,7 +1236,7 @@ function ciniki_musicfestivals_main() {
                 'virtual':{'label':'Virtual', 'fn':'M.ciniki_musicfestivals_main.festival.switchScheduleLVTab("virtual");'},
             }}, 
         'schedule_sections':{'label':'Schedules', 'type':'simplegrid', 'num_cols':1, 'aside':'yes', 
-            'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['timeslots','comments','oldprovincials','results','photos','downloads']); },
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['timeslots','comments','provincials','results','photos','downloads']); },
             'noData':'No schedule',
             'cellClasses':['multiline', 'multiline alignright'],
             'menu':{
