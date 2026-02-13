@@ -64,6 +64,9 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     }
     elseif( isset($s['section-id']) ) {
         $section_id = $s['section-id'];
+        if( isset($request['uri_split'][($request['cur_uri_pos']+1)]) && $request['uri_split'][($request['cur_uri_pos']+1)] != '' ) {
+            $category_permalink = $request['uri_split'][($request['cur_uri_pos']+1)];
+        }
     }
     elseif( !isset($request['uri_split'][$request['cur_uri_pos']])
         || $request['uri_split'][$request['cur_uri_pos']] == '' 
@@ -73,7 +76,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
         $section_permalink = $request['uri_split'][$request['cur_uri_pos']];
     }
 
-    $base_url = $request['base_url'] . $request['page']['path'];
+    $base_url = $request['ssl_domain_base_url'] . $request['page']['path'];
 
     //
     // Check for image format
@@ -330,8 +333,13 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     //
     // Don't show titles or intros when displaying a pricelist
     //
-    if( isset($s['layout']) && $s['layout'] == 'pricelist' && isset($s['section-id']) ) {
-        $section['intros'] = 'no';
+    if( isset($s['layout']) 
+        && ($s['layout'] == 'pricelist' || $s['layout'] == 'categorybuttons') 
+        && isset($s['section-id']) 
+        ) {
+        if( $s['layout'] == 'pricelist' ) {
+            $section['intros'] = 'no';
+        }
         $section['tableheader'] = 'multiprices';
         if( isset($s['title']) && $s['title'] != '' && isset($s['content']) && $s['content'] != '' ) {
             $blocks[] = array(
@@ -513,10 +521,8 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             . "categories.id = classes.category_id ";
     if( isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'live' ) {
         $strsql .= "AND (classes.feeflags&0x02) = 0x02 ";
-//        $strsql .= "AND classes.fee > 0 ";
     } elseif( isset($s['display-live-virtual']) && $s['display-live-virtual'] == 'virtual' ) {
         $strsql .= "AND (classes.feeflags&0x08) = 0x08 ";
-//        $strsql .= "AND classes.virtual_fee > 0 ";
     }
         $strsql .= "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
@@ -558,6 +564,9 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     if( isset($groupname) ) {
         $strsql .= "AND categories.groupname = '" . ciniki_core_dbQuote($ciniki, $groupname) . "' ";
     } 
+    if( isset($category_permalink) ) {
+        $strsql .= "AND categories.permalink = '" . ciniki_core_dbQuote($ciniki, $category_permalink) . "' ";
+    }
     $strsql .= "ORDER BY categories.sequence, categories.name, classes.sequence, classes.name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -579,7 +588,21 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-    if( isset($rc['categories']) ) {
+    if( isset($rc['categories']) && isset($s['layout']) && $s['layout'] == 'categorybuttons' && !isset($category_permalink) ) {
+        $items = [];
+        $categories = $rc['categories'];
+        foreach($categories as $category) {
+            $items[] = [
+                'text' => $category['name'],
+                'url' => $base_url . '/' . $category['permalink'],
+                ];
+        }
+        $blocks[] = [
+            'type' => 'buttons',
+            'items' => $items,
+            ];
+    }
+    elseif( isset($rc['categories']) ) {
         $categories = $rc['categories'];
         //
         // Get the filters
@@ -798,7 +821,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             );
     } */
 
-    if( isset($s['section-id']) ) {
+    if( isset($s['section-id']) && !isset($category_permalink) ) {
         return array('stat'=>'ok', 'blocks'=>$blocks);
     }
 
