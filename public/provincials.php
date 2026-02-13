@@ -86,6 +86,13 @@ function ciniki_musicfestivals_provincials($ciniki) {
     $member = $rc['member'];
     $provincials_tnid = $member['tnid'];
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalMaps');
+    $rc = ciniki_musicfestivals_festivalMaps($ciniki, $provincials_tnid, $provincials_festival_id);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $provincials_maps = $rc['maps'];
+
     $rsp = array('stat'=>'ok', 'festival'=>$festival);
     
     //
@@ -328,10 +335,12 @@ function ciniki_musicfestivals_provincials($ciniki) {
             . "entries.mark, "
             . "entries.provincials_reg_id, "
             . "entries.local_reg_id, "
+            . "entries.dt_invite_sent, "
             . "recommendations.date_submitted, "
             . "sections.name AS section_name, "
             . "categories.name AS category_name, "
-            . "classes.name AS class_name "
+            . "classes.name AS class_name, "
+            . "IFNULL(registrations.status, '') AS reg_status_text "
             . "FROM ciniki_musicfestival_recommendations AS recommendations "
             . "INNER JOIN ciniki_musicfestival_recommendation_entries AS entries ON ("
                 . "recommendations.id = entries.recommendation_id "
@@ -351,6 +360,10 @@ function ciniki_musicfestivals_provincials($ciniki) {
                 . "categories.section_id = sections.id "
                 . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                . "entries.provincials_reg_id = registrations.id "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
+                . ") "
             . "WHERE recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $provincials_festival_id) . "' "
             . "AND recommendations.member_id = '" . ciniki_core_dbQuote($ciniki, $member['id']) . "' "
             . $recommendation_sql
@@ -362,12 +375,16 @@ function ciniki_musicfestivals_provincials($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'entries', 'fname'=>'id', 
                 'fields'=>array('id', 'recommendation_id', 'status', 'status_text', 'name', 'position', 'position_text', 'mark', 
-                    'provincials_reg_id', 'local_reg_id', 'date_submitted', 
-                    'section_name', 'category_name', 'class_name',
+                    'provincials_reg_id', 'local_reg_id', 'date_submitted', 'date_invited'=>'dt_invite_sent',
+                    'section_name', 'category_name', 'class_name', 'reg_status_text',
+                    ),
+                'utctotz'=>array(
+                    'date_invited' => array('timezone'=>$intl_timezone, 'format'=>'M j - g:i A'),
                     ),
                 'maps'=>array(
                     'status_text'=>$maps['recommendationentry']['status'],
                     'position_text'=>$maps['recommendationentry']['position'],
+                    'reg_status_text'=>$provincials_maps['registration']['status'],
                     ),
                 ),
             ));
