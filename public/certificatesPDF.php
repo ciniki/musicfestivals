@@ -434,6 +434,9 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
 //                                if( $field['field'] == 'class-group' && preg_match("/(Group\s+[0-9A-Z])/", $timeslot['name'], $m) ) {
 //                                    $class_name .= ' - ' . $m[1];
 //                                }
+                                if( isset($args['schedulesection_id']) && $args['schedulesection_id'] == 'blank' ) {
+                                    $class_name = '';
+                                }
                                 $certificate['fields'][$fid]['text'] = $class_name;
                             }
                             elseif( $field['field'] == 'title' ) {
