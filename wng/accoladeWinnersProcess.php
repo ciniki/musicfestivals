@@ -91,7 +91,7 @@ function ciniki_musicfestivals_wng_accoladeWinnersProcess(&$ciniki, $tnid, &$req
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.939', 'msg'=>'Unable to load winners', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1455', 'msg'=>'Unable to load winners', 'err'=>$rc['err']));
         }
         $subcategories = isset($rc['subcategories']) ? $rc['subcategories'] : array();
 

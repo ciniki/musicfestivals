@@ -6693,7 +6693,14 @@ function ciniki_musicfestivals_main() {
                 'provincials-email-invite-message':{'label':'Message', 'type':'htmlarea', 'size':'medium'},
                 'provincials-invite-confirm-message':{'label':'Accept Confirm Message', 'type':'htmlarea', 'size':'medium'},
                 'provincials-invite-decline-message':{'label':'Decline Confirm Message', 'type':'htmlarea', 'size':'medium'},
-            }},
+                },
+/*            'menu':{
+                'default':{
+                    'label':'Configure Default Template',
+                    'fn':'M.ciniki_musicfestivals_main.edit.provincialsInviteEmailDefault();',
+                    },
+                }, */
+            },
 /*        '_provincials_email3':{'label':'Invite Reminder Email',
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('provincials'); },
             'fields':{

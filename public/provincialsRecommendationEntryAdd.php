@@ -131,7 +131,7 @@ function ciniki_musicfestivals_provincialsRecommendationEntryAdd(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1289', 'msg'=>'Unable to load entry', 'err'=>$rc['err']));
     }
     if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
-        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1289', 'msg'=>'You already have recommendation for this class and position'));
+        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1391', 'msg'=>'You already have recommendation for this class and position'));
     }
 
     //
@@ -150,10 +150,10 @@ function ciniki_musicfestivals_provincialsRecommendationEntryAdd(&$ciniki) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'entry');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1289', 'msg'=>'Unable to load entry', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1392', 'msg'=>'Unable to load entry', 'err'=>$rc['err']));
     }
     if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
-        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1289', 'msg'=>'This registration has already been recommendated'));
+        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1393', 'msg'=>'This registration has already been recommendated'));
     }
 
     //

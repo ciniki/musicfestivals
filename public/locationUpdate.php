@@ -72,10 +72,10 @@ function ciniki_musicfestivals_locationUpdate(&$ciniki) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'building');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.978', 'msg'=>'Unable to load building', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1436', 'msg'=>'Unable to load building', 'err'=>$rc['err']));
     }
     if( !isset($rc['building']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.979', 'msg'=>'Unable to load building'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1437', 'msg'=>'Unable to load building'));
     }
     $building = $rc['building'];
 

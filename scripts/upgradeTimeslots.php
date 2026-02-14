@@ -88,7 +88,7 @@ $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals'
         ),
     ));
 if( $rc['stat'] != 'ok' ) {
-    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.459', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1458', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
 }
 $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
 

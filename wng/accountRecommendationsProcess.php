@@ -74,7 +74,7 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'adjudicator');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.397', 'msg'=>'Unable to load adjudicator', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1452', 'msg'=>'Unable to load adjudicator', 'err'=>$rc['err']));
     }
     if( !isset($rc['adjudicator']['id']) ) {
         return array('stat'=>'ok', 'blocks'=>[[
@@ -239,7 +239,7 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
         array('container'=>'sections', 'fname'=>'permalink', 'fields'=>array('id', 'permalink', 'name', 'description')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.595', 'msg'=>'Unable to load sections', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1453', 'msg'=>'Unable to load sections', 'err'=>$rc['err']));
     }
     $sections = isset($rc['sections']) ? $rc['sections'] : array();
 

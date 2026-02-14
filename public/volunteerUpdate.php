@@ -62,7 +62,7 @@ function ciniki_musicfestivals_volunteerUpdate(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1368', 'msg'=>'Unable to load volunteer', 'err'=>$rc['err']));
     }
     if( !isset($rc['volunteer']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1369', 'msg'=>'Unable to find requested volunteer'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1409', 'msg'=>'Unable to find requested volunteer'));
     }
     $volunteer = $rc['volunteer'];
 
@@ -168,7 +168,7 @@ function ciniki_musicfestivals_volunteerUpdate(&$ciniki) {
             'template' => 'volunteers-email-approved',
             ]);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1378', 'msg'=>'Unable to email volunteer', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1410', 'msg'=>'Unable to email volunteer', 'err'=>$rc['err']));
         }
     }
 

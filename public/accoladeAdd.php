@@ -64,7 +64,7 @@ function ciniki_musicfestivals_accoladeAdd(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.112', 'msg'=>'Unable to load subcategory', 'err'=>$rc['err']));
     }
     if( !isset($rc['subcat']) ) {
-        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.113', 'msg'=>'Subcategory does not exist'));
+        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1298', 'msg'=>'Subcategory does not exist'));
     }
 
     //

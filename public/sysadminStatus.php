@@ -146,7 +146,7 @@ function ciniki_musicfestivals_sysadminStatus($ciniki) {
         array('container'=>'mail', 'fname'=>'tnid', 'fields'=>array('detail_value')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.752', 'msg'=>'Unable to load mail', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1459', 'msg'=>'Unable to load mail', 'err'=>$rc['err']));
     }
     $mail = isset($rc['mail']) ? $rc['mail'] : array();
 

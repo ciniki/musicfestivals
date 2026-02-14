@@ -218,7 +218,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'entry');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1287', 'msg'=>'Unable to load entry', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1394', 'msg'=>'Unable to load entry', 'err'=>$rc['err']));
     }
     if( !isset($rc['entry']) ) {
         return array('stat'=>'ok', 'blocks'=>[
@@ -333,7 +333,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
         array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'name', 'pronoun', 'parent', 'age', 'instrument')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.257', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1395', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
     }
     $competitors = isset($rc['competitors']) ? $rc['competitors'] : array();
 
@@ -408,7 +408,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'competitor');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.355', 'msg'=>'Unable to load competitor', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1396', 'msg'=>'Unable to load competitor', 'err'=>$rc['err']));
             }
             if( !isset($rc['competitor']) ) {
                 return array('stat'=>'ok', 'blocks'=>[
@@ -444,7 +444,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
                 'competitor' => isset($local_competitor) ? $local_competitor : null,
                 ]); 
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1355', 'msg'=>'Unable to generate form', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1397', 'msg'=>'Unable to generate form', 'err'=>$rc['err']));
             }
             $fields = $rc['fields'];
             $ctype = $local_competitor['ctype'];
@@ -466,7 +466,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
                 if( $rc['stat'] == 'exit' ) {
                     return $rc;
                 } elseif( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1355', 'msg'=>'Unable to generate form', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1398', 'msg'=>'Unable to generate form', 'err'=>$rc['err']));
                 }
                 if( isset($rc['errors']) ) {
                     $errors = $rc['errors'];
@@ -608,7 +608,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
         array('container'=>'teachers', 'fname'=>'id', 'fields'=>array('id', 'name'=>'display_name')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.653', 'msg'=>'Unable to load teachers', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1467', 'msg'=>'Unable to load teachers', 'err'=>$rc['err']));
     }
     $teachers = isset($rc['teachers']) ? $rc['teachers'] : array();
     if( isset($request['session']['musicfestival-registration']['teacher_customer_id']) 
@@ -641,7 +641,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
             array('container'=>'accompanists', 'fname'=>'id', 'fields'=>array('id', 'name'=>'display_name')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.297', 'msg'=>'Unable to load accompanists', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1399', 'msg'=>'Unable to load accompanists', 'err'=>$rc['err']));
         }
         $accompanists = isset($rc['accompanists']) ? $rc['accompanists'] : array();
     }
@@ -670,7 +670,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
                 ),
             ));
     } elseif( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.348', 'msg'=>'', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1451', 'msg'=>'', 'err'=>$rc['err']));
     }
     $fields = $rc['fields'];
     $js = $rc['js'];

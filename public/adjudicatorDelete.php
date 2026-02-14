@@ -86,7 +86,7 @@ function ciniki_musicfestivals_adjudicatorDelete(&$ciniki) {
     }
     if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
         $count = $rc['num']['items'];
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1039', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' schedule section' . ($count==1?'':'s') . ' or division' . ($count==1?'':'s') . ' with this adjudicator.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1454', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' schedule section' . ($count==1?'':'s') . ' or division' . ($count==1?'':'s') . ' with this adjudicator.'));
     }
 
     //

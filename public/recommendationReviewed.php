@@ -123,7 +123,7 @@ function ciniki_musicfestivals_recommendationReviewed(&$ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1034', 'msg'=>'Unable to load recommendations', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1415', 'msg'=>'Unable to load recommendations', 'err'=>$rc['err']));
     }
     if( !isset($rc['recommendations'][0]) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1033', 'msg'=>'Recommendation not found'));
@@ -192,7 +192,7 @@ function ciniki_musicfestivals_recommendationReviewed(&$ciniki) {
         array('container'=>'customers', 'fname'=>'customer_id', 'fields'=>array('id'=>'customer_id')),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1052', 'msg'=>'Unable to load members customers', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1416', 'msg'=>'Unable to load members customers', 'err'=>$rc['err']));
     }
     $customers = isset($rc['customers']) ? $rc['customers'] : array();
 

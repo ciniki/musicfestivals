@@ -153,7 +153,7 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1048', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1427', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
     }
     $rows = isset($rc['rows']) ? $rc['rows'] : array();
     $existing = [];
@@ -194,7 +194,7 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
         }
     }
     if( !isset($recommendation['section']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1038', 'msg'=>'No section specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1429', 'msg'=>'No section specified'));
     }
 
     //

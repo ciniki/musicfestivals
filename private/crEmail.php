@@ -133,7 +133,7 @@ function ciniki_musicfestivals_crEmail(&$ciniki, $tnid, $args) {
                 'customer_email' => $email,
                 ));
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1234', 'msg'=>'Unable to email change request', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1422', 'msg'=>'Unable to email change request', 'err'=>$rc['err']));
             } else {
                 $ciniki['emailqueue'][] = array('mail_id' => $rc['id'], 'tnid'=>$tnid);
             }

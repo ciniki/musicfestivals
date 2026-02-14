@@ -125,7 +125,7 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
             'cancel-url' => "{$request['ssl_domain_base_url']}{$request['page']['path']}",
             ]);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1037', 'msg'=>'', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1456', 'msg'=>'', 'err'=>$rc['err']));
         }
         $form_sections = $rc['form_sections'];
         $form_errors = $rc['form_errors'];

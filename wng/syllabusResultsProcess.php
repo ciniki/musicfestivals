@@ -53,10 +53,10 @@ function ciniki_musicfestivals_wng_syllabusResultsProcess(&$ciniki, $tnid, &$req
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'syllabus');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1037', 'msg'=>'Unable to load syllabus', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1450', 'msg'=>'Unable to load syllabus', 'err'=>$rc['err']));
     }
     if( !isset($rc['syllabus']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1038', 'msg'=>'Unable to find requested syllabus'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1449', 'msg'=>'Unable to find requested syllabus'));
     }
     $syllabus = $rc['syllabus'];
     $festival_id = $syllabus['festival_id'];

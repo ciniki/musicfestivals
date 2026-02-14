@@ -102,7 +102,7 @@ function ciniki_musicfestivals__registrationDelete(&$ciniki, $tnid, $reg_id) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'entry');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1377', 'msg'=>'Unable to load entry', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1417', 'msg'=>'Unable to load entry', 'err'=>$rc['err']));
     }
     if( isset($rc['entry']) && $rc['entry']['status'] == 50 ) {
         $entry = $rc['entry'];

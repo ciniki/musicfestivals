@@ -72,7 +72,7 @@ function ciniki_musicfestivals_adjudicatorsExcel(&$ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1184', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1424', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
     }
     $adjudicators = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
     foreach($adjudicators as $aid => $adjudicator) {

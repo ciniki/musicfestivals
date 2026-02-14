@@ -827,7 +827,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1086', 'msg'=>'Unable to load crs', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1435', 'msg'=>'Unable to load crs', 'err'=>$rc['err']));
         }
         $registration['crs'] = isset($rc['crs']) ? $rc['crs'] : array();
         foreach($registration['crs'] as $cid => $cr) {

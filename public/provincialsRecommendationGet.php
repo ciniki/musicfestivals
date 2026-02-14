@@ -118,10 +118,10 @@ function ciniki_musicfestivals_provincialsRecommendationGet($ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.604', 'msg'=>'Submission not found', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1430', 'msg'=>'Submission not found', 'err'=>$rc['err']));
     }
     if( !isset($rc['recommendations'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.605', 'msg'=>'Unable to find Submission'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1431', 'msg'=>'Unable to find Submission'));
     }
     $recommendation = $rc['recommendations'][0];
     $recommendation['details'] = array(
@@ -276,7 +276,7 @@ function ciniki_musicfestivals_provincialsRecommendationGet($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1041', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1432', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
         }
         $rsp['registrations'] = isset($rc['registrations']) ? $rc['registrations'] : array();
         

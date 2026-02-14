@@ -166,7 +166,7 @@ function ciniki_musicfestivals_provincials($ciniki) {
                 'fields'=>array('id', 'name', 'num_items')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1279', 'msg'=>'Unable to load sections', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1403', 'msg'=>'Unable to load sections', 'err'=>$rc['err']));
         }
         $rsp['sections'] = isset($rc['sections']) ? $rc['sections'] : array();
         if( !isset($args['adjudicators']) ) { // Don't add totals when using to add recommendation

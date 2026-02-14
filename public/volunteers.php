@@ -84,7 +84,7 @@ function ciniki_musicfestivals_volunteers($ciniki) {
         return $rc;
     }
     if( !isset($rc['festival']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1246', 'msg'=>'No festival specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1404', 'msg'=>'No festival specified'));
     }
     $festival = $rc['festival'];
 
@@ -433,7 +433,7 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1309', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1405', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
         }
         $rsp['shifts'] = isset($rc['shifts']) ? $rc['shifts'] : array();
 

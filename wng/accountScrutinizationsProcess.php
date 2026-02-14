@@ -28,7 +28,7 @@ function ciniki_musicfestivals_wng_accountScrutinizationsProcess(&$ciniki, $tnid
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
     $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.395', 'msg'=>'', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1461', 'msg'=>'', 'err'=>$rc['err']));
     }
     $festival = $rc['festival'];
 

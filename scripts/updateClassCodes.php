@@ -127,7 +127,7 @@ $strsql = "SELECT "
         . "classes.sequence, classes.code, classes.name "
     . "";
 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
-$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'customer.omfa', array(
+$rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
     array('container'=>'sections', 'fname'=>'section_id', 
         'fields'=>array('id'=>'section_id', 'name'=>'section_name'),
         ),
@@ -139,7 +139,7 @@ $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'customer.omfa', array(
         ),
     ));
 if( $rc['stat'] != 'ok' ) {
-    return array('stat'=>'fail', 'err'=>array('code'=>'customer.omfa.13', 'msg'=>'Unable to load sections', 'err'=>$rc['err']));
+    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1444', 'msg'=>'Unable to load sections', 'err'=>$rc['err']));
 }
 $sections = isset($rc['sections']) ? $rc['sections'] : array();
 

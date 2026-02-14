@@ -53,34 +53,6 @@ function ciniki_musicfestivals_templates_scheduleTMSWord(&$ciniki, $tnid, $args)
     $festival = $rc['festival'];
 
     //
-    // Load the adjudicators
-    //
-/*    if( isset($args['section_adjudicator_bios'])
-        && $args['section_adjudicator_bios'] == 'yes' 
-        ) {
-        $strsql = "SELECT adjudicators.id, "
-            . "customers.display_name AS name, "
-            . "adjudicators.image_id, "
-            . "adjudicators.description "
-            . "FROM ciniki_musicfestival_adjudicators AS adjudicators "
-            . "LEFT JOIN ciniki_customers AS customers ON ("
-                . "adjudicators.customer_id = customers.id "
-                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "WHERE adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-            . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "";
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
-        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-            array('container'=>'adjudicators', 'fname'=>'id', 'fields'=>array('id', 'name', 'image_id', 'description')),
-            ));
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.979', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
-        }
-        $adjudicators = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
-    } */
-
-    //
     // Load the schedule sections, divisions, timeslots, classes, registrations
     //
     $strsql = "SELECT ssections.id AS section_id, "

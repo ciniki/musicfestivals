@@ -278,99 +278,13 @@ function ciniki_musicfestivals_wng_recommendationSave(&$ciniki, $tnid, $request,
                     $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.recommendationentry', $entry, 0x04);
                     if( $rc['stat'] != 'ok' ) {
                         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1046', 'msg'=>'Unable to add the recommendationentry', 'err'=>$rc['err']));
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1411', 'msg'=>'Unable to add the recommendationentry', 'err'=>$rc['err']));
                     }
                     $entry['id'] = $rc['id'];
                     $recommendation['entries'][$cid][$i] = $entry;
                 }
             }
         }
-/*        for($i = 1; $i <= $num_recommendations; $i++) {
-            if( isset($existing[$cid][(100+$i)]) ) {
-                $form_errors .= ($form_errors != '' ? "\n" : '') . "You already have a submissions for " . $form_section['fields']["recommendation_{$i}_{$cid}"]['label'] . ' in class ' . $class['code'] . ' - ' . $class['name'];
-                continue;
-            }
-            $entry = [];
-            if( $form_section['fields']["alternate_{$i}_{$cid}"]['ftype'] == 'select' ) {
-                // Lookup competitor name 
-                $entry['local_reg_id'] = $form_section['fields']["alternate_{$i}_{$cid}"]['value'];
-                if( $entry['local_reg_id'] > 0 ) {
-                    foreach($form_section['fields']["alternate_{$i}_{$cid}"]['options'] as $option) {
-                        if( $option['id'] == $entry['local_reg_id'] ) {
-                            $entry['name'] = $option['display_name'];
-                        }
-                    }
-                } else {
-                    $entry['name'] = '';
-                }
-            } elseif( $form_section['fields']["alternate_{$i}_{$cid}"]['ftype'] == 'text' ) {
-                $entry['name'] = $form_section['fields']["alternate_{$i}_{$cid}"]['value'];
-            }
-            $entry['mark'] = $form_section['fields']["alternate_mark_{$i}_{$cid}"]['value'];
-            if( isset($existing[$cid][(100+$i)]) ) {
-                if( isset($_POST["f-alternate_{" . (100+$i) . "}_{$cid}"]) 
-                    && $_POST["f-alternate_{" . (100+$i) . "}_{$cid}"] != ''
-                    && $_POST["f-alternate_{" . (100+$i) . "}_{$cid}"] != 'Already Submitted'
-                    ) {
-                    $form_errors .= ($form_errors != '' ? "\n" : '') . "You already have a submissions for " . $form_section['fields']["recommendation_{$i}_{$cid}"]['label'] . ' in class ' . $class['code'] . ' - ' . $class['name'];
-                }
-                $entry['name'] = '';
-            }
-            if( isset($entry['name']) && $entry['name'] != '' && $entry['mark'] == '' 
-                && (!isset($args['save-draft']) || $args['save-draft'] != 'yes')
-                ) {
-                $form_errors .= ($form_errors != '' ? "\n" : '') . "You must specify a Mark for your " . $form_section['fields']["alternate_{$i}_{$cid}"]['label'] . ' in class ' . $class['code'] . ' - ' . $class['name'];
-                continue;
-            }
-
-            if( !isset($entry['name']) || $entry['name'] == '' ) {
-                // Check if existing entry needs to be removed
-                if( isset($recommendation['entries'][$cid][(100+$i)]['id']) 
-                    && $recommendation['entries'][$cid][(100+$i)]['id'] > 0 
-                    ) {
-                    $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.musicfestivals.recommendationentry', $recommendation['entries'][$cid][(100+$i)]['id'], null, 0x04);
-                    if( $rc['stat'] != 'ok' ) {
-                        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1046', 'msg'=>'Unable to add the recommendationentry', 'err'=>$rc['err']));
-                    }
-                    unset($recommendation['entries'][$cid][(100+$i)]);
-                }
-                continue;
-            } else {
-                // Check if entry needs to be updated or added
-                if( isset($recommendation['entries'][$cid][(100+$i)]['id']) 
-                    && $recommendation['entries'][$cid][(100+$i)]['id'] > 0
-                    ) {
-                    $update_args = [];
-                    if( isset($entry['name']) && $entry['name'] != $recommendation['entries'][$cid][(100+$i)]['name'] ) {
-                        $update_args['name'] = $entry['name'];
-                    }
-                    if( isset($entry['mark']) && $entry['mark'] != $recommendation['entries'][$cid][(100+$i)]['mark'] ) {
-                        $update_args['mark'] = $entry['mark'];
-                    }
-                    if( count($update_args) > 0 ) {
-                        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.recommendationentry', $recommendation['entries'][$cid][(100+$i)]['id'], $update_args, 0x04);
-                        if( $rc['stat'] != 'ok' ) {
-                            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
-                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1045', 'msg'=>'Unable to update the recommendation entry', 'err'=>$rc['err']));
-                        }
-                    }
-                } else {
-                    $entry['status'] = 10;
-                    $entry['status_text'] = 'Draft';
-                    $entry['recommendation_id'] = $recommendation['id'];
-                    $entry['class_id'] = $cid;
-                    $entry['position'] = (100+$i);
-                    $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.recommendationentry', $entry, 0x04);
-                    if( $rc['stat'] != 'ok' ) {
-                        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1046', 'msg'=>'Unable to add the recommendationentry', 'err'=>$rc['err']));
-                    }
-                    $entry['id'] = $rc['id'];
-                    $recommendation['entries'][$cid][(100+$i)] = $entry;
-                }
-            }
-        } */
     }
 
     //

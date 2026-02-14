@@ -46,7 +46,7 @@ $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', a
     array('container'=>'adjudicators', 'fname'=>'id', 'fields'=>array('id')),
     ));
 if( $rc['stat'] != 'ok' ) {
-    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.459', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1439', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
 }
 $adjudicators = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
 
@@ -65,7 +65,7 @@ $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals'
     array('container'=>'ssections', 'fname'=>'id', 'fields'=>array('id', 'tnid', 'adjudicator_id')),
     ));
 if( $rc['stat'] != 'ok' ) {
-    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.459', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1440', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
 }
 $ssections = isset($rc['ssections']) ? $rc['ssections'] : array();
 
@@ -79,7 +79,7 @@ foreach($ssections as $section) {
             'object_id' => $section['id'],
             ], 0x04);
         if( $rc['stat'] != 'ok' && $rc['stat'] != 'exists' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1040', 'msg'=>'Unable to add the adjudicatorref', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1412', 'msg'=>'Unable to add the adjudicatorref', 'err'=>$rc['err']));
         }
     }
 }
@@ -99,7 +99,7 @@ $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals'
     array('container'=>'divisions', 'fname'=>'id', 'fields'=>array('id', 'tnid', 'adjudicator_id')),
     ));
 if( $rc['stat'] != 'ok' ) {
-    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.459', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1460', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
 }
 $divisions = isset($rc['divisions']) ? $rc['divisions'] : array();
 
@@ -113,7 +113,7 @@ foreach($divisions as $division) {
             'object_id' => $division['id'],
             ], 0x04);
         if( $rc['stat'] != 'ok' && $rc['stat'] != 'exists' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1040', 'msg'=>'Unable to add the adjudicatorref', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1413', 'msg'=>'Unable to add the adjudicatorref', 'err'=>$rc['err']));
         }
     }
 }

@@ -48,7 +48,7 @@ $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', a
     array('container'=>'sections', 'fname'=>'id', 'fields'=>array('id', 'tnid', 'festival_id', 'syllabus_id', 'syllabus')),
     ));
 if( $rc['stat'] != 'ok' ) {
-    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.459', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1447', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
 }
 $sections = isset($rc['sections']) ? $rc['sections'] : array();
 
@@ -69,7 +69,7 @@ foreach($sections as $section) {
                 'permalink' => $permalink,
                 ], 0x04);
             if( $rc['stat'] != 'ok' && $rc['stat'] != 'exists' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1040', 'msg'=>'Unable to add the adjudicatorref', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1443', 'msg'=>'Unable to add the adjudicatorref', 'err'=>$rc['err']));
             }
             if( $rc['stat'] == 'exists' ) {
                 error_log(print_r($rc,true));
@@ -84,7 +84,7 @@ foreach($sections as $section) {
             'syllabus_id' => $existing[$section['festival_id']][$section['syllabus']],
             ], 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1016', 'msg'=>'Unable to update the section', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1441', 'msg'=>'Unable to update the section', 'err'=>$rc['err']));
         }
         
         // Add what would be old syllabus-id and map to new syllabus_id
@@ -112,7 +112,7 @@ $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', a
     array('container'=>'sections', 'fname'=>'id', 'fields'=>array('id', 'tnid', 'settings')),
     ));
 if( $rc['stat'] != 'ok' ) {
-    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.459', 'msg'=>'Unable to load sections', 'err'=>$rc['err']));
+    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1446', 'msg'=>'Unable to load sections', 'err'=>$rc['err']));
 }
 $wngsections = isset($rc['sections']) ? $rc['sections'] : array();
 foreach($wngsections as $sid => $section) {
@@ -127,7 +127,7 @@ foreach($wngsections as $sid => $section) {
             'settings' => json_encode($settings),
             ], 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1016', 'msg'=>'Unable to update the section', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1442', 'msg'=>'Unable to update the section', 'err'=>$rc['err']));
         }
         
     }

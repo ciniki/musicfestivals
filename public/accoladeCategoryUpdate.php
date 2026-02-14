@@ -57,10 +57,10 @@ function ciniki_musicfestivals_accoladeCategoryUpdate(&$ciniki) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'category');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.384', 'msg'=>'Unable to load category', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1426', 'msg'=>'Unable to load category', 'err'=>$rc['err']));
     }
     if( !isset($rc['category']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.385', 'msg'=>'Unable to find requested category'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1428', 'msg'=>'Unable to find requested category'));
     }
     $category = $rc['category'];
   

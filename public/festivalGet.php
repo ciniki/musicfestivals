@@ -5130,7 +5130,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     ),
                 ));
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1081', 'msg'=>'Unable to load fees', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1425', 'msg'=>'Unable to load fees', 'err'=>$rc['err']));
             }
             if( isset($rc['fees']) ) {
                 foreach($rc['fees'] as $row) {

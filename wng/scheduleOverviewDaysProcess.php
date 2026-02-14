@@ -90,7 +90,7 @@ function ciniki_musicfestivals_wng_scheduleOverviewDaysProcess(&$ciniki, $tnid, 
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1021', 'msg'=>'Unable to load locations', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1457', 'msg'=>'Unable to load locations', 'err'=>$rc['err']));
     }
     $dates = isset($rc['dates']) ? $rc['dates'] : array();
 

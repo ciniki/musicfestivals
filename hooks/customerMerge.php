@@ -194,7 +194,7 @@ function ciniki_musicfestivals_hooks_customerMerge($ciniki, $tnid, $args) {
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'items');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1248', 'msg'=>'Unable to find adjudicators', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1414', 'msg'=>'Unable to find adjudicators', 'err'=>$rc['err']));
     }
     $items = $rc['rows'];
     foreach($items as $i => $row) {

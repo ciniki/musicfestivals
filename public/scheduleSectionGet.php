@@ -143,7 +143,7 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1184', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1423', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
         }
         $schedulesection['adjudicators'] = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
     }

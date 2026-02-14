@@ -66,7 +66,7 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1301', 'msg'=>'Unable to load assignment', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1418', 'msg'=>'Unable to load assignment', 'err'=>$rc['err']));
         }
         if( isset($rc['assignments'][0]) ) {
             $assignment = $rc['assignments'][0];

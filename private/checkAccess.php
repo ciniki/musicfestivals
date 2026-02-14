@@ -79,7 +79,7 @@ function ciniki_musicfestivals_checkAccess(&$ciniki, $tnid, $method) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.tenants', 'user');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.176', 'msg'=>'Access denied.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1381', 'msg'=>'Access denied.'));
     }
 
     if( isset($rc['user']['modperms']) ) {

@@ -198,7 +198,7 @@ function ciniki_musicfestivals_wng_locationsProcess(&$ciniki, $tnid, &$request, 
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.761', 'msg'=>'Unable to load locations', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1407', 'msg'=>'Unable to load locations', 'err'=>$rc['err']));
         }
         $locations = isset($rc['categories']) ? $rc['categories'] : array();
 

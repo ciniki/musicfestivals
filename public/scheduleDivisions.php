@@ -795,7 +795,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
         'festival_id' => $args['festival_id'],
         ]);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1273', 'msg'=>'', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1419', 'msg'=>'', 'err'=>$rc['err']));
     }
     $rsp['competitors'] = $rc['competitors'];
 
