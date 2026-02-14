@@ -88,8 +88,6 @@ function ciniki_musicfestivals_provincialsFestivalMemberLoad(&$ciniki, $tnid, $a
         if( $member['latedays'] > 0 ) {
             $reg_final_dt->add(new DateInterval('P' . $member['latedays'] . 'D'));
         }
-        $reg_end_dt->setTimezone(new DateTimezone($intl_timezone));
-        $member['deadline'] = $reg_end_dt->format("l, F j, Y g:i A");
     }
     $dt = new DateTime('now', new DateTimezone('UTC'));
 
@@ -98,6 +96,13 @@ function ciniki_musicfestivals_provincialsFestivalMemberLoad(&$ciniki, $tnid, $a
         $member['reg_status'] = 'open';
     } elseif( isset($reg_start_dt) && isset($reg_final_dt) && $dt <= $reg_final_dt ) {
         $member['reg_status'] = 'drafts';
+    }
+
+    if( isset($reg_end_dt) ) {
+        $reg_end_dt->setTimezone(new DateTimezone($intl_timezone));
+        $member['deadline'] = $reg_end_dt->format("l, F j, Y g:i A");
+        $reg_final_dt->setTimezone(new DateTimezone($intl_timezone));
+        $member['latedeadline'] = $reg_final_dt->format("l, F j, Y g:i A");
     }
     
     return array('stat'=>'ok', 'festival'=>$festival, 'member'=>$member);
