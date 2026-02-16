@@ -4767,7 +4767,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "entries.name, "
                     . "entries.mark, "
                     . "classes.code AS class_code, "
-                    . "classes.name AS class_name "
+                    . "classes.name AS class_name, "
+                    . "entries.local_reg_id, "
+                    . "entries.provincials_reg_id, "
+                    . "IFNULL(local_reg.private_name, '') AS local_reg_name "
                     . "FROM ciniki_musicfestival_recommendations AS recommendations "
                     . "LEFT JOIN ciniki_musicfestival_recommendation_entries AS entries ON ("
                         . "recommendations.id = entries.recommendation_id "
@@ -4777,6 +4780,14 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         . "entries.class_id = classes.id "
                         . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                         . ") "
+                    . "LEFT JOIN ciniki_musicfestivals_members AS members ON ("
+                        . "recommendations.member_id = members.id "
+                        . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "LEFT JOIN ciniki_musicfestival_registrations AS local_reg ON ("
+                        . "entries.local_reg_id = local_reg.id "
+                        . "AND members.member_tnid = local_reg.tnid "
+                        . ") "
                     . "WHERE recommendations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' "
                     . "AND recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                     . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -4785,7 +4796,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'entries', 'fname'=>'id', 
-                        'fields'=>array('id', 'status', 'class_code', 'class_name', 'position', 'name', 'mark'),
+                        'fields'=>array('id', 'status', 'class_code', 'class_name', 'position', 'name', 'local_reg_name', 'mark'),
                         'maps'=>array('position'=>$maps['recommendationentry']['position_shortname']),
                         ),
                     ));

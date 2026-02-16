@@ -76,6 +76,9 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
             'name'=>'',
             'mark'=>'',
             'notes'=>'',
+            'local_reg_details' => [
+                ['label'=>'Participant', 'value'=>''],
+                ],
         );
     }
 
@@ -91,11 +94,50 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
             . "entries.name, "
             . "entries.mark, "
             . "entries.notes, "
-            . "IFNULL(classes.code, '') AS class_code "
+            . "entries.provincials_reg_id, "
+            . "entries.local_reg_id, "
+            . "IFNULL(classes.code, '') AS class_code, "
+            . "IFNULL(local_reg.private_name, '') AS local_reg_private_name, "
+            . "IFNULL(local_reg.title1, '') AS title1, "
+            . "IFNULL(local_reg.movements1, '') AS movements1, "
+            . "IFNULL(local_reg.composer1, '') AS composer1, "
+            . "IFNULL(local_reg.title2, '') AS title2, "
+            . "IFNULL(local_reg.movements2, '') AS movements2, "
+            . "IFNULL(local_reg.composer2, '') AS composer2, "
+            . "IFNULL(local_reg.title3, '') AS title3, "
+            . "IFNULL(local_reg.movements3, '') AS movements3, "
+            . "IFNULL(local_reg.composer3, '') AS composer3, "
+            . "IFNULL(local_reg.title4, '') AS title4, "
+            . "IFNULL(local_reg.movements4, '') AS movements4, "
+            . "IFNULL(local_reg.composer4, '') AS composer4, "
+            . "IFNULL(local_reg.title5, '') AS title5, "
+            . "IFNULL(local_reg.movements5, '') AS movements5, "
+            . "IFNULL(local_reg.composer5, '') AS composer5, "
+            . "IFNULL(local_reg.title6, '') AS title6, "
+            . "IFNULL(local_reg.movements6, '') AS movements6, "
+            . "IFNULL(local_reg.composer6, '') AS composer6, "
+            . "IFNULL(local_reg.title7, '') AS title7, "
+            . "IFNULL(local_reg.movements7, '') AS movements7, "
+            . "IFNULL(local_reg.composer7, '') AS composer7, "
+            . "IFNULL(local_reg.title8, '') AS title8, "
+            . "IFNULL(local_reg.movements8, '') AS movements8, "
+            . "IFNULL(local_reg.composer8, '') AS composer8 "
             . "FROM ciniki_musicfestival_recommendation_entries AS entries "
             . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "entries.class_id = classes.id "
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_recommendations AS recommendations ON ("
+                . "entries.recommendation_id = recommendations.id "
+                . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestivals_members AS members ON ("
+                . "recommendations.member_id = members.id "
+                . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_registrations AS local_reg ON ("
+                . "entries.local_reg_id = local_reg.id "
+                . "AND members.member_tnid = local_reg.tnid "
                 . ") "
             . "WHERE entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND entries.id = '" . ciniki_core_dbQuote($ciniki, $args['entry_id']) . "' "
@@ -103,7 +145,13 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'entries', 'fname'=>'id', 
-                'fields'=>array('id', 'status', 'recommendation_id', 'class_id', 'position', 'name', 'mark', 'notes', 'class_code'),
+                'fields'=>array('id', 'status', 'recommendation_id', 'class_id', 'position', 'name', 'mark', 'notes', 
+                    'provincials_reg_id', 'local_reg_id', 'class_code',
+                    'local_reg_private_name',
+                    'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
+                    'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                    'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
+                    ),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -113,6 +161,20 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.610', 'msg'=>'Unable to find Adjudicator Recommendation Entry'));
         }
         $entry = $rc['entries'][0];
+
+        $entry['local_reg_details'] = [
+            ['label'=>'Participant', 'value'=>$entry['local_reg_private_name']],
+            ];
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
+        for($i = 1; $i <= 8; $i++) {
+            $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $entry, $i);
+            if( isset($rc['title']) && $rc['title'] != '' ) {
+                $entry['local_reg_details'][] = [
+                    'label' => "Title {$i}",
+                    'value' => $rc['title'],
+                    ];
+            }
+        }
     }
 
     $rsp = array('stat'=>'ok', 'entry'=>$entry);
