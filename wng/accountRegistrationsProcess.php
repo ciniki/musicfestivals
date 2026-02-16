@@ -1047,7 +1047,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             'customer_type' => $customer_type,
             'customer_id' => $request['session']['customer']['id'],
             ]);
-        if( $rc['stat'] == 'exit' ) {
+        if( $rc['stat'] == 'exit' || $rc['stat'] == '404' ) {
             return $rc;
         } elseif( $rc['stat'] != 'ok' ) {
             return array('stat'=>'ok', 'blocks'=>[[
