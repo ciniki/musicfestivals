@@ -815,7 +815,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                         }
                         $prev_name = '';
                         foreach($division['timeslots'][$tid]['items'] as $iid => $item) {
-                            if( $prev_name == $item['name'] ) {
+                            if( $prev_name == $item['name'] && !isset($s['results-only']) ) {
                                 $division['timeslots'][$tid]['items'][$iid]['name'] = '';
                                 $division['timeslots'][$tid]['items'][$iid]['placement'] = '';
                             }
