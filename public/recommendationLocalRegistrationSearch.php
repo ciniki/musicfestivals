@@ -154,6 +154,7 @@ function ciniki_musicfestivals_recommendationLocalRegistrationSearch($ciniki) {
             'id' => $reg['id'],
             'name' => $reg['name'],
             'private_name' => $reg['name'],
+            'mark' => $reg['mark'],
             'local_reg_details' => [],
             ];
         $result['local_reg_details'] = [
@@ -178,7 +179,6 @@ function ciniki_musicfestivals_recommendationLocalRegistrationSearch($ciniki) {
 
         $results[] = $result;
     }
-        error_log(print_r($results,true));
 
     return array('stat'=>'ok', 'registrations'=>$results);
 }

@@ -17006,6 +17006,9 @@ function ciniki_musicfestivals_main() {
         this.removeLiveSearch('general', 'name');
         this.setFieldValue('name', this.local_registrations[i].private_name);
         this.data.local_reg_details = this.local_registrations[i].local_reg_details;
+        if( this.local_registrations[i].mark != null && this.local_registrations[i].mark != '' ) {
+            this.setFieldValue('mark', this.local_registrations[i].mark);
+        }
         this.refreshSection('local_reg_details');
         this.local_reg_id = this.local_registrations[i].id;
     }
@@ -17066,7 +17069,7 @@ function ciniki_musicfestivals_main() {
 //            p.menutabs.selected = rsp.entry.status;
 //            p.sections._status.fields.status.selected = rsp.entry.status;
             p.sections.general.fields.class_id.options = rsp.classes;
-            p.local_reg_id = rsp.local_reg_id;
+            p.local_reg_id = rsp.entry.local_reg_id;
             p.refresh();
             p.show(cb);
         });
