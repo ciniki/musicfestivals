@@ -207,8 +207,10 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksSheetPDF(&$ciniki,
     }
     if( isset($args['sortorder']) && $args['sortorder'] == 'date' ) {
         $strsql .= "ORDER BY divisions.division_date, ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, adjudicator_name, registrations.timeslot_sequence, class_code, registrations.display_name, registrations.id ";
-    } else {
+    } elseif( isset($args['sortorder']) && $args['sortorder'] == 'schedule' ) {
         $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, adjudicator_name, registrations.timeslot_sequence, class_code, registrations.display_name, registrations.id ";
+    } else {
+        $strsql .= "ORDER BY adjudicator_name, ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, adjudicator_name, registrations.timeslot_sequence, class_code, registrations.display_name, registrations.id ";
     }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -388,6 +390,8 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksSheetPDF(&$ciniki,
     // Go through the sections, divisions and classes
     //
     $wncm = [45, 120, 15];
+    $prev_adjudicator = '';
+    $num_adjudicator_pages = 0;
     foreach($sections as $section) {
         if( count($sections) == 1 ) {
             $filename .= ' - ' . $section['name'];
@@ -418,15 +422,22 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksSheetPDF(&$ciniki,
                     continue;
                 }
                 foreach($timeslot['adjudicators'] as $adjudicator) {
-
                     if( !isset($adjudicator['registrations']) ) {
                         continue;
+                    }
+                    if( $prev_adjudicator != $adjudicator['name'] && $prev_adjudicator != '' ) {
+                        if( ($num_adjudicator_pages%2) > 0 ) {
+                            $pdf->AddPage();
+                        }
+                        $num_adjudicator_pages = 0;
+                    } else {
                     }
                     $pdf->date_time = $division['date'] . ' ' . $timeslot['time'];
                     $pdf->class_name = $timeslot['class_code'] . ' - ' . $timeslot['class_name'];
                     $pdf->adjudicator_name = $adjudicator['name'];
 
                     $pdf->AddPage();
+                    $num_adjudicator_pages++;
 
                     foreach($adjudicator['registrations'] as $reg) {
                         $pdf->Ln(3);
@@ -445,6 +456,7 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksSheetPDF(&$ciniki,
                         
                         if( ($pdf->GetY() + $h) > $pdf->getPageHeight() - 20 ) {
                             $pdf->AddPage();
+                            $num_adjudicator_pages++;
                         }
 
                         $pdf->SetFont('helvetica', 'B', 10);
@@ -467,6 +479,7 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksSheetPDF(&$ciniki,
                             $pdf->MultiCell($wncm[2], $reg["title{$i}_h"], '', 1, 'L', 0, 1);
                         }
                     }
+                    $prev_adjudicator = $adjudicator['name'];
                 }
             }
         }
