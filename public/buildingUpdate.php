@@ -124,6 +124,15 @@ function ciniki_musicfestivals_buildingUpdate(&$ciniki) {
         }
     }
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'locationNamesUpdate');
+    $rc = ciniki_musicfestivals_locationNamesUpdate($ciniki, $args['tnid'], [
+        'festival_id' => $building['festival_id'],
+        'building_id' => $args['building_id'],
+        ]);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+
     //
     // Commit the transaction
     //
