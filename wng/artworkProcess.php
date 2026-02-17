@@ -191,15 +191,14 @@ function ciniki_musicfestivals_wng_artworkProcess(&$ciniki, $tnid, &$request, $s
                 //
                 try {
                     $image = new Imagick($artwork['storage_filename']);
+                    $image->scaleImage(1024, 0);
+                    $image->setImageFormat('jpg');
+                    $image->setImageCompressionQuality(75);
+                    $image->writeImage($artwork['cache_filename']);
                 } catch (Exception $e) {
                     error_log("Unable to open image for {$artwork['title']}");
                     continue;
                 }
-                $image->scaleImage(1024, 0);
-                $image->setImageFormat('jpg');
-                $image->setImageCompressionQuality(75);
-            
-                $image->writeImage($artwork['cache_filename']);
             }
         }
         $blocks[] = array(
