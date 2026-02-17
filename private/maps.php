@@ -191,6 +191,12 @@ function ciniki_musicfestivals_maps($ciniki) {
             30 => 'Assigned',
         ),
     );
+    $maps['member'] = array(
+        'flags' => array(
+            0x01 => 'Local Recommendations',
+            0x02 => 'Registration Links',
+            ),
+    );
 
     return array('stat'=>'ok', 'maps'=>$maps);
 }

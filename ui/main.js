@@ -2123,12 +2123,12 @@ function ciniki_musicfestivals_main() {
             },
         'members':{'label':'Member Festivals', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'members' ? 'yes' : 'no'; },
-            'headerValues':['Name', 'Category/Admin', 'Reg Open', 'Reg Close', 'Late', '# Reg'],
-            'headerClasses':['', '', '', '', 'alignright', 'alignright'],
-            'cellClasses':['multiline', 'multiline', '', '', 'alignright', 'alignright'],
+            'headerValues':['Name', 'Category/Admin', 'Local Festival', 'Reg Open', 'Reg Close', 'Late', '# Reg'],
+            'headerClasses':['', '', '', '', '', 'alignright', 'alignright'],
+            'cellClasses':['multiline', 'multiline', 'multiline', '', '', 'alignright', 'alignright'],
             'noData':'No Member Festivals',
             'sortable':'yes',
-            'sortTypes':['text', 'text', 'date', 'date', 'number', 'number'],
+            'sortTypes':['text', 'text', 'text', 'date', 'date', 'number', 'number'],
             'menu':{
                 'add':{
                     'label':'Add Member',
@@ -3374,10 +3374,11 @@ function ciniki_musicfestivals_main() {
                 case 0: return M.multiline(d.shortname, d.name);
 //                case 1: return M.multiline(d.category, (d.customer_name != '' ? d.customer_name + ' [' + d.emails + ']' : ''));
                 case 1: return M.multiline(d.category, d.admins);
-                case 2: return d.reg_start_dt_display;
-                case 3: return d.reg_end_dt_display;
-                case 4: return d.latedays;
-                case 5: return d.num_registrations;
+                case 2: return M.multiline(d.member_tenant, d.member_options);
+                case 3: return d.reg_start_dt_display;
+                case 4: return d.reg_end_dt_display;
+                case 5: return d.latedays;
+                case 6: return d.num_registrations;
             }
         }
         if( s == 'lists' ) {
