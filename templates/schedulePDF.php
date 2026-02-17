@@ -258,7 +258,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     ),
                 ),
             array('container'=>'registrations', 'fname'=>'reg_id', 
-                'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 
+                'fields'=>array('id'=>'reg_id', 'status', 'name'=>'display_name', 'public_name', 
                     'participation', 'timeslot_time', 'member_name', 'teacher_name', 
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                     'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
