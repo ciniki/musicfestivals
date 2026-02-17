@@ -900,6 +900,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         }
         $rsp['unscheduled_registrations'] = isset($rc['registrations']) ? $rc['registrations'] : array();
     }
+    $unscheduled_perf_time = 0;
     if( isset($rsp['unscheduled_registrations']) ) {
         foreach($rsp['unscheduled_registrations'] as $rid => $reg) {
             $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, [
@@ -908,6 +909,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
 //                'schedule_time' => isset($festival['syllabus-schedule-time']) ? $festival['syllabus-schedule-time'] : '',
 //                'schedule_seconds' => $reg['schedule_seconds'],
                 ]);
+            $unscheduled_perf_time += $rc['perf_time_seconds'];
             $rsp['unscheduled_registrations'][$rid]['titles'] = $rc['titles'];
             if( isset($ages) ) {
                 $ra= '';
@@ -925,6 +927,13 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                 $rsp['unscheduled_registrations'][$rid]['notes'] .= ($reg['notes'] != '' ? ' ' : '') . $reg['competitor_notes'];
             }
         }
+    }
+
+    $rsp['unschedule_perf_time'] = '';
+    if( $unscheduled_perf_time > 3600 ) {
+        $rsp['unscheduled_perf_time'] = intval($unscheduled_perf_time/3600) . 'h ' . ceil(($unscheduled_perf_time%3600)/60) . 'm';
+    } elseif( $unscheduled_perf_time > 0 ) {
+        $rsp['unscheduled_perf_time'] =  intval($unscheduled_perf_time/60) . ':' . str_pad(($unscheduled_perf_time%60), 2, '0', STR_PAD_LEFT);
     }
 
     //
