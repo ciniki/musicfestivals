@@ -237,7 +237,8 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
         $strsql .= "AND registrations.participation = 1 ";
     }
-    $strsql .= "GROUP BY registrations.id ";
+//    $strsql .= "GROUP BY registrations.id ";
+    $strsql .= "GROUP BY timeslots.id, registrations.id ";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     if( isset($args['sorting']) && $args['sorting'] == 'location-division' ) {
         $strsql .= "ORDER BY location, divisions.division_date, divisions.name, divisions.id, slot_time, timeslots.name, timeslots.id, registrations.timeslot_sequence, class_code, registrations.display_name ";
