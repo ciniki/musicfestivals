@@ -442,7 +442,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     }
     if( isset($s['results-only']) && $s['results-only'] == 'yes' ) {
         $strsql .= "AND registrations.status < 70 ";
-        $strsql .= "ORDER BY divisions.division_date, divisions.name, division_id, class_code, mark, placement, registrations.display_name ";
+        $strsql .= "ORDER BY divisions.division_date, divisions.name, division_id, class_code, timeslot_id, mark, placement, registrations.display_name ";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'divisions', 'fname'=>'division_id', 
@@ -455,7 +455,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     'adjudicator_image_id', 'adjudicator_description',
                     ),
                 ),
-            array('container'=>'timeslots', 'fname'=>'class_id', 
+            array('container'=>'timeslots', 'fname'=>'timeslot_id', 
                 'fields'=>array('id'=>'timeslot_id', 'flags'=>'timeslot_flags', 'slot_time', 'slot_seconds',
                     'title'=>'timeslot_name', 'groupname'=>'timeslot_groupname', 
                     'time'=>'slot_time_text', 'description', 'start_num', 
