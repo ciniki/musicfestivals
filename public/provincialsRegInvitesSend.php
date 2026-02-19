@@ -121,7 +121,8 @@ function ciniki_musicfestivals_provincialsRegInvitesSend(&$ciniki) {
             . "entries.class_id = classes.id "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
             . ") "
-        . "WHERE entries.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' ";
+        . "WHERE entries.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
+        . "AND entries.position < 100 ";
     if( isset($args['resend']) && $args['resend'] == 'yes' && isset($args['entry_id']) ) {
         $strsql .= "AND entries.status = 45 "; // Invite Sent entries
     } else {

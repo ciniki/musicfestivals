@@ -107,8 +107,11 @@ function ciniki_musicfestivals_provincials($ciniki) {
     } elseif( isset($args['status']) && $args['status'] == '10' ) {
         $status_sql = "AND entries.status = '" . ciniki_core_dbQuote($ciniki, $args['status']) . "' "
             . "AND entries.position < 100 ";
-    } elseif( isset($args['status']) && $args['status'] != '' && $args['status'] > 0 ) {
+    } elseif( isset($args['status']) && $args['status'] != '' && $args['status'] > 100 ) {
         $status_sql = "AND entries.status = '" . ciniki_core_dbQuote($ciniki, $args['status']) . "' ";
+    } elseif( isset($args['status']) && $args['status'] != '' && $args['status'] > 0 ) {
+        $status_sql = "AND entries.status = '" . ciniki_core_dbQuote($ciniki, $args['status']) . "' "
+            . "AND entries.position < 100 ";
     }
     if( isset($args['section_id']) && $args['section_id'] > 0 ) {
         $section_sql = "AND recommendations.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' ";
@@ -394,10 +397,13 @@ function ciniki_musicfestivals_provincials($ciniki) {
         $rsp['entries'] = isset($rc['entries']) ? $rc['entries'] : array();
         $rsp['num_approved'] = 0;
         $rsp['num_accepted'] = 0;
-        foreach($rsp['entries'] as $entry) {
-            if( $entry['status'] == 30 ) {
+        foreach($rsp['entries'] as $eid => $entry) {
+            if( $entry['position'] > 100 && $entry['position'] < 600 ) {
+                $rsp['entries'][$eid]['status_text'] .= ' - Alternate';
+            }
+            if( $entry['status'] == 30 && $entry['position'] < 100 ) {
                 $rsp['num_approved']++;
-            } elseif( $entry['status'] == 40 ) {
+            } elseif( $entry['status'] == 40 && $entry['position'] < 100 ) {
                 $rsp['num_accepted']++;
             }
         }

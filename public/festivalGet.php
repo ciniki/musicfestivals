@@ -4772,7 +4772,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 ) {
                 $strsql = "SELECT entries.id, "
                     . "entries.status, "
+                    . "entries.status AS status_text, "
                     . "entries.position, "
+                    . "entries.position AS position_text, "
                     . "entries.name, "
                     . "entries.mark, "
                     . "classes.code AS class_code, "
@@ -4805,8 +4807,13 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'entries', 'fname'=>'id', 
-                        'fields'=>array('id', 'status', 'class_code', 'class_name', 'position', 'name', 'local_reg_name', 'mark'),
-                        'maps'=>array('position'=>$maps['recommendationentry']['position_shortname']),
+                        'fields'=>array('id', 'status', 'status_text', 'class_code', 'class_name', 'position', 'position_text',
+                            'name', 'local_reg_name', 'mark',
+                            ),
+                        'maps'=>array(
+                            'position_text'=>$maps['recommendationentry']['position_shortname'],
+                            'status_text'=>$maps['recommendationentry']['status'],
+                            ),
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
@@ -4814,6 +4821,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 }
                 $entries = isset($rc['entries']) ? $rc['entries'] : array();
                 foreach($entries as $eid => $entry) {
+                    if( $entry['position'] > 100 && $entry['position'] < 600 ) {
+                        $entries[$eid]['status_text'] .= ' - Alternate';
+                    }
                     $entries[$eid]['class_name'] = $entry['class_code'] . ' - ' . $entry['class_name'];
 //                    if( preg_match("/^([^-]+) - /", $recommendation['section_name'], $m) ) {
 //                        if( $m[1] != '' ) {

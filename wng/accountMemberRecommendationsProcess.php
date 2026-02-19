@@ -83,6 +83,11 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.984', 'msg'=>'Unable to load recommendations', 'err'=>$rc['err']));
     }
     $recommendations = isset($rc['recommendations']) ? $rc['recommendations'] : array();
+    foreach($recommendations AS $rid => $rec) {
+        if( $rec['position'] > 100 && $rec['position'] < 600 ) {
+            $recommendations[$rid]['status_text'] .= ' - Alternate';
+        }
+    }
 
     //
     // Setup background row colours

@@ -2241,9 +2241,9 @@ function ciniki_musicfestivals_main() {
             },
         'recommendation_member_entries':{'label':'Member Entries', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'memberentries' ? 'yes' : 'no'; },
-            'headerValues':['Class', 'Name', 'Local', 'Position', 'Mark'],
+            'headerValues':['Class', 'Name', 'Local', 'Position', 'Mark', 'Status'],
             'sortable':'yes', 
-            'sortTypes':['text', 'text', 'text', 'text', 'text'],
+            'sortTypes':['text', 'text', 'text', 'text', 'text', 'text'],
             },
         'emails_tabs':{'label':'', 'aside':'yes', 'type':'paneltabs', 'selected':'all',
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'emails'); },
@@ -3471,8 +3471,9 @@ function ciniki_musicfestivals_main() {
                 case 0: return d.class_name;
                 case 1: return d.name;
                 case 2: return d.local_reg_name;
-                case 3: return d.position;
+                case 3: return d.position_text;
                 case 4: return d.mark;
+                case 5: return d.status_text;
             }
         }
         if( s == 'sponsors-old' && j == 0 ) {
@@ -16899,6 +16900,9 @@ function ciniki_musicfestivals_main() {
                 '102':'2nd Alt',
                 '103':'3rd Alt',
                 '104':'4th Alt',
+                '601':'Old-1',
+                '602':'Old-2',
+                '603':'Old-3',
                 }},
             'name':{'label':'Name', 'required':'yes', 'type':'text', 'livesearch':'yes'},
             'mark':{'label':'Mark', 'required':'yes', 'type':'text'},
@@ -19642,14 +19646,22 @@ function ciniki_musicfestivals_main() {
     }
 
     this.recommendationEntryStatusColour = function(festival, entry) {
+        if( entry.position == 'Former 1st' || entry.position == 'Former 2nd' || entry.position == 'Former 3rd' 
+            || entry.position == 'Old 1st' || entry.position == 'Old 2nd' || entry.position == 'Old 3rd' 
+            || entry.position == '601' || entry.position == '602' || entry.position == '603' 
+            ) {
+            return 'statusgreyfade statuslinethrough';
+        }
+        if( entry.position == '1st Alt' || entry.position == '2nd Alt' || entry.position == '3rd Alt' || entry.position == '4th Alt' 
+            || entry.position == '101' || entry.position == '102' || entry.position == '103' || entry.position == '104' 
+            ) {
+            if( entry.status > 80 ) {
+                return 'statusgreyfade statuslinethrough';
+            }
+            return 'statusgreyfade';
+        }
         switch(entry.status) {
-            case '10': 
-                if( entry.position == '1st Alt' || entry.position == '2nd Alt' || entry.position == '3rd Alt' || entry.position == '4th Alt' 
-                    || entry.position == '101' || entry.position == '102' || entry.position == '103' || entry.position == '104' 
-                    ) {
-                    return 'statusgreyfade';
-                }
-                return '';
+            case '10': return ''; // White
             case '20': return 'statusblue';  
             case '30': return 'statusorange';
             case '35': return 'statusorangefade';

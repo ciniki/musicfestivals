@@ -36,6 +36,9 @@
 #                               102 - 2nd Alternate
 #                               103 - 3rd Alternate
 #                               600 - N/A
+#                               601 - Former 1st
+#                               602 - Former 2nd
+#                               603 - Former 3rd
 #
 # name:                     The recommended name.
 # mark:                     The mark they received.
