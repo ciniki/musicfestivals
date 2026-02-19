@@ -144,6 +144,7 @@ function ciniki_musicfestivals_recommendationGet($ciniki) {
             . "entries.status, "
             . "entries.status AS status_text, "
             . "entries.position, "
+            . "entries.position AS position_text, "
             . "entries.name, "
             . "entries.mark, "
             . "classes.code AS class_code, "
@@ -167,11 +168,11 @@ function ciniki_musicfestivals_recommendationGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'entries', 'fname'=>'id', 
-                'fields'=>array('id', 'status', 'status_text', 'class_code', 'class_name', 'position', 'name', 'mark',
-                    'local_reg_id', 'local_reg_name', 
+                'fields'=>array('id', 'status', 'status_text', 'class_code', 'class_name', 'position', 'position_text', 
+                    'name', 'mark', 'local_reg_id', 'local_reg_name', 
                     ),
                 'maps'=>array(
-                    'position'=>$maps['recommendationentry']['position_shortname'],
+                    'position_text'=>$maps['recommendationentry']['position_shortname'],
                     'status_text'=>$maps['recommendationentry']['status'],
                     ),
                 ),
@@ -188,6 +189,9 @@ function ciniki_musicfestivals_recommendationGet($ciniki) {
                 if( $m[1] != '' ) {
                     $recommendation['entries'][$eid]['name'] = str_replace($m[1] . ' - ', '', $recommendation['entries'][$eid]['name']);
                 }
+            }
+            if( $entry['position'] > 100 && $entry['position'] < 600 ) {
+                $recommendation['entries'][$eid]['status_text'] .= ' - Alternate';
             }
         }
 

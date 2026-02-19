@@ -16669,7 +16669,7 @@ function ciniki_musicfestivals_main() {
                 case 3: 
                     if( d.status == 90 ) { return 'Expired'; }
                     if( d.status == 80 ) { return 'Duplicate'; }
-                    return d.position;
+                    return d.position_text;
                 case 4: return d.mark;
                 case 5: return d.status_text;
             }
