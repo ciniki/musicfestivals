@@ -211,17 +211,18 @@ function ciniki_musicfestivals_templates_accoladeRegistrationsPDF(&$ciniki, $tni
             $pdf->AddPage();
             $newpage = 'yes';
         }
-        if( $prev_category != $accolade['category'] && $accolade['category'] != '' ) {
-            $pdf->SetCellPadding(4);
-            $pdf->SetFont('helvetica', 'B', 16);
-            $lh = $pdf->getStringHeight(245, $accolade['category']);
-            $prev_category = $accolade['category'];
-//            if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 55 ) ) {
-//            }
+        $accolade_category = $accolade['category'] . ' - ' . $accolade['subcategory'];
+        if( $prev_category != $accolade_category ) {
             if( $newpage == 'no' ) {
                 $pdf->AddPage();
             }
-            $pdf->MultiCell(245, 0, $accolade['category'], 0, 'C', 1, 1);
+            $pdf->SetCellPadding(4);
+            $pdf->SetFont('helvetica', 'B', 16);
+            $lh = $pdf->getStringHeight(245, $accolade_category);
+            $prev_category = $accolade_category;
+//            if( $pdf->getY() > ($pdf->getPageHeight() - $lh - 55 ) ) {
+//            }
+            $pdf->MultiCell(245, 0, $accolade_category, 0, 'C', 1, 1);
             $pdf->SetCellPadding(1.5);
         }
         if( isset($args['marks']) && $args['marks'] == 'yes' ) {

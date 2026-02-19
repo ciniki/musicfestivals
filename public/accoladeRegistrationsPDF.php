@@ -44,12 +44,15 @@ function ciniki_musicfestivals_accoladeRegistrationsPDF($ciniki) {
     $strsql = "SELECT accolades.id, "
         . "accolades.name, "
         . "accolades.typename, "
-        . "accolades.category, "
         . "accolades.donated_by, "
         . "accolades.first_presented, "
         . "accolades.criteria, "
         . "accolades.amount, "
         . "accolades.description, "
+        . "acats.id AS acat_id, "
+        . "acats.name AS acat_name, "
+        . "asubcats.id AS asubcat_id, "
+        . "asubcats.name AS asubcat_name, "
         . "classes.id AS class_id, "
         . "classes.code AS class_code, "
         . "classes.name AS class_name, "
@@ -95,7 +98,15 @@ function ciniki_musicfestivals_accoladeRegistrationsPDF($ciniki) {
         . "TIME_FORMAT(IFNULL(timeslots.slot_time, ''), '%l:%i %p') AS slot_time_text, "
         . "TIME_FORMAT(IFNULL(registrations.timeslot_time, ''), '%l:%i %p') AS reg_time_text, "
         . "IFNULL(locations.name, '') AS location_name "
-        . "FROM ciniki_musicfestival_accolades AS accolades "
+        . "FROM ciniki_musicfestival_accolade_categories AS acats "
+        . "INNER JOIN ciniki_musicfestival_accolade_subcategories AS asubcats ON ("
+            . "acats.id = asubcats.category_id "
+            . "AND asubcats.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestival_accolades AS accolades ON ("
+            . "asubcats.id = accolades.subcategory_id "
+            . "AND accolades.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
         . "INNER JOIN ciniki_musicfestival_accolade_classes AS tc ON ("
             . "accolades.id = tc.accolade_id "
             . "AND tc.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -138,14 +149,15 @@ function ciniki_musicfestivals_accoladeRegistrationsPDF($ciniki) {
             . "divisions.location_id = locations.id "
             . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
-        . "WHERE accolades.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "WHERE acats.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
 //        . "GROUP BY accolades.id "
-        . "ORDER BY accolades.category, accolades.name, accolades.id, classes.sequence, classes.code, registrations.display_name "
+        . "ORDER BY acats.name, asubcats.name, accolades.name, accolades.id, classes.sequence, classes.code, registrations.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'accolades', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'typename', 'category', 'donated_by', 'first_presented', 'criteria', 'amount', 
+            'fields'=>array('id', 'name', 'typename', 'donated_by', 'first_presented', 'criteria', 'amount', 
+                'category'=>'acat_name', 'subcategory'=>'asubcat_name',
                 'description', 
                 )),
         array('container'=>'classes', 'fname'=>'class_id', 
@@ -153,7 +165,7 @@ function ciniki_musicfestivals_accoladeRegistrationsPDF($ciniki) {
             ),
         array('container'=>'registrations', 'fname'=>'registration_id', 
             'fields'=>array('id'=>'class_id', 'display_name', 'mark',
-                'class_code', 'class_name', 'category_name', 'section_name',
+                'class_code', 'class_name', 'category_name', 'subcategory_name', 
                 'timeslot_name', 'timeslot_groupname', 'division_name', 'ssection_name',
                 'division_date_text', 'slot_time_text', 'reg_time_text', 'location_name',
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
