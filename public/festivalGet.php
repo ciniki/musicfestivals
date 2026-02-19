@@ -2597,7 +2597,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "registrations.level, "
                     . "registrations.provincials_status AS provincials_status_text, "
                     . "registrations.provincials_position, "
-                    . "IF(registrations.provincials_position=0, 999, registrations.provincials_position) AS position_sort, "
+                    . "IF(registrations.provincials_position=0, 900, registrations.provincials_position) AS position_sort, "
                     . "classes.code AS class_code, "
                     . "classes.provincials_code AS provincials_code, "
 //                    . "IF(registrations.provincials_code <> '', registrations.provincials_code, classes.provincials_code) AS provincials_code, "
@@ -3247,7 +3247,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "registrations.provincials_status, "
                 . "registrations.provincials_status AS provincials_status_text, "
                 . "registrations.provincials_position, "
-                . "IF(registrations.provincials_status >= 70, 999, registrations.provincials_position) AS position_sort, "
+                . "IF(registrations.provincials_status >= 70, 900, registrations.provincials_position) AS position_sort, "
                 . "registrations.provincials_position AS provincials_position_text, "
                 . "DATE_FORMAT(registrations.provincials_invite_date, '%b %e, %Y') AS provincials_invite_date, "
                 . "registrations.provincials_notes, ";

@@ -102,8 +102,14 @@ function ciniki_musicfestivals_provincials($ciniki) {
     $section_sql = '';
     $class_sql = '';
     $recommendation_sql = '';
-    if( isset($args['status']) && $args['status'] == '999' ) {
-        $status_sql = "AND entries.position > 100 ";
+    if( isset($args['status']) && $args['status'] == '950' ) {
+        $status_sql = "AND entries.position > 600 ";
+    } elseif( isset($args['status']) && $args['status'] == '900' ) {
+        $status_sql = "AND entries.position > 100 "
+            . "AND entries.position < 600 "
+            . "AND entries.status < 70 ";
+    } elseif( isset($args['status']) && $args['status'] >= 70 ) {
+        $status_sql = "AND entries.status = '" . ciniki_core_dbQuote($ciniki, $args['status']) . "' ";
     } elseif( isset($args['status']) && $args['status'] == '10' ) {
         $status_sql = "AND entries.status = '" . ciniki_core_dbQuote($ciniki, $args['status']) . "' "
             . "AND entries.position < 100 ";
@@ -240,7 +246,7 @@ function ciniki_musicfestivals_provincials($ciniki) {
         //
         // Get the counts
         //
-        $strsql = "SELECT if( entries.position > 100, 999, entries.status) AS status, "
+        $strsql = "SELECT IF( entries.position > 100 AND entries.position < 600 AND entries.status < 70, 900, IF(entries.position > 600, 950, entries.status)) AS status, "
             . "COUNT(entries.id) AS num_items "
             . "FROM ciniki_musicfestival_recommendations AS recommendations "
             . "INNER JOIN ciniki_musicfestival_recommendation_entries AS entries ON ("
@@ -273,7 +279,8 @@ function ciniki_musicfestivals_provincials($ciniki) {
             '80' => ['status' => '80', 'name' => 'Already Recommended', 'num_items' => ''],
             '85' => ['status' => '85', 'name' => 'Ineligible', 'num_items' => ''],
             '90' => ['status' => '90', 'name' => 'Expired', 'num_items' => ''],
-            '999' => ['status' => '999', 'name' => 'Alternates', 'num_items' => ''],
+            '900' => ['status' => '900', 'name' => 'Alternates', 'num_items' => ''],
+            '950' => ['status' => '950', 'name' => 'Former 1st/2nd/3rd', 'num_items' => ''],
             ];
         $total = 0;
         foreach($num_items as $status => $num) {
