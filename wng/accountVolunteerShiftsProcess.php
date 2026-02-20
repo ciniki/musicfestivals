@@ -272,7 +272,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
                         $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
                             'object' => 'ciniki.musicfestivals.volunteershift',
                             'object_id' => $shift['id'],
-                            'subject' => 'Volunteer Cancelled - ' . $volunteer['name'] . ' - ' . $shift['shift_date_text'] . ' - ' . $shift['start_time'],
+                            'subject' => 'Volunteer Cancelled - ' . $volunteer['name'] . ' - ' . $date['shift_date_text'] . ' - ' . $shift['start_time'],
                             'html_content' => $content,
                             'customer_email' => $email,
                             ));
