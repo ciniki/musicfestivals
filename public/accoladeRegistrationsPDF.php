@@ -165,7 +165,7 @@ function ciniki_musicfestivals_accoladeRegistrationsPDF($ciniki) {
             ),
         array('container'=>'registrations', 'fname'=>'registration_id', 
             'fields'=>array('id'=>'class_id', 'display_name', 'mark',
-                'class_code', 'class_name', 'category_name', 'subcategory_name', 
+                'class_code', 'class_name', 'category_name', 'section_name', 
                 'timeslot_name', 'timeslot_groupname', 'division_name', 'ssection_name',
                 'division_date_text', 'slot_time_text', 'reg_time_text', 'location_name',
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
