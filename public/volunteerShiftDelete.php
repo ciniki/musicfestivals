@@ -59,6 +59,18 @@ function ciniki_musicfestivals_volunteerShiftDelete(&$ciniki) {
     //
 
     //
+    // Detach any messages from this shift
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'objectMessagesDetach');
+    $rc = ciniki_mail_hooks_objectMessagesDetach($ciniki, $args['tnid'], array(
+        'object' => 'ciniki.musicfestivals.volunteershift',
+        'object_id' => $args['shift_id'],
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.624', 'msg'=>'Unable to detach from mail messages.', 'err'=>$rc['err']));
+    } 
+
+    //
     // Check if any modules are currently using this object
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectCheckUsed');
@@ -111,6 +123,7 @@ function ciniki_musicfestivals_volunteerShiftDelete(&$ciniki) {
         return $rc;
     }
 
+
     foreach($assignments as $assignment) {
         if( isset($assignment['notifications']) ) {
             foreach($assignment['notifications'] as $notification) {
@@ -122,6 +135,21 @@ function ciniki_musicfestivals_volunteerShiftDelete(&$ciniki) {
                 }
             }
         }
+        //
+        // Detach any messages from this assignment
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'objectMessagesDetach');
+        $rc = ciniki_mail_hooks_objectMessagesDetach($ciniki, $args['tnid'], array(
+            'object' => 'ciniki.musicfestivals.volunteerassignment',
+            'object_id' => $assignment['id'],
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.624', 'msg'=>'Unable to detach from mail messages.', 'err'=>$rc['err']));
+        } 
+
+        //
+        // Delete the assignment
+        //
         $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.musicfestivals.volunteerassignment',
             $assignment['id'], $assignment['uuid'], 0x04);
         if( $rc['stat'] != 'ok' ) {
