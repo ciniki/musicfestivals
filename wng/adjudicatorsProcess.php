@@ -152,6 +152,7 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
                 }
                 $blocks[] = array(
                     'type' => 'imagebuttons',
+                    'class' => 'musicfestival-adjudicators',
                     'items' => $adjudicators,
                     );
             } 
