@@ -9784,7 +9784,7 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.registration.nameVisible = function() {
-        if( (this.selected_class != null && (this.selected_class.flags&0x70) > 0) || this.data.competitor2_id > 0 ) {
+        if( (this.selected_class != null && (this.selected_class.flags&0x8000) == 0x8000) || this.data.competitor2_id > 0 ) {
             return 'yes';
         }
         return 'hidden';
