@@ -379,7 +379,7 @@ function ciniki_musicfestivals_scheduleMultislot($ciniki) {
             . "registrations.perf_time8, "
             . "registrations.participation, "
             . "registrations.notes, "
-            . "GROUP_CONCAT(' ', competitors.notes) AS competitor_notes, "
+            . "GROUP_CONCAT(competitors.notes SEPARATOR ' ') AS competitor_notes, "
 //            . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS status_text, "
             . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
             . "IFNULL(teachers.display_name, '') AS teacher_name, "

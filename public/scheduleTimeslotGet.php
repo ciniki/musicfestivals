@@ -210,7 +210,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "registrations.status AS status_text, "
             . "registrations.participation, "
             . "CONCAT_WS(' ', registrations.notes, registrations.runsheet_notes, registrations.internal_notes) AS notes, "
-            . "GROUP_CONCAT(' ', competitors.notes) AS competitor_notes, "
+            . "GROUP_CONCAT(competitors.notes SEPARATOR ' ') AS competitor_notes, "
             . "registrations.competitor1_id, "
             . "registrations.competitor2_id, "
             . "registrations.competitor3_id, "
@@ -395,8 +395,9 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                     $scheduletimeslot['registrations'][$rid]['ages'] = $ra;
                 }
             }
-            if( $reg['competitor_notes'] != '' ) {
-                $scheduletimeslot['registrations'][$rid]['notes'] .= ($reg['notes'] != '' ? ' ' : '') . $reg['competitor_notes'];
+            if( trim($reg['competitor_notes']) != '' ) {
+            error_log($reg['competitor_notes']);
+                $scheduletimeslot['registrations'][$rid]['notes'] .= ($reg['notes'] != '' ? ' ' : '') . trim($reg['competitor_notes']);
             }
             $num++;
         }
@@ -634,7 +635,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "registrations.perf_time8, "
             . "registrations.participation, "
             . "CONCAT_WS(' ', registrations.notes, registrations.runsheet_notes, registrations.internal_notes) AS notes, "
-            . "GROUP_CONCAT(' ', competitors.notes) AS competitor_notes, "
+            . "GROUP_CONCAT(competitors.notes SEPARATOR ' ') AS competitor_notes, "
             . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS invoice_status_text, "
             . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
             . "IFNULL(teachers.display_name, '') AS teacher_name, "
@@ -791,7 +792,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . "registrations.perf_time8, "
             . "registrations.participation, "
             . "CONCAT_WS(' ', registrations.notes, registrations.runsheet_notes, registrations.internal_notes) AS notes, "
-            . "GROUP_CONCAT(' ', competitors.notes) AS competitor_notes, "
+            . "GROUP_CONCAT(competitors.notes SEPARATOR ' ') AS competitor_notes, "
             . "CONCAT_WS('.', invoices.invoice_type, invoices.status) AS invoice_status_text, "
             . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
             . "IFNULL(teachers.display_name, '') AS teacher_name, "
