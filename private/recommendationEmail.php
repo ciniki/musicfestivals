@@ -69,6 +69,10 @@ function ciniki_musicfestivals_recommendationEmail(&$ciniki, $tnid, $args) {
         '101' => '1st Alternate',
         '102' => '2nd Alternate',
         '103' => '3rd Alternate',
+        '104' => '4rd Alternate',
+        '601' => 'Former 1st',
+        '602' => 'Former 2nd',
+        '603' => 'Former 3rd',
         ];
 
     //
