@@ -396,7 +396,6 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
                 }
             }
             if( trim($reg['competitor_notes']) != '' ) {
-            error_log($reg['competitor_notes']);
                 $scheduletimeslot['registrations'][$rid]['notes'] .= ($reg['notes'] != '' ? ' ' : '') . trim($reg['competitor_notes']);
             }
             $num++;
