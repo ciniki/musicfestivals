@@ -596,13 +596,12 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             //
             // Skip empty divisions
             //
-            $division['timeslots'] = array_values($division['timeslots']);
             if( !isset($division['timeslots']) || count($division['timeslots']) <= 0 
                 || (count($division['timeslots']) == 1 && $division['timeslots'][0]['id'] == '')
                 ) {
                 continue;
             }
-
+            $division['timeslots'] = array_values($division['timeslots']);
 
             //
             // Start a new section
