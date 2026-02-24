@@ -87,7 +87,7 @@ function ciniki_musicfestivals_cron_jobs(&$ciniki) {
     //
     // Check for volunteer email reminders
     //
-    $end_dt = new DateTime('now', new DateTimezone('UTC'));
+/*    $end_dt = new DateTime('now', new DateTimezone('UTC'));
     $start_dt = clone $end_dt;
     $start_dt->sub(new DateInterval('PT1H'));
     $end_dt->add(new DateInterval('PT5M'));
@@ -115,7 +115,7 @@ function ciniki_musicfestivals_cron_jobs(&$ciniki) {
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1300', 'msg'=>'Unable to send music festival volunteer message', 'err'=>$rc['err']));
         }
-    }
+    }*/
 
     return array('stat'=>'ok');
 }
