@@ -48,7 +48,7 @@ function ciniki_musicfestivals_locationNamesUpdate(&$ciniki, $tnid, $args) {
             continue;
         }
         foreach($building['rooms'] as $room) {
-            $location_name = $building['name'] . ' - ' . $room['roomname'];
+            $location_name = $building['name'] . ($room['roomname'] != '' ? ' - ' . $room['roomname'] : '');
             if( $location_name != $room['location_name'] ) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
                 $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.location', $room['id'], [

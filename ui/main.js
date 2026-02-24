@@ -13718,12 +13718,12 @@ function ciniki_musicfestivals_main() {
                     },
              },
         }}, */
-        'general':{'label':'Location Information', 'aside':'yes', 'fields':{
+        'general':{'label':'Room Information', 'aside':'yes', 'fields':{
             'building_id':{'label':'Building', 'required':'yes', 'type':'select',
                 'complex_options':{'value':'id', 'name':'name'},
                 'options':[],
                 },
-            'roomname':{'label':'Room', 'required':'yes', 'type':'text'},
+            'roomname':{'label':'Room', 'required':'no', 'type':'text'},
             'shortname':{'label':'Short Name', 'type':'text'},
 /*            'category':{'label':'Category', 'type':'text',
                 'visible':function() { return M.ciniki_musicfestivals_main.festival.settingValue('locations-categories') == 'yes' ? 'yes' : 'no'; },

@@ -19,7 +19,7 @@ function ciniki_musicfestivals_locationUpdate(&$ciniki) {
         'location_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Location'),
         'festival_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Festival'),
         'building_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Building'),
-        'roomname'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Room Name'),
+        'roomname'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Room Name'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
         'shortname'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Short Name'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
@@ -102,7 +102,7 @@ function ciniki_musicfestivals_locationUpdate(&$ciniki) {
             return $rc;
         }
         if( $rc['num_rows'] > 0 ) {
-            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1219', 'msg'=>'You already have an location with this name, please choose another.'));
+            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1219', 'msg'=>'You already have an room with this name, please choose another.'));
         }
     }
 
