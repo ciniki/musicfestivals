@@ -3892,6 +3892,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $festival['buildings'] = $rc['buildings'];
                 foreach($festival['buildings'] as $iid => $building) {
                     $room_disciplines = '';
+                    if( !isset($building['rooms']) ) {
+                        continue;
+                    }
                     foreach($building['rooms'] as $room) {
                         $room_disciplines .= ($room_disciplines != '' ? "<br/>" : '')
                             . ($room['roomname'] != '' ? $room['roomname'] : '')
