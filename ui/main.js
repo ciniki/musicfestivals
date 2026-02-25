@@ -11394,6 +11394,7 @@ function ciniki_musicfestivals_main() {
                     M.api.err(rsp);
                     return false;
                 }
+                M.ciniki_musicfestivals_main.festival.scheduledivision_id = 0;
                 M.ciniki_musicfestivals_main.scheduledivision.close();
             });
         });
