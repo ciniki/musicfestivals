@@ -146,10 +146,49 @@ function ciniki_musicfestivals_volunteerShiftUpdate(&$ciniki) {
     foreach($assignments as $volunteer_id => $assignment) {
         if( !in_array($volunteer_id, $assigned_ids) ) {
             $assignment = $assignments[$volunteer_id];
+            //
+            // Delete any assignment notifications
+            //
+            $strsql = "SELECT notifications.id, "
+                . "notifications.uuid "
+                . "FROM ciniki_musicfestival_volunteer_notifications AS notifications "
+                . "WHERE notifications.assignment_id = '" . ciniki_core_dbQuote($ciniki, $assignment['id']) . "' "
+                . "AND notifications.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'notification');
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1474', 'msg'=>'Unable to load notification', 'err'=>$rc['err']));
+            }
+            $notifications = isset($rc['rows']) ? $rc['rows'] : array();
+            foreach($notifications as $notification) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
+                $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.musicfestivals.volunteernotification', $notification['id'], $notification['uuid'], 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1474', 'msg'=>'Unable to remove notification', 'err'=>$rc['err']));
+                }
+            }
+
+            //
+            // Delete the assignment
+            //
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
             $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.musicfestivals.volunteerassignment', $assignment['id'], $assignment['uuid'], 0x04);
             if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1252', 'msg'=>'Unable to remove volunteer', 'err'=>$rc['err']));
+            }
+            //
+            // Update the email queue for the volunteer
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'volunteerNotificationsUpdate');
+            $rc = ciniki_musicfestivals_volunteerNotificationsUpdate($ciniki, $args['tnid'], [
+                'volunteer_id' => $volunteer_id,
+                ]);
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1266', 'msg'=>'Unable to update the notification queue', 'err'=>$rc['err']));
             }
         }
     }
@@ -177,6 +216,7 @@ function ciniki_musicfestivals_volunteerShiftUpdate(&$ciniki) {
                 'status' => $status_key !== false ? $assigned_id_status[$status_key] : 30,
                 ], 0x04);
             if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1311', 'msg'=>'Unable to add the volunteer', 'err'=>$rc['err']));
             }
             $assignment_id = $rc['id'];
@@ -187,6 +227,7 @@ function ciniki_musicfestivals_volunteerShiftUpdate(&$ciniki) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
             $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.volunteerassignment', $assignments[$volunteer_id]['id'], ['status' => $assigned_id_status[$status_key]], 0x04);
             if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1261', 'msg'=>'Unable to change status', 'err'=>$rc['err']));
             }
             if( $assigned_id_status[$status_key] == 30 ) {
@@ -201,6 +242,7 @@ function ciniki_musicfestivals_volunteerShiftUpdate(&$ciniki) {
             'volunteer_id' => $volunteer_id,
             ]);
         if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1266', 'msg'=>'Unable to update the notification queue', 'err'=>$rc['err']));
         }
     }
