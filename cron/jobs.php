@@ -89,7 +89,7 @@ function ciniki_musicfestivals_cron_jobs(&$ciniki) {
     //
     $end_dt = new DateTime('now', new DateTimezone('UTC'));
     $start_dt = clone $end_dt;
-    $start_dt->sub(new DateInterval('PT1H'));
+    $start_dt->sub(new DateInterval('PT12H'));
     $end_dt->add(new DateInterval('PT5M'));
     $strsql = "SELECT notifications.id AS notification_id, "   
         . "notifications.uuid, "
