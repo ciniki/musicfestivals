@@ -1618,12 +1618,16 @@ function ciniki_musicfestivals_main() {
                     'fn':'M.ciniki_musicfestivals_main.scheduletimeslot.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.scheduledivision_id,M.ciniki_musicfestivals_main.festival.festival_id,null);',
                     },
                 'runsheets':{
-                    'label':'Run Sheets PDF',
+                    'label':'Run Sheets',
                     'fn':'M.ciniki_musicfestivals_main.festival.downloadDivisionRunSheetsPDF();',
                     },
                 'comments':{
-                    'label':'Comments PDF',
+                    'label':'Comments',
                     'fn':'M.ciniki_musicfestivals_main.festival.downloadCommentsPDF(0,M.ciniki_musicfestivals_main.festival.scheduledivision_id);',
+                    },
+                'certificates':{
+                    'label':'Certificates',
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadCertificatesPDF(0,M.ciniki_musicfestivals_main.festival.scheduledivision_id);',
                     },
                 'certsnobg':{
                     'label':'Certificates No Background',
