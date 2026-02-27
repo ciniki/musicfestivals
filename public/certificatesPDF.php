@@ -214,7 +214,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
             $strsql .= "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
         }
         if( isset($args['division_id']) && $args['division_id'] > 0 ) {
-            $strsql .= "AND division_id.id = '" . ciniki_core_dbQuote($ciniki, $args['division_id']) . "' ";
+            $strsql .= "AND divisions.id = '" . ciniki_core_dbQuote($ciniki, $args['division_id']) . "' ";
         }
         if( isset($args['timeslot_id']) && $args['timeslot_id'] > 0 ) {
             $strsql .= "AND timeslots.id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' ";

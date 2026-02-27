@@ -1404,7 +1404,7 @@ function ciniki_musicfestivals_main() {
             'sortTypes':['text', 'date', 'time', 'text', 'number', 'text'],
             'menu':{
                 'runsheets':{
-                    'label':'Runsheets PDF',
+                    'label':'Run Sheets PDF',
                     'fn':'M.ciniki_musicfestivals_main.festival.downloadAdjudicatorRunSheetsPDF(M.ciniki_musicfestivals_main.festival.adjudicator_id);',
                     },
 //                'runsheetsword':{
@@ -1618,12 +1618,16 @@ function ciniki_musicfestivals_main() {
                     'fn':'M.ciniki_musicfestivals_main.scheduletimeslot.open(\'M.ciniki_musicfestivals_main.festival.open();\',0,M.ciniki_musicfestivals_main.festival.scheduledivision_id,M.ciniki_musicfestivals_main.festival.festival_id,null);',
                     },
                 'runsheets':{
-                    'label':'Runsheets PDF',
+                    'label':'Run Sheets PDF',
                     'fn':'M.ciniki_musicfestivals_main.festival.downloadDivisionRunSheetsPDF();',
                     },
                 'comments':{
                     'label':'Comments PDF',
                     'fn':'M.ciniki_musicfestivals_main.festival.downloadCommentsPDF(0,M.ciniki_musicfestivals_main.festival.scheduledivision_id);',
+                    },
+                'certsnobg':{
+                    'label':'Certificates No Background',
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadCertificatesPDF(0,M.ciniki_musicfestivals_main.festival.scheduledivision_id,0,"no");',
                     },
                 'import':{
                     'label':'Import Unscheduled Section Classes',
