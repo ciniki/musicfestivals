@@ -328,7 +328,9 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
         if( isset($args['teacher_customer_id']) && $args['teacher_customer_id'] > 0 ) {
             $strsql .= "AND registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $args['teacher_customer_id']) . "' ";
             $strsql .= "ORDER BY divisions.division_date, division_id, slot_time, display_name, registrations.id, adjudicator_name ";
-        } elseif( isset($festival['comments-sorting']) && $festival['comments-sorting'] == 'byclass' ) {
+        } elseif( isset($festival['comments-sorting']) && $festival['comments-sorting'] == 'byclass' 
+            && (!isset($args['division_id']) || $args['division_id'] == 0 )
+            ) {
             $strsql .= "ORDER BY classes.code, slot_time, registrations.timeslot_sequence, registrations.id, adjudicator_name ";
         } else {
             $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, registrations.timeslot_sequence, registrations.id, adjudicator_name ";

@@ -219,7 +219,9 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
         if( isset($args['timeslot_id']) && $args['timeslot_id'] > 0 ) {
             $strsql .= "AND timeslots.id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' ";
         }
-        if( isset($festival['certificates-sorting']) && $festival['certificates-sorting'] == 'byclass' ) {
+        if( isset($festival['certificates-sorting']) && $festival['certificates-sorting'] == 'byclass' 
+            && (!isset($args['division_id']) || $args['division_id'] == 0) 
+            ) {
             $strsql .= "ORDER BY classes.code, slot_time, registrations.timeslot_sequence, registrations.id, adjudicator_id ";
         } else {
             $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, registrations.timeslot_sequence, registrations.id, adjudicator_id ";
