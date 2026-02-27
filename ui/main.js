@@ -19357,6 +19357,11 @@ function ciniki_musicfestivals_main() {
 //                    },
 //                },
             },
+        '_buttons':{'label':'', 
+            'visible':function() { return M.ciniki_musicfestivals_main.pr.data.status == 10 && M.ciniki_musicfestivals_main.pre.data.status == 10 ? 'yes' : 'no'; },
+            'buttons':{
+                'delete':{'label':'Delete', 'fn':'M.ciniki_musicfestivals_main.pre.remove();'},
+                }},
         };
     this.pre.cellClass = function(s, i, j, d) {
         if( s == 'details' && j == 0 ) {
@@ -19499,6 +19504,17 @@ function ciniki_musicfestivals_main() {
                 } */
                 p.refresh();
                 p.show(cb);
+        });
+    }
+    this.pre.remove = function() {
+        M.confirm('Are you sure you want to remove this recommendation?', null, function(rsp) {
+            M.api.getJSONCb('ciniki.musicfestivals.provincialsRecommendationEntryDelete', {'tnid':M.curTenantID, 'recommendation_id':M.ciniki_musicfestivals_main.pr.recommendation_id, 'festival_id':M.ciniki_musicfestivals_main.pr.festival_id, 'entry_id':M.ciniki_musicfestivals_main.pre.entry_id}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_musicfestivals_main.pre.close();
+            });
         });
     }
     this.pre.addClose('Back');
