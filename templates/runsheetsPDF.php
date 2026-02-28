@@ -683,7 +683,10 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                 $tnw[2] = $tnw[2] - 15;
             }
             $prev_time = '';
+            $num_timeslots = count($division['timeslots']);
+            $cur_timeslot = 0;
             foreach($division['timeslots'] as $tid => $timeslot) {
+                $cur_timeslot++;
                 $rc = ciniki_musicfestivals_scheduleTimeslotProcess($ciniki, $tnid, $timeslot, [
                     'festival' => $festival,
                     ]);
@@ -1136,8 +1139,12 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                         $num++;
                     }
                     if( isset($festival['runsheets-timeslot-singlepage']) && $festival['runsheets-timeslot-singlepage'] == 'yes' ) {
-                        $pdf->AddPage();
-                        $newpage = 'yes';
+                        if( $cur_timeslot != $num_timeslots ) {
+                            $pdf->AddPage();
+                            $newpage = 'yes';
+                        } else {
+                            $newpage = 'no';
+                        }
                     } else {
                         $pdf->Ln(5);
                     }
