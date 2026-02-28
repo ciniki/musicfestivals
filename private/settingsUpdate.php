@@ -332,6 +332,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'volunteers-account-menu',          // Enable the account menu for logins
         'volunteers-shift-signup-review',   // Review shift signups, require approval
         'volunteers-applied-msg',           // The message to display when a volunteer has applied.
+        'volunteers-discipline-format',     // Where to pull the discipline from
         'volunteers-account-cancel',        // Is customer allowed to cancel
         'volunteers-cancel-notify-emails',  // The emails to notify when a person cancels a shift
         'volunteers-approve-assignments',   // Used to enable approval requirement

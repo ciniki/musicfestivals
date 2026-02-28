@@ -6762,6 +6762,11 @@ function ciniki_musicfestivals_main() {
                 'volunteers-availability-times':{'label':'Available Times', 'type':'textarea', 'size':'medium'},
 //                'volunteers-default-shifts':{'label':'Default Shifts', 'type':'textarea'},
                 'volunteers-applied-msg':{'label':'Applied Message', 'type':'textarea', 'size':'small'},
+                'volunteers-discipline-format':{'label':'Discipline', 'type':'select', 'default':'none', 'options':{
+                    'none':'No Discipline',
+                    'section':'Schedule Name',
+//                    'division':'Division Name',
+                    }},
                 'volunteers-account-menu':{'label':'Account Menu', 'type':'toggle', 'default':'yes', 'toggles':{
                     'no':'No',
                     'yes':'Yes',

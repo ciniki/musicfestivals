@@ -13,7 +13,7 @@
 # ssection_id:          The schedule_section the time slot is for, used for unscheduled timeslots.
 # sdivision_id:         The schedule_division the time slot is for.
 #
-# slot_time:            The time for the slot on the division date.
+# slot_time:            The time for the slot on the division date in local time.
 #
 # pre_seconds:          The length of time to leave before this timeslot, used in scheduling-timeslot-autoshift setting.
 # slot_seconds:         The length of time for this timeslot, how many seconds long.
