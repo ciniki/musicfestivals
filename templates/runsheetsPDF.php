@@ -55,6 +55,27 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         return ciniki_musicfestivals_templates_compactRunSheetsPDF($ciniki, $tnid, $args);
     }
 
+    $titles = 'yes';
+    if( isset($festival['runsheets-titles']) && $festival['runsheets-titles'] == 'no' ) {
+        $titles = 'no';
+    }
+    $mark = 'yes';
+    if( isset($festival['runsheets-mark']) && $festival['runsheets-mark'] == 'no' ) {
+        $mark = 'no';
+    }
+    $placement = 'yes';
+    if( isset($festival['runsheets-placement']) && $festival['runsheets-placement'] == 'no' ) {
+        $placement = 'no';
+    }
+    $level = 'no';
+    if( isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes' ) {
+        $level = 'yes';
+    }
+    $advanceto = 'yes';
+    if( isset($festival['runsheets-advance-to']) && $festival['runsheets-advance-to'] == 'no' ) {
+        $advanceto = 'no';
+    }
+
     //
     // Load the schedule sections, divisions, timeslots, classes, registrations
     //
@@ -631,32 +652,24 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             //
             $fill = 0;
             $border = 'T';
-            if( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
-                && (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
-                && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes') 
-                ) {
-                $w = array(10, 85, 15, 15, 15, 40);
-            } elseif( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
-                && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes') 
-                ) {
-                $w = array(10, 100, 15, 15, 40);
-            } elseif( (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
-                && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes') 
-                ) {
-                $w = array(10, 100, 15, 15, 40);
-            } elseif( (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
-                && (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
-                ) {
-                $w = array(10, 140, 15, 15, 15);
-            } elseif( !isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes' ) {
-                $w = array(10, 140, 15, 15);
-            } elseif( isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes' ) {
-                $w = array(10, 140, 15, 15);
-            } elseif( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
-                $w = array(10, 115, 15, 40);
-            } else {
-                $w = array(10, 155, 15);
+            $w = array(10, 170);
+            if( $mark == 'yes' ) {
+                $w[] = 15;
+                $w[1] -= 15;
             }
+            if( $placement == 'yes' ) {
+                $w[] = 15;
+                $w[1] -= 15;
+            }
+            if( $level == 'yes' ) {
+                $w[] = 15;
+                $w[1] -= 15;
+            }
+            if( $advanceto == 'yes' ) {
+                $w[] = 40;
+                $w[1] -= 40;
+            }
+
             $cw = array(30, 150);   // Class lines
             $tw = array(10, 170);   // Title lines
             $tnw = array(10, 15, 155);   // reg notes lines
@@ -811,7 +824,11 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                                             $timeslot['registrations'][$rid]["title{$i}"] = $rc['title'];
                                         }
                                     }
-                                    $h += $pdf->getStringHeight($tw[1], $timeslot['registrations'][$rid]["title{$i}"]);
+                                    if( $titles == 'yes' ) {
+                                        $h += $pdf->getStringHeight($tw[1], $timeslot['registrations'][$rid]["title{$i}"]);
+                                    } else {
+//                                        $h += 2;
+                                    }
                                 }
                             }
                         }
@@ -939,43 +956,22 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                         $pdf->MultiCell($w[0], 0, '#', 1, 'C', 1, 0);
                     }
                     $pdf->MultiCell($w[1], 0, 'Name', 1, 'L', 1, 0);
-                    if( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
-                        && (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
-                        && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
-                        ) {
-                        $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
-                        $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 0);
-                        $pdf->MultiCell($w[4], 0, 'Level', 1, 'C', 1, 0);
-                        $pdf->MultiCell($w[5], 0, 'Advanced to', 1, 'C', 1, 1);
-                    } elseif( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
-                        && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
-                        ) {
-                        $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
-                        $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 0);
-                        $pdf->MultiCell($w[4], 0, 'Advanced to', 1, 'C', 1, 1);
-                    } elseif( (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
-                        && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
-                        ) {
-                        $pdf->MultiCell($w[2], 0, 'Place', 1, 'C', 1, 0);
-                        $pdf->MultiCell($w[3], 0, 'Level', 1, 'C', 1, 0);
-                        $pdf->MultiCell($w[4], 0, 'Advanced to', 1, 'C', 1, 1);
-                    } elseif( (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
-                        && (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
-                        ) {
-                        $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
-                        $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 0);
-                        $pdf->MultiCell($w[4], 0, 'Level', 1, 'C', 1, 0);
-                    } elseif( !isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes' ) {
-                        $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
-                        $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 1);
-                    } elseif( isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes' ) {
-                        $pdf->MultiCell($w[2], 0, 'Place', 1, 'C', 1, 1);
-                        $pdf->MultiCell($w[3], 0, 'Level', 1, 'C', 1, 0);
-                    } elseif( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
-                        $pdf->MultiCell($w[2], 0, 'Place', 1, 'C', 1, 0);
-                        $pdf->MultiCell($w[3], 0, 'Advanced to', 1, 'C', 1, 1);
-                    } else {
-                        $pdf->MultiCell($w[2], 0, 'Place', 1, 'C', 1, 1);
+                    $col = 2;
+                    if( $mark == 'yes' ) {
+                        $pdf->MultiCell($w[$col], 0, 'Mark', 1, 'C', 1, (($col+1) < count($w) ? 0 : 1));
+                        $col++;
+                    }
+                    if( $placement == 'yes' ) {
+                        $pdf->MultiCell($w[$col], 0, 'Place', 1, 'C', 1, (($col+1) < count($w) ? 0 : 1));
+                        $col++;
+                    }
+                    if( $level == 'yes' ) {
+                        $pdf->MultiCell($w[$col], 0, 'Level', 1, 'C', 1, (($col+1) < count($w) ? 0 : 1));
+                        $col++;
+                    }
+                    if( $advanceto == 'yes' ) {
+                        $pdf->MultiCell($w[$col], 0, 'Advanced to', 1, 'C', 1, 1);
+                        $col++;
                     }
 
                     $pdf->SetFont('', '', '12');
@@ -991,7 +987,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                         $pdf->SetFont('', 'B');
                         $h += $pdf->getStringHeight($w[1], $reg['name']);
                         for($i = 1; $i <= 8; $i++) {
-                            if( $reg["title{$i}"] != '' ) {
+                            if( $reg["title{$i}"] != '' && $titles == 'yes' ) {
                                 $h += $pdf->getStringHeight($tw[1], $reg["title{$i}"]);
                             }
                         }
@@ -1044,64 +1040,28 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                                 $pdf->MultiCell($w[0], 0, '#', 1, 'C', 1, 0);
                             }
                             $pdf->MultiCell($w[1], 0, 'Name', 1, 'L', 1, 0);
-                            if( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
-                                && (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
-                                && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
-                                ) {
-                                $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
-                                $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 0);
-                                $pdf->MultiCell($w[4], 0, 'Level', 1, 'C', 1, 0);
-                                $pdf->MultiCell($w[5], 0, 'Advanced to', 1, 'C', 1, 1);
-                            } elseif( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
-                                && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
-                                ) {
-                                $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
-                                $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 0);
-                                $pdf->MultiCell($w[4], 0, 'Advanced to', 1, 'C', 1, 1);
-                            } elseif( (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
-                                && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
-                                ) {
-                                $pdf->MultiCell($w[2], 0, 'Place', 1, 'C', 1, 0);
-                                $pdf->MultiCell($w[3], 0, 'Level', 1, 'C', 1, 0);
-                                $pdf->MultiCell($w[4], 0, 'Advanced to', 1, 'C', 1, 1);
-                            } elseif( (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
-                                && (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
-                                ) {
-                                $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
-                                $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 0);
-                                $pdf->MultiCell($w[4], 0, 'Level', 1, 'C', 1, 0);
-                            } elseif( !isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes' ) {
-                                $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
-                                $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 1);
-                            } elseif( isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes' ) {
-                                $pdf->MultiCell($w[2], 0, 'Place', 1, 'C', 1, 1);
-                                $pdf->MultiCell($w[3], 0, 'Level', 1, 'C', 1, 0);
-                            } elseif( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
-                                $pdf->MultiCell($w[2], 0, 'Place', 1, 'C', 1, 0);
-                                $pdf->MultiCell($w[3], 0, 'Advanced to', 1, 'C', 1, 1);
-                            } else {
-                                $pdf->MultiCell($w[2], 0, 'Place', 1, 'C', 1, 1);
+                            $col = 2;
+                            if( $mark == 'yes' ) {
+                                $pdf->MultiCell($w[$col], 0, 'Mark', 1, 'C', 1, (($col+1) < count($w) ? 0 : 1));
+                                $col++;
                             }
-/*                            if( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
-                                && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
-                                ) {
-                                $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
-                                $pdf->MultiCell($w[3], 0, 'Place', 1, 'C', 1, 0);
-                                $pdf->MultiCell($w[4], 0, 'Advanced to', 1, 'C', 1, 1);
-                            } elseif( !isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes' ) {
-                                $pdf->MultiCell($w[2], 0, 'Mark', 1, 'C', 1, 0);
-                                $pdf->MultiCell($w[3], 0, 'Advanced to', 1, 'C', 1, 1);
-                            } elseif( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
-                                $pdf->MultiCell($w[2], 0, 'Place', 1, 'C', 1, 0);
-                                $pdf->MultiCell($w[3], 0, 'Advanced to', 1, 'C', 1, 1);
-                            } else {
-                                $pdf->MultiCell($w[2], 0, 'Place', 1, 'C', 1, 1);
-                            } */
+                            if( $placement == 'yes' ) {
+                                $pdf->MultiCell($w[$col], 0, 'Place', 1, 'C', 1, (($col+1) < count($w) ? 0 : 1));
+                                $col++;
+                            }
+                            if( $level == 'yes' ) {
+                                $pdf->MultiCell($w[$col], 0, 'Level', 1, 'C', 1, (($col+1) < count($w) ? 0 : 1));
+                                $col++;
+                            }
+                            if( $advanceto == 'yes' ) {
+                                $pdf->MultiCell($w[$col], 0, 'Advanced to', 1, 'C', 1, 1);
+                                $col++;
+                            }
                         }
                         $pdf->SetCellPaddings(2,2,2,2);
                         $pdf->SetFont('', 'B', 12);
                         $border = 'LTR';
-                        if( $reg["title1"] == '' ) {
+                        if( $reg["title1"] == '' || $titles == 'no' ) {
                             $border = 'BLTR';
                         }
                         $h = $pdf->getStringHeight($w[1], $reg['name']);
@@ -1119,49 +1079,22 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                             }
                         }
                         $pdf->MultiCell($w[1], $h, $reg['name'], 'BLTR', 'L', 0, 0);
-/*                        if( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
-                            $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 0);
-                            $pdf->MultiCell($w[4], $h, '', 1, 'L', 0, 1);
-                        } else {
-                            $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 1);
-                        } */
-                        if( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
-                            && (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
-                            && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
-                            ) {
-                            $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 0);
-                            $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 0);
-                            $pdf->MultiCell($w[4], $h, '', 1, 'L', 0, 0);
-                            $pdf->MultiCell($w[5], $h, '', 1, 'L', 0, 1);
-                        } elseif( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
-                            && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
-                            ) {
-                            $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 0);
-                            $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 0);
-                            $pdf->MultiCell($w[4], $h, '', 1, 'L', 0, 1);
-                        } elseif( (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
-                            && (!isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes')
-                            ) {
-                            $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 0);
-                            $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 0);
-                            $pdf->MultiCell($w[4], $h, '', 1, 'L', 0, 1);
-                        } elseif( (!isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes')
-                            && (isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes')
-                            ) {
-                            $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 0);
-                            $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 0);
-                            $pdf->MultiCell($w[4], $h, '', 1, 'L', 0, 1);
-                        } elseif( !isset($festival['runsheets-mark']) || $festival['runsheets-mark'] == 'yes' ) {
-                            $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 0);
-                            $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 1);
-                        } elseif( isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yes' ) {
-                            $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 0);
-                            $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 1);
-                        } elseif( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
-                            $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 0);
-                            $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 1);
-                        } else {
-                            $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 1);
+                        $col = 2;
+                        if( $mark == 'yes' ) {
+                            $pdf->MultiCell($w[$col], $h, '', 1, 'C', 0, (($col+1) < count($w) ? 0 : 1));
+                            $col++;
+                        }
+                        if( $placement == 'yes' ) {
+                            $pdf->MultiCell($w[$col], $h, '', 1, 'C', 0, (($col+1) < count($w) ? 0 : 1));
+                            $col++;
+                        }
+                        if( $level == 'yes' ) {
+                            $pdf->MultiCell($w[$col], $h, '', 1, 'C', 0, (($col+1) < count($w) ? 0 : 1));
+                            $col++;
+                        }
+                        if( $advanceto == 'yes' ) {
+                            $pdf->MultiCell($w[$col], $h, '', 1, 'C', 0, 1);
+                            $col++;
                         }
                         $pdf->SetFont('', '');
                         $border = 'LR';
@@ -1179,10 +1112,12 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                                 } elseif( $i > 1 ) {
                                     $pdf->SetCellPaddings(2,0,2,0);
                                 }
-                                $h = $pdf->getStringHeight($tw[1], $reg["title{$i}"]);
-                                $pdf->MultiCell($tw[0], $h, '', $border, 'C', 0, 0);
-                                $pdf->SetFont('arialunicodems', '', '11');
-                                $pdf->MultiCell($tw[1], $h, $reg["title{$i}"], $border, 'L', 0, 1);
+                                if( $titles == 'yes' ) {
+                                    $h = $pdf->getStringHeight($tw[1], $reg["title{$i}"]);
+                                    $pdf->MultiCell($tw[0], $h, '', $border, 'C', 0, 0);
+                                    $pdf->SetFont('arialunicodems', '', '11');
+                                    $pdf->MultiCell($tw[1], $h, $reg["title{$i}"], $border, 'L', 0, 1);
+                                }
                                 $pdf->SetFont('helvetica', '', '11');
                             }
                         }
