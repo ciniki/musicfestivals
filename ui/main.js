@@ -19360,7 +19360,7 @@ function ciniki_musicfestivals_main() {
 //                },
             },
         '_buttons':{'label':'', 
-            'visible':function() { return M.ciniki_musicfestivals_main.pr.data.status == 10 && M.ciniki_musicfestivals_main.pre.data.status == 10 ? 'yes' : 'no'; },
+            'visible':function() { return M.ciniki_musicfestivals_main.pre.data.recommendation_status == 10 && M.ciniki_musicfestivals_main.pre.data.status == 10 ? 'yes' : 'no'; },
             'buttons':{
                 'delete':{'label':'Delete', 'fn':'M.ciniki_musicfestivals_main.pre.remove();'},
                 }},
