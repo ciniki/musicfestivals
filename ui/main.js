@@ -10001,9 +10001,9 @@ function ciniki_musicfestivals_main() {
                             });
                     }
                 }
-                if( this.data.provincials_code == '' && this.selected_class.provincials_code != '' ) {
-                    this.setFieldValue('provincials_code', this.selected_class.provincials_code);
-                }
+//                if( this.data.provincials_code == '' && this.selected_class.provincials_code != '' ) {
+//                    this.setFieldValue('provincials_code', this.selected_class.provincials_code);
+//                }
                 this.showHideSections(['_display_name', 'competitor2_details', 'competitor3_details', 'competitor4_details', 'competitor5_details']);
                 for(var i = 1; i <= 8; i++) {
                     this.showHideSection('_title'+i);
