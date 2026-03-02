@@ -199,15 +199,15 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
     if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
         $strsql .= "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
     }
-    if( isset($args['provincials_recommendations']) && $args['provincials_recommendations'] == 'yes' ) {
-        $strsql .= "AND registrations.provincials_position > 0 ";
-    }
+//    if( isset($args['provincials_recommendations']) && $args['provincials_recommendations'] == 'yes' ) {
+//        $strsql .= "AND registrations.provincials_position > 0 ";
+//    }
     $strsql .= "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
-    if( isset($args['provincials_recommendations']) && $args['provincials_recommendations'] == 'yes' ) {
+//    if( isset($args['provincials_recommendations']) && $args['provincials_recommendations'] == 'yes' ) {
         $strsql .= "ORDER BY ssections.sequence, ssections.name, registrations.display_name ";
-    } else {
-        $strsql .= "ORDER BY ssections.sequence, ssections.name, class_code, registrations.provincials_position ";
-    }
+//    } else {
+//        $strsql .= "ORDER BY ssections.sequence, ssections.name, class_code, registrations.provincials_position ";
+//    }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'sections', 'fname'=>'id', 
