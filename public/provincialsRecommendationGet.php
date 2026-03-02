@@ -176,6 +176,7 @@ function ciniki_musicfestivals_provincialsRecommendationGet($ciniki) {
 
     $recommendation['num_approved'] = 0;
     $recommendation['num_accepted'] = 0;
+    $recommendation['num_instructionssent'] = 0;
     foreach($recommendation['entries'] as $eid => $entry) {
         $nplist[] = $entry['id'];
         $recommendation['entries'][$eid]['class_name'] = str_replace($recommendation['section_name'] . ' - ', '', $recommendation['entries'][$eid]['class_name']);
@@ -184,11 +185,14 @@ function ciniki_musicfestivals_provincialsRecommendationGet($ciniki) {
                 $recommendation['entries'][$eid]['name'] = str_replace($m[1] . ' - ', '', $recommendation['entries'][$eid]['name']);
             }
         }
-        if( $entry['status'] == 30 ) {
+        if( $entry['status'] == 30 && $entry['position'] < 100 ) {
             $recommendation['num_approved']++;
         }
-        if( $entry['status'] == 40 ) {
+        if( $entry['status'] == 40 && $entry['position'] < 100 ) {
             $recommendation['num_accepted']++;
+        }
+        if( $entry['status'] == 45 && $entry['position'] < 100 ) {
+            $recommendation['num_instructionssent']++;
         }
     }
 

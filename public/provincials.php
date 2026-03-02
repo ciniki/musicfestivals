@@ -404,6 +404,7 @@ function ciniki_musicfestivals_provincials($ciniki) {
         $rsp['entries'] = isset($rc['entries']) ? $rc['entries'] : array();
         $rsp['num_approved'] = 0;
         $rsp['num_accepted'] = 0;
+        $rsp['num_instructionssent'] = 0;
         foreach($rsp['entries'] as $eid => $entry) {
             if( $entry['position'] > 100 && $entry['position'] < 600 ) {
                 $rsp['entries'][$eid]['status_text'] .= ' - Alternate';
@@ -412,6 +413,8 @@ function ciniki_musicfestivals_provincials($ciniki) {
                 $rsp['num_approved']++;
             } elseif( $entry['status'] == 40 && $entry['position'] < 100 ) {
                 $rsp['num_accepted']++;
+            } elseif( $entry['status'] == 45 && $entry['position'] < 100 ) {
+                $rsp['num_instructionssent']++;
             }
         }
     }

@@ -112,7 +112,7 @@ function ciniki_musicfestivals_provincialsDefaultEmails(&$ciniki) {
     $p_settings = isset($rc['settings']) ? $rc['settings'] : array();
 
     $rsp = ['stat'=>'ok'];
-    foreach(['provincials-email-invite', 'provincials-email-register-live', 'provincials-email-register-virtual'] as $msg) {
+    foreach(['provincials-email-invite', 'provincials-email-register-live', 'provincials-email-register-virtual', 'provincials-email-register-reminder'] as $msg) {
         $rsp["{$msg}-subject"] = '';
         if( isset($p_settings["{$msg}-subject"]) ) {
             $rsp["{$msg}-subject"] = str_replace("{_tenantname_}", $tenant_details['name'], $p_settings["{$msg}-subject"]);
