@@ -59,6 +59,18 @@ function ciniki_musicfestivals_recommendationDelete(&$ciniki) {
     }
 */
     //
+    // Remove this submission from any mail entries
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'objectMessagesDetach');
+    $rc = ciniki_mail_hooks_objectMessagesDetach($ciniki, $args['tnid'], array(
+        'object' => 'ciniki.musicfestivals.recommendation',
+        'object_id' => $args['recommendation_id'],
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.624', 'msg'=>'Unable to detach from mail messages.', 'err'=>$rc['err']));
+    }
+
+    //
     // Check if any modules are currently using this object
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectCheckUsed');
