@@ -894,7 +894,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         //
         // Output the divisions
         //
-//        $newpage = 'yes';
+        $newpage = 'no';
         foreach($section['divisions'] as $division) {
             //
             // Skip empty divisions
@@ -1090,6 +1090,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 }
                 $pdf->Ln(2);
 
+                $pdf->newpage = 'no';
                 $pdf->SetFont('', 'B');
                 $lh = $pdf->getStringHeight($w[2], $name);
                 $dh = $pdf->getStringHeight($w[2], $description);
@@ -1192,7 +1193,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 $h = 40;
             }
             if( $pdf->getY() > $pdf->getPageHeight() - $h - 30 - $pdf->footer_image_height) {
-                $pdf->newpage = 'no';
+                $pdf->newpage = 'yes';
                 $pdf->AddPage();
             }
             $y = $pdf->GetY();
@@ -1268,7 +1269,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
             }
             $h = $h1 + $h2 + 40;
             if( $pdf->getY() > $pdf->getPageHeight() - $h - 18  - $pdf->footer_image_height) {
-                $pdf->newpage = 'no';
+                $pdf->newpage = 'yes';
                 $pdf->AddPage();
             }
             $pdf->SetFont('', 'B', '13');
