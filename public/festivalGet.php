@@ -3370,7 +3370,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         //
         // Get the list of accolades
         //
-        if( isset($args['accolades']) && $args['accolades'] == 'list' ) {
+/*        if( isset($args['accolades']) && $args['accolades'] == 'list' ) {
             $strsql = "SELECT accolades.id, "
                 . "accolades.subcategory_id, "
                 . "accolades.name, "
@@ -3449,11 +3449,11 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 }
             }
         }
-
+*/
         //
         // Get the list of accolade recipients
         //
-        if( isset($args['accolades']) && $args['accolades'] == 'recipients' ) {
+/*        if( isset($args['accolades']) && $args['accolades'] == 'recipients' ) {
             $strsql = "SELECT winners.id, "
                 . "winners.flags, "
                 . "IFNULL(registrations.display_name, winners.name) AS recipient_name, "
@@ -3509,9 +3509,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     $festival['totals']['accolades_recipients']['awarded_amount'] += $recipient['awarded_amount'];
                 }
             }
-        }
+        } */
 
-        if( isset($args['accolades']) && in_array($args['accolades'], ['list', 'recipients']) ) {
+/*        if( isset($args['accolades']) && in_array($args['accolades'], ['list', 'recipients']) ) {
             //
             // Get the list of categories and subcategories
             //
@@ -3551,8 +3551,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 }
                 $festival['accolade_subcategories'] = isset($rc['subcategories']) ? $rc['subcategories'] : array();
                 array_unshift($festival['accolade_subcategories'], ['id'=>0, 'sequence'=>0, 'name'=>'All']);
-            }
-        }
+            } 
+        } */
 
         //
         // Get the list of competitors

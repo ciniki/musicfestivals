@@ -9,7 +9,7 @@
 # uuid:                     The Universal Unique ID.
 # tnid:                     The Tenant ID the record belongs to.
 #
-# accolade_id:                The ID of the accolade the winner is for.
+# accolade_id:              The ID of the accolade the winner is for.
 # registration_id:          The ID of the registration that won the accolade.
 # flags:                    The options for the winner.
 #
@@ -46,5 +46,5 @@ create table ciniki_musicfestival_accolade_winners (
     primary key (id),
     unique index (uuid),
     index sync (tnid, uuid, last_updated),
-    unique index (accolade_id, name, year)
-) ENGINE='InnoDB', COMMENT='v1.03';
+    unique index (accolade_id, registration_id, year)
+) ENGINE='InnoDB', COMMENT='v1.04';

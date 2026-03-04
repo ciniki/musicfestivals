@@ -23,7 +23,7 @@ function ciniki_musicfestivals_accoladeWinnerAdd(&$ciniki) {
         'accolade_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Accolade'),
         'registration_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Registration'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
-        'awarded_amount'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Awarded Amount'),
+        'awarded_amount'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Awarded Amount'),
         'name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name'),
         'year'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Year'),
         'internal_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Internal Year'),
@@ -54,6 +54,22 @@ function ciniki_musicfestivals_accoladeWinnerAdd(&$ciniki) {
 
     if( isset($args['registration_id']) && $args['registration_id'] > 0 ) {
         $args['name'] = '';
+        //
+        // Check to make sure this registration has not already won the specified accolade
+        //
+        $strsql = "SELECT winners.id "
+            . "FROM ciniki_musicfestival_accolade_winners AS winners "
+            . "WHERE winners.accolade_id = '" . ciniki_core_dbQuote($ciniki, $args['accolade_id']) . "' "
+            . "AND winners.registration_id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
+            . "AND winners.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1482', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+        }
+        if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
+            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1483', 'msg'=>'This registration has already received this accolade.'));
+        }
     }
 
     //

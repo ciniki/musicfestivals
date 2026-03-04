@@ -1,0 +1,3 @@
+DROP INDEX trophy_id ON ciniki_musicfestival_accolade_winners;
+CREATE INDEX trophy_id ON ciniki_musicfestival_accolade_winners (accolade_id, registration_id, year);
+ALTER TABLE ciniki_musicfestival_accolade_winners COMMENT='v1.04';

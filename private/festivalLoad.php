@@ -37,6 +37,7 @@ function ciniki_musicfestivals_festivalLoad(&$ciniki, $tnid, $festival_id) {
         . "name, "
         . "start_date, "
         . "end_date, "
+        . "DATE_FORMAT(end_date, '%Y') AS year, "
         . "status, "
         . "flags, "
         . "earlybird_date, "

@@ -20,7 +20,7 @@ function ciniki_musicfestivals_accoladeWinnerUpdate(&$ciniki) {
         'accolade_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Accolade'),
         'registration_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Registration'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
-        'awarded_amount'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Awarded Amount'),
+        'awarded_amount'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Awarded Amount'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'),
         'year'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Year'),
         'internal_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Internal Notes'),
@@ -38,6 +38,58 @@ function ciniki_musicfestivals_accoladeWinnerUpdate(&$ciniki) {
     $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.accoladeWinnerUpdate');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
+    }
+
+    //
+    // Load the winner
+    //
+    $strsql = "SELECT id, "
+        . "accolade_id, "
+        . "registration_id, "
+        . "flags, "
+        . "awarded_amount, "
+        . "name, "
+        . "year, "
+        . "internal_notes "
+        . "FROM ciniki_musicfestival_accolade_winners "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['winner_id']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'winners', 'fname'=>'id', 
+            'fields'=>array('id', 'accolade_id', 'registration_id', 'flags', 'awarded_amount', 'name', 'year', 'internal_notes'),
+            ),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.408', 'msg'=>'Accolade Winner not found', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['winners'][0]) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.409', 'msg'=>'Unable to find Accolade Winner'));
+    }
+    $winner = $rc['winners'][0];
+
+
+    if( (isset($args['accolade_id']) && $args['accolade_id'] != $args['accolade_id'])
+        || (isset($args['registration_id']) && $args['registration_id'] != $args['registration_id']) 
+        ) {
+        //
+        // Check to make sure this registration has not already won the specified accolade
+        //
+        $strsql = "SELECT winners.id "
+            . "FROM ciniki_musicfestival_accolade_winners AS winners "
+            . "WHERE winners.accolade_id = '" . ciniki_core_dbQuote($ciniki, isset($args['accolade_id']) ? $args['accolade_id'] : $winner['accolade_id']) . "' "
+            . "AND winners.registration_id = '" . ciniki_core_dbQuote($ciniki, isset($args['registration_id']) ? $args['registration_id'] : $winner['registration_id']) . "' "
+            . "AND winners.id <> '" . ciniki_core_dbQuote($ciniki, $args['winner_id']) . "' "
+            . "AND winners.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1482', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+        }
+        if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
+            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1483', 'msg'=>'This registration has already received this accolade.'));
+        }
     }
 
     //

@@ -105,14 +105,14 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
         //
         // Display current festival and trophies and awards enabled, show shortcut to trophies and awards
         //
-        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x40) ) {
+/*        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x40) ) {
             $menu_item = array(
                 'priority'=>2800,
                 'label'=>'Accolades',
                 'edit'=>array('app'=>'ciniki.musicfestivals.main', 'args'=>array('accolades'=>1)),
                 );
             $rsp['menu_items'][] = $menu_item;
-        }
+        } */
     }
 
     //

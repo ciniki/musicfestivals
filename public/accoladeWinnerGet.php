@@ -52,6 +52,8 @@ function ciniki_musicfestivals_accoladeWinnerGet($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
     $date_format = ciniki_users_dateFormat($ciniki, 'php');
 
+    $dt = new DateTime('now', new DateTimezone($intl_timezone));
+
     //
     // Return default for new Accolade Winner
     //
@@ -63,7 +65,7 @@ function ciniki_musicfestivals_accoladeWinnerGet($ciniki) {
             'flags' => 0,
             'name' => '',
             'registration' => '',
-            'year' => '',
+            'year' => $dt->format('Y'),
             'internal_notes' =>'',
             ];
         if( isset($args['registration_id']) && $args['registration_id'] > 0 ) {
