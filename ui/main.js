@@ -15542,7 +15542,7 @@ function ciniki_musicfestivals_main() {
             'description':{'label':'Description', 'fn':'M.ciniki_musicfestivals_main.accoladecategory.switchTab("description");'},
             'awardedemail':{'label':'Awarded Email', 'fn':'M.ciniki_musicfestivals_main.accoladecategory.switchTab("awardedemail");'},
             'awardedpdf':{'label':'Awarded PDF', 'fn':'M.ciniki_musicfestivals_main.accoladecategory.switchTab("awardedpdf");'},
-            'teacheremail':{'label':'Teacher Email', 'fn':'M.ciniki_musicfestivals_main.accoladecategory.switchTab("teacheremail");'},
+//            'teacheremail':{'label':'Teacher Email', 'fn':'M.ciniki_musicfestivals_main.accoladecategory.switchTab("teacheremail");'},
             }},
         '_description':{'label':'Description', 
             'visible':function() { return M.ciniki_musicfestivals_main.accoladecategory.sections._tabs.selected == 'description' ? 'yes' : 'hidden'; },
