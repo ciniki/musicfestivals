@@ -1490,8 +1490,8 @@ function ciniki_musicfestivals_main() {
                     },
                 'schedule-division-header-format':{'label':'Division Header Format', 'type':'select', 'default':'default', 'options':{
                     'default':'Date-Division, Location', 
-                    'namedate-adjudicatorlocation':'Division-Date, Adjudicator-Location', 
                     'name-adjudicator-location':'Division, Adjudicator, Location',
+                    'namedate-adjudicatorlocation':'Division-Date, Adjudicator-Location', 
                     'date-adjudicator-location':'Date, Adjudicator, Location',
                     'date-name-adjudicator-location':'Date, Division, Adjudicator, Location',
                     'name-date-adjudicator-location':'Division, Date, Adjudicator, Location',

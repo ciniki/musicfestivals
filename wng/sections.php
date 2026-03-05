@@ -604,6 +604,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'options'=>array(
                     'default' => 'Date-Division, Address', 
                     'name-adjudicator-location' => 'Division, Adjudicator, Location',
+                    'namedate-adjudicatorlocation' => 'Division-Date, Adjudicator-Location',
                     'date-adjudicator-location' => 'Date, Adjudicator, Location',
                     'date-name-adjudicator-location' => 'Date, Division, Adjudicator, Location',
                     'name-date-adjudicator-location' => 'Division, Date, Adjudicator, Location',
