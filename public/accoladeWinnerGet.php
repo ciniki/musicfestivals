@@ -107,6 +107,20 @@ function ciniki_musicfestivals_accoladeWinnerGet($ciniki) {
         } else {
             $winner['awarded_amount'] = '';
         }
+
+        //
+        // Load the list of emails sent about this entry
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'objectMessages');
+        $rc = ciniki_mail_hooks_objectMessages($ciniki, $args['tnid'], [
+            'object' => 'ciniki.musicfestivals.accoladewinner',
+            'object_id' => $winner['id'],
+            'xml' => 'no',
+            ]);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1502', 'msg'=>'Unable to load emails', 'err'=>$rc['err']));
+        }
+        $winner['messages'] = isset($rc['messages']) ? $rc['messages'] : array();
     }
 
     if( $winner['registration_id'] > 0 ) {

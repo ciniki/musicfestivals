@@ -136,7 +136,8 @@ function ciniki_musicfestivals_accolades($ciniki) {
             . "accolades.donated_by, "
             . "accolades.first_presented, "
             . "accolades.amount, "
-            . "accolades.criteria "
+            . "accolades.criteria, "
+            . "COUNT(winners.id) AS num_noemail "
             . "FROM ciniki_musicfestival_accolades AS accolades "
             . "INNER JOIN ciniki_musicfestival_accolade_subcategories AS subcategories ON ("
                 . "accolades.subcategory_id = subcategories.id "
@@ -146,6 +147,11 @@ function ciniki_musicfestivals_accolades($ciniki) {
                 . "subcategories.category_id = categories.id "
                 . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_musicfestival_accolade_winners AS winners ON ("
+                . "accolades.id = winners.accolade_id "
+                . "AND (winners.flags&0x01) = 0 " // Email not sent
+                . "AND winners.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "WHERE accolades.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
         if( isset($args['category_id']) && $args['category_id'] != '' && $args['category_id'] > 0 ) {
             $strsql .= "AND categories.id = '" . ciniki_core_dbQuote($ciniki, $args['category_id']) . "' ";
@@ -153,22 +159,26 @@ function ciniki_musicfestivals_accolades($ciniki) {
         if( isset($args['subcategory_id']) && $args['subcategory_id'] != '' && $args['subcategory_id'] > 0 ) {
             $strsql .= "AND subcategories.id = '" . ciniki_core_dbQuote($ciniki, $args['subcategory_id']) . "' ";
         }
+        $strsql .= "GROUP BY accolades.id ";
         $strsql .= "ORDER BY categories.sequence, categories.name, subcategories.sequence, subcategories.name, name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'accolades', 'fname'=>'id', 
-                'fields'=>array('id', 'subcategory_id', 'category_name', 'subcategory_name', 'name', 'donated_by', 'first_presented', 'amount', 
-                    'criteria'),
+                'fields'=>array('id', 'subcategory_id', 'category_name', 'subcategory_name', 'name', 
+                    'donated_by', 'first_presented', 'amount', 
+                    'criteria', 'num_noemail'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.623', 'msg'=>'Unable to load accolades', 'err'=>$rc['err']));
         }
         $rsp['accolades'] = isset($rc['accolades']) ? $rc['accolades'] : array();
+        $rsp['num_accolades_noemail'] = 0;
         $rsp['nplists']['accolades'] = [];
         foreach($rsp['accolades'] as $aid => $accolade) {
             $rsp['nplists']['accolades'][] = $accolade['id'];
+            $rsp['num_accolades_noemail'] += $accolade['num_noemail'];
         }
     }
 
@@ -203,7 +213,7 @@ function ciniki_musicfestivals_accolades($ciniki) {
                 . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "WHERE accolades.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
+            . "WHERE winners.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
         if( isset($args['accolade_id']) && $args['accolade_id'] != '' && $args['accolade_id'] > 0 ) {
             $strsql .= "AND accolades.id = '" . ciniki_core_dbQuote($ciniki, $args['accolade_id']) . "' ";
         }
@@ -229,12 +239,16 @@ function ciniki_musicfestivals_accolades($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1128', 'msg'=>'Unable to load recipients', 'err'=>$rc['err']));
         }
         $rsp['recipients'] = isset($rc['recipients']) ? $rc['recipients'] : array();
+        $rsp['num_recipients_noemail'] = 0;
         $nplists['accolades'] = [];
         if( count($rsp['recipients']) > 0 ) {
             $rsp['totals']['recipients'] = ['awarded_amount' => 0];
             foreach($rsp['recipients'] as $rid => $recipient) {
                 $rsp['nplists']['accolades'][] = $recipient['id'];
                 $rsp['totals']['recipients']['awarded_amount'] += $recipient['awarded_amount'];
+                if( ($recipient['flags']&0x01) == 0 ) {
+                    $rsp['num_recipients_noemail']++;
+                }
             }
         }
     }
