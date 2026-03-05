@@ -649,7 +649,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         //
         // Load the message sent directly to this registration
         //
-        $strsql = "SELECT messages.id, "
+/*        $strsql = "SELECT messages.id, "
             . "messages.subject, "
             . "messages.status, "
             . "messages.status AS status_text, "
@@ -688,7 +688,16 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             } else {
                 $registration['messages'][$mid]['date'] = $message['dt_sent'];
             }
+        } */
+        //
+        // Load the list of emails sent to this registration
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationMessages');
+        $rc = ciniki_musicfestivals_registrationMessages($ciniki, $args['tnid'], $registration['id']);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1486', 'msg'=>'Unable to load emails', 'err'=>$rc['err']));
         }
+        $registration['messages'] = isset($rc['messages']) ? $rc['messages'] : array();
 
         //
         // Load the invoice details
