@@ -46,7 +46,7 @@ function ciniki_musicfestivals_wng_memberdeadlinesProcess(&$ciniki, $tnid, &$req
         . "members.status AS status_text, "
         . "IFNULL(fmembers.reg_start_dt, '') AS reg_start_dt_display, "
         . "IFNULL(fmembers.reg_end_dt, '') AS reg_end_dt_display, "
-        . "IFNULL(DATE_ADD(fmembers.reg_end_dt, INTERVAL fmembers.latedays DAY), '') AS reg_late_dt_display, "
+//        . "IFNULL(DATE_ADD(fmembers.reg_end_dt, INTERVAL fmembers.latedays DAY), '') AS reg_late_dt_display, "
         . "IFNULL(fmembers.latedays, '') AS latedays "
         . "FROM ciniki_musicfestivals_members AS members "
         . "LEFT JOIN ciniki_musicfestival_members AS fmembers ON ("
@@ -63,12 +63,12 @@ function ciniki_musicfestivals_wng_memberdeadlinesProcess(&$ciniki, $tnid, &$req
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'members', 'fname'=>'id', 
             'fields'=>array('id', 'name', 'category', 'status', 
-                'reg_start_dt_display', 'reg_end_dt_display', 'reg_late_dt_display', 'latedays',
+                'reg_start_dt_display', 'reg_end_dt_display', 'latedays',
                 ),
             'utctotz'=>array(
                 'reg_start_dt_display' => array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i A'),
                 'reg_end_dt_display' => array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i A'),
-                'reg_late_dt_display' => array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i A'),
+//                'reg_late_dt_display' => array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i A'),
                 ),
             ),
         ));
@@ -92,8 +92,14 @@ function ciniki_musicfestivals_wng_memberdeadlinesProcess(&$ciniki, $tnid, &$req
         }
         if( $member['reg_end_dt_display'] == '' ) {
             $members[$mid]['reg_end_dt_display'] = 'TBD';
+        } else {
+            $late_dt = new DateTime($member['reg_end_dt_display'], new DateTimezone($intl_timezone));
+            if( $member['latedays'] > 0 ) {
+                $late_dt->add(new DateInterval('P' . $member['latedays'] . 'D'));
+            }
+            $members[$mid]['reg_late_dt_display'] = $late_dt->format('M j, Y g:i A');
         }
-        if( $member['reg_late_dt_display'] == '' ) {
+        if( !isset($members[$mid]['reg_late_dt_display']) || $members[$mid]['reg_late_dt_display'] == '' ) {
             $members[$mid]['reg_late_dt_display'] = 'TBD';
         }
     }
