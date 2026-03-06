@@ -79,6 +79,13 @@ function ciniki_musicfestivals_provincialsRecommendationEntryGet($ciniki) {
     $member = $rc['member'];
     $provincials_tnid = $member['tnid'];
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalMaps');
+    $rc = ciniki_musicfestivals_festivalMaps($ciniki, $provincials_tnid, $provincials_festival_id);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $provincials_maps = $rc['maps'];
+
     //
     // Load the entry
     //
@@ -97,6 +104,7 @@ function ciniki_musicfestivals_provincialsRecommendationEntryGet($ciniki) {
             . "entries.mark, "
             . "entries.notes, "
             . "entries.dt_invite_sent, "
+            . "entries.class_id, "
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
             . "recommendations.id AS recommendation_id, "
@@ -190,6 +198,81 @@ function ciniki_musicfestivals_provincialsRecommendationEntryGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1341', 'msg'=>'Unable to load emails', 'err'=>$rc['err']));
         }
         $entry['messages'] = isset($rc['messages']) ? $rc['messages'] : array(); */
+
+        //
+        // Get the list of class registrations
+        //
+        $strsql = "SELECT entries.id, "
+            . "entries.recommendation_id, "
+            . "entries.status, "
+            . "entries.status AS status_text, "
+            . "entries.name, "
+            . "entries.position, "
+            . "entries.position AS position_text, "
+            . "entries.mark, "
+            . "entries.provincials_reg_id, "
+            . "entries.local_reg_id, "
+            . "entries.dt_invite_sent, "
+            . "recommendations.date_submitted, "
+            . "sections.name AS section_name, "
+            . "categories.name AS category_name, "
+            . "classes.name AS class_name, "
+            . "IFNULL(registrations.status, '') AS reg_status_text "
+            . "FROM ciniki_musicfestival_recommendations AS recommendations "
+            . "INNER JOIN ciniki_musicfestival_recommendation_entries AS entries ON ("
+                . "recommendations.id = entries.recommendation_id "
+                . "AND entries.class_id = '" . ciniki_core_dbQuote($ciniki, $entry['class_id']) . "' "
+                . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+                . "entries.class_id = classes.id "
+                . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
+                . "classes.category_id = categories.id "
+                . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+                . "categories.section_id = sections.id "
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                . "entries.provincials_reg_id = registrations.id "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
+                . ") "
+            . "WHERE recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $provincials_festival_id) . "' "
+            . "AND recommendations.member_id = '" . ciniki_core_dbQuote($ciniki, $member['id']) . "' "
+            . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
+            . "ORDER BY entries.position "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'entries', 'fname'=>'id', 
+                'fields'=>array('id', 'recommendation_id', 'status', 'status_text', 'name', 'position', 'position_text', 'mark', 
+                    'provincials_reg_id', 'local_reg_id', 'date_submitted', 'date_invited'=>'dt_invite_sent',
+                    'section_name', 'category_name', 'class_name', 'reg_status_text', 
+                    ),
+                'utctotz'=>array(
+                    'date_invited' => array('timezone'=>$intl_timezone, 'format'=>'M j - g:i A'),
+                    ),
+                'maps'=>array(
+                    'status_text'=>$maps['recommendationentry']['status'],
+                    'position_text'=>$maps['recommendationentry']['position'],
+                    'reg_status_text'=>$provincials_maps['registration']['status'],
+                    ),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1510', 'msg'=>'Unable to load entries', 'err'=>$rc['err']));
+        }
+        $entry['classentries'] = isset($rc['entries']) ? $rc['entries'] : array();
+
+        foreach($entry['classentries'] as $e) {
+            if( $e['position'] > 100 && $e['position'] < 600 ) {
+                $entry['nextalt'] = $e;
+                break;
+            }
+        }
     }
 
     return array('stat'=>'ok', 'entry'=>$entry);
