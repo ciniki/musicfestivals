@@ -19206,6 +19206,7 @@ function ciniki_musicfestivals_main() {
             'headerValues':['Class', 'Name', 'Position', 'Mark', 'Status'],
             'headerClasses':['', '', '', '', 'alignright'],
             'cellClasses':['', '', '', '', 'alignright'],
+            'cellClasses':['', '', '', '', 'multiline alignright'],
             },
         'entries':{'label':'Recommendations', 'type':'simplegrid', 'num_cols':5,
 //            'visible':function() { return M.ciniki_musicfestivals_main.provincials.sections._tabs.selected == 'entries' ? 'yes' : 'no'; },
