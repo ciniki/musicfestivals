@@ -161,6 +161,7 @@ function ciniki_musicfestivals_provincialsRecommendationEntryGet($ciniki) {
             array('label' => 'Position', 'value'=>$maps['recommendationentry']['position'][$entry['position']]),
             array('label' => 'Mark', 'value'=>$entry['mark']),
             );
+        $entry['position_text'] = $maps['recommendationentry']['position'][$entry['position']];
         if( isset($entry['local_class_code']) && $entry['local_class_code'] != '' ) {
             $entry['details'][] = [
                 'label' => 'Local Class', 
