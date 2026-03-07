@@ -2832,29 +2832,7 @@ function ciniki_musicfestivals_main() {
         }
     }
     this.festival.liveSearchResultRowClass = function(s, f, i, d) { 
-        if( s == 'registration_search' 
-            && d.status != null 
-            && this.data['registration-status-' + d.status + '-colour'] != null 
-            && this.data['registration-status-' + d.status + '-colour'] != '' 
-            && this.data['registration-status-' + d.status + '-colour'] != '#ffffff' 
-            ) {
-            return 'colored';
-        }
-        if( s == 'recommendation_search' ) {
-            switch(d.status) {
-                case '10': 
-                    if( d.position == '1st Alt' || d.position == '2nd Alt' || d.position == '3rd Alt' || d.position == '4th Alt' ) {
-                        return 'statusyellow';
-                    }
-                    return '';
-                case '30': return 'statusorange';
-                case '50': return 'statusgreen';
-                case '70': return 'statusred';
-                case '80': return 'statuspurple';
-                case '90': return 'statusgrey';
-            }
-        }
-        return '';
+        return M.ciniki_musicfestivals_main.recommendationEntryStatusColour(this.data, d);
     }
     this.festival.liveSearchResultRowStyle = function(s, f, i, j, d) { 
         return this.rowStyle(s, i, j, d);
