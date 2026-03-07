@@ -182,7 +182,7 @@ function ciniki_musicfestivals_provincialsRecommendationEntryUpdate($ciniki) {
         }
     }
     elseif( $args['action'] == 'movetoformer' ) {
-        if( $entry['status'] >= 70 && $entry['position'] < 100 ) {  // Turned Down, Already Recommended, Ineligible, Expired
+/*        if( $entry['status'] >= 70 && $entry['position'] < 100 ) {  // Turned Down, Already Recommended, Ineligible, Expired
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
             $rc = ciniki_core_objectUpdate($ciniki, $provincials_tnid, 'ciniki.musicfestivals.recommendationentry', $entry['id'], [
                 'position' => ($entry['position'] + 600),
@@ -192,7 +192,7 @@ function ciniki_musicfestivals_provincialsRecommendationEntryUpdate($ciniki) {
             }
         } else {
             return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1513', 'msg'=>'Recommendation is not currently in invited status'));
-        }
+        } */
     }
 
     //

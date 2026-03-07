@@ -19807,7 +19807,7 @@ function ciniki_musicfestivals_main() {
                     },
                 'movetoformer':{
                     'label':'Remove Invite from Position',
-                    'visible':function() { return M.ciniki_musicfestivals_main.pre.data.status >= 70 && M.ciniki_musicfestivals_main.pre.data.position < 100 ? 'yes' : 'no'; },
+                    'visible':function() { return M.ciniki_musicfestivals_main.pre.data.status >= 70 && M.ciniki_musicfestivals_main.pre.data.position < 100 && M.ciniki_musicfestivals_main.pre.data.nextalt != null ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.pre.movetoformer();',
                     }, 
                 'emailinstructions':{

@@ -88,7 +88,9 @@ function ciniki_musicfestivals_provincialsClassShift(&$ciniki, $tnid, $args) {
     $move = 'no';
     $prev_position = 0;
     foreach($entries as $entry) {
+        error_log("Entry: {$entry['id']} IN {$entry['position']}");
         if( isset($args['entry_id']) && $args['entry_id'] == $entry['id'] && $entry['position'] < 100 ) {
+            error_log("Move to former");
             //
             // Update to former
             //
@@ -117,6 +119,7 @@ function ciniki_musicfestivals_provincialsClassShift(&$ciniki, $tnid, $args) {
         }
 
         if( $move == 'yes' && $entry['position'] > 1 && $entry['position'] < 600 ) {
+            error_log('move up: ' . $entry['id']);
             //
             // Move entry up
             //
