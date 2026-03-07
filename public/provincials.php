@@ -44,7 +44,7 @@ function ciniki_musicfestivals_provincials($ciniki) {
     // check permission to run this function for this tenant
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.volunteers');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.provincials');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -356,7 +356,7 @@ function ciniki_musicfestivals_provincials($ciniki) {
                 . "recommendations.id = entries.recommendation_id "
                 . $class_sql
                 . $status_sql
-                . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
+                . "AND entries.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
                 . ") "
             . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "entries.class_id = classes.id "

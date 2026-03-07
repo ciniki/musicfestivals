@@ -19235,6 +19235,22 @@ function ciniki_musicfestivals_main() {
                 },
             },
     };
+    this.provincials.liveSearchCb = function(s, i, v) {
+        if( s == 'entry_search' && v != '' ) {
+            M.api.getJSONBgCb('ciniki.musicfestivals.provincialsRecommendationEntrySearch', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'start_needle':v, 'limit':'25'}, function(rsp) {
+                M.ciniki_musicfestivals_main.provincials.liveSearchShow('entry_search',null,M.gE(M.ciniki_musicfestivals_main.menu.panelUID + '_' + s), rsp.entries);
+                });
+        }
+    }
+    this.provincials.liveSearchResultValue = function(s, f, i, j, d) {
+        return this.cellValue(s, i, j, d);
+    }
+    this.provincials.liveSearchResultRowClass = function(s, f, i, d) {
+        return M.ciniki_musicfestivals_main.recommendationEntryStatusColour(this.data.festival, d);
+   }
+    this.provincials.liveSearchResultRowFn = function(s, f, i, j, d) {
+        return 'M.ciniki_musicfestivals_main.pre.open(\'M.ciniki_musicfestivals_main.provincials.open();\', ' + d.id + ',' + d.recommendation_id + ', M.ciniki_musicfestivals_main.provincials.festival_id);';
+    }
     this.provincials.switchTab = function(t) {
         this.sections._tabs.selected = t;
         this.open();
