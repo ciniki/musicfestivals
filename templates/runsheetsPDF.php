@@ -164,7 +164,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x40) 
         && (!isset($festival['runsheets-accolades-list']) || $festival['runsheets-accolades-list'] == 'yes')
         ) {
-        $strsql .= "GROUP_CONCAT(accolades.name SEPARATOR ', ') AS accolade_name, ";
+        $strsql .= "GROUP_CONCAT(accolades.name SEPARATOR '::') AS accolade_name, ";
     } else {
         $strsql .= "'' AS accolade_name, ";
     }
@@ -269,14 +269,14 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
             'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 'groupname', 'start_num',
                 'description', 'runsheet_notes', 'slot_time', 'slot_seconds', 
-                'class_code', 'class_name', 'category_name', 'syllabus_section_name', 'accolade_name',
+                'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
                 ),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'participation', 'reg_time_text', 
                 'status'=>'reg_status',
                 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
-                'notes', 'internal_notes', 'runsheet_notes'=>'runnote',
+                'notes', 'internal_notes', 'runsheet_notes'=>'runnote', 'accolade_name',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
@@ -771,6 +771,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     $h += $pdf->getStringHeight($w[1], $timeslot['registrations'][0]['name']);
                     $pdf->SetFont('', '');
                     $pdf->SetCellPadding(2);
+                    $timeslot['accolades'] = [];
                     // FIXME: add height of titles
                     foreach($timeslot['registrations'] as $rid => $reg) {
                         $extra_info = '';
@@ -868,10 +869,18 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                             $pdf->SetFont('', '', '11');
                             $h += $pdf->getStringHeight($tnw[2], $notes);
                         }
-
-                        if( isset($timeslot['accolade_name']) && $timeslot['accolade_name'] != '' ) {
-                            $h += $pdf->getStringHeight($trw[1], $timeslot['accolade_name']);
+                        if( isset($reg['accolade_name']) && $reg['accolade_name'] != '' ) {
+                            $accolades = explode('::', $reg['accolade_name']);
+                            foreach($accolades as $accolade) {
+                                if( !in_array($accolade, $timeslot['accolades']) ) {
+                                    $timeslot['accolades'][] = $accolade;
+                                }
+                            }
                         }
+
+//                        if( isset($timeslot['accolade_name']) && $timeslot['accolade_name'] != '' ) {
+//                            $h += $pdf->getStringHeight($trw[1], $timeslot['accolade_name']);
+//                        }
 //                        if( isset($reg['accolades']) && count($reg['accolades']) > 0 ) {
 //                            foreach($reg['accolades'] as $accolade) {
 //                                if( $accolade['name'] != '' && !in_array($accolade['name'], $timeslot['accolades']) ) {
@@ -883,6 +892,12 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     }
                 } else {
                     $h += 5;
+                }
+
+                if( count($timeslot['accolades']) > 0 ) {
+                    sort($timeslot['accolades']);
+                    $timeslot['accolade_names'] = implode(', ', $timeslot['accolades']);
+                    $h += $pdf->getStringHeight($trw[1], $timeslot['accolade_names']);
                 }
 
                 $continued = 'no';
@@ -920,11 +935,11 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                 }
                 $pdf->SetFont('', '', '11');
 
-                if( isset($timeslot['accolade_name']) && $timeslot['accolade_name'] != '' ) {
+                if( isset($timeslot['accolade_names']) && $timeslot['accolade_names'] != '' ) {
                     $pdf->MultiCell($cw[0], 0, '', 0, 'L', 0, 0);
 //                    $pdf->MultiCell($trw[0], 0, ($tid == 0 ? 'Eligible for: ' : ''), 0, 'L', 0, 0);
                     $pdf->MultiCell($trw[0], 0, 'Eligible for: ', 0, 'L', 0, 0);
-                    $pdf->MultiCell($trw[1], 0, $timeslot['accolade_name'], 0, 'L', 0, 1);
+                    $pdf->MultiCell($trw[1], 0, $timeslot['accolade_names'], 0, 'L', 0, 1);
                 }
 //                if( isset($timeslot['accolades']) && count($timeslot['accolades']) > 0 ) {
 //                    foreach($timeslot['accolades'] as $tid => $accolade) {
@@ -1015,11 +1030,11 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                                 $pdf->MultiCell($cw[1], 0, $name . ' (continued...)', 0, 'L', 0, 1);
                             }
                             $pdf->SetFont('', '', '11');
-                            if( isset($timeslot['accolade_name']) && $timeslot['accolade_name'] != '' ) {
+                            if( isset($timeslot['accolade_names']) && $timeslot['accolade_names'] != '' ) {
                                 $pdf->MultiCell($cw[0] + $cw[1], 0, '', 0, 'L', 0, 0);
 //                                $pdf->MultiCell($trw[0], 0, ($tid == 0 ? 'Eligible for: ' : ''), 0, 'L', 0, 0);
                                 $pdf->MultiCell($trw[0], 0, 'Eligible for: ', 0, 'L', 0, 0);
-                                $pdf->MultiCell($trw[1], 0, $timeslot['accolade_name'], 0, 'L', 0, 1);
+                                $pdf->MultiCell($trw[1], 0, $timeslot['accolade_names'], 0, 'L', 0, 1);
                             }
 //                            if( isset($timeslot['accolades']) && count($timeslot['accolades']) > 0 ) {
 //                                foreach($timeslot['accolades'] as $tid => $accolade) {
