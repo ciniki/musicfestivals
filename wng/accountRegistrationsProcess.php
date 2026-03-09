@@ -1049,7 +1049,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             ]);
         if( $rc['stat'] == 'exit' || $rc['stat'] == '404' ) {
             return $rc;
-        } elseif( $rc['stat'] != 'ok' ) {
+        } elseif( $rc['stat'] != 'ok' && $rc['stat'] != 'updated' ) {
             return array('stat'=>'ok', 'blocks'=>[[
                 'type' => 'msg',
                 'level' => 'error', 
