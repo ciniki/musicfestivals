@@ -17353,10 +17353,10 @@ function ciniki_musicfestivals_main() {
     }
     this.recommendationentry.liveSearchCb = function(s, i, v) {
         this.lastY = 0;
-        if( s == 'general' && i == 'name' && M.ciniki_musicfestivals_main.recommendation.data.member_tnid > 0 && v != '' ) {
+        if( s == 'general' && i == 'name' && M.ciniki_musicfestivals_main.recommendationentry.data.member_tnid > 0 && v != '' ) {
             this.liveSearchLRNS++;
             var sN = this.liveSearchLRNS;
-            M.api.getJSONBgCb('ciniki.musicfestivals.recommendationLocalRegistrationSearch', {'tnid':M.curTenantID, 'start_needle':v, 'recommendation_id':M.ciniki_musicfestivals_main.recommendation.recommendation_id, 'limit':'50'}, function(rsp) {
+            M.api.getJSONBgCb('ciniki.musicfestivals.recommendationLocalRegistrationSearch', {'tnid':M.curTenantID, 'start_needle':v, 'recommendation_id':M.ciniki_musicfestivals_main.recommendationentry.data.recommendation_id, 'limit':'50'}, function(rsp) {
                     if( sN == M.ciniki_musicfestivals_main.recommendationentry.liveSearchLRNS ) {
                         M.ciniki_musicfestivals_main.recommendationentry.local_registrations = rsp.registrations;
                         M.ciniki_musicfestivals_main.recommendationentry.liveSearchShow(s,i,M.gE(M.ciniki_musicfestivals_main.recommendationentry.panelUID + '_' + s), rsp.registrations);

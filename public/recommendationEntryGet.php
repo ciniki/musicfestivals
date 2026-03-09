@@ -96,6 +96,7 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
             . "entries.notes, "
             . "entries.provincials_reg_id, "
             . "entries.local_reg_id, "
+            . "members.member_tnid, "
             . "IFNULL(classes.code, '') AS class_code, "
             . "IFNULL(local_reg.private_name, '') AS local_reg_private_name, "
             . "IFNULL(local_reg.title1, '') AS title1, "
@@ -123,15 +124,15 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
             . "IFNULL(local_reg.movements8, '') AS movements8, "
             . "IFNULL(local_reg.composer8, '') AS composer8 "
             . "FROM ciniki_musicfestival_recommendation_entries AS entries "
-            . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+            . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "entries.class_id = classes.id "
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "LEFT JOIN ciniki_musicfestival_recommendations AS recommendations ON ("
+            . "INNER JOIN ciniki_musicfestival_recommendations AS recommendations ON ("
                 . "entries.recommendation_id = recommendations.id "
                 . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "LEFT JOIN ciniki_musicfestivals_members AS members ON ("
+            . "INNER JOIN ciniki_musicfestivals_members AS members ON ("
                 . "recommendations.member_id = members.id "
                 . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
@@ -146,7 +147,7 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'entries', 'fname'=>'id', 
                 'fields'=>array('id', 'status', 'recommendation_id', 'class_id', 'position', 'name', 'mark', 'notes', 
-                    'provincials_reg_id', 'local_reg_id', 'class_code',
+                    'member_tnid', 'provincials_reg_id', 'local_reg_id', 'class_code',
                     'local_reg_private_name',
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
