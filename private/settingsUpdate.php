@@ -346,6 +346,8 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'volunteers-email-reminder-7day-message',
         'volunteers-email-reminder-24hour-subject',
         'volunteers-email-reminder-24hour-message',
+        'volunteers-smtp-from-name',
+        'volunteers-smtp-from-address',
         'site-base-url',                    // The base url of the website hosted on Ciniki, including https://
         'multiple-adjudicator-documents',   // Admin option to enable documents that support multiple adjudicators
         );

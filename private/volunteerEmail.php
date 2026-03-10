@@ -2,7 +2,7 @@
 //
 // Description
 // -----------
-// This function will load the assignment information and send and email to the volunteer.
+// This function will load the assignment information and send and email to a single volunteer who may have multiple emails.
 // 
 // Arguments
 // ---------
@@ -28,6 +28,7 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
             . "shifts.object, "
             . "shifts.object_id, "
             . "shifts.role, "
+            . "volunteers.id AS volunteer_id, "
             . "volunteers.customer_id, "
             . "customers.first AS firstname, "
             . "customers.last AS lastname, "
@@ -57,7 +58,7 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'assignments', 'fname'=>'id', 
-                'fields'=>array('id', 'festival_id', 'customer_id', 'firstname', 'lastname', 'display_name', 
+                'fields'=>array('id', 'festival_id', 'volunteer_id', 'customer_id', 'firstname', 'lastname', 'display_name', 
                     'shift_date', 'start_time', 'end_time', 'object', 'object_id', 'role',
                     ),
                 ),
@@ -89,8 +90,10 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
             $assignment['location'] = $locations["{$assignment['object']}:{$assignment['object_id']}"]['name'];
         }
 
-        $object = 'ciniki.musicfestivals.volunteerassignment';
-        $object_id = $assignment['id'];
+        $object = 'ciniki.musicfestivals.volunteer';
+        $object_id = $assignment['volunteer_id'];
+        $parent_object = 'ciniki.musicfestivals.volunteerassignment';
+        $parent_object_id = $assignment['id'];
         $customer_id = $assignment['customer_id'];
         $display_name = $assignment['display_name'];
         $emails = isset($assignment['emails']) ? $assignment['emails'] : [];
@@ -140,6 +143,8 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
         
         $object = 'ciniki.musicfestivals.volunteer';
         $object_id = $args['volunteer_id'];
+        $parent_object = '';
+        $parent_object_id = '';
         $customer_id = $volunteer['customer_id'];
         $display_name = $volunteer['display_name'];
         $emails = isset($volunteer['emails']) ? $volunteer['emails'] : [];
@@ -162,6 +167,18 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
     }
 
     //
+    // Check for volunteer from name or email address to send from
+    //
+    $from_name = '';
+    if( isset($festival['volunteers-smtp-from-name']) && $festival['volunteers-smtp-from-name'] != '' ) {
+        $from_name = $festival['volunteers-smtp-from-name'];
+    }
+    $from_address = '';
+    if( isset($festival['volunteers-smtp-from-address']) && $festival['volunteers-smtp-from-address'] != '' ) {
+        $from_address = $festival['volunteers-smtp-from-address'];
+    }
+
+    //
     // Check for template
     //
     if( isset($festival["{$args['template']}-subject"]) 
@@ -176,8 +193,17 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
         //
         // Run substitutions
         //
-        $object = '';
-        $object_id = '';
+    } elseif( isset($args['subject']) && $args['subject'] != '' 
+        && isset($args['message']) && $args['message'] != '' 
+        ) {
+        $subject = $args['subject'];
+        $message = $args['message'];
+    }
+
+    if( isset($subject) && isset($message) ) {
+        //
+        // Check for substitutions base on volunteer
+        //
         if( isset($assignment) ) {
             $subject = str_replace('{_firstname_}', $assignment['firstname'], $subject);
             $message = str_replace('{_firstname_}', $assignment['firstname'], $message);
@@ -191,7 +217,8 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
             $message = str_replace('{_role_}', $assignment['role'], $message);
             $subject = str_replace('{_location_}', $assignment['location'], $subject);
             $message = str_replace('{_location_}', $assignment['location'], $message);
-        } elseif( isset($volunteer) ) {
+        }
+        elseif( isset($volunteer) ) {
             $subject = str_replace('{_firstname_}', $volunteer['firstname'], $subject);
             $message = str_replace('{_firstname_}', $volunteer['firstname'], $message);
         }
@@ -201,11 +228,15 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
             $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
                 'object' => $object,
                 'object_id' => $object_id,
+                'parent_object' => $object,
+                'parent_object_id' => $object_id,
                 'customer_id' => $customer_id,
                 'customer_email' => $email['email'],
                 'customer_name' => $display_name,
                 'subject' => $subject,
                 'tinymce' => 'yes',
+                'from_name' => $from_name,
+                'from_address' => $from_address,
                 'html_content' => $message,
                 'text_content' => html_entity_decode(strip_tags($message)),
                 ));
