@@ -15,6 +15,21 @@
 function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
 
     //
+    // Load the tenant settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $intl_timezone = $rc['settings']['intl-default-timezone'];
+
+    //
+    // Set current date
+    //
+    $dt = new DateTime('now', new DateTimezone($intl_timezone));
+
+    //
     // Load the assignment, volunteer and emails
     //
     if( isset($args['assignment_id']) && $args['assignment_id'] > 0 ) {
@@ -76,6 +91,15 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
         }
 
         //
+        // Check to make sure assignment is in the future
+        //
+        $assignment_dt = new DateTime($assignment['shift_date'] . ' ' . $assignment['start_time'], new DateTimezone($intl_timezone));
+        if( $assignment_dt < $dt ) {
+            error_log('assignment past, no emails sent');
+            return array('stat'=>'ok');
+        }
+
+        //
         // Load the locations
         //
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'locationsLoad');
@@ -88,6 +112,36 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
         $assignment['location'] = 'Location To Be Determined';
         if( isset($locations["{$assignment['object']}:{$assignment['object_id']}"]['name']) ) {
             $assignment['location'] = $locations["{$assignment['object']}:{$assignment['object_id']}"]['name'];
+        }
+        $assignment['start_end_time'] = "{$assignment['start_time']} to {$assignment['end_time']}";
+
+        if( isset($args['old_shift']) ) {
+            if( $args['old_shift']['shift_date'] != $assignment['shift_date'] ) {
+                $assignment['shift_date'] = "<b>{$assignment['shift_date']}</b> (<i>was {$args['old_shift']['shift_date']}</i>)";
+            }
+            if( ($args['old_shift']['start_time'] != $assignment['start_time']) 
+                || ($args['old_shift']['end_time'] != $assignment['end_time'])
+                ) {
+                $assignment['start_end_time'] = "<b>{$assignment['start_end_time']}</b> (<i>was {$args['old_shift']['start_time']} to {$args['old_shift']['end_time']}</i>)";
+            }
+            if( $args['old_shift']['start_time'] != $assignment['start_time'] ) {
+                $assignment['start_time'] = "<b>{$assignment['start_time']}</b> (<i>was {$args['old_shift']['start_time']}</i>)";
+            }
+            if( $args['old_shift']['end_time'] != $assignment['end_time'] ) {
+                $assignment['end_time'] = "<b>{$assignment['end_time']}</b> (<i>was {$args['old_shift']['end_time']}</i>)";
+            }
+            if( $args['old_shift']['role'] != $assignment['role'] ) {
+                $assignment['role'] = "<b>{$assignment['role']}</b> (<i>was {$args['old_shift']['role']}</i>)";
+            }
+            if( ($args['old_shift']['object'] != $assignment['object'])
+                || ($args['old_shift']['object_id'] != $assignment['object_id'])
+                ) {
+                $old_location = 'Location To Be Determined';
+                if( isset($locations["{$args['old_shift']['object']}:{$args['old_shift']['object_id']}"]['name']) ) {
+                    $old_location = $locations["{$args['old_shift']['object']}:{$args['old_shift']['object_id']}"]['name'];
+                }
+                $assignment['location'] = "<b>{$assignment['location']}</b> (<i>was {$old_location}</i>)";
+            }
         }
 
         $object = 'ciniki.musicfestivals.volunteer';
@@ -213,6 +267,8 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
             $message = str_replace('{_starttime_}', $assignment['start_time'], $message);
             $subject = str_replace('{_endtime_}', $assignment['end_time'], $subject);
             $message = str_replace('{_endtime_}', $assignment['end_time'], $message);
+            $subject = str_replace('{_startendtime_}', $assignment['start_end_time'], $subject);
+            $message = str_replace('{_startendtime_}', $assignment['start_end_time'], $message);
             $subject = str_replace('{_role_}', $assignment['role'], $subject);
             $message = str_replace('{_role_}', $assignment['role'], $message);
             $subject = str_replace('{_location_}', $assignment['location'], $subject);

@@ -74,7 +74,8 @@ function ciniki_musicfestivals_volunteers($ciniki) {
 
     $date_format = 'D, M j, Y';
 
-    
+    $now = new DateTime('now', new DateTimezone($intl_timezone));
+
     //
     // Load the festival
     //
@@ -357,7 +358,6 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                         $rsp['schedule_vshifts'][$sid]['names'] .= ($rsp['schedule_vshifts'][$sid]['names'] != '' ? '<br>' : '')
                             . $volunteer['name']
                             . ($volunteer['assignment_status'] != 30 ? ' [' . $volunteer['assignment_status_text'] . ']' : '');
-                        
                     }
                 }
 
@@ -408,7 +408,9 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                 . ") "
             . "WHERE shifts.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "";
-        if( isset($args['shift_date']) && $args['shift_date'] != '' ) {
+        if( isset($args['shift_date']) && $args['shift_date'] == 'upcoming' ) {
+            $strsql .= "AND shifts.shift_date >= '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' ";
+        } elseif( isset($args['shift_date']) && $args['shift_date'] != '' ) {
             $strsql .= "AND shifts.shift_date = '" . ciniki_core_dbQuote($ciniki, $args['shift_date']) . "' ";
         }
         if( isset($args['object']) && $args['object'] != '' && isset($args['object_id']) && $args['object_id'] != '' ) {
@@ -493,7 +495,7 @@ function ciniki_musicfestivals_volunteers($ciniki) {
         }
         $rsp['shift_dates'] = isset($rc['shift_dates']) ? $rc['shift_dates'] : array();
 
-        if( isset($args['shift_date']) && $args['shift_date'] != '' ) {
+/*        if( isset($args['shift_date']) && $args['shift_date'] != '' && $args['shift_date'] != 'upcoming' ) {
             $strsql = "SELECT shifts.id, "
                 . "TIME_FORMAT(shifts.start_time, '%l:%i %p') as start_time, "
                 . "TIME_FORMAT(shifts.end_time, '%l:%i %p') AS end_time, "
@@ -570,12 +572,12 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                 return $a['sort_start_time'] < $b['sort_start_time'] ? -1 : 1;
                 });
             $rsp['date_shifts'] = array_values($rsp['date_shifts']);
-        }
+        } */
     }
 
     if( isset($args['locations']) && $args['locations'] == 'yes' ) {
         $rsp['locations'] = $locations;
-        if( isset($args['location']) && $args['location'] != '' 
+/*        if( isset($args['location']) && $args['location'] != '' 
             && preg_match("/^(.*):(.*)$/", $args['location'], $m)
             ) {
             $args['object'] = $m[1];
@@ -642,7 +644,7 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                     }
                 }
             }
-        }
+        } */
     }
 
     if( isset($args['roles']) && $args['roles'] == 'yes' ) {
@@ -661,7 +663,7 @@ function ciniki_musicfestivals_volunteers($ciniki) {
         //
         // Load the shifts for a role
         //
-        if( isset($args['role']) && $args['role'] != '' ) {
+/*        if( isset($args['role']) && $args['role'] != '' ) {
             $strsql = "SELECT shifts.id, "
                 . "shifts.shift_date, "
                 . "DATE_FORMAT(shifts.shift_date, '%Y%m%d') AS sort_shift_date, "
@@ -742,7 +744,7 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                 return $a['sort_start_time'] < $b['sort_start_time'] ? -1 : 1;
                 });
             $rsp['role_shifts'] = array_values($rsp['role_shifts']);
-        }
+        } */
     }
 
     return $rsp;

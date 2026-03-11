@@ -49,7 +49,12 @@ function ciniki_musicfestivals_volunteerShiftUpdate(&$ciniki) {
     //
     $strsql = "SELECT shifts.id, "
         . "shifts.festival_id, "
-        . "shifts.object "
+        . "DATE_FORMAT(shifts.shift_date, '%a, %b %e, %Y') AS shift_date, "
+        . "TIME_FORMAT(shifts.start_time, '%l:%i %p') as start_time, "
+        . "TIME_FORMAT(shifts.end_time, '%l:%i %p') AS end_time, "
+        . "shifts.object, "
+        . "shifts.object_id, "
+        . "shifts.role "
         . "FROM ciniki_musicfestival_volunteer_shifts AS shifts "
         . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['shift_id']) . "' "
         . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -169,6 +174,22 @@ function ciniki_musicfestivals_volunteerShiftUpdate(&$ciniki) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1474', 'msg'=>'Unable to remove notification', 'err'=>$rc['err']));
                 }
             }
+            //
+            // Check if they need cancelled email
+            //
+            if( $assignment['status'] == 30 ) {
+                //
+                // Email cancelled email
+                //
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'volunteerEmail');
+                $rc = ciniki_musicfestivals_volunteerEmail($ciniki, $args['tnid'], [
+                    'assignment_id' => $assignment['id'],
+                    'template' => 'volunteers-email-shift-cancelled',
+                    ]);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1262', 'msg'=>'Unable to email volunteer', 'err'=>$rc['err']));
+                }
+            }
 
             //
             // Delete the assignment
@@ -202,11 +223,15 @@ function ciniki_musicfestivals_volunteerShiftUpdate(&$ciniki) {
     // Add assigned volunteers
     //
     $email_shift_assigned_ids = [];  // The list of assignment ids that need an shift-assigned email
+    $email_shift_changed_ids = [];  // The list of assignment ids that need an shift-changed email
     foreach($assigned_ids as $volunteer_id) {
         if( $volunteer_id == 0 ) {
             continue;
         }
         $status_key = array_search($volunteer_id, $assigned_ids);
+        //
+        // Check for new volunteer assignment
+        //
         if( !isset($assignments[$volunteer_id]) ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
             $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.volunteerassignment', [
@@ -223,7 +248,11 @@ function ciniki_musicfestivals_volunteerShiftUpdate(&$ciniki) {
             if( !isset($assigned_id_status[$status_key]) || $assigned_id_status[$status_key] == 30 ) {
                 $email_shift_assigned_ids[] = $rc['id'];
             }
-        } elseif( $status_key !== false && $assignments[$volunteer_id]['status'] != $assigned_id_status[$status_key] ) {
+        } 
+        //
+        // Check for existing assignmen changed to approved
+        //
+        elseif( $status_key !== false && $assignments[$volunteer_id]['status'] != $assigned_id_status[$status_key] ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
             $rc = ciniki_core_objectUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.volunteerassignment', $assignments[$volunteer_id]['id'], ['status' => $assigned_id_status[$status_key]], 0x04);
             if( $rc['stat'] != 'ok' ) {
@@ -233,6 +262,12 @@ function ciniki_musicfestivals_volunteerShiftUpdate(&$ciniki) {
             if( $assigned_id_status[$status_key] == 30 ) {
                 $email_shift_assigned_ids[] = $assignments[$volunteer_id]['id'];
             }
+        } 
+        //
+        // Existing assignments need update email
+        //
+        elseif( $assignment['status'] == 30 ) {
+            $email_shift_changed_ids[] = $assignments[$volunteer_id]['id'];
         }
         //
         // Update the email queue for the volunteer
@@ -256,7 +291,22 @@ function ciniki_musicfestivals_volunteerShiftUpdate(&$ciniki) {
     }
 
     //
-    // Once all changes commited, send out the emails
+    // Once all changes commited, send out the emails about shift changed
+    //
+    foreach($email_shift_changed_ids as $assignment_id) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'volunteerEmail');
+        $rc = ciniki_musicfestivals_volunteerEmail($ciniki, $args['tnid'], [
+            'assignment_id' => $assignment_id,
+            'old_shift' => $shift,
+            'template' => 'volunteers-email-shift-changed',
+            ]);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1262', 'msg'=>'Unable to email volunteer', 'err'=>$rc['err']));
+        }
+    }
+
+    //
+    // Emails to new assigments
     //
     foreach($email_shift_assigned_ids as $assignment_id) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'volunteerEmail');

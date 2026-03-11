@@ -87,6 +87,7 @@ function ciniki_musicfestivals_volunteerShiftDelete(&$ciniki) {
     //
     $strsql = "SELECT assignments.id, "
         . "assignments.uuid, "
+        . "assignments.status, "
         . "notifications.id AS notification_id, "
         . "notifications.uuid AS notification_uuid "
         . "FROM ciniki_musicfestival_volunteer_assignments AS assignments "
@@ -99,7 +100,7 @@ function ciniki_musicfestivals_volunteerShiftDelete(&$ciniki) {
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'assignments', 'fname'=>'id', 'fields'=>array('id', 'uuid')),
+        array('container'=>'assignments', 'fname'=>'id', 'fields'=>array('id', 'uuid', 'status')),
         array('container'=>'notifications', 'fname'=>'notification_id', 
             'fields'=>array('id'=>'notification_id', 'uuid'=>'notification_uuid'),
             ),
@@ -127,6 +128,23 @@ function ciniki_musicfestivals_volunteerShiftDelete(&$ciniki) {
     foreach($assignments as $assignment) {
         if( isset($assignment['notifications']) ) {
             foreach($assignment['notifications'] as $notification) {
+                //
+                // Email cancelled email
+                //
+                if( $assignment['status'] == 30 ) {
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'volunteerEmail');
+                    $rc = ciniki_musicfestivals_volunteerEmail($ciniki, $args['tnid'], [
+                        'assignment_id' => $assignment['id'],
+                        'template' => 'volunteers-email-shift-cancelled',
+                        ]);
+                    if( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1262', 'msg'=>'Unable to email volunteer', 'err'=>$rc['err']));
+                    }
+                }
+
+                //
+                // Remove the notifications
+                //
                 $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.musicfestivals.volunteernotification',
                     $notification['id'], $notification['uuid'], 0x04);
                 if( $rc['stat'] != 'ok' ) {
