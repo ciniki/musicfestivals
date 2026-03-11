@@ -894,7 +894,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     $h += 5;
                 }
 
-                if( count($timeslot['accolades']) > 0 ) {
+                if( isset($timeslot['accolades']) && count($timeslot['accolades']) > 0 ) {
                     sort($timeslot['accolades']);
                     $timeslot['accolade_names'] = implode(', ', $timeslot['accolades']);
                     $h += $pdf->getStringHeight($trw[1], $timeslot['accolade_names']);
