@@ -108,8 +108,8 @@ function ciniki_musicfestivals_wng_locationsProcess(&$ciniki, $tnid, &$request, 
                 if( $location['description'] != '' ) {
                     $content .= ($content != '' ? "\n\n" : '') . $location['description'];
                 }
-                    $location['title'] = isset($location['disciplines']) ? $location['disciplines'] : '';
-                    $location['subtitle'] = isset($location['name']) ? $location['name'] : '';
+                $location['title'] = isset($location['disciplines']) ? $location['disciplines'] : '';
+                $location['subtitle'] = isset($location['name']) ? $location['name'] : '';
                 $location['buttons'] = [
                     [
                         'url' => "{$base_url}/{$location['permalink']}", 
@@ -227,11 +227,12 @@ function ciniki_musicfestivals_wng_locationsProcess(&$ciniki, $tnid, &$request, 
             }
             $items = [];
             foreach($cat['buildings'] as $building) {
-                $content = $building['address1']
-                    . "\n" . $building['city'] . ', ' . $building['province'] . '  ' . $building['postal'];
+                $content = "<p>" . $building['address1']
+                    . "<br>" . $building['city'] . ', ' . $building['province'] . '  ' . $building['postal']
+                    . "</p>";
                 $building['content'] = $content;
                 if( $building['description'] != '' ) {
-                    $content .= ($content != '' ? "\n\n" : '') . $building['description'];
+                    $content .= ($content != '' ? "" : '') . $building['description'];
                 }
                 $building['title'] = $building['name'];
                 $building['subtitle'] = '';
