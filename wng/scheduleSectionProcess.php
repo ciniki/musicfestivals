@@ -231,7 +231,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-            array('container'=>'sponsors', 'fname'=>'id', 'fields'=>array('url', 'image-id'=>'image_id')),
+            array('container'=>'sponsors', 'fname'=>'id', 'fields'=>array('name', 'url', 'image-id'=>'image_id')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.992', 'msg'=>'Unable to load sponsors', 'err'=>$rc['err']));
@@ -551,7 +551,12 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         $items = array();
         foreach($schedulesection['webheader_sponsor_ids'] as $sid) {
             if( isset($webheader_sponsors[$sid]) ) {
-                $items[] = $webheader_sponsors[$sid];
+                $items[] = [
+                    'name' => $webheader_sponsors[$sid]['name'],
+                    'url' => $webheader_sponsors[$sid]['url'],
+                    'class' => 'musicfestival-schedule-division-sponsor sponsor-' . ciniki_core_makePermalink($ciniki, $webheader_sponsors[$sid]['name']),
+                    'image-id' => $webheader_sponsors[$sid]['image-id'],
+                    ];
             }
         }
         $blocks[] = array(
