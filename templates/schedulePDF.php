@@ -1110,6 +1110,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 }
                 $pdf->SetFont('', '');
    
+                $pdf->SetFont('arialunicodems', '', '12');
                 $pdf->SetCellPadding(0);
                 foreach($reg_list as $row) {
                     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) 
@@ -1154,6 +1155,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     }
                     $pdf->Ln(1);
                 }
+                $pdf->SetFont('helvetica', '', '12');
                 $pdf->SetCellPadding(1);
 
                 $fill=!$fill;
