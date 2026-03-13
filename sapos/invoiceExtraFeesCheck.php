@@ -71,7 +71,7 @@ function ciniki_musicfestivals_sapos_invoiceExtraFeesCheck($ciniki, $tnid, $args
     }
 
     if( $closed_registrations != '' ) {
-        return array('stat'=>'blocked', 'msg'=>$closed_registrations);
+        return array('stat'=>'blocked', 'err'=>array('code'=>'ciniki.musicfestivals.1522', 'msg'=>$closed_registrations));
     }
 
     //
