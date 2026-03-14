@@ -25,6 +25,7 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
 //        'member_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Member'),
         'section_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Section'),
+        'recommendation_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Recommendation'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -70,16 +71,37 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
     if( $args['entry_id'] == 0 ) {
         $entry = array('id'=>0,
             'status' => 10,
-            'recommendation_id'=>'',
-            'class_id'=>0,
-            'position'=>'',
-            'name'=>'',
-            'mark'=>'',
-            'notes'=>'',
+            'recommendation_id' => isset($args['recommendation_id']) ? $args['recommendation_id'] : 0,
+            'class_id' => 0,
+            'position' => '',
+            'name' => '',
+            'mark' => '',
+            'notes' => '',
+            'member_tnid' => 0,
             'local_reg_details' => [
-                ['label'=>'Participant', 'value'=>''],
+                ['label' => 'Participant', 'value' => ''],
                 ],
         );
+
+        if( isset($args['recommendation_id']) && $args['recommendation_id'] > 0 ) {
+            $strsql = "SELECT members.member_tnid "
+                . "FROM ciniki_musicfestival_recommendations AS recommendations "
+                . "INNER JOIN ciniki_musicfestivals_members AS members ON ("
+                    . "recommendations.member_id = members.id "
+                    . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE recommendations.id = '" . ciniki_core_dbQuote($ciniki, $args['recommendation_id']) . "' "
+                . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'member');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1506', 'msg'=>'Unable to load member', 'err'=>$rc['err']));
+            }
+            if( !isset($rc['member']) ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1507', 'msg'=>'Unable to find requested member'));
+            }
+            $entry['member_tnid'] = $rc['member']['member_tnid'];
+        }
     }
 
     //

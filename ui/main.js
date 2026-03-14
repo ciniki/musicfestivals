@@ -17483,7 +17483,7 @@ function ciniki_musicfestivals_main() {
         if( eid != null ) { this.entry_id = eid; }
         if( sid != null ) { this.section_id = sid; }
         if( list != null ) { this.nplist = list; }
-        M.api.getJSONCb('ciniki.musicfestivals.recommendationEntryGet', {'tnid':M.curTenantID, 'festival_id':M.ciniki_musicfestivals_main.festival.festival_id, 'entry_id':this.entry_id, 'section_id':this.section_id}, function(rsp) {
+        M.api.getJSONCb('ciniki.musicfestivals.recommendationEntryGet', {'tnid':M.curTenantID, 'festival_id':M.ciniki_musicfestivals_main.festival.festival_id, 'entry_id':this.entry_id, 'section_id':this.section_id, 'recommendation_id':M.ciniki_musicfestivals_main.recommendation.recommendation_id}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
