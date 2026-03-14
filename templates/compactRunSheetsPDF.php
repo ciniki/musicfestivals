@@ -49,6 +49,11 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
     }
     $festival = $rc['festival'];
 
+    $show_titles = 'yes';
+    if( isset($festival['runsheets-titles']) && $festival['runsheets-titles'] == 'no' ) {
+        $show_titles = 'no';
+    }
+
     //
     // FIXME: This file needs to be a landscape only generation
     // This was copied from runsheetsPDF before reverting runsheetsPDF
@@ -550,6 +555,10 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
     $tnw = array(5, 10, 15, 219);   // reg notes lines
     $trw = array(22, 198);   // Accolade lines
 
+    if( $show_titles == 'no' ) {
+        $w[2] = $w[2] + $w[3];
+        $w[3] = 0;
+    }
 
     $newpage = 'yes';
     //
@@ -612,9 +621,11 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                 $pdf->SetFont('', 'B');
                 $i = 0;
                 $pdf->MultiCell($w[$i++] + $w[$i++], 0, '#', 1, 'C', 1, 0);
-                $pdf->MultiCell($w[$i++], 0, 'Name', 1, 'L', 1, 0);
-                if( $orientation == 'landscape' ) {
+                if( $show_titles == 'yes' ) {
+                    $pdf->MultiCell($w[$i++], 0, 'Name', 1, 'L', 1, 0);
                     $pdf->MultiCell($w[$i++], 0, 'Titles', 1, 'L', 1, 0);
+                } else {
+                    $pdf->MultiCell($w[$i++] + $w[$i++], 0, 'Name', 1, 'L', 1, 0);
                 }
                 $pdf->MultiCell($w[$i++], 0, 'Mark', 1, 'C', 1, 0);
                 if( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
@@ -680,24 +691,26 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                         $pdf->SetFont('', '', $font_size);
                         $pdf->SetCellPadding($cell_padding);
                         $titles = '';
-                        for($i = 1; $i <= 8; $i++) {
-                            if( $reg["title{$i}"] != '' ) {
-                                $timeslot['registrations'][$rid]['last_title'] = $i;
-                                $perf_time = '??';
-                                if( $reg["perf_time{$i}"] != '' && is_numeric($reg["perf_time{$i}"]) ) {
-                                    $perf_time = intval($reg["perf_time{$i}"]/60) 
-                                        . ':' 
-                                        . str_pad(($reg["perf_time{$i}"]%60), 2, '0', STR_PAD_LEFT);
-                                }
-                                $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
-                                if( isset($rc['title']) ) {
-                                    $timeslot['registrations'][$rid]["title{$i}"] = "- [{$perf_time}] " . $rc['title'];
-                                    $titles .= ($titles != '' ? "\n" : '') . "[{$perf_time}] " . $rc['title'];
-                                }
-                                if( $orientation == 'landscape' ) {
-                                    $ht += $pdf->getStringHeight($w[3], $timeslot['registrations'][$rid]["title{$i}"]);
-                                } else {
-                                    $ht += $pdf->getStringHeight($tw[1], $timeslot['registrations'][$rid]["title{$i}"]);
+                        if( $show_titles == 'yes' ) {
+                            for($i = 1; $i <= 8; $i++) {
+                                if( $reg["title{$i}"] != '' ) {
+                                    $timeslot['registrations'][$rid]['last_title'] = $i;
+                                    $perf_time = '??';
+                                    if( $reg["perf_time{$i}"] != '' && is_numeric($reg["perf_time{$i}"]) ) {
+                                        $perf_time = intval($reg["perf_time{$i}"]/60) 
+                                            . ':' 
+                                            . str_pad(($reg["perf_time{$i}"]%60), 2, '0', STR_PAD_LEFT);
+                                    }
+                                    $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
+                                    if( isset($rc['title']) ) {
+                                        $timeslot['registrations'][$rid]["title{$i}"] = "- [{$perf_time}] " . $rc['title'];
+                                        $titles .= ($titles != '' ? "\n" : '') . "[{$perf_time}] " . $rc['title'];
+                                    }
+                                    if( $orientation == 'landscape' ) {
+                                        $ht += $pdf->getStringHeight($w[3], $timeslot['registrations'][$rid]["title{$i}"]);
+                                    } else {
+                                        $ht += $pdf->getStringHeight($tw[1], $timeslot['registrations'][$rid]["title{$i}"]);
+                                    }
                                 }
                             }
                         }
@@ -705,7 +718,7 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                         $timeslot['registrations'][$rid]["titles"] = $titles;
                         if( $orientation == 'landscape' ) {
                             $ht = $pdf->getStringHeight($w[3], $titles);
-                            if( $ht > $h ) {
+                            if( $show_titles == 'yes' && $ht > $h ) {
                                 $h = $ht;
                             } 
                         } else {
@@ -758,7 +771,7 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                     $h += 5;
                 }
               
-                if( $pdf->GetY() > 70 && $pdf->GetY() > $pdf->getPageHeight() - $h - 38) {
+                if( $pdf->GetY() > 70 && $pdf->GetY() > $pdf->getPageHeight() - $h - 30) {
                     $pdf->AddPage();
 //                    $pdf->DivisionHeader($args, $section, $division, 'yes');
                     $pdf->SetFont('', '', $font_size);
@@ -766,9 +779,11 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                         $pdf->SetFont('', 'B');
                         $i = 0;
                         $pdf->MultiCell($w[$i++] + $w[$i++], 0, '#', 1, 'C', 1, 0);
-                        $pdf->MultiCell($w[$i++], 0, 'Name', 1, 'L', 1, 0);
-                        if( $orientation == 'landscape' ) {
+                        if( $show_titles == 'yes' ) {
+                            $pdf->MultiCell($w[$i++], 0, 'Name', 1, 'L', 1, 0);
                             $pdf->MultiCell($w[$i++], 0, 'Titles', 1, 'L', 1, 0);
+                        } else {
+                            $pdf->MultiCell($w[$i++] + $w[$i++], 0, 'Name', 1, 'L', 1, 0);
                         }
                         $pdf->MultiCell($w[$i++], 0, 'Mark', 1, 'C', 1, 0);
                         if( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
@@ -830,9 +845,11 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                         $pdf->SetFont('', 'B');
                         $i = 0;
                         $pdf->MultiCell($w[$i++] + $w[$i++], 0, '#', 1, 'C', 1, 0);
-                        $pdf->MultiCell($w[$i++], 0, 'Name', 1, 'L', 1, 0);
-                        if( $orientation == 'landscape' ) {
+                        if( $show_titles == 'yes' ) {
+                            $pdf->MultiCell($w[$i++], 0, 'Name', 1, 'L', 1, 0);
                             $pdf->MultiCell($w[$i++], 0, 'Titles', 1, 'L', 1, 0);
+                        } else {
+                            $pdf->MultiCell($w[$i++] + $w[$i++], 0, 'Name', 1, 'L', 1, 0);
                         }
                         $pdf->MultiCell($w[$i++], 0, 'Mark', 1, 'C', 1, 0);
                         if( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
@@ -889,8 +906,10 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                         if( $orientation == 'landscape' ) {
                             $pdf->SetFont('', '', $font_size);
                             $pdf->SetCellPadding($cell_padding);
-                            $ht = $pdf->getStringHeight($w[3], $reg["titles"]);
-                        } else {
+                            if( $show_titles == 'yes' ) {
+                                $ht = $pdf->getStringHeight($w[3], $reg["titles"]);
+                            }
+                        } elseif( $show_titles == 'yes' ) {
                             for($i = 1; $i <= 8; $i++) {
                                 if( $reg["title{$i}"] != '' ) {
                                     $ht += $pdf->getStringHeight($tw[1], $reg["title{$i}"]);
@@ -914,9 +933,11 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                                 $pdf->SetFont('', 'B');
                                 $i = 0;
                                 $pdf->MultiCell($w[$i++] + $w[$i++], 0, '#', 1, 'C', 1, 0);
-                                $pdf->MultiCell($w[$i++], 0, 'Name', 1, 'L', 1, 0);
-                                if( $orientation == 'landscape' ) {
+                                if( $show_titles == 'yes' ) {
+                                    $pdf->MultiCell($w[$i++], 0, 'Name', 1, 'L', 1, 0);
                                     $pdf->MultiCell($w[$i++], 0, 'Titles', 1, 'L', 1, 0);
+                                } else {
+                                    $pdf->MultiCell($w[$i++] + $w[$i++], 0, 'Name', 1, 'L', 1, 0);
                                 }
                                 $pdf->MultiCell($w[$i++], 0, 'Mark', 1, 'C', 1, 0);
                                 if( !isset($festival['runsheets-advance-to']) || $festival['runsheets-advance-to'] == 'yes' ) {
@@ -989,13 +1010,17 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                         if( $orientation == 'landscape' ) {
                             $j = 0;
                             $pdf->SetFont('', '', $font_size);
-                            if( $pdf->getStringHeight($w[3], $reg['titles']) > $h ) {
+                            if( $show_titles == 'yes' && $pdf->getStringHeight($w[3], $reg['titles']) > $h ) {
                                 $h = $pdf->getStringHeight($w[3], $reg['titles']);
                             }
                             $pdf->MultiCell($w[$j++], $h, '', '', 'C', 0, 0);
                             $pdf->MultiCell($w[$j++], $h, $num, 'BLTR', 'C', 0, 0);
                             $pdf->MultiCell($w[$j++], $h, $reg['name'], 'BLTR', 'L', 0, 0);
-                            $pdf->MultiCell($w[$j++], $h, $reg['titles'], 1, 'L', 0, 0);
+                            if( $show_titles == 'yes' ) {
+                                $pdf->MultiCell($w[$j++], $h, $reg['titles'], 1, 'L', 0, 0);
+                            } else {
+                                $j++;
+                            }
                         } else {
                             $j = 0;
                             $pdf->MultiCell($w[$j++], $h, $num, 'LTR', 'C', 0, 0);
