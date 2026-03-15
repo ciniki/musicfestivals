@@ -454,6 +454,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             $rc = ciniki_musicfestivals_volunteerConflictCheck($ciniki, $tnid, [
                 'volunteer_id' => $volunteer['id'],
                 'shift_id' => $shift['id'],
+                'festival' => $festival,
                 ]);
             if( $rc['stat'] != 'ok' ) {
                 $blocks[] = [

@@ -6719,6 +6719,10 @@ function ciniki_musicfestivals_main() {
                     'no':'No',
                     'yes':'Yes',
                     }},
+                'volunteers-conflict-checker':{'label':'Conflict Checker', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
                 'volunteers-cancel-notify-emails':{'label':'Cancel Notifications', 'type':'text'},
                 'volunteers-smtp-from-name':{'label':'SMTP Name', 'type':'text',
                     'visible':function() { return ((M.userPerms&0x01) == 1 ? 'yes' : 'no'); },

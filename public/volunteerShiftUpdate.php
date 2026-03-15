@@ -80,6 +80,16 @@ function ciniki_musicfestivals_volunteerShiftUpdate(&$ciniki) {
     }
 
     //
+    // Load the festival
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $shift['festival_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $festival = $rc['festival'];
+
+    //
     // Check for volunteers added to shift
     //
     $assigned_ids = [];
@@ -241,6 +251,7 @@ function ciniki_musicfestivals_volunteerShiftUpdate(&$ciniki) {
             $rc = ciniki_musicfestivals_volunteerConflictCheck($ciniki, $args['tnid'], [
                 'volunteer_id' => $volunteer_id,
                 'shift_id' => $args['shift_id'],
+                'festival' => $festival,
                 ]);
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
