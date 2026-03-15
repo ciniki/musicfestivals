@@ -1002,7 +1002,12 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     if( $pdf->layout == 'compact' ) {
                         $pdf->SetFont('', 'B', $pdf->font_size);
                         $pdf->SetCellPadding($pdf->padding);
-                        $pdf->MultiCell($cw[0] + $cw[1], 0, $time . ' - ' . $name, 1, 'L', 1, 1);
+                        if( $time == '' ) {
+                            $pdf->MultiCell($w[0], 0, '', 'LTB', 'L', 1, 0);
+                            $pdf->MultiCell($pdf->page_width - $w[0], 0, $name, 'TRB', 'L', 1, 1);
+                        } else {
+                            $pdf->MultiCell($cw[0] + $cw[1], 0, $time . ' - ' . $name, 1, 'L', 1, 1);
+                        }
                     } else {
                         $pdf->MultiCell($cw[0], 0, $time, 0, 'L', 0, 0);
                         $pdf->MultiCell($cw[1], 0, $name, 0, 'L', 0, 1);
