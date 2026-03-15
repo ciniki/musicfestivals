@@ -187,6 +187,7 @@ function ciniki_musicfestivals_volunteerShiftUpdate(&$ciniki) {
                     'template' => 'volunteers-email-shift-cancelled',
                     ]);
                 if( $rc['stat'] != 'ok' ) {
+                    ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1262', 'msg'=>'Unable to email volunteer', 'err'=>$rc['err']));
                 }
             }
@@ -233,6 +234,18 @@ function ciniki_musicfestivals_volunteerShiftUpdate(&$ciniki) {
         // Check for new volunteer assignment
         //
         if( !isset($assignments[$volunteer_id]) ) {
+            //
+            // Check for volunteer scheduling conflict
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'volunteerConflictCheck');
+            $rc = ciniki_musicfestivals_volunteerConflictCheck($ciniki, $args['tnid'], [
+                'volunteer_id' => $volunteer_id,
+                'shift_id' => $args['shift_id'],
+                ]);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
             $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.volunteerassignment', [
                 'festival_id' => $shift['festival_id'],
