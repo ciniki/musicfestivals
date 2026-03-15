@@ -5844,6 +5844,15 @@ function ciniki_musicfestivals_main() {
                     'portrait':'Portrait',
                     'landscape':'Landscape',
                     }},
+                'runsheets-page-layout':{'label':'Page Layout', 'type':'toggle', 'default':'regular', 'toggles':{
+                    'regular':'Regular',
+                    'compact':'Compact',
+                    }},
+//                'runsheets-font-size':{'label':'Font Size', 'type':'toggle', 'default':'12', 'toggles':{
+//                    '10':'10',
+//                    '11':'11',
+//                    '12':'12',
+//                    }},
                 'runsheets-include-pronouns':{'label':'Include Pronouns', 'type':'toggle', 'default':'no', 'toggles':{
                     'no':'No',
                     'yes':'Yes',

@@ -76,6 +76,8 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'schedule-continued-label',
         'schedule-word-template',
         'runsheets-page-orientation',
+        'runsheets-page-layout',
+        'runsheets-font-size',
         'runsheets-include-pronouns',
         'runsheets-separate-classes',
         'runsheets-class-format',
