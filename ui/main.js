@@ -6397,6 +6397,10 @@ function ciniki_musicfestivals_main() {
                     'no':'No',
                     'yes':'Yes',
                     }},
+                'comments-titles':{'label':'Titles', 'type':'toggle', 'default':'yes', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
                 'comments-adjudicator-signature':{'label':'Adjudicator Signature', 'type':'toggle', 'default':'no', 'toggles':{
                     'no':'No',
                     'filledout':'Filled Out',

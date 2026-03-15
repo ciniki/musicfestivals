@@ -97,6 +97,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'runsheets-footer-msg',
         'comments-header-adjudicator',
         'comments-include-pronouns',
+        'comments-titles',
         'comments-class-format',
         'comments-timeslot-datetime',
         'comments-mark-ui',

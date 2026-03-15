@@ -661,14 +661,15 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         $pdf->SetFont('arialunicodems', '', 12);
                         $pdf->MultiCell($w[1], $lh, $reg['name'], $border, 'L', 0, 1, '', '');
 
-                    
-                        for($i = 1; $i <= 8; $i++) {
-                            if( isset($reg["title{$i}"]) && $reg["title{$i}"] != '' ) {
-                                $lh = $pdf->getStringHeight($w[1], $reg["title{$i}"]);
-                                $pdf->SetFont('helvetica', 'B', 12);
-                                $pdf->MultiCell($w[0], $lh, 'Title: ', $border, 'R', 0, 0, '', '');
-                                $pdf->SetFont('arialunicodems', '', 12);
-                                $pdf->MultiCell($w[1], $lh, $reg["title{$i}"], $border, 'L', 0, 1, '', '');
+                        if( !isset($festival['comments-titles']) || $festival['comments-titles'] == 'yes' ) { 
+                            for($i = 1; $i <= 8; $i++) {
+                                if( isset($reg["title{$i}"]) && $reg["title{$i}"] != '' ) {
+                                    $lh = $pdf->getStringHeight($w[1], $reg["title{$i}"]);
+                                    $pdf->SetFont('helvetica', 'B', 12);
+                                    $pdf->MultiCell($w[0], $lh, 'Title: ', $border, 'R', 0, 0, '', '');
+                                    $pdf->SetFont('arialunicodems', '', 12);
+                                    $pdf->MultiCell($w[1], $lh, $reg["title{$i}"], $border, 'L', 0, 1, '', '');
+                                }
                             }
                         }
                         $pdf->Ln(1);
