@@ -250,8 +250,9 @@ function ciniki_musicfestivals_provincialsRecommendationGet($ciniki) {
                 . ") "
             . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
                 . "timeslots.id = registrations.timeslot_id "
+                . "AND (registrations.flags&0x20) = 0 " // Eligible for provincials
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . ") "
+                . ") "  
             . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "registrations.class_id = classes.id "
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "

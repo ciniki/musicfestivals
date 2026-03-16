@@ -157,10 +157,10 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
                 foreach($args['adjudicator']['registrations']['']['registrations'] as $reg) {
                     $registrations[] = $reg;
                 }
-                uasort($registrations, function($a, $b) {   
-                    return strcmp($a['name'], $b['name']);
-                    });
             }
+            uasort($registrations, function($a, $b) {   
+                return strcmp($a['name'], $b['name']);
+                });
         }
         foreach($positions as $i => $position) {
 //            $label = ($i == 1 ? '1st' : ($i == 2 ? '2nd' : ($i == 3 ? '3rd' : $i . 'th')));

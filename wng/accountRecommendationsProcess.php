@@ -113,6 +113,7 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
             . ") "
         . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "timeslots.id = registrations.timeslot_id "
+            . "AND (registrations.flags&0x20) = 0 " // Eligible for provincials
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
@@ -125,7 +126,7 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
                 . "OR (arefs.object_id = divisions.id AND arefs.object = 'ciniki.musicfestivals.scheduledivision') "
             . ") "
         . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "ORDER BY classes.provincials_code, registrations.class_id, registrations.display_name, registrations.id "
+        . "ORDER BY classes.provincials_code, registrations.display_name, classes.code, registrations.id "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(

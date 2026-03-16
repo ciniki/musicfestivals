@@ -52,6 +52,21 @@ function ciniki_musicfestivals_registrationHistory($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryTags');
         return ciniki_core_dbGetModuleHistoryTags($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', $args['tnid'], 'ciniki_musicfestival_registration_tags', $args['registration_id'], 'tag_name', 'registration_id', 10);
     }
+    if( $args['field'] == 'flags6' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectHistory');
+        return ciniki_core_objectHistory($ciniki, $args['tnid'], 'ciniki.musicfestivals.registration', [
+            'key' => $args['registration_id'], 
+            'field' => 'flags',
+            'flagbit' => 0x20,
+            'flagoff' => 'Eligible',
+            'flagon' => 'Ineligible',
+            ]);
+    }
+    if( preg_match("/^flags([0-9]+)/", $args['field'], $m) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbGetModuleHistoryFlagBit');
+        return ciniki_core_dbGetModuleHistoryFlagBit($ciniki, 'ciniki.musicfestivals', 'ciniki_musicfestivals_history', 
+            $args['tnid'], 'ciniki_musicfestival_registrations', $args['registration_id'], 'flags', pow(2, ($m[1]-1)), 'No', 'Yes');
+    }
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectHistory');
     return ciniki_core_objectHistory($ciniki, $args['tnid'], 'ciniki.musicfestivals.registration', [

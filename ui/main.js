@@ -1125,7 +1125,7 @@ function ciniki_musicfestivals_main() {
                     },
                 'accompanist':{'label':'Accompanist', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("accompanist");'},
                 'schedule':{'label':'Schedule', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("schedule");'},
-                'marks':{'label':'Marks', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("marks");'},
+                'results':{'label':'Results', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("results");'},
 // Move tags into Marks tab, might need it's own tab in the future
 //                'tags':{'label':'Tags', 'fn':'M.ciniki_musicfestivals_main.festival.switchRegsTab("tags");'},
             }},
@@ -2953,6 +2953,7 @@ function ciniki_musicfestivals_main() {
                 case 'placement': return d.placement;
                 case 'level': return d.level;
                 case 'tags': return d.tags;
+                case 'eligible': return ((d.flags&0x20) == 0x20 ? 'Ineligible' : 'Eligible');
             }
         }
         if( s == 'registration_sections' || s == 'emails_sections' ) {
@@ -4895,7 +4896,7 @@ function ciniki_musicfestivals_main() {
             this.sections.registrations.dataMaps = ['class', 'registrant', 'perf_calc_time', 'scheduled'];
             this.sections.registrations.sortTypes = ['text', 'text', 'time', 'text'];
             this.sections.registrations.num_cols = 4;
-        } else if( this.sections.registrations_tabs.selected == 'marks' ) {
+        } else if( this.sections.registrations_tabs.selected == 'results' ) {
             this.sections.registrations.headerValues = ['Class', 'Registrant'];
             this.sections.registrations.cellClasses = ['multiline', 'multiline'];
             this.sections.registrations.dataMaps = ['class', 'registrant'];
@@ -4933,6 +4934,10 @@ function ciniki_musicfestivals_main() {
             }
             this.sections.registrations.headerValues[this.sections.registrations.num_cols] = 'Tags';
             this.sections.registrations.dataMaps[this.sections.registrations.num_cols] = 'tags';
+            this.sections.registrations.sortTypes[this.sections.registrations.num_cols] = 'text';
+            this.sections.registrations.num_cols++;
+            this.sections.registrations.headerValues[this.sections.registrations.num_cols] = 'Provincials';
+            this.sections.registrations.dataMaps[this.sections.registrations.num_cols] = 'eligible';
             this.sections.registrations.sortTypes[this.sections.registrations.num_cols] = 'text';
             this.sections.registrations.num_cols++;
         } else if( this.sections.registrations_tabs.selected == 'tags' ) {
@@ -9576,6 +9581,7 @@ function ciniki_musicfestivals_main() {
                 'level':{'label':'Level', 'type':'text', 'separator':'no', 'visible':'yes', 'size':'small'},
                 'finals_placement':{'label':'Finals Placement', 'type':'text', 'separator':'no', 'visible':'yes'},
                 'flags5':{'label':'Best in Class', 'type':'flagtoggle', 'bit':0x10, 'default':'off', 'field':'flags'},
+                'flags6':{'label':'Provincials', 'type':'flagtoggle', 'bit':0x20, 'default':'off', 'field':'flags', 'on':'Ineligible', 'off':'Eligible'},
             }},
         'accolades':{'label':'Accolades', 'type':'simplegrid', 'num_cols':3, 'panelcolumn':1,
             'visible':function() { return M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'accolades' ? 'yes' : 'hidden'; },
