@@ -1561,7 +1561,6 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 }
     //            $festival['registrations_copy'] = '';
                 if( isset($rc['registrations']) ) {
-                    error_log('test');
                     $festival['registrations'] = $rc['registrations'];
                     $nplists['registrations'] = array();
                     $total = 0;

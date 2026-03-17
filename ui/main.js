@@ -2947,7 +2947,7 @@ function ciniki_musicfestivals_main() {
                 case 'notes': return d.notes.replace(/\n/g, '<br/>');
                 case 'instrument': return d.instrument;
                 case 'perf_time': return d.perf_time;
-                case 'perf_calc_time': return (d.org_time != d.perf_time ? '<strike>' + d.org_time + '</strike>&nbsp;' : '') + d.perf_time;
+                case 'perf_calc_time': return (d.org_time != null && d.org_time != d.perf_time ? '<strike>' + d.org_time + '</strike>&nbsp;' : '') + d.perf_time;
                 case 'scheduled': return M.multiline(d.scheduled, d.scheduled_sd);
                 case 'mark': return d.mark;
                 case 'placement': return d.placement;

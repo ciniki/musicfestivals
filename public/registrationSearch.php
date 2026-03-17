@@ -107,6 +107,14 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         . "registrations.movements6, "
         . "registrations.movements7, "
         . "registrations.movements8, "
+        . "registrations.perf_time1, "
+        . "registrations.perf_time2, "
+        . "registrations.perf_time3, "
+        . "registrations.perf_time4, "
+        . "registrations.perf_time5, "
+        . "registrations.perf_time6, "
+        . "registrations.perf_time7, "
+        . "registrations.perf_time8, "
         . "registrations.video_url1, "
         . "registrations.video_url2, "
         . "registrations.video_url3, "
@@ -135,7 +143,15 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         . "registrations.provincials_notes, "
         . "invoices.invoice_type, "
         . "invoices.status AS invoice_status, "
-        . "invoices.payment_status AS payment_status_text "
+        . "invoices.payment_status AS payment_status_text, ";
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+        $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS slot_time, ";
+    } else {
+        $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time, ";
+    }
+    $strsql .= "IFNULL(divisions.name, '') AS division_name, "
+        . "IFNULL(DATE_FORMAT(divisions.division_date, '%b %e'), '') AS division_date, "
+        . "IFNULL(ssections.name, '') AS section_name "
         . "FROM ciniki_musicfestival_competitors AS competitors "
         . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "(competitors.id = registrations.competitor1_id "
@@ -170,6 +186,18 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
             . "categories.section_id = sections.id "
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+            . "registrations.timeslot_id = timeslots.id "
+            . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+            . "timeslots.sdivision_id = divisions.id "
+            . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
+            . "divisions.ssection_id = ssections.id "
+            . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -206,18 +234,19 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
                 'status', 'status_text', 'invoice_id', 'display_name', 
                 'class_id', 'class_code', 'class_name', 'category_name', 'section_name',
                 'fee', 'participation', 
-                'title1', 'composer1', 'movements1', 'video_url1', 'music_orgfilename1',
-                'title2', 'composer2', 'movements2', 'video_url2', 'music_orgfilename2',
-                'title3', 'composer3', 'movements3', 'video_url3', 'music_orgfilename3',
-                'title4', 'composer4', 'movements4', 'video_url4', 'music_orgfilename4',
-                'title5', 'composer5', 'movements5', 'video_url5', 'music_orgfilename5',
-                'title6', 'composer6', 'movements6', 'video_url6', 'music_orgfilename6',
-                'title7', 'composer7', 'movements7', 'video_url7', 'music_orgfilename7',
-                'title8', 'composer8', 'movements8', 'video_url8', 'music_orgfilename8',
+                'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
+                'title2', 'composer2', 'movements2', 'perf_time2', 'video_url2', 'music_orgfilename2',
+                'title3', 'composer3', 'movements3', 'perf_time3', 'video_url3', 'music_orgfilename3',
+                'title4', 'composer4', 'movements4', 'perf_time4', 'video_url4', 'music_orgfilename4',
+                'title5', 'composer5', 'movements5', 'perf_time5', 'video_url5', 'music_orgfilename5',
+                'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
+                'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
+                'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
                 'mark', 'placement', 'level',
                 'invoice_type', 'invoice_status', 'payment_status_text',
                 'provincials_code', 'provincials_position', 'provincials_position_text', 
                 'provincials_status', 'provincials_status_text', 'provincials_invite_date', 'provincials_notes',
+                'slot_time', 'division_name', 'division_date', 'section_name', 
                 ),
             'maps'=>array(
                 'rtype_text'=>$maps['registration']['rtype'],
@@ -235,19 +264,26 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
     if( isset($rc['registrations']) ) {
         $registrations = $rc['registrations'];
         $registration_ids = array();
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
         foreach($registrations as $rid => $registration) {
             $registration_ids[] = $registration['id'];
             $registrations[$rid]['titles'] = '';
-            for($i = 1; $i <= 8; $i++) {
+            $registrations[$rid]['perf_time'] = '';
+            $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $registration);
+            if( $rc['stat'] == 'ok' ) {
+                $registrations[$rid]['titles'] .= $rc['titles'];
+                $registrations[$rid]['perf_time'] = $rc['perf_time'];
+            }
+/*            for($i = 1; $i <= 8; $i++) {
                 if( $registration["title{$i}"] != '' ) {
                     $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
                     if( $rc['stat'] == 'ok' ) {
                         $registrations[$rid]["title{$i}"] = $rc['title'];
                         $registrations[$rid]['titles'] .= ($registrations[$rid]['titles'] != '' ? '<br/>' : '') . $rc['title'];
+                        $perf_time += $registration["perf_time{$i}"];
                     }
                 }
-            }
+            } */
             //
             // Setup invoice status
             //
@@ -256,6 +292,28 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
             } else {
                 $registrations[$rid]['invoice_status_text'] = $registration['payment_status_text'];
             }
+            //
+            // Setup schedule info
+            //
+            $scheduled = '';
+            $scheduled_sd = '';
+            if( $registration['division_date'] != '' ) {
+                $scheduled .= $registration['division_date'];
+            }
+            if( $registration['slot_time'] != '' && $registration['slot_time'] != '12:00 AM' ) {
+                $scheduled .= ($scheduled != '' ? ' - ' : '') . $registration['slot_time'];
+            }
+//            if( $registration['location_name'] != '' ) {
+//                $scheduled .= ($scheduled != '' ? ' - ' : '') . $registration['location_name'];
+//            }
+            if( $registration['section_name'] != '' ) {
+                $scheduled_sd .= ($scheduled_sd != '' ? "" : '') . $registration['section_name'];
+            }
+            if( $registration['division_name'] != '' ) {
+                $scheduled_sd .= ($scheduled_sd != '' ? ' - ' : '') . $registration['division_name'];
+            }
+            $registrations[$rid]['scheduled'] = $scheduled;
+            $registrations[$rid]['scheduled_sd'] = $scheduled_sd;
         }
     } else {
         $registrations = array();
