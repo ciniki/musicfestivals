@@ -60,13 +60,13 @@ function ciniki_musicfestivals_volunteerShiftGet($ciniki) {
     // Return default for new Shift
     //
     if( $args['shift_id'] == 0 ) {
-        if( isset($args['shift_date']) && $args['shift_date'] != '' && $args['shift_date'] != 'All' ) {
+        if( isset($args['shift_date']) && $args['shift_date'] != '' && $args['shift_date'] != 'All' && $args['shift_date'] != 'upcoming' ) {
             $dt = new DateTime($args['shift_date'] . ' 12:00', new DateTimezone($intl_timezone));
             $args['shift_date'] = $dt->format($date_format);
         }
         $shift = array('id'=>0,
             'festival_id'=>'',
-            'shift_date' => (isset($args['shift_date']) && $args['shift_date'] != 'All' ? $args['shift_date'] : ''),
+            'shift_date' => '',
             'start_time'=>'',
             'end_time'=>'',
             'object'=>'',
@@ -77,6 +77,9 @@ function ciniki_musicfestivals_volunteerShiftGet($ciniki) {
             'min_volunteers'=>'1',
             'max_volunteers'=>'1',
         );
+        if( isset($args['shift_date']) && $args['shift_date'] != 'All' && $args['shift_date'] != 'upcoming' ) {
+            $shift['shift_date'] = $args['shift_date'];
+        }
 
         // 
         // Check if division specified, and lookup specifics
