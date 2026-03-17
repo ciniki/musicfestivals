@@ -31,6 +31,16 @@ function ciniki_musicfestivals_provincialsRegReminderSend(&$ciniki, $tnid, $args
     $provincials = $rc['festival'];
 
     //
+    // Load the tenant settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $intl_timezone = $rc['settings']['intl-default-timezone'];
+    
+    //
     // Get the website base url
     //
     if( !isset($provincials['site-base-url']) || $provincials['site-base-url'] == '' ) {
@@ -131,6 +141,19 @@ function ciniki_musicfestivals_provincialsRegReminderSend(&$ciniki, $tnid, $args
     $message = str_replace('{_livevirtual_}', $class_live_virtual, $message);
     $subject = str_replace('{_registerlink_}', $register_url, $subject);
     $message = str_replace('{_registerlink_}', $register_url, $message);
+    $dt = new DateTime($member['deadline'], new DateTimezone($intl_timezone));
+    $now = new DateTime('now', new DateTimezone($intl_timezone));
+    $dayshours = '';
+    if( $dt > $now ) {
+        $interval = $dt->diff($now);
+        if( $interval->format('d') > 0 ) {
+            $dayshours = $interval->format('%d days');
+        } else {
+            $dayshours = $interval->format('%h hours');
+        }
+    }
+    $subject = str_replace('{_dayshours_}', $dayshours, $subject);
+    $message = str_replace('{_dayshours_}', $dayshours, $message);
 
     //
     // Build a list of email addresses
