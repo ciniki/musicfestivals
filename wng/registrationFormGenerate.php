@@ -1061,6 +1061,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         } elseif( isset($registration["title{$i}"]) ) {
             $fields["title{$i}"]['value'] = $registration["title{$i}"];
         }
+        if( isset($selected_class) && $i > $selected_class['max_titles'] ) {
+            $fields["title{$i}"]['value'] = '';
+        }
 
         $fields["movements{$i}"] = array(
             'id' => "movements{$i}",
@@ -1089,6 +1092,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         } elseif( isset($registration["movements{$i}"]) ) {
             $fields["movements{$i}"]['value'] = $registration["movements{$i}"];
         }
+        if( isset($selected_class) && $i > $selected_class['max_titles'] ) {
+            $fields["movements{$i}"]['value'] = '';
+        }
 
         $fields["composer{$i}"] = array(
             'id' => "composer{$i}",
@@ -1116,6 +1122,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             $fields["composer{$i}"]['value'] = trim($_POST["f-composer{$i}"]);
         } elseif( isset($registration["composer{$i}"]) ) {
             $fields["composer{$i}"]['value'] = $registration["composer{$i}"];
+        }
+        if( isset($selected_class) && $i > $selected_class['max_titles'] ) {
+            $fields["composer{$i}"]['value'] = '';
         }
 
         if( isset($selected_class) && ($selected_class['flags']&0x10) == 0x10 
@@ -1161,6 +1170,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             $fields["perf_time{$i}"]['class'] = 'hidden';
             $fields["perf_time{$i}"]['required'] = 'no';
         }
+        if( isset($selected_class) && $i > $selected_class['max_titles'] ) {
+            $fields["perf_time{$i}"]['value'] = 0;
+        }
 
         $fields["video_url{$i}"] = array(
             'id' => "video_url{$i}",
@@ -1178,6 +1190,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             && $selected_class['min_titles'] >= $i
             ) {
             $fields["video_url{$i}"]['required'] = 'yes';
+        }
+        if( isset($selected_class) && $i > $selected_class['max_titles'] ) {
+            $fields["video_url{$i}"]['value'] = '';
         }
         $fields["music_orgfilename{$i}"] = array(
             'id' => "music_orgfilename{$i}",

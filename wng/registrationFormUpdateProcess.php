@@ -335,7 +335,6 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
         }
     }
 
-
     //
     // If no errors, add/update the registration
     //
@@ -370,6 +369,10 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             $registration['member_id'] = $args['selected_member']['id'];
         }
         for($i = 1; $i <= 8; $i++) {
+            // Skip title not applicable to this class
+            if( $i > $selected_class['max_titles'] ) {
+                continue;
+            }
             $registration["title{$i}"] = isset($fields["title{$i}"]['value']) ? $fields["title{$i}"]['value'] : '';
             $registration["composer{$i}"] = isset($fields["composer{$i}"]['value']) ? $fields["composer{$i}"]['value'] : '';
             $registration["movements{$i}"] = isset($fields["movements{$i}"]['value']) ? $fields["movements{$i}"]['value'] : '';
@@ -553,7 +556,7 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
         $notes = $registration['display_name'];
         $titles = '';
         for($i = 1; $i <= 8; $i++) {
-            if( $registration["title{$i}"] != '' ) {
+            if( isset($registration["title{$i}"]) && $registration["title{$i}"] != '' ) {
                 $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $registration, $i);
                 if( isset($rc['title']) ) {
                     $registration["title{$i}"] = $rc['title'];
