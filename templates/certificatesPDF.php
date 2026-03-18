@@ -123,16 +123,14 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $tnid, $args)
        
         if( isset($certificate['fields']) ) {
             foreach($certificate['fields'] as $field) {
-                if( $field['field'] == 'adjudicatorsig' 
-                    || ($field['field'] == 'adjudicatorsigorname' && isset($field['image_id']) && $field['image_id'] > 0) 
-                    ) {
+                if( $field['field'] == 'adjudicatorsig' || $field['field'] == 'adjudicatorsigorname' ) {
                     if( isset($field['image_id']) && $field['image_id'] > 0 ) {
                         $rc = ciniki_images_loadImage($ciniki, $tnid, $field['image_id'], 'original');
                         if( $rc['stat'] == 'ok' ) {
                             $height = $rc['image']->getImageHeight();
                             $width = $rc['image']->getImageWidth();
-                            if( $width > 600 ) {
-                                $this->header_image->scaleImage(600, 0);
+                            if( $width > 400 ) {
+                                $rc['image']->scaleImage(400, 0);
                             }
                             $image_ratio = $width/$height;
                             $available_ratio = $field['width']/$field['height'];

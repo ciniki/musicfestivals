@@ -14685,7 +14685,7 @@ function ciniki_musicfestivals_main() {
                 'timeslotdate':'Timeslot Date',
                 'participant':'Participant',
                 'title':'Title',
-                'adjudicator':'Adjudicator',
+                'adjudicator':'Adjudicator Name',
                 'adjudicatorsig':'Adjudicator Signature',
                 'adjudicatorsigorname':'Adjudicator Signature or Name',
                 'mark':'Mark',

@@ -495,7 +495,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
 //                            elseif( $field['field'] == 'adjudicator' && isset($adjudicators[$division['adjudicator_id']]['name']) ) {
 //                                $certificate['fields'][$fid]['text'] = $adjudicators[$division['adjudicator_id']]['name'];
 //                            }
-                            elseif( $field['field'] == 'adjudicator' && isset($reg['adjudicators']) 
+                            elseif( $field['field'] == 'adjudicatorsig' && isset($reg['adjudicators']) 
                                 && count($reg['adjudicators']) == 1 
                                 && isset($adjudicators[$reg['adjudicators'][0]['id']]['sig_image_id']) 
                                 && $adjudicators[$reg['adjudicators'][0]['id']]['sig_image_id'] > 0
