@@ -18306,6 +18306,10 @@ function ciniki_musicfestivals_main() {
                     'label':'Email Volunteers',
                     'fn':'M.ciniki_musicfestivals_main.volunteers.emailVolunteers();',
                     },
+                'addtag':{
+                    'label':'Add Role to All Volunteers',
+                    'fn':'M.ciniki_musicfestivals_main.volunteers.assignRole();',
+                    },
                 },
             },
         'volunteer_shifts':{'label':'Shifts', 'type':'simplegrid', 'num_cols':5, 
@@ -18582,6 +18586,24 @@ function ciniki_musicfestivals_main() {
 //                'object_id':this.offering_id,
                 'removeable':'yes',
             });
+    }
+    this.volunteers.assignRole = function() {
+        M.prompt('Role to assign to all volunteers:', '', 'Assign Role to All Volunteers', function(n) {
+            if( n != 0 && n != '0' && n != '' ) {
+                var args = {
+                    'tnid':M.curTenantID, 
+                    'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
+                    'role':n,
+                    }; 
+                M.api.getJSONCb('ciniki.musicfestivals.volunteersRoleAdd', args, function(rsp) {
+                    if( rsp.stat != 'ok' ) {
+                        M.api.err(rsp);
+                        return false;
+                    }
+                    M.ciniki_musicfestivals_main.festival.open();
+                    });
+            }
+        });
     }
     this.volunteers.open = function(cb, fid) {
         this.size = 'xlarge narrowaside';
