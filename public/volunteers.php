@@ -480,6 +480,9 @@ function ciniki_musicfestivals_volunteers($ciniki) {
             if( isset($locations["{$shift['object']}:{$shift['object_id']}"]) ) {
                 $rsp['shifts'][$sid]['location_shortname'] = $locations["{$shift['object']}:{$shift['object_id']}"]['shortname'];
                 $rsp['shifts'][$sid]['location_name'] = $locations["{$shift['object']}:{$shift['object_id']}"]['name'];
+            } else {
+                $rsp['shifts'][$sid]['location_shortname'] = '';
+                $rsp['shifts'][$sid]['location_name'] = '';
             }
             $rsp['shifts'][$sid]['num_volunteers'] = isset($shift['volunteers']) ? count($shift['volunteers']) : 0;
             $rsp['shifts'][$sid]['names'] = '';
