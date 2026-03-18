@@ -18312,6 +18312,11 @@ function ciniki_musicfestivals_main() {
                     },
                 },
             },
+        'declined':{'label':'Declined', 'type':'simplegrid', 'num_cols':1, 'aside':'yes', 
+            'visible':function() { return M.ciniki_musicfestivals_main.volunteers.sections._tabs.selected == 'volunteers' && M.ciniki_musicfestivals_main.volunteers.data.declined != null ? 'yes' : 'no'; },
+            'noData':'No declined volunteers',
+            'cellClasses':['multiline', 'multiline alignright'],
+            },
         'volunteer_shifts':{'label':'Shifts', 'type':'simplegrid', 'num_cols':5, 
             'visible':function() { return M.ciniki_musicfestivals_main.volunteers.sections._tabs.selected == 'volunteers' && M.ciniki_musicfestivals_main.volunteers.volunteer_id > 0 ? 'yes' :'no'; },
             'headerValues':['Date', 'Time', 'Location', 'Role', 'Status'],
@@ -18474,6 +18479,11 @@ function ciniki_musicfestivals_main() {
                 case 0: return d.display_name + (d.status != 30 ? M.subdue(' [', d.status_text, ']') : '');
             }
         }
+        if( s == 'declined' ) {
+            switch(j) {
+                case 0: return d.display_name;
+            }
+        }
         if( s == 'volunteer_shifts' ) {
             switch(j) {
                 case 0: return d.shift_date;
@@ -18536,6 +18546,9 @@ function ciniki_musicfestivals_main() {
             } else {
                 return 'M.ciniki_musicfestivals_main.volunteers.volunteerSelect(' + d.id + ');';
             }
+        }
+        if( s == 'declined' ) {
+            return 'M.ciniki_musicfestivals_main.volunteer.open(\'M.ciniki_musicfestivals_main.volunteers.open();\',\'' + d.id + '\',0,M.ciniki_musicfestivals_main.volunteers.festival_id,M.ciniki_musicfestivals_main.volunteers.nplist);';
         }
         if( s == 'schedule_sections' ) {
             return 'M.ciniki_musicfestivals_main.volunteers.scheduleSelect(\'' + d.id + '\');';
@@ -18616,6 +18629,7 @@ function ciniki_musicfestivals_main() {
             };
         if( this.sections._tabs.selected == 'volunteers' ) {
             args['volunteers'] = 'yes';
+            args['declined'] = 'yes';
             if( this.volunteer_id > 0  ) {
                 args['volunteer_id'] = this.volunteer_id;
             }
@@ -18697,6 +18711,7 @@ function ciniki_musicfestivals_main() {
             'status':{'label':'Status', 'type':'toggle', 'toggles':{
                 '10':'Applied',
                 '30':'Approved',
+                '80':'Declined',
                 }},
             'shortname':{'label':'Short Name', 'type':'text'},
             'local_festival_id':{'label':'Local Festival', 

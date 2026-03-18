@@ -15,6 +15,7 @@
 #                       
 #                               10 - Applied
 #                               30 - Approved
+#                               80 - Declined
 #
 # shortname:                The short name to use instead of persons first & last name.
 #

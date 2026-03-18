@@ -189,6 +189,7 @@ function ciniki_musicfestivals_maps($ciniki) {
         'status'=>array(
             10 => 'Applied',
             30 => 'Approved',
+            80 => 'Declined',
         ),
     );
     $maps['volunteerassignment'] = array(
