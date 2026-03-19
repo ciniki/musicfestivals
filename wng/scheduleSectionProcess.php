@@ -285,6 +285,53 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     } */
 
     //
+    // Load the adjudicators 
+    //
+    $strsql = "SELECT divisions.id, "
+        . "adjudicators.id AS adjudicator_id, "
+        . "adjudicators.image_id, "
+        . "adjudicators.description, "
+        . "adjudicators.flags, "
+        . "customers.display_name, "
+        . "customers.permalink "
+        . "FROM ciniki_musicfestival_schedule_divisions AS divisions "
+        . "INNER JOIN ciniki_musicfestival_adjudicatorrefs AS arefs ON ("
+            . "("
+                . "(divisions.ssection_id = arefs.object_id AND arefs.object = 'ciniki.musicfestivals.schedulesection') "
+                . "OR (divisions.id = arefs.object_id AND arefs.object = 'ciniki.musicfestivals.scheduledivision') "
+                . ") "
+            . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
+            . "arefs.adjudicator_id = adjudicators.id "
+            . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "INNER JOIN ciniki_customers AS customers ON ("
+            . "adjudicators.customer_id = customers.id "
+            . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "WHERE divisions.ssection_id = '" . ciniki_core_dbQuote($ciniki, $s['section-id']) . "' "
+        . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "";
+    if( isset($s['division-ids']) && count($s['division-ids']) > 0 ) {
+        $strsql .= "AND divisions.id IN (" . ciniki_core_dbQuoteIDs($ciniki, $s['division-ids']) . ") ";
+    } elseif( isset($s['division-id']) && $s['division-id'] > 0 ) {
+        $strsql .= "AND divisions.id = '" . ciniki_core_dbQuote($ciniki, $s['division-id']) . "' ";
+    }
+    $strsql .= "ORDER BY divisions.id, customers.display_name, adjudicators.id ";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'divisions', 'fname'=>'id', 'fields'=>array('id')),
+        array('container'=>'adjudicators', 'fname'=>'adjudicator_id', 
+            'fields'=>array('id'=>'adjudicator_id', 'image_id', 'description', 'flags', 'display_name', 'permalink',
+            )),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1525', 'msg'=>'', 'err'=>$rc['err']));
+    }
+    $adjudicators = isset($rc['divisions']) ? $rc['divisions'] : array();
+
+    //
     // Load the divisions, timeslots and registrations
     //
     $strsql = "SELECT divisions.id AS division_id, "
@@ -300,11 +347,11 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "IFNULL(buildings.postal, '') AS location_postal, "
         . "IFNULL(buildings.latitude, '') AS latitude, "
         . "IFNULL(buildings.longitude, '') AS longitude, "
-        . "IFNULL(customers.display_name, '') AS adjudicator_name, "
-        . "IFNULL(customers.permalink, '') AS adjudicator_permalink, "
-        . "IFNULL(adjudicators.image_id, 0) AS adjudicator_image_id, "
-        . "IFNULL(adjudicators.description, 0) AS adjudicator_description, "
-        . "IFNULL(adjudicators.flags, 0) AS adjudicator_flags, "
+//        . "IFNULL(customers.display_name, '') AS adjudicator_name, "
+//        . "IFNULL(customers.permalink, '') AS adjudicator_permalink, "
+//        . "IFNULL(adjudicators.image_id, 0) AS adjudicator_image_id, "
+//        . "IFNULL(adjudicators.description, 0) AS adjudicator_description, "
+//        . "IFNULL(adjudicators.flags, 0) AS adjudicator_flags, "
         . "DATE_FORMAT(divisions.division_date, '" . ciniki_core_dbQuote($ciniki, $division_date_format) . "') AS division_date_text, ";
     if( isset($s['separate-classes']) && $s['separate-classes'] == 'yes' ) {
         $strsql .= "CONCAT_WS('-', timeslots.id, classes.id) AS timeslot_id, ";
@@ -459,9 +506,9 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     'sort_key'=>'division_sort_key',
                     'location_name', 'location_permalink', 
                     'location_address1', 'location_city', 'location_province', 'location_postal', 
-                    'latitude', 'longitude', 'adjudicator_name', 'adjudicator_permalink', 'adjudicator_flags',
+                    'latitude', 'longitude', // 'adjudicator_name', 'adjudicator_permalink', 'adjudicator_flags',
                     'results_notes', 'results_video_url',
-                    'adjudicator_image_id', 'adjudicator_description',
+//                    'adjudicator_image_id', 'adjudicator_description',
                     ),
                 ),
             array('container'=>'timeslots', 'fname'=>'timeslot_id', 
@@ -493,9 +540,9 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     'sort_key'=>'division_sort_key',
                     'location_name', 'location_permalink', 
                     'location_address1', 'location_city', 'location_province', 'location_postal', 
-                    'latitude', 'longitude', 'adjudicator_name', 'adjudicator_permalink', 'adjudicator_flags',
+                    'latitude', 'longitude', // 'adjudicator_name', 'adjudicator_permalink', 'adjudicator_flags',
                     'results_notes', 'results_video_url',
-                    'adjudicator_image_id', 'adjudicator_description',
+                    // 'adjudicator_image_id', 'adjudicator_description',
                     ),
                 ),
             array('container'=>'timeslots', 'fname'=>'timeslot_id', 
@@ -903,7 +950,25 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 if( $videos == 'yes' ) {
                     $columns[] = array('label'=>'Video', 'fold-label'=>'Videos:', 'field'=>'videos', 'class'=>'alignright');
                 }
-                $adjudicator_name = $division['adjudicator_name'];
+                $adjudicator_name = '';
+                if( isset($adjudicators[$division['id']]['adjudicators']) ) {
+                    foreach($adjudicators[$division['id']]['adjudicators'] as $adjudicator) {
+                        if( $adjudicator['permalink'] != '' && $adjudicator['display_name'] != '' 
+                            && isset($s['adjudicators-page']) && $s['adjudicators-page'] != '' 
+                            && ($adjudicator['flags']&0x08) == 0
+                            ) {
+                            ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'urlProcess');
+                            $rc = ciniki_wng_urlProcess($ciniki, $tnid, $request, $s['adjudicators-page'], '');
+                            if( isset($rc['url']) ) {
+                                $adjudicator_name = ($adjudicator_name != '' ? ', ' : '') . "<a class='link' href='" . $rc['url'] . '/' . $adjudicator['permalink'] . "'>"
+                                    . $adjudicator['display_name'] . "</a>";
+                            }
+                        } else {
+                            $adjudicator_name .= ($adjudicator_name != '' ? ', ' : '') . $adjudicator['display_name'];
+                        }
+                    }
+                }
+/*                $adjudicator_name = $division['adjudicator_name'];
                 if( $division['adjudicator_permalink'] != '' && $division['adjudicator_name'] != '' 
                     && isset($s['adjudicators-page']) && $s['adjudicators-page'] != '' 
                     && ($division['adjudicator_flags']&0x08) == 0
@@ -913,18 +978,18 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     if( isset($rc['url']) ) {
                         $adjudicator_name = "<a class='link' href='" . $rc['url'] . '/' . $division['adjudicator_permalink'] . "'>{$division['adjudicator_name']}</a>";
                     }
-                }
+                } */
                 if( $division['latitude'] != '' && $division['longitude'] != '' ) {
-                    if( $adjudicator_name != '' 
-                        && isset($division['adjudicator_image_id']) && $division['adjudicator_image_id'] > 0 
-                        && isset($division['adjudicator_description']) && $division['adjudicator_description'] != '' 
+                    if( $adjudicator != '' 
+                        && isset($adjudicator['image_id']) && $adjudicator['image_id'] > 0 
+                        && isset($adjudicator['description']) && $adjudicator['description'] != '' 
                         ) {
                         $blocks[] = array(
                             'type' => 'contentphoto',
                             'title' => $division['name'],
-                            'subtitle' => 'Adjudicator: ' . $division['adjudicator_name'],
-                            'content' => $division['adjudicator_description'],
-                            'image-id' => $division['adjudicator_image_id'],
+                            'subtitle' => 'Adjudicator: ' . $adjudicator['name'],
+                            'content' => $adjudicator['description'],
+                            'image-id' => $adjudicator['image_id'],
                             'image-position' => 'top-right-inline',
                             'image-size' => 'small',
                             );
@@ -1025,6 +1090,27 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 }
             } else {
                 $adjudicator_name = '';
+                if( isset($adjudicators[$division['id']]['adjudicators']) ) {
+                    foreach($adjudicators[$division['id']]['adjudicators'] as $adjudicator) {
+                        if( $adjudicator['permalink'] != '' && $adjudicator['display_name'] != '' 
+                            && isset($s['adjudicators-page']) && $s['adjudicators-page'] != '' 
+                            && ($adjudicator['flags']&0x08) == 0
+                            ) {
+                            ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'urlProcess');
+                            $rc = ciniki_wng_urlProcess($ciniki, $tnid, $request, $s['adjudicators-page'], '');
+                            if( isset($rc['url']) ) {
+                                $adjudicator_name .= ($adjudicator_name != '' ? ', ' : '') . "<a class='link' href='" . $rc['url'] . '/' . $adjudicator['permalink'] . "'>"
+                                    . $adjudicator['display_name'] . "</a>";
+                            }
+                        } else {
+                            $adjudicator_name .= ($adjudicator_name != '' ? ', ' : '') . $adjudicator['display_name'];
+                        }
+                    }
+                    if( isset($s['adjudicators-label']) && $s['adjudicators-label'] == 'yes' && $adjudicator_name != '' ) {
+                        $adjudicator_name = 'Adjudicator: ' . $adjudicator_name;
+                    }
+                }
+/*                $adjudicator_name = '';
                 if( isset($s['adjudicators-name']) && $s['adjudicators-name'] == 'yes' ) {
                     $adjudicator_name = $division['adjudicator_name'];
                     if( $division['adjudicator_permalink'] != '' && $division['adjudicator_name'] != '' && isset($s['adjudicators-page']) && $s['adjudicators-page'] != '' ) {
@@ -1037,7 +1123,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     if( isset($s['adjudicators-label']) && $s['adjudicators-label'] == 'yes' && $adjudicator_name != '' ) {
                         $adjudicator_name = 'Adjudicator: ' . $adjudicator_name;
                     }
-                }
+                } */
                 $location_name = '';
                 if( (!isset($s['locations-name']) || $s['locations-name'] == 'yes') && $division['location_name'] != '' ) {
                     $location_name = $division['location_name'];
