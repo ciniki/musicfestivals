@@ -546,6 +546,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "classes.code, "
                 . "classes.name, "
                 . "classes.permalink, "
+                . "classes.cert_name, "
                 . "classes.sequence, "
                 . "classes.flags, "
                 . "classes.feeflags, "
@@ -649,7 +650,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                 array('container'=>'classes', 'fname'=>'id', 
                     'fields'=>array('id', 'festival_id', 'category_id', 'section_name', 'groupname', 'category_name', 
-                        'code', 'name', 'permalink', 'sequence', 'flags', 'feeflags', 'titleflags',
+                        'code', 'name', 'permalink', 'cert_name', 'sequence', 'flags', 'feeflags', 'titleflags',
                         'earlybird_fee', 'fee', 'virtual_fee', 'plus_fee', 'earlybird_plus_fee',
                         'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 
                         'synopsis', 'provincials_code', 'provincials_class_name', 

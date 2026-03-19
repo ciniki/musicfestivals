@@ -4764,11 +4764,11 @@ function ciniki_musicfestivals_main() {
             this.sections.classes.num_cols = 4;
         }
         else if( this.sections._stabs.selected == 'marking' ) {
-            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Mark', 'Placement', 'Level', 'Provincials'];
+            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Cert', 'Mark', 'Placement', 'Level', 'Provincials'];
             this.sections.classes.cellClasses = ['', '', '', '', '', '', ''];
-            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'mark', 'placement', 'level', 'provincials_code'];
-            this.sections.classes.sortTypes = ['text', 'text', 'text', 'text', 'text', 'text', 'text'];
-            this.sections.classes.num_cols = 7;
+            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'cert_name', 'mark', 'placement', 'level', 'provincials_code'];
+            this.sections.classes.sortTypes = ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'text'];
+            this.sections.classes.num_cols = 8;
         }
         else if( this.sections._stabs.selected == 'accolades' ) {
             this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Accolades'];
@@ -8488,6 +8488,7 @@ function ciniki_musicfestivals_main() {
 //            'level':{'label':'Level', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes',
 //                'visible':function() {return M.modFlagSet('ciniki.musicfestivals', 0x1000); },
 //                },
+            'cert_name':{'label':'Certificate Name', 'type':'text'},
             'levels':{'label':'Level', 'type':'tags', 'tags':[], 'hint':'Enter a new level:', 'sort':'no',
                 'visible':function() {return M.modFlagSet('ciniki.musicfestivals', 0x1000); },
                 },

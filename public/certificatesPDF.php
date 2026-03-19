@@ -158,6 +158,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
             . "registrations.level, "
             . "IFNULL(classes.code, '') AS class_code, "
             . "IFNULL(classes.name, '') AS class_name, "
+            . "IFNULL(classes.cert_name, '') AS class_cert_name, "
             . "IFNULL(categories.name, '') AS category_name, "
             . "IFNULL(sections.name, '') AS syllabus_section_name, "
             . "IFNULL(registrations.competitor2_id, 0) AS competitor2_id, "
@@ -241,7 +242,7 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
             array('container'=>'registrations', 'fname'=>'reg_id', 
                 'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'num_people',
                     'title1', 
-                    'class_code', 'class_name', 'category_name', 'syllabus_section_name',
+                    'class_code', 'class_name', 'class_cert_name', 'category_name', 'syllabus_section_name',
                     'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 
                     'participation', 'mark', 'flags', 'placement', 'level', 'timeslot_date_text',
                     )),
@@ -407,7 +408,16 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
                             }
                             elseif( $field['field'] == 'class' || $field['field'] == 'class-group' ) {
                                 $class_name = $reg['class_name'];
-                                if( isset($festival['certificates-class-format']) 
+                                if( $reg['class_cert_name'] != '' ) {
+                                    if( isset($festival['certificates-class-format']) 
+                                        && preg_match("/^code-/", $festival['certificates-class-format'])
+                                        ) {
+                                        $class_name = $reg['class_code'] . ' - ' . $reg['class_cert_name'];
+                                    } else {
+                                        $class_name = $reg['class_cert_name'];
+                                    }
+                                }
+                                elseif( isset($festival['certificates-class-format']) 
                                     && $festival['certificates-class-format'] == 'code-section-category-class' 
                                     ) {
                                     $class_name = $reg['class_code'] . ' - ' . $reg['syllabus_section_name'] . ' - ' . $reg['category_name'] . ' - ' . $reg['class_name']; 

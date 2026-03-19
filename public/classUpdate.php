@@ -22,6 +22,7 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
         'code'=>array('required'=>'no', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Code'),
         'name'=>array('required'=>'no', 'blank'=>'no', 'trim'=>'yes', 'name'=>'Name'),
         'permalink'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Permalink'),
+        'cert_name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Certificate Name'),
         'icon_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Icon'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
@@ -66,6 +67,7 @@ function ciniki_musicfestivals_classUpdate(&$ciniki) {
         . "classes.code, "
         . "classes.category_id, "
         . "classes.name, "
+        . "classes.cert_name, "
         . "classes.sequence, "
         . "classes.synopsis, "
         . "classes.keywords, "
