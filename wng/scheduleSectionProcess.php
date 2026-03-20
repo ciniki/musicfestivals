@@ -980,14 +980,14 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     }
                 } */
                 if( $division['latitude'] != '' && $division['longitude'] != '' ) {
-                    if( $adjudicator != '' 
+                    if( $adjudicator_name != '' 
                         && isset($adjudicator['image_id']) && $adjudicator['image_id'] > 0 
                         && isset($adjudicator['description']) && $adjudicator['description'] != '' 
                         ) {
                         $blocks[] = array(
                             'type' => 'contentphoto',
                             'title' => $division['name'],
-                            'subtitle' => 'Adjudicator: ' . $adjudicator['name'],
+                            'subtitle' => 'Adjudicator: ' . $adjudicator['display_name'],
                             'content' => $adjudicator['description'],
                             'image-id' => $adjudicator['image_id'],
                             'image-position' => 'top-right-inline',

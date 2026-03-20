@@ -292,10 +292,11 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
         $date = $shift_dates[$selected_date];
         $shift = $shift_dates[$selected_date]['roles'][$selected_role]['shifts'][$selected_shift];
         $content = "<b>Date</b>: {$date['shift_date_text']}<br/>"
-            . "<b>Times</b>: {$shift['start_time']} - {$shift['end_time']}<br/>"
-            . "<b>Location</b>: {$shift['location']}<br/>"
-            . "<b>Role</b>: {$shift['role']}<br/>"
-            . "";
+            . "<b>Times</b>: {$shift['start_time']} - {$shift['end_time']}<br/>";
+        if( isset($shift['location']) ) {
+            $content .= "<b>Location</b>: {$shift['location']}<br/>";
+        }
+        $content .= "<b>Role</b>: {$shift['role']}<br/>";
         if( isset($shift['disciplines']) && $shift['disciplines'] != '' ) {
             $content .= "<b>Disciplines</b>: {$shift['disciplines']}<br/>";
         }
