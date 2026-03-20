@@ -1013,6 +1013,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             'settings' => array(
                 'title' => array('label'=>'Title', 'type'=>'text'),
                 'display-format' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
+                    'buttons-tradingcards-accolade' => 'Category Buttons - Trading Cards - Accolade',
                     'buttons-imagebuttons-accolade' => 'Category Buttons - Image Buttons - Accolade',
                     'buttons-buttons-accolade' => 'Category Buttons - Accolade Buttons - Accolade',
                     'buttons-list' => 'Category Buttons - List',

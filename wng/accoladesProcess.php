@@ -302,6 +302,7 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
             ); */
         $blocks[] = array(
             'type' => 'asideimage',
+            'class' => 'musicfestival-accolade',
             'image-id' => $accolade['primary_image_id'],
             );
         $blocks[] = array(
@@ -519,6 +520,14 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
                 'class' => 'musicfestival-accolades',
                 'items' => $accolades,
                 ];
+        } elseif( isset($s['display-format']) && $s['display-format'] == 'buttons-tradingcards-accolade' ) {
+            $blocks[] = array(
+                'type' => 'tradingcards',
+                'class' => 'musicfestival-accolades aligncenter',
+                'image-format' => 'padded',
+                'no-image' => 'blank',
+                'items' => $accolades,
+                );
         } else {
             $blocks[] = array(
                 'type' => 'imagebuttons',
