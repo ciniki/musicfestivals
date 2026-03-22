@@ -221,6 +221,9 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
 
     $default_cert = null;
     foreach($avail_certs as $cid => $cert) {
+        if( !isset($cert['fields']) ) { 
+            $cert['fields'] = [];
+        }
         if( isset($args['background']) && $args['background'] == 'no' ) {
             $cert['image_id'] = 0;
         }
@@ -282,6 +285,11 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
                         $certificate = $virtual_cert;
                     } elseif( $reg['participation'] == 0 && isset($live_cert) ) {
                         $certificate = $live_cert;
+                    }
+                    if( $certificate == null ) {
+                        $certificate = [
+                            'fields' => [],
+                            ];
                     }
 
                     //
@@ -403,16 +411,18 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
                                 }
                                 $certificate['fields'][$fid]['text'] = implode(', ', $names);
                             }
-                            elseif( $field['field'] == 'adjudicator' && isset($reg['adjudicators']) 
-                                && count($reg['adjudicators']) == 1 
-                                && isset($adjudicators[$reg['adjudicators'][0]['id']]['sig_image_id']) 
-                                && $adjudicators[$reg['adjudicators'][0]['id']]['sig_image_id'] > 0
-                                ) {
-                                $certificate['fields'][$fid]['image_id'] = $adjudicators[$reg['adjudicators'][0]['id']]['sig_image_id'];
-                            }
-//                            elseif( $field['field'] == 'adjudicatorsig' && isset($adjudicators[$division['adjudicator_id']]['sig_image_id']) && $adjudicators[$division['adjudicator_id']]['sig_image_id'] > 0 ) {
-//                                $certificate['fields'][$fid]['image_id'] = $adjudicators[$division['adjudicator_id']]['sig_image_id'];
+//                            elseif( $field['field'] == 'adjudicator' && isset($reg['adjudicators']) 
+//                                && count($reg['adjudicators']) == 1 
+//                                && isset($adjudicators[$reg['adjudicators'][0]['id']]['sig_image_id']) 
+//                                && $adjudicators[$reg['adjudicators'][0]['id']]['sig_image_id'] > 0
+//                                ) {
+//                                $certificate['fields'][$fid]['image_id'] = $adjudicators[$reg['adjudicators'][0]['id']]['sig_image_id'];
 //                            }
+                            elseif( $field['field'] == 'adjudicatorsig' ) {
+                                if( count($reg['adjudicators']) == 1 ) {
+                                    $certificate['fields'][$fid]['image_id'] = $reg['adjudicators'][0]['sig_image_id'];
+                                }
+                            }
                             elseif( $field['field'] == 'adjudicatorsigorname' ) {
                                 if( count($reg['adjudicators']) > 1 ) {
                                     $names = [];
