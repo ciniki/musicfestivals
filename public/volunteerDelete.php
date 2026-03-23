@@ -55,6 +55,18 @@ function ciniki_musicfestivals_volunteerDelete(&$ciniki) {
     $volunteer = $rc['volunteer'];
 
     //
+    // Remove this volunteer from any mail entries
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'objectMessagesDetach');
+    $rc = ciniki_mail_hooks_objectMessagesDetach($ciniki, $args['tnid'], array(
+        'object' => 'ciniki.musicfestivals.volunteer',
+        'object_id' => $args['volunteer_id'],
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1526', 'msg'=>'Unable to detach from mail messages.', 'err'=>$rc['err']));
+    }
+
+    //
     // Check for any dependencies before deleting
     //
 

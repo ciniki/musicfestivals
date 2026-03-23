@@ -6716,6 +6716,10 @@ function ciniki_musicfestivals_main() {
                     'no':'No',
                     'yes':'Yes',
                     }},
+                'volunteers-signup-review':{'label':'Review Volunteer Signups', 'type':'toggle', 'default':'yes', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
                 'volunteers-shift-signup-review':{'label':'Review Shift Signups', 'type':'toggle', 'default':'yes', 'toggles':{
                     'no':'No',
                     'yes':'Yes',

@@ -63,10 +63,14 @@ function ciniki_musicfestivals_wng_accountVolunteerProfileProcess(&$ciniki, $tni
         //
         // Add the volunteer to the database
         //
+        $status = 10;
+        if( isset($festival['volunteers-signup-review']) && $festival['volunteers-signup-review'] == 'no' ) {
+            $status = 30;
+        }
         $args['volunteer'] = [
             'festival_id' => $festival['id'],
             'customer_id' => $request['session']['customer']['id'],
-            'status' => 10,
+            'status' => $status,
             'shortname' => '',
             'local_festival_id' => isset($_POST['f-local_festival_id']) ? $_POST['f-local_festival_id'] : 0,
             'notes' => isset($_POST['f-notes']) ? $_POST['f-notes'] : '',
@@ -92,6 +96,26 @@ function ciniki_musicfestivals_wng_accountVolunteerProfileProcess(&$ciniki, $tni
                 if( $rc['stat'] != 'ok' ) {
                     $problem_list = "Unable to update availability profile";
                 }
+            }
+        }
+
+        //
+        // Check of auto approved is set then send welcome email
+        //
+        if( isset($festival['volunteers-signup-review']) && $festival['volunteers-signup-review'] == 'no' 
+            && isset($festival["volunteers-email-approved-subject"])
+            && $festival["volunteers-email-approved-subject"] != ''
+            && isset($festival["volunteers-email-approved-message"])
+            && $festival["volunteers-email-approved-message"] != ''
+            ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'volunteerEmail');
+            $rc = ciniki_musicfestivals_volunteerEmail($ciniki, $tnid, [
+                'volunteer_id' => $args['volunteer']['id'],
+                'festival' => $festival,
+                'template' => 'volunteers-email-approved',
+                ]);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1410', 'msg'=>'Unable to email volunteer', 'err'=>$rc['err']));
             }
         }
     }
@@ -408,7 +432,7 @@ function ciniki_musicfestivals_wng_accountVolunteerProfileProcess(&$ciniki, $tni
             $blocks[] = [
                 'type' => 'buttons',
                 'class' => 'aligncenter',
-                'items' => [['url' => '/account', 'text' => 'Continue']],
+                'items' => [['url' => '/account/musicfestival/volunteer', 'text' => 'Continue']],
                 ];
         } else {
             $blocks[] = [
