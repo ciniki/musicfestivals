@@ -274,7 +274,7 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksExcel(&$ciniki, $t
             } else {
                 $spreadsheet = $excel->createSheet();
             }
-            $spreadsheet->setTitle($division['name']);
+            $spreadsheet->setTitle(substr($division['name'], 0, 30));
 
             // Row 1 - Headings
             $spreadsheet->setCellValue([$cur_col++, $cur_row], 'Participant');

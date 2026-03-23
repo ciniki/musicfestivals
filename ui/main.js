@@ -2631,7 +2631,7 @@ function ciniki_musicfestivals_main() {
     this.festival.downloadMultiAdjudicatorDocument = function(s,d) {
         var args = {'tnid':M.curTenantID,
             'festival_id':this.festival_id,
-            'schedulesection_id':(s==null ? this.schedulesection_id : s),
+            'schedulesection_id':(s==0 ? this.schedulesection_id : s),
             'document':d,
             };
         M.api.openFile('ciniki.musicfestivals.multiAdjudicatorDocument',args);
