@@ -90,11 +90,11 @@ function ciniki_musicfestivals_provincialsRecommendationAdd(&$ciniki) {
         $args['adjudicator_name'] = $adjudicator['customer']['display_name']; 
         $args['adjudicator_email'] = '';
         $args['adjudicator_phone'] = '';
-        if( isset($adjudicator['emails'][0]['address']) ) {
-            $args['adjudicator_email'] = $adjudicator['emails'][0]['address'];
+        if( isset($adjudicator['customer']['emails'][0]['address']) ) {
+            $args['adjudicator_email'] = $adjudicator['customer']['emails'][0]['address'];
         }
-        if( isset($adjudicator['phones'][0]['phone_number']) ) {
-            $args['adjudicator_phone'] = $adjudicator['phones'][0]['phone_number'];
+        if( isset($adjudicator['customer']['phones'][0]['phone_number']) ) {
+            $args['adjudicator_phone'] = $adjudicator['customer']['phones'][0]['phone_number'];
         }
     } else {
         $adjudicator['adjudicator_name'] = '';
