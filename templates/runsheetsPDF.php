@@ -1084,7 +1084,6 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                                 ) {
                                 $pdf->MultiCell($cw[0] + $cw[1], 0, $name . ' (continued...)', 0, 'L', 0, 1);
                             } elseif( $pdf->layout == 'compact' ) {
-                                error_log('wrap: ' . $name);
                                 $pdf->SetFont('', 'B', $pdf->font_size);
                                 $pdf->SetCellPadding($pdf->padding);
                                 $pdf->MultiCell($cw[0] + $cw[1], 0, $time . ' - ' . $name . ' (continued...)', 1, 'L', 1, 1);
