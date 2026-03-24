@@ -237,6 +237,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             . "WHERE sponsors.id IN (" . ciniki_core_dbQuoteIDs($ciniki, $schedulesection["webheader_sponsor_ids"]) . ") "
             . "AND sponsors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "GROUP BY sponsors.id "
+            . "ORDER BY sponsors.name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -605,7 +606,19 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     } else*/
     if( isset($webheader_sponsors) && count($webheader_sponsors) > 0 ) {
         $items = array();
+        if( isset($schedulesection['webheader_sponsors_display']) 
+            && strncmp('random', $schedulesection['webheader_sponsors_display'], 6) == 0 
+            ) {
+            shuffle($schedulesection['webheader_sponsor_ids']);
+            if( preg_match("/^random-([0-9]+)/", $schedulesection['webheader_sponsors_display'], $m) ) {
+                $sponsor_limit = $m[1];
+            }
+        }
+        $sponsor_num = 0;
         foreach($schedulesection['webheader_sponsor_ids'] as $sid) {
+            if( isset($sponsor_limit) && $sponsor_limit <= $sponsor_num ) { 
+                break;
+            }
             if( isset($webheader_sponsors[$sid]) ) {
                 $class = 'musicfestival-schedule-division-sponsor sponsor-' . ciniki_core_makePermalink($ciniki, $webheader_sponsors[$sid]['name']);
                 if( isset($webheader_sponsors[$sid]['tags']) && $webheader_sponsors[$sid]['tags'] != '' ) {
@@ -620,6 +633,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     'class' => $class,
                     'image-id' => $webheader_sponsors[$sid]['image-id'],
                     ];
+                $sponsor_num++;
             }
         }
         $blocks[] = array(

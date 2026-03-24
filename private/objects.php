@@ -491,6 +491,7 @@ function ciniki_musicfestivals_objects($ciniki) {
                 'pdffooter_image_id'=>array('name'=>'PDF Footer Image'),
                 'webheader_sponsor_ids'=>array('name'=>'Web Header Sponsor'),
                 'webheader_sponsors_title'=>array('name'=>'Web Header Sponsors Title'),
+                'webheader_sponsors_display'=>array('name'=>'Web Header Sponsors Display'),
                 'webheader_sponsors_content'=>array('name'=>'Web Header Sponsors Content'),
                 )),
             'provincial_settings'=>array('name'=>'Provincial Settings', 'sfields'=>array(

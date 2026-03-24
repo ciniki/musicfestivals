@@ -10912,8 +10912,17 @@ function ciniki_musicfestivals_main() {
                 'provincials':{'label':'Provincials', 'fn':'M.ciniki_musicfestivals_main.schedulesection.switchTab("provincials");'},
             }}, */
         'website_sponsors':{'label':'Website Sponsors', 'aside':'no', 'fields':{
-            'webheader_sponsor_ids':{'label':'Intro Sponsors', 'type':'idlist', 'list':{}},
             'webheader_sponsors_title':{'label':'Intro Title', 'type':'text'},
+            'webheader_sponsor_ids':{'label':'Intro Sponsors', 'type':'idlist', 'list':{}},
+            'webheader_sponsors_display':{'label':'Display', 'type':'select', 'options':{
+                'alphabetical':'Alphabetical',
+                'random':'Random',
+                'random-2':'Random (limit 2)',
+                'random-3':'Random (limit 3)',
+                'random-4':'Random (limit 4)',
+                'random-5':'Random (limit 5)',
+                'random-6':'Random (limit 6)',
+                }},
 //            'webheader_sponsors_content':{'label':'Intro Content', 'type':'textarea', 'size':'small'},
 /*            'top_sponsors_image_ratio':{'label':'Image Ratio', 'type':'select', 'default':'1-1', 'options':{
                 '2-1':'Panoramic',
