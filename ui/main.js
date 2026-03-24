@@ -19749,6 +19749,14 @@ function ciniki_musicfestivals_main() {
         });
     }
     this.pr.addentry = function() {
+        if( this.formValue('position') == 0 ) {
+            M.alert('You must select a position');
+            return;
+        }
+        if( this.formValue('mark') == 0 ) {
+            M.alert('You must select a mark');
+            return;
+        }
         var args = {
             'tnid':M.curTenantID, 
             'festival_id':this.festival_id, 
