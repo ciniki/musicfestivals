@@ -9916,7 +9916,7 @@ function ciniki_musicfestivals_main() {
     }
     this.registration.rowFn = function(s, i, d) {
         if( s == 'invoice_details' && this._source != 'invoice' && this._source != 'pos' ) {
-            return 'M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_musicfestivals_main.registration.show();\',\'mc\',{\'invoice_id\':\'' + this.data.invoice_id + '\'});';
+            return 'M.ciniki_musicfestivals_main.registration.save("M.startApp(\'ciniki.sapos.invoice\',null,\'M.ciniki_musicfestivals_main.registration.show();\',\'mc\',{\'invoice_id\':\'' + this.data.invoice_id + '\'});");';
         }
         if( s == 'messages' && d.type == 'mail' ) {
             return 'M.ciniki_musicfestivals_main.registration.save("M.startApp(\'ciniki.mail.main\',null,\'M.ciniki_musicfestivals_main.registration.open();\',\'mc\',{\'message_id\':\'' + d.id + '\'});");';
