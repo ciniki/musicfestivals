@@ -20378,7 +20378,11 @@ function ciniki_musicfestivals_main() {
             case '35': return 'statusorangefade';
             case '40': return 'statusteal';
             case '45': return 'statustealfade';
-            case '50': return 'statusgreen';
+            case '50': 
+                if( entry.reg_status < 50 ) {
+                    return 'statusgreenfade';
+                }
+                return 'statusgreen';
             case '70': return 'statusred';
             case '80': return 'statuspurple';
             case '85': 

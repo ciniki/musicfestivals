@@ -350,6 +350,7 @@ function ciniki_musicfestivals_provincials($ciniki) {
             . "sections.name AS section_name, "
             . "categories.name AS category_name, "
             . "classes.name AS class_name, "
+            . "IFNULL(registrations.status, '') AS reg_status, "
             . "IFNULL(registrations.status, '') AS reg_status_text "
             . "FROM ciniki_musicfestival_recommendations AS recommendations "
             . "INNER JOIN ciniki_musicfestival_recommendation_entries AS entries ON ("
@@ -386,7 +387,7 @@ function ciniki_musicfestivals_provincials($ciniki) {
             array('container'=>'entries', 'fname'=>'id', 
                 'fields'=>array('id', 'recommendation_id', 'status', 'status_text', 'name', 'position', 'position_text', 'mark', 
                     'provincials_reg_id', 'local_reg_id', 'date_submitted', 'date_invited'=>'dt_invite_sent',
-                    'section_name', 'category_name', 'class_name', 'reg_status_text',
+                    'section_name', 'category_name', 'class_name', 'reg_status', 'reg_status_text',
                     ),
                 'utctotz'=>array(
                     'date_invited' => array('timezone'=>$intl_timezone, 'format'=>'M j - g:i A'),
