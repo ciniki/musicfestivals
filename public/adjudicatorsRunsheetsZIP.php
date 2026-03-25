@@ -65,11 +65,12 @@ function ciniki_musicfestivals_adjudicatorsRunsheetsZIP($ciniki) {
     //
     // Get the list of adjudicators for ipv
     //
-    $strsql = "SELECT DISTINCT divisions.adjudicator_id,  "
+    $strsql = "SELECT DISTINCT arefs.adjudicator_id,  "
         . "customers.display_name "
-        . "FROM ciniki_musicfestival_schedule_divisions AS divisions "
+        . "FROM ciniki_musicfestival_adjudicatorrefs AS arefs "
         . "INNER JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ( "
-            . "divisions.adjudicator_id = adjudicators.id "
+            . "arefs.adjudicator_id = adjudicators.id "
+            . "AND adjudicators.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "INNER JOIN ciniki_customers AS customers ON ( "
@@ -78,7 +79,8 @@ function ciniki_musicfestivals_adjudicatorsRunsheetsZIP($ciniki) {
             . ") ";
     if( isset($args['ipv']) && ($args['ipv'] == 'inperson' || $args['ipv'] == 'virtual') ) {
         $strsql .= "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
-                . "divisions.id = timeslots.sdivision_id "
+                . "arefs.object = 'ciniki.musicfestivals.scheduledivision' "
+                . "AND arefs.object_id = timeslots.sdivision_id "
                 . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
             . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
@@ -91,10 +93,9 @@ function ciniki_musicfestivals_adjudicatorsRunsheetsZIP($ciniki) {
         $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") ";
     }
-    $strsql .= "WHERE divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND divisions.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "AND divisions.adjudicator_id > 0 "
+    $strsql .= "WHERE arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND arefs.adjudicator_id > 0 "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
