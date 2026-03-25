@@ -166,7 +166,7 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             }
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) 
                 && $fields['accompanist_customer_id'] != -1 
-                && $field['id'] == 'accompanist_email'
+                && ($field['id'] == 'accompanist_email' || $field['id'] == 'accompanist_first' || $field['id'] == 'accompanist_last')
                 ) {
                 continue;
             }
@@ -268,6 +268,14 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             if( $fields['accompanist_email']['value'] == '' ) {
                 $errors[] = array(
                     'msg' => "You must specify your accompanist's email.",
+                    );
+            } elseif( $fields['accompanist_first']['value'] == '' ) {
+                $errors[] = array(
+                    'msg' => "You must specify your accompanist's first name.",
+                    );
+            } elseif( $fields['accompanist_last']['value'] == '' ) {
+                $errors[] = array(
+                    'msg' => "You must specify your accompanist's last name.",
                     );
             } else {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accompanistCreate');

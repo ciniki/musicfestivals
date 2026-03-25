@@ -88,7 +88,7 @@ function ciniki_musicfestivals_wng_accompanistCreate(&$ciniki, $tnid, $request, 
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'customerAdd');
     $rc = ciniki_customers_web_customerAdd($ciniki, $tnid, array(
-        'name'=>$_POST['f-accompanist_first'],
+        'first'=>$_POST['f-accompanist_first'],
         'last'=>$_POST['f-accompanist_last'],
         'email_address'=>$_POST['f-accompanist_email'],
         'phone_label_1'=>'Home',

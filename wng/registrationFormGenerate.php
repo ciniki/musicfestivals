@@ -781,6 +781,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'label' => 'Accompanist First Name',
             'ftype' => 'text',
             'size' => 'medium',
+            'required' => 'yes',
             'class' => isset($_POST['f-accompanist_customer_id']) && $_POST['f-accompanist_customer_id'] == -1 ? '' : 'hidden',
             'value' => isset($_POST['f-accompanist_first']) ? trim($_POST['f-accompanist_first']) : '',
             );
@@ -789,6 +790,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'label' => 'Accompanist Last Name',
             'ftype' => 'text',
             'size' => 'medium',
+            'required' => 'yes',
             'class' => isset($_POST['f-accompanist_customer_id']) && $_POST['f-accompanist_customer_id'] == -1 ? '' : 'hidden',
             'value' => isset($_POST['f-accompanist_last']) ? trim($_POST['f-accompanist_last']) : '',
             );
