@@ -487,48 +487,57 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 $js_members[$member['id']]['r'] = 1;
             }
         }
-        array_unshift($members, array(
-            'id' => 0,
-            'name' => 'Choose the local festival you competed in and recommended you',
-            'reg_start_dt' => '',
-            'reg_end_dt' => '',
-            ));
-
-        $fields['member_id'] = array(
-            'id' => 'member_id',
-            'ftype' => 'select',
-//            'label' => 'Recommending Local Festival',
-            'label' => 'Which festival invited you?',
-            'description' => 'You must choose the local festival where you competed and who recommended you to provincials.<br><br><b>DO NOT CHOOSE Kitchener-Waterloo unless you competed in the Kitchener Waterloo Kiwanis Music Festival in April.</b>',
-            'blank' => 'no',
-            'size' => 'large',
-            'required' => 'yes',
-            'options' => $members, 
-            'value' => (isset($_POST['f-member_id']) ? $_POST['f-member_id'] : (isset($registration['member_id']) ? $registration['member_id'] : 0)),
-            'onchange' => 'memberSelected()',
-            );
-        $fields['member_notallowed'] = [
-            'id' => 'member_notallowed',
-            'ftype' => 'break',
-            'class' => 'member-notallowed' . ($args['display'] == 'view' ? '' : ' hidden'),
-            ];
-        $fields['member_notallowed_msg'] = [
-            'id' => 'member_notallowed_msg',
-            'ftype' => 'content',
-            'size' => 'large',
-            'label' => '',
-            'description' => "You must register with the link provided from your local festival. Please contact them for more information.",
-            ];
-        $fields['member_break'] = array(
-            'id' => 'member_break',
-            'ftype' => 'break',
-            'class' => 'member-break' . ($args['display'] == 'view' ? '' : ' hidden'),
-            );
-        if( $fields['member_id']['value'] > 0 
-            && isset($js_members[$fields['member_id']['value']]) 
-            && $js_members[$fields['member_id']['value']]['s'] == 1
+        if( isset($registration['member_id']) && $registration['member_id'] > 0 
+            && isset($js_members[$registration['member_id']]) 
+            && $js_members[$registration['member_id']]['r'] == 1
             ) {
-            $fields['member_break']['class'] = 'member-break';  
+            $args['display'] = 'recommendation-registration';
+        } else {
+            array_unshift($members, array(
+                'id' => 0,
+                'name' => 'Choose the local festival you competed in and recommended you',
+                'reg_start_dt' => '',
+                'reg_end_dt' => '',
+                ));
+
+            $fields['member_id'] = array(
+                'id' => 'member_id',
+                'ftype' => 'select',
+    //            'label' => 'Recommending Local Festival',
+                'label' => 'Which festival invited you?',
+                'description' => 'You must choose the local festival where you competed and who recommended you to provincials.<br><br><b>DO NOT CHOOSE Kitchener-Waterloo unless you competed in the Kitchener Waterloo Kiwanis Music Festival in April.</b>',
+                'blank' => 'no',
+                'size' => 'large',
+                'required' => 'yes',
+                'editable' => 'yes',
+                'options' => $members, 
+                'value' => (isset($_POST['f-member_id']) ? $_POST['f-member_id'] : (isset($registration['member_id']) ? $registration['member_id'] : 0)),
+                'onchange' => 'memberSelected()',
+                );
+            $fields['member_notallowed'] = [
+                'id' => 'member_notallowed',
+                'ftype' => 'break',
+                'class' => 'member-notallowed hidden',
+//                'class' => 'member-notallowed' . ($args['display'] == 'view' ? '' : ' hidden'),
+                ];
+            $fields['member_notallowed_msg'] = [
+                'id' => 'member_notallowed_msg',
+                'ftype' => 'content',
+                'size' => 'large',
+                'label' => '',
+                'description' => "You must register with the link provided from your local festival. Please contact them for more information.",
+                ];
+            $fields['member_break'] = array(
+                'id' => 'member_break',
+                'ftype' => 'break',
+                'class' => 'member-break' . ($args['display'] == 'view' ? '' : ' hidden'),
+                );
+            if( $fields['member_id']['value'] > 0 
+                && isset($js_members[$fields['member_id']['value']]) 
+                && $js_members[$fields['member_id']['value']]['s'] == 1
+                ) {
+                $fields['member_break']['class'] = 'member-break';  
+            }
         }
     }
 
@@ -570,7 +579,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'label' => 'Section',
             'blank' => 'no',
             'size' => 'small',
-            'editable' => 'no',
             'required' => 'yes',
             'flex-basis' => '10em',
             'onchange' => 'sectionSelected()',

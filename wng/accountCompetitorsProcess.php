@@ -480,7 +480,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                 $columns[] = array('label' => 'Pronoun', 'field' => 'pronoun', 'class' => 'alignleft');
             }
             if( $customer_type != 30 ) {
-                $columns[] = array('label' => 'Parent', 'fold-label'=>'Parent:', 'field' => 'parent', 'class' => 'alignleft');
+                $columns[] = array('label' => 'Parent/Contact', 'fold-label'=>'Parent:', 'field' => 'parent', 'class' => 'alignleft');
             }
             $columns[] = array('label' => 'Age', 'fold-label'=>'Age:', 'field' => 'age', 'class' => 'alignleft');
             if( (isset($festival['competitor-individual-instrumenut']) 
