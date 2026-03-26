@@ -396,6 +396,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
         public $right_margin = 18;
         public $top_margin = 15;
         public $header_image = null;
+        public $header_image_ratio = 1;
         public $header_title = '';
         public $header_sub_title = '';
         public $header_subsub_title = '';
@@ -413,21 +414,23 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             //
             $img_width = 0;
             if( $this->header_image != null ) {
-                $height = $this->header_image->getImageHeight();
+/*                $height = $this->header_image->getImageHeight();
                 $width = $this->header_image->getImageWidth();
                 if( $width > 600 ) {
                     $this->header_image->scaleImage(600, 0);
                 }
                 $image_ratio = $width/$height;
+*/
                 $img_width = 65;
                 $available_ratio = $img_width/$this->header_height;
                 // Check if the ratio of the image will make it too large for the height,
                 // and scaled based on either height or width.
-                if( $available_ratio < $image_ratio ) {
-//                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, 0, '', '', 'L', 2, '150');
-                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, $this->header_height-8, '', '', 'L', 2, '150', '', false, false, 0, true);
+                if( $available_ratio < $this->header_image_ratio ) {
+                    $this->Image('@'.$this->header_image, $this->left_margin, 10, $img_width, $this->header_height-8, '', '', 'L', 2, '150', '', false, false, 0, true);
+//                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, $this->header_height-8, '', '', 'L', 2, '150', '', false, false, 0, true);
                 } else {
-                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-8, '', '', 'L', 2, '150');
+                    $this->Image('@'.$this->header_image, $this->left_margin, 10, 0, $this->header_height-8, '', '', 'L', 2, '150');
+//                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-8, '', '', 'L', 2, '150');
                 }
             }
 
@@ -495,7 +498,14 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
         $rc = ciniki_images_loadImage($ciniki, $tnid, $festival['document_logo_id'], 'original');
         if( $rc['stat'] == 'ok' ) {
-            $pdf->header_image = $rc['image'];
+            $header_image = $rc['image'];
+            $height = $header_image->getImageHeight();
+            $width = $header_image->getImageWidth();
+            if( $width > 600 ) {
+                $header_image->scaleImage(600, 0);
+            }
+            $pdf->header_image_ratio = $width/$height;
+            $pdf->header_image = $header_image->getImageBlob();
         }
     }
 
