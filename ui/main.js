@@ -14696,6 +14696,7 @@ function ciniki_musicfestivals_main() {
             'field':{'label':'Field', 'type':'select', 'options':{
                 'class':'Class',
                 'class-group':'Class - Group',
+                'syllabus-section':'Syllabus Section',
                 'timeslotdate':'Timeslot Date',
                 'participant':'Participant',
                 'title':'Title',

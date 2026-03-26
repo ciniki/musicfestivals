@@ -361,6 +361,9 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
 //                                }
                                 $certificate['fields'][$fid]['text'] = $class_name;
                             }
+                            elseif( $field['field'] == 'syllabus-section' ) {
+                                $certificate['fields'][$fid]['text'] = $reg['syllabus_section_name'];
+                            }
                             elseif( $field['field'] == 'title' ) {
                                 $certificate['fields'][$fid]['text'] = $reg['title'];
                             }
