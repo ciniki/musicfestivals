@@ -183,7 +183,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                 . "divisions.location_id = locations.id "
                 . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
-            . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+            . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
                 . "registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
                 . "AND timeslots.id = registrations.timeslot_id "
                 // Removed on Jan 27, 2026 - Was REALLY slowing down queries
