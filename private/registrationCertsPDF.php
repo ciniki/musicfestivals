@@ -350,6 +350,10 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
                                     && $festival['certificates-class-format'] == 'section-class' 
                                     ) {
                                     $class_name = $reg['syllabus_section_name'] . ' - ' . $reg['class_name']; 
+                                } elseif( isset($festival['certificates-class-format']) 
+                                    && $festival['certificates-class-format'] == 'code-class' 
+                                    ) {
+                                    $class_name = $reg['class_code'] . ' - ' . $reg['class_name']; 
                                 } else {
                                     $class_name = $reg['class_name']; 
                                 }

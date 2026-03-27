@@ -5908,6 +5908,7 @@ function ciniki_musicfestivals_main() {
                     'section-class':'Section - Class',
                     'code-section-category-class':'Code - Section - Category - Class',
                     'code-category-class':'Code - Category - Class',
+                    'code-class':'Code - Class',
                     }},
                 'certificates-use-group-numpeople':{'label':'Print for Each Group Member', 'type':'toggle', 'default':'no', 'toggles':{
                     'no':'No',
