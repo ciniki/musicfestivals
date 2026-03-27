@@ -396,6 +396,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
         public $right_margin = 18;
         public $top_margin = 15;
         public $header_image = null;
+        public $header_image_filename = null;
         public $header_image_ratio = 1;
         public $header_title = '';
         public $header_sub_title = '';
@@ -413,7 +414,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             // but only to a maximum height of the header_height (set far below).
             //
             $img_width = 0;
-            if( $this->header_image != null ) {
+            if( $this->header_image_filename != '' ) {
 /*                $height = $this->header_image->getImageHeight();
                 $width = $this->header_image->getImageWidth();
                 if( $width > 600 ) {
@@ -426,10 +427,11 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                 // Check if the ratio of the image will make it too large for the height,
                 // and scaled based on either height or width.
                 if( $available_ratio < $this->header_image_ratio ) {
-                    $this->Image('@'.$this->header_image, $this->left_margin, 10, $img_width, $this->header_height-8, '', '', 'L', 2, '150', '', false, false, 0, true);
+//                $pdf->Image($rc['filename'], 0, 0, 216, 279, '', '', '', false, 300, '', false, false, 0);
+                    $this->Image($this->header_image_filename, $this->left_margin, 10, $img_width, $this->header_height-8, '', '', 'L', false, '150', '', false, false, 0, true);
 //                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, $this->header_height-8, '', '', 'L', 2, '150', '', false, false, 0, true);
                 } else {
-                    $this->Image('@'.$this->header_image, $this->left_margin, 10, 0, $this->header_height-8, '', '', 'L', 2, '150');
+                    $this->Image($this->header_image_filename, $this->left_margin, 10, 0, $this->header_height-8, '', '', 'L', false, '150');
 //                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-8, '', '', 'L', 2, '150');
                 }
             }
@@ -505,7 +507,20 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                 $header_image->scaleImage(600, 0);
             }
             $pdf->header_image_ratio = $width/$height;
-            $pdf->header_image = $header_image->getImageBlob();
+            //
+            // Load the image storage filename, adding as blob is REALLY slow!
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'hooks', 'loadOriginalStorageFilename');
+            $rc = ciniki_images_hooks_loadOriginalStorageFilename($ciniki, $tnid, array('image_id'=>$festival['document_logo_id']));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.302', 'msg'=>'No image specified', 'err'=>$rc['err']));
+            }
+            $pdf->header_image_filename = $rc['filename'];
+//            if( isset($certificate['orientation']) && $certificate['orientation'] == 'P' ) {
+//                $pdf->Image($rc['filename'], 0, 0, 216, 279, '', '', '', false, 300, '', false, false, 0);
+//            } else {
+//                $pdf->Image($rc['filename'], 0, 0, 280, 216, '', '', '', false, 300, '', false, false, 0);
+//            }
         }
     }
 
