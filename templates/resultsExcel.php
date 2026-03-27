@@ -158,6 +158,7 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
         . "sections.name AS syllabus_section_name, "
         . "competitors.id AS competitor_id, "
         . "competitors.name AS competitor_name, "
+        . "competitors.age AS comp_age, "
         . "competitors.email, "
         . "competitors.etransfer_email "
         . "FROM ciniki_musicfestival_schedule_sections AS ssections "
@@ -229,7 +230,7 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
                 ),
             ),
         array('container'=>'competitors', 'fname'=>'competitor_id', 
-            'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'email', 'etransfer_email',),
+            'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'comp_age', 'email', 'etransfer_email',),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -264,6 +265,7 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
             $col = 0;
             $row = 1;
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Name', false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Age', false);
             if( isset($festival['comments-mark-ui']) && $festival['comments-mark-ui'] == 'yes' ) {
                 if( isset($festival['comments-mark-label']) && $festival['comments-mark-label'] != '' ) {
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['comments-mark-label'], false);
@@ -312,6 +314,7 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
             $registration['teacher_emails'] = '';
             $registration['emails'] = '';
             $registration['etransfer_emails'] = '';
+            $registration['ages'] = '';
             foreach($registration['competitors'] as $competitor) {
                 if( !str_contains($registration['emails'], $competitor['email']) ) {
                     $registration['emails'] .= ($registration['emails'] != '' ? ', ' : '') . $competitor['email'];
@@ -319,6 +322,7 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
                 if( !str_contains($registration['etransfer_emails'], $competitor['etransfer_email']) ) {
                     $registration['etransfer_emails'] .= ($registration['etransfer_emails'] != '' ? ', ' : '') . $competitor['etransfer_email'];
                 }
+                $registration['ages'] .= ($registration['ages'] != '' ? ',' : '') . $competitor['comp_age'];
             }
             if( $registration['teacher_customer_id'] > 0
                 && isset($teachers[$registration['teacher_customer_id']]['emails']) 
@@ -343,6 +347,7 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
             }
             $col = 0;
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['display_name'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['ages'], false);
             if( isset($festival['comments-mark-ui']) && $festival['comments-mark-ui'] == 'yes' ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['mark'], false);
             }
