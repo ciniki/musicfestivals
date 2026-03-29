@@ -37,6 +37,9 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
             . "assignments.festival_id, "
             . "shifts.id AS shift_id, "
             . "assignments.status AS assignment_status, "
+            . "shifts.shift_date AS shift_date_raw, "
+            . "shifts.start_time AS start_time_raw, "
+            . "shifts.end_time AS end_time_raw, "
             . "DATE_FORMAT(shifts.shift_date, '%a, %b %e, %Y') AS shift_date, "
             . "TIME_FORMAT(shifts.start_time, '%l:%i %p') as start_time, "
             . "TIME_FORMAT(shifts.end_time, '%l:%i %p') AS end_time, "
@@ -74,6 +77,7 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'assignments', 'fname'=>'id', 
                 'fields'=>array('id', 'festival_id', 'volunteer_id', 'customer_id', 'firstname', 'lastname', 'display_name', 
+                    'shift_date_raw', 'start_time_raw', 'end_time_raw', 
                     'shift_date', 'start_time', 'end_time', 'object', 'object_id', 'role',
                     ),
                 ),
@@ -220,6 +224,57 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
         $festival = $args['festival'];
     }
 
+    
+    //
+    // Get the disciplines
+    //
+    if( isset($assignment) 
+        && isset($festival['volunteers-discipline-format']) 
+        && $festival['volunteers-discipline-format'] == 'section' 
+        && $assignment['object'] != ''
+        && preg_match("/^ciniki.musicfestivals.(building|location)/", $assignment['object'])
+        && $assignment['object_id'] != ''
+        && $assignment['object_id'] > 0 
+        ) {
+        $strsql = "SELECT sections.name "
+            . "FROM ciniki_musicfestival_locations AS rooms "
+            . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+                . "rooms.id = divisions.location_id "
+                . "AND divisions.division_date = '" . ciniki_core_dbQuote($ciniki, $assignment['shift_date_raw']) . "' "
+                . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+                . "divisions.id = timeslots.sdivision_id "
+                . "AND timeslots.slot_time > '" . ciniki_core_dbQuote($ciniki, $assignment['start_time_raw']) . "' "
+                . "AND timeslots.slot_time < '" . ciniki_core_dbQuote($ciniki, $assignment['end_time_raw']) . "' "
+                . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_schedule_sections AS sections ON ("
+                . "divisions.ssection_id = sections.id "
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") ";
+        if( $assignment['object'] == 'ciniki.musicfestivals.location' ) {
+            // Assignment is at a single room
+            $strsql .= "WHERE rooms.id = '" . ciniki_core_dbQuote($ciniki, $assignment['object_id']) . "' ";
+        } elseif( $assignment['object'] == 'ciniki.musicfestivals.building' ) {
+            // Assignment is at a building with multiple rooms
+            $strsql .= "WHERE rooms.building_id = '" . ciniki_core_dbQuote($ciniki, $assignment['object_id']) . "' ";
+        }
+        $strsql .= "AND rooms.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "ORDER BY sections.name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'disciplines', 'fname'=>'name', 'fields'=>array('name')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1534', 'msg'=>'Unable to load disciplines', 'err'=>$rc['err']));
+        }
+        $assignment['discipline'] = isset($rc['disciplines']) ? implode(', ', array_keys($rc['disciplines'])) : '';
+    } else {
+        $assignment['discipline'] = '';
+    }
+
     //
     // Check for volunteer from name or email address to send from
     //
@@ -273,6 +328,8 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
             $message = str_replace('{_role_}', $assignment['role'], $message);
             $subject = str_replace('{_location_}', $assignment['location'], $subject);
             $message = str_replace('{_location_}', $assignment['location'], $message);
+            $subject = str_replace('{_discipline_}', $assignment['discipline'], $subject);
+            $message = str_replace('{_discipline_}', $assignment['discipline'], $message);
         }
         elseif( isset($volunteer) ) {
             $subject = str_replace('{_firstname_}', $volunteer['firstname'], $subject);

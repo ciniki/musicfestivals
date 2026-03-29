@@ -239,7 +239,6 @@ function ciniki_musicfestivals_volunteerShiftUpdate(&$ciniki) {
         if( $volunteer_id == 0 ) {
             continue;
         }
-        $assignment = $assignments[$volunteer_id];
         $status_key = array_search($volunteer_id, $assigned_ids);
         //
         // Check for new volunteer assignment
@@ -291,7 +290,7 @@ function ciniki_musicfestivals_volunteerShiftUpdate(&$ciniki) {
         //
         // Existing assignments need update email
         //
-        elseif( $assignment['status'] == 30 && (
+        elseif( isset($assignments[$volunteer_id]['status']) && $assignments[$volunteer_id]['status'] == 30 && (
             (isset($args['shift_date']) && $args['shift_date'] != $shift['shift_date'])
             || (isset($args['start_time']) && $args['start_time'] != $shift['start_time'])
             || (isset($args['end_time']) && $args['end_time'] != $shift['end_time'])
