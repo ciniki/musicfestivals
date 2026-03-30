@@ -738,7 +738,7 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             }
             elseif( preg_match("/backtrack_option([0-9])/", $field['id'], $m) && ($selected_class['flags']&0x400000) == 0x400000 ) {
                 $bit = pow(2, ($m[1]+7));
-                if( $field['value'] == 'on' ) {
+                if( $field['value'] == 'on' || (isset($_POST["f-{$field['id']}"]) && $_POST["f-{$field['id']}"] == 'on') ) {
                     $registration_flags |= $bit;
                 } else {
                     $registration_flags &= ~$bit;

@@ -1253,7 +1253,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 $fields["backtrack_option{$i}"]['value'] = 'on';
                 $backtrack_class = '';
             }
-            
+        }
+        if( $args['display'] == 'view' ) {
+            $fields["backtrack_option{$i}"]['onchange'] = "backtrackShow({$i});";
         }
         $fields["backtrack{$i}"] = array(
             'id' => "backtrack{$i}",
@@ -1737,7 +1739,11 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 . "C.aC(C.gE('f-accompanist_phone').parentNode,'hidden');"
                 . "C.aC(C.gE('f-accompanist_email').parentNode,'hidden');"
             . "}"
-        . "}; ";
+        . "}; "
+        . "function backtrackShow(i){"
+            . "C.rC(C.gE('f-backtrack'+i).parentNode,'hidden');"
+        . "};"
+        . "";
 
     $rsp = array('stat'=>'ok', 'fields'=>$fields, 'js'=>$js, 'sections'=>$sections);
     if( isset($selected_section) ) {
