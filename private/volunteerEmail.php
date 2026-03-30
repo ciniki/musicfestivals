@@ -228,51 +228,52 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
     //
     // Get the disciplines
     //
-    if( isset($assignment) 
-        && isset($festival['volunteers-discipline-format']) 
-        && $festival['volunteers-discipline-format'] == 'section' 
-        && $assignment['object'] != ''
-        && preg_match("/^ciniki.musicfestivals.(building|location)/", $assignment['object'])
-        && $assignment['object_id'] != ''
-        && $assignment['object_id'] > 0 
-        ) {
-        $strsql = "SELECT sections.name "
-            . "FROM ciniki_musicfestival_locations AS rooms "
-            . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
-                . "rooms.id = divisions.location_id "
-                . "AND divisions.division_date = '" . ciniki_core_dbQuote($ciniki, $assignment['shift_date_raw']) . "' "
-                . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
-                . "divisions.id = timeslots.sdivision_id "
-                . "AND timeslots.slot_time > '" . ciniki_core_dbQuote($ciniki, $assignment['start_time_raw']) . "' "
-                . "AND timeslots.slot_time < '" . ciniki_core_dbQuote($ciniki, $assignment['end_time_raw']) . "' "
-                . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "INNER JOIN ciniki_musicfestival_schedule_sections AS sections ON ("
-                . "divisions.ssection_id = sections.id "
-                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") ";
-        if( $assignment['object'] == 'ciniki.musicfestivals.location' ) {
-            // Assignment is at a single room
-            $strsql .= "WHERE rooms.id = '" . ciniki_core_dbQuote($ciniki, $assignment['object_id']) . "' ";
-        } elseif( $assignment['object'] == 'ciniki.musicfestivals.building' ) {
-            // Assignment is at a building with multiple rooms
-            $strsql .= "WHERE rooms.building_id = '" . ciniki_core_dbQuote($ciniki, $assignment['object_id']) . "' ";
+    if( isset($assignment) ) {
+        if( isset($festival['volunteers-discipline-format']) 
+            && $festival['volunteers-discipline-format'] == 'section' 
+            && $assignment['object'] != ''
+            && preg_match("/^ciniki.musicfestivals.(building|location)/", $assignment['object'])
+            && $assignment['object_id'] != ''
+            && $assignment['object_id'] > 0 
+            ) {
+            $strsql = "SELECT sections.name "
+                . "FROM ciniki_musicfestival_locations AS rooms "
+                . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+                    . "rooms.id = divisions.location_id "
+                    . "AND divisions.division_date = '" . ciniki_core_dbQuote($ciniki, $assignment['shift_date_raw']) . "' "
+                    . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+                    . "divisions.id = timeslots.sdivision_id "
+                    . "AND timeslots.slot_time > '" . ciniki_core_dbQuote($ciniki, $assignment['start_time_raw']) . "' "
+                    . "AND timeslots.slot_time < '" . ciniki_core_dbQuote($ciniki, $assignment['end_time_raw']) . "' "
+                    . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_musicfestival_schedule_sections AS sections ON ("
+                    . "divisions.ssection_id = sections.id "
+                    . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . ") ";
+            if( $assignment['object'] == 'ciniki.musicfestivals.location' ) {
+                // Assignment is at a single room
+                $strsql .= "WHERE rooms.id = '" . ciniki_core_dbQuote($ciniki, $assignment['object_id']) . "' ";
+            } elseif( $assignment['object'] == 'ciniki.musicfestivals.building' ) {
+                // Assignment is at a building with multiple rooms
+                $strsql .= "WHERE rooms.building_id = '" . ciniki_core_dbQuote($ciniki, $assignment['object_id']) . "' ";
+            }
+            $strsql .= "AND rooms.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "ORDER BY sections.name "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+            $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'disciplines', 'fname'=>'name', 'fields'=>array('name')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1534', 'msg'=>'Unable to load disciplines', 'err'=>$rc['err']));
+            }
+            $assignment['discipline'] = isset($rc['disciplines']) ? implode(', ', array_keys($rc['disciplines'])) : '';
+        } else {
+            $assignment['discipline'] = '';
         }
-        $strsql .= "AND rooms.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "ORDER BY sections.name "
-            . "";
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
-        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-            array('container'=>'disciplines', 'fname'=>'name', 'fields'=>array('name')),
-            ));
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1534', 'msg'=>'Unable to load disciplines', 'err'=>$rc['err']));
-        }
-        $assignment['discipline'] = isset($rc['disciplines']) ? implode(', ', array_keys($rc['disciplines'])) : '';
-    } else {
-        $assignment['discipline'] = '';
     }
 
     //
