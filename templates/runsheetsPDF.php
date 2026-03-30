@@ -149,6 +149,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
     }
     $strsql .= "classes.code AS class_code, "
         . "classes.name AS class_name, "
+        . "classes.flags AS class_flags, "
         . "categories.name AS category_name, "
         . "sections.name AS syllabus_section_name "
         . "FROM ciniki_musicfestival_schedule_sections AS ssections "
@@ -256,7 +257,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                 'status'=>'reg_status',
                 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
                 'notes', 'internal_notes', 'runsheet_notes'=>'runnote', 'accolade_name',
-                'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
+                'class_code', 'class_name', 'class_flags', 'category_name', 'syllabus_section_name', 
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                 'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
@@ -1158,24 +1159,42 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                             }
                         }
                         $pdf->MultiCell($w[1], $h, $reg['name'], 'BLTR', 'L', 0, 0);
+                        $pdf->SetFont('', '');
                         $col = 2;
                         if( $pdf->mark == 'yes' ) {
-                            $pdf->MultiCell($w[$col], $h, '', 1, 'C', 0, (($col+1) < count($w) ? 0 : 1));
+                            $content = '';
+                            if( ($reg['class_flags']&0x0100) == 0 
+                                && isset($festival['runsheets-mark']) && $festival['runsheets-mark'] == 'yesna' 
+                                ) {
+                                $content = 'N/A';
+                            }
+                            $pdf->MultiCell($w[$col], $h, $content, 1, 'C', 0, (($col+1) < count($w) ? 0 : 1));
                             $col++;
                         }
                         if( $pdf->placement == 'yes' ) {
-                            $pdf->MultiCell($w[$col], $h, '', 1, 'C', 0, (($col+1) < count($w) ? 0 : 1));
+                            $content = '';
+                            if( ($reg['class_flags']&0x0200) == 0 
+                                && isset($festival['runsheets-placement']) && $festival['runsheets-placement'] == 'yesna' 
+                                ) {
+                                $content = 'N/A';
+                            }
+                            $pdf->MultiCell($w[$col], $h, $content, 1, 'C', 0, (($col+1) < count($w) ? 0 : 1));
                             $col++;
                         }
                         if( $pdf->level == 'yes' ) {
-                            $pdf->MultiCell($w[$col], $h, '', 1, 'C', 0, (($col+1) < count($w) ? 0 : 1));
+                            $content = '';
+                            if( ($reg['class_flags']&0x0400) == 0 
+                                && isset($festival['runsheets-level']) && $festival['runsheets-level'] == 'yesna' 
+                                ) {
+                                $content = 'N/A';
+                            }
+                            $pdf->MultiCell($w[$col], $h, $content, 1, 'C', 0, (($col+1) < count($w) ? 0 : 1));
                             $col++;
                         }
                         if( $pdf->advanceto == 'yes' ) {
                             $pdf->MultiCell($w[$col], $h, '', 1, 'C', 0, 1);
                             $col++;
                         }
-                        $pdf->SetFont('', '');
                         $border = 'LR';
                         $pdf->SetCellPaddings($pdf->padding,$pdf->padding,$pdf->padding,0);
                         $pdf->SetFont('', '', '11');
