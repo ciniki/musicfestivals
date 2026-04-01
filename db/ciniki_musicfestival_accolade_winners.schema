@@ -21,7 +21,11 @@
 # awarded_amount:           The amount awarded to the registration.
 #
 # name:                     The name of the winner copied from registration, can be changed if needed.
+# discipline:               The discipline the winner won for.
 # year:                     The year won.
+#
+# payment_conf_code:        The payment confirmation code, typicaly from e-transfer.
+# cheque_number:            The cheque number if paid by cheque.
 #
 # internal_notes:           Any notes about the winner, for internal use only.
 #
@@ -38,7 +42,10 @@ create table ciniki_musicfestival_accolade_winners (
     flags tinyint unsigned not null,
     awarded_amount decimal(19,4) not null,
     name varchar(250) not null,
+    discipline varchar(250) not null,
     year varchar(50) not null,
+    payment_conf_code varchar(250) not null,
+    cheque_number varchar(250) not null,
     internal_notes text not null,
 
     date_added datetime not null,
@@ -47,4 +54,4 @@ create table ciniki_musicfestival_accolade_winners (
     unique index (uuid),
     index sync (tnid, uuid, last_updated),
     unique index (accolade_id, registration_id, year)
-) ENGINE='InnoDB', COMMENT='v1.04';
+) ENGINE='InnoDB', COMMENT='v1.05';

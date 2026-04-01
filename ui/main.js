@@ -14963,7 +14963,7 @@ function ciniki_musicfestivals_main() {
             'noData':'No Recipients',
             'headerValues':['Name', 'Awarded', ''],
             'headerClasses':['', 'alignright', ''],
-            'cellClasses':['', 'alignright', ''],
+            'cellClasses':['multiline', 'alignright', 'multiline'],
             'footerClasses':['', 'alignright', ''],
             'sortable':'yes', 
             'sortTypes':['text', 'number', ''],
@@ -14984,7 +14984,7 @@ function ciniki_musicfestivals_main() {
             'noData':'No Recipients',
             'headerValues':['Category', 'Subcategory', 'Name', 'Recipient', 'Amount', ''],
             'headerClasses':['', '', '', '', 'alignright', ''],
-            'cellClasses':['', '', '', '', 'alignright', ''],
+            'cellClasses':['', '', '', 'multiline', 'alignright', 'multiline'],
             'footerClasses':['', '', '', '', 'alignright', ''],
             'sortable':'yes', 
             'sortTypes':['text', 'text', 'text', 'text', 'number', ''],
@@ -15017,10 +15017,10 @@ function ciniki_musicfestivals_main() {
         }
         if( s == 'accolade_recipients' ) {
             switch(j) {
-                case 0: return d.recipient_name
+                case 0: return M.multiline(d.recipient_name, d.discipline);
                     + ((d.flags&0x01) == 0x01 ? ' <span class="subdue">[Emailed]</span>' : '');
                 case 1: return (d.awarded_amount > 0 ? M.formatDollar(d.awarded_amount) : '');
-                case 2: return ((d.flags&0x02) == 0x02 ? ' <span class="subdue">[Sent]</span>' : '');
+                case 2: return M.multiline(((d.flags&0x02) == 0x02 ? ' <span class="subdue">[Sent]</span>' : ''), d.payment_conf_code + d.cheque_number);
             }
         }
         if( s == 'recipients' ) {
@@ -15028,10 +15028,10 @@ function ciniki_musicfestivals_main() {
                 case 0: return d.category_name;
                 case 1: return d.subcategory_name;
                 case 2: return d.name;
-                case 3: return d.recipient_name
+                case 3: return M.multiline(d.recipient_name, d.discipline);
                     + ((d.flags&0x01) == 0x01 ? ' <span class="subdue">[Emailed]</span>' : '');
                 case 4: return (d.awarded_amount > 0 ? M.formatDollar(d.awarded_amount) : '');
-                case 5: return ((d.flags&0x02) == 0x02 ? ' <span class="subdue">[Sent]</span>' : '');
+                case 5: return M.multiline(((d.flags&0x02) == 0x02 ? ' <span class="subdue">[Sent]</span>' : ''), d.payment_conf_code + d.cheque_number);
             }
         } 
         if( s == 'thankyous' ) {
@@ -15396,8 +15396,11 @@ function ciniki_musicfestivals_main() {
                 'section':{'label':'Section', 'type':'text', 'visible':'no', 'editable':'no'},
                 'category':{'label':'Category', 'type':'text', 'visible':'no', 'editable':'no'},
                 'classname':{'label':'Class', 'type':'text', 'visible':'no', 'editable':'no'},
+                'discipline':{'label':'Discipline', 'type':'text', 'visible':'yes'},
                 'awarded_amount':{'label':'Awarded Amount', 'type':'text', 'size':'small'},
                 'year':{'label':'Year', 'type':'text', 'editable':'yes'},
+                'payment_conf_code':{'label':'Payment Confirmation', 'type':'text', 'editable':'yes'},
+                'cheque_number':{'label':'Cheque Number', 'type':'text', 'editable':'yes'},
                 'flags1':{'label':'Award Email Sent', 'type':'flagtoggle', 'default':'off', 'bit':0x01, 'field':'flags'},
                 'flags2':{'label':'Payment Sent', 'type':'flagtoggle', 'default':'off', 'bit':0x02, 'field':'flags'},
             },

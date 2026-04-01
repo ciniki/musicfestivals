@@ -191,7 +191,10 @@ function ciniki_musicfestivals_accolades($ciniki) {
         $strsql = "SELECT winners.id, "
             . "winners.flags, "
             . "IFNULL(registrations.display_name, winners.name) AS recipient_name, "
+            . "winners.discipline, "
             . "winners.awarded_amount, "
+            . "winners.payment_conf_code, "
+            . "winners.cheque_number, "
             . "winners.internal_notes, "
             . "accolades.id AS accolade_id, "
             . "accolades.name, "
@@ -234,8 +237,9 @@ function ciniki_musicfestivals_accolades($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'recipients', 'fname'=>'id', 
-                'fields'=>array('id', 'flags', 'recipient_name', 'awarded_amount', 'accolade_id', 'name', 'subcategory_id',
-                    'category_name', 'subcategory_name', 'internal_notes'),
+                'fields'=>array('id', 'flags', 'recipient_name', 'awarded_amount', 'accolade_id', 'name', 'discipline', 
+                    'subcategory_id', 'category_name', 'subcategory_name', 
+                    'payment_conf_code', 'cheque_number', 'internal_notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -269,9 +273,12 @@ function ciniki_musicfestivals_accolades($ciniki) {
                         ['label' => 'Subcategory', 'field' => 'subcategory_name'],
                         ['label' => 'Accolade', 'field' => 'name'],
                         ['label' => 'Recipient', 'field' => 'recipient_name'],
+                        ['label' => 'Discipline', 'field' => 'discipline'],
                         ['label' => 'Amount', 'field' => 'awarded_amount'],
                         ['label' => 'Email Sent', 'field' => 'email_sent'],
                         ['label' => 'Payment Sent', 'field' => 'payment_sent'],
+                        ['label' => 'Conf Code', 'field' => 'payment_conf_code'],
+                        ['label' => 'Cheque #', 'field' => 'cheque_number'],
                         ['label' => 'Notes', 'field' => 'internal_notes'],
                         ],
                     'rows' => $rsp['recipients'],

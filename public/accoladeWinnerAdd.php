@@ -25,7 +25,10 @@ function ciniki_musicfestivals_accoladeWinnerAdd(&$ciniki) {
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'awarded_amount'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Awarded Amount'),
         'name'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Name'),
+        'discipline'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Discipline'),
         'year'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Year'),
+        'payment_conf_code'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Payment Confirmation Code'),
+        'cheque_number'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Cheque Number'),
         'internal_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Internal Year'),
         ));
     if( $rc['stat'] != 'ok' ) {

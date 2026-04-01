@@ -64,8 +64,11 @@ function ciniki_musicfestivals_accoladeWinnerGet($ciniki) {
             'registration_id' => 0,
             'flags' => 0,
             'name' => '',
+            'discipline' => '',
             'registration' => '',
             'year' => $dt->format('Y'),
+            'payment_conf_code' => '',
+            'cheque_number' => '',
             'internal_notes' =>'',
             ];
         if( isset($args['registration_id']) && $args['registration_id'] > 0 ) {
@@ -83,7 +86,10 @@ function ciniki_musicfestivals_accoladeWinnerGet($ciniki) {
             . "flags, "
             . "awarded_amount, "
             . "name, "
+            . "discipline, "
             . "year, "
+            . "payment_conf_code, "
+            . "cheque_number, "
             . "internal_notes "
             . "FROM ciniki_musicfestival_accolade_winners "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -92,7 +98,8 @@ function ciniki_musicfestivals_accoladeWinnerGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'winners', 'fname'=>'id', 
-                'fields'=>array('id', 'accolade_id', 'registration_id', 'flags', 'awarded_amount', 'name', 'year', 'internal_notes'),
+                'fields'=>array('id', 'accolade_id', 'registration_id', 'flags', 'awarded_amount', 'name', 'discipline',
+                    'year', 'payment_conf_code', 'cheque_number', 'internal_notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

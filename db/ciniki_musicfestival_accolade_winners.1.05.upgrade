@@ -1,0 +1,4 @@
+ALTER TABLE ciniki_musicfestival_accolade_winners ADD COLUMN discipline varchar(250) not null AFTER name;
+ALTER TABLE ciniki_musicfestival_accolade_winners ADD COLUMN payment_conf_code varchar(250) not null AFTER year;
+ALTER TABLE ciniki_musicfestival_accolade_winners ADD COLUMN cheque_number varchar(250) not null AFTER payment_conf_code;
+ALTER TABLE ciniki_musicfestival_accolade_winners COMMENT='v1.05';
