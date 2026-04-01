@@ -30,6 +30,7 @@ function ciniki_musicfestivals_accolades($ciniki) {
         'accolades'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Accolades'),
         'accolade_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Accolade'),
         'recipients'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Recipients'),
+        'output'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Output'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -191,6 +192,7 @@ function ciniki_musicfestivals_accolades($ciniki) {
             . "winners.flags, "
             . "IFNULL(registrations.display_name, winners.name) AS recipient_name, "
             . "winners.awarded_amount, "
+            . "winners.internal_notes, "
             . "accolades.id AS accolade_id, "
             . "accolades.name, "
             . "accolades.subcategory_id, "
@@ -233,7 +235,7 @@ function ciniki_musicfestivals_accolades($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'recipients', 'fname'=>'id', 
                 'fields'=>array('id', 'flags', 'recipient_name', 'awarded_amount', 'accolade_id', 'name', 'subcategory_id',
-                    'category_name', 'subcategory_name',),
+                    'category_name', 'subcategory_name', 'internal_notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -250,7 +252,38 @@ function ciniki_musicfestivals_accolades($ciniki) {
                 if( ($recipient['flags']&0x01) == 0 ) {
                     $rsp['num_recipients_noemail']++;
                 }
+                $rsp['recipients'][$rid]['email_sent'] = ($recipient['flags']&0x01) == 0x01 ? 'Sent' : '';
+                $rsp['recipients'][$rid]['payment_sent'] = ($recipient['flags']&0x02) == 0x02 ? 'Sent' : '';
             }
+        }
+
+        //
+        // Check if excel export requested
+        //
+        if( isset($args['output']) && $args['output'] == 'excel' ) {
+            $sheets = [
+                'recipients' => [
+                    'label' => 'Recipients',
+                    'columns' => [
+                        ['label' => 'Category', 'field' => 'category_name'],
+                        ['label' => 'Subcategory', 'field' => 'subcategory_name'],
+                        ['label' => 'Accolade', 'field' => 'name'],
+                        ['label' => 'Recipient', 'field' => 'recipient_name'],
+                        ['label' => 'Amount', 'field' => 'awarded_amount'],
+                        ['label' => 'Email Sent', 'field' => 'email_sent'],
+                        ['label' => 'Payment Sent', 'field' => 'payment_sent'],
+                        ['label' => 'Notes', 'field' => 'internal_notes'],
+                        ],
+                    'rows' => $rsp['recipients'],
+                    ],
+                ];
+
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'excelGenerate');
+            return ciniki_core_excelGenerate($ciniki, $args['tnid'], [
+                'sheets' => $sheets,
+                'download' => 'yes',
+                'filename' => 'Accolade Recipients.xlsx'
+                ]);
         }
     }
 

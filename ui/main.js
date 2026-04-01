@@ -14988,22 +14988,12 @@ function ciniki_musicfestivals_main() {
             'footerClasses':['', '', '', '', 'alignright', ''],
             'sortable':'yes', 
             'sortTypes':['text', 'text', 'text', 'text', 'number', ''],
-//            'menu':{
-//                'add':{
-//                    'label':'Add Accolade',
-//                    'visible':function() { return M.ciniki_musicfestivals_main.accolades.subcategory_id > 0 ? 'yes' : 'no'; },
-//                    'fn':'M.ciniki_musicfestivals_main.accolade.open(\'M.ciniki_musicfestivals_main.accolades.open();\',0,M.ciniki_musicfestivals_main.accolades.subcategory_id,null);'
-//                    },
-//                'list':{
-//                    'label':'Accolade List PDF',
-//                    'fn':'M.ciniki_musicfestivals_main.accolades.accoladeListPDF();'
-//                    },
-//                'winners':{
-//                    'label':'Accolade Recipients PDF (BROKEN)',
-//                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections.accolade_years.selected != 'None' ? 'yes' : 'no'; },
-//                    'fn':'M.ciniki_musicfestivals_main.festival.accoladeWinnersPDF();'
-//                    },
-//                },
+            'menu':{
+                'excel':{
+                    'label':'Export Excel',
+                    'fn':'M.ciniki_musicfestivals_main.accolades.exportExcel();'
+                    },
+                },
             }, 
         'thankyous':{'label':'Thank Yous', 'type':'simplegrid', 'num_cols':4, 
             'selected':0,
@@ -15158,6 +15148,19 @@ function ciniki_musicfestivals_main() {
                 });
             });
         };
+    this.accolades.exportExcel = function() {
+        this.popupMenuClose('recipients');
+        var args = {
+            'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'categories':'yes',
+            'category_id':this.category_id,
+            'subcategory_id':this.subcategory_id,
+            'recipients':'yes',
+            'output':'excel',
+            };
+        M.api.openPDF('ciniki.musicfestivals.accolades', args);
+    }
     this.accolades.open = function(cb, fid) {
         if( fid != null ) { this.festival_id = fid; }
         var args = {
