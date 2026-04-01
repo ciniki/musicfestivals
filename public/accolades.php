@@ -137,6 +137,7 @@ function ciniki_musicfestivals_accolades($ciniki) {
             . "accolades.first_presented, "
             . "accolades.amount, "
             . "accolades.criteria, "
+            . "accolades.donor_thankyou_info, "
             . "COUNT(winners.id) AS num_noemail "
             . "FROM ciniki_musicfestival_accolades AS accolades "
             . "INNER JOIN ciniki_musicfestival_accolade_subcategories AS subcategories ON ("
@@ -167,7 +168,7 @@ function ciniki_musicfestivals_accolades($ciniki) {
             array('container'=>'accolades', 'fname'=>'id', 
                 'fields'=>array('id', 'subcategory_id', 'category_name', 'subcategory_name', 'name', 
                     'donated_by', 'first_presented', 'amount', 
-                    'criteria', 'num_noemail'),
+                    'criteria', 'donor_thankyou_info', 'num_noemail'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
