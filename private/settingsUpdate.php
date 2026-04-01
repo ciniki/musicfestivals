@@ -263,6 +263,8 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'provincials-email-register-reminder-subject',
         'provincials-email-register-reminder-message',
         'provincials-recommendation-sheets-intro',
+        'provincials-smtp-from-name',
+        'provincials-smtp-from-address',
         'competitor-label-singular',
         'competitor-label-plural',
         'competitor-parent-msg',

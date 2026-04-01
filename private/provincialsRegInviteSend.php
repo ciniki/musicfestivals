@@ -62,6 +62,18 @@ function ciniki_musicfestivals_provincialsRegInviteSend(&$ciniki, $tnid, $args) 
     }
         
     //
+    // Check for provincials from name or email address to send from
+    //
+    $from_name = '';
+    if( isset($festival['provincials-smtp-from-name']) && $festival['provincials-smtp-from-name'] != '' ) {
+        $from_name = $festival['provincials-smtp-from-name'];
+    }
+    $from_address = '';
+    if( isset($festival['provincials-smtp-from-address']) && $festival['provincials-smtp-from-address'] != '' ) {
+        $from_address = $festival['provincials-smtp-from-address'];
+    }
+
+    //
     // Load the local registration
     //
     $strsql = "SELECT registrations.id, "
@@ -159,6 +171,8 @@ function ciniki_musicfestivals_provincialsRegInviteSend(&$ciniki, $tnid, $args) 
                             'object_id' => $registration['id'],
                             'subject' => $subject,
                             'tinymce' => 'yes',
+                            'from_name' => $from_name,
+                            'from_address' => $from_address,
                             'html_content' => $message,
                             'text_content' => html_entity_decode(strip_tags($message)),
                             ];
@@ -192,6 +206,8 @@ function ciniki_musicfestivals_provincialsRegInviteSend(&$ciniki, $tnid, $args) 
                         'object_id' => $registration['id'],
                         'subject' => $subject,
                         'tinymce' => 'yes',
+                        'from_name' => $from_name,
+                        'from_address' => $from_address,
                         'html_content' => $message,
                         'text_content' => html_entity_decode(strip_tags($message)),
                         ];

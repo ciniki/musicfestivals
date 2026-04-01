@@ -6651,6 +6651,12 @@ function ciniki_musicfestivals_main() {
                 'provincials-email-invite-message':{'label':'Message', 'type':'htmlarea', 'size':'medium'},
                 'provincials-invite-confirm-message':{'label':'Accept Confirm Message', 'type':'htmlarea', 'size':'medium'},
                 'provincials-invite-decline-message':{'label':'Decline Confirm Message', 'type':'htmlarea', 'size':'medium'},
+                'provincials-smtp-from-name':{'label':'SMTP Name', 'type':'text',
+                    'visible':function() { return (M.modSettingSet('ciniki.mail','smtp-alternate-addresses') == 'yes' && (M.userPerms&0x01) == 1 ? 'yes' : 'no'); },
+                    },
+                'provincials-smtp-from-address':{'label':'SMTP Address', 'type':'text',
+                    'visible':function() { return (M.modSettingSet('ciniki.mail','smtp-alternate-addresses') == 'yes' && (M.userPerms&0x01) == 1 ? 'yes' : 'no'); },
+                    },
                 },
             'menu':{
                 'default':{
@@ -6747,11 +6753,11 @@ function ciniki_musicfestivals_main() {
                     }},
                 'volunteers-cancel-notify-emails':{'label':'Cancel Notifications', 'type':'text'},
                 'volunteers-smtp-from-name':{'label':'SMTP Name', 'type':'text',
-                    'visible':function() { return ((M.userPerms&0x01) == 1 ? 'yes' : 'no'); },
+                    'visible':function() { return (M.modSettingSet('ciniki.mail','smtp-alternate-addresses') == 'yes' && (M.userPerms&0x01) == 1 ? 'yes' : 'no'); },
                     },
                 'volunteers-smtp-from-address':{'label':'SMTP Address', 'type':'text',
-                    'visible':function() { return ((M.userPerms&0x01) == 1 ? 'yes' : 'no'); },
-                },
+                    'visible':function() { return (M.modSettingSet('ciniki.mail','smtp-alternate-addresses') == 'yes' && (M.userPerms&0x01) == 1 ? 'yes' : 'no'); },
+                    },
             }},
         '_volunteers_email1':{'label':'Volunteer Approved Email',
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('volunteers'); },
@@ -20184,7 +20190,6 @@ function ciniki_musicfestivals_main() {
                 }
                 var p = M.ciniki_musicfestivals_main.pre;
                 p.data = rsp.entry;
-                console.log(rsp.entry);
 /*                p.sections.details.menu.visible = 'no';
                 p.sections.details.menu.emailinvite.visible = 'no';
                 p.sections.details.menu.emailinstructions.visible = 'no';
