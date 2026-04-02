@@ -2884,6 +2884,9 @@ function ciniki_musicfestivals_main() {
             else if( this.sections[s].dataMaps[j] == 'synopsis' ) {
                 return d.synopsis.replace('\n', '<br/>');
             }
+            else if( this.sections[s].dataMaps[j] == 'num_registrations' ) {
+                return d.num_registrations > 0 ? d.num_registrations : '';
+            }
             else if( this.sections[s].dataMaps[j] == 'provincials_code_name' ) {
                 if( d.provincials_code != '' ) {
                     return d.provincials_code + (d.provincials_class_name != '' ? ' - ' + d.provincials_class_name : '');
@@ -4771,28 +4774,33 @@ function ciniki_musicfestivals_main() {
             this.sections.classes.num_cols = 8;
         }
         else if( this.sections._stabs.selected == 'accolades' ) {
-            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Accolades'];
-            this.sections.classes.cellClasses = ['', '', '', ''];
-            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'accolades'];
-            this.sections.classes.sortTypes = ['text', 'text', 'text', 'text'];
-            this.sections.classes.num_cols = 4;
+            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Accolades', '# Reg'];
+            this.sections.classes.cellClasses = ['', '', '', '', 'aligncenter'];
+            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'accolades', 'num_registrations'];
+            this.sections.classes.sortTypes = ['text', 'text', 'text', 'text', 'number'];
+            this.sections.classes.num_cols = 5;
         }
         else if( this.sections._stabs.selected == 'scheduling' ) {
-            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Scheduling', 'Time', 'Talk', 'Total', '# Reg'];
-            this.sections.classes.cellClasses = ['', '', '', '', '', '', '', 'aligncenter'];
-            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'schedule_type', 'schedule_time', 'talk_time', 'total_time', 'num_registrations'];
-            this.sections.classes.sortTypes = ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'number'];
-            this.sections.classes.num_cols = 5;
             if( this.data['scheduling-at-times'] != null && this.data['scheduling-at-times'] == 'yes' ) {
-                this.sections.classes.num_cols+=3;
+                this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Scheduling', 'Time', 'Talk', 'Total', '# Reg'];
+                this.sections.classes.cellClasses = ['', '', '', '', '', '', '', 'aligncenter'];
+                this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'schedule_type', 'schedule_time', 'talk_time', 'total_time', 'num_registrations'];
+                this.sections.classes.sortTypes = ['text', 'text', 'text', 'text', 'text', 'text', 'text', 'number'];
+                this.sections.classes.num_cols = 8;
+            } else {
+                this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Scheduling', 'Time', '# Reg'];
+                this.sections.classes.cellClasses = ['', '', '', '', '', 'aligncenter'];
+                this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'schedule_type', 'schedule_time', 'num_registrations'];
+                this.sections.classes.sortTypes = ['text', 'text', 'text', 'text', 'text', 'number'];
+                this.sections.classes.num_cols = 6;
             }
         } 
         else if( this.sections._stabs.selected == 'provincials' ) {
-            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Provincials Code'];
-            this.sections.classes.cellClasses = ['', '', '', ''];
-            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'provincials_code_name'];
-            this.sections.classes.sortTypes = ['text', 'text', 'text', 'text'];
-            this.sections.classes.num_cols = 4;
+            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Provincials Code', '# Reg'];
+            this.sections.classes.cellClasses = ['', '', '', '', 'aligncenter'];
+            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'provincials_code_name', 'num_registrations'];
+            this.sections.classes.sortTypes = ['text', 'text', 'text', 'text', 'number'];
+            this.sections.classes.num_cols = 5;
         } 
         else if( this.sections._stabs.selected == 'synopsis' ) {
             this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Synopsis'];
