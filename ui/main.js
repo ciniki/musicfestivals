@@ -6208,7 +6208,7 @@ function ciniki_musicfestivals_main() {
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
                 'competitor-individual-etransfer-email-label':{'label':'e-transfer Email Label', 'type':'text'},
-                'competitor-individual-etransfer-email-confirm':{'label':'e-tranfer Email Confirm', 'type':'toggle', 'default':'no', 'separator':'no', 'toggles':{
+                'competitor-individual-etransfer-email-confirm':{'label':'e-transfer Email Confirm', 'type':'toggle', 'default':'no', 'separator':'no', 'toggles':{
                     'no':'No', 'yes':'Yes',
                     }},
                 'competitor-individual-notes-enable':{'label':'Notes', 'type':'toggle', 'default':'yes', 'separator':'no', 'toggles':{
@@ -6243,7 +6243,7 @@ function ciniki_musicfestivals_main() {
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
                 'competitor-group-etransfer-email-label':{'label':'e-transfer Email Label', 'type':'text'},
-                'competitor-group-etransfer-email-confirm':{'label':'e-tranfer Email Confirm', 'type':'toggle', 'default':'no', 'separator':'no', 'toggles':{
+                'competitor-group-etransfer-email-confirm':{'label':'e-transfer Email Confirm', 'type':'toggle', 'default':'no', 'separator':'no', 'toggles':{
                     'no':'No', 'yes':'Yes',
                     }},
                 'competitor-group-notes-enable':{'label':'Notes', 'type':'toggle', 'default':'yes', 'separator':'no', 'toggles':{
@@ -15398,7 +15398,7 @@ function ciniki_musicfestivals_main() {
                 'classname':{'label':'Class', 'type':'text', 'visible':'no', 'editable':'no'},
                 'discipline':{'label':'Discipline', 'type':'text', 'visible':'yes'},
                 'awarded_amount':{'label':'Awarded Amount', 'type':'text', 'size':'small'},
-                'etransfer_email':{'label':'Awarded Amount', 'type':'text', 'size':'small', 'visible':'no', 'editable':'no'},
+                'etransfer_email':{'label':'etransfer Email', 'type':'text', 'visible':'no', 'editable':'no'},
                 'year':{'label':'Year', 'type':'text', 'editable':'yes'},
                 'payment_conf_code':{'label':'Payment Confirmation', 'type':'text', 'editable':'yes'},
                 'cheque_number':{'label':'Cheque Number', 'type':'text', 'editable':'yes'},
@@ -15486,17 +15486,20 @@ function ciniki_musicfestivals_main() {
             p.data.section = rsp['class']['section_name'];
             p.data.category = rsp['class']['category_name'];
             p.data.classname = rsp['class']['code'] + ' - ' + rsp['class']['name'];
+            p.data.etransfer_email = rsp.registration.etransfer_email;
             p.sections.general.fields.name.visible = 'no';
             p.sections.general.fields.registration_name.visible = 'yes';
             p.sections.general.fields.section.visible = 'yes';
             p.sections.general.fields.category.visible = 'yes';
             p.sections.general.fields.classname.visible = 'yes';
+            p.sections.general.fields.etransfer_email.visible = 'yes';
             p.sections.general.fields.year.editable = 'no';
             p.showHideFormField('general', 'name');
             p.refreshFormField('general', 'registration_name');
             p.refreshFormField('general', 'section');
             p.refreshFormField('general', 'category');
             p.refreshFormField('general', 'classname');
+            p.refreshFormField('general', 'etransfer_email');
             p.refreshFormField('general', 'year');
             });
     };
@@ -15543,6 +15546,7 @@ function ciniki_musicfestivals_main() {
             p.sections.general.fields.section.visible = (p.registration_id > 0 ? 'yes' : 'no');
             p.sections.general.fields.category.visible = (p.registration_id > 0 ? 'yes' : 'no');
             p.sections.general.fields.classname.visible = (p.registration_id > 0 ? 'yes' : 'no');
+            p.sections.general.fields.etransfer_email.visible = (p.registration_id > 0 ? 'yes' : 'no');
             p.sections.general.fields.year.editable = (p.registration_id > 0 ? 'no' : 'yes');
             p.refresh();
             p.show(cb);

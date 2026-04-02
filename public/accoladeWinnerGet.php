@@ -137,7 +137,8 @@ function ciniki_musicfestivals_accoladeWinnerGet($ciniki) {
             . "categories.name AS category_name, "
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
-            . "DATE_FORMAT(festivals.end_date, '%Y') AS year "
+            . "DATE_FORMAT(festivals.end_date, '%Y') AS year, "
+            . "GROUP_CONCAT(competitors.etransfer_email SEPARATOR ',') AS etransfer_email "
             . "FROM ciniki_musicfestival_registrations AS registrations "
             . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "registrations.class_id = classes.id "
@@ -155,8 +156,19 @@ function ciniki_musicfestivals_accoladeWinnerGet($ciniki) {
                 . "registrations.festival_id = festivals.id "
                 . "AND festivals.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
+            . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ("
+                . "("
+                    . "registrations.competitor1_id = competitors.id "
+                    . "OR registrations.competitor2_id = competitors.id "
+                    . "OR registrations.competitor3_id = competitors.id "
+                    . "OR registrations.competitor4_id = competitors.id "
+                    . "OR registrations.competitor5_id = competitors.id "
+                    . ") "
+                . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "WHERE registrations.id = '" . ciniki_core_dbQuote($ciniki, $winner['registration_id']) . "' "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "GROUP BY registrations.id "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'registration');
         if( $rc['stat'] != 'ok' ) {
@@ -173,6 +185,10 @@ function ciniki_musicfestivals_accoladeWinnerGet($ciniki) {
         $winner['classname'] = $registration['class_code'] . ' - ' . $registration['class_name'];
         if( $winner['year'] == '' ) {
             $winner['year'] = $registration['year'];
+        }
+        $winner['etransfer_email'] = '';
+        if( $registration['etransfer_email'] != '' ) {
+            $winner['etransfer_email'] = $registration['etransfer_email'];
         }
 
         // 

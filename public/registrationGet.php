@@ -395,6 +395,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         $registration['year'] = $festival['year'];
         $registration['scheduled'] = '';
         $registration['scheduled_sd'] = '';
+        $registration['etransfer_email'] = '';
         if( $registration['division_date'] != '' ) {
             $registration['scheduled'] .= $registration['division_date'];
         }
@@ -521,6 +522,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     . "ciniki_musicfestival_competitors.phone_home, "
                     . "ciniki_musicfestival_competitors.phone_cell, "
                     . "ciniki_musicfestival_competitors.email, "
+                    . "ciniki_musicfestival_competitors.etransfer_email, "
                     . "ciniki_musicfestival_competitors.age AS _age, "
                     . "ciniki_musicfestival_competitors.num_people, "
                     . "ciniki_musicfestival_competitors.study_level, "
@@ -536,7 +538,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     array('container'=>'competitors', 'fname'=>'id', 
                         'fields'=>array('festival_id', 'ctype', 'flags', 'name', 'pronoun', 'conductor', 'parent', 
                             'address', 'city', 'province', 'postal', 'phone_home', 'phone_cell', 
-                            'email', '_age', 'num_people', 'study_level', 'last_exam', 'instrument', 'notes'),
+                            'email', 'etransfer_email', '_age', 'num_people', 'study_level', 'last_exam', 'instrument', 'notes'),
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
@@ -643,6 +645,9 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     $details[] = array('label'=>'Notes', 'value'=>$competitor['notes']);
                 }
                 $registration['competitor' . $i . '_details'] = $details;
+                if( $competitor['etransfer_email'] != '' ) {
+                    $registration['etransfer_email'] .= ($registration['etransfer_email'] != '' ? ', ' : '') . $competitor['etransfer_email'];
+                }
             }
         }
 
