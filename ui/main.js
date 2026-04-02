@@ -14873,6 +14873,7 @@ function ciniki_musicfestivals_main() {
             'tabs':{
                 'accolades':{'label':'Accolades', 'fn':'M.ciniki_musicfestivals_main.accolades.switchTab("accolades");'},
                 'recipients':{'label':'Recipients', 'fn':'M.ciniki_musicfestivals_main.accolades.switchTab("recipients");'},
+                'pending':{'label':'Pending', 'fn':'M.ciniki_musicfestivals_main.accolades.switchTab("pending");'},
                 'thankyous':{'label':'Thank Yous', 'fn':'M.ciniki_musicfestivals_main.accolades.switchTab("thankyous");'},
             }},
         'categories':{'label':'Categories', 'type':'simplegrid', 'aside':'yes', 'num_cols':1,
@@ -14988,7 +14989,7 @@ function ciniki_musicfestivals_main() {
                 },
             },
         'recipients':{'label':'Recipients', 'type':'simplegrid', 'num_cols':6, 'panelcolumn':1,
-            'visible':function() { return M.ciniki_musicfestivals_main.accolades.sections._tabs.selected == 'recipients' ? 'yes' : 'no';},
+            'visible':function() { return M.ciniki_musicfestivals_main.accolades.sections._tabs.selected == 'recipients' || M.ciniki_musicfestivals_main.accolades.sections._tabs.selected == 'pending' ? 'yes' : 'no';},
             'noData':'No Recipients',
             'headerValues':['Category', 'Subcategory', 'Name', 'Recipient', 'Amount', ''],
             'headerClasses':['', '', '', '', 'alignright', ''],
@@ -15187,6 +15188,10 @@ function ciniki_musicfestivals_main() {
         }
         else if( this.sections._tabs.selected == 'recipients' ) {
             args['recipients'] = 'yes';
+        }
+        else if( this.sections._tabs.selected == 'pending' ) {
+            args['recipients'] = 'yes';
+            args['pending'] = 'yes';
         }
         else if( this.sections._tabs.selected == 'thankyous' ) {
             args['accolades'] = 'yes';

@@ -30,6 +30,7 @@ function ciniki_musicfestivals_accolades($ciniki) {
         'accolades'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Accolades'),
         'accolade_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Accolade'),
         'recipients'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Recipients'),
+        'pending'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Pending'),
         'output'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Output'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -231,6 +232,9 @@ function ciniki_musicfestivals_accolades($ciniki) {
         }
         if( isset($args['festival_id']) && $args['festival_id'] > 0 ) {
             $strsql .= "AND winners.year = '" . ciniki_core_dbQuote($ciniki, $festival['year']) . "' ";
+        }
+        if( isset($args['pending']) && $args['pending'] == 'yes' ) {
+            $strsql .= "AND (winners.flags&0x03) <> 0x03 ";
         }
         $strsql .= "ORDER BY categories.sequence, categories.name, subcategories.sequence, subcategories.name, recipient_name "
             . "";
