@@ -15017,8 +15017,8 @@ function ciniki_musicfestivals_main() {
         }
         if( s == 'accolade_recipients' ) {
             switch(j) {
-                case 0: return M.multiline(d.recipient_name, d.discipline);
-                    + ((d.flags&0x01) == 0x01 ? ' <span class="subdue">[Emailed]</span>' : '');
+                case 0: return M.multiline(d.recipient_name
+                    + ((d.flags&0x01) == 0x01 ? ' <span class="subdue">[Emailed]</span>' : ''), d.discipline);
                 case 1: return (d.awarded_amount > 0 ? M.formatDollar(d.awarded_amount) : '');
                 case 2: return M.multiline(((d.flags&0x02) == 0x02 ? ' <span class="subdue">[Sent]</span>' : ''), d.payment_conf_code + d.cheque_number);
             }
@@ -15028,8 +15028,8 @@ function ciniki_musicfestivals_main() {
                 case 0: return d.category_name;
                 case 1: return d.subcategory_name;
                 case 2: return d.name;
-                case 3: return M.multiline(d.recipient_name, d.discipline);
-                    + ((d.flags&0x01) == 0x01 ? ' <span class="subdue">[Emailed]</span>' : '');
+                case 3: return M.multiline(d.recipient_name
+                    + ((d.flags&0x01) == 0x01 ? ' <span class="subdue">[Emailed]</span>' : ''), d.discipline);
                 case 4: return (d.awarded_amount > 0 ? M.formatDollar(d.awarded_amount) : '');
                 case 5: return M.multiline(((d.flags&0x02) == 0x02 ? ' <span class="subdue">[Sent]</span>' : ''), d.payment_conf_code + d.cheque_number);
             }
@@ -15377,7 +15377,7 @@ function ciniki_musicfestivals_main() {
     //
     // The panel to edit Accolade Recipient
     //
-    this.accoladewinner = new M.panel('Accolade Recipient', 'ciniki_musicfestivals_main', 'accoladewinner', 'mc', 'medium', 'sectioned', 'ciniki.musicfestivals.main.accoladewinner');
+    this.accoladewinner = new M.panel('Accolade Recipient', 'ciniki_musicfestivals_main', 'accoladewinner', 'mc', 'medium mediumaside', 'sectioned', 'ciniki.musicfestivals.main.accoladewinner');
     this.accoladewinner.data = null;
     this.accoladewinner.festival_id = 0;
     this.accoladewinner.accolade_id = 0;
@@ -15386,7 +15386,7 @@ function ciniki_musicfestivals_main() {
     this.accoladewinner.nplist = [];
     this.accoladewinner.liveSearchNum = 0;
     this.accoladewinner.sections = {
-        'general':{'label':'Accolade Winner', 
+        'general':{'label':'Accolade Winner', 'aside':'yes',
             'fields':{
                 'accolade_id':{'label':'Accolade', 'type':'select', 'options':[], 
                     'complex_options':{'value':'id', 'name':'name'},
@@ -15398,6 +15398,7 @@ function ciniki_musicfestivals_main() {
                 'classname':{'label':'Class', 'type':'text', 'visible':'no', 'editable':'no'},
                 'discipline':{'label':'Discipline', 'type':'text', 'visible':'yes'},
                 'awarded_amount':{'label':'Awarded Amount', 'type':'text', 'size':'small'},
+                'etransfer_email':{'label':'Awarded Amount', 'type':'text', 'size':'small', 'visible':'no', 'editable':'no'},
                 'year':{'label':'Year', 'type':'text', 'editable':'yes'},
                 'payment_conf_code':{'label':'Payment Confirmation', 'type':'text', 'editable':'yes'},
                 'cheque_number':{'label':'Cheque Number', 'type':'text', 'editable':'yes'},
@@ -15552,6 +15553,9 @@ function ciniki_musicfestivals_main() {
         if( !this.checkForm() ) { return false; }
         if( this.winner_id > 0 ) {
             var c = this.serializeForm('no');
+            if( this.registration_id > 0 && this.registration_id != this.data.registration_id ) {
+                c += '&registration_id=' + this.registration_id;
+            }
             if( c != '' ) {
                 M.api.postJSONCb('ciniki.musicfestivals.accoladeWinnerUpdate', {'tnid':M.curTenantID, 'winner_id':this.winner_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
