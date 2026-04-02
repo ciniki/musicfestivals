@@ -292,7 +292,8 @@ function ciniki_musicfestivals_provincialsRecommendationGet($ciniki) {
                 return $rc;
             }
             $title = $rc['title'];
-            $rsp['registrations'][$rid]['name'] = $reg['display_name'] . ' - ' . $reg['class_code'] . ' - ' . $reg['class_name'] . ' - ' . $title;
+//            $rsp['registrations'][$rid]['name'] = $reg['display_name'] . ' - ' . $reg['class_code'] . ' - ' . $reg['class_name'] . ' - ' . $title;
+            $rsp['registrations'][$rid]['name'] = $reg['display_name'] . ' - ' . $reg['class_code'] . ' - ' . $title . ' - ' . $reg['class_name'];
         }
     }
 
