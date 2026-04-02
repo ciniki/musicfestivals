@@ -78,6 +78,7 @@ function ciniki_musicfestivals_buildingUpdate(&$ciniki) {
             . "FROM ciniki_musicfestival_buildings "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
+            . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $building['festival_id']) . "' "
             . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['building_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
