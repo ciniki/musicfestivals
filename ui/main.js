@@ -15409,7 +15409,7 @@ function ciniki_musicfestivals_main() {
                 'email':{
                     'label':'Send Awarded Email',
                     'visible':function() { return M.ciniki_musicfestivals_main.accoladewinner.winner_id > 0 && (M.ciniki_musicfestivals_main.accoladewinner.data.flags&0x01) == 0 ? 'yes' : 'no'; },
-                    'fn':'M.ciniki_musicfestivals_main.accoladewinner.sendAwardedEmail();',
+                    'fn':'M.ciniki_musicfestivals_main.accoladewinner.save("M.ciniki_musicfestivals_main.accoladewinner.sendAwardedEmail();");',
                     },
                 },
             },
@@ -15513,7 +15513,7 @@ function ciniki_musicfestivals_main() {
                         M.api.err(rsp);
                         return false;
                     }
-                    M.ciniki_musicfestivals_main.accolades.open();
+                    M.ciniki_musicfestivals_main.accoladewinner.open();
                 });
             });
         };
