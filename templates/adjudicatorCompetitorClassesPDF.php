@@ -57,6 +57,7 @@ function ciniki_musicfestivals_templates_adjudicatorCompetitorClassesPDF(&$cinik
         . "competitors.last, "
         . "competitors.name, "
         . "competitors.ctype, "
+        . "registrations.mark AS marks, "
         . "classes.code AS codes "
         . "FROM ciniki_musicfestival_competitors AS competitors "
         . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
@@ -81,8 +82,8 @@ function ciniki_musicfestivals_templates_adjudicatorCompetitorClassesPDF(&$cinik
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'competitors', 'fname'=>'id', 
-            'fields'=>array('id', 'first', 'last', 'name', 'ctype', 'codes'),
-            'dlists'=>array('codes'=>', '),
+            'fields'=>array('id', 'first', 'last', 'name', 'ctype', 'marks', 'codes'),
+            'dlists'=>array('codes'=>', ', 'marks'=>', '),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -146,11 +147,12 @@ function ciniki_musicfestivals_templates_adjudicatorCompetitorClassesPDF(&$cinik
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'adjudicators', 'fname'=>'id', 
-            'fields'=>array('id', 'name',
-            )), 
+            'fields'=>array('id', 'name'),
+            ), 
         array('container'=>'registrations', 'fname'=>'reg_id', 
-            'fields'=>array('id'=>'reg_id', 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
-            )),
+            'fields'=>array('id'=>'reg_id', 
+                'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
+                )),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.919', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
@@ -388,9 +390,11 @@ function ciniki_musicfestivals_templates_adjudicatorCompetitorClassesPDF(&$cinik
             }
 
             $pdf->SetFont('', '', '10');
+            $competitor['marks'] = preg_replace("/^\s*\, /", "", $competitor['marks']);
+            $competitor['marks'] = preg_replace("/\s*\, $/", "", $competitor['marks']);
             $pdf->MultiCell($w[0], $h, $competitor['name'], 1, 'L', 0, 0);
             $pdf->MultiCell($w[1], $h, $competitor['codes'], 1, 'L', 0, 0);
-            $pdf->MultiCell($w[2], $h, '', 1, 'L', 0, 0);
+            $pdf->MultiCell($w[2], $h, $competitor['marks'], 1, 'L', 0, 0);
             $pdf->MultiCell($w[3], $h, '', 1, 'L', 0, 1);
         }
     }
