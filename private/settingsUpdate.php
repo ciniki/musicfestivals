@@ -122,6 +122,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'comments-level-autofill',
         'comments-adjudicator-signature',
         'comments-adjudicator-fontsig',
+        'comments-adjudicator-line',
         'comments-footer-msg',
         'comments-paper-size',
         'comments-sorting',

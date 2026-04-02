@@ -810,7 +810,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                             $pdf->Cell($wa[$wapos++], 16, "Adjudicator", 0, false, 'R', 0, '', 0, false, '', 'B');
                             $pdf->Cell($wa[$wapos++], 16, $adjudicator['name'], 'B', false, 'L', 0, '', 0, false, 'T', 'B');
                         } 
-                        else {
+                        elseif( !isset($festival['comments-adjudicator-line']) || $festival['comments-adjudicator-line'] != 'no' ) {
                             $pdf->Cell($wa[$wapos++], 16, "Adjudicator", 0, false, 'R', 0, '', 0, false, '', 'B');
                             $pdf->Cell($wa[$wapos++], 16, "", 'B', false, 'L', 0, '', 0, false, 'T', 'B');
                         }
