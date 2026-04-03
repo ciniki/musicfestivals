@@ -32,7 +32,8 @@ function ciniki_musicfestivals_recommendationEmail(&$ciniki, $tnid, $args) {
     $email_content = '';
     $email_text = '';
     if( $recommendation['date_submitted'] != '' ) {
-        $dt = new DateTime($recommendation['date_submitted'], new DateTimezone($intl_timezone));
+        $dt = new DateTime($recommendation['date_submitted'], new DateTimezone('UTC'));
+        $dt->setTimezone(new DateTimezone($intl_timezone));
         $recommendation['date_submitted'] = $dt->format('M j, Y g:i:s a');
     } 
 
