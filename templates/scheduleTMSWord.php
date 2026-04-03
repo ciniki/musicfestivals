@@ -324,14 +324,17 @@ function ciniki_musicfestivals_templates_scheduleTMSWord(&$ciniki, $tnid, $args)
                         ]);
                 }
             }
-            $paragraphs = explode("\n", $division['adjudicator_bio']);
+            $division['adjudicator_bio'] = preg_replace("/\n/", '-- ', $division['adjudicator_bio']);
+            \PhpOffice\PhpWord\Shared\Html::addHtml($sectionWord, $division['adjudicator_bio']);
+/*            $paragraphs = explode("\n", $division['adjudicator_bio']);
             foreach($paragraphs as $p) {
                 if( trim($p) != '' ) {
-                    $adjudicator->addText(htmlspecialchars($p), 'Adjudicators Font', 'Adjudicators');
+                    $adjudicator->addHtml($p, 'Adjudicators Font', 'Adjudicators');
+//                    $adjudicator->addText(htmlspecialchars($p), 'Adjudicators Font', 'Adjudicators');
 //                    $adjudicator->addTextBreak(2, 'Adjudicators Font', 'Adjudicators');
                     $adjudicator = $sectionWord->addTextRun('Adjudicators');
                 }
-            }
+            } */
         }
         $prev_adjudicator_id = $division['adjudicator_id'];
         $sectionWord = $PHPWord->addSection([
