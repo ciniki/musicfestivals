@@ -18488,6 +18488,7 @@ function ciniki_musicfestivals_main() {
             'sortTypes':['date', 'text', 'text', 'time', 'time', 'number', 'text'],
             'noData':'No shifts',
             'menu':{
+                'visible':function() { return M.ciniki_musicfestivals_main.volunteers.sections._tabs.selected == 'shifts' ? 'yes' : 'no'; },
                 'add':{
                     'label':'Add Shift',
                     'fn':'M.ciniki_musicfestivals_main.vshift.open("M.ciniki_musicfestivals_main.volunteers.open();",0,M.ciniki_musicfestivals_main.volunteers.festival_id,{\'shift_date\':M.ciniki_musicfestivals_main.volunteers.shift_date,\'location\':M.ciniki_musicfestivals_main.volunteers.location,\'role\':M.ciniki_musicfestivals_main.volunteers.role});',
@@ -18495,6 +18496,10 @@ function ciniki_musicfestivals_main() {
                 'bulkadd':{
                     'label':'Bulk Add Shifts',
                     'fn':'M.ciniki_musicfestivals_main.addshifts.open("M.ciniki_musicfestivals_main.volunteers.open();",M.ciniki_musicfestivals_main.volunteers.festival_id);',
+                    },
+                'shiftspdf':{
+                    'label':'Shifts PDF',
+                    'fn':'M.ciniki_musicfestivals_main.volunteers.shiftsPDF();',
                     },
                 },
             },
@@ -18708,6 +18713,25 @@ function ciniki_musicfestivals_main() {
                     });
             }
         });
+    }
+    this.volunteers.shiftsPDF = function() {
+        this.popupMenuClose('shifts');
+        var args = {
+            'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'shifts':'yes',
+            };
+        if( this.shift_date != '' && this.shift_date != 'All' ) {
+            args['shift_date'] = this.shift_date;
+        }
+        if( this.location != '' && this.location != 'All' ) {
+            args['location'] = this.location;
+        }
+        if( this.role != '' && this.role != 'All' ) {
+            args['role'] = this.role;
+        }
+        args['output'] = 'pdf';
+        M.api.openFile('ciniki.musicfestivals.volunteers', args);
     }
     this.volunteers.open = function(cb, fid) {
         this.size = 'xlarge narrowaside';

@@ -37,6 +37,7 @@ function ciniki_musicfestivals_volunteers($ciniki) {
         'role'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Role'),
         'pending'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Pending'),
         'declined'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Declined'),
+        'output'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Output'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -408,7 +409,7 @@ function ciniki_musicfestivals_volunteers($ciniki) {
     if( isset($args['shifts']) && $args['shifts'] == 'yes' ) {
         $strsql = "SELECT shifts.id, "
             . "DATE_FORMAT(shifts.shift_date, '%a, %b %e, %Y') AS shift_date, "
-            . "DATE_FORMAT(shifts.shift_date, 'Ymd') AS sort_shift_date, "
+            . "DATE_FORMAT(shifts.shift_date, '%Y-%m-%d') AS sort_shift_date, "
             . "TIME_FORMAT(shifts.start_time, '%l:%i %p') as start_time, "
             . "TIME_FORMAT(shifts.end_time, '%l:%i %p') AS end_time, "
             . "TIME_FORMAT(shifts.start_time, '%H%i') as sort_start_time, "
@@ -480,9 +481,18 @@ function ciniki_musicfestivals_volunteers($ciniki) {
             if( isset($locations["{$shift['object']}:{$shift['object_id']}"]) ) {
                 $rsp['shifts'][$sid]['location_shortname'] = $locations["{$shift['object']}:{$shift['object_id']}"]['shortname'];
                 $rsp['shifts'][$sid]['location_name'] = $locations["{$shift['object']}:{$shift['object_id']}"]['name'];
+                $rsp['shifts'][$sid]['building_name'] = $locations["{$shift['object']}:{$shift['object_id']}"]['building_name'];
+                $rsp['shifts'][$sid]['roomname'] = $locations["{$shift['object']}:{$shift['object_id']}"]['roomname'];
+                if( $shift['object'] == 'ciniki.musicfestivals.building' ) {
+                    $rsp['shifts'][$sid]['building_id'] = $shift['object_id'];
+                } else {
+                    $rsp['shifts'][$sid]['building_id'] = $locations["{$shift['object']}:{$shift['object_id']}"]['building_id'];
+                }
             } else {
                 $rsp['shifts'][$sid]['location_shortname'] = '';
                 $rsp['shifts'][$sid]['location_name'] = '';
+                $rsp['shifts'][$sid]['building_name'] = '';
+                $rsp['shifts'][$sid]['roomname'] = '';
             }
             $rsp['shifts'][$sid]['num_volunteers'] = isset($shift['volunteers']) ? count($shift['volunteers']) : 0;
             $rsp['shifts'][$sid]['names'] = '';
@@ -510,6 +520,19 @@ function ciniki_musicfestivals_volunteers($ciniki) {
             return $a['sort_start_time'] < $b['sort_start_time'] ? -1 : 1;
             });
         $rsp['shifts'] = array_values($rsp['shifts']);
+
+        //
+        // Check if shifts should be output
+        //
+        if( isset($args['output']) && $args['output'] == 'pdf' ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'volunteersShiftsPDF');
+            return ciniki_musicfestivals_templates_volunteersShiftsPDF($ciniki, $args['tnid'], [
+                'shifts' => $rsp['shifts'],
+                'festival' => $festival,
+                'download' => 'yes',
+                'filename' => 'Volunteer Shifts.pdf'
+                ]);
+        }
     }
 
     //
