@@ -5914,6 +5914,11 @@ function ciniki_musicfestivals_main() {
                 'accolades-include-amount':{'label':'Include Amount', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'accolades-footer-msg':{'label':'Footer Message', 'type':'text'},
             }},
+        '_classlabels_pdf':{'label':'Schedule Class Labels PDF Options', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('documents'); },
+            'fields':{
+                'classlabels-class-name':{'label':'Show Class Names', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+                }},
         '_certificates_pdf':{'label':'Certificates PDF Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('documents'); },
             'fields':{
@@ -6849,6 +6854,7 @@ function ciniki_musicfestivals_main() {
             '_program_pdf',
             '_runsheets_pdf',
             '_accolades_pdf',
+            '_classlabels_pdf',
             '_certificates_pdf',
             '_syllabus',
             '_syllabus_pdf',

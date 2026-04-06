@@ -2,7 +2,7 @@
 //
 // Description
 // ===========
-// This method will produce a PDF of the class.
+// This method will produce a PDF of the class codes for avery labels (labels 5160).
 //
 // Arguments
 // ---------
@@ -136,7 +136,7 @@ function ciniki_musicfestivals_templates_scheduleClassLabelsPDF(&$ciniki, $tnid,
         //Page header
         public $left_margin = 5;
         public $right_margin = 4;
-        public $top_margin = 10;
+        public $top_margin = 12;
         public $header_visible = 'yes';
         public $header_image = null;
         public $header_sponsor_image = null;
@@ -177,9 +177,10 @@ function ciniki_musicfestivals_templates_scheduleClassLabelsPDF(&$ciniki, $tnid,
     $pdf->SetKeywords('');
 
     // set margins
-    $pdf->SetMargins($pdf->left_margin, $pdf->header_height, $pdf->right_margin);
-    $pdf->SetHeaderMargin(PDF_MARGIN_HEADER);
-    $pdf->SetFooterMargin(1);
+    $pdf->SetMargins(0, 0, 0);
+    $pdf->SetHeaderMargin(0);
+    $pdf->SetFooterMargin(0);
+    $pdf->SetAutoPageBreak(true, 0);
 
     // set font
     $pdf->SetFont('helvetica', 'B', 14);
@@ -198,8 +199,12 @@ function ciniki_musicfestivals_templates_scheduleClassLabelsPDF(&$ciniki, $tnid,
     // Go through the sections, divisions and classes
     //
     $w = array(66.5, 66.5, 66.5);
-    $col = 1;
-    $row = 1;
+    $col = 0;
+    $row = 0;
+    $size_x = 66.5;
+    $x_padding = 3.25;
+    $size_y = 25.4;
+    $lh = 25.4;
     foreach($sections as $section) {
 
         $pdf->SetFont('', 'B', '20');
@@ -211,24 +216,31 @@ function ciniki_musicfestivals_templates_scheduleClassLabelsPDF(&$ciniki, $tnid,
                 foreach($timeslot['registrations'] as $reg) {
                     $num_reg++;
                 }
-                if( $row > 10 ) {
+                if( $row > 9 ) {
                     $pdf->AddPage();
-                    $col = 1;
-                    $row = 1;
+                    $col = 0;
+                    $row = 0;
                 }
+                $x = $pdf->left_margin + ($col * $size_x) + ($col * $x_padding);
+                $y = $pdf->top_margin + ($row * $size_y);
                 $txt = $class['code'] . ($timeslot['groupname'] != '' ? " - {$timeslot['groupname']}" : '');
-                $lh = 25.4;
-                $pdf->MultiCell($w[($col-1)], $lh, $txt, 0, 'C', 0, 0, '', '', true, 0, false, true, $lh, 'M');
-                if( $col < 3 ) {
-                    $pdf->SetX($pdf->getX()+3.25);
+                if( isset($festival['classlabels-class-name']) && $festival['classlabels-class-name'] == 'yes' ) {
+                    $h1 = 9.0;
+                    $pdf->SetCellPadding(1);
+                    $pdf->SetCellPaddings(1,2,1,0);
+                    $pdf->SetFont('helvetica', 'B', 14);
+                    $pdf->MultiCell($w[$col], $h1, $txt, 1, 'C', 0, 0, $x, $y, true, 0, false, true, $h1, 'M');
+                    $h2 = 16.4;
+                    $pdf->SetCellPaddings(3,0,3,2);
+                    $pdf->setFont('', '', '12');
+                    $pdf->MultiCell($size_x, $h2, $class['name'], 1, 'C', 0, 0, $x, $y+$h1, true, 0, false, true, $h2, 'M', true);
+                } else {
+                    $pdf->MultiCell($size_x, $size_y, $txt, 1, 'C', 0, 0, $x, $y, true, 0, false, true, $lh, 'M');
                 }
                 $col++;
-                if( $col > 3 ) {
-                    $col = 1;
+                if( $col > 2 ) {
+                    $col = 0;
                     $row++;
-                    if( $row < 11 ) {
-                        $pdf->Ln($lh);
-                    }
                 }
             }
         }
