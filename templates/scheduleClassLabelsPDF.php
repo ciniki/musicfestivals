@@ -229,13 +229,13 @@ function ciniki_musicfestivals_templates_scheduleClassLabelsPDF(&$ciniki, $tnid,
                     $pdf->SetCellPadding(1);
                     $pdf->SetCellPaddings(1,2,1,0);
                     $pdf->SetFont('helvetica', 'B', 14);
-                    $pdf->MultiCell($w[$col], $h1, $txt, 1, 'C', 0, 0, $x, $y, true, 0, false, true, $h1, 'M');
+                    $pdf->MultiCell($w[$col], $h1, $txt, 0, 'C', 0, 0, $x, $y, true, 0, false, true, $h1, 'M');
                     $h2 = 16.4;
                     $pdf->SetCellPaddings(3,0,3,2);
                     $pdf->setFont('', '', '12');
-                    $pdf->MultiCell($size_x, $h2, $class['name'], 1, 'C', 0, 0, $x, $y+$h1, true, 0, false, true, $h2, 'M', true);
+                    $pdf->MultiCell($size_x, $h2, $class['name'], 0, 'C', 0, 0, $x, $y+$h1, true, 0, false, true, $h2, 'M', true);
                 } else {
-                    $pdf->MultiCell($size_x, $size_y, $txt, 1, 'C', 0, 0, $x, $y, true, 0, false, true, $lh, 'M');
+                    $pdf->MultiCell($size_x, $size_y, $txt, 0, 'C', 0, 0, $x, $y, true, 0, false, true, $lh, 'M');
                 }
                 $col++;
                 if( $col > 2 ) {
