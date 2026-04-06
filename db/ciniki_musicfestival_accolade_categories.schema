@@ -51,7 +51,9 @@ create table ciniki_musicfestival_accolade_categories (
     description text not null,
     awarded_email_subject varchar(250) not null,
     awarded_email_content text not null,
+    awarded_pdf_header text not null,
     awarded_pdf_content text not null,
+    awarded_pdf_footer text not null,
     teacher_email_subject varchar(250) not null,
     teacher_email_content text not null,
 
