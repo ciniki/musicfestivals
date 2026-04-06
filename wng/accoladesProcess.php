@@ -396,6 +396,7 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
         // Get the accolades for a category
         //
         $strsql = "SELECT accolades.id, "
+            . "accolades.sequence, "
             . "accolades.name, "
             . "accolades.permalink, "
             . "accolades.primary_image_id, "
@@ -419,7 +420,7 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'accolades', 'fname'=>'permalink', 
-                'fields'=>array('id', 'title'=>'name', 'permalink', 'image-id'=>'primary_image_id',
+                'fields'=>array('id', 'sequence', 'title'=>'name', 'permalink', 'image-id'=>'primary_image_id',
                     'donated_by', 'first_presented', 'criteria', 'amount', 'description'),
                 ),
             array('container'=>'winners', 'fname'=>'winner_year', 
@@ -432,6 +433,9 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
         $accolades = isset($rc['accolades']) ? $rc['accolades'] : array();
 
         uasort($accolades, function($a, $b) {
+            if( $a['sequence'] != $b['sequence'] ) {
+                return $a['sequence'] < $b['sequence'] ? -1 : 1;
+            }
             return strnatcasecmp($a['title'], $b['title']);
             });
 
