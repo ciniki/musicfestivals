@@ -477,7 +477,10 @@ function ciniki_musicfestivals_volunteers($ciniki) {
         }
         $rsp['shifts'] = isset($rc['shifts']) ? $rc['shifts'] : array();
 
+        $total_shifts = 0;
+        $shifts_filled = 0;
         foreach($rsp['shifts'] as $sid => $shift) {
+            $total_shifts++;
             if( isset($locations["{$shift['object']}:{$shift['object_id']}"]) ) {
                 $rsp['shifts'][$sid]['location_shortname'] = $locations["{$shift['object']}:{$shift['object_id']}"]['shortname'];
                 $rsp['shifts'][$sid]['location_name'] = $locations["{$shift['object']}:{$shift['object_id']}"]['name'];
@@ -495,6 +498,9 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                 $rsp['shifts'][$sid]['roomname'] = '';
             }
             $rsp['shifts'][$sid]['num_volunteers'] = isset($shift['volunteers']) ? count($shift['volunteers']) : 0;
+            if( $shift['min_volunteers'] <= $rsp['shifts'][$sid]['num_volunteers'] ) {
+                $shifts_filled++;
+            }
             $rsp['shifts'][$sid]['names'] = '';
             if( isset($shift['volunteers']) ) {
                 foreach($shift['volunteers'] as $volunteer) {
@@ -504,6 +510,8 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                 }
             }
         }
+        $filled_percent = number_format(($shifts_filled/$total_shifts) * 100, 1);
+        $rsp['shifts_stats_line'] = "{$shifts_filled} of {$total_shifts} ({$filled_percent}%)";
         uasort($rsp['shifts'], function($a, $b) {
             if( $a['sort_shift_date'] != $b['sort_shift_date'] ) {    
                 return strnatcasecmp($a['sort_shift_date'], $b['sort_shift_date']);

@@ -18875,6 +18875,11 @@ function ciniki_musicfestivals_main() {
                 p.sections.role_select.fields.role.options = rsp.roles;
                 p.sections.role_select.fields.role.options.unshift({'role':'', 'role':'All'});
             }
+            if( rsp.shifts_stats_line != null && rsp.shifts_stats_line != '' ) {
+                p.sections.shifts.label = 'Shifts - ' + rsp.shifts_stats_line;
+            } else {
+                p.sections.shifts.label = 'Shifts';
+            }
             p.refresh();
             p.show(cb);
             });
