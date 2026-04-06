@@ -1021,7 +1021,8 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     )),
                 'display-winners' => array('label'=>'Show Winners', 'type'=>'toggle', 'default'=>'yes', 'toggles'=>array(
                     'no' => 'No',
-                    'yes' => 'Yes',
+                    'past' => 'Past',
+                    'yes' => 'All',
                     )),
                 'display-classes' => array('label'=>'Show Classes', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
                     'no' => 'No',

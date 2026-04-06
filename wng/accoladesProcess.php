@@ -186,8 +186,12 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "WHERE winners.accolade_id = '" . ciniki_core_dbQuote($ciniki, $accolade['id']) . "' "
-            . "AND winners.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "ORDER BY winners.year DESC, winners.name "
+            . "AND winners.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
+        if( isset($s['display-winners']) && $s['display-winners'] == 'past' ) {
+            $dt = new DateTime('now');
+            $strsql .= "AND winners.year < '" . ciniki_core_dbQuote($ciniki, $dt->format('Y')) . "' ";
+        } 
+        $strsql .= "ORDER BY winners.year DESC, winners.name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -315,7 +319,7 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
             'content' => $accolade['full_description'],
             );
         if( isset($winners) && count($winners) > 0 
-            && (!isset($s['display-winners']) || $s['display-winners'] == 'yes')
+            && (!isset($s['display-winners']) || $s['display-winners'] == 'yes' || $s['display-winners'] == 'past')
             ) {
             $blocks[] = array(
                 'type' => 'table',
