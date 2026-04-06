@@ -5917,6 +5917,12 @@ function ciniki_musicfestivals_main() {
         '_classlabels_pdf':{'label':'Schedule Class Labels PDF Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('documents'); },
             'fields':{
+                'classlabels-avery-template':{'label':'Avery Template', 'type':'toggle', 'default':'5160', 'toggles':{
+                    '5160':'5160', 
+                    '5162':'5162',
+                    }},
+                'classlabels-class-section':{'label':'Show Class Section', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'classlabels-class-category':{'label':'Show Class Category', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'classlabels-class-name':{'label':'Show Class Names', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
                 }},
         '_certificates_pdf':{'label':'Certificates PDF Options', 

@@ -198,13 +198,32 @@ function ciniki_musicfestivals_templates_scheduleClassLabelsPDF(&$ciniki, $tnid,
     //
     // Go through the sections, divisions and classes
     //
-    $w = array(66.5, 66.5, 66.5);
     $col = 0;
     $row = 0;
+    // Default avery template 5160
+    $pdf->left_margin = 5;
+    $pdf->right_margin = 4;
+    $pdf->top_margin = 12;
+    $num_cols = 3;
+    $num_rows = 10;
     $size_x = 66.5;
     $x_padding = 3.25;
     $size_y = 25.4;
-    $lh = 25.4;
+    $l1_h = 9;
+    $l2_h = 16.4;
+    if( isset($festival['classlabels-avery-template']) && $festival['classlabels-avery-template'] == '5162' ) {
+        $pdf->left_margin = 4;
+        $pdf->right_margin = 4;
+        $pdf->top_margin = 21.25;
+        $num_cols = 2;
+        $num_rows = 7;
+        $size_x = 101.4;
+        $x_padding = 5;
+        $size_y = 33.85;
+        $l1_h = 13;
+        $l2_h = 20.85;
+    }
+
     foreach($sections as $section) {
 
         $pdf->SetFont('', 'B', '20');
@@ -216,29 +235,37 @@ function ciniki_musicfestivals_templates_scheduleClassLabelsPDF(&$ciniki, $tnid,
                 foreach($timeslot['registrations'] as $reg) {
                     $num_reg++;
                 }
-                if( $row > 9 ) {
+                if( $row >= $num_rows ) {
                     $pdf->AddPage();
                     $col = 0;
                     $row = 0;
                 }
                 $x = $pdf->left_margin + ($col * $size_x) + ($col * $x_padding);
                 $y = $pdf->top_margin + ($row * $size_y);
-                $txt = $class['code'] . ($timeslot['groupname'] != '' ? " - {$timeslot['groupname']}" : '');
+                if( isset($festival['classlabels-class-section']) && $festival['classlabels-class-section'] == 'yes' 
+                    && isset($festival['classlabels-class-name']) && $festival['classlabels-class-name'] == 'yes'
+                    ) {
+                    $txt = $class['section_name'] . ' - ' . $class['code'] . ($timeslot['groupname'] != '' ? " - {$timeslot['groupname']}" : '');
+                } else {
+                    $txt = $class['code'] . ($timeslot['groupname'] != '' ? " - {$timeslot['groupname']}" : '');
+                }
+                $name = $class['name'];
+                if( isset($festival['classlabels-class-category']) && $festival['classlabels-class-category'] == 'yes' ) {
+                    $name = $class['category_name'] . ' - ' . $class['name'];
+                }
                 if( isset($festival['classlabels-class-name']) && $festival['classlabels-class-name'] == 'yes' ) {
-                    $h1 = 9.0;
                     $pdf->SetCellPadding(1);
                     $pdf->SetCellPaddings(1,2,1,0);
                     $pdf->SetFont('helvetica', 'B', 14);
-                    $pdf->MultiCell($w[$col], $h1, $txt, 0, 'C', 0, 0, $x, $y, true, 0, false, true, $h1, 'M');
-                    $h2 = 16.4;
+                    $pdf->MultiCell($size_x, $l1_h, $txt, 1, 'C', 0, 0, $x, $y, true, 0, false, true, $l1_h, 'M', true);
                     $pdf->SetCellPaddings(3,0,3,2);
                     $pdf->setFont('', '', '12');
-                    $pdf->MultiCell($size_x, $h2, $class['name'], 0, 'C', 0, 0, $x, $y+$h1, true, 0, false, true, $h2, 'M', true);
+                    $pdf->MultiCell($size_x, $l2_h, $name, 1, 'C', 0, 0, $x, $y+$l1_h, true, 0, false, true, $l2_h, 'M', true);
                 } else {
-                    $pdf->MultiCell($size_x, $size_y, $txt, 0, 'C', 0, 0, $x, $y, true, 0, false, true, $lh, 'M');
+                    $pdf->MultiCell($size_x, $size_y, $txt, 0, 'C', 0, 0, $x, $y, true, 0, false, true, $size_y, 'M');
                 }
                 $col++;
-                if( $col > 2 ) {
+                if( $col >= $num_cols ) {
                     $col = 0;
                     $row++;
                 }
