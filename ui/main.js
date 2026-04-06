@@ -14954,6 +14954,7 @@ function ciniki_musicfestivals_main() {
                 }
                 return '';
             },
+            'seqDrop':null,
             'menu':{
                 'add':{
                     'label':'Add Accolade',
@@ -15233,6 +15234,22 @@ function ciniki_musicfestivals_main() {
             }
             if( p.sections._tabs.selected == 'accolades' && p.accolade_id > 0 ) {
                 p.data.accolade_recipients = rsp.recipients;
+            }
+            if( p.category_id > 0 && p.subcategory_id > 0 ) {
+                p.sections.accolades.seqDrop = function(e,from,to){
+                    M.api.getJSONCb('ciniki.musicfestivals.accoladeUpdate', {'tnid':M.curTenantID, 
+                        'accolade_id':M.ciniki_musicfestivals_main.accolades.data.accolades[from].id,
+                        'sequence':M.ciniki_musicfestivals_main.accolades.data.accolades[to].sequence,
+                        }, function(rsp) {
+                            if( rsp.stat != 'ok' ) {
+                                M.api.err(rsp);
+                                return false;
+                            }
+                            M.ciniki_musicfestivals_main.accolades.open();
+                        });
+                    };
+            } else {
+                p.sections.accolades.seqDrop = null;
             }
             p.nplists = rsp.nplists;
             p.refresh();

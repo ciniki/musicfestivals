@@ -132,6 +132,7 @@ function ciniki_musicfestivals_accolades($ciniki) {
     if( isset($args['accolades']) && $args['accolades'] == 'yes' ) {
         $strsql = "SELECT accolades.id, "
             . "accolades.subcategory_id, "
+            . "accolades.sequence, "
             . "accolades.name, "
             . "categories.name AS category_name, "
             . "subcategories.name AS subcategory_name, "
@@ -163,12 +164,12 @@ function ciniki_musicfestivals_accolades($ciniki) {
             $strsql .= "AND subcategories.id = '" . ciniki_core_dbQuote($ciniki, $args['subcategory_id']) . "' ";
         }
         $strsql .= "GROUP BY accolades.id ";
-        $strsql .= "ORDER BY categories.sequence, categories.name, subcategories.sequence, subcategories.name, name "
+        $strsql .= "ORDER BY categories.sequence, categories.name, subcategories.sequence, subcategories.name, accolades.sequence, name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'accolades', 'fname'=>'id', 
-                'fields'=>array('id', 'subcategory_id', 'category_name', 'subcategory_name', 'name', 
+                'fields'=>array('id', 'subcategory_id', 'category_name', 'subcategory_name', 'sequence', 'name', 
                     'donated_by', 'first_presented', 'amount', 
                     'criteria', 'donor_thankyou_info', 'num_noemail'),
                 ),

@@ -83,7 +83,7 @@ function ciniki_musicfestivals_wng_accoladeWinnersProcess(&$ciniki, $tnid, &$req
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "WHERE subcategories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . "ORDER BY subcategories.name, subcategories.sequence, accolades.name "
+            . "ORDER BY subcategories.name, subcategories.sequence, accolades.sequence, accolades.name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -125,7 +125,7 @@ function ciniki_musicfestivals_wng_accoladeWinnersProcess(&$ciniki, $tnid, &$req
         if( isset($s['category-id']) && $s['category-id'] != '' && $s['category-id'] > 0 ) {
             $strsql .= "AND subcategories.category_id = '" . ciniki_core_dbQuote($ciniki, $s['category-id']) . "' ";
         }
-        $strsql .= "ORDER BY subcategories.sequence, subcategories.name, accolades.name "
+        $strsql .= "ORDER BY subcategories.sequence, subcategories.name, accolades.sequence, accolades.name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(

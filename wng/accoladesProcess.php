@@ -414,7 +414,7 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
             . "WHERE accolades.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND (accolades.flags&0x01) = 0x01 "
             . "AND accolades.subcategory_id = '" . ciniki_core_dbQuote($ciniki, $subcategory['id']) . "' ";
-        $strsql .= "ORDER BY accolades.name, winners.year DESC "
+        $strsql .= "ORDER BY accolades.sequence, accolades.name, winners.year DESC "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(

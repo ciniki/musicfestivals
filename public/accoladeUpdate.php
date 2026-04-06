@@ -21,6 +21,7 @@ function ciniki_musicfestivals_accoladeUpdate(&$ciniki) {
         'subcategory_id'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Subcategory'),
 //        'typename'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Type'),
 //        'category'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Category'),
+        'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'primary_image_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Image'),
         'donated_by'=>array('required'=>'no', 'blank'=>'yes', 'trim'=>'yes', 'name'=>'Donated By'),
@@ -48,7 +49,8 @@ function ciniki_musicfestivals_accoladeUpdate(&$ciniki) {
 
     $strsql = "SELECT id, "
         . "name, "
-        . "subcategory_id "
+        . "subcategory_id, "
+        . "sequence "
         . "FROM ciniki_musicfestival_accolades "
         . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['accolade_id']) . "' "
         . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -107,6 +109,20 @@ function ciniki_musicfestivals_accoladeUpdate(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;
+    }
+
+    //
+    // Check if sequences should be updated
+    //
+    if( isset($args['sequence']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'sequencesUpdate');
+        $rc = ciniki_core_sequencesUpdate($ciniki, $args['tnid'], 'ciniki.musicfestivals.accolade', 
+            'subcategory_id', (isset($args['subcategory_id']) ? $args['subcategory_id'] : $accolade['subcategory_id']), 
+            $args['sequence'], $accolade['sequence']);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
     }
 
     //

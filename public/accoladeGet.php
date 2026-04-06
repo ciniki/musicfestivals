@@ -22,6 +22,7 @@ function ciniki_musicfestivals_accoladeGet($ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'accolade_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Accolade'),
+        'subcategory_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Subcategory'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -55,10 +56,24 @@ function ciniki_musicfestivals_accoladeGet($ciniki) {
     // Return default for new Accolade
     //
     if( $args['accolade_id'] == 0 ) {
+
+        //
+        // Get the next sequence 
+        //
+        $next_seq = 1;
+        if( isset($args['subcategory_id']) && $args['subcategory_id'] > 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'sequencesNext');
+            $rc = ciniki_core_sequencesNext($ciniki, $args['tnid'], 'ciniki.musicfestivals.accolade', 'subcategory_id', $args['subcategory_id']);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $next_seq = $rc['sequence'];
+        }
         $accolade = array('id'=>0,
             'name' => '',
             'subcategory_id' => 0,
             'flags' => 1,
+            'sequence' => $next_seq,
             'primary_image_id' => '0',
             'donated_by' => '',
             'first_presented' => '',
@@ -78,6 +93,7 @@ function ciniki_musicfestivals_accoladeGet($ciniki) {
         $strsql = "SELECT accolades.id, "
             . "accolades.name, "
             . "accolades.subcategory_id, "
+            . "accolades.sequence, "
             . "accolades.flags, "
             . "accolades.primary_image_id, "
             . "accolades.donated_by, "
@@ -94,7 +110,7 @@ function ciniki_musicfestivals_accoladeGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'accolades', 'fname'=>'id', 
-                'fields'=>array('name', 'subcategory_id', 'flags', 'primary_image_id', 
+                'fields'=>array('name', 'subcategory_id', 'sequence', 'flags', 'primary_image_id', 
                     'donated_by', 'first_presented', 'criteria', 'amount', 'description', 'donor_thankyou_info', 'notes',
                     ),
                 ),

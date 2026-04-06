@@ -15,6 +15,8 @@
 # subcategory_id:           The ID of the subcategory the accolades is in.
 # category:                 The category for the accolade (Piano, Voice, Strings, etc) **Deprecated**
 #
+# sequence:                 The order to display the accolades in.
+#
 # typename:                 The type of accolade or award, which is use for grouping on the website. **Deprecated**
 #
 # flags:                    The options for the accolade.
@@ -43,6 +45,7 @@ create table ciniki_musicfestival_accolades (
     subcategory_id int not null,
     typename varchar(250) not null,
     category varchar(150) not null,
+    sequence tinyint unsigned not null,
     flags tinyint unsigned not null,
     primary_image_id int not null,
     donated_by varchar(250) not null,
@@ -58,4 +61,4 @@ create table ciniki_musicfestival_accolades (
     primary key (id),
     unique index (uuid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.06';
+) ENGINE='InnoDB', COMMENT='v1.07';

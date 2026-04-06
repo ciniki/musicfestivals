@@ -697,6 +697,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'name' => array('name'=>'Name'),
             'permalink' => array('name'=>'Permalink', 'default'=>''),
             'subcategory_id' => array('name'=>'Subcategory'),
+            'sequence' => array('name'=>'Order', 'default'=>'1'),
             'flags' => array('name'=>'Options', 'default'=>'0'),
             'primary_image_id' => array('name'=>'Image', 'default'=>'0', 'ref'=>'ciniki.images.image'),
             'donated_by' => array('name'=>'Donated By', 'default'=>''),
