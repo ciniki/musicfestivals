@@ -18493,7 +18493,7 @@ function ciniki_musicfestivals_main() {
             'headerValues':['Date', 'Time', 'Location', 'Role', 'Status'],
             'cellClasses':['', 'multiline', '', '', ''],
             'sortable':'yes',
-            'sortTypes':['date', 'time', 'text', 'text', 'text'],
+            'sortTypes':['date', 'number', 'text', 'text', 'text'],
             'noData':'No shifts assigned',
             },
         'schedule_sections':{'label':'Schedules', 'type':'simplegrid', 'num_cols':1, 'aside':'yes', 
@@ -18526,7 +18526,7 @@ function ciniki_musicfestivals_main() {
             'panelcolumn':2,
             'cellClasses':['', ''],
             'sortable':'yes',
-            'sortTypes':['text', 'time', 'time', 'number', 'number', 'text'],
+            'sortTypes':['text', 'number', 'number', 'number', 'number', 'text'],
             'noData':'Select a division',
             }, */
         'date_select':{'label':'Date', 'aside':'yes', 'type':'select',
@@ -18565,7 +18565,7 @@ function ciniki_musicfestivals_main() {
             'headerValues':['Date', 'Location', 'Role', 'Start', 'End', '#', 'Volunteers'],
             'cellClasses':['', ''],
             'sortable':'yes',
-            'sortTypes':['date', 'text', 'text', 'time', 'time', 'number', 'text'],
+            'sortTypes':['date', 'text', 'text', 'altnumber', 'altnumber', 'number', 'text'],
             'noData':'No shifts',
             'menu':{
                 'visible':function() { return M.ciniki_musicfestivals_main.volunteers.sections._tabs.selected == 'shifts' ? 'yes' : 'no'; },
@@ -18648,6 +18648,15 @@ function ciniki_musicfestivals_main() {
         if( i == 'location' ) { return this.location; }
         if( i == 'role' ) { return this.role; }
         return this.data[i]; 
+    }
+    this.volunteers.cellSortValue = function(s, i, j, d) {
+        if( s == 'shifts' ) {
+            switch(j) {
+                case 3: return d.sort_start_time;
+                case 4: return d.sort_end_time;
+            }
+        }
+        return '';
     }
     this.volunteers.cellValue = function(s, i, j, d) {
         if( s == 'volunteers' ) {
