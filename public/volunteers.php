@@ -510,8 +510,10 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                 }
             }
         }
-        $filled_percent = number_format(($shifts_filled/$total_shifts) * 100, 1);
-        $rsp['shifts_stats_line'] = "{$shifts_filled} of {$total_shifts} ({$filled_percent}%)";
+        if( $total_shifts > 0 ) {
+            $filled_percent = number_format(($shifts_filled/$total_shifts) * 100, 1);
+            $rsp['shifts_stats_line'] = "{$shifts_filled} of {$total_shifts} ({$filled_percent}%)";
+        }
         uasort($rsp['shifts'], function($a, $b) {
             if( $a['sort_shift_date'] != $b['sort_shift_date'] ) {    
                 return strnatcasecmp($a['sort_shift_date'], $b['sort_shift_date']);
