@@ -300,6 +300,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
         if( isset($shift['disciplines']) && $shift['disciplines'] != '' ) {
             $content .= "<b>Disciplines</b>: {$shift['disciplines']}<br/>";
         }
+        $alert_email_content = $content;
         if( isset($festival["volunteers-role-{$selected_role}-description"]) 
             && $festival["volunteers-role-{$selected_role}-description"] != '' ) {
             $content .= $festival["volunteers-role-{$selected_role}-description"];
@@ -353,6 +354,23 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             } else {
                 if( isset($festival['volunteers-cancel-notify-emails']) && $festival['volunteers-cancel-notify-emails'] != '' ) {
                     $emails = explode(',', $festival['volunteers-cancel-notify-emails']);
+
+                    //
+                    // Get the customer details
+                    //
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
+                    $rc = ciniki_customers_hooks_customerDetails2($ciniki, $tnid, [
+                        'customer_id' => $volunteer['customer_id'],
+                        'phones' => 'yes',
+                        'emails' => 'yes',
+                        ]);
+                    if( $rc['stat'] == 'ok' && isset($rc['details']) ) {
+                        $alert_email_content .= '<br/>';
+                        foreach($rc['details'] as $detail) {
+                            $alert_email_content .= "<b>{$detail['label']}</b>: {$detail['value']}<br/>";
+                        }
+                    }
+
                     foreach($emails as $email) {
                         $email = trim($email);
                         ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
@@ -360,7 +378,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
                             'object' => 'ciniki.musicfestivals.volunteershift',
                             'object_id' => $shift['id'],
                             'subject' => 'Volunteer Cancelled - ' . $volunteer['name'] . ' - ' . $date['shift_date_text'] . ' - ' . $shift['start_time'],
-                            'html_content' => $content,
+                            'html_content' => $alert_email_content,
                             'customer_email' => $email,
                             ));
                         if( $rc['stat'] != 'ok' ) {
