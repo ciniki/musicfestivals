@@ -113,6 +113,18 @@ function ciniki_musicfestivals_volunteers($ciniki) {
         $args['object_id'] = $m[2];
     }
 
+    $room_ids = [];
+    if( isset($args['object']) && $args['object'] == 'ciniki.musicfestivals.building' ) {
+        foreach($locations as $location) {
+            if( $location['object'] == 'ciniki.musicfestivals.location' 
+                && $location['building_id'] == $args['object_id']
+                ) {
+                $room_ids[] = $location['object_id'];
+                
+            }
+        }
+    }
+
     //
     // Load volunteers
     //
@@ -452,8 +464,14 @@ function ciniki_musicfestivals_volunteers($ciniki) {
             $strsql .= "AND shifts.shift_date = '" . ciniki_core_dbQuote($ciniki, $args['shift_date']) . "' ";
         }
         if( isset($args['object']) && $args['object'] != '' && isset($args['object_id']) && $args['object_id'] != '' ) {
-            $strsql .= "AND shifts.object = '" . ciniki_core_dbQuote($ciniki, $args['object']) . "' "
-                . "AND shifts.object_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "' ";
+            $strsql .= "AND ((shifts.object = '" . ciniki_core_dbQuote($ciniki, $args['object']) . "' "
+                . "AND shifts.object_id = '" . ciniki_core_dbQuote($ciniki, $args['object_id']) . "') ";
+            if( $args['object'] == 'ciniki.musicfestivals.building' && count($room_ids) > 0 ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
+                $strsql .= "OR (shifts.object = 'ciniki.musicfestivals.location' "
+                    . "AND shifts.object_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $room_ids) . ")) ";
+            }
+            $strsql .= ") ";
         }
         if( isset($args['role']) && $args['role'] != '' ) {
             $strsql .= "AND shifts.role = '" . ciniki_core_dbQuote($ciniki, $args['role']) . "' ";

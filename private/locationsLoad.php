@@ -52,6 +52,8 @@ function ciniki_musicfestivals_locationsLoad($ciniki, $tnid, $festival_id) {
         if( count($building['rooms']) > 1 ) {
             $locations["ciniki.musicfestivals.building:{$building['id']}"] = [
                 'id' => 'ciniki.musicfestivals.building:' . $building['id'],
+                'object' => 'ciniki.musicfestivals.building',
+                'object_id' => $building['id'],
                 'name' => $building['name'],
                 'shortname' => $building['shortname'],
                 'building_name' => $building['name'],
@@ -60,6 +62,8 @@ function ciniki_musicfestivals_locationsLoad($ciniki, $tnid, $festival_id) {
             foreach($building['rooms'] as $room) {
                 $locations["ciniki.musicfestivals.location:{$room['id']}"] = [
                     'id' => 'ciniki.musicfestivals.location:' . $room['id'],
+                    'object' => 'ciniki.musicfestivals.location',
+                    'object_id' => $room['id'],
                     'name' => $room['name'],
                     'shortname' => $room['shortname'],
                     'building_id' => $building['id'],
@@ -70,6 +74,8 @@ function ciniki_musicfestivals_locationsLoad($ciniki, $tnid, $festival_id) {
         } else {
             $locations["ciniki.musicfestivals.location:{$building['rooms'][0]['id']}"] = [
                 'id' => 'ciniki.musicfestivals.location:' . $building['rooms'][0]['id'],
+                'object' => 'ciniki.musicfestivals.location',
+                'object_id' => $building['rooms'][0]['id'],
                 'name' => $building['rooms'][0]['name'],
                 'shortname' => $building['rooms'][0]['shortname'],
                 'building_id' => $building['id'],
