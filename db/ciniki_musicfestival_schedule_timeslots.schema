@@ -64,5 +64,6 @@ create table ciniki_musicfestival_schedule_timeslots (
     primary key (id),
     unique index (uuid),
     index (festival_id, sdivision_id),
+    index time_idx (sdivision_id, slot_time, tnid),
     index tenant_uuid (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.12';

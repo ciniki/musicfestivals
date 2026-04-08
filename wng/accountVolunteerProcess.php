@@ -69,6 +69,16 @@ function ciniki_musicfestivals_wng_accountVolunteerProcess(&$ciniki, $tnid, &$re
     }
     elseif( isset($request['uri_split'][($request['cur_uri_pos']+3)]) 
         && $request['uri_split'][($request['cur_uri_pos']+3)] == 'shifts'
+        && isset($festival['volunteers-account-shift-selector']) && $festival['volunteers-account-shift-selector'] == 'yes'
+        ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountVolunteerShiftsProcess2');
+        return ciniki_musicfestivals_wng_accountVolunteerShiftsProcess2($ciniki, $tnid, $request, [
+            'festival' => $festival,
+            'volunteer' => $volunteer,
+            ]);
+    }
+    elseif( isset($request['uri_split'][($request['cur_uri_pos']+3)]) 
+        && $request['uri_split'][($request['cur_uri_pos']+3)] == 'shifts'
         ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountVolunteerShiftsProcess');
         return ciniki_musicfestivals_wng_accountVolunteerShiftsProcess($ciniki, $tnid, $request, [

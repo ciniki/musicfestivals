@@ -35,5 +35,6 @@ create table ciniki_musicfestival_volunteer_assignments (
     primary key (id),
     unique index (uuid),
     unique index (festival_id, shift_id, volunteer_id),
+    index shift (shift_id, tnid),
     index sync (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

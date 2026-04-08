@@ -49,5 +49,6 @@ create table ciniki_musicfestival_volunteer_shifts (
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
+    index (tnid, festival_id, shift_date, start_time, end_time, object, object_id, role, flags),
     index sync (tnid, uuid, last_updated)
 ) ENGINE='InnoDB', COMMENT='v1.01';

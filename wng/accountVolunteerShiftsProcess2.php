@@ -1,0 +1,662 @@
+<?php
+//
+// Description
+// -----------
+// This function will check for competitors in the music festivals
+//
+// Arguments
+// ---------
+//
+// Returns
+// -------
+//
+function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess2(&$ciniki, $tnid, &$request, $args) {
+
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteList');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
+
+    $blocks = array();
+
+    $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
+    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/volunteer';
+    $display = 'sections';
+    $date_format = 'D, M j, Y';
+
+    //
+    // Load the tenant settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $intl_timezone = $rc['settings']['intl-default-timezone'];
+    
+    $now = new DateTime('now', new DateTimezone($intl_timezone));
+
+    //
+    // Load current festival
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
+    $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1297', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
+    }
+    $festival = $rc['festival'];
+
+    //
+    // Parse and check the approved roles for this volunteer
+    //
+    $volunteer = $args['volunteer'];
+    $roles = [];
+    if( isset($volunteer['approved_roles']) ) {
+        $roles = explode('::', $volunteer['approved_roles']);
+    }
+
+    $css_width_limit = 'limit-width limit-width-80';
+
+    if( count($roles) <= 0 ) {
+        $blocks[] = [
+            'type' => 'msg',
+            'level' => 'error',
+            'class' => $css_width_limit,
+            'content' => 'No shifts available',
+            ];
+        $blocks[] = [
+            'type' => 'buttons',
+            'class' => 'aligncenter ' . $css_width_limit,
+            'items' => [
+                ['url' => $base_url, 'text' => 'Back'],
+                ],
+            ];
+        return array('stat'=>'ok', 'blocks'=>$blocks);
+    }
+
+    //
+    // Load the locations
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'locationsLoad');
+    $rc = ciniki_musicfestivals_locationsLoad($ciniki, $tnid, $volunteer['festival_id']);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $locations = isset($rc['locations']) ? $rc['locations'] : array();
+
+    //
+    // Get the shifts discipline(s)
+    //
+    $disciplines = [];
+    if( isset($festival['volunteers-discipline-format']) && $festival['volunteers-discipline-format'] == 'section' ) {
+        $strsql = "SELECT shifts.id, "
+            . "GROUP_CONCAT(DISTINCT sections.name SEPARATOR ', ') AS disciplines "
+            . "FROM ciniki_musicfestival_volunteer_shifts AS shifts "
+            . "INNER JOIN ciniki_musicfestival_locations AS rooms ON ("
+                . "("
+                    . "(shifts.object = 'ciniki.musicfestivals.location' AND shifts.object_id = rooms.id) "
+                    . "OR (shifts.object = 'ciniki.musicfestivals.building' AND shifts.object_id = rooms.building_id) "
+                    . " ) "
+                . "AND rooms.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+                . "shifts.shift_date = divisions.division_date "
+                . "AND rooms.id = divisions.location_id "
+                . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+                . "divisions.id = timeslots.sdivision_id "
+                . "AND timeslots.slot_time > shifts.start_time "
+                . "AND timeslots.slot_time < shifts.end_time "
+                . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_schedule_sections AS sections ON ("
+                . "divisions.ssection_id = sections.id "
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE shifts.festival_id = '" . ciniki_core_dbQuote($ciniki, $volunteer['festival_id']) . "' "
+            . "AND shifts.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "GROUP BY shifts.id "
+            . "ORDER BY shifts.id "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'shifts', 'fname'=>'id', 'fields'=>array('id', 'disciplines')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1479', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
+        }
+        $disciplines = isset($rc['shifts']) ? $rc['shifts'] : array();
+    }
+
+    //
+    // Get the shifts for the approved roles
+    //
+    $strsql = "SELECT shifts.id, "
+        . "shifts.uuid, "
+        . "shifts.shift_date, "
+        . "shifts.shift_date AS shift_date_text, "
+        . "TIME_FORMAT(shifts.start_time, '%l:%i %p') as start_time, "
+        . "TIME_FORMAT(shifts.end_time, '%l:%i %p') AS end_time, "
+        . "TIME_FORMAT(shifts.start_time, '%H%i') as sort_start_time, "
+        . "TIME_FORMAT(shifts.end_time, '%H%i') as sort_end_time, "
+        . "shifts.object, "
+        . "shifts.object_id, "
+        . "shifts.role, "
+        . "shifts.min_volunteers, "
+        . "shifts.max_volunteers, "
+        . "IFNULL(assigned.id, 0) AS assignment_id, "
+        . "COUNT(assigned.volunteer_id) AS num_volunteers "
+        . "FROM ciniki_musicfestival_volunteer_shifts AS shifts "
+        . "LEFT JOIN ciniki_musicfestival_volunteer_assignments AS assigned ON ("
+            . "shifts.id = assigned.shift_id "
+            . "AND assigned.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+//        . "LEFT JOIN ciniki_musicfestival_volunteers AS volunteers ON ("
+//            . "assigned.volunteer_id = volunteers.id "
+//            . "AND volunteers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+//            . ") "
+        . "WHERE shifts.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+        . "AND shifts.role IN (" . ciniki_core_dbQuoteList($ciniki, $roles) . ") "
+        . "AND (shifts.flags&0x01) = 0x01 " // Online signups
+        . "AND shifts.shift_date >= '" . ciniki_core_dbQuote($ciniki, $now->format('Y-m-d')) . "' "
+        . "AND shifts.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "GROUP BY shifts.id "
+        . "ORDER BY shifts.shift_date, shifts.role, shifts.object, shifts.object_id, assigned.volunteer_id "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'dates', 'fname'=>'shift_date', 
+            'fields'=>array('shift_date', 'shift_date_text'),
+            'utctotz'=>array('shift_date_text'=>array('timezone'=>'UTC', 'format'=>$date_format)),
+            ),
+        array('container'=>'roles', 'fname'=>'role', 
+            'fields'=>array('name'=>'role'),
+            ),
+        array('container'=>'shifts', 'fname'=>'uuid', 
+            'fields'=>array('id', 'uuid', 'shift_date', 'start_time', 'end_time', 'assignment_id',
+                'sort_start_time', 'sort_end_time', 
+                'object', 'object_id', 'role', 
+                'min_volunteers', 'max_volunteers', 'num_volunteers'),
+            ),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1260', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
+    }
+    $shift_dates = isset($rc['dates']) ? $rc['dates'] : array();
+
+    if( count($shift_dates) == 0 ) {
+        $blocks[] = [
+            'type' => 'msg',
+            'level' => 'error',
+            'class' => $css_width_limit,
+            'content' => "No upcoming volunteer shifts",
+            ];
+        $blocks[] = [
+            'type' => 'buttons',
+            'class' => 'aligncenter ' . $css_width_limit,
+            'items' => [
+                ['url' => $base_url, 'text' => 'Back'],
+                ],
+            ];
+        return array('stat'=>'ok', 'blocks'=>$blocks);
+    }
+
+    //
+    // Show the dates
+    //
+    foreach($shift_dates AS $did => $date) {
+        $shift_dates[$did]['num_open'] = 0;
+        $shift_dates[$did]['shifts'] = [];
+        if( isset($date['roles']) ) {
+            foreach($date['roles'] as $rid => $role) {
+                $shift_dates[$did]['roles'][$rid]['num_open'] = 0;
+                $permalink = ciniki_core_makePermalink($ciniki, $role['name']);
+                $shift_dates[$did]['roles'][$permalink] = $shift_dates[$did]['roles'][$rid];
+                unset($shift_dates[$did]['roles'][$rid]);
+                $rid = $permalink;
+                $shift_dates[$did]['roles'][$rid]['permalink'] = $permalink;
+                if( isset($role['shifts']) ) {
+                    foreach($role['shifts'] as $sid => $shift) {
+                        //
+                        // Setup shift location
+                        //
+                        if( isset($locations["{$shift['object']}:{$shift['object_id']}"]) ) {
+                            $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['location'] = $locations["{$shift['object']}:{$shift['object_id']}"]['name'];
+                        }
+                        // Setup to disciplines
+                        $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['disciplines'] = '';
+                        if( isset($disciplines[$shift['id']]) ) {
+                            $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['disciplines'] = $disciplines[$shift['id']]['disciplines'];
+                        }
+                        // Setup shift times
+                        $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['times'] = "{$shift['start_time']} - {$shift['end_time']}";
+                        if( $shift['num_volunteers'] < $shift['max_volunteers'] ) {
+                            $shift_dates[$did]['num_open']++;
+                            $shift_dates[$did]['roles'][$rid]['num_open']++;
+                        }
+                        //
+                        // Setup shift buttons
+                        //
+                        $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['buttons'] = "";
+                        if( isset($args['volunteer']['shifts'][$shift['id']]) ) {
+                            $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['assigned'] = 'yes';
+                            if( $args['volunteer']['shifts'][$shift['id']]['assignment_status'] == 30 ) {
+                                $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['buttons'] .= "<span class='text'>Your Shift</span>";
+                            } else {
+                                $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['buttons'] .= "<span class='text'>Request Pending</span>";
+                            }
+                        } elseif( $shift['num_volunteers'] >= $shift['max_volunteers'] ) {
+                            $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['buttons'] .= "<span class='text'>Filled</span>";
+                        } 
+                        $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['buttons'] .= "<a class='button' href='{$base_url}/shifts/{$date['shift_date']}/{$permalink}/{$shift['uuid']}'>Open</a>";
+                        $shift_dates[$did]['shifts'][$sid] = $shift_dates[$did]['roles'][$rid]['shifts'][$sid];
+                    }
+                    uasort($shift_dates[$did]['roles'][$rid]['shifts'], function($a, $b) {
+                        if( $a['location'] == $b['location'] ) {
+                            return $a['sort_start_time'] < $b['sort_start_time'] ? -1 : 1;
+                        }
+                        return strcasecmp($a['location'], $b['location']);
+                        });
+                }
+                $shift_dates[$did]['roles'][$rid]['num_open_text'] = $shift_dates[$did]['roles'][$rid]['num_open'] > 0 ? $shift_dates[$did]['roles'][$rid]['num_open'] : 'Filled';
+                $shift_dates[$did]['roles'][$rid]['buttons'] = "<a class='button' href='{$base_url}/shifts/{$date['shift_date']}/{$permalink}'>Open</a>";
+            }
+        }
+        $shift_dates[$did]['num_open_text'] = $shift_dates[$did]['num_open'] > 0 ? $shift_dates[$did]['num_open'] : 'Filled';
+        $shift_dates[$did]['buttons'] = "<a class='button' href='{$base_url}/shifts/{$date['shift_date']}'>Open</a>";
+        uasort($shift_dates[$did]['shifts'], function($a, $b) {
+            if( $a['location'] != $b['location'] ) {
+                return strcasecmp($a['location'], $b['location']);
+            }
+            if( $a['role'] != $b['role'] ) {
+                return strcasecmp($a['role'], $b['role']);
+            }
+            return $a['sort_start_time'] < $b['sort_start_time'] ? -1 : 1;
+            });
+    }
+
+    $selected_date = '';
+    $selected_role = '';
+    $selected_shift = '';
+    $action = 'view';
+    if( isset($request['uri_split'][($request['cur_uri_pos']+4)]) ) {
+        $selected_date = $request['uri_split'][($request['cur_uri_pos']+4)];
+    }
+    if( isset($request['uri_split'][($request['cur_uri_pos']+5)]) ) {
+        $selected_role = $request['uri_split'][($request['cur_uri_pos']+5)];
+    }
+    if( isset($request['uri_split'][($request['cur_uri_pos']+6)]) ) {
+        $selected_shift = $request['uri_split'][($request['cur_uri_pos']+6)];
+    }
+    if( isset($request['uri_split'][($request['cur_uri_pos']+7)]) ) {
+        $action = $request['uri_split'][($request['cur_uri_pos']+7)];
+    }
+    if( isset($request['uri_split'][($request['cur_uri_pos']+8)]) ) {
+        $confirm = $request['uri_split'][($request['cur_uri_pos']+8)];
+    }
+
+    //
+    // Decide what to display
+    //
+    if( $selected_date != '' && $selected_role != '' && $selected_shift != '' 
+        && isset($shift_dates[$selected_date]['roles'][$selected_role]['shifts'][$selected_shift]) 
+        ) {
+        $date = $shift_dates[$selected_date];
+        $shift = $shift_dates[$selected_date]['roles'][$selected_role]['shifts'][$selected_shift];
+        $content = "<b>Date</b>: {$date['shift_date_text']}<br/>"
+            . "<b>Times</b>: {$shift['start_time']} - {$shift['end_time']}<br/>";
+        if( isset($shift['location']) ) {
+            $content .= "<b>Location</b>: {$shift['location']}<br/>";
+        }
+        $content .= "<b>Role</b>: {$shift['role']}<br/>";
+        if( isset($shift['disciplines']) && $shift['disciplines'] != '' ) {
+            $content .= "<b>Disciplines</b>: {$shift['disciplines']}<br/>";
+        }
+        $alert_email_content = $content;
+        if( isset($festival["volunteers-role-{$selected_role}-description"]) 
+            && $festival["volunteers-role-{$selected_role}-description"] != '' ) {
+            $content .= $festival["volunteers-role-{$selected_role}-description"];
+        }
+        $blocks[] = [
+            'type' => 'text',
+            'title' => 'Volunteer Shift',
+            'class' => $css_width_limit,
+            'content' => $content,
+            ];
+        $buttons = [];
+        // Cancelling a shift
+        if( isset($args['volunteer']['shifts'][$shift['id']]) 
+            && isset($action) && $action == 'cancel' && isset($confirm) && $confirm == 'confirm' 
+            ) {
+            //
+            // Delete any assignment notifications
+            //
+            $strsql = "SELECT notifications.id, "
+                . "notifications.uuid "
+                . "FROM ciniki_musicfestival_volunteer_notifications AS notifications "
+                . "WHERE notifications.assignment_id = '" . ciniki_core_dbQuote($ciniki, $shift['assignment_id']) . "' "
+                . "AND notifications.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'notification');
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1475', 'msg'=>'Unable to load notification', 'err'=>$rc['err']));
+            }
+            $notifications = isset($rc['rows']) ? $rc['rows'] : array();
+            foreach($notifications as $notification) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
+                $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.musicfestivals.volunteernotification', $notification['id'], $notification['uuid'], 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1476', 'msg'=>'Unable to remove notification', 'err'=>$rc['err']));
+                }
+            }
+            //
+            // Delete the assignment
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
+            $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.musicfestivals.volunteerassignment', $shift['assignment_id'], null, 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                $blocks[] = [
+                    'type' => 'msg',
+                    'level' => 'error',
+                    'class' => $css_width_limit,
+                    'content' => "We are unable to cancel your shift, please contact us for help.",
+                    ];
+            } else {
+                if( isset($festival['volunteers-cancel-notify-emails']) && $festival['volunteers-cancel-notify-emails'] != '' ) {
+                    $emails = explode(',', $festival['volunteers-cancel-notify-emails']);
+
+                    //
+                    // Get the customer details
+                    //
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
+                    $rc = ciniki_customers_hooks_customerDetails2($ciniki, $tnid, [
+                        'customer_id' => $volunteer['customer_id'],
+                        'phones' => 'yes',
+                        'emails' => 'yes',
+                        ]);
+                    if( $rc['stat'] == 'ok' && isset($rc['details']) ) {
+                        $alert_email_content .= '<br/>';
+                        foreach($rc['details'] as $detail) {
+                            $alert_email_content .= "<b>{$detail['label']}</b>: {$detail['value']}<br/>";
+                        }
+                    }
+
+                    foreach($emails as $email) {
+                        $email = trim($email);
+                        ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
+                        $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
+                            'object' => 'ciniki.musicfestivals.volunteershift',
+                            'object_id' => $shift['id'],
+                            'subject' => 'Volunteer Cancelled - ' . $volunteer['name'] . ' - ' . $date['shift_date_text'] . ' - ' . $shift['start_time'],
+                            'html_content' => $alert_email_content,
+                            'customer_email' => $email,
+                            ));
+                        if( $rc['stat'] != 'ok' ) {
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1234', 'msg'=>'Unable to email change request', 'err'=>$rc['err']));
+                        } else {
+                            $ciniki['emailqueue'][] = array('mail_id' => $rc['id'], 'tnid'=>$tnid);
+                        }
+                    }
+                }
+                $blocks[] = [
+                    'type' => 'msg',
+                    'level' => 'success',
+                    'class' => $css_width_limit,
+                    'content' => "Your shift has been cancelled.",
+                    ];
+            }
+            if( isset($_GET['back']) && $_GET['back'] == 'profile' ) {
+                $buttons = [
+                    ['url' => "{$base_url}", 'text' => 'Back'],
+                    ];
+            } else {
+                $buttons = [
+                    ['url' => "{$base_url}/shifts/{$selected_date}", 'text' => 'Back'],
+                    ];
+            }
+        }
+        // Confirm a cancellation
+        elseif( isset($args['volunteer']['shifts'][$shift['id']]) && isset($action) && $action == 'cancel' ) {
+            $blocks[] = [
+                'type' => 'msg',
+                'level' => 'error',
+                'class' => $css_width_limit,
+                'content' => "Are you sure you want to cancel your shift?",
+                ];
+            $back = '';
+            if( isset($_GET['back']) && $_GET['back'] == 'profile' ) {
+                $back = '?back=profile';
+            }
+            $buttons[] = ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}/{$selected_shift}{$back}", 'text' => 'Back'];
+            $buttons[] = ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}/{$selected_shift}/cancel/confirm{$back}", 'text' => 'Yes, cancel my shift'];
+        }
+        // Already signed up for this shift
+        elseif( isset($args['volunteer']['shifts'][$shift['id']]) ) {
+            if( $args['volunteer']['shifts'][$shift['id']]['assignment_status'] == 30 ) {
+                $blocks[] = [
+                    'type' => 'msg',
+                    'level' => 'success',
+                    'class' => $css_width_limit,
+                    'content' => "You are signed up for this shift.",
+                    ];
+            } else {
+                $blocks[] = [
+                    'type' => 'msg',
+                    'level' => 'success',
+                    'class' => $css_width_limit,
+                    'content' => "Thank you for requesting this shift, we will email when with confirmation.",
+                    ];
+            }
+            $back = '';
+            if( isset($_GET['back']) && $_GET['back'] == 'profile' ) {
+                $buttons = [
+                    ['url' => "{$base_url}", 'text' => 'Back'],
+                    ];
+                $back = '?back=profile';
+            } else {
+                $buttons = [
+                    ['url' => "{$base_url}/shifts/{$selected_date}", 'text' => 'Back'],
+                    ];
+            }
+            if( isset($festival['volunteers-account-cancel']) && $festival['volunteers-account-cancel'] == 'yes' ) {
+                $buttons[] = ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}/{$selected_shift}/cancel{$back}", 'text' => 'Cancel my shift'];
+            }
+        } 
+        // Shift is full
+        elseif( $shift['num_volunteers'] >= $shift['max_volunteers'] ) {
+            $blocks[] = [
+                'type' => 'msg',
+                'level' => 'warning',
+                'class' => $css_width_limit,
+                'content' => "This shift is full",
+                ];
+            $buttons = [
+                ['url' => "{$base_url}/shifts/{$selected_date}", 'text' => 'Back'],
+                ];
+        } 
+        // Shift has open spots
+        elseif( isset($action) && $action == 'signup' && isset($confirm) && $confirm == 'confirm' ) {
+            //
+            // Check for volunteer scheduling conflict
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'volunteerConflictCheck');
+            $rc = ciniki_musicfestivals_volunteerConflictCheck($ciniki, $tnid, [
+                'volunteer_id' => $volunteer['id'],
+                'shift_id' => $shift['id'],
+                'festival' => $festival,
+                ]);
+            if( $rc['stat'] != 'ok' ) {
+                $blocks[] = [
+                    'type' => 'msg',
+                    'level' => 'error',
+                    'class' => $css_width_limit,
+                    'content' => "You have a conflict with another shift."
+                    ];
+                $buttons = [
+                    ['url' => "{$base_url}/shifts/{$selected_date}", 'text' => 'Back'],
+                    ];
+            } else {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
+                $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.volunteerassignment', [
+                    'festival_id' => $volunteer['festival_id'],
+                    'shift_id' => $shift['id'],
+                    'volunteer_id' => $volunteer['id'],
+                    'status' => (isset($festival['volunteers-shift-signup-review']) && $festival['volunteers-shift-signup-review'] == 'no' ? 30 : 10),
+                    ], 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    $blocks[] = [
+                        'type' => 'msg',
+                        'level' => 'error',
+                        'class' => $css_width_limit,
+                        'content' => "Unable to signup for shift, please contact us for help."
+                        ];
+                    return array('stat'=>'ok', 'blocks'=>$blocks);
+                }
+                $assignment_id = $rc['id'];
+                if( isset($festival['volunteers-shift-signup-review']) && $festival['volunteers-shift-signup-review'] == 'no' ) {
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'volunteerEmail');
+                    $rc = ciniki_musicfestivals_volunteerEmail($ciniki, $tnid, [
+                        'assignment_id' => $assignment_id,
+                        'template' => 'volunteers-email-shift-assigned',
+                        ]);
+                    if( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1384', 'msg'=>'Unable to email volunteer', 'err'=>$rc['err']));
+                    }
+                }
+                $blocks[] = [
+                    'type' => 'msg',
+                    'level' => 'success',
+                    'class' => $css_width_limit,
+                    'content' => "Thank you for requesting this shift, we will email with your confirmation.",
+                    ];
+                $buttons = [
+                    ['url' => "{$base_url}/shifts/{$selected_date}", 'text' => 'Back'],
+                    ];
+            } 
+        }
+        elseif( isset($action) && $action == 'signup' ) {
+            $blocks[] = [
+                'type' => 'msg',
+                'level' => 'warning',
+                'class' => $css_width_limit,
+                'content' => "Please confirm you would like to sign up for this shift.",
+                ];
+            
+            $buttons = [
+                ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}/{$selected_shift}", 'text' => 'Cancel'],
+                ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}/{$selected_shift}/signup/confirm", 'text' => 'Confirm'],
+                ];
+        }
+        else {
+            $buttons = [
+                ['url' => "{$base_url}/shifts/{$selected_date}", 'text' => 'Back'],
+                ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}/{$selected_shift}/signup", 'text' => 'Request Shift'],
+                ];
+        }
+        $blocks[] = [
+            'type' => 'buttons',
+            'class' => 'aligncenter ' . $css_width_limit,
+            'items' => $buttons,
+            ];
+    } 
+    elseif( $selected_date != '' && $selected_role != '' && isset($shift_dates[$selected_date]['roles'][$selected_role]) ) {
+        $date = $shift_dates[$selected_date];
+        $role = $shift_dates[$selected_date]['roles'][$selected_role];
+        $columns = [
+            ['label' => 'Location', 'field' => 'location'],
+            ['label' => 'Times', 'field' => 'times'],
+            ];
+        if( isset($festival['volunteers-discipline-format']) && $festival['volunteers-discipline-format'] == 'section' ) {
+            $columns[] = ['label' => 'Disciplines', 'class' => '', 'field' => 'disciplines'];
+        }
+        $columns[] = ['label' => '', 'class' => 'alignright buttons', 'field' => 'buttons'];
+        $blocks[] = [
+            'type' => 'table',
+            'title' => $date['shift_date_text'] . ' - ' . $role['name'],
+            'class' => $css_width_limit,
+            'columns' => $columns,
+            'rows' => $role['shifts'],
+            ];
+        $blocks[] = [
+            'type' => 'buttons',
+            'class' => 'aligncenter',
+            'class' => $css_width_limit,
+            'items' => [
+                ['url' => $base_url . '/shifts/' . $selected_date, 'text' => 'Back'],
+                ],
+            ];
+    } 
+    elseif( $selected_date != '' && isset($shift_dates[$selected_date]) ) {
+        $date = $shift_dates[$selected_date];
+        $columns = [
+            ['label' => 'Location', 'field' => 'location'],
+            ['label' => 'Role', 'field' => 'role'],
+            ['label' => 'Times', 'field' => 'times'],
+            ];
+        if( isset($festival['volunteers-discipline-format']) && $festival['volunteers-discipline-format'] == 'section' ) {
+            $columns[] = ['label' => 'Disciplines', 'class' => '', 'field' => 'disciplines'];
+        }
+        $columns[] = ['label' => '', 'class' => 'alignright buttons', 'field' => 'buttons'];
+        $blocks[] = [
+            'type' => 'table',
+            'title' => $date['shift_date_text'],
+            'class' => $css_width_limit . ' fold-at-40',
+            'columns' => $columns,
+            'rows' => $date['shifts'],
+            ];
+        $blocks[] = [
+            'type' => 'buttons',
+            'class' => 'aligncenter',
+            'class' => $css_width_limit,
+            'items' => [
+                ['url' => $base_url . '/shifts/' . $selected_date, 'text' => 'Back'],
+                ],
+            ];
+/*        $date = $shift_dates[$selected_date];
+        $blocks[] = [
+            'type' => 'table',
+            'title' => $date['shift_date_text'],
+            'class' => $css_width_limit,
+            'columns' => [
+                ['label' => 'Role', 'field' => 'name'],
+                ['label' => 'Unfilled Shifts', 'field' => 'num_open_text'],
+                ['label' => '', 'class' => 'alignright buttons', 'field' => 'buttons'],
+                ],
+            'rows' => $date['roles'],
+            ];
+        $blocks[] = [
+            'type' => 'buttons',
+            'class' => 'aligncenter ' . $css_width_limit,
+            'items' => [
+                ['url' => $base_url . '/shifts', 'text' => 'Back'],
+                ],
+            ]; */
+    }
+    //
+    // Print the list of dates
+    //
+    else {
+        $blocks[] = [
+            'type' => 'table',
+            'title' => 'Dates',
+            'class' => $css_width_limit,
+            'columns' => [
+                ['label' => 'Date', 'field' => 'shift_date_text'],
+                ['label' => 'Unfilled Shifts', 'field' => 'num_open_text'],
+                ['label' => '', 'class' => 'alignright buttons', 'field' => 'buttons'],
+                ],
+            'rows' => $shift_dates,
+            ];
+        $blocks[] = [
+            'type' => 'buttons',
+            'class' => 'aligncenter ' . $css_width_limit,
+            'items' => [
+                ['url' => $base_url, 'text' => 'Back'],
+                ],
+            ];
+    }
+
+    return array('stat'=>'ok', 'blocks'=>$blocks);
+}
+?>
