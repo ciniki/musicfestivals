@@ -90,7 +90,7 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksExcel(&$ciniki, $t
     if( isset($args['scheduledivision_id']) && $args['scheduledivision_id'] > 0 ) {
         $strsql .= "AND divisions.id = '" . ciniki_core_dbQuote($ciniki, $args['scheduledivision_id']) . "' ";
     }
-    $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.name, adjudicator_name "
+    $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, divisions.name, adjudicator_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -120,6 +120,7 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksExcel(&$ciniki, $t
         . "timeslots.start_num, "
         . "timeslots.groupname, "
         . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
+        . "DATE_FORMAT(divisions.division_date, '%W, %M %e, %Y') AS division_date, "
         . "registrations.id AS reg_id, "
         . "registrations.status AS reg_status, "
         . "registrations.private_name, "
@@ -206,7 +207,7 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksExcel(&$ciniki, $t
             'fields'=>array('id'=>'division_id'),
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
-            'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'groupname', 'start_num',
+            'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'groupname', 'start_num', 'division_date', 
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 'time'=>'slot_time_text',
                 ),
             ),
@@ -266,7 +267,36 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksExcel(&$ciniki, $t
 
     $sheet_num = 0;
     foreach($sections as $sid => $section) {
+        $classes = [];
+        //
+        // This is a hack to have the spreadsheets separated by classes instead of divisions
+        //
         foreach($section['divisions'] as $did => $division) {
+            if( !isset($divisions[$division['id']]['timeslots']) ) {
+                continue;
+            }
+            foreach($divisions[$division['id']]['timeslots'] as $timeslot) {
+                if( !isset($timeslot['registrations']) ) {
+                    continue;
+                }
+                foreach($timeslot['registrations'] as $reg) {
+                    $class_code = $reg['class_code'];
+                    break;
+                }
+                if( !isset($classes[$class_code]) ) {
+                    $classes[$class_code] = $division;
+                    $classes[$class_code]['name'] = $class_code;
+                    $classes[$class_code]['timeslots'] = [$timeslot];
+                } else {
+                    $classes[$class_code]['timeslots'][] = $timeslot;
+                }
+            }
+        }
+        uasort($classes, function($a, $b) {
+            return strnatcasecmp($a['name'], $b['name']);
+            });
+        
+        foreach($classes as $did => $division) {
             $cur_col = 1;
             $cur_row = 1;
             if( $sheet_num == 0 ) {
@@ -310,7 +340,8 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksExcel(&$ciniki, $t
             // Go through the timeslots
             //
             $num_reg = 0; 
-            foreach($divisions[$division['id']]['timeslots'] as $timeslot) {
+//            foreach($divisions[$division['id']]['timeslots'] as $timeslot) {
+            foreach($division['timeslots'] as $timeslot) {
                 if( !isset($timeslot['registrations']) || count($timeslot['registrations']) == 0 ) {
                     continue;
                 }
@@ -318,7 +349,8 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksExcel(&$ciniki, $t
                 $cur_col = 1;
                 $spreadsheet->setCellValue([$cur_col++, $cur_row], 'Start: ' . $timeslot['time']);
                 $spreadsheet->setCellValue([$cur_col++, $cur_row], $timeslot['class_name'] . ($timeslot['groupname'] != '' ? ' - ' . $timeslot['groupname'] : ''));
-                $spreadsheet->getStyle("A{$cur_row}:B{$cur_row}")->getFont()->setBold(true);
+                $spreadsheet->setCellValue([$cur_col++, $cur_row], $timeslot['division_date']);
+                $spreadsheet->getStyle("A{$cur_row}:C{$cur_row}")->getFont()->setBold(true);
                 $spreadsheet->getStyle("A{$cur_row}")->getFont()->setBold(true);
                 $spreadsheet->getStyle("A{$cur_row}:L{$cur_row}")->applyFromArray($greybg);
 
