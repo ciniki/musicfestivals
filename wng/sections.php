@@ -528,6 +528,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             'today-divisions' => array('label'=>'Todays Schedule', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
                 'no' => 'No',
                 'yes' => 'Yes',
+                'yes-section-names' => 'Yes - Section Names',
                 )),
             'ipv' => array('label'=>'Live/Virtual', 'type'=>'toggle', 'default'=>'all', 'separator'=>'yes',
                 'toggles'=>array(

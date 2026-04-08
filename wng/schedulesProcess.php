@@ -448,7 +448,9 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
     //
     // Show todays divisions
     //
-    if( isset($s['today-divisions']) && $s['today-divisions'] == 'yes' ) {
+    if( isset($s['today-divisions']) 
+        && ($s['today-divisions'] == 'yes' || $s['today-divisions'] == 'yes-section-names') 
+        ) {
         $dt = new DateTime('now', new DateTimezone($intl_timezone));
 //        $dt = new DateTime('2025-02-19', new DateTimezone($intl_timezone));
         $todays_date = $dt->format('Y-m-d');
@@ -457,11 +459,20 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
             if( isset($sc['divisions']) ) {
                 foreach($sc['divisions'] as $div) {
                     if( $div['division_ymd'] == $todays_date ) {
-                        $divisions[] = [
-                            'text' => $div['location_name'] 
-                                . ($div['location_name'] != '' ? '<br/>' : '') . $div['name'],
-                            'url' => $div['url'],
-                            ];
+                        if( $s['today-divisions'] == 'yes-section-names' ) {
+                            $divisions[] = [
+                                'text' => $sc['name'] . '<br/>' . $div['name'] 
+                                    . ($div['location_name'] != '' ? '<br/>' : '') . $div['location_name'],
+                                'url' => $div['url'],
+                                ];
+
+                        } else {
+                            $divisions[] = [
+                                'text' => $div['location_name'] 
+                                    . ($div['location_name'] != '' ? '<br/>' : '') . $div['name'],
+                                'url' => $div['url'],
+                                ];
+                        }
                     }
                 }
             }
