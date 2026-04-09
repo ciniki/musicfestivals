@@ -267,10 +267,10 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess2(&$ciniki, $tni
             if( $a['location'] != $b['location'] ) {
                 return strcasecmp($a['location'], $b['location']);
             }
-            if( $a['role'] != $b['role'] ) {
-                return strcasecmp($a['role'], $b['role']);
+            if( $a['sort_start_time'] != $b['sort_start_time'] ) {
+                return $a['sort_start_time'] < $b['sort_start_time'] ? -1 : 1;
             }
-            return $a['sort_start_time'] < $b['sort_start_time'] ? -1 : 1;
+            return strcasecmp($a['role'], $b['role']);
             });
     }
 
@@ -591,8 +591,8 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess2(&$ciniki, $tni
         $date = $shift_dates[$selected_date];
         $columns = [
             ['label' => 'Location', 'field' => 'location'],
-            ['label' => 'Role', 'field' => 'role'],
             ['label' => 'Times', 'field' => 'times'],
+            ['label' => 'Role', 'field' => 'role'],
             ];
         if( isset($festival['volunteers-discipline-format']) && $festival['volunteers-discipline-format'] == 'section' ) {
             $columns[] = ['label' => 'Disciplines', 'class' => '', 'field' => 'disciplines'];

@@ -6652,6 +6652,12 @@ function ciniki_musicfestivals_main() {
                         'no':'No',
                         'up5':'Up 5 Min',
                     }},
+                'scheduling-division-sorting':{'label':'Division Sorting', 'type':'toggle', 'default':'date-name', 
+                    'visible':function() { return (M.userPerms&0x01) == 1 ? 'yes' : 'no'; },
+                    'toggles':{
+                        'date-name':'Date, Name',
+                        'date-time-name':'Date, Time, Name',
+                    }},
             }},
         '_locationoptions':{'label':'Location Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('scheduling'); },

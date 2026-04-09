@@ -2061,14 +2061,17 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "WHERE divisions.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                     . "AND divisions.ssection_id = '" . ciniki_core_dbQuote($ciniki, $args['ssection_id']) . "' "
                     . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . "GROUP BY divisions.id "
-                    . "ORDER BY divisions.division_date, divisions.name, first_timeslot "
-                    . "";
+                    . "GROUP BY divisions.id ";
+                if( isset($festival['scheduling-division-sorting']) && $festival['scheduling-division-sorting'] == 'date-time-name' ) {
+                    $strsql .= "ORDER BY divisions.division_date, first_timeslot, divisions.name, first_timeslot ";
+                } else {
+                    $strsql .= "ORDER BY divisions.division_date, divisions.name, first_timeslot ";
+                }
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'scheduledivisions', 'fname'=>'id', 
                         'fields'=>array('id', 'festival_id', 'ssection_id', 'name', 'flags', 'options', 
-                            'division_date_text', 'location_name', 'adjudicator_name', 
+                            'division_date_text', 'location_name', 'adjudicator_name', 'first_timeslot',
                             ),
                         'flags' => array('options'=>$maps['schedulesection']['flags']),
                         ),
@@ -2080,6 +2083,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     $festival['schedule_divisions'] = $rc['scheduledivisions'];
                     $nplists['schedule_divisions'] = array();
                     foreach($festival['schedule_divisions'] as $iid => $scheduledivision) {
+                        error_log($scheduledivision['name'] . ' - ' . $scheduledivision['first_timeslot']);
                         $nplists['schedule_divisions'][] = $scheduledivision['id'];
                     }
                 } else {
