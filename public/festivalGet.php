@@ -2083,7 +2083,6 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     $festival['schedule_divisions'] = $rc['scheduledivisions'];
                     $nplists['schedule_divisions'] = array();
                     foreach($festival['schedule_divisions'] as $iid => $scheduledivision) {
-                        error_log($scheduledivision['name'] . ' - ' . $scheduledivision['first_timeslot']);
                         $nplists['schedule_divisions'][] = $scheduledivision['id'];
                     }
                 } else {
