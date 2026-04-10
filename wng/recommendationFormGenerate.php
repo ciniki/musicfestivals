@@ -194,6 +194,7 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
                         'ftype' => 'select',
                         'options' => $registrations,
                         'value' => 0,
+                        'onchange' => "C.form.setMark({$i},{$cid});",
                         );
                     if( isset($_POST["f-recommendation_{$i}_{$cid}"]) ) {
                         $form_sections[$cid]['fields']["recommendation_{$i}_{$cid}"]['value'] = $_POST["f-recommendation_{$i}_{$cid}"];

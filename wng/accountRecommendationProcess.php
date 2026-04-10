@@ -355,6 +355,16 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
 //        'type' => 'html',
 //        'html' => '<pre>' . print_r($form_sections, true) . '</pre>',
 //        ]]);
+    $js = "C.form.setMark = function(i,cid){"
+        . "var e=C.gE('f-recommendation_'+i+'_'+cid);"
+        . "if(e.value != null && e.options[e.selectedIndex] != null && e.options[e.selectedIndex].text != null) {"
+            . "var mark=e.options[e.selectedIndex].text.match(/ \[([0-9][0-9])\]$/);"
+            . "if(mark != null && mark[1] != null ) {"
+                . "C.gE('f-recommendation_mark_'+i+'_'+cid).value=mark[1];"
+            . "}else{"
+                . "C.gE('f-recommendation_mark_'+i+'_'+cid).value='';"
+            . "}"
+        . "}}";
     $blocks[] = array(
         'type' => 'form',
         'form-id' => 'section-form',
@@ -363,6 +373,7 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
         'problem-list' => $form_errors,
         'section-selector' => 'yes',
         'form-sections' => $form_sections,
+        'js' => $js,
         );
 
     return array('stat'=>'ok', 'blocks'=>$blocks, 'clear'=>'yes', 'stop'=>'yes');

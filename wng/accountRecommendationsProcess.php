@@ -97,7 +97,8 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
         . "registrations.title1, "
         . "registrations.movements1, "
         . "registrations.composer1, "
-        . "registrations.perf_time1 "
+        . "registrations.perf_time1, "
+        . "registrations.mark "
         . "FROM ciniki_musicfestival_adjudicatorrefs AS arefs "
         . "INNER JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
             . "ssections.festival_id = '" . ciniki_core_dbQuote($ciniki, $local['id']) . "' "
@@ -132,7 +133,7 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'classes', 'fname'=>'provincials_code', 'fields'=>array()),
         array('container'=>'registrations', 'fname'=>'id', 
-            'fields'=>array('id', 'class_code', 'class_name', 'mark', 'display_name', 
+            'fields'=>array('id', 'class_code', 'class_name', 'mark', 'display_name', 'mark',
                 'title1', 'movements1', 'composer1', 'perf_time1'),
             ),
         ));
@@ -149,7 +150,7 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
                 return $rc;
             }
             $title = $rc['title'];
-            $adjudicator['registrations'][$cid]['registrations'][$rid]['name'] = $reg['display_name'] . ' - ' . $reg['class_code'] . ' - ' . $reg['class_name'] . ' - ' . $title;
+            $adjudicator['registrations'][$cid]['registrations'][$rid]['name'] = $reg['display_name'] . ' - ' . $reg['class_code'] . ' - ' . $reg['class_name'] . ' - ' . $title . ($reg['mark'] != '' ? " [{$reg['mark']}]" : '');
         }
     }
 
