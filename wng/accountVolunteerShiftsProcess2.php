@@ -40,7 +40,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess2(&$ciniki, $tni
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
     $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1297', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1545', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
     }
     $festival = $rc['festival'];
 
@@ -122,7 +122,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess2(&$ciniki, $tni
             array('container'=>'shifts', 'fname'=>'id', 'fields'=>array('id', 'disciplines')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1479', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1557', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
         }
         $disciplines = isset($rc['shifts']) ? $rc['shifts'] : array();
     }
@@ -179,7 +179,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess2(&$ciniki, $tni
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1260', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1555', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
     }
     $shift_dates = isset($rc['dates']) ? $rc['dates'] : array();
 
@@ -339,7 +339,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess2(&$ciniki, $tni
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'notification');
             if( $rc['stat'] != 'ok' ) {
                 ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1475', 'msg'=>'Unable to load notification', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1543', 'msg'=>'Unable to load notification', 'err'=>$rc['err']));
             }
             $notifications = isset($rc['rows']) ? $rc['rows'] : array();
             foreach($notifications as $notification) {
@@ -347,7 +347,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess2(&$ciniki, $tni
                 $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.musicfestivals.volunteernotification', $notification['id'], $notification['uuid'], 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1476', 'msg'=>'Unable to remove notification', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1556', 'msg'=>'Unable to remove notification', 'err'=>$rc['err']));
                 }
             }
             //
@@ -393,7 +393,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess2(&$ciniki, $tni
                             'customer_email' => $email,
                             ));
                         if( $rc['stat'] != 'ok' ) {
-                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1234', 'msg'=>'Unable to email change request', 'err'=>$rc['err']));
+                            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1554', 'msg'=>'Unable to email change request', 'err'=>$rc['err']));
                         } else {
                             $ciniki['emailqueue'][] = array('mail_id' => $rc['id'], 'tnid'=>$tnid);
                         }
@@ -521,7 +521,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess2(&$ciniki, $tni
                         'template' => 'volunteers-email-shift-assigned',
                         ]);
                     if( $rc['stat'] != 'ok' ) {
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1384', 'msg'=>'Unable to email volunteer', 'err'=>$rc['err']));
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1544', 'msg'=>'Unable to email volunteer', 'err'=>$rc['err']));
                     }
                 }
                 $blocks[] = [

@@ -143,7 +143,7 @@ function ciniki_musicfestivals_provincialsRecommendationEntryDelete($ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1488', 'msg'=>'Unable to delete'));
     }
     if( $entry['status'] != 10 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1488', 'msg'=>'Unable to delete'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1558', 'msg'=>'Unable to delete'));
     }
 
     //

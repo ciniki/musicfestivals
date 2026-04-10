@@ -57,7 +57,7 @@ function ciniki_musicfestivals_templates_volunteersShiftsPDF(&$ciniki, $tnid, $a
                     ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'hooks', 'loadOriginalStorageFilename');
                     $rc = ciniki_images_hooks_loadOriginalStorageFilename($ciniki, $tnid, array('image_id'=>$image_id));
                     if( $rc['stat'] != 'ok' ) {
-                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.302', 'msg'=>'No image specified', 'err'=>$rc['err']));
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1562', 'msg'=>'No image specified', 'err'=>$rc['err']));
                     }
                     $this->header_image_filename = $rc['filename'];
                 }

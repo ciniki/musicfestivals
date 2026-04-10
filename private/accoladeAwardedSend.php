@@ -104,7 +104,7 @@ function ciniki_musicfestivals_accoladeAwardedSend(&$ciniki, $tnid, $args) {
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'competitor');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1340', 'msg'=>'Unable to load competitor', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1564', 'msg'=>'Unable to load competitor', 'err'=>$rc['err']));
             }
             if( isset($rc['competitor']['email']) && $rc['competitor']['email'] != '' ) {
                 if( !isset($emails[$rc['competitor']['email']]) ) {

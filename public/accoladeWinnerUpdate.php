@@ -65,10 +65,10 @@ function ciniki_musicfestivals_accoladeWinnerUpdate(&$ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.408', 'msg'=>'Accolade Winner not found', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1536', 'msg'=>'Accolade Winner not found', 'err'=>$rc['err']));
     }
     if( !isset($rc['winners'][0]) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.409', 'msg'=>'Unable to find Accolade Winner'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1537', 'msg'=>'Unable to find Accolade Winner'));
     }
     $winner = $rc['winners'][0];
 
@@ -88,10 +88,10 @@ function ciniki_musicfestivals_accoladeWinnerUpdate(&$ciniki) {
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1482', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1538', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
         }
         if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
-            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1483', 'msg'=>'This registration has already received this accolade.'));
+            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1539', 'msg'=>'This registration has already received this accolade.'));
         }
     }
 

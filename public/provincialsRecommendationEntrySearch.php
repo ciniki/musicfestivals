@@ -149,7 +149,7 @@ function ciniki_musicfestivals_provincialsRecommendationEntrySearch(&$ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1281', 'msg'=>'Unable to load entries', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1560', 'msg'=>'Unable to load entries', 'err'=>$rc['err']));
     }
     $entries = isset($rc['entries']) ? $rc['entries'] : array();
     foreach($entries as $eid => $entry) {

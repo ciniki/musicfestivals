@@ -73,7 +73,7 @@ function ciniki_musicfestivals_accoladesAwardedSend(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['festival']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1404', 'msg'=>'No festival specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1566', 'msg'=>'No festival specified'));
     }
     $festival = $rc['festival'];
 

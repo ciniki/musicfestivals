@@ -183,22 +183,9 @@ function ciniki_musicfestivals_provincialsRecommendationEntryGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationMessages');
         $rc = ciniki_musicfestivals_registrationMessages($ciniki, $args['tnid'], $entry['registration_id']);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1486', 'msg'=>'Unable to load emails', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1559', 'msg'=>'Unable to load emails', 'err'=>$rc['err']));
         }
         $entry['messages'] = isset($rc['messages']) ? $rc['messages'] : array();
-
-/*        ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'objectMessages');
-        $rc = ciniki_mail_hooks_objectMessages($ciniki, $args['tnid'], [
-//            'object' => 'ciniki.musicfestivals.recommendationentry',
-//            'object_id' => $entry['id'],
-            'object' => 'ciniki.musicfestivals.registration',
-            'object_id' => $entry['registration_id'],
-            'xml' => 'no',
-            ]);
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1341', 'msg'=>'Unable to load emails', 'err'=>$rc['err']));
-        }
-        $entry['messages'] = isset($rc['messages']) ? $rc['messages'] : array(); */
 
         //
         // Get the list of class registrations

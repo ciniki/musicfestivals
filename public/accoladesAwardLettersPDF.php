@@ -73,7 +73,7 @@ function ciniki_musicfestivals_accoladesAwardLettersPDF(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['festival']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1404', 'msg'=>'No festival specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1540', 'msg'=>'No festival specified'));
     }
     $festival = $rc['festival'];
 
@@ -147,7 +147,7 @@ function ciniki_musicfestivals_accoladesAwardLettersPDF(&$ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1484', 'msg'=>'Unable to load winners', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1541', 'msg'=>'Unable to load winners', 'err'=>$rc['err']));
     }
     $winners = isset($rc['winners']) ? $rc['winners'] : array();
 

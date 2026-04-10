@@ -67,7 +67,7 @@ function ciniki_musicfestivals_accolades($ciniki) {
         return $rc;
     }
     if( !isset($rc['festival']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1404', 'msg'=>'No festival specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1550', 'msg'=>'No festival specified'));
     }
     $festival = $rc['festival'];
 
@@ -101,7 +101,7 @@ function ciniki_musicfestivals_accolades($ciniki) {
             array('container'=>'categories', 'fname'=>'id', 'fields'=>array('id', 'sequence', 'name')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1179', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1548', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
         }
         $rsp['categories'] = isset($rc['categories']) ? $rc['categories'] : [];
         array_unshift($rsp['categories'], ['id'=>0, 'sequence'=>0, 'name'=>'All']);
@@ -119,7 +119,7 @@ function ciniki_musicfestivals_accolades($ciniki) {
                 array('container'=>'subcategories', 'fname'=>'id', 'fields'=>array('id', 'sequence', 'name')),
                 ));
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1180', 'msg'=>'Unable to load subcategories', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1549', 'msg'=>'Unable to load subcategories', 'err'=>$rc['err']));
             }
             $rsp['subcategories'] = isset($rc['subcategories']) ? $rc['subcategories'] : array();
             array_unshift($rsp['subcategories'], ['id'=>0, 'sequence'=>0, 'name'=>'All']);
@@ -175,7 +175,7 @@ function ciniki_musicfestivals_accolades($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.623', 'msg'=>'Unable to load accolades', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1551', 'msg'=>'Unable to load accolades', 'err'=>$rc['err']));
         }
         $rsp['accolades'] = isset($rc['accolades']) ? $rc['accolades'] : array();
         $rsp['num_accolades_noemail'] = 0;
@@ -273,7 +273,7 @@ function ciniki_musicfestivals_accolades($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1128', 'msg'=>'Unable to load recipients', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1547', 'msg'=>'Unable to load recipients', 'err'=>$rc['err']));
         }
         $rsp['recipients'] = isset($rc['recipients']) ? $rc['recipients'] : array();
         $rsp['num_recipients_noemail'] = 0;

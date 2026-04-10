@@ -108,7 +108,7 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $tnid, $args)
             ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'hooks', 'loadOriginalStorageFilename');
             $rc = ciniki_images_hooks_loadOriginalStorageFilename($ciniki, $tnid, array('image_id'=>$certificate['image_id']));
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.302', 'msg'=>'No image specified', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1561', 'msg'=>'No image specified', 'err'=>$rc['err']));
             }
             if( isset($certificate['orientation']) && $certificate['orientation'] == 'P' ) {
                 $pdf->Image($rc['filename'], 0, 0, 216, 279, '', '', '', false, 300, '', false, false, 0);

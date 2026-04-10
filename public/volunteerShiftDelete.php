@@ -67,7 +67,7 @@ function ciniki_musicfestivals_volunteerShiftDelete(&$ciniki) {
         'object_id' => $args['shift_id'],
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.624', 'msg'=>'Unable to detach from mail messages.', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1553', 'msg'=>'Unable to detach from mail messages.', 'err'=>$rc['err']));
     } 
 
     //
@@ -162,7 +162,7 @@ function ciniki_musicfestivals_volunteerShiftDelete(&$ciniki) {
             'object_id' => $assignment['id'],
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.624', 'msg'=>'Unable to detach from mail messages.', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1552', 'msg'=>'Unable to detach from mail messages.', 'err'=>$rc['err']));
         } 
 
         //

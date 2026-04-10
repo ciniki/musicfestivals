@@ -83,7 +83,7 @@ function ciniki_musicfestivals_registrationMessages(&$ciniki, $tnid, $registrati
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.321', 'msg'=>'Unable to load messages', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1563', 'msg'=>'Unable to load messages', 'err'=>$rc['err']));
     }
     $messages = isset($rc['messages']) ? $rc['messages'] : array();
     foreach($messages as $mid => $message) {

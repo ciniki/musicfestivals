@@ -115,7 +115,7 @@ function ciniki_musicfestivals_wng_accountVolunteerProfileProcess(&$ciniki, $tni
                 'template' => 'volunteers-email-approved',
                 ]);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1410', 'msg'=>'Unable to email volunteer', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1565', 'msg'=>'Unable to email volunteer', 'err'=>$rc['err']));
             }
         }
     }

@@ -43,7 +43,7 @@ function ciniki_musicfestivals_volunteerConflictCheck(&$ciniki, $tnid, $args) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1511', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
         }
         if( isset($rc['rows']) && count($rc['rows']) > 0 ) {
-            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1511', 'msg'=>'Conflict with another timeslot'));
+            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1542', 'msg'=>'Conflict with another timeslot'));
         }
     }
 
