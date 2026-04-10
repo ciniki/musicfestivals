@@ -173,7 +173,7 @@ function ciniki_musicfestivals_templates_scheduleTMSWord(&$ciniki, $tnid, $args)
     } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
         $strsql .= "AND registrations.participation = 1 ";
     }
-    $strsql .= "ORDER BY ssections.sequence, divisions.division_date, division_id, slot_time, registrations.timeslot_sequence, registrations.public_name "
+    $strsql .= "ORDER BY ssections.sequence, divisions.division_date, divisions.name, division_id, slot_time, registrations.timeslot_sequence, registrations.public_name "
 //    $strsql .= "ORDER BY divisions.division_date, ssections.sequence, divisions.name, divisions.id, slot_time, timeslots.name, timeslots.id, registrations.timeslot_sequence, class_code, registrations.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
