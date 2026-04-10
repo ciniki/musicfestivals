@@ -23,6 +23,7 @@ function ciniki_musicfestivals_scheduleResultsExcel(&$ciniki) {
         'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'schedulesection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Section'),
         'provincials_recommendations'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Provincials Recommendations'),
+        'ipv'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Live/Virtual'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

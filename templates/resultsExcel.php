@@ -83,9 +83,13 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
             . ") "
         . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "AND registrations.teacher_customer_id > 0 "  
-        . "AND registrations.timeslot_id > 0 "  // Scheduled registrations only
-        . "AND registrations.participation <> 1 "   // Live only
-        . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND registrations.timeslot_id > 0 ";  // Scheduled registrations only
+    if( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
+        $strsql .= "AND registrations.participation = 1 ";   // Live only
+    } elseif( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
+        $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";   // Live only
+    }
+    $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "ORDER BY customers.id "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
@@ -113,6 +117,7 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
         . "ssections.name, "
         . "registrations.id AS registration_id, "
         . "registrations.participation, "
+        . "registrations.participation AS participation_text, "
         . "registrations.timeslot_sequence, "
         . "registrations.display_name, "
         . "registrations.competitor1_id, "
@@ -200,6 +205,11 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
     if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
         $strsql .= "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
     }
+    if( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
+        $strsql .= "AND registrations.participation = 1 ";   // Live only
+    } elseif( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
+        $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";   // Live only
+    }
 //    if( isset($args['provincials_recommendations']) && $args['provincials_recommendations'] == 'yes' ) {
 //        $strsql .= "AND registrations.provincials_position > 0 ";
 //    }
@@ -215,7 +225,7 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
             'fields'=>array('id', 'name'=>'section_name'),
             ),
         array('container'=>'registrations', 'fname'=>'registration_id', 
-            'fields'=>array('id'=>'registration_id', 'display_name', 'participation',
+            'fields'=>array('id'=>'registration_id', 'display_name', 'participation', 'participation_text',
                 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
                 'teacher_customer_id', 'teacher2_customer_id',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
@@ -225,8 +235,7 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
                 'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
                 ),
             'maps'=>array(
-                'provincials_status_text'=>$maps['registration']['provincials_status'],
-                'provincials_position_text'=>$maps['registration']['provincials_position'],
+                'participation_text'=>$maps['registration']['participation'],
                 ),
             ),
         array('container'=>'competitors', 'fname'=>'competitor_id', 
@@ -266,6 +275,9 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
             $row = 1;
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Name', false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Age', false);
+            if( ($festival['flags']&0x06) > 0 ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Type', false);
+            }
             if( isset($festival['comments-mark-ui']) && $festival['comments-mark-ui'] == 'yes' ) {
                 if( isset($festival['comments-mark-label']) && $festival['comments-mark-label'] != '' ) {
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['comments-mark-label'], false);
@@ -290,11 +302,11 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Code', false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Category', false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Class', false);
-            if( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Provincial Class', false);
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Position', false);
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Status', false);
-            }
+//            if( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+//                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Provincial Class', false);
+//                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Position', false);
+//                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Status', false);
+//            }
 
             if( !isset($args['provincials_recommendations']) || $args['provincials_recommendations'] != 'yes' ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Titles', false);
@@ -348,6 +360,9 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
             $col = 0;
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['display_name'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['ages'], false);
+            if( ($festival['flags']&0x06) > 0 ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['participation_text'], false);
+            }
             if( isset($festival['comments-mark-ui']) && $festival['comments-mark-ui'] == 'yes' ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['mark'], false);
             }
@@ -360,11 +375,11 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['class_code'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['category_name'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['class_name'], false);
-            if( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['provincials_code'], false);
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['provincials_position_text'], false);
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['provincials_status_text'], false);
-            }
+//            if( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+//                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['provincials_code'], false);
+//                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['provincials_position_text'], false);
+//                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['provincials_status_text'], false);
+//            }
             $rc = ciniki_musicfestivals_titlesMerge($ciniki, $tnid, $registration);
             if( !isset($args['provincials_recommendations']) || $args['provincials_recommendations'] != 'yes' ) {
                 if( isset($rc['titles']) ) {
