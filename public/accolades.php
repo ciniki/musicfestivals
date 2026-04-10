@@ -190,9 +190,33 @@ function ciniki_musicfestivals_accolades($ciniki) {
     // Get the list of recipients
     //
     if( isset($args['recipients']) && $args['recipients'] == 'yes' ) {
+        $strsql = "SELECT competitors.id, "
+            . "competitors.age AS competitor_age, "
+            . "competitors.etransfer_email "
+            . "FROM ciniki_musicfestival_competitors AS competitors "
+            . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+            . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'competitors', 'fname'=>'id', 
+                'fields'=>array('id', 'age'=>'competitor_age', 'etransfer_email')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1535', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
+        }
+        $competitors = isset($rc['competitors']) ? $rc['competitors'] : array();
+        //
+        // Load the winners
+        //
         $strsql = "SELECT winners.id, "
             . "winners.flags, "
             . "IFNULL(registrations.display_name, winners.name) AS recipient_name, "
+            . "IFNULL(registrations.competitor1_id, 0) AS competitor1_id, "
+            . "IFNULL(registrations.competitor2_id, 0) AS competitor2_id, "
+            . "IFNULL(registrations.competitor3_id, 0) AS competitor3_id, "
+            . "IFNULL(registrations.competitor4_id, 0) AS competitor4_id, "
+            . "IFNULL(registrations.competitor5_id, 0) AS competitor5_id, "
             . "winners.discipline, "
             . "winners.awarded_amount, "
             . "winners.payment_conf_code, "
@@ -244,7 +268,8 @@ function ciniki_musicfestivals_accolades($ciniki) {
             array('container'=>'recipients', 'fname'=>'id', 
                 'fields'=>array('id', 'flags', 'recipient_name', 'awarded_amount', 'accolade_id', 'name', 'discipline', 
                     'subcategory_id', 'category_name', 'subcategory_name', 
-                    'payment_conf_code', 'cheque_number', 'internal_notes'),
+                    'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 
+                    'payment_conf_code', 'cheque_number', 'internal_notes', ),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -263,6 +288,16 @@ function ciniki_musicfestivals_accolades($ciniki) {
                 }
                 $rsp['recipients'][$rid]['email_sent'] = ($recipient['flags']&0x01) == 0x01 ? 'Sent' : '';
                 $rsp['recipients'][$rid]['payment_sent'] = ($recipient['flags']&0x02) == 0x02 ? 'Sent' : '';
+                $rsp['recipients'][$rid]['age'] = '';
+                for($i = 1; $i <= 5; $i++) {
+                    if( $recipient["competitor{$i}_id"] > 0 
+                        && isset($competitors[$recipient["competitor{$i}_id"]]['age']) 
+                        && $competitors[$recipient["competitor{$i}_id"]]['age'] != '' 
+                        ) {
+                        $rsp['recipients'][$rid]['age'] .= ($rsp['recipients'][$rid]['age'] != '' ? ', ' : '') 
+                            . $competitors[$recipient["competitor{$i}_id"]]['age'];
+                    }
+                }
             }
         }
 
@@ -278,6 +313,7 @@ function ciniki_musicfestivals_accolades($ciniki) {
                         ['label' => 'Subcategory', 'field' => 'subcategory_name'],
                         ['label' => 'Accolade', 'field' => 'name'],
                         ['label' => 'Recipient', 'field' => 'recipient_name'],
+                        ['label' => 'Age', 'field' => 'age'],
                         ['label' => 'Discipline', 'field' => 'discipline'],
                         ['label' => 'Amount', 'field' => 'awarded_amount'],
                         ['label' => 'Email Sent', 'field' => 'email_sent'],
