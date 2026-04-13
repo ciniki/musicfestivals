@@ -76,6 +76,9 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
         $start_dt = new DateTime($festival['start_date'], new DateTimezone($intl_timezone));
         $end_dt = new DateTime($festival['end_date'] . ' 11:59pm', new DateTimezone($intl_timezone));
         $now = new DateTime('now', new DateTimezone($intl_timezone));
+        // Open up photo editing 10 days before and 10 days after
+        $start_dt->sub(new DateInterval('P10D'));
+        $end_dt->add(new DateInterval('P10D'));
 
         if( $start_dt < $now && $end_dt > $now ) {
             $current_festival = 'yes';
