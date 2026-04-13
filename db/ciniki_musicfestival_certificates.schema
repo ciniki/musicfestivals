@@ -26,7 +26,7 @@
 #                               L - landscape (default)
 #                               P - Portrait
 #
-# section_id:               The ID of the section the certificate is for, or 0 for all sections.
+# section_id:               The ID of the section the certificate is for, or 0 for all sections. **Deprecated**
 # min_score:                The minimum score to receive this certficate.
 # participation:            The participation type the certificate applies to.
 #

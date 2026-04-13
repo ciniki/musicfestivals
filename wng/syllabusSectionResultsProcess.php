@@ -13,6 +13,7 @@
 function ciniki_musicfestivals_wng_syllabusSectionResultsProcess(&$ciniki, $tnid, &$request, $section) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'classNameFormat');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
 
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.943', 'msg'=>"I'm sorry, the page you requested does not exist."));
@@ -87,6 +88,17 @@ function ciniki_musicfestivals_wng_syllabusSectionResultsProcess(&$ciniki, $tnid
         if( isset($s['thumbnail-padding-color']) && $s['thumbnail-padding-color'] != '' ) {
             $thumbnail_padding_color = $s['thumbnail-padding-color'];
         } 
+    }
+
+    $registrations_sql = '';
+    if( isset($s['valid-placements']) && $s['valid-placements'] != '' && $s['valid-placements'] != 'All' ) {
+        $placements = explode(',', $s['valid-placements']);
+        foreach($placements as $placement) {
+            $registrations_sql .= ($registrations_sql != '' ? ', ' : '') . "'" . ciniki_core_dbQuote($ciniki, $placement) . "' ";
+        }
+        if( $registrations_sql != '' ) {
+            $registrations_sql = "AND registrations.placement IN (" . $registrations_sql . ") ";
+        }
     }
    
     if( isset($s['section-id']) ) {
@@ -283,6 +295,7 @@ function ciniki_musicfestivals_wng_syllabusSectionResultsProcess(&$ciniki, $tnid
 //        . $level_strsql 
         . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "classes.id = registrations.class_id "
+            . $registrations_sql 
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
@@ -366,17 +379,17 @@ function ciniki_musicfestivals_wng_syllabusSectionResultsProcess(&$ciniki, $tnid
                                 //
                                 // Make sure the title exists
                                 //
-                                if( isset($registration["title{$i}"]) && $registration["title{$i}"] != '' ) {
-                                    $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $registration, $i);
+                                if( isset($reg["title{$i}"]) && $reg["title{$i}"] != '' ) {
+                                    $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
                                     if( $rc['stat'] != 'ok' ) {
                                         return $rc;
                                     }
                                     if( isset($s['video_urls']) && $s['video_urls'] == 'yes' 
-                                        && isset($registration["video_url{$i}"]) && $registration["video_url{$i}"] != '' 
+                                        && isset($reg["video_url{$i}"]) && $reg["video_url{$i}"] != '' 
                                         ) {
                                         $titles .= "<div class='video-title'><span class='perf-title'>{$rc['title']}</span>"
                                             . "<span class='perf-video'>"
-                                            . "<a target='_blank' class='link' href='" . $registration["video_url{$i}"] . "'>Watch Video</a>"
+                                            . "<a target='_blank' class='link' href='" . $reg["video_url{$i}"] . "'>Watch Video</a>"
                                             . "</span></div>";
                                     } else {
                                         $titles .= "<div class='perf-title'>{$rc['title']}</div>";

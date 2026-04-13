@@ -83,8 +83,16 @@ function ciniki_musicfestivals_wng_syllabusResultsProcess(&$ciniki, $tnid, &$req
         } 
     }
 
-    $schedule_sql = "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
-        . ") ";
+    $registrations_sql = '';
+    if( isset($s['valid-placements']) && $s['valid-placements'] != '' && $s['valid-placements'] != 'All' ) {
+        $placements = explode(',', $s['valid-placements']);
+        foreach($placements as $placement) {
+            $registrations_sql .= ($registrations_sql != '' ? ', ' : '') . "'" . ciniki_core_dbQuote($ciniki, $placement) . "' ";
+        }
+        if( $registrations_sql != '' ) {
+            $registrations_sql = "AND registrations.placement IN (" . $registrations_sql . ") ";
+        }
+    }
 
     //
     // Get the list of sections
@@ -112,6 +120,7 @@ function ciniki_musicfestivals_wng_syllabusResultsProcess(&$ciniki, $tnid, &$req
             . ") "
         . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "classes.id = registrations.class_id "
+            . $registrations_sql
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
@@ -127,8 +136,8 @@ function ciniki_musicfestivals_wng_syllabusResultsProcess(&$ciniki, $tnid, &$req
             . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' ";
-        . "AND sections.syllabus_id = '" . ciniki_core_dbQuote($ciniki, $syllabus['id']) . "' ";
+        . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+        . "AND sections.syllabus_id = '" . ciniki_core_dbQuote($ciniki, $syllabus['id']) . "' "
         . "AND (sections.flags&0x01) = 0 " // Visible on website
         . "AND ("
             . "(divisions.flags&0x20) = 0x20 "

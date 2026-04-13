@@ -694,6 +694,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'no' => 'No',
                     'yes' => 'Yes',
                     )),
+//            'valid-placements' => array('label'=>'Show Placements', 'type'=>'text', 'size'=>'small', 'hint'=>'All'),
             'level' => array('label'=>'Show Level', 'type'=>'toggle', 'default'=>'no',
                 'toggles'=>array(
                     'no' => 'No',
@@ -738,6 +739,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 ),
             );
     }
+
 
     //
     // Section to display the results the same as syllabus syllabus
@@ -815,6 +817,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'no' => 'No',
                     'yes' => 'Yes',
                     )),
+            'valid-placements' => array('label'=>'Show Placements', 'type'=>'text', 'size'=>'small', 'hint'=>'All'),
             'level' => array('label'=>'Show Level', 'type'=>'toggle', 'default'=>'no',
                 'toggles'=>array(
                     'no' => 'No',
