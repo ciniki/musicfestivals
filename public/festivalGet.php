@@ -1066,7 +1066,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     $strsql .= "COUNT(registrations.id) AS num_registrations ";
                 }
                 $strsql .= "FROM ciniki_musicfestival_registrations AS registrations "
-                    . "LEFT JOIN ciniki_customers AS customers ON ("
+                    . "INNER JOIN ciniki_customers AS customers ON ("
                         . "registrations.accompanist_customer_id = customers.id "
                         . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                         . ") "
