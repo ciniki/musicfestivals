@@ -109,7 +109,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             $schedulesection[$k] = $v;
         }
     }
-    if( isset($schedulesection['webheader_sponsor_ids']) ) {
+    if( isset($schedulesection['webheader_sponsor_ids']) && $schedulesection['webheader_sponsor_ids'] != '' ) {
         $schedulesection['webheader_sponsor_ids'] = explode(',', $schedulesection['webheader_sponsor_ids']);
     }
     if( $schedulesection['provincial_settings'] != '' ) {
