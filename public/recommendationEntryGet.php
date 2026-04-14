@@ -338,11 +338,12 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND ("
-                . "entries.name like '" . ciniki_core_dbQuote($ciniki, $entry['name']) . "%' "
-                . "OR entries.name like '% " . ciniki_core_dbQuote($ciniki, $entry['name']) . "%' "
-                . ") "
-            . "ORDER BY class_code, entries.position "
+            . "AND entries.name REGEXP '" . ciniki_core_dbQuote($ciniki, preg_replace("/ +/", " +", trim($entry['name']))) . "' "
+//            . "AND ("
+//                . "entries.name like '" . ciniki_core_dbQuote($ciniki, trim($entry['name'])) . "%' "
+//                . "OR entries.name like '% " . ciniki_core_dbQuote($ciniki, trim($entry['name'])) . "%' "
+//                . ") "
+            . "ORDER BY class_code, entries.position, entries.id "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
