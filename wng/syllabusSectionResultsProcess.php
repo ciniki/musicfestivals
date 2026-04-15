@@ -236,9 +236,13 @@ function ciniki_musicfestivals_wng_syllabusSectionResultsProcess(&$ciniki, $tnid
         . "classes.fee, "
         . "classes.virtual_fee, "
         . "classes.earlybird_plus_fee, "
-        . "classes.plus_fee, "
-        . "timeslots.groupname, "
-        . "registrations.id AS registration_id, "
+        . "classes.plus_fee, ";
+    if( isset($s['split-groups']) && $s['split-groups'] == 'no' ) {
+        $strsql .= "'' AS groupname, ";
+    } else {
+        $strsql .= "timeslots.groupname, ";
+    }
+    $strsql .= "registrations.id AS registration_id, "
         . "registrations.display_name, "
         . "registrations.public_name, "
         . "registrations.flags AS reg_flags, "

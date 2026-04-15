@@ -791,6 +791,11 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'code-section-category-class'=>'Code - Section - Category - Class',
                 'code-category-class'=>'Code - Category - Class',
                 )), 
+            'split-groups'=>array('label'=>'Split Groups', 'type'=>'toggle', 'default'=>'yes',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
             'titles' => array('label'=>'Titles', 'type'=>'toggle', 'default'=>'no',
                 'toggles'=>array(
                     'no' => 'No',
