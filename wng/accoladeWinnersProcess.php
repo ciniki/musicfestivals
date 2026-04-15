@@ -161,7 +161,10 @@ function ciniki_musicfestivals_wng_accoladeWinnersProcess(&$ciniki, $tnid, &$req
             'title' => $subcategory['name'],
             'headers' => 'yes',
             'columns' => array(
-                array('label' => 'Trophy/Award/Scholarship', 'field' => 'name'),
+                array('label' => 
+                    (isset($s['table-header-1']) && $s['table-header-1'] != '' ? $s['table-header-1'] : 'Trophy/Award/Scholarship'), 
+                    'field' => 'name',
+                    ),
                 array('label' => 'Recipient', 'field' => 'winner_name'),
                 ),
             'rows' => $subcategory['winners'],

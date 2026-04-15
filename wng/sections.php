@@ -1058,6 +1058,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
             'settings' => array(
                 'title' => array('label'=>'Title', 'type'=>'text'),
                 'year' => array('label'=>'Year', 'type'=>'text'),
+                'table-header-1' => array('label'=>'Table Header', 'type'=>'text'),
 //                'display-format' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
 //                    'buttons-imagebuttons-accolade' => 'Category Buttons - Image Buttons - Accolade',
 //                    'buttons-buttons-accolade' => 'Category Buttons - Accolade Buttons - Accolade',
