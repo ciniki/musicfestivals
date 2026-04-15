@@ -421,7 +421,7 @@ function ciniki_musicfestivals_wng_syllabusSectionResultsProcess(&$ciniki, $tnid
                     $blocks[] = array(
                         'type' => 'table',
                         'title' => $name,
-                        'class' => 'musicfestival-timeslots limit-width limit-width-90 fold-at-50',
+                        'class' => 'musicfestival-timeslots musicfestival-syllabus-results limit-width limit-width-90 fold-at-50',
                         'headers' => 'no',
                         'columns' => $columns,
                         'rows' => $group['registrations'],
