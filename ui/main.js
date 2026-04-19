@@ -17326,7 +17326,12 @@ function ciniki_musicfestivals_main() {
                     M.api.err(rsp);
                     return false;
                 }
-                M.ciniki_musicfestivals_main.recommendation.close();
+                var p = M.ciniki_musicfestivals_main.recommendation;
+                if( p.nplist != null && p.nplist.indexOf('' + p.recommendation_id) < (p.nplist.length - 1) ) {
+                    p.open(null,p.nplist[p.nplist.indexOf('' + p.recommendation_id) + 1]);
+                } else {
+                    M.ciniki_musicfestivals_main.recommendation.close();
+                }
             });
         });
     }
