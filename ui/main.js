@@ -16271,7 +16271,6 @@ function ciniki_musicfestivals_main() {
     }
     this.message.save = function(cb) {
         if( cb == null ) { cb = 'M.ciniki_musicfestivals_main.message.close();'; }
-        if(
         if( !this.checkForm() ) { return false; }
         if( this.message_id > 0 ) {
             var c = this.serializeForm('no');
