@@ -5025,6 +5025,11 @@ function ciniki_musicfestivals_main() {
                 this.sections.registration_search.lastsearch = M.gE(this.panelUID + '_registration_search').value;
             }
         }
+        if( this.menutabs.selected == 'recommendations' ) {
+            if( M.gE(this.panelUID + '_recommendation_search').value != '' ) {
+                this.sections.recommendation_search.lastsearch = M.gE(this.panelUID + '_recommendation_search').value;
+            }
+        }
         this.open(cb,fid,list);
     }
     this.festival.open = function(cb, fid, list) {
@@ -5559,6 +5564,15 @@ function ciniki_musicfestivals_main() {
                 t.style.display = 'table';
                 p.liveSearchCb('registration_search', null, p.sections['registration_search'].lastsearch);
                 delete p.sections['registration_search'].lastsearch;
+            }
+            else if( p.sections['recommendation_search'].lastsearch != null 
+                && p.sections['recommendation_search'].lastsearch != '' 
+                ) {
+                M.gE(p.panelUID + '_recommendation_search').value = p.sections['recommendation_search'].lastsearch;
+                var t = M.gE(p.panelUID + '_recommendation_search_livesearch_grid');
+                t.style.display = 'table';
+                p.liveSearchCb('recommendation_search', null, p.sections['recommendation_search'].lastsearch);
+                delete p.sections['recommendation_search'].lastsearch;
             }
         });
     }
