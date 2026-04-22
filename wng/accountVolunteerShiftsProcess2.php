@@ -244,10 +244,13 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess2(&$ciniki, $tni
                             } else {
                                 $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['buttons'] .= "<span class='text'>Request Pending</span>";
                             }
+                            $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['buttons'] .= "<a class='button' href='{$base_url}/shifts/{$date['shift_date']}/{$permalink}/{$shift['uuid']}'>Open</a>";
                         } elseif( $shift['num_volunteers'] >= $shift['max_volunteers'] ) {
                             $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['buttons'] .= "<span class='text'>Filled</span>";
-                        } 
-                        $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['buttons'] .= "<a class='button' href='{$base_url}/shifts/{$date['shift_date']}/{$permalink}/{$shift['uuid']}'>Open</a>";
+                            $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['buttons'] .= "<a class='button' href='{$base_url}/shifts/{$date['shift_date']}/{$permalink}/{$shift['uuid']}'>View</a>";
+                        } else {
+                            $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['buttons'] .= "<a class='button' href='{$base_url}/shifts/{$date['shift_date']}/{$permalink}/{$shift['uuid']}'>Open</a>";
+                        }
                         $shift_dates[$did]['shifts'][$sid] = $shift_dates[$did]['roles'][$rid]['shifts'][$sid];
                     }
                     uasort($shift_dates[$did]['roles'][$rid]['shifts'], function($a, $b) {
@@ -258,11 +261,19 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess2(&$ciniki, $tni
                         });
                 }
                 $shift_dates[$did]['roles'][$rid]['num_open_text'] = $shift_dates[$did]['roles'][$rid]['num_open'] > 0 ? $shift_dates[$did]['roles'][$rid]['num_open'] : 'Filled';
-                $shift_dates[$did]['roles'][$rid]['buttons'] = "<a class='button' href='{$base_url}/shifts/{$date['shift_date']}/{$permalink}'>Open</a>";
+                if( $shift_dates[$did]['roles'][$rid]['num_open'] > 0 ) {
+                    $shift_dates[$did]['roles'][$rid]['buttons'] = "<a class='button' href='{$base_url}/shifts/{$date['shift_date']}/{$permalink}'>Open</a>";
+                } else {
+                    $shift_dates[$did]['roles'][$rid]['buttons'] = "<a class='button' href='{$base_url}/shifts/{$date['shift_date']}/{$permalink}'>View</a>";
+                }
             }
         }
         $shift_dates[$did]['num_open_text'] = $shift_dates[$did]['num_open'] > 0 ? $shift_dates[$did]['num_open'] : 'Filled';
-        $shift_dates[$did]['buttons'] = "<a class='button' href='{$base_url}/shifts/{$date['shift_date']}'>Open</a>";
+        if( $shift_dates[$did]['num_open'] > 0 ) {
+            $shift_dates[$did]['buttons'] = "<a class='button' href='{$base_url}/shifts/{$date['shift_date']}'>Open</a>";
+        } else {
+            $shift_dates[$did]['buttons'] = "<a class='button' href='{$base_url}/shifts/{$date['shift_date']}'>View</a>";
+        }
         uasort($shift_dates[$did]['shifts'], function($a, $b) {
             if( $a['location'] != $b['location'] ) {
                 return strcasecmp($a['location'], $b['location']);
