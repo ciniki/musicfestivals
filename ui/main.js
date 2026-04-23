@@ -2173,11 +2173,11 @@ function ciniki_musicfestivals_main() {
             'sortable':'yes',
             'sortTypes':['text', 'text', 'date', 'text', 'number'],
             }, 
-        'recommendation_entries':{'label':'Recommendations', 'type':'simplegrid', 'num_cols':6,
+        'recommendation_entries':{'label':'Recommendations', 'type':'simplegrid', 'num_cols':7,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'classes' ? 'yes' : 'no'; },
-            'headerValues':['Name', 'Position', 'Mark', 'Festival', 'Date Submitted', 'Deadline'],
+            'headerValues':['Name', 'Position', 'Mark', 'Festival', 'Date Submitted', 'Status', 'Deadline'],
             'sortable':'yes', 
-            'sortTypes':['text', 'text', 'number', 'text', 'date', ''],
+            'sortTypes':['text', 'altnumber', 'number', 'text', 'date', 'altnumber', ''],
             },
         'recommendation_member_entries':{'label':'Member Entries', 'type':'simplegrid', 'num_cols':6,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'memberentries' ? 'yes' : 'no'; },
@@ -3382,11 +3382,12 @@ function ciniki_musicfestivals_main() {
         if( s == 'recommendation_entries' ) {
             switch(j) { 
                 case 0: return d.name;
-                case 1: return d.position;
+                case 1: return d.position_text;
                 case 2: return d.mark;
                 case 3: return d.member_name;
                 case 4: return d.date_submitted;
-                case 5: return d.end_date + ' [+' + d.latedays + ']';
+                case 5: return d.status_text;
+                case 6: return d.end_date + ' [+' + d.latedays + ']';
             }
         }
         if( s == 'recommendation_member_entries' ) {
@@ -3452,6 +3453,12 @@ function ciniki_musicfestivals_main() {
         if( s == 'videos' ) {
             switch(j) {
                 case 4: return d.status;
+            }
+        }
+        if( s == 'recommendation_entries' ) {
+            switch(j) {
+                case 1: return d.position;
+                case 5: return d.status;
             }
         }
         return '';

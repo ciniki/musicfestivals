@@ -4612,7 +4612,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             if( isset($args['class_id']) && $args['class_id'] > 0 ) {
                 $strsql = "SELECT entries.id, "
                     . "entries.status, "
+                    . "entries.status AS status_text, "
                     . "IF(entries.status >= 70, 600, entries.position) AS position, "
+                    . "IF(entries.status >= 70, 600, entries.position) AS position_text, "
                     . "entries.name, "
                     . "entries.mark, "
                     . "recommendations.id AS recommendation_id, "
@@ -4644,13 +4646,16 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'entries', 'fname'=>'id', 
-                        'fields'=>array('id', 'status', 'recommendation_id', 'position', 'name', 'mark',
+                        'fields'=>array('id', 'status', 'status_text', 'recommendation_id', 'position', 'position_text', 'name', 'mark',
                             'date_submitted', 'member_id', 'section_id', 'member_name', 'end_date', 'latedays'),
                         'utctotz'=>array(
                             'date_submitted'=> array('timezone'=>$intl_timezone, 'format'=>'M j, Y g:i:s A'),
                             'end_date'=> array('timezone'=>$intl_timezone, 'format'=>'M j'),
                             ),
-                        'maps'=>array('position'=>$maps['recommendationentry']['position_shortname']),
+                        'maps'=>array(
+                            'position_text'=>$maps['recommendationentry']['position_shortname'],
+                            'status_text'=>$maps['recommendationentry']['status'],
+                            ),
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
