@@ -313,7 +313,7 @@ function ciniki_musicfestivals_provincials($ciniki) {
                 . ") "
             . "WHERE recommendations.member_id = '" . ciniki_core_dbQuote($ciniki, $member['id']) . "' "
             . "AND recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $provincials_festival_id) . "' "
-            . "ORDER BY recommendations.date_submitted DESC, section_name "
+            . "ORDER BY recommendations.status, recommendations.date_submitted DESC, section_name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
