@@ -2146,7 +2146,7 @@ function ciniki_musicfestivals_main() {
             },
         'recommendation_classes':{'label':'Classes', 'aside':'yes', 'type':'simplegrid', 'num_cols':3,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.menutabs.selected == 'recommendations' && M.ciniki_musicfestivals_main.festival.sections.recommendation_tabs.selected == 'classes' ? 'yes' : 'no'; },
-            'headerValues':['Class', 'W', 'G'],
+            'headerValues':['Class', 'N', 'A/R'],
             'headerClasses':['', 'alignright', 'alignright', 'alignright'],
             'cellClasses':['', 'alignright', 'alignright', 'alignright'],
             },

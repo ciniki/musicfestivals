@@ -4562,7 +4562,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "(SELECT COUNT(ar.id) "
                     . "FROM ciniki_musicfestival_recommendation_entries AS ar "
                     . "WHERE classes.id = ar.class_id "
-                    . "AND (ar.status = 30 OR ar.status = 50) "
+                    . "AND (ar.status >= 40 AND ar.status <= 50) "
                     . "AND ar.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . ") AS num_acceptedreg, "
                 . "(SELECT COUNT(entries.id) "
