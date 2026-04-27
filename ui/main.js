@@ -6318,6 +6318,12 @@ function ciniki_musicfestivals_main() {
                     'no':'No',
                     'yes':'Yes',
                     }},
+                'competitor-group-disable':{'label':'Disable Group', 'type':'toggle', 'default':'no', 'separator':'no', 
+                    'visible':function() { return (M.userPerms&0x01) == 1 ? 'yes' : 'no'; },
+                    'toggles':{
+                        'no':'No',
+                        'yes':'Yes',
+                    }},
             }},
         '_waiver':{'label':'General Waiver', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('competitors'); },

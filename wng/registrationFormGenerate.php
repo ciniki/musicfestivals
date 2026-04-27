@@ -657,11 +657,13 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'class' => (isset($selected_class['flags']) && ($selected_class['flags']&0xC000) == 0x8000 ? 'hidden' : ''),
             'name' => 'Add Individual ' . $festival['competitor-label-singular'],
             );
-        $fields["competitor{$i}_id"]['options']['addgroup'] = array(
-            'id' => '-2',
-            'class' => (isset($selected_class['flags']) && ($selected_class['flags']&0xC000) == 0x4000 ? 'hidden' : ''),
-            'name' => 'Add Group/Ensemble',
-            );
+        if( !isset($festival['competitor-group-disable']) || $festival['competitor-group-disable'] != 'yes' ) {
+            $fields["competitor{$i}_id"]['options']['addgroup'] = array(
+                'id' => '-2',
+                'class' => (isset($selected_class['flags']) && ($selected_class['flags']&0xC000) == 0x4000 ? 'hidden' : ''),
+                'name' => 'Add Group/Ensemble',
+                );
+        }
             //
             // DO NOT ADD EDIT BUTTON
             // It will confuse customers and think to change competitor they just change name 
@@ -1479,8 +1481,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     . "C.rC(C.gE('f-instrument').parentNode,'hidden');"
                 . "}else{"
                     . "C.aC(C.gE('f-instrument').parentNode,'hidden');"
-                . "}"
-                . "if((classes[c].f&0xC000)==0x4000){"
+                . "}";
+            if( !isset($festival['competitor-group-disable']) || $festival['competitor-group-disable'] != 'yes' ) {
+                $js .= "if((classes[c].f&0xC000)==0x4000){"
                     . "C.aC(C.gE('f-competitor1_id').lastChild,'hidden');"
                     . "C.aC(C.gE('f-competitor2_id').lastChild,'hidden');"
                     . "C.aC(C.gE('f-competitor3_id').lastChild,'hidden');"
@@ -1506,6 +1509,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     . "C.rC(C.gE('f-competitor4_id').lastChild.previousSibling,'hidden');"
                     . "C.rC(C.gE('f-competitor5_id').lastChild.previousSibling,'hidden');"
                 . "}"; 
+            }
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) ) {
                 $js .= "if((classes[c].f&0x403000)>0){"
                     . "C.rC(C.gE('f-accompanist_customer_id').parentNode,'hidden');"

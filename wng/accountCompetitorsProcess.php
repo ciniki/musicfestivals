@@ -518,20 +518,34 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         }
 
         if( ($festival['flags']&0x01) == 0x01 && ($festival['live'] == 'yes' || $festival['virtual'] == 'yes') ) {
-            $blocks[] = array(
-                'type' => 'buttons',
-                'class' => 'limit-width limit-width-40 aligncenter',
-                'list' => array(
-                    array(
-                        'text' => 'Add Individual',
-                        'url' => "/account/musicfestival/competitors?add=individual",
+            if( isset($festival['competitor-group-disable']) && $festival['competitor-group-disable'] == 'yes' ) {
+                $blocks[] = array(
+                    'type' => 'buttons',
+                    'class' => 'limit-width limit-width-40 aligncenter',
+                    'list' => array(
+                        array(
+                            'text' => 'Add Individual',
+                            'url' => "/account/musicfestival/competitors?add=individual",
+                            ),
                         ),
-                    array(
-                        'text' => 'Add Group/Ensemble',
-                        'url' => "/account/musicfestival/competitors?add=group",
+                    );
+
+            } else {
+                $blocks[] = array(
+                    'type' => 'buttons',
+                    'class' => 'limit-width limit-width-40 aligncenter',
+                    'list' => array(
+                        array(
+                            'text' => 'Add Individual',
+                            'url' => "/account/musicfestival/competitors?add=individual",
+                            ),
+                        array(
+                            'text' => 'Add Group/Ensemble',
+                            'url' => "/account/musicfestival/competitors?add=group",
+                            ),
                         ),
-                    ),
-                );
+                    );
+            }
             if( isset($customer_switch_type_block) ) {
                 $blocks[] = $customer_switch_type_block;
             }

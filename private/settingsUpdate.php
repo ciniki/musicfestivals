@@ -303,6 +303,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'competitor-group-etransfer-email-label',
         'competitor-group-etransfer-email-confirm',
         'competitor-group-notes-enable',
+        'competitor-group-disable',
         'provincial-festival-id',
         'scheduling-age-show',
         'scheduling-group-size-show',
