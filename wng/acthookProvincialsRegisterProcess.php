@@ -172,6 +172,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
         . "localreg.composer8, "
         . "localreg.movements8, "
         . "localreg.perf_time8, "
+        . "localreg.instrument, "
         . "localclasses.code AS local_class_code, "
         . "localclasses.name AS local_class_name, "
         . "localcategories.name AS local_category_name, "
@@ -320,8 +321,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
         . "competitors.name, "
         . "competitors.pronoun, "
         . "competitors.parent, "
-        . "competitors.age, "
-        . "competitors.instrument "
+        . "competitors.age "
         . "FROM ciniki_musicfestival_competitors AS competitors "
         . "WHERE competitors.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
         . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -330,7 +330,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'name', 'pronoun', 'parent', 'age', 'instrument')),
+        array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'name', 'pronoun', 'parent', 'age')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1395', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
@@ -349,6 +349,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
             'entry_id' => $entry['id'],
             'member_id' => $entry['member_id'],
             'class_id' => $entry['class_id'],
+            'instrument' => $entry['instrument'],
             ];
         for($i = 1; $i <= 8; $i++) {
             foreach(['title', 'movements', 'composer', 'perf_time'] as $field) {
@@ -398,7 +399,6 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
                 . "age, "
                 . "study_level, "
                 . "last_exam, "
-                . "instrument, "
                 . "etransfer_email, "
                 . "notes "
                 . "FROM ciniki_musicfestival_competitors "
@@ -425,8 +425,8 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
             // Check if competitor exists already
             //
             foreach($competitors as $c) {
-                if( $c['name'] == $local_competitor['name']
-                    && $c['parent'] == $local_competitor['parent']
+                if( strtolower($c['name']) == strtolower($local_competitor['name'])
+                    && strtolower($c['parent']) == strtolower($local_competitor['parent'])
                     ) {
                     $request['session']['musicfestival-registration']["competitor{$i}_id"] = $c['id'];
                     continue 2;
