@@ -521,7 +521,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
     //
     if( $customer_type == 20 ) {
         $request['session']['musicfestival-registration']['teacher_customer_id'] = $request['session']['customer']['id'];
-               
+        $request['session']['musicfestival-registration']['teacher_name'] = $request['session']['customer']['display_name'];
     } elseif( $entry['teacher_customer_id'] > 0 ) {
         //
         // Lookup local teacher and set up in provincials
@@ -549,7 +549,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
             //
             // Check if teacher exists in provincials
             //
-            $strsql = "SELECT emails.id, emails.customer_id "
+            $strsql = "SELECT emails.id, emails.customer_id, customers.display_name "
                 . "FROM ciniki_customer_emails AS emails "
                 . "INNER JOIN ciniki_customers AS customers ON ("
                     . "emails.customer_id = customers.id "
@@ -566,6 +566,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
             }
             if( isset($rc['customer']) ) {
                 $request['session']['musicfestival-registration']['teacher_customer_id'] = $rc['customer']['customer_id'];
+                $request['session']['musicfestival-registration']['teacher_name'] = $rc['customer']['display_name'];
             } else {
                 // 
                 // Add teacher
@@ -586,6 +587,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
                         ]]);
                 }
                 $request['session']['musicfestival-registration']['teacher_customer_id'] = $rc['id'];
+                $request['session']['musicfestival-registration']['teacher_name'] = trim($teacher_first . ' ' . $teacher_last);
             }
         }
     }
@@ -617,7 +619,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
         ) {
         $teachers[$request['session']['musicfestival-registration']['teacher_customer_id']] = [
             'id' => $request['session']['musicfestival-registration']['teacher_customer_id'],
-            'name' => trim($teacher_first . ' ' . $teacher_last),
+            'name' => $request['session']['musicfestival-registration']['teacher_name'],
             ];
     }
 
