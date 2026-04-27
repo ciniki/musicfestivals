@@ -160,6 +160,8 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
 //                    || (($selected_class['flags']&0x20) == 0 && $field['id'] == 'competitor3_id')
 //                    || (($selected_class['flags']&0x10) == 0 && $field['id'] == 'competitor2_id')
                 || (($selected_class['flags']&0x04) == 0 && $field['id'] == 'instrument')
+                || ($customer_type != 20 && $fields['teacher_customer_id'] != -1 && $field['id'] == 'teacher_first')
+                || ($customer_type != 20 && $fields['teacher_customer_id'] != -1 && $field['id'] == 'teacher_last')
                 || ($customer_type != 20 && $fields['teacher_customer_id'] != -1 && $field['id'] == 'teacher_email')
                 ) {
                 continue;
