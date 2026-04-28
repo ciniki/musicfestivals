@@ -434,6 +434,9 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksSheetPDF(&$ciniki,
                     }
                     $pdf->date_time = $division['date'] . ' ' . $timeslot['time'];
                     $pdf->class_name = $timeslot['class_code'] . ' - ' . $timeslot['class_name'];
+                    if( $timeslot['groupname'] != '' ) {
+                        $pdf->class_name .= ' - ' . $timeslot['groupname'];
+                    }
                     $pdf->adjudicator_name = $adjudicator['name'];
 
                     $pdf->AddPage();
