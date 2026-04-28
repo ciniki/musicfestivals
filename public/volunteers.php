@@ -137,11 +137,23 @@ function ciniki_musicfestivals_volunteers($ciniki) {
             . "volunteers.status AS status_text, "
             . "volunteers.customer_id, "
             . "customers.display_name AS customer_name, "
-            . "IF(volunteers.shortname <> '', volunteers.shortname, customers.display_name) AS display_name "
+            . "IF(volunteers.shortname <> '', volunteers.shortname, customers.display_name) AS display_name, "
+            . "shifts.id AS shift_id, "
+            . "shifts.shift_date, "
+            . "TIME_TO_SEC(shifts.start_time) AS start_seconds, "
+            . "TIME_TO_SEC(shifts.end_time) AS end_seconds "
             . "FROM ciniki_musicfestival_volunteers AS volunteers "
             . "LEFT JOIN ciniki_customers AS customers ON ("
                 . "volunteers.customer_id = customers.id "
                 . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_volunteer_assignments AS assignments ON ("
+                . "volunteers.id = assignments.volunteer_id "
+                . "AND assignments.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_volunteer_shifts AS shifts ON ("
+                . "assignments.shift_id = shifts.id "
+                . "AND shifts.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE volunteers.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND volunteers.status < 80 "
@@ -157,11 +169,48 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                 'fields'=>array('id', 'status', 'status_text', 'customer_id', 'display_name', 'customer_name'),
                 'maps'=>array('status_text'=>$maps['volunteer']['status']),
                 ),
+            array('container'=>'shifts', 'fname'=>'shift_id', 
+                'fields'=>array('id'=>'shift_id', 'shift_date', 'start_seconds', 'end_seconds'),
+                ),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1144', 'msg'=>'Unable to load volunteers', 'err'=>$rc['err']));
         }
         $rsp['volunteers'] = isset($rc['volunteers']) ? $rc['volunteers'] : array();
+
+        //
+        // Calculate hours
+        //
+        $rsp['volunteer_total_minutes'] = 0;
+        $rsp['volunteer_total_hours_text'] = '';
+        foreach($rsp['volunteers'] as $vid => $volunteer) {
+            $rsp['volunteers'][$vid]['total_minutes'] = 0;
+            $rsp['volunteers'][$vid]['total_hours_text'] = '';
+            if( isset($volunteer['shifts']) ) {
+                $seconds = 0;
+                foreach($volunteer['shifts'] as $shift) {
+                    if( $shift['end_seconds'] < $shift['start_seconds'] ) {
+                        $seconds += (86400 - $shift['start_seconds']) + $shift['end_seconds'];
+                    } else {
+                        $seconds += $shift['end_seconds'] - $shift['start_seconds'];
+                    }
+                }
+                $rsp['volunteers'][$vid]['total_minutes'] = floor($seconds/60);
+                $rsp['volunteer_total_minutes'] += floor($seconds/60);
+                if( ($rsp['volunteers'][$vid]['total_minutes']%60) > 0 ) {
+                    $rsp['volunteers'][$vid]['total_hours_text'] = round(floor($seconds/60)/60, 2);
+                } else {
+                    $rsp['volunteers'][$vid]['total_hours_text'] = floor($seconds/60/60);
+                }
+            }
+        }
+        if( $rsp['volunteer_total_minutes'] > 0 ) {
+            if( ($rsp['volunteer_total_minutes']%60) > 0 ) {
+                $rsp['volunteer_total_hours_text'] = round(floor($rsp['volunteer_total_minutes']/60), 1);
+            } else {
+                $rsp['volunteer_total_hours_text'] = floor($rsp['volunteer_total_minutes']/60);
+            }
+        }
     
         //
         // Load the volunteer shifts

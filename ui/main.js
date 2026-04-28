@@ -18732,6 +18732,7 @@ function ciniki_musicfestivals_main() {
         if( s == 'volunteers' ) {
             switch(j) {
                 case 0: return d.display_name + (d.status != 30 ? M.subdue(' [', d.status_text, ']') : '');
+                case 1: return d.total_hours_text;
             }
         }
         if( s == 'declined' ) {
@@ -18896,6 +18897,7 @@ function ciniki_musicfestivals_main() {
         this.size = 'xlarge narrowaside';
         this.sections.volunteers.noData = 'No volunteers';
         this.sections.shifts.noData = 'No shifts';
+        this.sections.volunteers.num_cols = 1;
         if( fid != null ) { this.festival_id = fid; }
         var args = {
             'tnid':M.curTenantID,
@@ -18904,6 +18906,7 @@ function ciniki_musicfestivals_main() {
         if( this.sections._tabs.selected == 'volunteers' ) {
             args['volunteers'] = 'yes';
             args['declined'] = 'yes';
+            this.sections.volunteers.num_cols = 2;
             if( this.volunteer_id > 0  ) {
                 args['volunteer_id'] = this.volunteer_id;
             }
@@ -18964,6 +18967,10 @@ function ciniki_musicfestivals_main() {
                 p.sections.shifts.label = 'Shifts - ' + rsp.shifts_stats_line;
             } else {
                 p.sections.shifts.label = 'Shifts';
+            }
+            p.sections.volunteers.label = 'Volunteers';
+            if( rsp.volunteer_total_hours_text != '' ) {
+                p.sections.volunteers.label += ' - ' + rsp.volunteer_total_hours_text + ' hours';
             }
             p.refresh();
             p.show(cb);
