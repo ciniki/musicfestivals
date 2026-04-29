@@ -134,6 +134,7 @@ function ciniki_musicfestivals_accoladesAwardLettersPDF(&$ciniki) {
     if( isset($args['subcategory_id']) && $args['subcategory_id'] != '' && $args['subcategory_id'] > 0 ) {
         $strsql .= "AND subcategories.id = '" . ciniki_core_dbQuote($ciniki, $args['subcategory_id']) . "' ";
     }
+    $strsql .= "ORDER BY registrations.private_name ";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'winners', 'fname'=>'id', 
