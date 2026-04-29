@@ -167,6 +167,7 @@ function ciniki_musicfestivals_templates_accoladesAwardLettersPDF(&$ciniki, $tni
         if( $winner['awarded_amount'][0] != '$' && $winner['awarded_amount'] > 0 ) {
             $winner['awarded_amount'] = '$' . number_format($winner['awarded_amount'], 0);
         }
+        $content = str_replace('{_accoladeamount_}', $winner['awarded_amount'], $content);
         $content = str_replace('{_awardedamount_}', $winner['awarded_amount'], $content);
         $content = str_replace('{_discipline_}', $winner['discipline'], $content);
         $content = preg_replace("/<p( style=\"[^\"]+\"|)>{_thankyou_}<\/p>/", "{_thankyou_}", $content);
