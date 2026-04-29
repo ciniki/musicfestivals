@@ -120,7 +120,7 @@ function ciniki_musicfestivals_accoladesAwardLettersPDF(&$ciniki) {
             . ") "
         . "WHERE winners.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND winners.year = '" . ciniki_core_dbQuote($ciniki, $festival['year']) . "' "
-        . "AND (winners.flags&0x01) = 0 " // unsent
+//        . "AND (winners.flags&0x01) = 0 " // unsent
         . "AND winners.registration_id > 0 ";
     if( isset($args['winner_id']) && $args['winner_id'] != '' && $args['winner_id'] > 0 ) {
         $strsql .= "AND winners.id = '" . ciniki_core_dbQuote($ciniki, $args['winner_id']) . "' ";
