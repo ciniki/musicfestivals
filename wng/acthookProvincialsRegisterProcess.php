@@ -426,7 +426,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
             //
             foreach($competitors as $c) {
                 if( strtolower($c['name']) == strtolower($local_competitor['name'])
-                    && strtolower($c['parent']) == strtolower($local_competitor['parent'])
+//                    && strtolower($c['parent']) == strtolower($local_competitor['parent'])
                     ) {
                     $request['session']['musicfestival-registration']["competitor{$i}_id"] = $c['id'];
                     continue 2;

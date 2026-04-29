@@ -56,6 +56,8 @@ function ciniki_musicfestivals_accoladeAwardedSend(&$ciniki, $tnid, $args) {
     $message = str_replace('{_accoladename_}', $winner['accolade_name'], $message);
     $subject = str_replace('{_accoladeamount_}', $awarded_amount, $subject);
     $message = str_replace('{_accoladeamount_}', $awarded_amount, $message);
+    $subject = str_replace('{_discipline_}', $awarded_amount, $subject);
+    $message = str_replace('{_discipline_}', $awarded_amount, $message);
     $subject = str_replace('{_thankyou_}', $donor_thankyou_info, $subject);
     $message = str_replace('{_thankyou_}', $donor_thankyou_info, $message);
 

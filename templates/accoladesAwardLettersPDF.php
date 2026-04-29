@@ -163,6 +163,7 @@ function ciniki_musicfestivals_templates_accoladesAwardLettersPDF(&$ciniki, $tni
         $content = str_replace('{_date_}', $dt->format('F j, Y'), $content);
         $content = str_replace('{_name_}', $winner['private_name'], $content);
         $content = str_replace('{_accolade_}', $winner['accolade_name'], $content);
+        $content = str_replace('{_accoladename_}', $winner['accolade_name'], $content);
         if( $winner['awarded_amount'][0] != '$' && $winner['awarded_amount'] > 0 ) {
             $winner['awarded_amount'] = '$' . number_format($winner['awarded_amount'], 0);
         }
