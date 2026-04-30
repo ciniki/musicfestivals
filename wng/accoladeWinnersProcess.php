@@ -127,17 +127,32 @@ function ciniki_musicfestivals_wng_accoladeWinnersProcess(&$ciniki, $tnid, &$req
         if( isset($s['category-id']) && $s['category-id'] != '' && $s['category-id'] > 0 ) {
             $strsql .= "AND subcategories.category_id = '" . ciniki_core_dbQuote($ciniki, $s['category-id']) . "' ";
         }
-        $strsql .= "ORDER BY subcategories.sequence, subcategories.name, accolades.sequence, accolades.name "
-            . "";
+        if( isset($s['display-format']) && $s['display-format'] == 'discipline-accolade-winner' ) {
+            $strsql .= "ORDER BY winners.discipline, accolades.sequence, accolades.name, winner_name ";
+        } else {
+            $strsql .= "ORDER BY subcategories.sequence, subcategories.name, accolades.sequence, accolades.name, winner_name ";
+        }
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-            array('container'=>'subcategories', 'fname'=>'subcategory_id', 
-                'fields'=>array('id' => 'subcategory_id', 'name' => 'subcategory_name'),
-                ),
-            array('container'=>'winners', 'fname'=>'id', 
-                'fields'=>array('id', 'name', 'permalink', 'winner_name', 'awarded_amount', 'discipline'),
-                ),
-            ));
+        if( isset($s['display-format']) && $s['display-format'] == 'discipline-accolade-winner' ) {
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'subcategories', 'fname'=>'discipline', 
+                    'fields'=>array('id' => 'discipline', 'name' => 'discipline'),
+                    ),
+                array('container'=>'winners', 'fname'=>'id', 
+                    'fields'=>array('id', 'name', 'permalink', 'winner_name', 'awarded_amount', 'discipline'),
+                    ),
+                ));
+
+        } else {
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'subcategories', 'fname'=>'subcategory_id', 
+                    'fields'=>array('id' => 'subcategory_id', 'name' => 'subcategory_name'),
+                    ),
+                array('container'=>'winners', 'fname'=>'id', 
+                    'fields'=>array('id', 'name', 'permalink', 'winner_name', 'awarded_amount', 'discipline'),
+                    ),
+                ));
+        }
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.939', 'msg'=>'Unable to load winners', 'err'=>$rc['err']));
         }

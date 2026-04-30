@@ -1067,12 +1067,10 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'no' => 'No',
                     'yes' => 'Yes',
                     )),
-//                'display-format' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
-//                    'buttons-imagebuttons-accolade' => 'Category Buttons - Image Buttons - Accolade',
-//                    'buttons-buttons-accolade' => 'Category Buttons - Accolade Buttons - Accolade',
-//                    'buttons-list' => 'Buttons - List',
-//                    )),
-//                'syllabus-page' => array('label'=>'Syllabus Page', 'type'=>'select', 'pages'=>'yes'),
+                'display-format' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
+                    'subcategory-accolade-winner' => 'Subcategory - Accolade - Winner',
+                    'discipline-accolade-winner' => 'Discipline - Accolade - Winner',
+                    )),
                 ),
             );
 //        if( count($categories) > 1 ) { 
