@@ -48,7 +48,7 @@ function ciniki_musicfestivals_contactsExcel($ciniki) {
     // Load the festival settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
-    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $tnid, $args['festival_id']);
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $args['tnid'], $args['festival_id']);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -160,7 +160,7 @@ function ciniki_musicfestivals_contactsExcel($ciniki) {
             'fields'=>array('id'=>'section_id', 'billing_customer_id', 'custtype', 
                 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 
                 'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 
-                'fee'=>'reg_fee', 'invoice_number', 
+                'fee'=>'reg_fee', 
                 'participation', 'internal_notes', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
                 'mark', 'placement', 'level', 'instrument',
                 ),

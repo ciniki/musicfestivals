@@ -181,6 +181,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         public $footer_msg = '';
         public $tenant_details = array();
         public $class_icons = [];
+        public $font_name = 'helvetica';
 
         public function Header() {
             //
@@ -209,7 +210,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             }
 
             $this->Ln(8);
-            $this->SetFont('helvetica', 'B', 20);
+            $this->SetFont($this->font_name, 'B', 20);
             if( $img_width > 0 ) {
                 $this->Cell($img_width, 10, '', 0);
             }
@@ -217,12 +218,12 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             $this->Cell(180-$img_width, 12, $this->header_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
             $this->Ln(7);
 
-            $this->SetFont('helvetica', 'B', 14);
+            $this->SetFont($this->font_name, 'B', 14);
             $this->setX($this->left_margin + $img_width);
             $this->Cell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
             $this->Ln(6);
 
-            $this->SetFont('helvetica', 'B', 12);
+            $this->SetFont($this->font_name, 'B', 12);
             $this->setX($this->left_margin + $img_width);
             $this->Cell(180-$img_width, 10, $this->header_msg, 0, false, 'R', 0, '', 0, false, 'M', 'M');
             $this->Ln(6);
@@ -232,9 +233,9 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         public function Footer() {
             // Position at 15 mm from bottom
             $this->SetY(-15);
-            $this->SetFont('helvetica', 'B', 10);
+            $this->SetFont($this->font_name, 'B', 10);
             $this->Cell(90, 10, $this->footer_msg, 0, false, 'L', 0, '', 0, false, 'T', 'M');
-            $this->SetFont('helvetica', '', 10);
+            $this->SetFont($this->font_name, '', 10);
             $this->Cell(90, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
         }
 
@@ -323,7 +324,11 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                             $this->MultiCell($w[$i], $lh, "{$class['code']} {$img}- {$class['name']}", 'LT', 'L', $fill, 1, '', '', true, 0, true);
                             $this->SetFont('', 'I', '12');
                             $this->setCellPaddings($indent, 0, 2, 2);
+                            $class['synopsis'] = preg_replace("/<strong>/", "<b>", $class['synopsis']);
+                            $class['synopsis'] = preg_replace("/<\/strong>/", "</b>", $class['synopsis']);
+                            error_log(print_r($class['synopsis'],true));
                             $this->MultiCell($w[$i], $lhs, $class['synopsis'], 'LB', 'L', $fill, 1, '', '', true, 0, true, true, 0, 'T', false);
+//                            $this->writeHTMLCell($w[$i], $lhs, '', '', $class['synopsis'], 'LB', 0, $fill, true);
                             // HTML can mess up the getStringHeight, so check if actual height is greater
                             if( $this->getY() > $y + $lh + $lhs ) {
                                 $lhs += $this->getY() - ($y + $lh + $lhs);
@@ -395,6 +400,10 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
     $pdf->header_msg = $festival['document_header_msg'];
     $pdf->footer_msg = $festival['document_footer_msg'];
 
+    if( isset($festival['pdf-font-name']) && $festival['pdf-font-name'] != '' ) {
+        $pdf->font_name = $festival['pdf-font-name'];
+    }
+
     //
     // Set the minimum header height
     //
@@ -428,7 +437,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
     // set font
-    $pdf->SetFont('helvetica', 'BI', 10);
+    $pdf->SetFont($pdf->font_name, 'BI', 10);
     $pdf->SetCellPadding(2);
 
     // add a page

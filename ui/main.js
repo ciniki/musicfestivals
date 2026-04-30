@@ -5775,6 +5775,9 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return (M.userPerms&0x01) == 0x01 ? 'yes' : 'hidden'; },
             'fields':{
                 'site-base-url':{'label':'Site URL', 'type':'text'},
+                'pdf-font-name':{'label':'Document Font', 'type':'toggle',
+                    'default':'helvetica', 'toggles':{'helvetica':'Helvetica', 'arialunicodems':'Unicode'},
+                    },
                 'multiple-adjudicator-documents':{'label':'Multi Adjudicator Documents', 'type':'toggle',
                     'default':'no', 'toggles':{'no':'No', 'yes':'Yes'},
                     },

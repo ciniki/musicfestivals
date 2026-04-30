@@ -54,6 +54,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
     // Check for any settings and add/update
     //
     $valid_settings = array(
+        'pdf-font-name',
         'syllabus-rules-include', 
         'syllabus-class-icons', 
         'syllabus-section-images',
