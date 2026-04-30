@@ -100,7 +100,9 @@ function ciniki_musicfestivals_wng_accoladeWinnersProcess(&$ciniki, $tnid, &$req
         $subcategories = isset($rc['subcategories']) ? $rc['subcategories'] : array();
 
     } else {
-        $strsql = "SELECT accolades.id, "
+        $strsql = "SELECT winners.id, "
+            . "winners.discipline, "
+            . "winners.awarded_amount, "
             . "subcategories.id AS subcategory_id, "
             . "subcategories.name AS subcategory_name, "
             . "accolades.name, "
@@ -133,7 +135,7 @@ function ciniki_musicfestivals_wng_accoladeWinnersProcess(&$ciniki, $tnid, &$req
                 'fields'=>array('id' => 'subcategory_id', 'name' => 'subcategory_name'),
                 ),
             array('container'=>'winners', 'fname'=>'id', 
-                'fields'=>array('id', 'name', 'permalink', 'winner_name'),
+                'fields'=>array('id', 'name', 'permalink', 'winner_name', 'awarded_amount', 'discipline'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -156,17 +158,28 @@ function ciniki_musicfestivals_wng_accoladeWinnersProcess(&$ciniki, $tnid, &$req
         //
         // Display a table for each category
         //
+        $column_name = isset($s['table-header-1']) && $s['table-header-1'] != '' ? $s['table-header-1'] : 'Trophy/Award/Scholarship';
+        $columns = [
+            ['label' => $column_name, 'field' => 'name'],
+            ['label' => 'Recipient', 'field' => 'winner_name'],
+            ];
+        if( isset($s['discipline']) && $s['discipline'] == 'yes' ) {
+            $columns[] = ['label' => 'Discipline', 'field'=>'discipline'];
+        }
+        if( isset($s['awarded-amount']) && $s['awarded-amount'] == 'yes' ) {
+            $columns[] = ['label' => 'Amount', 'field'=>'awarded_amount', 'class'=>'alignright'];
+            foreach($subcategory['winners'] as $wid => $winner) {
+                $subcategory['winners'][$wid]['awarded_amount'] = '';
+                if( $winner['awarded_amount'] > 0 ) {
+                    $subcategory['winners'][$wid]['awarded_amount'] = '$' . number_format($winner['awarded_amount'], 0);
+                }
+            }
+        }
         $blocks[] = array(
             'type' => 'table',
             'title' => $subcategory['name'],
             'headers' => 'yes',
-            'columns' => array(
-                array('label' => 
-                    (isset($s['table-header-1']) && $s['table-header-1'] != '' ? $s['table-header-1'] : 'Trophy/Award/Scholarship'), 
-                    'field' => 'name',
-                    ),
-                array('label' => 'Recipient', 'field' => 'winner_name'),
-                ),
+            'columns' => $columns,
             'rows' => $subcategory['winners'],
             );
     }

@@ -1059,6 +1059,14 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'title' => array('label'=>'Title', 'type'=>'text'),
                 'year' => array('label'=>'Year', 'type'=>'text'),
                 'table-header-1' => array('label'=>'Table Header', 'type'=>'text'),
+                'awarded-amount' => array('label'=>'Awarded Amount', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
+                'discipline' => array('label'=>'Discipline', 'type'=>'toggle', 'default'=>'no', 'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
 //                'display-format' => array('label'=>'Format', 'type'=>'select', 'options'=>array(
 //                    'buttons-imagebuttons-accolade' => 'Category Buttons - Image Buttons - Accolade',
 //                    'buttons-buttons-accolade' => 'Category Buttons - Accolade Buttons - Accolade',
