@@ -216,17 +216,24 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             }
             $this->setX($this->left_margin + $img_width);
             $this->Cell(180-$img_width, 12, $this->header_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
-            $this->Ln(7);
+            $this->Ln(5);
 
             $this->SetFont($this->font_name, 'B', 14);
             $this->setX($this->left_margin + $img_width);
-            $this->Cell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
+            if( $this->header_msg != '' ) {
+                $this->MultiCell(180-$img_width, 7, $this->header_sub_title, 0, 'R', 0, 0, '', '', true, 0, false, true, 7, 'T', true);
+            } else {
+                $this->MultiCell(180-$img_width, 14, $this->header_sub_title, 0, 'R', 0, 0, '', '', true, 0, false, true, 7, 'T', true);
+            }
+            //$this->Cell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
             $this->Ln(6);
 
-            $this->SetFont($this->font_name, 'B', 12);
-            $this->setX($this->left_margin + $img_width);
-            $this->Cell(180-$img_width, 10, $this->header_msg, 0, false, 'R', 0, '', 0, false, 'M', 'M');
-            $this->Ln(6);
+            if( $this->header_msg != '' ) {
+                $this->SetFont($this->font_name, 'B', 12);
+                $this->setX($this->left_margin + $img_width);
+                $this->Cell(180-$img_width, 10, $this->header_msg, 0, false, 'R', 0, '', 0, false, 'M', 'M');
+                $this->Ln(6);
+            }
         }
 
         // Page footer
@@ -278,6 +285,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                 $icon_width = 0;
                 $icon_x = 0;
                 $img = '';
+                $synopsis = '';
                 foreach($fields as $i => $field) {
                     if( isset($this->class_icons[$class['icon_image_id']]) && $i == 0 ) {
                         $icon_x = $this->GetX() + $this->getStringWidth($class['code']) + 3;
@@ -292,11 +300,12 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                     if( $field == 'code_name_synopsis' ) {
                         $lh = $this->getStringHeight(($w[$i] - $icon_width), $class['code'] . ' - ' . $class['name']);
                         if( $class['synopsis'] != '' ) {
-                            $this->setCellPaddings(2, 2, 2, 1);
+                            $this->setCellPaddings(2, 2, 2, 2);
                             $lh = $this->getStringHeight(($w[$i] - $icon_width), $class['code'] . ' - ' . $class['name']);
                             $indent = $this->getStringWidth($class['code'] . ' - ') + 2 + $icon_width;
-                            $this->setCellPaddings($indent, 0, 2, 2);
-                            $lhs = $this->getStringHeight($w[$i], strip_tags(preg_replace("/<br>/", "\n", $class['synopsis'])));
+                            $this->setCellPaddings($indent, 1, 2, 2);
+                            $lhs = $this->getStringHeight(180-$indent, strip_tags(preg_replace("/<br>/", "\n", $class['synopsis'])));
+                            $synopsis = $class['synopsis'];
                             $this->setCellPaddings(2, 2, 2, 2);
                         }
                     } elseif( $field == 'code_name' ) {
@@ -320,7 +329,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                     $y = $this->getY();
                     if( $field == 'code_name_synopsis' ) {
                         if( $class['synopsis'] != '' ) {
-                            $this->setCellPaddings(2, 2, 2, 1);
+/*                            $this->setCellPaddings(2, 2, 2, 1);
                             $this->MultiCell($w[$i], $lh, "{$class['code']} {$img}- {$class['name']}", 'LT', 'L', $fill, 1, '', '', true, 0, true);
                             $this->SetFont('', 'I', '12');
                             $this->setCellPaddings($indent, 0, 2, 2);
@@ -332,7 +341,9 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                             $this->setCellPaddings(2, 2, 2, 2);
                             $this->SetFont('', '', '12');
                             $this->setY($y);
-                            $this->setX($x+$w[$i]);
+                            $this->setX($x+$w[$i]); */
+                            $this->setCellPaddings(2, 2, 2, 1);
+                            $this->MultiCell($w[$i], $lh, "{$class['code']} {$img}- {$class['name']}", 'LT', 'L', $fill, 0, '', '', true, 0, true);
                         } else {
                             $this->MultiCell($w[$i], $lh, "{$class['code']} {$img}- {$class['name']}", 'LTB', 'L', $fill, 0, '', '', true, 0, true);
                         }
@@ -347,6 +358,10 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                         ) {
                         $this->setCellPaddings(2, 2, 3, 2);
                         $val = '$' . number_format($class[$field], 2);
+                        $border = 'T';
+                        if( $i == (count($w)-1) ) {
+                            $border = 'TR';
+                        }
                         if( $field == 'earlybird_fee' && ($class['feeflags']&0x01) == 0 ) {
                             $val = 'n/a';
                         }
@@ -363,20 +378,28 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                             $val = 'n/a';
                         }
                         if( !isset($headers[0]) || $headers[0] == '' ) {
-                            $this->MultiCell($w[$i], $lh+$lhs, $val, 'TRB', 'R', $fill, 0, '', '', true, 0, false, true, ($lh+$lhs), 'M');
+                            $this->MultiCell($w[$i], $lh, $val, $border, 'R', $fill, 0, '', '', true, 0, false, true, ($lh), 'M');
                         } else {
-                            $this->MultiCell($w[$i], $lh+$lhs, $val, 'TRBL', 'C', $fill, 0, '', '', true, 0, false, true, ($lh+$lhs), 'M');
+                            $this->MultiCell($w[$i], $lh, $val, $border, 'C', $fill, 0, '', '', true, 0, false, true, ($lh), 'M');
                         }
                         $this->setCellPaddings(2, 2, 2, 2);
                     } else {
-                        $this->MultiCell($w[$i], $lh+$lhs, (isset($class[$field]) ? $class[$field] : ''), 'TRBL', 'C', $fill, 0, '', '', true, 0, false, true, ($lh+$lhs), 'M');
+                        $this->MultiCell($w[$i], $lh, (isset($class[$field]) ? $class[$field] : ''), 'TRBL', 'C', $fill, 0, '', '', true, 0, false, true, ($lh), 'M');
                     }
                     if( $img != '' && ($field == 'code_name_synopsis' || $field == 'code_name') ) {
                         $this->Image('@'.$this->class_icons[$class['icon_image_id']]['image']->getImageBlob(), $icon_x, $icon_y, $icon_width, 0); //, '', '', 'C', true, '300');
                     }
                 }
 
-                $this->Ln($lh+$lhs);
+                $this->Ln($lh);
+                if( isset($synopsis) && $synopsis != '' ) {
+                    $this->setCellPaddings($indent, 1, 2, 2);
+                    $this->SetFont('', 'I', '12');
+                    $this->MultiCell(180, 0, $class['synopsis'], 'LBR', 'L', $fill, 1, '', '', true, 1, true, true, 0, 'T', false);
+//                    $this->Ln($lhs);
+                    $this->SetFont('', '', '12');
+                }
+
                 $fill=!$fill;
             } 
         }
@@ -513,6 +536,13 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
         } else {
             $pdf->header_sub_title = $section['name'] . ' Syllabus';
         }
+        if( $pdf->header_msg == '' && strlen($pdf->header_sub_title) > 60 ) {
+            if( isset($args['groupname']) && $args['groupname'] != '' ) {
+                $pdf->header_sub_title = $section['name'] . "\n" . $args['groupname'] . ' Syllabus';
+            } else {
+                $pdf->header_sub_title = $section['name'] . ' Syllabus';
+            }
+        }
         $pdf->AddPage();
 
         $pdf->SetFont('', 'B', '18');
@@ -570,14 +600,22 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             } else {
                 $s_height = 0;
             }
+            $description = preg_replace("/<(ul|ol)>\n/", "<$1>", $description);
+            $description = preg_replace("/<\/li>\n/", "</li>", $description);
 
             $pdf->SetFont('', 'B', '18');
             $lh = $pdf->getStringHeight(180, $category['name']);
 
+
+            $lhs = 0;
+            if( isset($category['classes'][0]['synopsis']) && $category['classes'][0]['synopsis'] != '' ) {
+                $lhs = $pdf->getStringHeight(160, strip_tags(preg_replace("/<br>/", "\n", $category['classes'][0]['synopsis'])));
+            }
+
             //
             // Determine if new page should be started
             //
-            if( $newpage == 'no' && $pdf->getY() > $pdf->getPageHeight() - 50 - $s_height - $lh) {
+            if( $pdf->getY() > 140 && $pdf->getY() > $pdf->getPageHeight() - 50 - $s_height - $lh - $lhs) {
                 $pdf->AddPage();
                 $newpage = 'yes';
             } elseif( $newpage == 'no' ) {
@@ -631,7 +669,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                 $pdf->ClassesAdd([105, 25, 25, 25], $category, ['Class', 'Earlybird', 'Live', 'Virtual'], ['code_name_synopsis', 'earlybird_fee', 'fee', 'virtual_fee']);
 
             } elseif( ($festival['flags']&0x04) == 0x04 && (!isset($args['live-virtual']) || !in_array($args['live-virtual'], ['live','virtual'])) ) {
-                $pdf->ClassesAdd([130,25, 25], $category, ['Class', 'Live', 'Virtual'], ['code_name_synopsis', 'fee', 'virtual_fee']);
+                $pdf->ClassesAdd([130, 25, 25], $category, ['Class', 'Live', 'Virtual'], ['code_name_synopsis', 'fee', 'virtual_fee']);
             } elseif( isset($args['live-virtual']) && in_array($args['live-virtual'], ['live','virtual']) ) {
                 $headers = ['Class', 'Live'];
                 $fields = ['code_name_synopsis', 'fee'];
