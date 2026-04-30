@@ -324,11 +324,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                             $this->MultiCell($w[$i], $lh, "{$class['code']} {$img}- {$class['name']}", 'LT', 'L', $fill, 1, '', '', true, 0, true);
                             $this->SetFont('', 'I', '12');
                             $this->setCellPaddings($indent, 0, 2, 2);
-                            $class['synopsis'] = preg_replace("/<strong>/", "<b>", $class['synopsis']);
-                            $class['synopsis'] = preg_replace("/<\/strong>/", "</b>", $class['synopsis']);
-                            error_log(print_r($class['synopsis'],true));
                             $this->MultiCell($w[$i], $lhs, $class['synopsis'], 'LB', 'L', $fill, 1, '', '', true, 0, true, true, 0, 'T', false);
-//                            $this->writeHTMLCell($w[$i], $lhs, '', '', $class['synopsis'], 'LB', 0, $fill, true);
                             // HTML can mess up the getStringHeight, so check if actual height is greater
                             if( $this->getY() > $y + $lh + $lhs ) {
                                 $lhs += $this->getY() - ($y + $lh + $lhs);
