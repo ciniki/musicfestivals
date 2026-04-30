@@ -153,6 +153,7 @@ function ciniki_musicfestivals_volunteerShiftGet($ciniki) {
             . "assignments.uuid, "
             . "assignments.volunteer_id, "
             . "assignments.status, "
+            . "volunteers.customer_id, "
             . "IF(volunteers.shortname <> '', volunteers.shortname, customers.display_name) AS name "
             . "FROM ciniki_musicfestival_volunteer_assignments AS assignments "
             . "INNER JOIN ciniki_musicfestival_volunteers AS volunteers ON ("
@@ -170,7 +171,7 @@ function ciniki_musicfestivals_volunteerShiftGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'assignments', 'fname'=>'volunteer_id', 
-                'fields'=>array('id', 'uuid', 'volunteer_id', 'status', 'name')),
+                'fields'=>array('id', 'uuid', 'volunteer_id', 'customer_id', 'status', 'name')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1250', 'msg'=>'Unable to load assignments', 'err'=>$rc['err']));
@@ -180,12 +181,28 @@ function ciniki_musicfestivals_volunteerShiftGet($ciniki) {
         foreach($shift['assignments'] as $assignment) {
             $shift['volunteer_' . $i] = $assignment['volunteer_id'];
             $shift['volunteer_' . $i . '_status'] = $assignment['status'];
+            //
+            // Get the details for each volunteers
+            //
+            if( $assignment['customer_id'] > 0 ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
+                $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], [
+                    'customer_id' => $assignment['customer_id'],
+                    'phones' => 'yes',
+                    'emails' => 'yes',
+                    ]);
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                $shift["volunteer_{$i}_details"] = $rc['details'];
+            }
             $i++;
         }
         for(;$i <= $shift['max_volunteers']; $i++) {
             $shift['volunteer_' . $i] = 0;
             $shift['volunteer_' . $i . '_status'] = 10;
         }
+
     }
 
     $rsp = array('stat'=>'ok', 'shift'=>$shift);

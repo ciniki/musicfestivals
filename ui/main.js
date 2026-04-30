@@ -19161,31 +19161,7 @@ function ciniki_musicfestivals_main() {
     this.vshift.shift_id = 0;
     this.vshift.festival_id = 0;
     this.vshift.nplist = [];
-    this.vshift.sections = {
-        'general':{'label':'Volunteer Shift', 'fields':{
-            'shift_date':{'label':'Date', 'required':'yes', 'type':'date'},
-            'start_time':{'label':'Start', 'required':'yes', 'type':'text', 'size':'small'},
-            'end_time':{'label':'End', 'required':'yes', 'type':'text', 'size':'small'},
-            'location':{'label':'Location', 'type':'select', 'options':[],
-                'complex_options':{'value':'id', 'name':'name'},
-                },
-            'role':{'label':'Role', 'required':'yes', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
-//            'role':{'label':'Role', 'required':'yes', 'type':'select', 'options':[],
-//                'complex_options':{'value':'name', 'name':'name'},
-//                },
-            'flags1':{'label':'Online Signups', 'type':'flagtoggle', 'default':'on', 'bit':0x01, 'field':'flags'},
-            'min_volunteers':{'label':'Minimum Volunteers', 'type':'text', 'size':'small'},
-            'max_volunteers':{'label':'Maximum Volunteers', 'type':'text', 'size':'small', 'onkeyup':'M.ciniki_musicfestivals_main.vshift.formUpdate'},
-            }},
-        'volunteers':{'label':'Volunteers', 'fields':{
-            }},
-        '_buttons':{'label':'', 'buttons':{
-            'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.vshift.save();'},
-            'delete':{'label':'Delete', 
-                'visible':function() {return M.ciniki_musicfestivals_main.vshift.shift_id > 0 ? 'yes' : 'no'; },
-                'fn':'M.ciniki_musicfestivals_main.vshift.remove();'},
-            }},
-        };
+    this.vshift.sections = {};
     this.vshift.fieldValue = function(s, i, d) { return this.data[i]; }
     this.vshift.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.musicfestivals.volunteervshiftHistory', 'args':{'tnid':M.curTenantID, 'shift_id':this.shift_id, 'field':i}};
@@ -19203,6 +19179,19 @@ function ciniki_musicfestivals_main() {
     }
     this.vshift.liveSearchResultRowFn = function(s, f, i, j, d) {
         return 'M.ciniki_musicfestivals_main.vshift.updateField(\'' + s + '\',\'' + f + '\',\'' + escape(d.value) + '\');';
+    }
+    this.vshift.cellValue = function(s, i, j, d) {
+        if( s.match(/volunteer_/) && j == 0 ) {
+            return d.label; 
+        }
+        if( s.match(/volunteer_/) && j == 1 ) {
+            if( d.label == 'Email' ) {
+                return M.linkEmail(d.value);
+            } else if( d.label == 'Address' ) {
+                return d.value.replace(/\n/g, '<br/>');
+            }
+            return d.value;
+        }
     }
     this.vshift.updateField = function(s, fid, result) {
         M.gE(this.panelUID + '_' + fid).value = unescape(result);
@@ -19270,6 +19259,43 @@ function ciniki_musicfestivals_main() {
             }
             var p = M.ciniki_musicfestivals_main.vshift;
             p.data = rsp.shift;
+            p.sections = {
+                'general':{'label':'Volunteer Shift', 'aside':'yes', 'fields':{
+                    'shift_date':{'label':'Date', 'required':'yes', 'type':'date'},
+                    'start_time':{'label':'Start', 'required':'yes', 'type':'text', 'size':'small'},
+                    'end_time':{'label':'End', 'required':'yes', 'type':'text', 'size':'small'},
+                    'location':{'label':'Location', 'type':'select', 'options':[],
+                        'complex_options':{'value':'id', 'name':'name'},
+                        },
+                    'role':{'label':'Role', 'required':'yes', 'type':'text', 'livesearch':'yes', 'livesearchempty':'yes'},
+        //            'role':{'label':'Role', 'required':'yes', 'type':'select', 'options':[],
+        //                'complex_options':{'value':'name', 'name':'name'},
+        //                },
+                    'flags1':{'label':'Online Signups', 'type':'flagtoggle', 'default':'on', 'bit':0x01, 'field':'flags'},
+                    'min_volunteers':{'label':'Minimum Volunteers', 'type':'text', 'size':'small'},
+                    'max_volunteers':{'label':'Maximum Volunteers', 'type':'text', 'size':'small', 'onkeyup':'M.ciniki_musicfestivals_main.vshift.formUpdate'},
+                    }},
+                'volunteers':{'label':'Volunteers', 'aside':'yes', 'fields':{
+                    }},
+                '_buttons':{'label':'', 'aside':'yes', 'buttons':{
+                    'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.vshift.save();'},
+                    'delete':{'label':'Delete', 
+                        'visible':function() {return M.ciniki_musicfestivals_main.vshift.shift_id > 0 ? 'yes' : 'no'; },
+                        'fn':'M.ciniki_musicfestivals_main.vshift.remove();'},
+                    }},
+                };
+            p.size = 'medium';
+            for(var i = 1; i <= rsp.shift.max_volunteers; i++) {
+                if( rsp.shift['volunteer_' + i + '_details'] != null ) {
+                    p.size = 'medium mediumaside';
+                    p.sections['volunteer_' + i + '_details'] = {'label':'Customer', 'type':'customer', 'num_cols':2, 
+                        'customer_id':0,
+                        'customer_field':'customer_id',
+                        'cellClasses':['label', ''],
+                        'noData':'No Customer Account',
+                        };
+                }
+            }
             p.sections.general.fields.location.options = rsp.locations;
             p.volunteers = rsp.volunteers;
             p.volunteers.unshift({'id':0, 'name':'None'});
