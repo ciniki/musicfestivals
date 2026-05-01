@@ -1350,6 +1350,10 @@ function ciniki_musicfestivals_main() {
                     'label':'Competitors List PDF',
                     'fn':'M.ciniki_musicfestivals_main.festival.downloadAdjudicatorCompetitorClassesPDF(M.ciniki_musicfestivals_main.festival.adjudicator_id);',
                     },
+                'marks':{
+                    'label':'Competitors Marks PDF',
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadAdjudicatorCompetitorClassMarksPDF(M.ciniki_musicfestivals_main.festival.adjudicator_id);',
+                    },
                 'provincialsheet':{
                     'label':'Provincial Recommendation Sheet',
                     'visible':function() { return M.ciniki_musicfestivals_main.festival.settingValue('provincial-festival-id') > 0 ? 'yes' : 'no'; },
@@ -2515,6 +2519,13 @@ function ciniki_musicfestivals_main() {
 //            'ipv':this.formValue('ipv'),
             };
         M.api.openPDF('ciniki.musicfestivals.adjudicatorCompetitorClassesPDF',args);
+    }
+    this.festival.downloadAdjudicatorCompetitorClassMarksPDF = function(s) {
+        var args = {'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'adjudicator_id':this.adjudicator_id,
+            };
+        M.api.openPDF('ciniki.musicfestivals.competitorClassMarksPDF',args);
     }
     this.festival.downloadCompactSchedulePDF = function(s) {
         var args = {'tnid':M.curTenantID,
