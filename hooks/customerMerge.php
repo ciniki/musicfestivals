@@ -13,6 +13,7 @@ function ciniki_musicfestivals_hooks_customerMerge($ciniki, $tnid, $args) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQuery');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
 
     if( !isset($args['primary_customer_id']) || $args['primary_customer_id'] == '' 
         || !isset($args['secondary_customer_id']) || $args['secondary_customer_id'] == '' ) {
@@ -185,26 +186,116 @@ function ciniki_musicfestivals_hooks_customerMerge($ciniki, $tnid, $args) {
     }
 
     //
-    // Get the list of volunteers to update
+    // Check if primary customer exists
     //
-    $strsql = "SELECT id, customer_id "
+    $strsql = "SELECT id "
         . "FROM ciniki_musicfestival_volunteers "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
+        . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['primary_customer_id']) . "' "
         . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'items');
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'primary');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1414', 'msg'=>'Unable to find adjudicators', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1572', 'msg'=>'Unable to find volunteers', 'err'=>$rc['err']));
     }
-    $items = $rc['rows'];
-    foreach($items as $i => $row) {
-        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.volunteer', $row['id'], [
-            'customer_id' => $args['primary_customer_id'],
-            ], 0x04);
+    if( isset($rc['primary']) ) {
+        $primary_volunteer_id = $rc['primary']['id'];
+        
+        //
+        // Check for secondary volunteer
+        //
+        $strsql = "SELECT id "
+            . "FROM ciniki_musicfestival_volunteers "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'secondary');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1249', 'msg'=>'Unable to find volunteers.', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1573', 'msg'=>'Unable to find volunteers', 'err'=>$rc['err']));
         }
-        $updated++;
+        if( isset($rc['secondary']) ) {
+            $secondary_volunteer_id = $rc['secondary']['id'];
+
+            //
+            // Get the list of assignments
+            //
+            $strsql = "SELECT id "
+                . "FROM ciniki_musicfestival_volunteer_assignments "
+                . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "AND volunteer_id = '" . ciniki_core_dbQuote($ciniki, $secondary_volunteer_id) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.volunteers', 'items');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1574', 'msg'=>'Unable to find volunteer entries', 'err'=>$rc['err']));
+            }
+            $items = $rc['rows'];
+            foreach($items as $i => $row) {
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.volunteerassignment', $row['id'], array('volunteer_id'=>$primary_volunteer_id), 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1575', 'msg'=>'Unable to update volunteer entry.', 'err'=>$rc['err']));
+                }
+                $updated++;
+            }
+
+            //
+            // Get the list of job tags
+            //
+            $strsql = "SELECT id, uuid "
+                . "FROM ciniki_musicfestival_volunteer_tags "
+                . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "AND volunteer_id = '" . ciniki_core_dbQuote($ciniki, $secondary_volunteer_id) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.volunteers', 'items');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1576', 'msg'=>'Unable to find volunteer tags', 'err'=>$rc['err']));
+            }
+            $items = $rc['rows'];
+            foreach($items as $i => $row) {
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.volunteertag', $row['id'], array('volunteer_id'=>$primary_volunteer_id), 0x04);
+                // Delete duplicate tags
+                if( $rc['err']['code'] == 'ciniki.core.407' ) {
+                    $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.musicfestivals.volunteertag',
+                        $row['id'], $row['uuid'], 0x04);
+                    if( $rc['stat'] != 'ok' ) {
+                        return $rc;
+                    }
+                } elseif( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1577', 'msg'=>'Unable to update volunteer tag.', 'err'=>$rc['err']));
+                }
+                $updated++;
+            }
+
+            //
+            // Remove the volunteer
+            //
+            $rc = ciniki_core_objectDelete($ciniki, $tnid, 'ciniki.musicfestivals.volunteer', $secondary_volunteer_id, null, 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+        }
+    }
+    else {
+        //
+        // Get the list of volunteers to update
+        //
+        $strsql = "SELECT id, customer_id "
+            . "FROM ciniki_musicfestival_volunteers "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND customer_id = '" . ciniki_core_dbQuote($ciniki, $args['secondary_customer_id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'items');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1414', 'msg'=>'Unable to find adjudicators', 'err'=>$rc['err']));
+        }
+        $items = $rc['rows'];
+        foreach($items as $i => $row) {
+            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.volunteer', $row['id'], [
+                'customer_id' => $args['primary_customer_id'],
+                ], 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1249', 'msg'=>'Unable to merge volunteers.', 'err'=>$rc['err']));
+            }
+            $updated++;
+        }
     }
 
     return array('stat'=>'ok', 'updated'=>$updated);
