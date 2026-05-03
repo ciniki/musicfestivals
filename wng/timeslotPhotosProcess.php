@@ -81,8 +81,8 @@ function ciniki_musicfestivals_wng_timeslotPhotosProcess(&$ciniki, $tnid, &$requ
             . "timeslots.id = images.timeslot_id "
             . "AND images.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "WHERE divisions.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
-        . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
+        . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY sections.name, divisions.division_date, divisions.name, timeslots.slot_time, images.sequence, images.title "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
