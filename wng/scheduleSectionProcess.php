@@ -333,6 +333,10 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     $adjudicators = isset($rc['divisions']) ? $rc['divisions'] : array();
 
     //
+    // NOTE: Union used below to speed up query
+    //
+
+    //
     // Load the divisions, timeslots and registrations
     //
     $strsql = "SELECT divisions.id AS division_id, "
@@ -348,11 +352,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "IFNULL(buildings.postal, '') AS location_postal, "
         . "IFNULL(buildings.latitude, '') AS latitude, "
         . "IFNULL(buildings.longitude, '') AS longitude, "
-//        . "IFNULL(customers.display_name, '') AS adjudicator_name, "
-//        . "IFNULL(customers.permalink, '') AS adjudicator_permalink, "
-//        . "IFNULL(adjudicators.image_id, 0) AS adjudicator_image_id, "
-//        . "IFNULL(adjudicators.description, 0) AS adjudicator_description, "
-//        . "IFNULL(adjudicators.flags, 0) AS adjudicator_flags, "
+        . "divisions.division_date, "
         . "DATE_FORMAT(divisions.division_date, '" . ciniki_core_dbQuote($ciniki, $division_date_format) . "') AS division_date_text, ";
     if( isset($s['separate-classes']) && $s['separate-classes'] == 'yes' ) {
         $strsql .= "CONCAT_WS('-', timeslots.id, classes.id) AS timeslot_id, ";
@@ -373,6 +373,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "registrations.id AS reg_id, "
         . "registrations.display_name, "
         . "registrations.public_name, "
+        . "registrations.timeslot_sequence, "
         . "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS timeslot_time, "
         . "TIME_FORMAT(registrations.finals_timeslot_time, '%l:%i %p') AS finals_timeslot_time, "
         . "TIME_FORMAT(registrations.finals_timeslot_time, '%H%i') AS reg_finals_sort_time, "
@@ -434,7 +435,6 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "("
                 . "((timeslots.flags&0x02) = 0 AND timeslots.id = registrations.timeslot_id) "
-                . "OR ((timeslots.flags&0x02) = 0x02 AND timeslots.id = registrations.finals_timeslot_id) "
                 . ") "
             . "AND (registrations.flags&0x1000) = 0 "   // Not Red
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -463,22 +463,8 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             . "locations.building_id = buildings.id "
             . "AND buildings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "LEFT JOIN ciniki_musicfestival_adjudicatorrefs AS arefs ON ("
-            . "("
-                . "(ssections.id = arefs.object_id AND arefs.object = 'ciniki.musicfestivals.schedulesection') "
-                . "OR (divisions.id = arefs.object_id AND arefs.object = 'ciniki.musicfestivals.scheduledivision') "
-                . ") "
-            . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
-            . "arefs.adjudicator_id = adjudicators.id "
-            . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
-        . "LEFT JOIN ciniki_customers AS customers ON ("
-            . "adjudicators.customer_id = customers.id "
-            . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
         . "WHERE divisions.ssection_id = '" . ciniki_core_dbQuote($ciniki, $s['section-id']) . "' "
+        . "AND divisions.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
         . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "";
     if( isset($s['division-ids']) && count($s['division-ids']) > 0 ) {
@@ -499,7 +485,158 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     }
     if( isset($s['results-only']) && $s['results-only'] == 'yes' ) {
         $strsql .= "AND registrations.status < 70 ";
-        $strsql .= "ORDER BY divisions.division_date, divisions.name, division_id, class_code, timeslot_id, mark, placement, registrations.display_name ";
+    }
+    $strsql .= "UNION DISTINCT ";
+    $strsql .= "SELECT divisions.id AS division_id, "
+        . "divisions.name AS division_name, "
+        . "divisions.results_notes, "
+        . "divisions.results_video_url, "
+        . "CONCAT_WS(' ', divisions.division_date, IFNULL(locations.name, ''), timeslots.slot_time) AS division_sort_key, "
+        . "IFNULL(locations.name, '') AS location_name, "
+        . "IFNULL(locations.permalink, '') AS location_permalink, "
+        . "IFNULL(buildings.address1, '') AS location_address1, "
+        . "IFNULL(buildings.city, '') AS location_city, "
+        . "IFNULL(buildings.province, '') AS location_province, "
+        . "IFNULL(buildings.postal, '') AS location_postal, "
+        . "IFNULL(buildings.latitude, '') AS latitude, "
+        . "IFNULL(buildings.longitude, '') AS longitude, "
+        . "divisions.division_date, "
+        . "DATE_FORMAT(divisions.division_date, '" . ciniki_core_dbQuote($ciniki, $division_date_format) . "') AS division_date_text, ";
+    if( isset($s['separate-classes']) && $s['separate-classes'] == 'yes' ) {
+        $strsql .= "CONCAT_WS('-', timeslots.id, classes.id) AS timeslot_id, ";
+    } else {
+        $strsql .= "timeslots.id AS timeslot_id, ";
+    }
+    $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
+        . "timeslots.slot_time, "
+        . "timeslots.slot_seconds, "
+        . "timeslots.name AS timeslot_name, "
+        . "timeslots.groupname AS timeslot_groupname, "
+        . "timeslots.flags AS timeslot_flags, "
+        . "timeslots.start_num, "
+        . "timeslots.description, "
+        . "timeslots.results_notes AS timeslot_results_notes, "
+        . "timeslots.results_video_url AS timeslot_results_video_url, "
+        . "timeslots.linked_timeslot_id, "
+        . "registrations.id AS reg_id, "
+        . "registrations.display_name, "
+        . "registrations.public_name, "
+        . "registrations.timeslot_sequence, "
+        . "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS timeslot_time, "
+        . "TIME_FORMAT(registrations.finals_timeslot_time, '%l:%i %p') AS finals_timeslot_time, "
+        . "TIME_FORMAT(registrations.finals_timeslot_time, '%H%i') AS reg_finals_sort_time, "
+        . "registrations.status, "
+        . "registrations.flags, "
+        . "registrations.title1, "
+        . "registrations.title2, "
+        . "registrations.title3, "
+        . "registrations.title4, "
+        . "registrations.title5, "
+        . "registrations.title6, "
+        . "registrations.title7, "
+        . "registrations.title8, "
+        . "registrations.composer1, "
+        . "registrations.composer2, "
+        . "registrations.composer3, "
+        . "registrations.composer4, "
+        . "registrations.composer5, "
+        . "registrations.composer6, "
+        . "registrations.composer7, "
+        . "registrations.composer8, "
+        . "registrations.movements1, "
+        . "registrations.movements2, "
+        . "registrations.movements3, "
+        . "registrations.movements4, "
+        . "registrations.movements5, "
+        . "registrations.movements6, "
+        . "registrations.movements7, "
+        . "registrations.movements8, "
+        . "registrations.video_url1, "
+        . "registrations.video_url2, "
+        . "registrations.video_url3, "
+        . "registrations.video_url4, "
+        . "registrations.video_url5, "
+        . "registrations.video_url6, "
+        . "registrations.video_url7, "
+        . "registrations.video_url8, "
+        . "registrations.participation, "
+        . "registrations.mark, "
+        . "registrations.placement, "
+        . "registrations.level, "
+        . "registrations.finals_mark, "
+        . "registrations.finals_placement, "
+        . "classes.id AS class_id, "
+        . "classes.code AS class_code, "
+        . "classes.name AS class_name, "
+        . "categories.name AS category_name, "
+        . "sections.name AS section_name, "
+        . "members.shortname AS member_name "
+        . "FROM ciniki_musicfestival_schedule_divisions AS divisions "
+        . "INNER JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
+            . "divisions.ssection_id = ssections.id " 
+            . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+            . "divisions.id = timeslots.sdivision_id " 
+            . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
+            . "("
+//                . "((timeslots.flags&0x02) = 0 AND timeslots.id = registrations.timeslot_id) "
+                . " ((timeslots.flags&0x02) = 0x02 AND timeslots.id = registrations.finals_timeslot_id) "
+                . ") "
+            . "AND (registrations.flags&0x1000) = 0 "   // Not Red
+            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+            . "registrations.class_id = classes.id "
+            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
+            . "classes.category_id = categories.id " 
+            . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+            . "categories.section_id = sections.id " 
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestivals_members AS members ON ("
+            . "registrations.member_id = members.id "
+            . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
+            . "divisions.location_id = locations.id "
+            . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_buildings AS buildings ON ("
+            . "locations.building_id = buildings.id "
+            . "AND buildings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "WHERE divisions.ssection_id = '" . ciniki_core_dbQuote($ciniki, $s['section-id']) . "' "
+        . "AND divisions.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
+        . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "";
+    if( isset($s['division-ids']) && count($s['division-ids']) > 0 ) {
+        $strsql .= "AND divisions.id IN (" . ciniki_core_dbQuoteIDs($ciniki, $s['division-ids']) . ") ";
+    } elseif( isset($s['division-id']) && $s['division-id'] > 0 ) {
+        $strsql .= "AND divisions.id = '" . ciniki_core_dbQuote($ciniki, $s['division-id']) . "' ";
+    }
+    if( isset($s['results-only']) && $s['results-only'] == 'yes' ) {
+        $strsql .= "AND ((divisions.flags&0x20) = 0x20 OR (ssections.flags&0x20)) ";
+        if( isset($s['min-mark']) && $s['min-mark'] != '' ) {
+            $strsql .= "AND registrations.mark >= '" . ciniki_core_dbQuote($ciniki, $s['min-mark']) . "' ";
+        }
+    }
+    if( isset($s['ipv']) && $s['ipv'] == 'inperson' ) {
+        $strsql .= "AND (registrations.participation < 1 || ISNULL(registrations.participation) ) ";
+    } elseif( isset($s['ipv']) && $s['ipv'] == 'virtual' ) {
+        $strsql .= "AND registrations.participation = 1 ";
+    }
+    if( isset($s['results-only']) && $s['results-only'] == 'yes' ) {
+        $strsql .= "AND registrations.status < 70 ";
+    }
+    if( isset($s['results-only']) && $s['results-only'] == 'yes' ) {
+        $strsql .= "ORDER BY division_date, division_name, division_id, class_code, timeslot_id, mark, placement, display_name ";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'divisions', 'fname'=>'division_id', 
@@ -533,7 +670,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             ));
 
     } else {
-        $strsql .= "ORDER BY divisions.division_date, divisions.name, division_id, slot_time, registrations.timeslot_sequence, registrations.display_name ";
+        $strsql .= "ORDER BY division_date, division_name, division_id, slot_time, timeslot_sequence, display_name ";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'divisions', 'fname'=>'division_id', 
