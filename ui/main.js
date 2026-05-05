@@ -18565,6 +18565,10 @@ function ciniki_musicfestivals_main() {
                     'label':'Add Role to All Volunteers',
                     'fn':'M.ciniki_musicfestivals_main.volunteers.assignRole();',
                     },
+                'contacts':{
+                    'label':'Export Contacts to Excel',
+                    'fn':'M.ciniki_musicfestivals_main.volunteers.excelExport();',
+                    },
                 },
             },
         'declined':{'label':'Declined', 'type':'simplegrid', 'num_cols':1, 'aside':'yes', 
@@ -18906,6 +18910,14 @@ function ciniki_musicfestivals_main() {
         }
         args['output'] = 'pdf';
         M.api.openFile('ciniki.musicfestivals.volunteers', args);
+    }
+    this.volunteers.excelExport = function() {
+        this.popupMenuClose('volunteers');
+        var args = {
+            'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            };
+        M.api.openFile('ciniki.musicfestivals.volunteerContactsExcel', args);
     }
     this.volunteers.open = function(cb, fid) {
         this.size = 'xlarge narrowaside';
