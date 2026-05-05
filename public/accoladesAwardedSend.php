@@ -87,6 +87,7 @@ function ciniki_musicfestivals_accoladesAwardedSend(&$ciniki) {
         . "winners.discipline, "
         . "accolades.id AS accolade_id, "
         . "accolades.name AS accolade_name, "
+        . "accolades.criteria AS accolade_criteria, "
         . "accolades.donor_thankyou_info, "
         . "categories.awarded_email_subject, "
         . "categories.awarded_email_content, "
@@ -137,7 +138,7 @@ function ciniki_musicfestivals_accoladesAwardedSend(&$ciniki) {
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'winners', 'fname'=>'id', 
             'fields'=>array('id', 'flags', 'registration_id', 'awarded_amount', 'discipline',
-                'accolade_name', 'donor_thankyou_info', 
+                'accolade_name', 'accolade_criteria', 'donor_thankyou_info', 
                 'awarded_email_subject', 'awarded_email_content',
                 'private_name', 'billing_customer_id', 'parent_customer_id', 
                 'teacher_customer_id', 'teacher2_customer_id',
