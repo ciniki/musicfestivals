@@ -25,6 +25,7 @@ function ciniki_musicfestivals_accoladesAwardedSend(&$ciniki) {
         'subcategory_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Subcategory'),
         'accolade_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Accolade'),
         'winner_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Winner'),
+        'send'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Send'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -159,8 +160,12 @@ function ciniki_musicfestivals_accoladesAwardedSend(&$ciniki) {
         $rc = ciniki_musicfestivals_accoladeAwardedSend($ciniki, $args['tnid'], [
             'festival' => $festival,
             'winner' => $winner,
+            'send' => isset($args['send']) ? $args['send'] : 'test',
             ]);
         if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( !isset($args['send']) || $args['send'] == 'test' ) {
             return $rc;
         }
     }

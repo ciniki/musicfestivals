@@ -15102,6 +15102,11 @@ function ciniki_musicfestivals_main() {
             'sortable':'yes', 
             'sortTypes':['text', 'text', 'text', 'text', 'number', ''],
             'menu':{
+                'email':{
+                    'label':'Send Awarded Email',
+                    'visible':function() { return M.ciniki_musicfestivals_main.accolades.data.num_recipients_noemail > 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.accolades.sendAwardedEmail(M.ciniki_musicfestivals_main.accolades.category_id,M.ciniki_musicfestivals_main.accolades.subcategory_id,M.ciniki_musicfestivals_main.accolades.accolade_id,0);',
+                    },
                 'excel':{
                     'label':'Export Excel',
                     'fn':'M.ciniki_musicfestivals_main.accolades.exportExcel();'
@@ -15251,6 +15256,7 @@ function ciniki_musicfestivals_main() {
                 'subcategory_id':sid,
                 'accolade_id':aid,
                 'winner_id':wid,
+                'send':'all',
                 },
                 function(rsp) {
                     if( rsp.stat != 'ok' ) {
@@ -15552,6 +15558,11 @@ function ciniki_musicfestivals_main() {
                 'flags2':{'label':'Payment Sent', 'type':'flagtoggle', 'default':'off', 'bit':0x02, 'field':'flags'},
             },
             'menu':{
+                'test':{
+                    'label':'Test Awarded Email',
+                    'visible':function() { return M.ciniki_musicfestivals_main.accoladewinner.winner_id > 0 && (M.ciniki_musicfestivals_main.accoladewinner.data.flags&0x01) == 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.accoladewinner.save("M.ciniki_musicfestivals_main.accoladewinner.sendAwardedEmail(\'test\');");',
+                    },
                 'email':{
                     'label':'Send Awarded Email',
                     'visible':function() { return M.ciniki_musicfestivals_main.accoladewinner.winner_id > 0 && (M.ciniki_musicfestivals_main.accoladewinner.data.flags&0x01) == 0 ? 'yes' : 'no'; },
@@ -15654,22 +15665,39 @@ function ciniki_musicfestivals_main() {
             p.refreshFormField('general', 'year');
             });
     };
-    this.accoladewinner.sendAwardedEmail = function(cid, sid, aid, wid) {
+    this.accoladewinner.sendAwardedEmail = function(t) {
         this.popupMenuClose('general');
-        M.confirm('Are you ready to send Awarded Email?', null, function(rsp) {
+        if( t == 'test' ) {
             M.api.getJSONCb('ciniki.musicfestivals.accoladesAwardedSend', {
                 'tnid':M.curTenantID, 
                 'festival_id':M.ciniki_musicfestivals_main.accoladewinner.festival_id, 
                 'winner_id':M.ciniki_musicfestivals_main.accoladewinner.winner_id,
+                'send':'test',
                 },
                 function(rsp) {
                     if( rsp.stat != 'ok' ) {
                         M.api.err(rsp);
                         return false;
                     }
-                    M.ciniki_musicfestivals_main.accoladewinner.open();
+                    M.alert(rsp.msg);
                 });
-            });
+        } else {
+            M.confirm('Are you ready to send Awarded Email?', null, function(rsp) {
+                M.api.getJSONCb('ciniki.musicfestivals.accoladesAwardedSend', {
+                    'tnid':M.curTenantID, 
+                    'festival_id':M.ciniki_musicfestivals_main.accoladewinner.festival_id, 
+                    'winner_id':M.ciniki_musicfestivals_main.accoladewinner.winner_id,
+                    'send':'all',
+                    },
+                    function(rsp) {
+                        if( rsp.stat != 'ok' ) {
+                            M.api.err(rsp);
+                            return false;
+                        }
+                        M.ciniki_musicfestivals_main.accoladewinner.open();
+                    });
+                });
+        }
         };
     this.accoladewinner.awardLettersPDF = function(cid, sid, aid, wid) {
         this.popupMenuClose('general');

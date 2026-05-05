@@ -70,23 +70,57 @@ function ciniki_musicfestivals_accoladeAwardedSend(&$ciniki, $tnid, $args) {
     //
     // Build a list of email addresses
     //
-    $emails = [];
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
-    foreach(['billing_customer_id', 'parent_customer_id'] AS $field) {
-        if( $winner[$field] > 0 ) {
-            $rc = ciniki_customers_hooks_customerDetails2($ciniki, $tnid, [
-                'customer_id' => $winner[$field],
-                ]);
-            if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1508', 'msg'=>'Unable to open customer', 'err'=>$rc['err']));
+    if( isset($args['send']) && $args['send'] == 'all' ) {
+        $emails = [];
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
+        foreach(['billing_customer_id', 'parent_customer_id'] AS $field) {
+            if( $winner[$field] > 0 ) {
+                $rc = ciniki_customers_hooks_customerDetails2($ciniki, $tnid, [
+                    'customer_id' => $winner[$field],
+                    ]);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1508', 'msg'=>'Unable to open customer', 'err'=>$rc['err']));
+                }
+                if( isset($rc['customer']['emails']) ) {
+                    foreach($rc['customer']['emails'] as $email) {
+                        if( !isset($emails[$email['address']]) ) {
+                            $emails[$email['address']] = [
+                                'customer_id' => $winner[$field],
+                                'customer_name' => $rc['customer']['display_name'],
+                                'customer_email' => $email['address'],
+                                'parent_object' => 'ciniki.musicfestivals.accoladewinner',
+                                'parent_object_id' => $winner['id'],
+                                'object' => 'ciniki.musicfestivals.registration',
+                                'object_id' => $winner['registration_id'],
+                                'subject' => $subject,
+                                'tinymce' => 'yes',
+                                'html_content' => $message,
+                                'text_content' => html_entity_decode(strip_tags($message)),
+                                ];
+                        }
+                    }
+                }
             }
-            if( isset($rc['customer']['emails']) ) {
-                foreach($rc['customer']['emails'] as $email) {
-                    if( !isset($emails[$email['address']]) ) {
-                        $emails[$email['address']] = [
-                            'customer_id' => $winner[$field],
-                            'customer_name' => $rc['customer']['display_name'],
-                            'customer_email' => $email['address'],
+        }
+        for($i = 1; $i <= 5; $i++) {
+            if( $winner["competitor{$i}_id"] > 0 ) {
+                $strsql = "SELECT competitors.id, "
+                    . "competitors.name, "            
+                    . "competitors.email "
+                    . "FROM ciniki_musicfestival_competitors AS competitors "
+                    . "WHERE competitors.id = '" . ciniki_core_dbQuote($ciniki, $winner["competitor{$i}_id"]) . "' "
+                    . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                    . "";
+                $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'competitor');
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1564', 'msg'=>'Unable to load competitor', 'err'=>$rc['err']));
+                }
+                if( isset($rc['competitor']['email']) && $rc['competitor']['email'] != '' ) {
+                    if( !isset($emails[$rc['competitor']['email']]) ) {
+                        $emails[$rc['competitor']['email']] = [
+                            'customer_id' => 0,
+                            'customer_name' => $rc['competitor']['name'],
+                            'customer_email' => $rc['competitor']['email'],
                             'parent_object' => 'ciniki.musicfestivals.accoladewinner',
                             'parent_object_id' => $winner['id'],
                             'object' => 'ciniki.musicfestivals.registration',
@@ -100,69 +134,66 @@ function ciniki_musicfestivals_accoladeAwardedSend(&$ciniki, $tnid, $args) {
                 }
             }
         }
-    }
-    for($i = 1; $i <= 5; $i++) {
-        if( $winner["competitor{$i}_id"] > 0 ) {
-            $strsql = "SELECT competitors.id, "
-                . "competitors.name, "            
-                . "competitors.email "
-                . "FROM ciniki_musicfestival_competitors AS competitors "
-                . "WHERE competitors.id = '" . ciniki_core_dbQuote($ciniki, $winner["competitor{$i}_id"]) . "' "
-                . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . "";
-            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'competitor');
+
+        // 
+        // Add the message
+        //
+        $errors = [];
+        $num_errors = 0;
+        $num_sent = 0;
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
+        foreach($emails as $email) {
+            $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, $email);
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1564', 'msg'=>'Unable to load competitor', 'err'=>$rc['err']));
-            }
-            if( isset($rc['competitor']['email']) && $rc['competitor']['email'] != '' ) {
-                if( !isset($emails[$rc['competitor']['email']]) ) {
-                    $emails[$rc['competitor']['email']] = [
-                        'customer_id' => 0,
-                        'customer_name' => $rc['competitor']['name'],
-                        'customer_email' => $rc['competitor']['email'],
-                        'parent_object' => 'ciniki.musicfestivals.accoladewinner',
-                        'parent_object_id' => $winner['id'],
-                        'object' => 'ciniki.musicfestivals.registration',
-                        'object_id' => $winner['registration_id'],
-                        'subject' => $subject,
-                        'tinymce' => 'yes',
-                        'html_content' => $message,
-                        'text_content' => html_entity_decode(strip_tags($message)),
-                        ];
-                }
+                $errors .= $rc['err']['code'] . ' - ' . $rc['err']['msg'];
+                $num_errors++;
+            } else {
+                $num_sent++;
+                $ciniki['emailqueue'][] = array('mail_id' => $rc['id'], 'tnid' => $tnid);
             }
         }
-    }
 
-    // 
-    // Add the message
-    //
-    $errors = [];
-    $num_errors = 0;
-    $num_sent = 0;
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
-    foreach($emails as $email) {
-        $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, $email);
-        if( $rc['stat'] != 'ok' ) {
-            $errors .= $rc['err']['code'] . ' - ' . $rc['err']['msg'];
-            $num_errors++;
-        } else {
-            $num_sent++;
-            $ciniki['emailqueue'][] = array('mail_id' => $rc['id'], 'tnid' => $tnid);
+        //
+        // Update the recommendation
+        //
+        if( ($winner['flags']&0x01) == 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+            $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.accoladewinner', $winner['id'], [
+                'flags' => ($winner['flags'] | 0x01),
+                ], 0x04);
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1485', 'msg'=>'Unable to update the winner', 'err'=>$rc['err']));
+            }
         }
-    }
-
-    //
-    // Update the recommendation
-    //
-    if( ($winner['flags']&0x01) == 0 ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
-        $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.accoladewinner', $winner['id'], [
-            'flags' => ($winner['flags'] | 0x01),
-            ], 0x04);
-        if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1485', 'msg'=>'Unable to update the winner', 'err'=>$rc['err']));
+    } 
+    else {
+        //
+        // Get the users email
+        //
+        $strsql = "SELECT id, CONCAT_WS(' ', firstname, lastname) AS name, email "
+            . "FROM ciniki_users "
+            . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $ciniki['session']['user']['id']) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.users', 'user');
+        if( $rc['stat'] != 'ok' || !isset($rc['user']) ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.495', 'msg'=>'Unable to find email information', 'err'=>$rc['err']));
         }
+        $name = $rc['user']['name'];
+        $email = $rc['user']['email'];
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'addMessage');
+        $rc = ciniki_mail_hooks_addMessage($ciniki, $tnid, array(
+            'customer_email'=>$email,
+            'customer_name'=>$name,
+            'subject'=>$subject,
+            'tinymce' => 'yes',
+            'html_content'=>$message,
+            'text_content'=>html_entity_decode(strip_tags($message)),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $ciniki['emailqueue'][] = array('mail_id'=>$rc['id'], 'tnid'=>$tnid);
+        return array('stat'=>'ok', 'msg'=>'Message sent, please check your email.');
     }
     
     return array('stat'=>'ok');
