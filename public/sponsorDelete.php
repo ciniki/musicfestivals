@@ -67,7 +67,6 @@ function ciniki_musicfestivals_sponsorDelete(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.777', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
     }
     $tags = isset($rc['rows']) ? $rc['rows'] : array();
-    
 
     //
     // Check if any modules are currently using this object

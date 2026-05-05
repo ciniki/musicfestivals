@@ -124,6 +124,17 @@ function ciniki_musicfestivals_volunteerDelete(&$ciniki) {
     }
 
     //
+    // Remove the tags
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsDelete');
+    $rc = ciniki_core_tagsDelete($ciniki, 'ciniki.musicfestivals', 'tag', $args['tnid'],
+        'ciniki_musicfestival_volunteer_tags', 'ciniki_musicfestivals_history', 'volunteer_id', $args['volunteer_id']);
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.events');
+        return $rc;
+    }
+
+    //
     // Remove the assignments and notification queue
     //
     foreach($assignments as $assignment) {
