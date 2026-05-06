@@ -19636,7 +19636,7 @@ function ciniki_musicfestivals_main() {
             'sortTypes':['date', 'text', 'text', 'text', 'text'],
             'noData':'No Recommendations',
             'menu':{
-                'visible':function() { return (M.ciniki_musicfestivals_main.provincials.data.num_approved > 0 || M.ciniki_musicfestivals_main.provincials.data.num_accepted > 0 || M.ciniki_musicfestivals_main.provincials.data.num_instructionssent > 0 ? 'yes' : 'no'); },
+                'visible':function() { return (M.ciniki_musicfestivals_main.provincials.data.num_approved > 0 || M.ciniki_musicfestivals_main.provincials.data.num_accepted > 0 || (M.ciniki_musicfestivals_main.provincials.data.num_instructionssent > 0 && M.ciniki_musicfestivals_main.provincials.sections._tabs.selected == 'entries') ? 'yes' : 'no'); },
                 'emailinvite':{
                     'label':'Send Invite Emails',
                     'visible':function() { return M.ciniki_musicfestivals_main.provincials.data.num_approved > 0 ? 'yes' : 'no'; },
@@ -19649,7 +19649,7 @@ function ciniki_musicfestivals_main() {
                     },
                 'emailreminders':{
                     'label':'Send Registration Reminder Emails',
-                    'visible':function() { return M.ciniki_musicfestivals_main.provincials.data.num_instructionssent > 0 ? 'yes' : 'no'; },
+                    'visible':function() { return M.ciniki_musicfestivals_main.provincials.data.num_instructionssent > 0 && M.ciniki_musicfestivals_main.provincials.sections._tabs.selected == 'entries' ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.provincials.sendReminderEmail();',
                     },
                 },
