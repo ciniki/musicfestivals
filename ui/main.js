@@ -20754,11 +20754,13 @@ function ciniki_musicfestivals_main() {
     }
 
     this.recommendationEntryStatusColour = function(festival, entry) {
+        var st = '';
         if( entry.position == 'Former 1st' || entry.position == 'Former 2nd' || entry.position == 'Former 3rd' 
             || entry.position == 'Old 1st' || entry.position == 'Old 2nd' || entry.position == 'Old 3rd' 
             || entry.position == '601' || entry.position == '602' || entry.position == '603' 
             ) {
-            return 'statusgreyfade statuslinethrough';
+            st = ' statuslinethrough';
+//            return 'statusgreyfade statuslinethrough';
         }
         if( entry.position == '1st Alt' || entry.position == '2nd Alt' || entry.position == '3rd Alt' || entry.position == '4th Alt' 
             || entry.position == '101' || entry.position == '102' || entry.position == '103' || entry.position == '104' 
@@ -20770,18 +20772,18 @@ function ciniki_musicfestivals_main() {
         }
         switch(entry.status) {
             case '10': return ''; // White
-            case '20': return 'statusblue';  
-            case '30': return 'statusorange';
-            case '35': return 'statusorangefade';
-            case '40': return 'statusteal';
-            case '45': return 'statustealfade';
+            case '20': return 'statusblue' + st;  
+            case '30': return 'statusorange' + st;
+            case '35': return 'statusorangefade' + st;
+            case '40': return 'statusteal' + st;
+            case '45': return 'statustealfade' + st;
             case '50': 
                 if( entry.reg_status < 50 ) {
-                    return 'statusgreenfade';
+                    return 'statusgreenfade' + st;
                 }
-                return 'statusgreen';
-            case '70': return 'statusred';
-            case '80': return 'statuspurple';
+                return 'statusgreen' + st;
+            case '70': return 'statusred' + st;
+            case '80': return 'statuspurple' + st;
             case '85': 
             case '90': return 'statusgrey statuslinethrough';
             case '900': return 'statusgreyfade';
