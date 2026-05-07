@@ -15111,6 +15111,10 @@ function ciniki_musicfestivals_main() {
                     'label':'Export Excel',
                     'fn':'M.ciniki_musicfestivals_main.accolades.exportExcel();'
                     },
+                'labels':{
+                    'label':'Address Labels',
+                    'fn':'M.ciniki_musicfestivals_main.accolades.downloadLabels();'
+                    },
                 },
             }, 
         'thankyous':{'label':'Thank Yous', 'type':'simplegrid', 'num_cols':4, 
@@ -15290,6 +15294,19 @@ function ciniki_musicfestivals_main() {
             'subcategory_id':this.subcategory_id,
             'recipients':'yes',
             'output':'excel',
+            };
+        M.api.openPDF('ciniki.musicfestivals.accolades', args);
+    }
+    this.accolades.downloadLabels = function() {
+        this.popupMenuClose('recipients');
+        var args = {
+            'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'categories':'yes',
+            'category_id':this.category_id,
+            'subcategory_id':this.subcategory_id,
+            'recipients':'yes',
+            'output':'avery5162',
             };
         M.api.openPDF('ciniki.musicfestivals.accolades', args);
     }

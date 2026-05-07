@@ -192,6 +192,11 @@ function ciniki_musicfestivals_accolades($ciniki) {
     if( isset($args['recipients']) && $args['recipients'] == 'yes' ) {
         $strsql = "SELECT competitors.id, "
             . "competitors.age AS competitor_age, "
+            . "competitors.name, "
+            . "competitors.address, "
+            . "competitors.city, "
+            . "competitors.province, "
+            . "competitors.postal, "
             . "competitors.etransfer_email "
             . "FROM ciniki_musicfestival_competitors AS competitors "
             . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
@@ -200,7 +205,7 @@ function ciniki_musicfestivals_accolades($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'competitors', 'fname'=>'id', 
-                'fields'=>array('id', 'age'=>'competitor_age', 'etransfer_email')),
+                'fields'=>array('id', 'age'=>'competitor_age', 'name', 'address', 'city', 'province', 'postal', 'etransfer_email')),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1535', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
@@ -278,6 +283,7 @@ function ciniki_musicfestivals_accolades($ciniki) {
         $rsp['recipients'] = isset($rc['recipients']) ? $rc['recipients'] : array();
         $rsp['num_recipients_noemail'] = 0;
         $nplists['accolades'] = [];
+        $recipient_competitors = [];
         if( count($rsp['recipients']) > 0 ) {
             $rsp['totals']['recipients'] = ['awarded_amount' => 0];
             foreach($rsp['recipients'] as $rid => $recipient) {
@@ -296,6 +302,9 @@ function ciniki_musicfestivals_accolades($ciniki) {
                         ) {
                         $rsp['recipients'][$rid]['age'] .= ($rsp['recipients'][$rid]['age'] != '' ? ', ' : '') 
                             . $competitors[$recipient["competitor{$i}_id"]]['age'];
+                        if( !isset($recipient_competitors[$recipient["competitor{$i}_id"]]) ) {
+                            $recipient_competitors[] = $competitors[$recipient["competitor{$i}_id"]];
+                        }
                     }
                 }
             }
@@ -331,6 +340,18 @@ function ciniki_musicfestivals_accolades($ciniki) {
                 'sheets' => $sheets,
                 'download' => 'yes',
                 'filename' => 'Accolade Recipients.xlsx'
+                ]);
+        }
+        //
+        // Check if labels export requested
+        //
+        if( isset($args['output']) && $args['output'] == 'avery5162' ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'accoladesRecipientLabelsPDF');
+            return ciniki_musicfestivals_templates_accoladesRecipientLabelsPDF($ciniki, $args['tnid'], [
+                'competitors' => $recipient_competitors,
+                'festival' => $festival,
+                'download' => 'yes',
+                'filename' => 'Accolade Recipients.pdf'
                 ]);
         }
     }
