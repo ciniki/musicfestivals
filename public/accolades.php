@@ -32,6 +32,7 @@ function ciniki_musicfestivals_accolades($ciniki) {
         'recipients'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Recipients'),
         'pending'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Pending'),
         'output'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Output'),
+        'template'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Template'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -345,11 +346,12 @@ function ciniki_musicfestivals_accolades($ciniki) {
         //
         // Check if labels export requested
         //
-        if( isset($args['output']) && $args['output'] == 'avery5162' ) {
+        if( isset($args['output']) && $args['output'] == 'labelspdf' ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'accoladesRecipientLabelsPDF');
             return ciniki_musicfestivals_templates_accoladesRecipientLabelsPDF($ciniki, $args['tnid'], [
                 'competitors' => $recipient_competitors,
                 'festival' => $festival,
+                'template' => $args['template'],
                 'download' => 'yes',
                 'filename' => 'Accolade Recipients.pdf'
                 ]);

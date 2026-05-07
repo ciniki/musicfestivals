@@ -122,10 +122,20 @@ function ciniki_musicfestivals_templates_accoladesRecipientLabelsPDF(&$ciniki, $
     $size_x = 101.4;
     $x_padding = 5;
     $size_y = 33.85;
-    $l1_h = 13;
-    $l2_h = 20.85;
     $pdf->SetCellPaddings(5, 2, 5, 2);
     $pdf->SetFont('helvetica', '', 12);
+    if( isset($args['template']) && $args['template'] == '5161' ) {
+        $pdf->left_margin = 4;
+        $pdf->right_margin = 4;
+        $pdf->top_margin = 12.85;
+        $num_cols = 2;
+        $num_rows = 10;
+        $size_x = 101.4;
+        $x_padding = 5;
+        $size_y = 25.37;
+        $pdf->SetCellPaddings(5, 2, 5, 2);
+        $pdf->SetFont('helvetica', '', 12);
+    }
 
     foreach($args['competitors'] as $competitor) {
 
@@ -152,7 +162,7 @@ function ciniki_musicfestivals_templates_accoladesRecipientLabelsPDF(&$ciniki, $
             $txt .= ($txt != '' ? "\n" : '') . $city;
         }
 
-        $pdf->MultiCell($size_x, $size_y, $txt, 0, 'L', 0, 0, $x, $y, true, 0, false, true, $size_y, 'M');
+        $pdf->MultiCell($size_x, $size_y, $txt, 1, 'L', 0, 0, $x, $y, true, 0, false, true, $size_y, 'M');
 
         $col++;
         if( $col >= $num_cols ) {

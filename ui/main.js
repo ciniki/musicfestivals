@@ -15111,9 +15111,13 @@ function ciniki_musicfestivals_main() {
                     'label':'Export Excel',
                     'fn':'M.ciniki_musicfestivals_main.accolades.exportExcel();'
                     },
-                'labels':{
-                    'label':'Address Labels',
-                    'fn':'M.ciniki_musicfestivals_main.accolades.downloadLabels();'
+                'labels5161':{
+                    'label':'Address Labels (5161)',
+                    'fn':'M.ciniki_musicfestivals_main.accolades.downloadLabels("5161");'
+                    },
+                'labels5162':{
+                    'label':'Address Labels (5162)',
+                    'fn':'M.ciniki_musicfestivals_main.accolades.downloadLabels("5162");'
                     },
                 },
             }, 
@@ -15297,7 +15301,7 @@ function ciniki_musicfestivals_main() {
             };
         M.api.openPDF('ciniki.musicfestivals.accolades', args);
     }
-    this.accolades.downloadLabels = function() {
+    this.accolades.downloadLabels = function(t) {
         this.popupMenuClose('recipients');
         var args = {
             'tnid':M.curTenantID,
@@ -15306,7 +15310,8 @@ function ciniki_musicfestivals_main() {
             'category_id':this.category_id,
             'subcategory_id':this.subcategory_id,
             'recipients':'yes',
-            'output':'avery5162',
+            'output':'labelspdf',
+            'template':t,
             };
         M.api.openPDF('ciniki.musicfestivals.accolades', args);
     }
