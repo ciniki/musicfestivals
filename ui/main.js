@@ -17693,6 +17693,12 @@ function ciniki_musicfestivals_main() {
             'sortable':'yes',
             'sortTypes':['text', 'text', 'text', 'text', 'date'],
             },
+        'member_class_recommendations':{'label':'Member Class Recommendations', 'type':'simplegrid', 'num_cols':3,   
+            'flexcolumn':3, 'flexBasis':'30em', 
+            'headerValues':['Name', 'Position', 'Submitted'],
+            'sortable':'yes',
+            'sortTypes':['text', 'text', 'date'],
+            },
         };
     this.recommendationentry.fieldValue = function(s, i, d) { return this.data[i]; }
     this.recommendationentry.fieldHistoryArgs = function(s, i) {
@@ -17797,11 +17803,28 @@ function ciniki_musicfestivals_main() {
                 case 4: return d.date_submitted;
             }
         }
+        if( s == 'member_class_recommendations' ) {
+            switch(j) {
+                case 0: return d.name;
+                case 1: return d.position;
+                case 2: return d.date_submitted;
+            }
+        }
     }
     this.recommendationentry.rowClass = function(s, i, d) {
-        if( s == 'class_recommendations' || s == 'name_search' || s == 'name_recommendations' ) {
+        if( s == 'class_recommendations' || s == 'name_search' || s == 'name_recommendations' || s == 'member_class_recommendations' ) {
             return M.ciniki_musicfestivals_main.recommendationEntryStatusColour(M.ciniki_musicfestivals_main.festival.data, d);
         }
+    }
+    this.recommendationentry.rowFn = function(s, i, d) {
+        if( s == 'name_recommendations' ) {
+            return 'M.ciniki_musicfestivals_main.recommendationentry.save("M.ciniki_musicfestivals_main.recommendationentry.open(null,' + d.id + ');");';
+        }
+        if( s == 'member_class_recommendations' ) {
+            return 'M.ciniki_musicfestivals_main.recommendationentry.save("M.ciniki_musicfestivals_main.recommendationentry.open(null,' + d.id + ');");';
+        }
+
+        return '';
     }
 //    this.recommendationentry.changeStatus = function(s) {
 //        this.sections.general.fields.status.selected = s;
@@ -17822,6 +17845,7 @@ function ciniki_musicfestivals_main() {
             p.sections.name_recommendations.label = 'All Entries - ' + rsp.entry.name;
             p.data.class_recommendations = rsp.class_recommendations;
             p.data.name_recommendations = rsp.name_recommendations;
+            p.data.member_class_recommendations = rsp.member_class_recommendations;
 //            p.menutabs.selected = rsp.entry.status;
 //            p.sections._status.fields.status.selected = rsp.entry.status;
             p.sections.general.fields.class_id.options = rsp.classes;

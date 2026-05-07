@@ -84,7 +84,8 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
         );
 
         if( isset($args['recommendation_id']) && $args['recommendation_id'] > 0 ) {
-            $strsql = "SELECT members.member_tnid "
+            $strsql = "SELECT recommendations.member_id, "
+                . "members.member_tnid "
                 . "FROM ciniki_musicfestival_recommendations AS recommendations "
                 . "INNER JOIN ciniki_musicfestivals_members AS members ON ("
                     . "recommendations.member_id = members.id "
@@ -100,6 +101,7 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
             if( !isset($rc['member']) ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1507', 'msg'=>'Unable to find requested member'));
             }
+            $entry['member_id'] = $rc['member']['member_id'];
             $entry['member_tnid'] = $rc['member']['member_tnid'];
         }
     }
@@ -119,6 +121,7 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
             . "entries.provincials_reg_id, "
             . "entries.local_reg_id, "
             . "members.member_tnid, "
+            . "members.id AS member_id, "
             . "IFNULL(classes.code, '') AS class_code, "
             . "IFNULL(local_reg.private_name, '') AS local_reg_private_name, "
             . "IFNULL(local_reg.title1, '') AS title1, "
@@ -169,7 +172,7 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'entries', 'fname'=>'id', 
                 'fields'=>array('id', 'status', 'recommendation_id', 'class_id', 'position', 'name', 'mark', 'notes', 
-                    'member_tnid', 'provincials_reg_id', 'local_reg_id', 'class_code',
+                    'member_tnid', 'member_id', 'provincials_reg_id', 'local_reg_id', 'class_code',
                     'local_reg_private_name',
                     'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                     'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
@@ -261,7 +264,8 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
         //
         $strsql = "SELECT entries.id, "
             . "entries.status, "
-            . "IF(entries.status >= 70, 600, entries.position) AS position, "
+            . "entries.position, "
+//            . "IF(entries.status >= 70, 600, entries.position) AS position, "
             . "entries.name, "
             . "entries.mark, "
             . "recommendations.id AS recommendation_id, "
@@ -305,6 +309,13 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.656', 'msg'=>'Unable to load entries', 'err'=>$rc['err']));
         }
         $rsp['class_recommendations'] = isset($rc['entries']) ? $rc['entries'] : array();
+
+        $rsp['member_class_recommendations'] = [];
+        foreach($rsp['class_recommendations'] as $rec) {    
+            if( $rec['member_id'] == $entry['member_id'] ) {
+                $rsp['member_class_recommendations'][] = $rec;
+            }
+        }
     }
 
     //
