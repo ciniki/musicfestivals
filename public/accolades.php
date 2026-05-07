@@ -347,6 +347,9 @@ function ciniki_musicfestivals_accolades($ciniki) {
         // Check if labels export requested
         //
         if( isset($args['output']) && $args['output'] == 'labelspdf' ) {
+            uasort($recipient_competitors, function($a, $b) {
+                return strnatcasecmp($a['name'], $b['name']);
+                });
             ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'accoladesRecipientLabelsPDF');
             return ciniki_musicfestivals_templates_accoladesRecipientLabelsPDF($ciniki, $args['tnid'], [
                 'competitors' => $recipient_competitors,
