@@ -121,6 +121,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         . "classes.virtual_fee, "
         . "classes.earlybird_plus_fee, "
         . "classes.plus_fee, "
+        . "classes.synopsis, "
         . "classes.options "
         . "FROM ciniki_musicfestival_sections AS sections "
         . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
@@ -151,7 +152,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     'min_competitors', 'max_competitors', 
                     'min_titles', 'max_titles', 
                     'earlybird_fee', 'fee', 
-                    'vfee' => 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 'options',
+                    'vfee' => 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 'synopsis', 'options',
                     ),
             ),
         ));
@@ -563,6 +564,15 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'label' => 'Class',
             'description' => $selected_section['name'] . ' - ' . $selected_class['name'],
             );
+        if( isset($selected_class['synopsis']) && $selected_class['synopsis'] != '' ) {
+            $fields['class_synopsis'] = array(
+                'id' => 'class_synopsis',
+                'ftype' => 'content',
+                'label' => '',
+                'size' => 'large',
+                'description' => $selected_class['synopsis'],
+                );
+        }
     } else {
         //
         // Remove any hidden from registration form classes
