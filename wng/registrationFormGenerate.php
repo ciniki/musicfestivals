@@ -426,6 +426,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             $selected_member = $members[$_POST['f-member_id']];
         } 
     }
+    elseif( isset($args['member']) && $args['display'] == 'recommendation-registration' ) {
+        $selected_member = $args['member'];
+    }
     elseif( isset($registration['member_id']) && $registration['member_id'] > 0 ) {
         if( isset($members[$registration['member_id']]) ) {
             $selected_member = $members[$registration['member_id']];
@@ -564,7 +567,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'label' => 'Class',
             'description' => $selected_section['name'] . ' - ' . $selected_class['name'],
             );
-        if( isset($selected_class['synopsis']) && $selected_class['synopsis'] != '' ) {
+        if( !isset($registration['status']) && isset($selected_class['synopsis']) && $selected_class['synopsis'] != '' ) {
             $fields['class_synopsis'] = array(
                 'id' => 'class_synopsis',
                 'ftype' => 'content',
@@ -572,6 +575,36 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 'size' => 'large',
                 'description' => $selected_class['synopsis'],
                 );
+        }
+        if( !isset($registration['status']) && ($festival['flags']&0x06) == 0x06 && ($selected_class['feeflags']&0x0a) != 0x0a ) {
+            $price = '';
+            if( isset($festival['live']) && $festival['live'] != 'no' 
+                && isset($selected_class['feeflags']) && ($selected_class['feeflags']&0x02) == 0x02
+                && isset($selected_class['live_fee']) 
+                ) {
+                $price = '<b>Live Only</b>: $' . number_format($selected_class['live_fee'], 2);
+                if( isset($selected_member['latefee']) ) {
+                    $price .= ' + $' . $selected_member['latefee'] . ' late fee';
+                }
+            }
+            elseif( isset($festival['virtual']) && $festival['virtual'] != 'no' 
+                && isset($selected_class['feeflags']) && ($selected_class['feeflags']&0x08) == 0x08
+                && isset($selected_class['virtual_fee']) 
+                ) {
+                $price .= '<b>Virtual Only</b>: $' . number_format($selected_class['virtual_fee'], 2);
+                if( isset($selected_member['latefee']) ) {
+                    $price .= ' + $' . $selected_member['latefee'] . ' late fee';
+                }
+            }
+            if( $price != '' ) {
+                $fields['class_price'] = array(
+                    'id' => 'class_price',
+                    'ftype' => 'content',
+                    'label' => '',
+                    'class' => 'large',
+                    'description' => $price,
+                    );
+            }
         }
     } else {
         //
