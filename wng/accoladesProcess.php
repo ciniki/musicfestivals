@@ -52,6 +52,98 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
     }
 
     //
+    // Display a simple list of accolades
+    //
+    if( isset($s['display-format']) && $s['display-format'] == 'list' ) {
+        //
+        // Get the accolades for a category
+        //
+        $strsql = "SELECT accolades.id, "
+            . "accolades.sequence, "
+            . "accolades.name, "
+            . "accolades.permalink, "
+            . "accolades.primary_image_id, "
+            . "accolades.donated_by, "
+            . "accolades.first_presented, "
+            . "accolades.criteria, "
+            . "accolades.amount, "
+            . "accolades.description, "
+            . "winners.year AS winner_year, "
+            . "winners.name AS winner_name "
+            . "FROM ciniki_musicfestival_accolade_categories AS categories "
+            . "INNER JOIN ciniki_musicfestival_accolade_subcategories AS subcategories ON ("
+                . "categories.id = subcategories.category_id "
+                . "AND subcategories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_accolades AS accolades ON ("
+                . "subcategories.id = accolades.subcategory_id "
+                . "AND (accolades.flags&0x01) = 0x01 "
+                . "AND accolades.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_accolade_winners AS winners ON ("
+                . "accolades.id = winners.accolade_id "
+                . "AND winners.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
+        if( isset($s['category-id']) && $s['category-id'] > 0 ) {
+            $strsql .= "AND categories.id = '" . ciniki_core_dbQuote($ciniki, $s['category-id']) . "' ";
+        }
+        $strsql .= "ORDER BY accolades.sequence, accolades.name, winners.year DESC "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'accolades', 'fname'=>'permalink', 
+                'fields'=>array('id', 'sequence', 'title'=>'name', 'permalink', 'image-id'=>'primary_image_id',
+                    'donated_by', 'first_presented', 'criteria', 'amount', 'description'),
+                ),
+            array('container'=>'winners', 'fname'=>'winner_year', 
+                'fields'=>array('year'=>'winner_year', 'name'=>'winner_name'),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.343', 'msg'=>'Unable to load accolades', 'err'=>$rc['err']));
+        }
+        $accolades = isset($rc['accolades']) ? $rc['accolades'] : array();
+
+        if( isset($s['title']) && $s['title'] != '' ) {
+            $blocks[] = [
+                'type' => 'title',
+                'title' => $s['title'],
+                ];
+        }
+
+        foreach($accolades as $aid => $accolade) {
+            $accolades[$aid]['full_description'] = '';
+            if( $accolade['donated_by'] != '' ) {
+                $accolades[$aid]['full_description'] .= '<b>Donated By:</b> ' . $accolade['donated_by'] . '<br/>';
+            }
+            if( $accolade['first_presented'] != '' ) {
+                $accolades[$aid]['full_description'] .= '<b>First Presented:</b> ' . $accolade['first_presented'] . '<br/>';
+            }
+            if( $accolade['criteria'] != '' ) {
+                $accolades[$aid]['full_description'] .= '<b>Criteria:</b> ' . $accolade['criteria'] . '<br/>';
+            }
+            if( $accolade['amount'] != '' ) {
+                $accolades[$aid]['full_description'] .= '<b>Amount:</b> ' . $accolade['amount'] . '<br/>';
+            }
+            // Synopsis is used in text cards and doesn't display full description
+            $accolades[$aid]['synopsis'] = $accolades[$aid]['full_description'];
+            if( $accolade['description'] != '' ) {
+                $accolades[$aid]['full_description'] .= $accolade['description'];
+            }
+            $blocks[] = array(
+                'type' => 'text',
+                'class' => 'content-aligntop limit-width limit-width-90',
+                'title' => $accolades[$aid]['title'],
+                'content' => $accolades[$aid]['full_description'],
+                );
+        }
+
+        return array('stat'=>'ok', 'blocks'=>$blocks, 'stop'=>'yes', 'clear'=>'yes');
+    }
+
+
+    //
     // Get the list of sub categories
     //
     $strsql = "SELECT id, "

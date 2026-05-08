@@ -1026,6 +1026,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'buttons-imagebuttons-accolade' => 'Category Buttons - Image Buttons - Accolade',
                     'buttons-buttons-accolade' => 'Category Buttons - Accolade Buttons - Accolade',
                     'buttons-list' => 'Category Buttons - List',
+                    'list' => 'List',
                     'buttons-textcards' => 'Category Buttons - Text Cards',
                     )),
                 'display-winners' => array('label'=>'Show Winners', 'type'=>'toggle', 'default'=>'yes', 'toggles'=>array(
