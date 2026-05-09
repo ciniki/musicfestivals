@@ -23,6 +23,8 @@ function ciniki_musicfestivals_sectionsUpdate(&$ciniki) {
         'syllabus_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus'),
         'adminfees_flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Admin Fees'),
         'adminfees_amount'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Admin Fees Amount'),
+        'competitorfees_flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitor Fees'),
+        'competitorfees_amount'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Competitor Fees Amount'),
         'latefees_flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Late Fees'),
         'latefees_start_amount'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Late Fees Start Amount'),
         'latefees_daily_increase'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Late Fees Daily Increase'),
@@ -51,7 +53,8 @@ function ciniki_musicfestivals_sectionsUpdate(&$ciniki) {
         . "sections.latefees_start_amount, "
         . "sections.latefees_daily_increase, "
         . "sections.latefees_days, "
-        . "sections.adminfees_amount "
+        . "sections.adminfees_amount, "
+        . "sections.competitorfees_amount "
         . "FROM ciniki_musicfestival_sections AS sections "
         . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "AND sections.syllabus_id = '" . ciniki_core_dbQuote($ciniki, $args['syllabus_id']) . "' "
@@ -71,6 +74,12 @@ function ciniki_musicfestivals_sectionsUpdate(&$ciniki) {
         }
         if( isset($args['adminfees_amount']) && $args['adminfees_amount'] != $section['adminfees_amount'] ) {
             $update_args['adminfees_amount'] = $args['adminfees_amount'];
+        }
+        if( isset($args['competitorfees_flags']) && ($section['flags']&0x0100) != $args['competitorfees_flags'] ) {
+            $flags = ($flags&0xFFFFFEFF) | $args['competitorfees_flags'];
+        }
+        if( isset($args['competitorfees_amount']) && $args['competitorfees_amount'] != $section['competitorfees_amount'] ) {
+            $update_args['competitorfees_amount'] = $args['competitorfees_amount'];
         }
         if( isset($args['latefees_flags']) && ($section['flags']&0x30) != $args['latefees_flags'] ) {
             $flags = ($flags&0xFFFFFFCF) | $args['latefees_flags'];

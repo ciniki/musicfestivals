@@ -40,6 +40,7 @@ function ciniki_musicfestivals_sectionAdd(&$ciniki) {
         'latefees_daily_increase'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Late Fees Daily Increase'),
         'latefees_days'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Late Fees Number of Days'),
         'adminfees_amount'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Admin Fees Amount'),
+        'competitorfees_amount'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Competitor Fees Amount'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;

@@ -67,7 +67,8 @@ function ciniki_musicfestivals_sectionList($ciniki) {
         . "sections.latefees_start_amount, "
         . "sections.latefees_daily_increase, "
         . "sections.latefees_days, "
-        . "sections.adminfees_amount "
+        . "sections.adminfees_amount, "
+        . "sections.competitorfees_amount "
 //        . "IFNULL(scrutineer1.display_name, '') AS scrutineer1_name "
         . "FROM ciniki_musicfestival_sections AS sections "
 //        . "LEFT JOIN ciniki_customers AS scrutineer1 ON ("
@@ -86,11 +87,11 @@ function ciniki_musicfestivals_sectionList($ciniki) {
         array('container'=>'sections', 'fname'=>'id', 
             'fields'=>array('id', 'festival_id', 'name', 'permalink', 'sequence', 'flags',
                 'live_end_dt', 'virtual_end_dt', 
-                'latefees_start_amount', 'latefees_daily_increase', 'latefees_days', 'adminfees_amount',
+                'latefees_start_amount', 'latefees_daily_increase', 'latefees_days', 'adminfees_amount', 'competitorfees_amount',
 //                'scrutineer1_id', 'scrutineer1_name',
                 ),
             'naprices'=>array(
-                'latefees_start_amount', 'latefees_daily_increase', 'adminfees_amount',
+                'latefees_start_amount', 'latefees_daily_increase', 'adminfees_amount', 'competitorfees_amount',
                 ),
             'utctotz'=>array(
                 'live_end_dt'=>array('format'=>$datetime_format, 'timezone'=>$intl_timezone),
@@ -126,6 +127,9 @@ function ciniki_musicfestivals_sectionList($ciniki) {
             }
             if( ($section['flags']&0xC0) == 0 ) {
                 $sections[$iid]['adminfees_amount'] = '';
+            }
+            if( ($section['flags']&0x0100) == 0 ) {
+                $sections[$iid]['competitorfees_amount'] = '';
             }
         }
     } else {

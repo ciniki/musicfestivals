@@ -117,7 +117,8 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
             . "ciniki_musicfestival_sections.latefees_start_amount, "
             . "ciniki_musicfestival_sections.latefees_daily_increase, "
             . "ciniki_musicfestival_sections.latefees_days, "
-            . "ciniki_musicfestival_sections.adminfees_amount "
+            . "ciniki_musicfestival_sections.adminfees_amount, "
+            . "ciniki_musicfestival_sections.competitorfees_amount "
             . "FROM ciniki_musicfestival_sections "
             . "WHERE ciniki_musicfestival_sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_musicfestival_sections.id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
@@ -130,7 +131,7 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
                     'primary_image_id', 'synopsis', 'description',
                     'live_description', 'virtual_description', 'recommendations_description', 
                     'live_end_dt', 'virtual_end_dt', 'titles_end_dt', 'upload_end_dt',
-                    'latefees_start_amount', 'latefees_daily_increase', 'latefees_days', 'adminfees_amount',
+                    'latefees_start_amount', 'latefees_daily_increase', 'latefees_days', 'adminfees_amount', 'competitorfees_amount',
                     ),
                 'utctotz'=>array(
                     'live_end_dt'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),
@@ -162,6 +163,11 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
             $section['adminfees_amount'] = '$' . number_format($section['adminfees_amount'], 2);
         } else {
             $section['adminfees_amount'] = '';
+        }
+        if( $section['competitorfees_amount'] != 0 ) {
+            $section['competitorfees_amount'] = '$' . number_format($section['competitorfees_amount'], 2);
+        } else {
+            $section['competitorfees_amount'] = '';
         }
 
         //

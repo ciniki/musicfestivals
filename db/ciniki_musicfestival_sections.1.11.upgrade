@@ -1,0 +1,3 @@
+ALTER TABLE ciniki_musicfestival_sections MODIFY COLUMN flags int unsigned not null;
+ALTER TABLE ciniki_musicfestival_sections ADD COLUMN competitorfees_amount decimal(19,6) NOT NULL AFTER adminfees_amount;
+ALTER TABLE ciniki_musicfestival_sections COMMENT='v1.11';
