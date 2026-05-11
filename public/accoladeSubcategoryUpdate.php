@@ -71,6 +71,7 @@ function ciniki_musicfestivals_accoladeSubcategoryUpdate(&$ciniki) {
             . "FROM ciniki_musicfestival_accolade_subcategories "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $args['permalink']) . "' "
+            . "AND category_id = '" . ciniki_core_dbQuote($ciniki, (isset($args['category_id']) ? $args['category_id'] : $subcategory['category_id'])) . "' "
             . "AND id <> '" . ciniki_core_dbQuote($ciniki, $args['subcategory_id']) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
