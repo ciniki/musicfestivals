@@ -88,6 +88,16 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
     }
     $festival = $rc['festival'];
 
+   
+    if( $festival['live'] == 'no' && $festival['virtual'] == 'no' ) {
+        return array('stat'=>'ok', 'blocks'=>[
+            ['type' => 'msg',
+            'level' => 'error',
+            'content' => 'Registrations are now closed.',
+            ]]);
+        
+    }
+
     //
     // Make sure they are signed in
     //
