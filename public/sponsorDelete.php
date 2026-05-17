@@ -98,7 +98,7 @@ function ciniki_musicfestivals_sponsorDelete(&$ciniki) {
     // Remove the tags
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsDelete');
-    $rc = ciniki_core_tagsDelete($ciniki, 'ciniki.musicfestivals', 'tag', $args['tnid'],
+    $rc = ciniki_core_tagsDelete($ciniki, 'ciniki.musicfestivals', 'sponsortag', $args['tnid'],
         'ciniki_musicfestival_sponsor_tags', 'ciniki_musicfestivals_history', 'sponsor_id', $args['sponsor_id']);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.events');

@@ -55,18 +55,6 @@ function ciniki_musicfestivals_registrationDelete(&$ciniki) {
     $registration = $rc['registration'];
 
     //
-    // Remove this submission from any mail entries
-    //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'objectMessagesDetach');
-    $rc = ciniki_mail_hooks_objectMessagesDetach($ciniki, $args['tnid'], array(
-        'object' => 'ciniki.musicfestivals.registration',
-        'object_id' => $args['registration_id'],
-        ));
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1319', 'msg'=>'Unable to detach from mail messages.', 'err'=>$rc['err']));
-    }
-
-    //
     // Check if any modules are currently using this object
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectCheckUsed');
@@ -76,6 +64,24 @@ function ciniki_musicfestivals_registrationDelete(&$ciniki) {
     }
     if( $rc['used'] != 'no' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.72', 'msg'=>'The registration is still in use. ' . $rc['msg']));
+    }
+
+    //
+    // Check if any accolades attached to registration
+    //
+    $strsql = "SELECT 'items', COUNT(*) "
+        . "FROM ciniki_musicfestival_accolade_winners "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND registration_id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbCount');
+    $rc = ciniki_core_dbCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num');
+    if( $rc['stat'] != 'ok' ) { 
+        return $rc;
+    }
+    if( isset($rc['num']['items']) && $rc['num']['items'] > 0 ) {
+        $count = $rc['num']['items'];
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1579', 'msg'=>'There ' . ($count==1?'is':'are') . ' still ' . $count . ' accolade' . ($count==1?'':'s') . ' for this registration.'));
     }
 
     //
@@ -89,6 +95,29 @@ function ciniki_musicfestivals_registrationDelete(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
     $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.musicfestivals');
     if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+
+    //
+    // Remove this submission from any mail entries
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'mail', 'hooks', 'objectMessagesDetach');
+    $rc = ciniki_mail_hooks_objectMessagesDetach($ciniki, $args['tnid'], array(
+        'object' => 'ciniki.musicfestivals.registration',
+        'object_id' => $args['registration_id'],
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1319', 'msg'=>'Unable to detach from mail messages.', 'err'=>$rc['err']));
+    }
+
+    //
+    // Remove the tags
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'tagsDelete');
+    $rc = ciniki_core_tagsDelete($ciniki, 'ciniki.musicfestivals', 'tag', $args['tnid'],
+        'ciniki_musicfestival_registration_tags', 'ciniki_musicfestivals_history', 'registration_id', $args['registration_id']);
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.events');
         return $rc;
     }
 
