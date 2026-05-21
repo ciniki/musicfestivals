@@ -193,6 +193,9 @@ function ciniki_musicfestivals_accolades($ciniki) {
     if( isset($args['recipients']) && $args['recipients'] == 'yes' ) {
         $strsql = "SELECT competitors.id, "
             . "competitors.age AS competitor_age, "
+            . "competitors.ctype, "
+            . "competitors.first, "
+            . "competitors.last, "
             . "competitors.name, "
             . "competitors.address, "
             . "competitors.city, "
@@ -206,7 +209,9 @@ function ciniki_musicfestivals_accolades($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'competitors', 'fname'=>'id', 
-                'fields'=>array('id', 'age'=>'competitor_age', 'name', 'address', 'city', 'province', 'postal', 'etransfer_email')),
+                'fields'=>array('id', 'age'=>'competitor_age', 'ctype', 'first', 'last', 'name', 
+                    'address', 'city', 'province', 'postal', 'etransfer_email',
+                    )),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1535', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
@@ -293,6 +298,11 @@ function ciniki_musicfestivals_accolades($ciniki) {
                 if( ($recipient['flags']&0x01) == 0 ) {
                     $rsp['num_recipients_noemail']++;
                 }
+                $rsp['recipients'][$rid]['competitor1_name'] = '';
+                $rsp['recipients'][$rid]['competitor2_name'] = '';
+                $rsp['recipients'][$rid]['competitor3_name'] = '';
+                $rsp['recipients'][$rid]['competitor4_name'] = '';
+                $rsp['recipients'][$rid]['competitor5_name'] = '';
                 $rsp['recipients'][$rid]['email_sent'] = ($recipient['flags']&0x01) == 0x01 ? 'Sent' : '';
                 $rsp['recipients'][$rid]['payment_sent'] = ($recipient['flags']&0x02) == 0x02 ? 'Sent' : '';
                 $rsp['recipients'][$rid]['age'] = '';
@@ -303,6 +313,10 @@ function ciniki_musicfestivals_accolades($ciniki) {
                         ) {
                         $rsp['recipients'][$rid]['age'] .= ($rsp['recipients'][$rid]['age'] != '' ? ', ' : '') 
                             . $competitors[$recipient["competitor{$i}_id"]]['age'];
+                        if( $competitors[$recipient["competitor{$i}_id"]]['ctype'] == 10 ) {
+                            $rsp['recipients'][$rid]["competitor{$i}_name"] = $competitors[$recipient["competitor{$i}_id"]]['last']
+                                . ', ' . $competitors[$recipient["competitor{$i}_id"]]['first'];
+                        }
                         if( !isset($recipient_competitors[$recipient["competitor{$i}_id"]]) ) {
                             $recipient_competitors[] = $competitors[$recipient["competitor{$i}_id"]];
                         }
@@ -323,6 +337,11 @@ function ciniki_musicfestivals_accolades($ciniki) {
                         ['label' => 'Subcategory', 'field' => 'subcategory_name'],
                         ['label' => 'Accolade', 'field' => 'name'],
                         ['label' => 'Recipient', 'field' => 'recipient_name'],
+                        ['label' => 'Competitor 1', 'field' => 'competitor1_name'],
+                        ['label' => 'Competitor 2', 'field' => 'competitor2_name'],
+                        ['label' => 'Competitor 3', 'field' => 'competitor3_name'],
+                        ['label' => 'Competitor 4', 'field' => 'competitor4_name'],
+                        ['label' => 'Competitor 5', 'field' => 'competitor5_name'],
                         ['label' => 'Age', 'field' => 'age'],
                         ['label' => 'Discipline', 'field' => 'discipline'],
                         ['label' => 'Amount', 'field' => 'awarded_amount'],
