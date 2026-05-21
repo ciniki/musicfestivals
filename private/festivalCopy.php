@@ -112,6 +112,12 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
 
     $update_args = [];
     foreach($old_festival['settings'] as $k => $setting) {
+        //
+        // The following settings should be skipped as they need to be re-setup each year
+        //
+        if( preg_match("/^provincials-email-/", $k) ) {
+            continue;
+        }
         if( $setting['detail_value'] != '' 
             && (!isset($new_festival['settings'][$k]['detail_value']) || $new_festival['settings'][$k]['detail_value'] == '') 
             ) {
