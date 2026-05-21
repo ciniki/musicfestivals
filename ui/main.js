@@ -7207,7 +7207,7 @@ function ciniki_musicfestivals_main() {
     this.edit.save = function(cb) {
         if( cb == null ) { cb = 'M.ciniki_musicfestivals_main.edit.close();'; }
         if( this.festival_id > 0 ) {
-            var c = '';
+            var c = this.serializeForm('no');
             if( c != '' ) {
                 M.api.postJSONCb('ciniki.musicfestivals.festivalUpdate', {'tnid':M.curTenantID, 'festival_id':this.festival_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {
