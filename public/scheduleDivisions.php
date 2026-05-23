@@ -36,6 +36,9 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
         'division7_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Division 7'),
         'division8_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Division 8'),
         'division9_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Division 9'),
+        'division10_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Division 10'),
+        'division11_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Division 11'),
+        'division12_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Division 12'),
         'section_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus Section'),
         'class_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Syllabus Class'),
         'participation'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Participation'),
@@ -143,7 +146,9 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
     //
     $strsql = "SELECT divisions.division_date, "
         . "accompanists.display_name AS name, "
-        . "COUNT(registrations.id) AS num_reg "
+        . "divisions.name AS division_name, "
+        . "registrations.id AS reg_id, "
+        . "registrations.timeslot_time "
         . "FROM ciniki_musicfestival_registrations AS registrations "
         . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
             . "registrations.timeslot_id = timeslots.id "
@@ -160,8 +165,8 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
         . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "AND registrations.accompanist_customer_id > 0 "
         . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "GROUP BY name, division_date "
-        . "ORDER BY name, division_date "
+//        . "GROUP BY name, division_date, timeslot_time, reg_id "
+        . "ORDER BY name, division_date, timeslot_time, reg_id "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -169,13 +174,28 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
             'fields'=>array('name'),
             ),
         array('container'=>'divisions', 'fname'=>'division_date', 
-            'fields'=>array('num_reg'),
+            'fields'=>array('name'=>'division_name'),
+            ),
+        array('container'=>'registrations', 'fname'=>'reg_id', 
+            'fields'=>array('id'=>'reg_id', 'timeslot_time', 'division_name'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.994', 'msg'=>'Unable to load accompanists', 'err'=>$rc['err']));
     }
     $accompanists = isset($rc['accompanists']) ? $rc['accompanists'] : array();
+    foreach($accompanists as $aid => $ac) {
+        foreach($ac['divisions'] as $did => $d) {
+            $accompanists[$aid]['divisions'][$did]['num_reg'] = count($d['registrations']);
+            $schedule = '';
+            foreach($d['registrations'] as $reg) {
+                $schedule .= ($schedule != '' ? '<br>' : '') . $reg['timeslot_time'] . ' - ' . $reg['division_name'];
+            }
+            $accompanists[$aid]['divisions'][$did]['schedule'] = $schedule;
+            unset($accompanists[$aid]['divisions'][$did]['registrations']);
+        }
+    }
+    $rsp['accompanists'] = $accompanists;
     
     //
     // Get the timeslots and registrations for each division
@@ -183,7 +203,7 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
     $rgb = [255,255,255];
     $competitor_colors = [];
     $competitor_numreg = [];
-    for($i = 1; $i <= 9; $i++) {
+    for($i = 1; $i <= 12; $i++) {
         $rsp["timeslots{$i}"] = array();
         if( isset($args["division{$i}_id"]) && $args["division{$i}_id"] > 0 ) {
             //
@@ -379,11 +399,14 @@ function ciniki_musicfestivals_scheduleDivisions($ciniki) {
                 $num = ($timeslot['start_num'] > 1 ? $timeslot['start_num'] : 1);
                 if( isset($timeslot['registrations']) ) {
                     foreach($timeslot["registrations"] as $rid => $reg) {
+                        $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['accompanist_num'] = '';
                         if( $reg['accompanist_name'] != ''  
                             && isset($accompanists[$reg['accompanist_name']]['divisions'][$reg['division_date']]['num_reg'])
                             ) {
-                            $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['accompanist_name'] .= 
-                                " (" . $accompanists[$reg['accompanist_name']]['divisions'][$reg['division_date']]['num_reg'] . ")";
+//                            $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['accompanist_name'] .= 
+//                                " (" . $accompanists[$reg['accompanist_name']]['divisions'][$reg['division_date']]['num_reg'] . ")";
+                            $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['accompanist_num'] = 
+                                $accompanists[$reg['accompanist_name']]['divisions'][$reg['division_date']]['num_reg'];
                         }
                         $rsp["timeslots{$i}"][$tid]["registrations"][$rid]['timeslot_number'] = $num;
                         $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $reg, [

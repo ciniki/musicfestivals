@@ -433,7 +433,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             . ") "
         . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-        . "ORDER BY sections.name, divisions.name "
+        . "ORDER BY sections.sequence, sections.name, divisions.name "
         . "";
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'divisions', 'fname'=>'id', 'fields'=>array('id', 'name')),
