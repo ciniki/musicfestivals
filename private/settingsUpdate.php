@@ -273,6 +273,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'provincials-smtp-from-address',
         'competitor-label-singular',
         'competitor-label-plural',
+        'competitor-admin-fee',
         'competitor-parent-msg',
         'competitor-teacher-msg',
         'competitor-adult-msg',
@@ -393,6 +394,9 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1093', 'msg'=>'Invalid Date Format: ' . $args[$field], 'pmsg'=>$e->getMessage()));
                 }
                 $args[$field] = $dt->format('Y-m-d H:i:s');
+            }
+            if( $field == 'competitor-admin-fee' ) {
+                $args[$field] = preg_replace("/[^0-9\.]/", '', $args[$field]);
             }
             if( isset($settings[$field]['detail_value']) && $settings[$field]['detail_value'] != $args[$field] ) {
                 //

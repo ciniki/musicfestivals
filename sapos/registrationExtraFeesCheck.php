@@ -21,6 +21,11 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
         . "registrations.class_id, "
         . "registrations.festival_id, "
         . "registrations.participation, "
+        . "registrations.competitor1_id, "
+        . "registrations.competitor2_id, "
+        . "registrations.competitor3_id, "
+        . "registrations.competitor4_id, "
+        . "registrations.competitor5_id, "
         . "IFNULL(sections.live_end_dt, '0000-00-00 00:00:00') AS live_end_dt, "
         . "IFNULL(sections.virtual_end_dt, '0000-00-00 00:00:00') AS virtual_end_dt, "
         . "IFNULL(classes.feeflags, 0) AS feeflags, "
@@ -33,7 +38,8 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
         . "IFNULL(sections.latefees_start_amount, 0) AS latefees_start_amount, "
         . "IFNULL(sections.latefees_daily_increase, 0) AS latefees_daily_increase, "
         . "IFNULL(sections.latefees_days, 0) AS latefees_days, "
-        . "IFNULL(sections.adminfees_amount, 0) AS adminfees_amount "
+        . "IFNULL(sections.adminfees_amount, 0) AS adminfees_amount, "
+        . "IFNULL(sections.competitorfees_amount, 0) AS competitorfees_amount "
         . "FROM ciniki_musicfestival_registrations AS registrations "
         . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
             . "registrations.class_id = classes.id "
@@ -68,6 +74,16 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
         return $rc;
     }
     $festival = $rc['festival'];
+
+    //
+    // Check for a competitor fee
+    //
+    if( isset($festival['competitor-admin-fee']) 
+        && is_numeric($festival['competitor-admin-fee']) 
+        && $festival['competitor-admin-fee'] > 0 
+        ) {
+        $registration['competitorfees_amount'] = $festival['competitor-admin-fee'];
+    }
 
     //
     // Check for section registration end dates and if still available
@@ -259,16 +275,16 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
     }
 
     if( $fees_msg != '' ) {
-        return array('stat'=>'updated', 'msg'=>$fees_msg);
+        return array('stat'=>'updated', 'msg'=>$fees_msg, 'registration'=>$registration);
     }
 
     if( isset($latefee) ) {
-        return array('stat'=>'ok', 'latefee'=>$latefee);
+        return array('stat'=>'ok', 'latefee'=>$latefee, 'registration'=>$registration);
     }
     if( isset($cart_latefee) ) {
-        return array('stat'=>'ok', 'cart_latefee'=>$cart_latefee);
+        return array('stat'=>'ok', 'cart_latefee'=>$cart_latefee, 'registration'=>$registration);
     }
 
-    return array('stat'=>'ok');
+    return array('stat'=>'ok', 'registration'=>$registration);
 }
 ?>

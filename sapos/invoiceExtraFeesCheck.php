@@ -43,6 +43,7 @@ function ciniki_musicfestivals_sapos_invoiceExtraFeesCheck($ciniki, $tnid, $args
     $latefee = 0;
     $cart_latefees = 0;
     $closed_registrations = '';
+    $competitor_fees = [];
     foreach($items as $iid => $item) {
         if( $item['object'] == 'ciniki.musicfestivals.registration' && $item['object_id'] > 0 ) {
             if( isset($args['ignore_registration_id']) && $args['ignore_registration_id'] == $item['object_id'] ) {
@@ -67,6 +68,19 @@ function ciniki_musicfestivals_sapos_invoiceExtraFeesCheck($ciniki, $tnid, $args
             if( isset($rc['cart_latefee']) ) {
                 $cart_latefees += $rc['cart_latefee'];
             }
+            //
+            // Check for competitor fees
+            //
+            if( isset($rc['registration']) && ($rc['registration']['section_flags']&0x0100) == 0x0100 
+                && $rc['registration']['competitorfees_amount'] > 0 
+                ) {
+                $reg = $rc['registration'];
+                for($i = 1; $i <= 5; $i++) {
+                    if( $reg["competitor{$i}_id"] > 0 && !isset($competitor_fees[$reg["competitor{$i}_id"]]) ) {
+                        $competitor_fees[$reg["competitor{$i}_id"]] = $reg['competitorfees_amount'];
+                    }
+                }
+            }
         }
     }
 
@@ -83,6 +97,7 @@ function ciniki_musicfestivals_sapos_invoiceExtraFeesCheck($ciniki, $tnid, $args
             || ($item['object'] == 'ciniki.musicfestivals.latefees' && $cart_latefees == 0) 
             || ($item['object'] == 'ciniki.musicfestivals.adminfee' && $num_registrations == 0)
             || ($item['object'] == 'ciniki.musicfestivals.memberlatefee' && $num_registrations == 0)
+            || ($item['object'] == 'ciniki.musicfestivals.competitorfee' && count($competitor_fees) == 0)
             ) {
             $rc = ciniki_sapos_hooks_invoiceItemDelete($ciniki, $tnid, [
                 'invoice_id' => $args['invoice_id'],
@@ -112,6 +127,23 @@ function ciniki_musicfestivals_sapos_invoiceExtraFeesCheck($ciniki, $tnid, $args
         }
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.726', 'msg'=>'Unable to update late fees', 'err'=>$rc['err']));
+        }
+    }
+
+    if( count($competitor_fees) > 0 ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'invoiceCompetitorFeesUpdate');
+        $rc = ciniki_musicfestivals_invoiceCompetitorFeesUpdate($ciniki, $tnid, [
+            'invoice_id' => $args['invoice_id'], 
+            'competitor_fees' => $competitor_fees,
+            ]);
+        if( isset($rc['added']) && $rc['added'] == 'yes' ) {
+            return array('stat'=>'updated', 'msg'=>'Competitor fees have been added.');
+        }
+        if( isset($rc['updated']) && $rc['updated'] == 'yes' ) {
+            return array('stat'=>'updated', 'msg'=>'Competitor fees have been updated.');
+        }
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1580', 'msg'=>'Unable to update competitor fees', 'err'=>$rc['err']));
         }
     }
 
