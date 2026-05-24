@@ -3139,7 +3139,7 @@ function ciniki_musicfestivals_main() {
                 return d.name;
             }
             if( d.registrations != null && d.registrations[(j-1)] != null ) {
-                return M.multiline(d.registrations[(j-1)].time_text, d.registrations[(j-1)].location_name);
+                return M.multiline(d.registrations[(j-1)].time_text, d.registrations[(j-1)].location_name, d.registrations[(j-1)].class_code + ' - ' + d.registrations[(j-1)].class_name);
             }
             return '';
         }

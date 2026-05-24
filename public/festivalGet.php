@@ -3104,7 +3104,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             if( isset($args['accompanist_schedule_date']) && $args['accompanist_schedule_date'] != '' ) {
                 $strsql = "SELECT customers.id, "
                     . "customers.display_name AS name, "
-                    . "registrations.id AS reg_id, ";
+                    . "registrations.id AS reg_id, "
+                    . "classes.code AS class_code, "
+                    . "classes.name AS class_name, ";
                 if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
                     $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS time_text, "
                         . "TIME_TO_SEC(registrations.timeslot_time) AS slot_sec, "
@@ -3119,6 +3121,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "INNER JOIN ciniki_customers AS customers ON ("
                         . "registrations.accompanist_customer_id = customers.id "
                         . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
+                        . "registrations.class_id = classes.id "
+                        . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                         . ") "
                     . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
                         . "registrations.timeslot_id = timeslots.id "
@@ -3146,7 +3152,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         'fields'=>array('id', 'name'),
                         ),
                     array('container'=>'registrations', 'fname'=>'reg_id', 
-                        'fields'=>array('time_text', 'slot_time', 'slot_sec', 'location_name'),
+                        'fields'=>array('time_text', 'slot_time', 'slot_sec', 'location_name', 'class_code', 'class_name'),
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
