@@ -291,30 +291,48 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.784', 'msg'=>'Unable to load lastreg', 'err'=>$rc['err']));
                 }
                 if( !isset($rc['lastreg']) ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.785', 'msg'=>'Unable to find requested lastreg'));
-                }
-                $lastreg = $rc['lastreg'];
-                $total_time = 0;
-                for($i = 1; $i <= 10; $i++) {
-                    if( isset($lastreg["perf_time{$i}"]) && $lastreg["perf_time{$i}"] > 0 ) {
-                        $total_time += $lastreg["perf_time{$i}"];
+                    //
+                    // If a registration is not found that likely means the timeslot_sequence does not start at 1
+                    // for this timeslot. Assume that this registration is now the first
+                    //
+                    $strsql = "SELECT slot_time "
+                        . "FROM ciniki_musicfestival_schedule_timeslots "
+                        . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['timeslot_id']) . "' "
+                        . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $registration['festival_id']) . "' "
+                        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . "";
+                    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'timeslot');
+                    if( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1580', 'msg'=>'Unable to load timeslot', 'err'=>$rc['err']));
                     }
-                }
-                $total_time += 60 - ($total_time%60);
-                //
-                // Check if there is a schedule time and if it should be total time or in adjudication time added to perf times
-                //
-                if( isset($lastreg['class_flags']) && ($lastreg['class_flags']&0x0C0000) > 0 && $lastreg['schedule_seconds'] > 0 ) {
-                    if( ($lastreg['class_flags']&0x0C0000) == 0x080000 ) {
-                        $total_time = $lastreg['schedule_seconds'];
-                    } elseif( ($lastreg['class_flags']&0x0C0000) == 0x040000 ) {
-                        $total_time += $lastreg['schedule_seconds'];
+                    if( !isset($rc['timeslot']) ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1581', 'msg'=>'Unable to find requested timeslot'));
                     }
+                    $args['timeslot_time'] = $rc['timeslot']['slot_time'];
+                } else {
+                    $lastreg = $rc['lastreg'];
+                    $total_time = 0;
+                    for($i = 1; $i <= 10; $i++) {
+                        if( isset($lastreg["perf_time{$i}"]) && $lastreg["perf_time{$i}"] > 0 ) {
+                            $total_time += $lastreg["perf_time{$i}"];
+                        }
+                    }
+                    $total_time += 60 - ($total_time%60);
+                    //
+                    // Check if there is a schedule time and if it should be total time or in adjudication time added to perf times
+                    //
+                    if( isset($lastreg['class_flags']) && ($lastreg['class_flags']&0x0C0000) > 0 && $lastreg['schedule_seconds'] > 0 ) {
+                        if( ($lastreg['class_flags']&0x0C0000) == 0x080000 ) {
+                            $total_time = $lastreg['schedule_seconds'];
+                        } elseif( ($lastreg['class_flags']&0x0C0000) == 0x040000 ) {
+                            $total_time += $lastreg['schedule_seconds'];
+                        }
+                    }
+                    $dt = new DateTime('now', new DateTimezone('UTC'));
+                    $dt = new DateTime($dt->format('Y-m-d') . ' ' . $lastreg['timeslot_time'], new DateTimezone('UTC'));
+                    $dt->add(new DateInterval('PT' . $total_time . 'S')); 
+                    $args['timeslot_time'] = $dt->format('H:i');
                 }
-                $dt = new DateTime('now', new DateTimezone('UTC'));
-                $dt = new DateTime($dt->format('Y-m-d') . ' ' . $lastreg['timeslot_time'], new DateTimezone('UTC'));
-                $dt->add(new DateInterval('PT' . $total_time . 'S')); 
-                $args['timeslot_time'] = $dt->format('H:i');
             } 
         } 
     }
