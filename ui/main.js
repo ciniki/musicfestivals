@@ -12888,7 +12888,9 @@ function ciniki_musicfestivals_main() {
             p.sections = {};
             for(var i = 1; i <= p.num_divisions; i++) {
                 p.sections['division'+i] = {
-                    'label':'Division ' + i, 'flexcolumn':i, 'flexBasis':'10%', 'type':'select',
+                    'label':'Division ' + i, 'flexcolumn':i, 
+                    'flexBasis':(p.division_ids[i] != null && p.division_ids[i] > 0 ? '10%' : '1%'), 
+                    'type':'select',
                     'fields':{},
                     'menu':{    
                         'add':{
