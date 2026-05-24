@@ -3557,6 +3557,11 @@ function ciniki_musicfestivals_main() {
                 return 'multiline statusred';
             }
         }
+        if( s == 'accompanists_date_schedule' ) {
+            if( d.registrations != null && d.registrations[(j-1)] != null && d.registrations[(j-1)].conflict != null ) {
+                return 'multiline statusred';
+            }
+        }
         if( this.sections[s].cellClasses != null && this.sections[s].cellClasses[j] != null ) {
             return this.sections[s].cellClasses[j];
         }

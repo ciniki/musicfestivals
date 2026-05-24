@@ -3107,9 +3107,11 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "registrations.id AS reg_id, ";
                 if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
                     $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS time_text, "
+                        . "TIME_TO_SEC(registrations.timeslot_time) AS slot_sec, "
                         . "registrations.timeslot_time AS slot_time, ";
                 } else {
                     $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS time_text, "
+                        . "TIME_TO_SEC(timeslots.slot_time) AS slot_sec, "
                         . "timeslots.slot_time, ";
                 }
                 $strsql .= "IFNULL(IF(locations.shortname <> '', locations.shortname, locations.name), '??') AS location_name "
@@ -3144,7 +3146,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         'fields'=>array('id', 'name'),
                         ),
                     array('container'=>'registrations', 'fname'=>'reg_id', 
-                        'fields'=>array('time_text', 'slot_time', 'location_name'),
+                        'fields'=>array('time_text', 'slot_time', 'slot_sec', 'location_name'),
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
@@ -3154,6 +3156,23 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 foreach($festival['accompanists_date_schedule'] as $aid => $acc) {
                     if( !isset($acc['registrations']) || count($acc['registrations']) < 2 ) {
                         unset($festival['accompanists_date_schedule'][$aid]);
+                    } else {
+                        $prev_reg = null;
+                        $prev_rid = 0;
+                        foreach($acc['registrations'] as $rid => $reg) {
+                            if( $prev_reg != null 
+                                && $prev_reg['slot_sec'] >= ($reg['slot_sec']-(45*60))
+                                && $prev_reg['location_name'] != $reg['location_name']
+                                ) {
+                                $festival['accompanists_date_schedule'][$aid]['conflict'] = 'yes';
+
+                                $festival['accompanists_date_schedule'][$aid]['registrations'][$rid]['conflict'] = 'yes';
+                                $festival['accompanists_date_schedule'][$aid]['registrations'][$prev_rid]['conflict'] = 'yes';
+                            }
+
+                            $prev_reg = $reg;
+                            $prev_rid = $rid;
+                        }
                     }
                 }
             }
