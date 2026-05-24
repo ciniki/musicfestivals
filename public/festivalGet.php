@@ -3152,7 +3152,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         'fields'=>array('id', 'name'),
                         ),
                     array('container'=>'registrations', 'fname'=>'reg_id', 
-                        'fields'=>array('time_text', 'slot_time', 'slot_sec', 'location_name', 'class_code', 'class_name'),
+                        'fields'=>array('id'=>'reg_id', 'time_text', 'slot_time', 'slot_sec', 'location_name', 'class_code', 'class_name'),
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {

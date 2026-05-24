@@ -3549,6 +3549,9 @@ function ciniki_musicfestivals_main() {
         if( s == 'classes' && this.sections.classes.dataMaps[j] == 'provincials_code_name' ) {
             return 'event.stopPropagation();M.ciniki_musicfestivals_main.festival.provincialsCodeChange(\'' + d.id + '\');';
         }
+        if( s == 'accompanists_date_schedule' && d.registrations != null && d.registrations[(j-1)] != null ) {
+            return 'M.ciniki_musicfestivals_main.registration.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'' + d.registrations[(j-1)].id + '\',0,0,M.ciniki_musicfestivals_main.festival.festival_id, null,\'festival\');';
+        }
         return '';
     }
     this.festival.cellClass = function(s, i, j, d) {
