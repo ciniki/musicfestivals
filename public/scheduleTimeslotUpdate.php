@@ -103,29 +103,31 @@ function ciniki_musicfestivals_scheduleTimeslotUpdate(&$ciniki) {
     //
     // Check for any timeslots linked to this one, or linked to the timeslot being linked to.
     //
-    $linked_timeslot_id = $timeslot['linked_timeslot_id'];
-    if( isset($args['linked_timeslot_id']) ) {
-        $linked_timeslot_id = $args['linked_timeslot_id'];
+    if( ($timeslot['flags']&0x06) > 0 ) {
+        $linked_timeslot_id = $timeslot['linked_timeslot_id'];
+        if( isset($args['linked_timeslot_id']) ) {
+            $linked_timeslot_id = $args['linked_timeslot_id'];
+        }
+        $strsql = "SELECT timeslots.id, "
+            . "timeslots.flags "
+            . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
+            . "WHERE ("
+                . "timeslots.linked_timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['scheduletimeslot_id']) . "' "
+                . "OR timeslots.linked_timeslot_id = '" . ciniki_core_dbQuote($ciniki, $linked_timeslot_id) . "' "
+                . ") "
+            . "AND (timeslots.flags&0x04) = 0x04 "
+            . "AND timeslots.festival_id = '" . ciniki_core_dbQuote($ciniki, $timeslot['festival_id']) . "' "
+            . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'timeslots', 'fname'=>'id', 'fields'=>array('id', 'flags')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1007', 'msg'=>'Unable to load timeslots', 'err'=>$rc['err']));
+        }
+        $linked_timeslots = isset($rc['timeslots']) ? $rc['timeslots'] : array();
     }
-    $strsql = "SELECT timeslots.id, "
-        . "timeslots.flags "
-        . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
-        . "WHERE ("
-            . "timeslots.linked_timeslot_id = '" . ciniki_core_dbQuote($ciniki, $args['scheduletimeslot_id']) . "' "
-            . "OR timeslots.linked_timeslot_id = '" . ciniki_core_dbQuote($ciniki, $linked_timeslot_id) . "' "
-            . ") "
-        . "AND (timeslots.flags&0x04) = 0x04 "
-        . "AND timeslots.festival_id = '" . ciniki_core_dbQuote($ciniki, $timeslot['festival_id']) . "' "
-        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-        . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'timeslots', 'fname'=>'id', 'fields'=>array('id', 'flags')),
-        ));
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1007', 'msg'=>'Unable to load timeslots', 'err'=>$rc['err']));
-    }
-    $linked_timeslots = isset($rc['timeslots']) ? $rc['timeslots'] : array();
 
     //
     // Start transaction
