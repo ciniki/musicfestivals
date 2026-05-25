@@ -188,6 +188,12 @@ function ciniki_musicfestivals_provincialsRegInviteSend(&$ciniki, $tnid, $args) 
     $message = str_replace('{_titles_}', $registration['titles'], $message);
     $subject = str_replace('{_livevirtual_}', $class_live_virtual, $subject);
     $message = str_replace('{_livevirtual_}', $class_live_virtual, $message);
+    $subject = str_replace('{_provincialsclass_}', $entry['class_code'] . ' - ' . $entry['class_name'], $subject);
+    $message = str_replace('{_provincialsclass_}', $entry['class_code'] . ' - ' . $entry['class_name'], $message);
+    $subject = str_replace('{_provincialsclasscode_}', $entry['class_code'], $subject);
+    $message = str_replace('{_provincialsclasscode_}', $entry['class_code'], $message);
+    $subject = str_replace('{_provincialsclassname_}', $entry['class_name'], $subject);
+    $message = str_replace('{_provincialsclassname_}', $entry['class_name'], $message);
     $subject = str_replace('{_registerlink_}', $register_url, $subject);
     $message = str_replace('{_registerlink_}', $register_url, $message);
 
