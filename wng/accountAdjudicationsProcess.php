@@ -607,6 +607,9 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 }
                 if( isset($festival['comments-placement-options']) && $festival['comments-placement-options'] != '' ) {
                     $timeslot['registrations'][$rid]['placement_input'] = "<select name='f-{$reg['id']}-placement' id='f-{$reg['id']}-placement'>";
+                    $timeslot['registrations'][$rid]['placement_input'] .= "<option value=''"
+                        . ($reg['placement'] == '' ? " selected" : '')
+                        . "></option>";
                     foreach(explode(',', $festival['comments-placement-options']) as $option) {
                         $option = trim($option);
                         $timeslot['registrations'][$rid]['placement_input'] .= "<option value='{$option}'"
