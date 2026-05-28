@@ -284,6 +284,17 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $festival[$k] = $v;
         }
 
+        if( isset($festival['comments-placement-options']) && $festival['comments-placement-options'] != '' ) {
+            $options = explode(',', $festival['comments-placement-options']);
+            $psorts = [];
+            $i = 0;
+            foreach($options as $o) {
+                $psorts[trim($o)] = chr($i+65);
+                $i++;
+            }
+            $psorts[''] = 'ZZ';
+        }
+
         //
         // Format CRS deadline
         //
@@ -2451,8 +2462,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
 //                && isset($requested_section)
                 ) {
                 $strsql = "SELECT timeslots.id AS timeslot_id, "
+                    . "timeslots.name AS timeslot_name, "
                     . "timeslots.groupname, "
-                    . "timeslots.start_num, ";
+                    . "timeslots.start_num, "
+                    . "timeslots.description AS timeslot_description, ";
                     
                 if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
                     $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS slot_time_text, ";
@@ -2526,7 +2539,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'results', 'fname'=>'id', 
                         'fields'=>array('id', 'timeslot_id', 'groupname', 'start_num', 
-                            'status', 'display_name', 'slot_time_text', 'timeslot_sequence', 'flags',
+                            'status', 'display_name', 'timeslot_name', 'slot_time_text', 'timeslot_sequence', 'timeslot_description', 'flags',
                             'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
                             'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
                             'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
@@ -2543,6 +2556,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.63', 'msg'=>'Unable to load results', 'err'=>$rc['err']));
                 }
                 $festival['schedule_results'] = isset($rc['results']) ? $rc['results'] : array();
+                $timeslots = [];
+                $cur_timeslot_id = '';
                 foreach($festival['schedule_results'] as $sid => $result) {
                     $festival['schedule_results'][$sid]['timeslot_number'] = $result['timeslot_sequence'];
                     if( $result['start_num'] > 1 ) {
@@ -2550,6 +2565,10 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     }
                     if( $result['status'] == 77 ) {
                         $festival['schedule_results'][$sid]['mark'] .= ($result['mark'] != '' ? ' - ' : '') . 'No Show';
+                    }
+                    $festival['schedule_results'][$sid]['psort'] = $result['placement'];
+                    if( isset($psorts[$result['placement']]) ) {
+                        $festival['schedule_results'][$sid]['psort'] = $psorts[$result['placement']];
                     }
                     $titles = '';
                     for($i = 1; $i <= 8; $i++) {
@@ -2561,7 +2580,48 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         }
                     }
                     $festival['schedule_results'][$sid]['titles'] = $titles;
+                    // Build the timeslots array
+                    $cur_timeslot_id = $result['timeslot_id'];
+                    if( !isset($timeslots[$result['timeslot_id']]) ) {
+                        $timeslots[$result['timeslot_id']] = [
+                            'name' => $result['timeslot_name'] != '' ? $result['timeslot_name'] : $result['class_name'],
+                            'groupname' => $result['groupname'],
+                            'slot_time_text' => $result['slot_time_text'],
+                            'description' => $result['timeslot_description'],
+                            'registrations' => [$festival['schedule_results'][$sid]],
+                            ];
+                    } else {
+                        $timeslots[$result['timeslot_id']]['registrations'][] = $festival['schedule_results'][$sid];
+                    }
                 }
+                foreach($timeslots as $tid => $timeslot) {
+                    if( isset($timeslot['registrations']) && count($timeslot['registrations']) > 0 ) {
+                        $timeslots[$tid]['description'] = '';
+                        uasort($timeslot['registrations'], function($a, $b) {
+                            if( $a['mark'] != $b['mark'] ) {
+                                return $a['mark'] < $b['mark'] ? -1 : 1;
+                            }
+                            if( $a['psort'] != $b['psort'] ) {
+                                return strnatcasecmp($a['psort'], $b['psort']);
+                            }
+                            return strnatcasecmp($a['display_name'], $b['display_name']);
+                            });
+                        foreach($timeslot['registrations'] as $reg) {
+                            if( $timeslots[$tid]['description'] != '' ) {
+                                $timeslots[$tid]['description'] .= "\n";
+                            }
+                            if( isset($festival['comments-placement-ui']) && $festival['comments-placement-ui'] == 'yes' ) {
+                                $timeslots[$tid]['description'] .= "{$reg['placement']} - {$reg['display_name']}";
+                            } else {
+                                $timeslots[$tid]['description'] .= "{$reg['display_name']}";
+                            }
+                            if( isset($festival['comments-mark-ui']) && $festival['comments-mark-ui'] == 'yes' ) {
+                                $timeslots[$tid]['description'] .= " - {$reg['mark']}";
+                            }
+                        }
+                    }
+                }
+                $festival['schedule_timeslots_results'] = array_values($timeslots); //[];
             }   
             elseif( isset($args['provincials']) && $args['provincials'] == 'yes'
                 && isset($requested_section)
