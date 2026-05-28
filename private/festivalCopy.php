@@ -162,6 +162,10 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
     //
     $strsql = "SELECT syllabuses.id AS syllabus_id, "
         . "syllabuses.name AS syllabus_name, "
+        . "syllabuses.permalink AS syllabus_permalink, "
+        . "syllabuses.sequence AS syllabus_sequence, "
+        . "syllabuses.flags AS syllabus_flags, "
+        . "syllabuses.sections_description AS syllabus_sections_description, "
         . "syllabuses.rules AS syllabus_rules, "
         . "sections.id AS section_id, "
         . "sections.name AS section_name, "
@@ -239,7 +243,8 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'syllabuses', 'fname'=>'syllabus_id',
-            'fields'=>array('name'=>'syllabus_name', 'rules'=>'syllabus_rules',
+            'fields'=>array('name'=>'syllabus_name', 'permalink'=>'syllabus_permalink', 'flags'=>'syllabus_flags', 
+                'rules'=>'syllabus_rules', 'sections_description'=>'syllabus_sections_description',
                 )),
         array('container'=>'sections', 'fname'=>'section_id',
             'fields'=>array('name'=>'section_name', 'permalink'=>'section_permalink', 'sequence'=>'section_sequence', 
@@ -257,12 +262,13 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
                 )),
         array('container'=>'classes', 'fname'=>'class_id',
             'fields'=>array('code', 'name'=>'class_name', 'permalink'=>'class_permalink', 
+                'cert_name', 'icon_image_id', 
                 'synopsis'=>'class_synopsis', 'sequence'=>'class_sequence', 
 // Provincials code will need to be updated after importing
                 'provincials_code',   
                 'flags', 'feeflags', 'titleflags', 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
                 'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 'keywords', 'options',
-                'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds',
+                'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds', 
                 )),
         array('container'=>'accolades', 'fname'=>'accolade_id',
             'fields'=>array('accolade_id')),
@@ -276,6 +282,19 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
         foreach($syllabuses as $syllabus) {
             if( isset($new_festival_syllabuses[$syllabus['name']]) ) {
                 $syllabus_id = $new_festival_syllabuses[$syllabus['name']]['id'];
+                //
+                // Update the rules
+                //
+                if( $syllabus['rules'] != '' || $syllabus['sections_description'] != '' ) {
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+                    $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.syllabus', $syllabus_id, [
+                        'rules' => $syllabus['rules'],
+                        'sections_description' => $syllabus['sections_description'],
+                        ], 0x04);
+                    if( $rc['stat'] != 'ok' ) {
+                        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1583', 'msg'=>'Unable to update the syllabus', 'err'=>$rc['err']));
+                    }
+                }
             } else {
                 $syllabus['festival_id'] = $festival_id;
                 $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.syllabus', $syllabus, 0x04);
