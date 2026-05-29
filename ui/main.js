@@ -18953,6 +18953,10 @@ function ciniki_musicfestivals_main() {
                     },
                 'contacts':{
                     'label':'Export Contacts to Excel',
+                    'fn':'M.ciniki_musicfestivals_main.volunteers.excelContactsExport();',
+                    },
+                'excel':{
+                    'label':'Export to Excel',
                     'fn':'M.ciniki_musicfestivals_main.volunteers.excelExport();',
                     },
                 },
@@ -19297,13 +19301,21 @@ function ciniki_musicfestivals_main() {
         args['output'] = 'pdf';
         M.api.openFile('ciniki.musicfestivals.volunteers', args);
     }
-    this.volunteers.excelExport = function() {
+    this.volunteers.excelContactsExport = function() {
         this.popupMenuClose('volunteers');
         var args = {
             'tnid':M.curTenantID,
             'festival_id':this.festival_id,
             };
         M.api.openFile('ciniki.musicfestivals.volunteerContactsExcel', args);
+    }
+    this.volunteers.excelExport = function() {
+        this.popupMenuClose('volunteers');
+        var args = {
+            'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            };
+        M.api.openFile('ciniki.musicfestivals.volunteersExcel', args);
     }
     this.volunteers.open = function(cb, fid) {
         this.size = 'xlarge narrowaside';
