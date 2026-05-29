@@ -82,9 +82,14 @@ function ciniki_musicfestivals_wng_apiScheduleSearch(&$ciniki, $tnid, $request) 
         }
         $strsql .= "classes.code AS class_code, "
             . "classes.name AS class_name, "
-            . "timeslots.id AS timeslot_id, "
-            . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time,"
-            . "timeslots.name AS slot_name, "
+            . "timeslots.id AS timeslot_id, ";
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+            $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS slot_time, ";
+        } else {
+            $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time, ";
+        }
+//            . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time,"
+        $strsql .= "timeslots.name AS slot_name, "
             . "DATE_FORMAT(divisions.division_date, '%b %D, %Y') AS division_date, "
             . "divisions.name AS division_name, "
             . "sections.name AS section_name, "
