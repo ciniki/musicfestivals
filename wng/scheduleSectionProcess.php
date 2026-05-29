@@ -1230,14 +1230,14 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     } elseif( $timeslot['description'] != '' ) {
                         $blocks[] = array(
                             'type' => 'text',
-                            'level' => 3,
+                            'level' => 2,
                             'subtitle' => $timeslot['time'] . ' - ' . $timeslot['title'],
                             'content' => $timeslot['description'],
                             );
                     } else {
                         $blocks[] = array(
                             'type' => 'title',
-                            'level' => 3,
+                            'level' => 2,
                             'title' => $timeslot['time'] . ' - ' . $timeslot['title'],
                             );
                     }
