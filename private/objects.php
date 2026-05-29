@@ -99,6 +99,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'shortname' => array('name'=>'Short Name', 'default'=>''),
             'category' => array('name'=>'Category', 'default'=>''),
             'sequence' => array('name'=>'Order', 'default'=>1),
+            'flags' => array('name'=>'Options', 'default'=>0),
             'address1' => array('name'=>'Address', 'default'=>''),
             'city' => array('name'=>'City', 'default'=>''),
             'province' => array('name'=>'Province', 'default'=>''),

@@ -182,6 +182,7 @@ function ciniki_musicfestivals_wng_locationsProcess(&$ciniki, $tnid, &$request, 
                 . ") "
             . "WHERE buildings.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
             . "AND buildings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND (buildings.flags&0x01) = 0x01 "
             . "ORDER BY buildings.category, buildings.sequence, buildings.name, rooms.sequence, buildings.name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');

@@ -16,6 +16,13 @@
 # shortname:                The short name of the place/venue/location for internal use.
 # category:                 The category for the location, used on venues page.
 # sequence:                 The order to display the location in
+# flags:                    The options for the building.
+#
+#                               0x01 - Visible on website
+#                               0x02 - 
+#                               0x04 - 
+#                               0x08 - 
+#
 # address1:                 The street address of the location.
 # city:                     The city the location is in.
 # province:                 The province the location is in.
@@ -40,6 +47,7 @@ create table ciniki_musicfestival_buildings (
     shortname varchar(150) not null,
     category varchar(150) not null,
     sequence tinyint unsigned not null,
+    flags tinyint unsigned not null,
     address1 varchar(100) not null,
     city varchar(100) not null,
     province varchar(100) not null,
@@ -54,4 +62,4 @@ create table ciniki_musicfestival_buildings (
     primary key (id),
     unique index (uuid),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.02';
+) ENGINE='InnoDB', COMMENT='v1.03';

@@ -13873,6 +13873,7 @@ function ciniki_musicfestivals_main() {
             'postal':{'label':'Postal Code', 'type':'text'},
             'latitude':{'label':'Latitude', 'type':'text'},
             'longitude':{'label':'Longitude', 'type':'text'},
+            'flags1':{'label':'Visible', 'type':'flagtoggle', 'field':'flags', 'default':'on', 'bit':0x01},
             }},
         'rooms':{'label':'Rooms/Disciplines', 'type':'simplegrid', 'num_cols':3,
             'headerValues':['Short Name', 'Room', 'Disciplines'],

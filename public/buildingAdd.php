@@ -26,6 +26,7 @@ function ciniki_musicfestivals_buildingAdd(&$ciniki) {
         'shortname'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Short Name'),
         'category'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'),
         'sequence'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Order'),
+        'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'address1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address'),
         'city'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'City'),
         'province'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Province'),
