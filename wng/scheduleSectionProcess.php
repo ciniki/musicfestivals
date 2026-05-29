@@ -493,7 +493,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "divisions.results_video_url, "
         . "CONCAT_WS(' ', divisions.division_date, IFNULL(locations.name, ''), timeslots.slot_time) AS division_sort_key, "
         . "IFNULL(locations.name, '') AS location_name, "
-        . "IFNULL(locations.permalink, '') AS location_permalink, "
+        . "IFNULL(buildings.permalink, '') AS location_permalink, "
         . "IFNULL(buildings.address1, '') AS location_address1, "
         . "IFNULL(buildings.city, '') AS location_city, "
         . "IFNULL(buildings.province, '') AS location_province, "
