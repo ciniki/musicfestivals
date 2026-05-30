@@ -15045,6 +15045,7 @@ function ciniki_musicfestivals_main() {
                 'mark placement level':'Mark: xx    Placement: xx    Level: xx',
                 'mark-placement-level':'Mark: xx - Placement: xx - Level: xx',
                 'text':'Text',
+                'conditional-autofill':'Conditional Autofill',
                 }},
             'xpos':{'label':'X Position', 'required':'yes', 'type':'text'},
             'ypos':{'label':'Y Position', 'required':'yes', 'type':'text'},
