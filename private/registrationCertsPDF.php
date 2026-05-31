@@ -473,7 +473,7 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
                                 // Check if autofill is blank and then don't output any text
                                 //
                                 if( (str_contains($text, '{_participant_}') && $reg['name'] == '')
-                                    || (str_contains($text, '{_title_}') && $reg['title1'] == '')
+                                    || (str_contains($text, '{_title_}') && $reg['title'] == '')
                                     || (str_contains($text, '{_mark_}') && $reg['mark'] == '')
                                     || (str_contains($text, '{_placement_}') && $reg['placement'] == '')
                                     || (str_contains($text, '{_level_}') && $reg['level'] == '')
@@ -481,7 +481,7 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
                                     $text = '';
                                 }
                                 $text = str_replace('{_participant_}', $reg['name'], $text);
-                                $text = str_replace('{_title_}', $reg['title1'], $text);
+                                $text = str_replace('{_title_}', $reg['title'], $text);
                                 $text = str_replace('{_mark_}', $reg['mark'], $text);
                                 $text = str_replace('{_placement_}', $reg['placement'], $text);
                                 $text = str_replace('{_level_}', $reg['level'], $text);
