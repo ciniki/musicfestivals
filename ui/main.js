@@ -1455,6 +1455,7 @@ function ciniki_musicfestivals_main() {
                 'dailyrunsheets':{'label':'All Run Sheets by Day', 'fn':'M.ciniki_musicfestivals_main.festival.downloadDailyRunSheetsPDF(0);'},
                 'dailyschedule':{'label':'Compact Schedule', 'fn':'M.ciniki_musicfestivals_main.festival.downloadCompactSchedulePDF(0);'},
                 'competitors':{'label':'All Daily Venue Competitors', 'fn':'M.ciniki_musicfestivals_main.festival.downloadDailyVenueCompetitorsPDF(0);'},
+                'warmups':{'label':'Warm-Up Schedule', 'fn':'M.ciniki_musicfestivals_main.festival.downloadWarmupSchedulePDF(0);'},
                 'accolades':{'label':'Accolade Registrations', 'fn':'M.ciniki_musicfestivals_main.festival.downloadAccoladeMarksPDF();'},
                 'classes':{'label':'Scheduled Classes', 'fn':'M.ciniki_musicfestivals_main.festival.downloadScheduleClassesPDF();'},
                 'classesnames':{'label':'Scheduled Classes Participants', 'fn':'M.ciniki_musicfestivals_main.festival.downloadScheduleClassesNamesPDF();'},
@@ -1483,6 +1484,7 @@ function ciniki_musicfestivals_main() {
                 'certs':{'label':'Certificates', 'fn':'M.ciniki_musicfestivals_main.festival.downloadCertificatesPDF();'},
                 'comments':{'label':'Adjudicators Comments', 'fn':'M.ciniki_musicfestivals_main.festival.downloadCommentsPDF();'},
                 'runsheets':{'label':'Run Sheets', 'fn':'M.ciniki_musicfestivals_main.festival.downloadRunSheetsPDF();'},
+                'warmups':{'label':'Warm-Up Schedule', 'fn':'M.ciniki_musicfestivals_main.festival.downloadWarmupSchedulePDF();'},
                 'resultsexcel':{'label':'Results Excel', 'fn':'M.ciniki_musicfestivals_main.festival.downloadResultsExcel();'},
                 'backtracks':{'label':'Backtracks', 'fn':'M.ciniki_musicfestivals_main.festival.downloadBacktracks();'},
                 'artwork':{'label':'Artwork', 'fn':'M.ciniki_musicfestivals_main.festival.downloadArtwork();'},
@@ -2578,6 +2580,14 @@ function ciniki_musicfestivals_main() {
             'ipv':this.formValue('ipv'),
             };
         M.api.openPDF('ciniki.musicfestivals.dailyVenueCompetitorsPDF',args);
+    }
+    this.festival.downloadWarmupSchedulePDF = function(s) {
+        var args = {'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'schedulesection_id':(s==null ? this.schedulesection_id : s),
+            'ipv':this.formValue('ipv'),
+            };
+        M.api.openPDF('ciniki.musicfestivals.warmupSchedulePDF',args);
     }
     this.festival.downloadTeacherComments = function() {
         var args = {'tnid':M.curTenantID,
@@ -6826,6 +6836,12 @@ function ciniki_musicfestivals_main() {
                     }},
                 'scheduling-timeslot-length':{'label':'Timeslot Length', 'type':'toggle', 'default':'no', 
                     'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x4000); },
+                    'toggles':{
+                        'no':'No',
+                        'yes':'Yes',
+                    }},
+                'scheduling-warmup-times':{'label':'Warm-Up Times', 'type':'toggle', 'default':'no', 
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); },
                     'toggles':{
                         'no':'No',
                         'yes':'Yes',
@@ -11864,6 +11880,20 @@ function ciniki_musicfestivals_main() {
                     && M.ciniki_musicfestivals_main.festival.data['scheduling-timeslot-startnum'] == 'yes' ? 'yes' : 'no';
                     },
                 'onkeyupFn':'M.ciniki_musicfestivals_main.scheduletimeslot.updateStartnum',
+                },
+            'warmup_time':{'label':'Warm-Up Time', 'type':'text', 'size':'small',
+                'visible':function() { return M.ciniki_musicfestivals_main.festival.data['scheduling-warmup-times'] != null
+                    && M.ciniki_musicfestivals_main.festival.data['scheduling-warmup-times'] == 'yes' ? 'yes' : 'no';
+                    }},
+            'warmup_offset_seconds':{'label':'Before Scheduled', 'type':'hourmin', 'max_hours':2, 'minute_interval':5,
+                'visible':function() { return M.ciniki_musicfestivals_main.festival.data['scheduling-timeslot-length'] != null
+                    && M.ciniki_musicfestivals_main.festival.data['scheduling-timeslot-length'] == 'yes' ? 'yes' : 'no';
+                    }},
+            'warmup_seconds':{'label':'Length (min)', 'type':'toggle', 
+                'visible':function() { return M.ciniki_musicfestivals_main.festival.data['scheduling-warmup-times'] != null
+                    && M.ciniki_musicfestivals_main.festival.data['scheduling-warmup-times'] == 'yes' ? 'yes' : 'no';
+                    },
+                'toggles':{'600':'10', '900':'15'},
                 },
             },
             'menu':{

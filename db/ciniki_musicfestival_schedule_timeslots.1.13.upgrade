@@ -1,0 +1,4 @@
+ALTER TABLE ciniki_musicfestival_schedule_timeslots ADD COLUMN warmup_time time not null AFTER slot_seconds;
+ALTER TABLE ciniki_musicfestival_schedule_timeslots ADD COLUMN warmup_offset_seconds int not null AFTER warmup_time;
+ALTER TABLE ciniki_musicfestival_schedule_timeslots ADD COLUMN warmup_seconds int not null AFTER warmup_offset_seconds;
+ALTER TABLE ciniki_musicfestival_schedule_timeslots COMMENT='v1.13';

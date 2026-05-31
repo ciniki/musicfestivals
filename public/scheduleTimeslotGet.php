@@ -131,6 +131,9 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
             'sdivision_id'=>(isset($args['sdivision_id']) ? $args['sdivision_id'] : 0),
             'slot_time'=>'',
             'slot_seconds' => '',
+            'warmup_time'=>'',
+            'warmup_offset_seconds'=>'3600',
+            'warmup_seconds'=>'600',
             'name'=>'',
             'shortname'=>'',
             'groupname'=>'',
@@ -160,6 +163,9 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
 //        . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time, "
         $strsql .= "timeslots.pre_seconds, "
             . "timeslots.slot_seconds, "
+            . "IF(timeslots.warmup_time='00:00:00', '', TIME_FORMAT(timeslots.warmup_time, '%l:%i %p')) AS warmup_time, "
+            . "timeslots.warmup_offset_seconds, "
+            . "timeslots.warmup_seconds, "
             . "timeslots.flags, "
             . "timeslots.name, "
             . "timeslots.shortname, "
@@ -177,7 +183,7 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'scheduletimeslot', 'fname'=>'id', 
                 'fields'=>array('id', 'festival_id', 'ssection_id', 'sdivision_id', 
-                    'slot_time', 'pre_seconds', 'slot_seconds',
+                    'slot_time', 'pre_seconds', 'slot_seconds', 'warmup_time', 'warmup_offset_seconds', 'warmup_seconds',
                     'flags', 'name', 'shortname', 'groupname', 'start_num',
                     'description', 'runsheet_notes', 'results_notes', 'results_video_url', 'linked_timeslot_id',
                     ),
@@ -195,6 +201,9 @@ function ciniki_musicfestivals_scheduleTimeslotGet($ciniki) {
         }
         if( $scheduletimeslot['slot_seconds'] == 0 ) {
             $scheduletimeslot['slot_seconds'] = '';
+        }
+        if( $scheduletimeslot['warmup_seconds'] == 0 ) {
+            $scheduletimeslot['warmup_seconds'] = '';
         }
         if( $scheduletimeslot['start_num'] < 1 ) {
             $scheduletimeslot['start_num'] = '';

@@ -18,6 +18,10 @@
 # pre_seconds:          The length of time to leave before this timeslot, used in scheduling-timeslot-autoshift setting.
 # slot_seconds:         The length of time for this timeslot, how many seconds long.
 #
+# warmup_time:              The time for the warmup on the division date in local time.
+# warmup_offset_seconds:    The length time before their scheduled time for warmup.
+# warmup_seconds:           The length of time for warmup for each registration, how many seconds long.
+#
 # flags:                The options for this timeslot.
 #
 #                           0x01 - Pre Playoffs (Auto schedule playoff competitors based on placement)
@@ -49,6 +53,9 @@ create table ciniki_musicfestival_schedule_timeslots (
     slot_time time not null,
     pre_seconds int not null,
     slot_seconds int not null,
+    warmup_time time not null,
+    warmup_offset_seconds int not null,
+    warmup_seconds int not null,
     flags tinyint unsigned not null,
     name varchar(150) not null,
     shortname varchar(150) not null,
@@ -66,4 +73,4 @@ create table ciniki_musicfestival_schedule_timeslots (
     index (festival_id, sdivision_id),
     index time_idx (sdivision_id, slot_time, tnid),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.12';
+) ENGINE='InnoDB', COMMENT='v1.13';
