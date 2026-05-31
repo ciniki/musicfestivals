@@ -175,11 +175,11 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
             ),
         array('container'=>'competitors', 'fname'=>'competitor_id', 
             'fields'=>array('id'=>'competitor_id', 'name'=>'competitor_name', 'ctype',
-                'first'=>'competitor_first', 'last'=>'competitor_last',
+                'first'=>'competitor_first', 'last'=>'competitor_last', 'timeslot_name',
                 )),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'participation',
-                'section_name', 'division_name', 'slot_time'=>'slot_time_text',
+                'section_name', 'division_name', 'slot_time'=>'slot_time_text', 'timeslot_name',
                 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
                 'notes', 'internal_notes',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
@@ -275,10 +275,10 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
             // Position at 15 mm from bottom
             if( $this->footer_visible == 'yes' ) {
                 $this->SetY(-15);
-                $this->SetFont('helvetica', 'B', 10);
-                $this->Cell(90, 10, $this->footer_msg, 0, false, 'L', 0, '', 0, false, 'T', 'M');
-                $this->SetFont('helvetica', '', 10);
-                $this->Cell(90, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
+//                $this->SetFont('helvetica', 'B', 10);
+//                $this->Cell(90, 10, $this->footer_msg, 0, false, 'L', 0, '', 0, false, 'T', 'M');
+//                $this->SetFont('helvetica', '', 10);
+//                $this->Cell(90, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
             } else {
                 // No footer
             }
@@ -310,9 +310,18 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
             $this->SetCellPaddings(3, 3, 3, 3);
             $this->SetFillColor(225);
             foreach($fields as $field) {
-                $this->MultiCell(180, 0, $location[$field], 1, 'C', 1, 1);
+                if( isset($args['timeslot_name']) && $args['timeslot_name'] != '' ) {
+                    $this->MultiCell(180, 0, $location[$field], 'LTR', 'C', 1, 1);
+                } else {
+                    $this->MultiCell(180, 0, $location[$field], 1, 'C', 1, 1);
+                }
                 $this->SetFont('', '', '13');
                 $this->SetCellPaddings(3, 1, 3, 3);
+            }
+            $this->SetFont('', 'B', '12');
+            $this->SetCellPaddings(2, 0, 2, 2);
+            if( isset($args['timeslot_name']) && $args['timeslot_name'] != '' ) {
+                $this->MultiCell(180, 0, $args['timeslot_name'], 'LBR', 'C', 1, 1);
             }
             $this->SetFillColor(246);
 
@@ -473,14 +482,16 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
         //
         // Setup the division header
         //
+        $prev_timeslot_name = '';
+        if( isset($festival['dailyvenuecompetitors-sort-order']) && $festival['dailyvenuecompetitors-sort-order'] == 'time' 
+            && isset($location['competitors'][0]['timeslot_name']) 
+            ) {
+            $args['timeslot_name'] = $location['competitors'][0]['timeslot_name'];
+            $prev_timeslot_name = $location['competitors'][0]['timeslot_name'];
+        }
         $pdf->DivisionHeader($args, $location, 'no');
         $pdf->SetFont('', '', '12');
-
-        if( isset($festival['dailyvenuecompetitors-sort-order']) && $festival['dailyvenuecompetitors-sort-order'] == 'time' ) {
-            uasort($location['competitors'], function($a, $b) {
-                
-                });
-        }
+        
         foreach($location['competitors'] as $competitor) {
             $times = '';
             $accompanist_info = '';
@@ -528,10 +539,24 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
                 $h = $pdf->getStringHeight($w[$accompanist_col], $accompanist_info);
             }
 
+            if( isset($festival['dailyvenuecompetitors-sort-order']) && $festival['dailyvenuecompetitors-sort-order'] == 'time' 
+                && isset($competitor['timeslot_name'])
+                ) {
+                $args['timeslot_name'] = $competitor['timeslot_name'];
+            }
             if( $pdf->GetY() > ($pdf->getPageHeight() - $h - 22)) {
                 $pdf->AddPage();
                 $pdf->DivisionHeader($args, $location, 'yes');
+            } elseif( $prev_timeslot_name != $competitor['timeslot_name'] ) {
+                $pdf->SetFont('', 'B', '12');
+                $pdf->SetFillColor(225);
+                $pdf->SetCellPaddings(2, 2, 2, 2);
+                if( isset($args['timeslot_name']) && $args['timeslot_name'] != '' ) {
+                    $pdf->MultiCell(180, 0, $args['timeslot_name'], 1, 'C', 1, 1);
+                }
+                $pdf->SetFillColor(246);
             }
+            $prev_timeslot_name = $competitor['timeslot_name'];
             $pdf->SetCellPaddings(2, 2, 2, 2);
 
             $pdf->SetFont('', '', '12');
