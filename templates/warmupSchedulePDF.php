@@ -143,6 +143,9 @@ function ciniki_musicfestivals_templates_warmupSchedulePDF(&$ciniki, $tnid, $arg
         array('container'=>'locations', 'fname'=>'location_id', 
             'fields'=>array('date'=>'division_date_text', 'name'=>'location_name'),
             ),
+        array('container'=>'timeslots', 'fname'=>'timeslot_id', 
+            'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name'), 
+            ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'display_name', 'public_name', 
                 'section_name', 'division_name', 'warmup_time_text', 'warmup_end_time_text',
@@ -359,7 +362,7 @@ function ciniki_musicfestivals_templates_warmupSchedulePDF(&$ciniki, $tnid, $arg
             $filename .= ' - ' . $location['name'];
         }
 
-        if( !isset($location['registrations']) ) {
+        if( !isset($location['timeslots']) ) {
             continue;
         }
 
@@ -376,20 +379,26 @@ function ciniki_musicfestivals_templates_warmupSchedulePDF(&$ciniki, $tnid, $arg
         $pdf->SetFont('', '', '12');
 
         $w = array(48, 132);
-        foreach($location['registrations'] as $reg) {
-            $pdf->SetFont('', '', '12');
+        $pdf->SetCellPaddings(2, 1.5, 2, 1.5);
+        foreach($location['timeslots'] as $timeslot) {
             $pdf->SetCellPaddings(2, 1.5, 2, 1.5);
-            $h = $pdf->getStringHeight($w[1], $reg['display_name']);
+            $pdf->SetFont('', 'B', '11');
+            $pdf->MultiCell(180, 0, $timeslot['name'], 1, 'C', 0, 1);
+            foreach($timeslot['registrations'] as $reg) {
+                $pdf->SetFont('', '', '11');
+                $pdf->SetCellPaddings(2, 1.5, 2, 1.5);
+                $h = $pdf->getStringHeight($w[1], $reg['display_name']);
 
-            if( $pdf->GetY() > ($pdf->getPageHeight() - $h - 22)) {
-                $pdf->AddPage();
-                $pdf->DivisionHeader($args, $location, 'yes');
+                if( $pdf->GetY() > ($pdf->getPageHeight() - $h - 22)) {
+                    $pdf->AddPage();
+                    $pdf->DivisionHeader($args, $location, 'yes');
+                }
+                $pdf->SetCellPaddings(2, 1.5, 2, 1.5);
+
+                $pdf->SetFont('', '', '11');
+                $pdf->MultiCell($w[0], $h, $reg['warmup_time_text'] . ' - ' . $reg['warmup_end_time_text'], 1, 'L', 0, 0);
+                $pdf->MultiCell($w[1], $h, $reg['display_name'], 1, 'L', 0, 1);
             }
-            $pdf->SetCellPaddings(2, 1.5, 2, 1.5);
-
-            $pdf->SetFont('', '', '12');
-            $pdf->MultiCell($w[0], $h, $reg['warmup_time_text'] . ' - ' . $reg['warmup_end_time_text'], 1, 'L', 0, 0);
-            $pdf->MultiCell($w[1], $h, $reg['display_name'], 1, 'L', 0, 1);
         }
     }
 

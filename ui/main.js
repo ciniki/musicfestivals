@@ -6841,7 +6841,7 @@ function ciniki_musicfestivals_main() {
                         'yes':'Yes',
                     }},
                 'scheduling-warmup-times':{'label':'Warm-Up Times', 'type':'toggle', 'default':'no', 
-                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); },
+                    'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x014000); },
                     'toggles':{
                         'no':'No',
                         'yes':'Yes',
