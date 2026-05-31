@@ -6132,6 +6132,13 @@ function ciniki_musicfestivals_main() {
                 'runsheets-competitor-city':{'label':'Include Competitor City', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
                 'runsheets-footer-msg':{'label':'Footer Message', 'type':'text'},
             }},
+        '_dailyvenuecompetitors_pdf':{'label':'Daily Venue Competitor PDF Options', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('documents'); },
+            'fields':{
+                'dailyvenuecompetitors-sort-order':{'label':'Sort Order', 'type':'toggle', 'default':'name', 'toggles':{'name':'Name', 'time':'Time'}},
+                'dailyvenuecompetitors-music-check':{'label':'Music Checked Column', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+                'dailyvenuecompetitors-accompanist-info':{'label':'Accompanist Name/Phone', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+            }},
         '_accolades_pdf':{'label':'Accolades PDF Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('documents'); },
             'fields':{
@@ -7108,6 +7115,7 @@ function ciniki_musicfestivals_main() {
             '_schedule_word',
             '_program_pdf',
             '_runsheets_pdf',
+            '_dailyvenuecompetitors_pdf',
             '_accolades_pdf',
             '_classlabels_pdf',
             '_certificates_pdf',

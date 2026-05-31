@@ -88,6 +88,10 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
         . "registrations.competitor3_id, "
         . "registrations.competitor4_id, "
         . "registrations.competitor5_id, "
+        . "IFNULL(accompanists.display_name, '') AS accompanist_name, "
+        . "phones.id AS phone_id, "
+        . "phones.phone_label, "
+        . "phones.phone_number, "
         . "competitors.id AS competitor_id, "
         . "competitors.ctype, "
         . "competitors.first AS competitor_first, "
@@ -118,6 +122,14 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
     }
     $strsql .= "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_customers AS accompanists ON ("
+            . "registrations.accompanist_customer_id = accompanists.id "
+            . "AND accompanists.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_customer_phones AS phones ON ("
+            . "accompanists.id = phones.customer_id "
+            . "AND phones.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
             . "registrations.class_id = classes.id " 
@@ -151,8 +163,11 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
     if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
         $strsql .= "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
     }
-    $strsql .= "ORDER BY locations.name, divisions.division_date, competitors.last, competitors.first, competitors.name, registrations.display_name, timeslots.slot_time "
-        . "";
+    if( isset($festival['dailyvenuecompetitors-sort-order']) && $festival['dailyvenuecompetitors-sort-order'] == 'time' ) {
+        $strsql .= "ORDER BY locations.name, divisions.division_date, timeslots.slot_time, registrations.timeslot_time, competitors.last, competitors.first, competitors.name, registrations.display_name ";
+    } else {
+        $strsql .= "ORDER BY locations.name, divisions.division_date, competitors.last, competitors.first, competitors.name, registrations.display_name, timeslots.slot_time ";
+    }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'locations', 'fname'=>'location_id', 
@@ -168,8 +183,12 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
                 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
                 'notes', 'internal_notes',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
+                'accompanist_name', 
                 ),
             ),
+        array('container'=>'phones', 'fname'=>'phone_id', 
+            'fields'=>array('label'=>'phone_label', 'number'=>'phone_number',
+            )),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -296,6 +315,18 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
                 $this->SetCellPaddings(3, 1, 3, 3);
             }
             $this->SetFillColor(246);
+
+            // Output the column headings
+            $this->setFont('', 'B', '12');
+            $this->SetCellPaddings(2, 2, 2, 2);
+            if( isset($args['headings']) ) {
+                $h = $this->getStringHeight($args['headings'][0]['width'], $args['headings'][0]['label']);
+                $last_col = count($args['headings']) - 1;
+                foreach($args['headings'] as $col => $heading) {
+                    $this->MultiCell($heading['width'], $h, $heading['label'], 1, 'C', 1, ($col == $last_col ? 1 : 0));
+                }
+            }
+            $this->setFont('', '', '12');
         }
     }
 
@@ -376,6 +407,54 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
     // Go through the sections, divisions and classes
     //
     $w = array(30, 5, 145);
+    $w = array(90, 90);
+    if( isset($festival['dailyvenuecompetitors-sort-order']) && $festival['dailyvenuecompetitors-sort-order'] == 'time' ) {
+        $w = [25, 155];
+        $args['headings'] = [
+            ['width' => 25, 'label' => 'Time'],
+            ['width' => 155, 'label' => 'Name'],
+            ];
+        if( isset($festival['dailyvenuecompetitors-music-check']) && $festival['dailyvenuecompetitors-music-check'] == 'yes' ) {
+            $music_col = count($w);
+            $w[1] -= 20;
+            $w[] = 20;
+            $args['headings'][1]['width'] -= 20;
+            $args['headings'][] = ['width' => 20, 'label' => 'Music'];
+        }
+        if( isset($festival['dailyvenuecompetitors-accompanist-info']) && $festival['dailyvenuecompetitors-accompanist-info'] == 'yes' ) {
+            $accompanist_col = count($w);
+            $w[1] -= 65;
+            $w[] = 65;
+            $args['headings'][1]['width'] -= 65;
+            $args['headings'][] = ['width' => 65, 'label' => 'Accompanist'];
+        }
+    } else {
+        $args['headings'] = [
+            ['width' => 150, 'label' => 'Name'],
+            ['width' => 30, 'label' => 'Time'],
+            ];
+        if( isset($festival['dailyvenuecompetitors-music-check']) && $festival['dailyvenuecompetitors-music-check'] == 'yes' ) {
+            $music_col = count($w);
+            $w[0] -= 10;
+            $w[1] -= 10;
+            $w[] = 20;
+            $args['headings'][0]['width'] -= 10;
+            $args['headings'][1]['width'] -= 10;
+            $args['headings'][] = ['width' => 20, 'label' => 'Music'];
+        }
+        if( isset($festival['dailyvenuecompetitors-accompanist-info']) && $festival['dailyvenuecompetitors-accompanist-info'] == 'yes' ) {
+            $accompanist_col = count($w);
+            $w[0] -= 30;
+            $w[1] -= 30;
+            $w[] = 60;
+            $args['headings'][0]['width'] -= 30;
+            $args['headings'][1]['width'] -= 30;
+            $args['headings'][] = ['width' => 60, 'label' => 'Accompanist'];
+        }
+    }
+    if( !isset($music_col) && !isset($accompanist_col) ) {
+        unset($args['headings']);
+    }
     foreach($locations as $location) {
         if( count($locations) == 1 ) {
             $filename .= ' - ' . $location['name'];
@@ -397,15 +476,34 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
         $pdf->DivisionHeader($args, $location, 'no');
         $pdf->SetFont('', '', '12');
 
-        $w = array(90, 90);
+        if( isset($festival['dailyvenuecompetitors-sort-order']) && $festival['dailyvenuecompetitors-sort-order'] == 'time' ) {
+            uasort($location['competitors'], function($a, $b) {
+                
+                });
+        }
         foreach($location['competitors'] as $competitor) {
             $times = '';
+            $accompanist_info = '';
             if( isset($competitor['registrations']) ) {
                 $prev_time = '';
                 foreach($competitor['registrations'] as $reg) {
                     if( $reg['slot_time'] != '' && $prev_time != $reg['slot_time']) {
                         $times .= ($times != '' ? ', ' : '') . $reg['slot_time'];
                         $prev_time = $reg['slot_time'];
+                    }
+                    if( $reg['accompanist_name'] != '' && !str_contains($accompanist_info, $reg['accompanist_name']) ) {
+                        $accompanist_info .= ($accompanist_info != '' ? "\n" : '') . $reg['accompanist_name'];
+                        $phones = '';
+                        if( isset($reg['phones']) ) {
+                            foreach($reg['phones'] as $phone) {
+                                if( !str_contains($phones, $phone['number']) ) {
+                                    $phones .= ($phones != '' ? ', ' : '') . $phone['number'];
+                                }
+                            }
+                        }
+                        if( $phones != '' ) {
+                            $accompanist_info .= " {$phones}";
+                        }
                     }
                 }
             }
@@ -415,9 +513,19 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
 
             $pdf->SetFont('', '', '12');
             $pdf->SetCellPaddings(2, 2, 2, 2);
-            $h = $pdf->getStringHeight($w[0], $competitor['name']);
-            if( $pdf->getStringHeight($w[1], $times) > $h ) {
-                $h = $pdf->getStringHeight($w[1], $times);
+            if( isset($festival['dailyvenuecompetitors-sort-order']) && $festival['dailyvenuecompetitors-sort-order'] == 'time' ) {
+                $h = $pdf->getStringHeight($w[1], $competitor['name']);
+                if( $pdf->getStringHeight($w[0], $times) > $h ) {
+                    $h = $pdf->getStringHeight($w[0], $times);
+                }
+            } else {
+                $h = $pdf->getStringHeight($w[0], $competitor['name']);
+                if( $pdf->getStringHeight($w[1], $times) > $h ) {
+                    $h = $pdf->getStringHeight($w[1], $times);
+                }
+            }
+            if( isset($accompanist_col) && $pdf->getStringHeight($w[$accompanist_col], $accompanist_info) > $h ) {
+                $h = $pdf->getStringHeight($w[$accompanist_col], $accompanist_info);
             }
 
             if( $pdf->GetY() > ($pdf->getPageHeight() - $h - 22)) {
@@ -427,8 +535,19 @@ function ciniki_musicfestivals_templates_dailyVenueCompetitorsPDF(&$ciniki, $tni
             $pdf->SetCellPaddings(2, 2, 2, 2);
 
             $pdf->SetFont('', '', '12');
-            $pdf->MultiCell($w[0], $h, $competitor['name'], 1, 'L', 0, 0);
-            $pdf->MultiCell($w[1], $h, $times, 1, 'L', 0, 1);
+            if( isset($festival['dailyvenuecompetitors-sort-order']) && $festival['dailyvenuecompetitors-sort-order'] == 'time' ) {
+                $pdf->MultiCell($w[0], $h, $times, 1, 'L', 0, 0);
+                $pdf->MultiCell($w[1], $h, $competitor['name'], 1, 'L', 0, (!isset($music_col) && !isset($accompanist_col) ? 1 : 0));
+            } else {
+                $pdf->MultiCell($w[0], $h, $competitor['name'], 1, 'L', 0, 0);
+                $pdf->MultiCell($w[1], $h, $times, 1, 'L', 0, (!isset($music_col) && !isset($accompanist_col) ? 1 : 0));
+            }
+            if( isset($music_col) ) {
+                $pdf->MultiCell($w[$music_col], $h, '', 1, 'L', 0, (!isset($accompanist_col) ? 1 : 0));
+            }
+            if( isset($accompanist_col) ) {
+                $pdf->MultiCell($w[$accompanist_col], $h, $accompanist_info, 1, 'L', 0, 1);
+            }
         }
     }
 
