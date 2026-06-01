@@ -670,6 +670,14 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
     $tw = array(10, 170);   // Title lines
     $tnw = array(10, 15, 155);   // reg notes lines
     $trw = array(22, 128);   // Accolade lines
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+        $w[0] = 25;
+        $w[1] = $w[1] - 15;
+        $tw[0] = 25;
+        $tw[1] = $tw[1] - 15;
+        $tnw[0] = 25;
+        $tnw[2] = $tnw[2] - 15;
+    }
 
     //
     // Go through the sections, divisions and classes
@@ -740,14 +748,6 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             //
             $fill = 0;
             $border = 'T';
-            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
-                $w[0] = 25;
-                $w[1] = $w[1] - 15;
-                $tw[0] = 25;
-                $tw[1] = $tw[1] - 15;
-                $tnw[0] = 25;
-                $tnw[2] = $tnw[2] - 15;
-            }
             $prev_time = '';
             $num_timeslots = count($division['timeslots']);
             $cur_timeslot = 0;
