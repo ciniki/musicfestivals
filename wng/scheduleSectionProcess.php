@@ -422,7 +422,9 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "classes.name AS class_name, "
         . "categories.name AS category_name, "
         . "sections.name AS section_name, "
-        . "members.shortname AS member_name "
+        . "members.shortname AS member_name, "
+        . "competitors.id AS competitor_id, "
+        . "competitors.flags AS competitor_flags "
         . "FROM ciniki_musicfestival_schedule_divisions AS divisions "
         . "INNER JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
             . "divisions.ssection_id = ssections.id " 
@@ -462,6 +464,16 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "LEFT JOIN ciniki_musicfestival_buildings AS buildings ON ("
             . "locations.building_id = buildings.id "
             . "AND buildings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ("
+            . "("
+                . "registrations.competitor1_id = competitors.id "
+                . "OR registrations.competitor2_id = competitors.id "
+                . "OR registrations.competitor3_id = competitors.id "
+                . "OR registrations.competitor4_id = competitors.id "
+                . "OR registrations.competitor5_id = competitors.id "
+            . ") "
+            . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE divisions.ssection_id = '" . ciniki_core_dbQuote($ciniki, $s['section-id']) . "' "
         . "AND divisions.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
@@ -570,7 +582,9 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "classes.name AS class_name, "
         . "categories.name AS category_name, "
         . "sections.name AS section_name, "
-        . "members.shortname AS member_name "
+        . "members.shortname AS member_name, "
+        . "competitors.id AS competitor_id, "
+        . "competitors.flags AS competitor_flags "
         . "FROM ciniki_musicfestival_schedule_divisions AS divisions "
         . "INNER JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
             . "divisions.ssection_id = ssections.id " 
@@ -611,6 +625,16 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "LEFT JOIN ciniki_musicfestival_buildings AS buildings ON ("
             . "locations.building_id = buildings.id "
             . "AND buildings.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ("
+            . "("
+                . "registrations.competitor1_id = competitors.id "
+                . "OR registrations.competitor2_id = competitors.id "
+                . "OR registrations.competitor3_id = competitors.id "
+                . "OR registrations.competitor4_id = competitors.id "
+                . "OR registrations.competitor5_id = competitors.id "
+            . ") "
+            . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE divisions.ssection_id = '" . ciniki_core_dbQuote($ciniki, $s['section-id']) . "' "
         . "AND divisions.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
@@ -667,6 +691,9 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
                     'participation', 'class_name', 'mark', 'placement', 'level', 'finals_mark', 'finals_placement', 'member_name'),
                 ),
+            array('container'=>'competitors', 'fname'=>'competitor_id', 
+                'fields'=>array('id'=>'competitor_id', 'flags'=>'competitor_flags',
+                )),
             ));
 
     } else {
@@ -701,6 +728,9 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                     'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
                     'participation', 'class_name', 'mark', 'placement', 'level', 'finals_mark', 'finals_placement', 'member_name'),
                 ),
+            array('container'=>'competitors', 'fname'=>'competitor_id', 
+                'fields'=>array('id'=>'competitor_id', 'flags'=>'competitor_flags',
+                )),
             ));
     }
     if( $rc['stat'] != 'ok' ) {
@@ -924,10 +954,22 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                         }
 
                         //
+                        // Check for photo permissions
+                        //  
+                        $show_videos = 'yes';
+                        if( isset($registration['competitors']) ) {
+                            foreach($registration['competitors'] as $competitor) {
+                                if( ($competitor['flags']&0x02) == 0 ) {
+                                    $show_videos = 'no';
+                                }
+                            }
+                        }
+
+                        //
                         // Check if titles required, then add line for each title, otherwise add names
                         //
                         if( (isset($s['titles']) && $s['titles'] == 'yes')
-                            || isset($s['video_urls']) && $s['video_urls'] == 'yes' 
+                            || (isset($s['video_urls']) && $s['video_urls'] == 'yes' && $show_videos == 'yes') 
                             ) {
                             $titles = '';
                             $video_links = '';
@@ -942,6 +984,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                                     }
                                     if( isset($s['video_urls']) && $s['video_urls'] == 'yes' 
                                         && isset($registration["video_url{$i}"]) && $registration["video_url{$i}"] != '' 
+                                        && $show_videos == 'yes'
                                         ) {
                                         $titles .= "<div class='video-title'><span class='perf-title'>{$rc['title']}</span>"
                                             . "<span class='perf-video'>"
