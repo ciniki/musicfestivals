@@ -7004,7 +7004,8 @@ function ciniki_musicfestivals_main() {
                 'volunteers-discipline-format':{'label':'Discipline', 'type':'select', 'default':'none', 'options':{
                     'none':'No Discipline',
                     'section':'Schedule Name',
-//                    'division':'Division Name',
+                    'division':'Division Name',
+                    'syllabussection':'Syllabus Section Name',
                     }},
                 'volunteers-account-menu':{'label':'Account Menu', 'type':'toggle', 'default':'yes', 'toggles':{
                     'no':'No',

@@ -125,6 +125,92 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1479', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
         }
         $disciplines = isset($rc['shifts']) ? $rc['shifts'] : array();
+    } elseif( isset($festival['volunteers-discipline-format']) && $festival['volunteers-discipline-format'] == 'division' ) {
+        $strsql = "SELECT shifts.id, "
+            . "GROUP_CONCAT(DISTINCT divisions.name SEPARATOR ', ') AS disciplines "
+            . "FROM ciniki_musicfestival_volunteer_shifts AS shifts "
+            . "INNER JOIN ciniki_musicfestival_locations AS rooms ON ("
+                . "("
+                    . "(shifts.object = 'ciniki.musicfestivals.location' AND shifts.object_id = rooms.id) "
+                    . "OR (shifts.object = 'ciniki.musicfestivals.building' AND shifts.object_id = rooms.building_id) "
+                    . " ) "
+                . "AND rooms.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+                . "shifts.shift_date = divisions.division_date "
+                . "AND rooms.id = divisions.location_id "
+                . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+                . "divisions.id = timeslots.sdivision_id "
+                . "AND timeslots.slot_time > shifts.start_time "
+                . "AND timeslots.slot_time < shifts.end_time "
+                . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE shifts.festival_id = '" . ciniki_core_dbQuote($ciniki, $volunteer['festival_id']) . "' "
+            . "AND shifts.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "GROUP BY shifts.id "
+            . "ORDER BY shifts.id "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'shifts', 'fname'=>'id', 'fields'=>array('id', 'disciplines')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1479', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
+        }
+        $disciplines = isset($rc['shifts']) ? $rc['shifts'] : array();
+    } elseif( isset($festival['volunteers-discipline-format']) && $festival['volunteers-discipline-format'] == 'syllabussection' ) {
+        $strsql = "SELECT shifts.id, "
+            . "GROUP_CONCAT(DISTINCT sections.name SEPARATOR ', ') AS disciplines "
+            . "FROM ciniki_musicfestival_volunteer_shifts AS shifts "
+            . "INNER JOIN ciniki_musicfestival_locations AS rooms ON ("
+                . "("
+                    . "(shifts.object = 'ciniki.musicfestivals.location' AND shifts.object_id = rooms.id) "
+                    . "OR (shifts.object = 'ciniki.musicfestivals.building' AND shifts.object_id = rooms.building_id) "
+                    . " ) "
+                . "AND rooms.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
+                . "shifts.shift_date = divisions.division_date "
+                . "AND rooms.id = divisions.location_id "
+                . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+                . "divisions.id = timeslots.sdivision_id "
+                . "AND timeslots.slot_time > shifts.start_time "
+                . "AND timeslots.slot_time < shifts.end_time "
+                . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                . "timeslots.id = registrations.timeslot_id "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+                . "registrations.class_id = classes.id "
+                . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
+                . "classes.category_id = categories.id "
+                . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+                . "categories.section_id = sections.id "
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE shifts.festival_id = '" . ciniki_core_dbQuote($ciniki, $volunteer['festival_id']) . "' "
+            . "AND shifts.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "GROUP BY shifts.id "
+            . "ORDER BY shifts.id "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'shifts', 'fname'=>'id', 'fields'=>array('id', 'disciplines')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1479', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
+        }
+        $disciplines = isset($rc['shifts']) ? $rc['shifts'] : array();
     }
 
     //
@@ -557,6 +643,10 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             ['label' => 'Times', 'field' => 'times'],
             ];
         if( isset($festival['volunteers-discipline-format']) && $festival['volunteers-discipline-format'] == 'section' ) {
+            $columns[] = ['label' => 'Disciplines', 'class' => '', 'field' => 'disciplines'];
+        } elseif( isset($festival['volunteers-discipline-format']) && $festival['volunteers-discipline-format'] == 'division' ) {
+            $columns[] = ['label' => 'Disciplines', 'class' => '', 'field' => 'disciplines'];
+        } elseif( isset($festival['volunteers-discipline-format']) && $festival['volunteers-discipline-format'] == 'syllabussection' ) {
             $columns[] = ['label' => 'Disciplines', 'class' => '', 'field' => 'disciplines'];
         }
         $columns[] = ['label' => '', 'class' => 'alignright buttons', 'field' => 'buttons'];
