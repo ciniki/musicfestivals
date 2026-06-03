@@ -140,6 +140,7 @@ create table ciniki_musicfestival_classes (
     code varchar(50) not null,
     name varchar(150) not null,
     permalink varchar(150) not null,
+    icon_image_id int not null,
     cert_name varchar(250) not null,
     sequence tinyint unsigned not null,
     flags int unsigned not null,
