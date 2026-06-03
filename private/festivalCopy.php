@@ -197,6 +197,8 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
         . "classes.sequence AS class_sequence, "
         . "classes.flags, "
         . "classes.feeflags, "
+        . "classes.cert_name, "
+        . "classes.icon_image_id, "
         . "classes.titleflags, "
         . "classes.earlybird_fee, "
         . "classes.fee, "
