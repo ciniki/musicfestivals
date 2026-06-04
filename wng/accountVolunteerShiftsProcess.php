@@ -288,6 +288,27 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
     }
 
     //
+    // Check for a locations section on a page
+    //
+    $strsql = "SELECT sections.id, "
+        . "sections.page_id "
+        . "FROM ciniki_wng_sections AS sections "
+        . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND sections.ref = 'ciniki.musicfestivals.locations' "
+        . "AND settings like '%\"festival-id\":\"" . ciniki_core_dbQuote($ciniki, $festival['id']) . "\"%' "
+        . "LIMIT 1 "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'section');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1584', 'msg'=>'Unable to load page', 'err'=>$rc['err']));
+    }
+    if( isset($rc['section']) ) {
+        if( isset($request['site']['pages'][$rc['section']['page_id']]) ) {
+            $locations_base_url = $request['ssl_domain_base_url'] . $request['site']['pages'][$rc['section']['page_id']]['path'];
+        }
+    }
+
+    //
     // Show the dates
     //
     foreach($shift_dates AS $did => $date) {
@@ -317,6 +338,9 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
                             }
                             if( $location['postal'] != '' ) {
                                 $address .= ($address != '' ? '  ' : '') . $location['postal'];
+                            }
+                            if( isset($locations_base_url) && $locations_base_url != '' ) {
+                                $address .= " (<a href='{$locations_base_url}/{$location['permalink']}'>View Map</a>)";
                             }
                             $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['address'] = $address;
                         }
