@@ -306,7 +306,19 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
                         // Setup shift location
                         //
                         if( isset($locations["{$shift['object']}:{$shift['object_id']}"]) ) {
-                            $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['location'] = $locations["{$shift['object']}:{$shift['object_id']}"]['name'];
+                            $location = $locations["{$shift['object']}:{$shift['object_id']}"];
+                            $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['location'] = $location['name'];
+                            $address = $location['address1'];
+                            if( $location['city'] != '' ) {
+                                $address .= ($address != '' ? ', ' : '') . $location['city'];
+                            }
+                            if( $location['province'] != '' ) {
+                                $address .= ($address != '' ? ', ' : '') . $location['province'];
+                            }
+                            if( $location['postal'] != '' ) {
+                                $address .= ($address != '' ? '  ' : '') . $location['postal'];
+                            }
+                            $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['address'] = $address;
                         }
                         // Setup to disciplines
                         $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['disciplines'] = '';
@@ -382,6 +394,9 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             . "<b>Times</b>: {$shift['start_time']} - {$shift['end_time']}<br/>";
         if( isset($shift['location']) ) {
             $content .= "<b>Location</b>: {$shift['location']}<br/>";
+            if( isset($shift['address']) && $shift['address'] != '' ) {
+                $content .= "<b>Address</b>: {$shift['address']}<br/>";
+            }
         }
         $content .= "<b>Role</b>: {$shift['role']}<br/>";
         if( isset($shift['disciplines']) && $shift['disciplines'] != '' ) {

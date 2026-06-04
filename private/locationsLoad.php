@@ -21,7 +21,12 @@ function ciniki_musicfestivals_locationsLoad($ciniki, $tnid, $festival_id) {
     //
     $strsql = "SELECT buildings.id, "
         . "buildings.name, "
+        . "buildings.permalink, "
         . "IF(buildings.shortname <> '', buildings.shortname, buildings.name) AS shortname, "
+        . "buildings.address1, "
+        . "buildings.city, "
+        . "buildings.province, "
+        . "buildings.postal, "
         . "locations.id AS location_id, "
         . "locations.roomname, "
         . "locations.name AS location_name, "
@@ -38,9 +43,12 @@ function ciniki_musicfestivals_locationsLoad($ciniki, $tnid, $festival_id) {
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'buildings', 'fname'=>'id', 'fields'=>array('id', 'name', 'shortname')),
+        array('container'=>'buildings', 'fname'=>'id', 
+            'fields'=>array('id', 'name', 'permalink', 'shortname', 'address1', 'city', 'province', 'postal'),
+            ),
         array('container'=>'rooms', 'fname'=>'location_id', 
-            'fields'=>array('id'=>'location_id', 'roomname', 'name'=>'location_name', 'shortname'=>'location_shortname')),
+            'fields'=>array('id'=>'location_id', 'roomname', 'name'=>'location_name', 'shortname'=>'location_shortname'),
+            ),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1240', 'msg'=>'Unable to load buildings', 'err'=>$rc['err']));
@@ -55,6 +63,10 @@ function ciniki_musicfestivals_locationsLoad($ciniki, $tnid, $festival_id) {
                 'object' => 'ciniki.musicfestivals.building',
                 'object_id' => $building['id'],
                 'name' => $building['name'],
+                'address1' => $building['address1'],
+                'city' => $building['city'],
+                'province' => $building['province'],
+                'postal' => $building['postal'],
                 'shortname' => $building['shortname'],
                 'building_name' => $building['name'],
                 'roomname' => '',
@@ -65,6 +77,10 @@ function ciniki_musicfestivals_locationsLoad($ciniki, $tnid, $festival_id) {
                     'object' => 'ciniki.musicfestivals.location',
                     'object_id' => $room['id'],
                     'name' => $room['name'],
+                    'address1' => $building['address1'],
+                    'city' => $building['city'],
+                    'province' => $building['province'],
+                    'postal' => $building['postal'],
                     'shortname' => $room['shortname'],
                     'building_id' => $building['id'],
                     'building_name' => $building['name'],
@@ -77,6 +93,10 @@ function ciniki_musicfestivals_locationsLoad($ciniki, $tnid, $festival_id) {
                 'object' => 'ciniki.musicfestivals.location',
                 'object_id' => $building['rooms'][0]['id'],
                 'name' => $building['rooms'][0]['name'],
+                'address1' => $building['address1'],
+                'city' => $building['city'],
+                'province' => $building['province'],
+                'postal' => $building['postal'],
                 'shortname' => $building['rooms'][0]['shortname'],
                 'building_id' => $building['id'],
                 'building_name' => $building['name'],
