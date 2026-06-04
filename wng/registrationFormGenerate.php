@@ -497,7 +497,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             && $args['display'] != 'view' 
             ) {
             $args['display'] = 'recommendation-registration';
-        } else {
+        } elseif( $args['display'] != 'view' ) {
             array_unshift($members, array(
                 'id' => 0,
                 'name' => 'Choose the local festival you competed in and recommended you',
