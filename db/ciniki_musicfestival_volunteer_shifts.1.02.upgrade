@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_volunteer_shifts ADD COLUMN notes text not null AFTER max_volunteers;
+ALTER TABLE ciniki_musicfestival_volunteer_shifts COMMENT='v1.02';

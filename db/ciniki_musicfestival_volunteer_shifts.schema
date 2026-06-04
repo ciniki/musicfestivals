@@ -26,6 +26,8 @@
 # min_volunteers:           The minimum number of volunteers required.
 # max_volunteers:           The maximum number of volunteers required.
 #
+# notes:                    Notes for the volunteer(s) on the shift.
+#
 # date_added:               The UTC date and time the record was added.
 # last_updated:             The UTC date and time the record was last update.
 #
@@ -44,6 +46,7 @@ create table ciniki_musicfestival_volunteer_shifts (
     flags int not null,
     min_volunteers tinyint not null,
     max_volunteers tinyint not null,
+    notes text not null,
 
     date_added datetime not null,
     last_updated datetime not null,
@@ -51,4 +54,4 @@ create table ciniki_musicfestival_volunteer_shifts (
     unique index (uuid),
     index (tnid, festival_id, shift_date, start_time, end_time, object, object_id, role, flags),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';
