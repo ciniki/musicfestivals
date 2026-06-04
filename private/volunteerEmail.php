@@ -40,6 +40,7 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
             . "shifts.shift_date AS shift_date_raw, "
             . "shifts.start_time AS start_time_raw, "
             . "shifts.end_time AS end_time_raw, "
+            . "shifts.notes AS shift_notes, "
             . "DATE_FORMAT(shifts.shift_date, '%a, %b %e, %Y') AS shift_date, "
             . "TIME_FORMAT(shifts.start_time, '%l:%i %p') as start_time, "
             . "TIME_FORMAT(shifts.end_time, '%l:%i %p') AS end_time, "
@@ -78,7 +79,7 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
             array('container'=>'assignments', 'fname'=>'id', 
                 'fields'=>array('id', 'festival_id', 'volunteer_id', 'customer_id', 'firstname', 'lastname', 'display_name', 
                     'shift_date_raw', 'start_time_raw', 'end_time_raw', 
-                    'shift_date', 'start_time', 'end_time', 'object', 'object_id', 'role',
+                    'shift_date', 'start_time', 'end_time', 'object', 'object_id', 'role', 'shift_notes',
                     ),
                 ),
             array('container'=>'emails', 'fname'=>'email_id', 
@@ -331,6 +332,13 @@ function ciniki_musicfestivals_volunteerEmail(&$ciniki, $tnid, $args) {
             $message = str_replace('{_location_}', $assignment['location'], $message);
             $subject = str_replace('{_discipline_}', $assignment['discipline'], $subject);
             $message = str_replace('{_discipline_}', $assignment['discipline'], $message);
+
+            if( isset($assignment['shift_notes']) && $assignment['shift_notes'] != '' ) {
+                $message = str_replace('{_notes_}', $assignment['shift_notes'], $message);
+            } else {
+                // Remove notes line if going to add blank line into email
+                $message = str_replace('<p>{_notes_}</p>', '', $message);
+            }
         }
         elseif( isset($volunteer) ) {
             $subject = str_replace('{_firstname_}', $volunteer['firstname'], $subject);

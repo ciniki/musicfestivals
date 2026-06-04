@@ -76,6 +76,7 @@ function ciniki_musicfestivals_volunteerShiftGet($ciniki) {
             'flags'=>0x01,
             'min_volunteers'=>'1',
             'max_volunteers'=>'1',
+            'notes'=>'',
         );
         if( isset($args['shift_date']) && $args['shift_date'] != 'All' && $args['shift_date'] != 'upcoming' ) {
             $shift['shift_date'] = $args['shift_date'];
@@ -120,7 +121,8 @@ function ciniki_musicfestivals_volunteerShiftGet($ciniki) {
             . "shifts.role, "
             . "shifts.flags, "
             . "shifts.min_volunteers, "
-            . "shifts.max_volunteers "
+            . "shifts.max_volunteers, "
+            . "shifts.notes "
             . "FROM ciniki_musicfestival_volunteer_shifts AS shifts "
             . "WHERE shifts.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND shifts.id = '" . ciniki_core_dbQuote($ciniki, $args['shift_id']) . "' "
@@ -129,7 +131,7 @@ function ciniki_musicfestivals_volunteerShiftGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'shifts', 'fname'=>'id', 
                 'fields'=>array('festival_id', 'shift_date', 'start_time', 'end_time', 
-                    'object', 'object_id', 'role', 'flags', 'min_volunteers', 'max_volunteers',
+                    'object', 'object_id', 'role', 'flags', 'min_volunteers', 'max_volunteers', 'notes'
                     ),
                 'utctotz'=>array('shift_date'=>array('timezone'=>'UTC', 'format'=>$date_format)),                ),
             ));

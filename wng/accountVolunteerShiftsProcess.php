@@ -229,6 +229,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
         . "shifts.role, "
         . "shifts.min_volunteers, "
         . "shifts.max_volunteers, "
+        . "shifts.notes AS shift_notes, "
         . "IFNULL(assigned.id, 0) AS assignment_id, "
         . "COUNT(assigned.volunteer_id) AS num_volunteers "
         . "FROM ciniki_musicfestival_volunteer_shifts AS shifts "
@@ -261,7 +262,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             'fields'=>array('id', 'uuid', 'shift_date', 'start_time', 'end_time', 'assignment_id',
                 'sort_start_time', 'sort_end_time', 
                 'object', 'object_id', 'role', 
-                'min_volunteers', 'max_volunteers', 'num_volunteers'),
+                'min_volunteers', 'max_volunteers', 'shift_notes', 'num_volunteers'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -386,10 +387,13 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
         if( isset($shift['disciplines']) && $shift['disciplines'] != '' ) {
             $content .= "<b>Disciplines</b>: {$shift['disciplines']}<br/>";
         }
+        if( isset($shift['shift_notes']) && $shift['shift_notes'] != '' ) {
+            $content .= preg_replace("/\n/", '', $shift['shift_notes']) . "<br/>";
+        }
         $alert_email_content = $content;
         if( isset($festival["volunteers-role-{$selected_role}-description"]) 
             && $festival["volunteers-role-{$selected_role}-description"] != '' ) {
-            $content .= $festival["volunteers-role-{$selected_role}-description"];
+            $content .= preg_replace("/\n/", '', $festival["volunteers-role-{$selected_role}-description"]);
         }
         $blocks[] = [
             'type' => 'text',

@@ -1042,6 +1042,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'flags' => array('name'=>'Options', 'default' => 0),
             'min_volunteers' => array('name'=>'Minimum Volunteers', 'default'=>1),
             'max_volunteers' => array('name'=>'Maximum Volunteers', 'default'=>1),
+            'notes' => array('name'=>'Notes', 'default'=>''),
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );

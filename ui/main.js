@@ -19737,7 +19737,10 @@ function ciniki_musicfestivals_main() {
                     'min_volunteers':{'label':'Minimum Volunteers', 'type':'text', 'size':'small'},
                     'max_volunteers':{'label':'Maximum Volunteers', 'type':'text', 'size':'small', 'onkeyup':'M.ciniki_musicfestivals_main.vshift.formUpdate'},
                     }},
-                'volunteers':{'label':'Volunteers', 'aside':'yes', 'fields':{
+                '_notes':{'label':'Shift Notes', 'aside':'no', 'fields':{
+                    'notes':{'label':'', 'hidelabel':'yes', 'type':'htmlarea', 'size':'medium'},
+                    }},
+                'volunteers':{'label':'Volunteers', 'aside':'no', 'fields':{
                     }},
                 '_buttons':{'label':'', 'aside':'yes', 'buttons':{
                     'save':{'label':'Save', 'fn':'M.ciniki_musicfestivals_main.vshift.save();'},
@@ -19773,6 +19776,7 @@ function ciniki_musicfestivals_main() {
             var c = this.serializeForm('no');
             if( c != '' ) {
                 c = this.serializeFormSection('no', 'general');
+                c += this.serializeFormSection('no', '_notes');
                 c += this.serializeFormSection('yes', 'volunteers');
                 M.api.postJSONCb('ciniki.musicfestivals.volunteerShiftUpdate', {'tnid':M.curTenantID, 'shift_id':this.shift_id}, c, function(rsp) {
                     if( rsp.stat != 'ok' ) {

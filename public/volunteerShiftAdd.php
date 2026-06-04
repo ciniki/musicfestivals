@@ -29,6 +29,7 @@ function ciniki_musicfestivals_volunteerShiftAdd(&$ciniki) {
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'min_volunteers'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Minimum Volunteers'),
         'max_volunteers'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Maximum Volunteers'),
+        'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
