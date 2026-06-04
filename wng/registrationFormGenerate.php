@@ -494,6 +494,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         if( isset($registration['member_id']) && $registration['member_id'] > 0 
             && isset($js_members[$registration['member_id']]) 
             && $js_members[$registration['member_id']]['r'] == 1
+            && $args['display'] != 'view' 
             ) {
             $args['display'] = 'recommendation-registration';
         } else {
@@ -1296,13 +1297,16 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     $fields["backtrack_option{$i}"]['value'] = 'on';
                     $backtrack_class = '';
                 }
-            } elseif( isset($registration['flags']) && ($registration['flags']&pow(2, ($i+7))) > 0 ) { 
+            } elseif( (isset($registration['flags']) && ($registration['flags']&pow(2, ($i+7))) > 0)
+                || $registration["backtrack{$i}"] != ''
+                ) { 
                 $fields["backtrack_option{$i}"]['value'] = 'on';
                 $backtrack_class = '';
             }
         }
         if( $args['display'] == 'view' ) {
             $fields["backtrack_option{$i}"]['onchange'] = "backtrackShow({$i});";
+            $fields["backtrack_option{$i}"]['class'] = 'hidden';
         }
         $fields["backtrack{$i}"] = array(
             'id' => "backtrack{$i}",
@@ -1634,15 +1638,17 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                             . "C.aC(C.gE('f-backtrack'+i).parentNode,'required');"
                         . "}else{"
                             . "C.rC(C.gE('f-backtrack'+i).parentNode,'required');"
-                        . "}"
-                        . "if((classes[c].f&0x400000)>0){"// Accompanist or Backtrack option
-                            . "C.rC(C.gE('f-backtrack_option'+i).parentNode,'hidden');"
-                            . "if(C.gE('f-backtrack_option'+i).checked==true){"
-                                . "C.rC(C.gE('f-backtrack'+i).parentNode,'hidden');"
-                            . "}else{"
-                                . "C.aC(C.gE('f-backtrack'+i).parentNode,'hidden');"
-                            . "}"
-                        . "}else if((classes[c].f&0x03000000)>0){"
+                        . "}";
+            if( $args['display'] != 'view' ) {
+                $js .= "if((classes[c].f&0x400000)>0){"// Accompanist or Backtrack option
+                    . "C.rC(C.gE('f-backtrack_option'+i).parentNode,'hidden');"
+                    . "if(C.gE('f-backtrack_option'+i).checked==true){"
+                        . "C.rC(C.gE('f-backtrack'+i).parentNode,'hidden');"
+                    . "}else{"
+                        . "C.aC(C.gE('f-backtrack'+i).parentNode,'hidden');"
+                    . "}";
+            }
+                    $js .= "}else if((classes[c].f&0x03000000)>0){"
                             . "C.rC(C.gE('f-backtrack'+i).parentNode,'hidden');"
                             . "C.aC(C.gE('f-backtrack_option'+i).parentNode,'hidden');"
                         . "}else{"
