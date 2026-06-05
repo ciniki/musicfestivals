@@ -19455,6 +19455,7 @@ function ciniki_musicfestivals_main() {
         'customer_details':{'label':'Customer', 'type':'customer', 'num_cols':2, 'aside':'yes',
             'customer_id':0,
             'customer_field':'customer_id',
+            'customer_args':{'phones':'yes', 'emails':'yes', 'addresses':'yes', 'crc':'yes'},
             'cellClasses':['label', ''],
             'noData':'No Customer Account',
             },
