@@ -204,6 +204,13 @@ function ciniki_musicfestivals_maps($ciniki) {
             0x02 => 'Registration Links',
             ),
     );
+    $maps['volunteerresource'] = array(
+        'resourcetype' => array(
+            '10'=>'Link',
+            '30'=>'Video',
+            '50'=>'File',
+        ),
+    );
 
     return array('stat'=>'ok', 'maps'=>$maps);
 }

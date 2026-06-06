@@ -1,0 +1,51 @@
+#
+# Description
+# -----------
+# This table stores the resources for volunteers (links, videos, files).
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# festival_id:              The ID of the festival the resource is attached to.
+# name:                     The name of the link, video or file.
+# permalink:                The permalink of the link, video or file.
+# resourcetype:             The type of job.
+#
+#                               10 - Link
+#                               30 - Youtube Video
+#                               50 - Uploaded File
+#
+# category:                 The project the job is assigned to
+#
+# synopsis:                 The synopsis of the job.
+#
+# url:                      The URL to the link or youtube video.
+# org_filename:             The filename of the uploaded file.
+# extension:                The filename extension of the uploaded file.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_musicfestival_volunteer_resources (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    festival_id int not null,
+    name varchar(250) not null,
+    resourcetype tinyint unsigned not null,
+    category varchar(250) not null,
+    synopsis varchar(1000) not null,
+    url varchar(1000) not null,
+    org_filename varchar(250) not null,
+    extension varchar(50) not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

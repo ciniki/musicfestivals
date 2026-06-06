@@ -37,6 +37,8 @@ function ciniki_musicfestivals_volunteers($ciniki) {
         'role'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Role'),
         'pending'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Pending'),
         'declined'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Declined'),
+        'resourcecategory'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Resource Category'),
+        'resourcecategories'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Resource Categories'),
         'output'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Output'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -885,6 +887,65 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                 });
             $rsp['role_shifts'] = array_values($rsp['role_shifts']);
         } */
+    }
+
+    //
+    // Get the list of resources
+    //
+    if( isset($args['resourcecategory']) && $args['resourcecategory'] != '' ) {
+        $strsql = "SELECT resources.id, "
+            . "resources.name, "
+            . "resources.resourcetype, "
+            . "resources.resourcetype AS resourcetype_text, "
+            . "resources.category, "
+            . "resources.synopsis, "
+            . "resources.url "
+            . "FROM ciniki_musicfestival_volunteer_resources AS resources "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        if( isset($args['resourcecategory']) && $args['resourcecategory'] != 'All' ) {
+            $strsql .= "AND category = '" . ciniki_core_dbQuote($ciniki, $args['resourcecategory']) . "' ";
+        }
+        $strsql .= "ORDER BY category, name "
+            . "";
+
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.volunteers', array(
+            array('container'=>'resources', 'fname'=>'id', 
+                'fields'=>array('id', 'name', 'resourcetype', 'resourcetype_text', 'category', 'synopsis', 'url'),
+                'maps'=>array('resourcetype_text'=>$maps['volunteerresource']['resourcetype']),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $rsp['resources'] = isset($rc['resources']) ? $rc['resources'] : array();
+        $resource_ids = array();
+        foreach($rsp['resources'] as $iid => $resource) {
+            $resource_ids[] = $resource['id'];
+        }
+    }
+
+    //
+    // Get the list of categories
+    //
+    if( isset($args['resourcecategories']) && $args['resourcecategories'] == 'yes' ) {
+        $strsql = "SELECT DISTINCT category "
+            . "FROM ciniki_musicfestival_volunteer_resources "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY category "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.volunteers', array(
+            array('container'=>'categories', 'fname'=>'category', 
+                'fields'=>array('label'=>'category', 'value'=>'category'),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.volunteers.36', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
+        }
+        $rsp['resourcecategories'] = isset($rc['categories']) ? $rc['categories'] : array();
+        array_unshift($rsp['resourcecategories'], array('label'=>'All', 'value'=>'All'));
     }
 
     return $rsp;

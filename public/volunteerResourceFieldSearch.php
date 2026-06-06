@@ -1,0 +1,73 @@
+<?php
+//
+// Description
+// -----------
+// This method will search a field for the search string provided.
+//
+// Arguments
+// ---------
+// api_key:
+// auth_token:
+// tnid:     The ID of the tenant to search.
+// field:           The field to search.  Possible fields available to search are:
+//
+//                  - module
+//
+// start_needle:    The search string to search the field for.
+//
+// limit:           (optional) Limit the number of results to be returned. 
+//                  If the limit is not specified, the default is 25.
+// 
+// Returns
+// -------
+//
+function ciniki_musicfestival_volunteerResourceFieldSearch($ciniki) {
+    //  
+    // Find all the required and optional arguments
+    //  
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
+    $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
+        'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'), 
+        'field'=>array('required'=>'yes', 'blank'=>'no', 'validlist'=>array('category'), 'name'=>'Field'),
+        'start_needle'=>array('required'=>'yes', 'blank'=>'yes', 'name'=>'Search'), 
+        'limit'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Limit'), 
+        )); 
+    if( $rc['stat'] != 'ok' ) { 
+        return $rc;
+    }   
+    $args = $rc['args'];
+    
+    //  
+    // Make sure this module is activated, and
+    // check permission to run this function for this tenant
+    //  
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.volunteerResourceFieldSearch'); 
+    if( $rc['stat'] != 'ok' ) { 
+        return $rc;
+    }   
+
+    //
+    // Reject if an unknown field
+    //
+    $strsql = "SELECT DISTINCT " . $args['field'] . " AS value "
+        . "FROM ciniki_musicfestival_volunteer_resources "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND (" . $args['field']  . " LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
+            . "AND " . $args['field'] . " <> '' "
+            . ") ";
+    if( $args['start_needle'] == '' ) {
+        $strsql .= "AND date_added > DATE_SUB(NOW(), INTERVAL 10 MONTH) ";
+    }
+    $strsql .= "ORDER BY " . $args['field'] . " ";
+    if( isset($args['limit']) && $args['limit'] != '' && $args['limit'] > 0 ) {
+        $strsql .= "LIMIT " . ciniki_core_dbQuote($ciniki, $args['limit']) . " ";
+    } else {
+        $strsql .= "LIMIT 25 ";
+    }
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    return ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'results', 'fname'=>'value', 'fields'=>array('value')),
+        ));
+}
+?>

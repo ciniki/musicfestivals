@@ -86,6 +86,75 @@ function ciniki_musicfestivals_wng_accountVolunteerProcess(&$ciniki, $tnid, &$re
             'volunteer' => $volunteer,
             ]);
     }
+    elseif( isset($request['uri_split'][($request['cur_uri_pos']+4)]) 
+        && $request['uri_split'][($request['cur_uri_pos']+3)] == 'resource'
+        ) {
+        $filename = $request['uri_split'][($request['cur_uri_pos']+4)];
+        $strsql = "SELECT id, uuid, org_filename "
+            . "FROM ciniki_musicfestival_volunteer_resources "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+            . "AND org_filename = '" . ciniki_core_dbQuote($ciniki, $filename) . "' "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'resource');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1606', 'msg'=>'Unable to load resource', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['resource']) ) {
+            $blocks[] = array(
+                'type' => 'msg', 
+                'level' => 'error',
+                'content' => 'File not found',
+                );
+        } else {
+            $resource = $rc['resource'];
+
+            //
+            // Get the tenant storage directory
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+            $rc = ciniki_tenants_hooks_storageDir($ciniki, $tnid, array());
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $tenant_storage_dir = $rc['storage_dir'];
+
+            //
+            // Build the storage filename
+            //
+            $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/volunteerfiles/' . $resource['uuid'][0] . '/' . $resource['uuid'];
+            if( file_exists($storage_filename) ) {
+                header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 
+                header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT"); 
+                header('Cache-Control: no-cache, must-revalidate');
+                header('Pragma: no-cache');
+
+                $finfo = finfo_open(FILEINFO_MIME);
+                if( $finfo ) {
+                    $content_type = finfo_file($finfo, $storage_filename);
+                    if( $content_type != '' ) {
+                        header('Content-Type: ' . $content_type);
+                    }
+                }
+
+                // Specify Filename
+                header('Content-Disposition: filename="' . $resource['org_filename'] . '"');
+                header('Content-Length: ' . filesize($storage_filename));
+                header('Cache-Control: max-age=0');
+
+                $fp = fopen($storage_filename, 'rb');
+                fpassthru($fp);
+
+                return array('stat'=>'exit');
+            } else {
+                $blocks[] = array(
+                    'type' => 'msg', 
+                    'level' => 'error',
+                    'content' => 'File not found',
+                    );
+            }
+        }
+    }
 
     //
     // Show the volunteer's assignments
@@ -146,6 +215,67 @@ function ciniki_musicfestivals_wng_accountVolunteerProcess(&$ciniki, $tnid, &$re
                     ['url' => $base_url . '/shifts', 'text' => 'Volunteer for Shifts'],
                     ],
                 ];
+        }
+    }
+
+    //
+    // Show any files for the volunteer
+    //
+    $strsql = "SELECT resources.id, "
+        . "resources.name, "
+        . "resources.resourcetype, "
+        . "resources.resourcetype AS resourcetype_text, "
+        . "resources.category, "
+        . "resources.synopsis, "
+        . "resources.url, "
+        . "resources.org_filename, "
+        . "resources.extension "
+        . "FROM ciniki_musicfestival_volunteer_resources AS resources "
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "ORDER BY category, name "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.volunteers', array(
+        array('container'=>'categories', 'fname'=>'category', 
+            'fields'=>array('name'=>'category'),
+            ),
+        array('container'=>'resources', 'fname'=>'id', 
+            'fields'=>array('id', 'name', 'resourcetype', 'category', 'synopsis', 'url', 'org_filename', 'extension'),
+            ),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $categories = isset($rc['categories']) ? $rc['categories'] : array();
+
+    if( count($categories) > 0 ) {
+        $blocks[] = array(
+            'type' => 'title', 
+            'title' => 'Volunteer Resources',
+            'level' => 2,
+            );
+        foreach($categories as $category) {
+            if( isset($category['resources']) ) {
+                $html = '';
+                foreach($category['resources'] as $resource) {
+                    if( $resource['resourcetype'] == 10 ) {
+                        $html .= ($html != '' ? '<br/>' : '')
+                            . "<a target='_blank' href='" . $resource['url'] . "'>" . $resource['name'] . "</a>";
+                    } elseif( $resource['resourcetype'] == 30 ) {
+                        $html .= ($html != '' ? '<br/>' : '')
+                            . "<a target='_blank' href='" . $resource['url'] . "'>" . $resource['name'] . "</a>";
+                    } elseif( $resource['resourcetype'] == 50 ) {
+                        $html .= ($html != '' ? '<br/>' : '')
+                            . "<a target='_blank' href='{$base_url}/resource/" . $resource['org_filename'] . "'>" . $resource['name'] . "</a>";
+                    }
+                }
+                $blocks[] = array(
+                    'type' => 'text',
+                    'title' => $category['name'],
+                    'level' => 3,
+                    'content' => $html,
+                    );
+            }
         }
     }
 

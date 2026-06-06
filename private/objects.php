@@ -1073,6 +1073,24 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );
+    $objects['volunteerresource'] = array(
+        'name' => 'Volunteer Resource',
+        'sync' => 'yes',
+        'o_name' => 'resource',
+        'o_container' => 'resources',
+        'table' => 'ciniki_musicfestival_volunteer_resources',
+        'fields' => array(
+            'festival_id' => array('name'=>'Festival'),
+            'name' => array('name'=>'Name'),
+            'resourcetype' => array('name'=>'Type', 'default'=>'10'),
+            'category' => array('name'=>'Category', 'default'=>''),
+            'synopsis' => array('name'=>'Synopsis', 'default'=>''),
+            'url' => array('name'=>'URL', 'default'=>''),
+            'org_filename' => array('name'=>'Original Filename', 'default'=>''),
+            'extension' => array('name'=>'Filename Extension', 'default'=>''),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
     
     return array('stat'=>'ok', 'objects'=>$objects);
 }
