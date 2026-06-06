@@ -89,7 +89,7 @@ function ciniki_musicfestivals_wng_accountVolunteerProcess(&$ciniki, $tnid, &$re
     elseif( isset($request['uri_split'][($request['cur_uri_pos']+4)]) 
         && $request['uri_split'][($request['cur_uri_pos']+3)] == 'resource'
         ) {
-        $filename = $request['uri_split'][($request['cur_uri_pos']+4)];
+        $filename = urldecode($request['uri_split'][($request['cur_uri_pos']+4)]);
         $strsql = "SELECT id, uuid, org_filename "
             . "FROM ciniki_musicfestival_volunteer_resources "
             . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -266,7 +266,7 @@ function ciniki_musicfestivals_wng_accountVolunteerProcess(&$ciniki, $tnid, &$re
                             . "<a target='_blank' href='" . $resource['url'] . "'>" . $resource['name'] . "</a>";
                     } elseif( $resource['resourcetype'] == 50 ) {
                         $html .= ($html != '' ? '<br/>' : '')
-                            . "<a target='_blank' href='{$base_url}/resource/" . $resource['org_filename'] . "'>" . $resource['name'] . "</a>";
+                            . "<a target='_blank' href='{$base_url}/resource/" . urlencode($resource['org_filename']) . "'>" . $resource['name'] . "</a>";
                     }
                 }
                 $blocks[] = array(
