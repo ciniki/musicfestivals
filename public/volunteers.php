@@ -139,6 +139,109 @@ function ciniki_musicfestivals_volunteers($ciniki) {
             . "volunteers.status AS status_text, "
             . "volunteers.customer_id, "
             . "customers.display_name AS customer_name, "
+            . "IF(volunteers.shortname <> '', volunteers.shortname, customers.display_name) AS display_name, ";
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+            $strsql .= "IFNULL(members.name, '') AS member_name, ";
+        } else {
+            $strsql .= "'' AS member_name, ";
+        }
+        $strsql .= "shifts.id AS shift_id, "
+            . "shifts.shift_date, "
+            . "TIME_TO_SEC(shifts.start_time) AS start_seconds, "
+            . "TIME_TO_SEC(shifts.end_time) AS end_seconds "
+            . "FROM ciniki_musicfestival_volunteers AS volunteers "
+            . "LEFT JOIN ciniki_customers AS customers ON ("
+                . "volunteers.customer_id = customers.id "
+                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") ";
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+            $strsql .= "LEFT JOIN ciniki_musicfestivals_members AS members ON ("
+                    . "volunteers.local_festival_id = members.id "
+                    . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") ";
+        }
+        $strsql .= "LEFT JOIN ciniki_musicfestival_volunteer_assignments AS assignments ON ("
+                . "volunteers.id = assignments.volunteer_id "
+                . "AND assignments.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_volunteer_shifts AS shifts ON ("
+                . "assignments.shift_id = shifts.id "
+                . "AND shifts.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE volunteers.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "AND volunteers.status < 80 "
+            . "AND volunteers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
+        if( isset($args['pending']) && $args['pending'] == 'yes' ) {
+            $strsql .= "AND volunteers.status = 10 ";
+        }
+        $strsql .= "ORDER BY customer_name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'volunteers', 'fname'=>'id', 
+                'fields'=>array('id', 'status', 'status_text', 'customer_id', 'display_name', 'customer_name',
+                    'member_name', ),
+                'maps'=>array('status_text'=>$maps['volunteer']['status']),
+                ),
+            array('container'=>'shifts', 'fname'=>'shift_id', 
+                'fields'=>array('id'=>'shift_id', 'shift_date', 'start_seconds', 'end_seconds'),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1144', 'msg'=>'Unable to load volunteers', 'err'=>$rc['err']));
+        }
+        $rsp['volunteers'] = isset($rc['volunteers']) ? $rc['volunteers'] : array();
+
+        $volunteer_ids = [];
+        $customer_ids = [];
+        foreach($rsp['volunteers'] as $v) {
+            $volunteer_ids[] = $v['id'];
+            if( $v['customer_id'] > 0 ) {
+                $customer_ids[] = $v['customer_id'];
+            }
+        }
+
+        //
+        // Load tags
+        //
+        if( isset($volunteer_ids) && count($volunteer_ids) > 0 ) {
+        }
+
+        //
+        // Load Phones
+        //
+        if( isset($customer_ids) && count($customer_ids) > 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
+            $strsql = "SELECT phones.customer_id, "
+                . "phones.id, "
+                . "phones.phone_label, "
+                . "phones.phone_number "
+                . "FROM ciniki_customer_phones AS phones "
+                . "WHERE phones.customer_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $customer_ids) . ") "
+                . "AND phones.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "ORDER BY phones.customer_id, phones.phone_label "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+            $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'customers', 'fname'=>'customer_id', 'fields'=>array()),
+                array('container'=>'phones', 'fname'=>'id', 'fields'=>array('id', 'phone_label', 'phone_number')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1607', 'msg'=>'Unable to load phones', 'err'=>$rc['err']));
+            }
+            $phones = isset($rc['customers']) ? $rc['customers'] : array();
+        }
+            
+
+    } elseif( isset($args['volunteers']) && $args['volunteers'] == 'basic' ) {
+        //
+        // Get the list of volunteers
+        //
+        $strsql = "SELECT volunteers.id, "
+            . "volunteers.status, "
+            . "volunteers.status AS status_text, "
+            . "volunteers.customer_id, "
+            . "customers.display_name AS customer_name, "
             . "IF(volunteers.shortname <> '', volunteers.shortname, customers.display_name) AS display_name, "
             . "shifts.id AS shift_id, "
             . "shifts.shift_date, "
@@ -179,7 +282,8 @@ function ciniki_musicfestivals_volunteers($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1144', 'msg'=>'Unable to load volunteers', 'err'=>$rc['err']));
         }
         $rsp['volunteers'] = isset($rc['volunteers']) ? $rc['volunteers'] : array();
-
+    }
+    if( isset($rsp['volunteers']) ) {
         //
         // Calculate hours
         //
@@ -205,6 +309,18 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                     $rsp['volunteers'][$vid]['total_hours_text'] = floor($seconds/60/60);
                 }
             }
+            //
+            // Check if phones exist and merge
+            //
+            $rsp['volunteers'][$vid]['phones'] = '';
+            $rsp['volunteers'][$vid]['emails'] = '';
+            if( isset($phones[$volunteer['customer_id']]['phones']) ) {
+                foreach($phones[$volunteer['customer_id']]['phones'] as $phone) {
+                    $rsp['volunteers'][$vid]['phones'] .= ($rsp['volunteers'][$vid]['phones'] != '' ? ', ' : '')
+                        . (count($phones[$volunteer['customer_id']]['phones']) > 1 ? $phone['phone_label'] . ': ' : '')
+                        . $phone['phone_number'];
+                }
+            }
         }
         if( $rsp['volunteer_total_minutes'] > 0 ) {
             if( ($rsp['volunteer_total_minutes']%60) > 0 ) {
@@ -213,7 +329,7 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                 $rsp['volunteer_total_hours_text'] = floor($rsp['volunteer_total_minutes']/60);
             }
         }
-    
+
         //
         // Load the volunteer shifts
         //
@@ -485,7 +601,8 @@ function ciniki_musicfestivals_volunteers($ciniki) {
             . "volunteers.id AS volunteer_id, "
             . "assignments.status AS assignment_status, "
             . "assignments.status AS assignment_status_text, "
-            . "IF(volunteers.shortname <> '', volunteers.shortname, customers.display_name) AS names "
+            . "IF(volunteers.shortname <> '', volunteers.shortname, customers.display_name) AS names, "
+            . "IFNULL(phones.phone_number, '') AS cell_number "
             . "FROM ciniki_musicfestival_volunteer_shifts AS shifts ";
         if( isset($args['pending']) && $args['pending'] == 'yes' ) {
             $strsql .= "INNER JOIN ciniki_musicfestival_volunteer_assignments AS assignments ON ("
@@ -505,6 +622,11 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                 . ") "
             . "LEFT JOIN ciniki_customers AS customers ON ("
                 . "volunteers.customer_id = customers.id "
+                . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_customer_phones AS phones ON ("
+                . "customers.id = phones.customer_id "
+                . "AND phones.phone_label = 'Cell' "
                 . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE shifts.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
@@ -537,7 +659,7 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                     ),
                 ),
             array('container'=>'volunteers', 'fname'=>'volunteer_id', 
-                'fields'=>array('id'=>'volunteer_id', 'name'=>'names', 'assignment_status', 'assignment_status_text'),
+                'fields'=>array('id'=>'volunteer_id', 'name'=>'names', 'assignment_status', 'assignment_status_text', 'cell'=>'cell_number'),
                 'maps'=>array('assignment_status_text'=>$maps['volunteerassignment']['status']),
                 ),
             ));
@@ -571,11 +693,15 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                 $shifts_filled++;
             }
             $rsp['shifts'][$sid]['names'] = '';
+            $rsp['shifts'][$sid]['names_cell'] = '';
             if( isset($shift['volunteers']) ) {
                 foreach($shift['volunteers'] as $volunteer) {
                     $rsp['shifts'][$sid]['names'] .= ($rsp['shifts'][$sid]['names'] != '' ? '<br>' : '')
                         . $volunteer['name']
                         . ($volunteer['assignment_status'] != 30 ? ' [' . $volunteer['assignment_status_text'] . ']' : '');
+                    $rsp['shifts'][$sid]['names_cell'] .= ($rsp['shifts'][$sid]['names_cell'] != '' ? '<br>' : '')
+                        . $volunteer['name']
+                        . ($volunteer['cell'] != '' ? ' [' . $volunteer['cell'] . ']' : '');
                 }
             }
         }
@@ -603,7 +729,15 @@ function ciniki_musicfestivals_volunteers($ciniki) {
         //
         // Check if shifts should be output
         //
-        if( isset($args['output']) && $args['output'] == 'pdf' ) {
+        if( isset($args['output']) && $args['output'] == 'dailypdf' ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'volunteersDailyShiftsPDF');
+            return ciniki_musicfestivals_templates_volunteersDailyShiftsPDF($ciniki, $args['tnid'], [
+                'shifts' => $rsp['shifts'],
+                'festival' => $festival,
+                'download' => 'yes',
+                'filename' => 'Volunteer Daily Shifts.pdf'
+                ]);
+        } elseif( isset($args['output']) && $args['output'] == 'locationspdf' ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'volunteersShiftsPDF');
             return ciniki_musicfestivals_templates_volunteersShiftsPDF($ciniki, $args['tnid'], [
                 'shifts' => $rsp['shifts'],
