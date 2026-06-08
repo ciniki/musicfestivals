@@ -2716,6 +2716,7 @@ function ciniki_musicfestivals_main() {
         M.api.openPDF('ciniki.musicfestivals.accompanistSchedulePDF',args);
     }
     this.festival.downloadDivisionsSummaryPDF = function(s) {
+        this.popupMenuClose('schedule_divisions');
         var args = {'tnid':M.curTenantID,
             'festival_id':this.festival_id,
             'schedulesection_id':(s==null ? this.schedulesection_id : s),
@@ -2723,6 +2724,7 @@ function ciniki_musicfestivals_main() {
         M.api.openPDF('ciniki.musicfestivals.scheduleDivisionsSummaryPDF',args);
     }
     this.festival.downloadDivisionsWithdrawalsPDF = function(s) {
+        this.popupMenuClose('schedule_divisions');
         var args = {'tnid':M.curTenantID,
             'festival_id':this.festival_id,
             'schedulesection_id':(s==null ? this.schedulesection_id : s),
