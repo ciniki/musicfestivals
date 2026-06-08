@@ -1091,6 +1091,19 @@ function ciniki_musicfestivals_objects($ciniki) {
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );
+    $objects['soundtech'] = array(
+        'name' => 'Sound Techinician',
+        'sync' => 'yes',
+        'o_name' => 'soundtech',
+        'o_container' => 'soundtechs',
+        'table' => 'ciniki_musicfestival_soundtechs',
+        'fields' => array(
+            'festival_id' => array('name'=>'Festival', 'ref'=>'ciniki.musicfestivals.festival'),
+            'customer_id' => array('name'=>'Customer', 'ref'=>'ciniki.customers.customer'),
+            'flags' => array('name'=>'Options', 'default'=>'0'),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
     
     return array('stat'=>'ok', 'objects'=>$objects);
 }

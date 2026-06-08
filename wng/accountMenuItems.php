@@ -171,6 +171,31 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
     }
 
     //
+    // Check if the customer is an adjudicator
+    //
+    $soundtech = 'no';
+    $strsql = "SELECT id "
+        . "FROM ciniki_musicfestival_soundtechs "
+        . "WHERE customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
+        . "AND festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+        . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'soundtech');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1609', 'msg'=>'Unable to load sound technician', 'err'=>$rc['err']));
+    }
+    if( isset($rc['soundtech']) ) {
+        $soundtech = 'yes';
+        $items[] = array(
+            'title' => 'Backtracks', 
+            'priority' => 3751, 
+            'selected' => isset($args['selected']) && $args['selected'] == 'musicfestival/backtracks' ? 'yes' : 'no',
+            'ref' => 'ciniki.musicfestivals.backtracks',
+            'url' => $base_url . '/musicfestival/backtracks',
+            );
+    }
+
+    //
     // Check if the customer is or has been registered for the published festival
     //
 /*    $strsql = "SELECT COUNT(*) AS registrations "

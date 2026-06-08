@@ -71,6 +71,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'invoices'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Invoices'),
         'invoice_typestatus'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Invoice Status'),
         'adjudicators'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicators'),
+        'soundtechs'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Sound Technicians'),
         'certificates'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Certificates'),
         'photos'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Photos'),
         'results'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Results'),
@@ -186,6 +187,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'schedule_divisions' => [],
         'schedule_timeslots' => [],
         'adjudicators' => [],
+        'soundtechs' => [],
         'locations' => [],
         'files' => [],
         'sponsors' => [],
@@ -4040,6 +4042,43 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 }
             } else {
                 $festival['adjudicators'] = array();
+            }
+        }
+
+        //
+        // Get the list of sound techs
+        //
+        if( isset($args['soundtechs']) && $args['soundtechs'] == 'yes' ) {
+            $strsql = "SELECT soundtechs.id, "
+                . "soundtechs.festival_id, "
+                . "soundtechs.customer_id, "
+                . "soundtechs.flags AS options, "
+                . "customers.display_name "
+                . "FROM ciniki_musicfestival_soundtechs AS soundtechs "
+                . "LEFT JOIN ciniki_customers AS customers ON ("
+                    . "soundtechs.customer_id = customers.id "
+                    . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE soundtechs.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND soundtechs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "ORDER BY display_name "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'soundtechs', 'fname'=>'id', 
+                    'fields'=>array('id', 'festival_id', 'customer_id', 'name'=>'display_name'),
+                    ),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            if( isset($rc['soundtechs']) ) {
+                $festival['soundtechs'] = $rc['soundtechs'];
+                foreach($festival['soundtechs'] as $iid => $soundtech) {
+                    $nplists['soundtechs'][] = $soundtech['id'];
+                }
+            } else {
+                $festival['soundtechs'] = array();
             }
         }
 
