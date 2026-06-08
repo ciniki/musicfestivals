@@ -1406,8 +1406,15 @@ function ciniki_musicfestivals_main() {
                     },
                 'divisionspdf':{
                     'label':'Summary PDF',
-                    'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['timeslots']) == 'yes' && M.ciniki_musicfestivals_main.festival.schedulesection_id > 0 ? 'yes' : 'no'; },
+                    // Currently on provincials
+                    'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x010000) && M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['timeslots']) == 'yes' && M.ciniki_musicfestivals_main.festival.schedulesection_id > 0 ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.festival.downloadDivisionsSummaryPDF();',
+                    },
+                'withdrawalspdf':{
+                    'label':'Withdrawals PDF',
+                    // Currently on provincials
+                    'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x010000) && M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['timeslots']) == 'yes' && M.ciniki_musicfestivals_main.festival.schedulesection_id > 0 ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadDivisionsWithdrawalsPDF();',
                     },
                 },
 /*            'mailFn':function(s, i, d) {
@@ -2714,6 +2721,13 @@ function ciniki_musicfestivals_main() {
             'schedulesection_id':(s==null ? this.schedulesection_id : s),
             };
         M.api.openPDF('ciniki.musicfestivals.scheduleDivisionsSummaryPDF',args);
+    }
+    this.festival.downloadDivisionsWithdrawalsPDF = function(s) {
+        var args = {'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'schedulesection_id':(s==null ? this.schedulesection_id : s),
+            };
+        M.api.openPDF('ciniki.musicfestivals.scheduleDivisionsWithdrawalsPDF',args);
     }
     this.festival.adjudicatorGroupsPDF = function(s) {
         var args = {'tnid':M.curTenantID,
