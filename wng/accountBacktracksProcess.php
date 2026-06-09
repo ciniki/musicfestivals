@@ -147,6 +147,18 @@ function ciniki_musicfestivals_wng_accountBacktracksProcess(&$ciniki, $tnid, &$r
         foreach($section['divisions'] as $division) {
             $division_permalink = ciniki_core_makePermalink($ciniki, $division['name']);
             //
+            // Check if zip requested
+            //
+            if( isset($request['uri_split'][4]) 
+                && $request['uri_split'][3] == $section_permalink
+                && $request['uri_split'][4] == $division_permalink . '.zip'
+                ) {
+                require_once($ciniki['config']['ciniki.core']['lib_dir'] . '/zipstream-php/src/ZipStream.php');
+                $zip_filename = preg_replace('/ /', '_', "{$section['name']}_{$division['location_name']}_{$division['name']}.zip");
+                $zip = new Pablotron\ZipStream\ZipStream($zip_filename);
+            } 
+
+            //
             // Check for backtracks
             //
             $files = [];
@@ -162,13 +174,24 @@ function ciniki_musicfestivals_wng_accountBacktracksProcess(&$ciniki, $tnid, &$r
                         //
                         // Check if requested file
                         //
+                        $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/files/'
+                            . $reg['uuid'][0] . '/' . $reg['uuid'] . '_backtrack' . $i;
+                        if( isset($request['uri_split'][4]) 
+                            && $request['uri_split'][3] == $section_permalink
+                            && $request['uri_split'][4] == $division_permalink . '.zip'
+                            ) {
+                            try {
+                                $zip->add_file_from_path($section['name'] . '/' . $division['name'] . '/'
+                                    . $reg_num . ' - ' . $reg['slot_time_text'] . ' - ' . $reg['display_name'] . ' - ' . $reg["title{$i}"] . ' - ' . $reg["backtrack{$i}"], $storage_filename);
+                            } catch(Exception $e) {
+                                error_log("Zip Add File: " . $e->getMessage());
+                            }
+                        }
                         if( isset($request['uri_split'][5]) 
                             && $request['uri_split'][3] == $section_permalink
                             && $request['uri_split'][4] == $division_permalink
                             && $request['uri_split'][5] == $backtrack_permalink
                             ) {
-                            $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/files/'
-                                . $reg['uuid'][0] . '/' . $reg['uuid'] . '_backtrack' . $i;
                             // Download file
                             header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 
                             header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT"); 
@@ -209,6 +232,13 @@ function ciniki_musicfestivals_wng_accountBacktracksProcess(&$ciniki, $tnid, &$r
             //
             if( isset($request['uri_split'][4]) 
                 && $request['uri_split'][3] == $section_permalink
+                && $request['uri_split'][4] == $division_permalink . '.zip'
+                ) {
+                $zip->close();
+                return array('stat'=>'exit');
+            }
+            if( isset($request['uri_split'][4]) 
+                && $request['uri_split'][3] == $section_permalink
                 && $request['uri_split'][4] == $division_permalink
                 ) {
                 $blocks = [];
@@ -227,6 +257,14 @@ function ciniki_musicfestivals_wng_accountBacktracksProcess(&$ciniki, $tnid, &$r
                     'level' => 3,
                     'content' => $html,
                     ];
+                $blocks[] = [
+                    'type' => 'buttons',
+                    'class' => 'aligncenter',
+                    'items' => [    
+                        ['text' => 'Download Zip', 'url'=>"{$base_url}/{$section_permalink}/{$division_permalink}.zip"],
+                        ],
+                    ];
+
                 return array('stat'=>'ok', 'blocks'=>$blocks);
             }
 
