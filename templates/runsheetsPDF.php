@@ -80,6 +80,8 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
         . "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS reg_time_text, "
         . "timeslots.name AS timeslot_name, "
         . "timeslots.groupname, "
+        . "timeslots.flags AS timeslot_flags, "
+        . "timeslots.linked_timeslot_id, "
         . "timeslots.slot_seconds, "
         . "timeslots.slot_time, "
         . "timeslots.start_num, "
@@ -226,7 +228,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
 //    if( isset($args['adjudicator_id']) && $args['adjudicator_id'] > 0 ) {
 //        $strsql .= "ORDER BY divisions.division_date, divisions.name, slot_time, registrations.timeslot_sequence, class_code, registrations.display_name ";
 //    } else {
-    $strsql .= "GROUP BY registrations.id ";
+    $strsql .= "GROUP BY timeslots.id, registrations.id ";
     if( isset($args['sortorder']) && $args['sortorder'] == 'date' ) {
         $strsql .= "ORDER BY divisions.division_date, ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, registrations.timeslot_sequence, class_code, registrations.display_name, registrations.id, adjudicator_name ";
     } else {
@@ -248,6 +250,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             ),
         array('container'=>'timeslots', 'fname'=>'timeslot_id', 
             'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 'groupname', 'start_num',
+                'flags'=>'timeslot_flags', 'linked_timeslot_id',
                 'description', 'runsheet_notes', 'slot_time', 'slot_seconds', 
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
                 ),
