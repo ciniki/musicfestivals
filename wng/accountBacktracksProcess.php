@@ -59,6 +59,7 @@ function ciniki_musicfestivals_wng_accountBacktracksProcess(&$ciniki, $tnid, &$r
         . "sections.name AS section_name, "
         . "divisions.id AS division_id, "
         . "divisions.name AS division_name, "
+        . "locations.name AS location_name, "
         . "timeslots.id AS timeslot_id, "
         . "timeslots.name AS timeslot_name, "
         . "timeslots.groupname AS timeslot_groupname, ";
@@ -99,6 +100,10 @@ function ciniki_musicfestivals_wng_accountBacktracksProcess(&$ciniki, $tnid, &$r
             . "divisions.ssection_id = sections.id "
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
+        . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
+            . "divisions.location_id = locations.id "
+            . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
         . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
         . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
@@ -112,7 +117,7 @@ function ciniki_musicfestivals_wng_accountBacktracksProcess(&$ciniki, $tnid, &$r
             'fields'=>array('id'=>'section_id', 'name'=>'section_name'),
             ),
         array('container'=>'divisions', 'fname'=>'division_id', 
-            'fields'=>array('id'=>'section_id', 'name'=>'division_name'),
+            'fields'=>array('id'=>'section_id', 'name'=>'division_name', 'location_name'),
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'uuid', 'section_name', 'division_id', 'division_name', 'slot_time_text', 'display_name', 
@@ -213,9 +218,13 @@ function ciniki_musicfestivals_wng_accountBacktracksProcess(&$ciniki, $tnid, &$r
                         . "<a target='_blank' href='{$file['url']}'>{$file['name']}</a>";
                 }
                 $blocks[] = [
+                    'type' => 'title',
+                    'title' => 'Backtracks',
+                    ];
+                $blocks[] = [
                     'type' => 'text',
-                    'title' => $section['name'] . ' - ' . $division['name'],
-                    'level' => 2,
+                    'title' => $section['name'] . '<br/>' . $division['location_name'] . '<br/>' . $division['name'],
+                    'level' => 3,
                     'content' => $html,
                     ];
                 return array('stat'=>'ok', 'blocks'=>$blocks);
@@ -224,7 +233,7 @@ function ciniki_musicfestivals_wng_accountBacktracksProcess(&$ciniki, $tnid, &$r
             if( $division_files_found == 'yes' ) {
                 $items[] = [
                     'url' => $base_url . '/' . $section_permalink . '/' . $division_permalink,
-                    'text' => $division['name'],
+                    'text' => $division['location_name'] . ' - ' . $division['name'],
                     ];
             }
         }
