@@ -126,9 +126,14 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "registrations.movements7, "
             . "registrations.movements8, "
             . "registrations.participation, "
-            . "IFNULL(timeslots.groupname, '') AS timeslot_groupname, "
-            . "IFNULL(TIME_FORMAT(timeslots.slot_time, '%l:%i %p'), '') AS timeslot_time, "
-            . "IFNULL(DATE_FORMAT(divisions.division_date, '%b %D, %Y'), '') AS timeslot_date, "
+            . "IFNULL(timeslots.groupname, '') AS timeslot_groupname, ";
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+            $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS timeslot_time, ";
+        } else {
+            $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS timeslot_time, ";
+        }
+        // "IFNULL(TIME_FORMAT(timeslots.slot_time, '%l:%i %p'), '') AS timeslot_time, "
+        $strsql .= "IFNULL(DATE_FORMAT(divisions.division_date, '%b %D, %Y'), '') AS timeslot_date, "
             . "IFNULL(classes.code, '') AS class_code, "
             . "IFNULL(classes.name, '') AS class_name, "
             . "IFNULL(categories.name, '') AS category_name, "
@@ -210,9 +215,14 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "divisions.name AS division_name, "
             . "timeslots.id AS timeslot_id, "
             . "timeslots.name AS timeslot_name, "
-            . "timeslots.groupname AS timeslot_groupname, "
-            . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS timeslot_time, "
-            . "DATE_FORMAT(divisions.division_date, '%b %D, %Y') AS timeslot_date, "
+            . "timeslots.groupname AS timeslot_groupname, ";
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
+            $strsql .= "TIME_FORMAT(registrations.timeslot_time, '%l:%i %p') AS timeslot_time, ";
+        } else {
+            $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS timeslot_time, ";
+        }
+        // . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS timeslot_time, "
+        $strsql .= "DATE_FORMAT(divisions.division_date, '%b %D, %Y') AS timeslot_date, "
             . "timeslots.name AS timeslot_name, "
             . "timeslots.description, "
             . "registrations.id AS reg_id, "
