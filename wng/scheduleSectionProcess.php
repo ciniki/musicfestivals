@@ -438,7 +438,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             . "("
                 . "((timeslots.flags&0x02) = 0 AND timeslots.id = registrations.timeslot_id) "
                 . ") "
-            . "AND (registrations.flags&0x1000) = 0 "   // Not Red
+//            . "AND (registrations.flags&0x1000) = 0 "   // Not Red
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
@@ -599,7 +599,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
 //                . "((timeslots.flags&0x02) = 0 AND timeslots.id = registrations.timeslot_id) "
                 . " ((timeslots.flags&0x02) = 0x02 AND timeslots.id = registrations.finals_timeslot_id) "
                 . ") "
-            . "AND (registrations.flags&0x1000) = 0 "   // Not Red
+//            . "AND (registrations.flags&0x1000) = 0 "   // Not Red
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
@@ -1002,6 +1002,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                             // Finals/playoffs timeslots
                             //
                             if( ($timeslot['flags']&0x02) == 0x02 ) {
+                                
                                 $division['timeslots'][$tid]['items'][] = array(
                                     'name' => $name,
                                     'titles' => $titles,
