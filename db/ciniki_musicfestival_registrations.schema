@@ -295,5 +295,6 @@ create table ciniki_musicfestival_registrations (
     index (festival_id, class_id, tnid),
     index (class_id),
     index (timeslot_id),
+    index timeslots (festival_id, timeslot_id, finals_timeslot_id, tnid),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.29';
+) ENGINE='InnoDB', COMMENT='v1.30';
