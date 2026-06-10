@@ -238,6 +238,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
             . "FROM ciniki_musicfestival_schedule_sections AS sections "
             . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
                 . "sections.id = divisions.ssection_id "
+                . "AND divisions.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
                 . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
             . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
@@ -245,7 +246,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                 . "AND timeslots.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
                 . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
-            . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+            . "INNER JOIN ciniki_musicfestival_registrations AS registrations USE INDEX (timeslots) ON ("
                 . "registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
                 . "AND timeslots.id = registrations.timeslot_id "
                 // Removed on Jan 27, 2026 - Was REALLY slowing down queries
