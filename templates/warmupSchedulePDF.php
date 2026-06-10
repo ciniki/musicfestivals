@@ -72,6 +72,7 @@ function ciniki_musicfestivals_templates_warmupSchedulePDF(&$ciniki, $tnid, $arg
             . "registrations.timeslot_time AS slot_time, ";
     } else {
         $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS warmup_time_text, "
+            . "'' AS warmup_end_time_text, "
             . "timeslots.slot_time, ";
     }
 //    $strsql .= "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "

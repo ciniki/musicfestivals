@@ -342,6 +342,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'dailyvenuecompetitors-sort-order',
         'dailyvenuecompetitors-music-check',
         'dailyvenuecompetitors-accompanist-info',
+        'dailyvenuecompetitors-warmup-times',
         'volunteers-roles',                 // comma delimited list
         'volunteers-default-roles',         // comma delimited list of default roles to assign 
         'volunteers-skills',                // comma delimited list

@@ -188,11 +188,6 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                 . "registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
                 . "AND registrations.finals_timeslot_id > 0 "
                 . "AND timeslots.id = registrations.finals_timeslot_id "
-                // Removed on Jan 27, 2026 - Was REALLY slowing down queries
-//                . "AND ("
-//                    . "timeslots.id = registrations.timeslot_id "
-//                    . "OR timeslots.id = registrations.finals_timeslot_id "
-//                    . ") "
                 . $ipv_sql
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
