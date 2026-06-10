@@ -424,6 +424,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "registrations.finals_placement, "
         . "classes.id AS class_id, "
         . "classes.code AS class_code, "
+        . "classes.sequence AS class_sequence, "
         . "classes.name AS class_name, "
         . "categories.name AS category_name, "
         . "sections.name AS section_name, "
@@ -589,6 +590,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "registrations.finals_placement, "
         . "classes.id AS class_id, "
         . "classes.code AS class_code, "
+        . "classes.sequence AS class_sequence, "
         . "classes.name AS class_name, "
         . "categories.name AS category_name, "
         . "sections.name AS section_name, "
@@ -670,7 +672,11 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         $strsql .= "AND registrations.status < 70 ";
     }
     if( isset($s['results-only']) && $s['results-only'] == 'yes' ) {
-        $strsql .= "ORDER BY division_date, division_name, division_id, class_code, timeslot_id, mark, placement, display_name ";
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+            $strsql .= "ORDER BY division_date, division_name, division_id, class_sequence, timeslot_id, mark, placement, display_name ";
+        } else {
+            $strsql .= "ORDER BY division_date, division_name, division_id, class_code, timeslot_id, mark, placement, display_name ";
+        }
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'divisions', 'fname'=>'division_id', 
