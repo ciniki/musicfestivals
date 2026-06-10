@@ -1,0 +1,2 @@
+CREATE INDEX timeslots ON ciniki_musicfestival_registrations (festival_id, timeslot_id, finals_timeslot_id, tnid);
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.30';
