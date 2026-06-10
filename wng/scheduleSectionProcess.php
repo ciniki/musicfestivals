@@ -354,7 +354,12 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "IFNULL(buildings.longitude, '') AS longitude, "
         . "divisions.division_date, "
         . "DATE_FORMAT(divisions.division_date, '" . ciniki_core_dbQuote($ciniki, $division_date_format) . "') AS division_date_text, ";
-    if( isset($s['separate-classes']) && $s['separate-classes'] == 'yes' ) {
+    if( isset($s['results-only']) && $s['results-only'] == 'yes' 
+        && ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
+        ) {
+        $strsql .= "classes.id AS timeslot_id, ";
+    }
+    elseif( isset($s['separate-classes']) && $s['separate-classes'] == 'yes' ) {
         $strsql .= "CONCAT_WS('-', timeslots.id, classes.id) AS timeslot_id, ";
     } else {
         $strsql .= "timeslots.id AS timeslot_id, ";
@@ -514,7 +519,12 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "IFNULL(buildings.longitude, '') AS longitude, "
         . "divisions.division_date, "
         . "DATE_FORMAT(divisions.division_date, '" . ciniki_core_dbQuote($ciniki, $division_date_format) . "') AS division_date_text, ";
-    if( isset($s['separate-classes']) && $s['separate-classes'] == 'yes' ) {
+    if( isset($s['results-only']) && $s['results-only'] == 'yes' 
+        && ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
+        ) {
+        $strsql .= "classes.id AS timeslot_id, ";
+    }
+    elseif( isset($s['separate-classes']) && $s['separate-classes'] == 'yes' ) {
         $strsql .= "CONCAT_WS('-', timeslots.id, classes.id) AS timeslot_id, ";
     } else {
         $strsql .= "timeslots.id AS timeslot_id, ";
