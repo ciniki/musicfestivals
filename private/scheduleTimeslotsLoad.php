@@ -88,8 +88,9 @@ function ciniki_musicfestivals_scheduleTimeslotsLoad(&$ciniki, $tnid, $args) {
         $strsql .= "registrations.display_name ";
     }
     $strsql .= "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
-        . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
-            . "("
+        . "LEFT JOIN ciniki_musicfestival_registrations AS registrations USE INDEX (timeslots) ON ("
+            . "registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival']['id']) . "' "
+            . "AND ("
                 . "((timeslots.flags&0x02) = 0 AND timeslots.id = registrations.timeslot_id) "
                 . "OR ((timeslots.flags&0x02) = 0x02 AND timeslots.id = registrations.finals_timeslot_id) "
                 . ") "
