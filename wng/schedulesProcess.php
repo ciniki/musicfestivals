@@ -173,8 +173,8 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
             . "sections.name, "
             . "sections.sequence AS section_sequence, "
             . "divisions.id AS division_id, "
-            . "divisions.name AS division_name, "
-            . "divisions.division_date, ";
+            . "divisions.name AS division_name, ";
+//            . "divisions.division_date, ";
         if( isset($s['division-locations']) && $s['division-locations'] == 'yes' ) {
             $strsql .= "IFNULL(locations.name, '') AS location_name, ";
         } else {
@@ -240,7 +240,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
         //
         // Load regular timeslots
         //
-        $strsql = "SELECT sections.id, "
+        $strsql = "SELECT DISTINCT sections.id, "
             . "sections.name, "
             . "sections.sequence AS section_sequence, "
             . "divisions.id AS division_id, "
@@ -261,9 +261,9 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                 . ") "
             . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
                 . "divisions.id = timeslots.sdivision_id "
-                . "AND (timeslots.flags&0x02) = 0 "
                 . "AND timeslots.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
                 . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "AND (timeslots.flags&0x02) = 0 "
                 . ") "
             . "INNER JOIN ciniki_musicfestival_registrations AS registrations USE INDEX (timeslots) ON ("
                 . "registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
