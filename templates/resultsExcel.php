@@ -153,9 +153,11 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
         . "registrations.movements8, "
         . "registrations.mark, "
         . "registrations.placement, "
+        . "IF(registrations.placement = '', 'zzz', registrations.placement) as placement_sort, "
         . "registrations.level, "
         . "registrations.finals_mark, "
         . "registrations.finals_placement, "
+        . "IF(registrations.finals_placement = '', 'zzz', registrations.finals_placement) as finals_placement_sort, "
         . "registrations.finals_level, "
         . "registrations.provincials_status AS provincials_status_text, "
         . "registrations.provincials_position AS provincials_position_text, "
@@ -218,7 +220,11 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
 //    }
     $strsql .= "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
 //    if( isset($args['provincials_recommendations']) && $args['provincials_recommendations'] == 'yes' ) {
+    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+        $strsql .= "ORDER BY ssections.sequence, ssections.name, classes.code, finals_placement_sort, placement_sort ";
+    } else {
         $strsql .= "ORDER BY ssections.sequence, ssections.name, registrations.display_name ";
+    }
 //    } else {
 //        $strsql .= "ORDER BY ssections.sequence, ssections.name, class_code, registrations.provincials_position ";
 //    }
