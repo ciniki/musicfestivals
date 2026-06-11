@@ -36,18 +36,6 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
     $blocks = array();
 
     //
-    // Check if schedule is displaying just live or just virtual
-    //
-    $ipv_sql = '';
-    if( isset($s['ipv']) && $s['ipv'] == 'inperson' ) {
-        $lv_word = 'Live ';
-        $ipv_sql = "AND (registrations.participation = 0 OR registrations.participation = 2) ";
-    } elseif( isset($s['ipv']) && $s['ipv'] == 'virtual' ) {
-        $lv_word = 'Virtual ';
-        $ipv_sql = "AND registrations.participation = 1 ";
-    }
-
-    //
     // Get the music festival details
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
@@ -56,6 +44,22 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
         return $rc;
     }
     $festival = $rc['festival'];
+
+    //
+    // Check if schedule is displaying just live or just virtual
+    //
+    $ipv_sql = '';
+    if( isset($s['ipv']) && $s['ipv'] == 'inperson' ) {
+        $lv_word = 'Live ';
+        if( ($festival['flags']&0x10) == 0x10 ) {
+            $ipv_sql = "AND (registrations.participation = 0 OR registrations.participation = 2) ";
+        } else {
+            $ipv_sql = "AND registrations.participation = 0 ";
+        }
+    } elseif( isset($s['ipv']) && $s['ipv'] == 'virtual' ) {
+        $lv_word = 'Virtual ';
+        $ipv_sql = "AND registrations.participation = 1 ";
+    }
 
     $division_date_format = '%W, %M %D, %Y';
     if( isset($festival['schedule-date-format']) && $festival['schedule-date-format'] != '' ) {
@@ -170,9 +174,13 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
             . "sections.sequence AS section_sequence, "
             . "divisions.id AS division_id, "
             . "divisions.name AS division_name, "
-            . "divisions.division_date, "
-            . "IFNULL(locations.name, '') AS location_name, "
-            . "DATE_FORMAT(divisions.division_date, '" . ciniki_core_dbQuote($ciniki, $division_date_format) . "') AS division_date_text, "
+            . "divisions.division_date, ";
+        if( isset($s['division-locations']) && $s['division-locations'] == 'yes' ) {
+            $strsql .= "IFNULL(locations.name, '') AS location_name, ";
+        } else {
+            $strsql .= "'' AS location_name, ";
+        }
+        $strsql .= "DATE_FORMAT(divisions.division_date, '" . ciniki_core_dbQuote($ciniki, $division_date_format) . "') AS division_date_text, "
             . "DATE_FORMAT(divisions.division_date, '%Y-%m-%d') AS division_ymd "
             . "FROM ciniki_musicfestival_schedule_sections AS sections "
             . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
@@ -181,6 +189,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                 . ") "
             . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
                 . "divisions.id = timeslots.sdivision_id "
+                . "AND (timeslots.flags&0x02) = 0x02 "
                 . "AND timeslots.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
                 . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
@@ -190,12 +199,14 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                 . "AND timeslots.id = registrations.finals_timeslot_id "
                 . $ipv_sql
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
+                . ") ";
+        if( isset($s['division-locations']) && $s['division-locations'] == 'yes' ) {
+            $strsql .= "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
                 . "divisions.location_id = locations.id "
                 . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
+                . ") ";
+        }
+        $strsql .= "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
             . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . $ipv_sections_sql;
         if( isset($s['results-only']) && $s['results-only'] == 'yes' ) {
@@ -204,9 +215,12 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
             $strsql .= "AND (sections.flags&0x10) = 0x10 "; // Schedule published on website
         } 
         if( $s['layout'] == 'division-buttons-name' ) {
-            $strsql .= "ORDER BY section_sequence, name, division_name, division_date, division_id, location_name ";
+            $strsql .= "ORDER BY section_sequence, name, division_name, division_date, division_id ";
         } else {
-            $strsql .= "ORDER BY section_sequence, name, division_date, division_name, location_name ";
+            $strsql .= "ORDER BY section_sequence, name, division_date, division_name ";
+        }
+        if( isset($s['division-locations']) && $s['division-locations'] == 'yes' ) {
+            $strsql .= ", location_name ";
         }
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -231,9 +245,13 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
             . "sections.sequence AS section_sequence, "
             . "divisions.id AS division_id, "
             . "divisions.name AS division_name, "
-            . "divisions.division_date, "
-            . "IFNULL(locations.name, '') AS location_name, "
-            . "DATE_FORMAT(divisions.division_date, '" . ciniki_core_dbQuote($ciniki, $division_date_format) . "') AS division_date_text, "
+            . "divisions.division_date, ";
+        if( isset($s['division-locations']) && $s['division-locations'] == 'yes' ) {
+            $strsql .= "IFNULL(locations.name, '') AS location_name, ";
+        } else {
+            $strsql .= "'' AS location_name, ";
+        }
+        $strsql .= "DATE_FORMAT(divisions.division_date, '" . ciniki_core_dbQuote($ciniki, $division_date_format) . "') AS division_date_text, "
             . "DATE_FORMAT(divisions.division_date, '%Y-%m-%d') AS division_ymd "
             . "FROM ciniki_musicfestival_schedule_sections AS sections "
             . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
@@ -243,6 +261,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                 . ") "
             . "INNER JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
                 . "divisions.id = timeslots.sdivision_id "
+                . "AND (timeslots.flags&0x02) = 0 "
                 . "AND timeslots.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
                 . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
                 . ") "
@@ -256,14 +275,16 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
 //                    . ") "
                 . $ipv_sql
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
+                . ") ";
+        if( isset($s['division-locations']) && $s['division-locations'] == 'yes' ) {
+            $strsql .= "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
                 . "divisions.location_id = locations.id "
                 . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-                . ") "
-            . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
-            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . $ipv_sections_sql;
+                . ") ";
+        }
+        $strsql .= "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
+            . $ipv_sections_sql
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
         if( isset($s['results-only']) && $s['results-only'] == 'yes' ) {
             $strsql .= "AND ((sections.flags&0x20) = 0x20 OR (divisions.flags&0x20) = 0x20) "; // results published on website
         } else {
