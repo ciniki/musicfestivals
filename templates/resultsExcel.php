@@ -73,7 +73,7 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
         . "INNER JOIN ciniki_customers AS customers ON ("
             . "("
                 . "registrations.teacher_customer_id = customers.id "
-                . "OR registrations.teacher2_customer_id = customers.id "
+//                . "OR registrations.teacher2_customer_id = customers.id "
                 . ") "
             . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
