@@ -70,6 +70,7 @@ function ciniki_musicfestivals_wng_scheduleOverviewDaysProcess(&$ciniki, $tnid, 
         . "FROM ciniki_musicfestival_schedule_sections AS ssections "
         . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
             . "ssections.id = divisions.ssection_id "
+            . "AND divisions.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
             . "AND divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
@@ -78,6 +79,7 @@ function ciniki_musicfestivals_wng_scheduleOverviewDaysProcess(&$ciniki, $tnid, 
             . ") "
         . "WHERE ssections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
         . "AND (ssections.flags&0x80) = 0x80 "
+        . "AND ssections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY divisions.division_date, divisions.name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
