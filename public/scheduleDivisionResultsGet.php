@@ -170,7 +170,7 @@ function ciniki_musicfestivals_scheduleDivisionResultsGet(&$ciniki) {
         . "categories.name AS category_name, "
         . "sections.name AS section_name "
         . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
-        . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+        . "INNER JOIN ciniki_musicfestival_registrations AS registrations USE INDEX (timeslots) ON ("
             . "("
                 . "((timeslots.flags&0x02) = 0 && timeslots.id = registrations.timeslot_id) "
                 . "OR ((timeslots.flags&0x02) = 0x02 && timeslots.id = registrations.finals_timeslot_id) "
