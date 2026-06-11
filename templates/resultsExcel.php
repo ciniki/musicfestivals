@@ -63,6 +63,22 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
     $festival = $rc['festival'];
 
     //
+    // Check if schedule is displaying just live or just virtual
+    //
+    $ipv_sql = '';
+    if( isset($s['ipv']) && $s['ipv'] == 'inperson' ) {
+        $lv_word = 'Live ';
+        if( ($festival['flags']&0x10) ) {
+            $ipv_sql = "AND registrations.participation = 0 ";
+        } else {
+            $ipv_sql = "AND (registrations.participation = 0 OR registrations.participation = 2) ";
+        }
+    } elseif( isset($s['ipv']) && $s['ipv'] == 'virtual' ) {
+        $lv_word = 'Virtual ';
+        $ipv_sql = "AND registrations.participation = 1 ";
+    }
+
+    //
     // Get the list of teachers
     //
     $strsql = "SELECT customers.id, "
@@ -83,12 +99,13 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
             . ") "
         . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "AND registrations.teacher_customer_id > 0 "  
+        . $ipv_sql
         . "AND registrations.timeslot_id > 0 ";  // Scheduled registrations only
-    if( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
-        $strsql .= "AND registrations.participation = 1 ";   // Live only
-    } elseif( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
-        $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";   // Live only
-    }
+//    if( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
+//        $strsql .= "AND registrations.participation = 1 ";   // Live only
+//    } elseif( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
+//        $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";   // Live only
+//    }
     $strsql .= "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "ORDER BY customers.id "
         . "";
@@ -182,6 +199,7 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
             . ") "
         . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "timeslots.id = registrations.timeslot_id "
+            . $ipv_sql
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
@@ -203,18 +221,18 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
                 . "OR registrations.competitor3_id = competitors.id "
                 . "OR registrations.competitor4_id = competitors.id "
                 . "OR registrations.competitor5_id = competitors.id "
-                . ") "
+                . ") " 
             . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE ssections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
     if( isset($args['schedulesection_id']) && $args['schedulesection_id'] > 0 ) {
         $strsql .= "AND ssections.id = '" . ciniki_core_dbQuote($ciniki, $args['schedulesection_id']) . "' ";
     }
-    if( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
-        $strsql .= "AND registrations.participation = 1 ";   // Live only
-    } elseif( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
-        $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";   // Live only
-    }
+//    if( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
+//        $strsql .= "AND registrations.participation = 1 ";   // Live only
+//    } elseif( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
+//        $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";   // Live only
+//    }
 //    if( isset($args['provincials_recommendations']) && $args['provincials_recommendations'] == 'yes' ) {
 //        $strsql .= "AND registrations.provincials_position > 0 ";
 //    }
