@@ -154,6 +154,9 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
         . "registrations.mark, "
         . "registrations.placement, "
         . "registrations.level, "
+        . "registrations.finals_mark, "
+        . "registrations.finals_placement, "
+        . "registrations.finals_level, "
         . "registrations.provincials_status AS provincials_status_text, "
         . "registrations.provincials_position AS provincials_position_text, "
         . "classes.code AS class_code, "
@@ -229,7 +232,8 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
                 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
                 'teacher_customer_id', 'teacher2_customer_id',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
-                'mark', 'placement', 'level', 'provincials_code', 'provincials_status_text', 'provincials_position_text',
+                'mark', 'placement', 'level', 'finals_mark', 'finals_placement', 'finals_level',
+                'provincials_code', 'provincials_status_text', 'provincials_position_text',
                 'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
                 'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
@@ -299,14 +303,14 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Level', false);
                 }
             }
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+//                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Provincial Class', false);
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Finals Position', false);
+//                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Status', false);
+            }
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Code', false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Category', false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Class', false);
-//            if( !ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
-//                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Provincial Class', false);
-//                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Position', false);
-//                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Status', false);
-//            }
 
             if( !isset($args['provincials_recommendations']) || $args['provincials_recommendations'] != 'yes' ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Titles', false);
@@ -327,14 +331,16 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
             $registration['emails'] = '';
             $registration['etransfer_emails'] = '';
             $registration['ages'] = '';
-            foreach($registration['competitors'] as $competitor) {
-                if( !str_contains($registration['emails'], $competitor['email']) ) {
-                    $registration['emails'] .= ($registration['emails'] != '' ? ', ' : '') . $competitor['email'];
+            if( isset($registration['competitors']) ) {
+                foreach($registration['competitors'] as $competitor) {
+                    if( !str_contains($registration['emails'], $competitor['email']) ) {
+                        $registration['emails'] .= ($registration['emails'] != '' ? ', ' : '') . $competitor['email'];
+                    }
+                    if( !str_contains($registration['etransfer_emails'], $competitor['etransfer_email']) ) {
+                        $registration['etransfer_emails'] .= ($registration['etransfer_emails'] != '' ? ', ' : '') . $competitor['etransfer_email'];
+                    }
+                    $registration['ages'] .= ($registration['ages'] != '' ? ',' : '') . $competitor['comp_age'];
                 }
-                if( !str_contains($registration['etransfer_emails'], $competitor['etransfer_email']) ) {
-                    $registration['etransfer_emails'] .= ($registration['etransfer_emails'] != '' ? ', ' : '') . $competitor['etransfer_email'];
-                }
-                $registration['ages'] .= ($registration['ages'] != '' ? ',' : '') . $competitor['comp_age'];
             }
             if( $registration['teacher_customer_id'] > 0
                 && isset($teachers[$registration['teacher_customer_id']]['emails']) 
@@ -371,6 +377,12 @@ function ciniki_musicfestivals_templates_resultsExcel(&$ciniki, $tnid, $args) {
             }
             if( isset($festival['comments-level-ui']) && $festival['comments-level-ui'] == 'yes' ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['level'], false);
+            }
+            if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+//                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['provincials_code'], false);
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['finals_placement'], false);
+//                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['provincials_position_text'], false);
+//                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['provincials_status_text'], false);
             }
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['class_code'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['category_name'], false);
