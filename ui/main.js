@@ -20294,7 +20294,7 @@ function ciniki_musicfestivals_main() {
                 },
             },
         'class_select':{'label':'Classes', 'aside':'yes', 'type':'select',
-            'visible':function() { return ['entries','results'].indexOf(M.ciniki_musicfestivals_main.provincials.sections._tabs.selected) >= 0 && M.ciniki_musicfestivals_main.provincials.section_id > 0 ? 'yes' : 'no'; },
+            'visible':function() { return ['entries'].indexOf(M.ciniki_musicfestivals_main.provincials.sections._tabs.selected) >= 0 && M.ciniki_musicfestivals_main.provincials.section_id > 0 ? 'yes' : 'no'; },
             'fields':{
                 'class_id':{'label':'', 'hidelabel':'yes', 'type':'select', 
                     'complex_options':{'value':'id', 'name':'name'},
@@ -20571,7 +20571,6 @@ function ciniki_musicfestivals_main() {
         else if( this.sections._tabs.selected == 'results' ) {
             args['sections'] = 'yes';
             args['section_id'] = this.section_id;
-            args['class_id'] = this.class_id;
             args['results'] = 'yes';
         }
         M.api.getJSONCb('ciniki.musicfestivals.provincials', args, function(rsp) {

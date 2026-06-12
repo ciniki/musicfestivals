@@ -114,10 +114,6 @@ function ciniki_musicfestivals_wng_accountMemberResultsProcess(&$ciniki, $tnid, 
     }
     $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
 
-    uasort($registrations, function($a, $b) {
-        return strnatcmp($a['class_name'], $b['class_name']);
-        });
-
     foreach($registrations as $rid => $reg) {
         //
         // If results have been released on the website
@@ -133,6 +129,11 @@ function ciniki_musicfestivals_wng_accountMemberResultsProcess(&$ciniki, $tnid, 
             $registrations[$rid]['result'] = $reg['status_text'];
         }
     }
+
+    uasort($registrations, function($a, $b) {
+        return strnatcmp($a['class_name'], $b['class_name']);
+        });
+
 
     $blocks[] = array(
         'type' => 'title',

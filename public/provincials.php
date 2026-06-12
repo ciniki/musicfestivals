@@ -179,7 +179,10 @@ function ciniki_musicfestivals_provincials($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1403', 'msg'=>'Unable to load sections', 'err'=>$rc['err']));
         }
         $rsp['sections'] = isset($rc['sections']) ? $rc['sections'] : array();
-        if( !isset($args['adjudicators']) ) { // Don't add totals when using to add recommendation
+        if( isset($args['results']) ) {
+            array_unshift($rsp['sections'], ['id' => 0, 'name' => 'All']);
+        }
+        elseif( !isset($args['adjudicators']) ) { // Don't add totals when using to add recommendation
             $total = 0;
             foreach($rsp['sections'] as $sid => $section) {
                 if( $section['num_items'] > 0 ) {
@@ -440,8 +443,15 @@ function ciniki_musicfestivals_provincials($ciniki) {
             . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "registrations.class_id = classes.id "
                 . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
-                . ") "
-            . "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
+                . ") ";
+        if( isset($args['section_id']) && $args['section_id'] > 0 ) {
+            $strsql .= "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
+                . "classes.category_id = categories.id "
+                . "AND categories.section_id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
+                . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
+                . ") ";
+        }
+        $strsql .= "LEFT JOIN ciniki_musicfestival_schedule_timeslots AS timeslots ON ("
                 . "registrations.timeslot_id = timeslots.id "
                 . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
                 . ") "
