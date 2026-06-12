@@ -190,8 +190,8 @@ function ciniki_musicfestivals_templates_memberResultsPDF(&$ciniki, $tnid, $args
     $pdf->header_height = 0;
     $pdf->header_title = $args['title'];
     $pdf->header_sub_title = $args['subtitle'];
-    $pdf->header_msg = $festival['document_header_msg'];
-    $pdf->footer_msg = $festival['document_footer_msg'];
+    $pdf->header_msg = '';
+    $pdf->footer_msg = '';
 
     //
     // Set the minimum header height
@@ -276,7 +276,6 @@ function ciniki_musicfestivals_templates_memberResultsPDF(&$ciniki, $tnid, $args
 
     $fill = 1;
     foreach($classes as $class) {
-
         $newpage = 'no';
         if( $pdf->getY() > $pdf->getPageHeight() - $class['lh'] - 30 ) {
             $pdf->AddPage();

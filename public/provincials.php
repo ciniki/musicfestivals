@@ -34,6 +34,7 @@ function ciniki_musicfestivals_provincials($ciniki) {
         'entries'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Entries'),
         'results'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Results'),
         'adjudicators'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Adjudicators'),
+        'output'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Output'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -509,6 +510,99 @@ function ciniki_musicfestivals_provincials($ciniki) {
                 return strnatcasecmp($a['display_name'], $b['display_name']);
             }
             });
+        if( isset($args['output']) && $args['output'] == 'excel' ) {
+            //
+            // Load provincials festival
+            //
+            $strsql = "SELECT festivals.id, "
+                . "festivals.name "
+                . "FROM ciniki_musicfestivals AS festivals "
+                . "WHERE festivals.id = '" . ciniki_core_dbQuote($ciniki, $provincials_festival_id) . "' "
+                . "AND festivals.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1612', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
+            }
+            if( !isset($rc['festival']) ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1613', 'msg'=>'Unable to find requested festival'));
+            }
+            $provincials_festival = $rc['festival'];
+            
+            //
+            // Generate XLS of registrations
+            //
+            $sheets = [
+                'results' => [
+                    'label' => 'Results',
+                    'columns' => [
+                        ['label' => 'Class', 'field' => 'class'],
+                        ['label' => 'Competitor', 'field' => 'display_name'],
+                        ['label' => 'Results', 'field' => 'result'],
+                        ],
+                    'rows' => $registrations,
+                    ],
+                ];
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'excelGenerate');
+            return ciniki_core_excelGenerate($ciniki, $args['tnid'], [
+                'sheets' => $sheets,
+                'download' => 'yes', 
+                'format' => 'xls',
+                'filename' => "{$member['name']} - {$provincials_festival['name']} - Results.xls",
+                ]);
+        }
+        if( isset($args['output']) && $args['output'] == 'pdf' ) {
+            //
+            // Load provincials festival
+            //
+            $strsql = "SELECT festivals.id, "
+                . "festivals.name "
+                . "FROM ciniki_musicfestivals AS festivals "
+                . "WHERE festivals.id = '" . ciniki_core_dbQuote($ciniki, $provincials_festival_id) . "' "
+                . "AND festivals.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1612', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
+            }
+            if( !isset($rc['festival']) ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1613', 'msg'=>'Unable to find requested festival'));
+            }
+            $provincials_festival = $rc['festival'];
+            
+            //
+            // Generate PDF of registrations
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'memberResultsPDF');
+            $rc = ciniki_musicfestivals_templates_memberResultsPDF($ciniki, $provincials_tnid, [
+                'festival_id' => $provincials_festival_id,
+                'title' => $member['name'],
+                'subtitle' => $provincials_festival['name'] . ' - Results',
+                'registrations' => $registrations,
+                ]);
+            if( $rc['stat'] != 'ok' ) {
+                error_log('ERR: Unable to generate local festival results pdf');
+                $blocks[] = array(
+                    'type' => 'msg', 
+                    'level' => 'error',
+                    'content' => 'Unable to create PDF file, please contact us for help.',
+                    );
+                return array('stat'=>'ok', 'blocks'=>$blocks);
+            }
+            //
+            // Output the excel file
+            //
+            $filename = "{$member['name']} - {$provincials_festival['name']} - Results";
+            header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+            header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+            header('Cache-Control: no-cache, must-revalidate');
+            header('Pragma: no-cache');
+            header('Content-Type: application/pdf');
+            header('Cache-Control: max-age=0');
+
+            $rc['pdf']->Output($filename . '.pdf', 'I');
+            return array('stat'=>'exit');
+        }
         $rsp['results'] = array_values($registrations);
     }
 
