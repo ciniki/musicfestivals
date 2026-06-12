@@ -72,7 +72,7 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
             'name'=>'',
             'sequence'=>$seq,
 //            'adjudicator1_id'=>0,
-            'flags'=>0,
+            'flags'=>0x40,
             'top_sponsors_title'=>'',
             'top_sponsor_ids'=>0,
             'bottom_sponsors_title'=>'',
