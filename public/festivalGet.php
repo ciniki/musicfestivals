@@ -2388,13 +2388,17 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "timeslots.groupname, "
                     . "timeslots.description, "
                     . "images.id AS timeslot_image_id, "
-                    . "images.uuid, "
                     . "images.image_id, "
-                    . "UNIX_TIMESTAMP(images.last_updated) AS last_updated "
+                    . "imgs.uuid, "
+                    . "UNIX_TIMESTAMP(imgs.last_updated) AS last_updated "
                     . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
-                    . "LEFT JOIN ciniki_musicfestival_timeslot_images AS images ON ("
+                    . "INNER JOIN ciniki_musicfestival_timeslot_images AS images ON ("
                         . "timeslots.id = images.timeslot_id "
                         . "AND images.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "INNER JOIN ciniki_images AS imgs ON ("
+                        . "images.image_id = imgs.id "
+                        . "AND imgs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                         . ") "
                     . "WHERE timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "AND timeslots.sdivision_id = '" . ciniki_core_dbQuote($ciniki, $args['sdivision_id']) . "' "
@@ -2446,6 +2450,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             foreach($scheduletimeslot['images'] as $iid => $image) {
                                 $rc = ciniki_images_hooks_loadThumbnail($ciniki, $args['tnid'], array(
                                     'image_id' => $image['image_id'],
+                                    'uuid' => $image['uuid'],
                                     'maxlength' => 50,
                                     'last_updated' => $image['last_updated'],
                                     ));

@@ -130,11 +130,16 @@ function ciniki_musicfestivals_photos($ciniki) {
             . "timeslots.description, "
             . "images.id AS timeslot_image_id, "
             . "images.image_id, "
-            . "images.last_updated "
+            . "imgs.uuid, "
+            . "UNIX_TIMESTAMP(imgs.last_updated) AS last_updated "
             . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
-            . "LEFT JOIN ciniki_musicfestival_timeslot_images AS images ON ("
+            . "INNER JOIN ciniki_musicfestival_timeslot_images AS images ON ("
                 . "timeslots.id = images.timeslot_id "
                 . "AND images.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "INNER JOIN ciniki_images AS imgs ON ("
+                . "images.image_id = imgs.id "
+                . "AND imgs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND timeslots.sdivision_id = '" . ciniki_core_dbQuote($ciniki, $args['division_id']) . "' "
@@ -148,7 +153,7 @@ function ciniki_musicfestivals_photos($ciniki) {
                     'name', 'description'),
                 ),
             array('container'=>'images', 'fname'=>'image_id', 
-                'fields'=>array('timeslot_image_id', 'image_id', 'last_updated'),
+                'fields'=>array('id'=>'image_id', 'timeslot_image_id', 'image_id', 'uuid', 'last_updated'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -175,7 +180,8 @@ function ciniki_musicfestivals_photos($ciniki) {
                     foreach($scheduletimeslot['images'] as $iid => $image) {
                         $rc = ciniki_images_hooks_loadThumbnail($ciniki, $args['tnid'], array(
                             'image_id' => $image['image_id'],
-                            'maxlength' => 40,
+                            'uuid' => $image['uuid'],
+                            'maxlength' => 50,
                             'last_updated' => $image['last_updated'],
                             ));
                         if( $rc['stat'] != 'ok' ) {
