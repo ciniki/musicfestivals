@@ -2388,8 +2388,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "timeslots.groupname, "
                     . "timeslots.description, "
                     . "images.id AS timeslot_image_id, "
+                    . "images.uuid, "
                     . "images.image_id, "
-                    . "images.last_updated "
+                    . "UNIX_TIMESTAMP(images.last_updated) AS last_updated "
                     . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
                     . "LEFT JOIN ciniki_musicfestival_timeslot_images AS images ON ("
                         . "timeslots.id = images.timeslot_id "
@@ -2407,7 +2408,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             'name', 'groupname', 'description'),
                         ),
                     array('container'=>'images', 'fname'=>'image_id', 
-                        'fields'=>array('timeslot_image_id', 'image_id', 'last_updated'),
+                        'fields'=>array('id'=>'image_id', 'timeslot_image_id', 'image_id', 'uuid', 'last_updated'),
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
