@@ -2348,8 +2348,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     // Load list of no photos
                     $strsql = "SELECT timeslots.id, competitors.id AS comp_id, competitors.flags, competitors.name "
                         . "FROM ciniki_musicfestival_schedule_timeslots AS timeslots "
-                        . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
-                            . "(timeslots.id = registrations.timeslot_id "
+                        . "INNER JOIN ciniki_musicfestival_registrations AS registrations USE INDEX (timeslots) ON ("
+                            . "registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                            . "AND (timeslots.id = registrations.timeslot_id "
                                 . "OR timeslots.id = registrations.finals_timeslot_id "
                                 . ") "
                             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
