@@ -29,7 +29,7 @@ function ciniki_musicfestivals_flags(&$ciniki) {
         array('flag'=>array('bit'=>'9', 'name'=>'Main Menu Festivals')),
         array('flag'=>array('bit'=>'10', 'name'=>'Email Lists')),
         array('flag'=>array('bit'=>'11', 'name'=>'Messages')),
-        array('flag'=>array('bit'=>'12', 'name'=>'Schedule Division Adjudicators **to be deprecated**')), // Convert to be a festival option
+        array('flag'=>array('bit'=>'12', 'name'=>'')), // Deprecated schedule division adjudicators
         // 0x1000
         array('flag'=>array('bit'=>'13', 'name'=>'Class Levels')), // May be changed to tags in the future
         array('flag'=>array('bit'=>'14', 'name'=>'Experimental')), // Experimental settings

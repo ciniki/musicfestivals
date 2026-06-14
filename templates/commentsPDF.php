@@ -143,12 +143,6 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "IFNULL(arefs.adjudicator_id, 0) AS adjudicator_id, "
             . "IFNULL(customers.display_name, '') AS adjudicator_name, "
             . "IFNULL(adjudicators.sig_image_id, 0) AS sig_image_id, "
-//        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0800) ) {;u
-//            $strsql .= "IFNULL(divisions.adjudicator_id, 0) AS adjudicator_id, ";
-//        } else {
-//            $strsql .= "IFNULL(ssections.adjudicator1_id, 0) AS adjudicator_id, ";
-//        }
-//        $strsql .= 
             . "registrations.mark, "
             . "registrations.flags, "
             . "registrations.placement, "
@@ -264,12 +258,6 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             . "IFNULL(arefs.adjudicator_id, 0) AS adjudicator_id, "
             . "IFNULL(customers.display_name, '') AS adjudicator_name, "
             . "IFNULL(adjudicators.sig_image_id, 0) AS sig_image_id, "
-//        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0800) ) {
-//            $strsql .= "IFNULL(divisions.adjudicator_id, 0) AS adjudicator_id, ";
-//        } else {
-//            $strsql .= "IFNULL(ssections.adjudicator1_id, 0) AS adjudicator_id, ";
-//        }
-//        $strsql .= 
             . "registrations.mark, "
             . "registrations.flags, "
             . "registrations.placement, "
