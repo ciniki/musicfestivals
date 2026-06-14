@@ -122,10 +122,8 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "WHERE arefs.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $adjudicator['id']) . "' "
-        . "AND ("
-                . "(arefs.object_id = ssections.id AND arefs.object = 'ciniki.musicfestivals.schedulesection') "
-                . "OR (arefs.object_id = divisions.id AND arefs.object = 'ciniki.musicfestivals.scheduledivision') "
-            . ") "
+        . "AND arefs.object_id = divisions.id "
+        . "AND arefs.object = 'ciniki.musicfestivals.scheduledivision' "
         . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY classes.provincials_code, registrations.display_name, classes.code, registrations.id "
         . "";

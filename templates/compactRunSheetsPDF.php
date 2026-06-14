@@ -167,10 +167,8 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_adjudicatorrefs AS arefs ON ("
-            . "( "
-                . "(ssections.id = arefs.object_id AND arefs.object = 'ciniki.musicfestivals.schedulesection') "
-                . "OR (divisions.id = arefs.object_id AND arefs.object = 'ciniki.musicfestivals.scheduledivision') "
-            . ") "
+            . "divisions.id = arefs.object_id "
+            . "AND arefs.object = 'ciniki.musicfestivals.scheduledivision' "
             . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "LEFT JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
@@ -215,13 +213,8 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
     }
     if( isset($args['adjudicator_id']) && $args['adjudicator_id'] > 0 ) {
         $strsql .= "AND arefs.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' ";
-//        $strsql .= "AND ("
-//           . "ssections.adjudicator1_id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' "
-//           . "OR divisions.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $args['adjudicator_id']) . "' "
-//           . ") ";
     }
     if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
-//        $strsql .= "AND (registrations.participation < 1 || ISNULL(registrations.participation) ) ";
         $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";
     } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
         $strsql .= "AND registrations.participation = 1 ";

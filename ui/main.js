@@ -1386,7 +1386,7 @@ function ciniki_musicfestivals_main() {
                     },
                 },
             },
-        'schedule_divisions':{'label':'Divisions', 'type':'simplegrid', 'num_cols':2, 'aside':'no', 
+        'schedule_divisions':{'label':'Divisions', 'type':'simplegrid', 'num_cols':3, 'aside':'no', 
             'panelcolumn':1,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.schedulesection_id != 'unscheduled' && M.ciniki_musicfestivals_main.festival.schedulesection_id != 'notes' && M.ciniki_musicfestivals_main.festival.isSelected('schedule', ['timeslots','locations','dates','comments','results','photos']) == 'yes' ? 'yes' : 'no'; },
             'headerValues':['Division', 'Date', 'Adjudicator'],
@@ -1536,7 +1536,7 @@ function ciniki_musicfestivals_main() {
 //                    'name-date-adjudicator-address':'Name<br/>Date: date<br/>Adjudicator: adjudicator<br/>Address: address', 
 //                    }},
                 'schedule-section-adjudicator-bios':{'label':'Section Adjudicator Bios', 'type':'toggle', 'default':'no', 
-                    'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x0800) ? 'no' : 'yes'; },
+//                    'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x0800) ? 'no' : 'yes'; },
                     'toggles':{
                         'no':'No',
                         'yes':'Yes',
@@ -5388,10 +5388,10 @@ function ciniki_musicfestivals_main() {
                     args['accompanist_schedule_date'] = this.sections.schedule_accompanists_tabs.selected;
                 }
             }
-            this.sections.schedule_divisions.num_cols = 2;
-            if( M.modFlagOn('ciniki.musicfestivals', 0x0800) ) {
-                this.sections.schedule_divisions.num_cols = 3;
-            }
+//            this.sections.schedule_divisions.num_cols = 2;
+//            if( M.modFlagOn('ciniki.musicfestivals', 0x0800) ) {
+//                this.sections.schedule_divisions.num_cols = 3;
+//            }
         } else if( this.menutabs.selected == 'provincials' ) {
             M.ciniki_musicfestivals_main.provincials.open(cb, this.festival_id);
             return;
@@ -11253,7 +11253,8 @@ function ciniki_musicfestivals_main() {
                 'flags':{'0':{'name':'Both'}, '9':{'name':'Live'}, '10':{'name':'Virtual'}},
                 },
             }},
-        'adjudicators':{'label':'Adjudicators', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
+// Adjudicators now always attached to divisions
+/*        'adjudicators':{'label':'Adjudicators', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
             'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x0800) ? 'no' : 'yes'; },
             'noData':'No Adjudicators',
             'menu':{
@@ -11265,7 +11266,7 @@ function ciniki_musicfestivals_main() {
             'deleteFn':function(s, i, d) {
                 return 'M.ciniki_musicfestivals_main.schedulesection.removeAdjudicator(' + d.id + ');';
                 },
-            },
+            }, */
         '_schedule':{'label':'Schedule', 'aside':'yes', 'fields':{
             'flags1':{'label':'Release Schedule to Competitors', 'type':'flagtoggle', 'bit':0x01, 'field':'flags'},
             'flags5':{'label':'Publish Schedule on Website', 'type':'flagtoggle', 'bit':0x10, 'field':'flags'},
@@ -11518,14 +11519,10 @@ function ciniki_musicfestivals_main() {
                 'visible':function() { return M.ciniki_musicfestivals_main.festival.settingValue('scheduling-division-shortnames') == 'manual' ? 'yes' : 'no'; },
                 },
             'division_date':{'label':'Date', 'required':'yes', 'type':'date'},
-//            'adjudicator_id':{'label':'Adjudicator', 'type':'select', 
-//                'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x0800); },
-//                'complex_options':{'name':'name', 'value':'id'}, 'options':{},
-//                },
             'location_id':{'label':'Location', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
             }},
         'adjudicators':{'label':'Adjudicators', 'type':'simplegrid', 'num_cols':1, 'aside':'yes',
-            'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x0800); },
+//            'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x0800); },
             'noData':'No Adjudicators',
             'menu':{
                 'add':{

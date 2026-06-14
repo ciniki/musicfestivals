@@ -69,6 +69,7 @@ function ciniki_musicfestivals_templates_provincialsAdjudicatorRecommendationShe
             . ") "
         . "INNER JOIN ciniki_musicfestival_adjudicatorrefs AS arefs ON ("
             . "adjudicators.id = arefs.adjudicator_id "
+            . "AND arefs.object = 'ciniki.musicfestivals.scheduledivision' "
             . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("

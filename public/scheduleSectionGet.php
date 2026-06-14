@@ -117,9 +117,10 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
         $schedulesection = $rc['schedulesections'][0];
 
         //
-        // Load the adjudicators
+        // Load the adjudicators 
+        // **NOTE:** moved to divisions
         //
-        $strsql = "SELECT arefs.id, "
+/*        $strsql = "SELECT arefs.id, "
             . "adjudicators.id AS adjudicator_id, "
             . "customers.display_name AS name "
             . "FROM ciniki_musicfestival_adjudicatorrefs AS arefs "
@@ -145,7 +146,7 @@ function ciniki_musicfestivals_scheduleSectionGet($ciniki) {
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1423', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
         }
-        $schedulesection['adjudicators'] = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
+        $schedulesection['adjudicators'] = isset($rc['adjudicators']) ? $rc['adjudicators'] : array(); */
     }
 
     $rsp = array('stat'=>'ok', 'schedulesection'=>$schedulesection);

@@ -266,10 +266,8 @@ function ciniki_musicfestivals_provincialsRecommendationGet($ciniki) {
                 . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
             . "WHERE arefs.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $recommendation['local_adjudicator_id']) . "' "
-            . "AND ("
-                    . "(arefs.object_id = ssections.id AND arefs.object = 'ciniki.musicfestivals.schedulesection') "
-                    . "OR (arefs.object_id = divisions.id AND arefs.object = 'ciniki.musicfestivals.scheduledivision') "
-                . ") "
+            . "AND arefs.object = 'ciniki.musicfestivals.scheduledivision' "
+            . "AND arefs.object_id = divisions.id "
             . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY registrations.display_name, sections.sequence, sections.name, categories.sequence, categories.name, classes.sequence, classes.name "
             . "";
