@@ -176,7 +176,7 @@ function ciniki_musicfestivals_accoladeAwardedSend(&$ciniki, $tnid, $args) {
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.users', 'user');
         if( $rc['stat'] != 'ok' || !isset($rc['user']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.495', 'msg'=>'Unable to find email information', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1643', 'msg'=>'Unable to find email information', 'err'=>$rc['err']));
         }
         $name = $rc['user']['name'];
         $email = $rc['user']['email'];

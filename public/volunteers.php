@@ -279,7 +279,7 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1144', 'msg'=>'Unable to load volunteers', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1619', 'msg'=>'Unable to load volunteers', 'err'=>$rc['err']));
         }
         $rsp['volunteers'] = isset($rc['volunteers']) ? $rc['volunteers'] : array();
     }
@@ -1076,7 +1076,7 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.volunteers.36', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1623', 'msg'=>'Unable to load categories', 'err'=>$rc['err']));
         }
         $rsp['resourcecategories'] = isset($rc['categories']) ? $rc['categories'] : array();
         array_unshift($rsp['resourcecategories'], array('label'=>'All', 'value'=>'All'));

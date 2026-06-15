@@ -157,7 +157,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             array('container'=>'shifts', 'fname'=>'id', 'fields'=>array('id', 'disciplines')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1479', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1630', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
         }
         $disciplines = isset($rc['shifts']) ? $rc['shifts'] : array();
     } elseif( isset($festival['volunteers-discipline-format']) && $festival['volunteers-discipline-format'] == 'syllabussection' ) {
@@ -208,7 +208,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             array('container'=>'shifts', 'fname'=>'id', 'fields'=>array('id', 'disciplines')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1479', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1631', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
         }
         $disciplines = isset($rc['shifts']) ? $rc['shifts'] : array();
     }

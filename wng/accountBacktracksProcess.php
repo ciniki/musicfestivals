@@ -127,7 +127,7 @@ function ciniki_musicfestivals_wng_accountBacktracksProcess(&$ciniki, $tnid, &$r
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.762', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1628', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
     }
     $sections = isset($rc['sections']) ? $rc['sections'] : array();
 

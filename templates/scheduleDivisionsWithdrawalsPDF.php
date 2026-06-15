@@ -17,14 +17,14 @@ function ciniki_musicfestivals_templates_scheduleDivisionsWithdrawalsPDF(&$cinik
     // Make sure festival_id was passed in
     //
     if( !isset($args['festival_id']) || $args['festival_id'] <= 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.727', 'msg'=>'No festival specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1634', 'msg'=>'No festival specified'));
     }
 
     //
     // Make sure schedule schedulesection_id was passed in
     //
     if( (!isset($args['schedulesection_id']) || $args['schedulesection_id'] <= 0) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.913', 'msg'=>'No section specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1635', 'msg'=>'No section specified'));
     }
 
     //

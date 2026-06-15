@@ -19,14 +19,14 @@ function ciniki_musicfestivals_templates_scheduleTimingsPDF(&$ciniki, $tnid, $ar
     // Make sure festival_id was passed in
     //
     if( !isset($args['festival_id']) || $args['festival_id'] <= 0 ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.727', 'msg'=>'No festival specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1632', 'msg'=>'No festival specified'));
     }
 
     //
     // Make sure schedule ssection_id was passed in
     //
     if( (!isset($args['ssection_id']) || $args['ssection_id'] <= 0) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.913', 'msg'=>'No section specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1633', 'msg'=>'No section specified'));
     }
 
     //

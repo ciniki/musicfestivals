@@ -117,7 +117,7 @@ function ciniki_musicfestivals_invoiceSearch($ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.564', 'msg'=>'Unable to load invoices', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1629', 'msg'=>'Unable to load invoices', 'err'=>$rc['err']));
     }
     $invoices = isset($rc['invoices']) ? $rc['invoices'] : array();
 

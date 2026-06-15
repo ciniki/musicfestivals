@@ -62,7 +62,7 @@ $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', a
         ),
     ));
 if( $rc['stat'] != 'ok' ) {
-    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1571', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
+    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1639', 'msg'=>'Unable to load ', 'err'=>$rc['err']));
 }
 $messages = isset($rc['messages']) ? $rc['messages'] : array();
 

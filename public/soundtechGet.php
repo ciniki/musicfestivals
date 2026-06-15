@@ -84,10 +84,10 @@ function ciniki_musicfestivals_soundtechGet($ciniki) {
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.15', 'msg'=>'Sound Technician not found', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1625', 'msg'=>'Sound Technician not found', 'err'=>$rc['err']));
         }
         if( !isset($rc['soundtechs'][0]) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.16', 'msg'=>'Unable to find Sound Technician'));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1626', 'msg'=>'Unable to find Sound Technician'));
         }
         $soundtech = $rc['soundtechs'][0];
     }

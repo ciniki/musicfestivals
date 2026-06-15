@@ -51,7 +51,7 @@ function ciniki_musicfestivals_soundtechDelete(&$ciniki) {
         return $rc;
     }
     if( !isset($rc['soundtech']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.12', 'msg'=>'Sound Technician does not exist.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.980', 'msg'=>'Sound Technician does not exist.'));
     }
     $soundtech = $rc['soundtech'];
 
@@ -65,10 +65,10 @@ function ciniki_musicfestivals_soundtechDelete(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectCheckUsed');
     $rc = ciniki_core_objectCheckUsed($ciniki, $args['tnid'], 'ciniki.musicfestivals.soundtech', $args['soundtech_id']);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.13', 'msg'=>'Unable to check if  is still being used.', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1617', 'msg'=>'Unable to check if  is still being used.', 'err'=>$rc['err']));
     }
     if( $rc['used'] != 'no' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.14', 'msg'=>'The Sound Technician is still in use. ' . $rc['msg']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1624', 'msg'=>'The Sound Technician is still in use. ' . $rc['msg']));
     }
 
     //

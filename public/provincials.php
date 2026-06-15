@@ -630,10 +630,10 @@ function ciniki_musicfestivals_provincials($ciniki) {
                 . "";
             $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1612', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1615', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
             }
             if( !isset($rc['festival']) ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1613', 'msg'=>'Unable to find requested festival'));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1616', 'msg'=>'Unable to find requested festival'));
             }
             $provincials_festival = $rc['festival'];
             

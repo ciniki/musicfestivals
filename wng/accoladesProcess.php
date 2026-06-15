@@ -520,7 +520,7 @@ function ciniki_musicfestivals_wng_accoladesProcess(&$ciniki, $tnid, &$request, 
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.343', 'msg'=>'Unable to load accolades', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1627', 'msg'=>'Unable to load accolades', 'err'=>$rc['err']));
         }
         $accolades = isset($rc['accolades']) ? $rc['accolades'] : array();
 

@@ -87,7 +87,7 @@ function ciniki_musicfestivals_volunteersExcel($ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1578', 'msg'=>'Unable to load volunteers', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1622', 'msg'=>'Unable to load volunteers', 'err'=>$rc['err']));
     }
     $volunteer_ids = isset($rc['volunteers']) ? $rc['volunteers'] : array();
 

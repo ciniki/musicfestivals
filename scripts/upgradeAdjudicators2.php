@@ -76,7 +76,7 @@ foreach($refs as $ref) {
             'object_id' => $division['id'],
             ], 0x04);
         if( $rc['stat'] != 'ok' && $rc['stat'] != 'exists' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1413', 'msg'=>'Unable to add the adjudicatorref', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1638', 'msg'=>'Unable to add the adjudicatorref', 'err'=>$rc['err']));
         }
     }
 }

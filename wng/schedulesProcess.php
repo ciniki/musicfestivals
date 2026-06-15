@@ -308,7 +308,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
                 )),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.738', 'msg'=>'Unable to load schedule_sections', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1636', 'msg'=>'Unable to load schedule_sections', 'err'=>$rc['err']));
         }
         $sections = isset($rc['sections']) ? $rc['sections'] : array();
         foreach($sections as $sid => $sc) {

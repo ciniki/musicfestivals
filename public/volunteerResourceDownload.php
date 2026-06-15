@@ -85,7 +85,7 @@ function ciniki_musicfestivals_volunteerResourceDownload($ciniki) {
     if( file_exists($storage_filename) ) {
         $binary_content = file_get_contents($storage_filename);
     } else {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1595', 'msg'=>'Unable to find file'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1618', 'msg'=>'Unable to find file'));
     }
 
     header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 

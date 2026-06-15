@@ -24,10 +24,10 @@ function ciniki_musicfestivals_invoiceCompetitorFeesUpdate(&$ciniki, $tnid, $arg
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'invoice');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.860', 'msg'=>'Unable to load invoice', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1644', 'msg'=>'Unable to load invoice', 'err'=>$rc['err']));
     }
     if( !isset($rc['invoice']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.861', 'msg'=>'Unable to find requested invoice'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1645', 'msg'=>'Unable to find requested invoice'));
     }
     $invoice = $rc['invoice'];
 
@@ -57,7 +57,7 @@ function ciniki_musicfestivals_invoiceCompetitorFeesUpdate(&$ciniki, $tnid, $arg
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'item');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.862', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1646', 'msg'=>'Unable to load item', 'err'=>$rc['err']));
         }
         if( isset($rc['item']) ) {
             $item = $rc['item'];
@@ -69,7 +69,7 @@ function ciniki_musicfestivals_invoiceCompetitorFeesUpdate(&$ciniki, $tnid, $arg
                     'unit_amount' => $competitor_fee,
                     ));
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.863', 'msg'=>'Unable to update the admin fee', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1647', 'msg'=>'Unable to update the admin fee', 'err'=>$rc['err']));
                 }
                 return array('stat'=>'ok', 'updated'=>'yes');
             }
@@ -92,7 +92,7 @@ function ciniki_musicfestivals_invoiceCompetitorFeesUpdate(&$ciniki, $tnid, $arg
                 'unit_discount_percentage' => 0,
                 ));
             if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.864', 'msg'=>'Unable to add the admin fee', 'err'=>$rc['err']));
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1648', 'msg'=>'Unable to add the admin fee', 'err'=>$rc['err']));
             }
             return array('stat'=>'ok', 'added'=>'yes');
         }

@@ -73,7 +73,7 @@ function ciniki_musicfestivals_accoladeEmailSend(&$ciniki, $tnid, $args) {
                     'customer_id' => $winner[$field],
                     ]);
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1508', 'msg'=>'Unable to open customer', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1641', 'msg'=>'Unable to open customer', 'err'=>$rc['err']));
                 }
                 if( isset($rc['customer']['emails']) ) {
                     foreach($rc['customer']['emails'] as $email) {
@@ -107,7 +107,7 @@ function ciniki_musicfestivals_accoladeEmailSend(&$ciniki, $tnid, $args) {
                     . "";
                 $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'competitor');
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1564', 'msg'=>'Unable to load competitor', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1642', 'msg'=>'Unable to load competitor', 'err'=>$rc['err']));
                 }
                 if( isset($rc['competitor']['email']) && $rc['competitor']['email'] != '' ) {
                     if( !isset($emails[$rc['competitor']['email']]) ) {
@@ -169,7 +169,7 @@ function ciniki_musicfestivals_accoladeEmailSend(&$ciniki, $tnid, $args) {
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.users', 'user');
         if( $rc['stat'] != 'ok' || !isset($rc['user']) ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.495', 'msg'=>'Unable to find email information', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1640', 'msg'=>'Unable to find email information', 'err'=>$rc['err']));
         }
         $name = $rc['user']['name'];
         $email = $rc['user']['email'];
