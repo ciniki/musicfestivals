@@ -20309,14 +20309,14 @@ function ciniki_musicfestivals_main() {
             },
         'entries':{'label':'Recommendations', 'type':'simplegrid', 'num_cols':5,
             'visible':function() { return ['entries','recommendations'].indexOf(M.ciniki_musicfestivals_main.provincials.sections._tabs.selected) >= 0 ? 'yes' : 'no'; },
-            'headerValues':['Provincials Class', 'Name', 'Position', 'Mark', 'Status'],
+            'headerValues':['Provincials Class', 'Position', 'Name', 'Mark', 'Status'],
             'headerClasses':['', '', '', '', 'alignright', ''],
             'cellClasses':['', '', '', '', 'multiline alignright', ''],
             'sortable':'yes',
             'sortTypes':['text', 'text', 'text', 'text', 'text'],
             'noData':'No Recommendations',
             'menu':{
-                'visible':function() { return (M.ciniki_musicfestivals_main.provincials.data.num_approved > 0 || M.ciniki_musicfestivals_main.provincials.data.num_accepted > 0 || (M.ciniki_musicfestivals_main.provincials.data.num_instructionssent > 0 && M.ciniki_musicfestivals_main.provincials.sections._tabs.selected == 'entries') ? 'yes' : 'no'); },
+//                'visible':function() { return (M.ciniki_musicfestivals_main.provincials.data.num_approved > 0 || M.ciniki_musicfestivals_main.provincials.data.num_accepted > 0 || (M.ciniki_musicfestivals_main.provincials.data.num_instructionssent > 0 && M.ciniki_musicfestivals_main.provincials.sections._tabs.selected == 'entries') ? 'yes' : 'no'); },
                 'emailinvite':{
                     'label':'Send Invite Emails',
                     'visible':function() { return M.ciniki_musicfestivals_main.provincials.data.num_approved > 0 ? 'yes' : 'no'; },
@@ -20331,6 +20331,14 @@ function ciniki_musicfestivals_main() {
                     'label':'Send Registration Reminder Emails',
                     'visible':function() { return M.ciniki_musicfestivals_main.provincials.data.num_instructionssent > 0 && M.ciniki_musicfestivals_main.provincials.sections._tabs.selected == 'entries' ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.provincials.sendReminderEmail();',
+                    },
+                'excel':{
+                    'label':'Download Excel',
+                    'fn':'M.ciniki_musicfestivals_main.provincials.download("excel");',
+                    },
+                'pdf':{
+                    'label':'Download PDF',
+                    'fn':'M.ciniki_musicfestivals_main.provincials.download("pdf");',
                     },
                 },
             },
@@ -20388,9 +20396,9 @@ function ciniki_musicfestivals_main() {
         }
         if( s == 'entries' || s == 'entry_search' ) {
             switch(j) {
-                case 0: return d.class_name;
-                case 1: return d.name;
-                case 2: return d.position_text;
+                case 0: return d['class'];
+                case 1: return d.position_text;
+                case 2: return d.name;
                 case 3: return d.mark;
                 case 4: 
                     if( d.status == 35 ) { 
@@ -20542,6 +20550,24 @@ function ciniki_musicfestivals_main() {
             'results':'yes',
             'output':f,
             };
+        M.api.openFile('ciniki.musicfestivals.provincials', args);
+    }
+    this.provincials.download = function(format) {
+        this.popupMenuClose('entries');
+        var args = {
+            'tnid':M.curTenantID,
+            'festival_id':this.festival_id,
+            'entries':'yes',
+            'output':format,
+            };
+        if( this.sections._tabs.selected == 'entries' ) {
+            args['section_id'] = this.section_id;
+            args['class_id'] = this.class_id;
+            args['status'] = this.status;
+        } else if( this.sections._tabs.selected == 'recommendations' ) {
+            args['section_id'] = this.section_id;
+            args['recommendation_id'] = this.recommendation_id;
+        }
         M.api.openFile('ciniki.musicfestivals.provincials', args);
     }
     this.provincials.open = function(cb, fid) {

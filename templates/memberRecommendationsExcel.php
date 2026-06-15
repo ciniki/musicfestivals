@@ -30,7 +30,7 @@ function ciniki_musicfestivals_templates_memberRecommendationsExcel(&$ciniki, $t
         $tenant_details = array();
     }
 
-    $filename = 'Results';
+    $filename = 'Provincial Recommendations';
 
     //
     // Load tenant settings
@@ -77,8 +77,8 @@ function ciniki_musicfestivals_templates_memberRecommendationsExcel(&$ciniki, $t
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Position', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Status', false);
-    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Mark', false);
     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Adjudicator', false);
+    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Mark', false);
     $objPHPExcelWorksheet->getStyle('A1:F1')->getFont()->setBold(true);
     $row++;
 
@@ -86,34 +86,65 @@ function ciniki_musicfestivals_templates_memberRecommendationsExcel(&$ciniki, $t
         
         $col = 0;
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $rec['class'], false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $rec['position'], false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $rec['position_text'], false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $rec['name'], false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $rec['status_text'], false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $rec['mark'], false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $rec['status_text'], false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $rec['adjudicator_name'], false);
 
+
         $color = '';
-        if( $rec['cssclass'] == 'statusyellow' ) {
-            $color = 'FFFDC5';
-        } elseif( $rec['cssclass'] == 'statusorange' ) {
-            $color = 'FFEFDD';
-        } elseif( $rec['cssclass'] == 'statusgreen' ) {
-            $color = 'DDFFDD';
-        } elseif( $rec['cssclass'] == 'statusred' ) {
-            $color = 'FFDDDD';
-        } elseif( $rec['cssclass'] == 'statuspurple' ) {
-            $color = 'F0DDFF';
-        } elseif( $rec['cssclass'] == 'statusblue' ) {
-            $color = 'DDF1FF';
-        } elseif( $rec['cssclass'] == 'statusgrey' ) {
-            $color = 'EEEEEE';
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'recommendationEntryStatusColour');
+        $rc = ciniki_musicfestivals_recommendationEntryStatusColour($ciniki, $tnid, $rec);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        } 
+        $fade = 'no';
+        if( isset($rc['fill']) ) {
+            $color = sprintf("%02X%02x%02X", $rc['fill'][0], $rc['fill'][1], $rc['fill'][2]);
         }
-        if( $color != '' ) {
+        if( isset($rc['fade']) ) {
+            $color = sprintf("%02X%02x%02X", $rc['fade'][0], $rc['fade'][1], $rc['fade'][2]);
+            $fade = 'yes';
+        }
+        $strike = 'no';
+        if( isset($rc['strike']) && $rc['strike'] == 'yes' ) {
+            $strike = 'yes';
+        }
+
+/*        if( str_contains($rec['cssclass'], 'statuslinethrough') ) {
+            $strike = 'yes';
+        }
+        if( str_contains($rec['cssclass'], 'statusyellow') ) {
+            $color = 'FFFDC5';
+        } elseif( str_contains($rec['cssclass'], 'statusorange') ) {
+            $color = 'FFEFDD';
+        } elseif( str_contains($rec['cssclass'], 'statusgreen') ) {
+            $color = 'DDFFDD';
+        } elseif( str_contains($rec['cssclass'], 'statusred') ) {
+            $color = 'FFDDDD';
+        } elseif( str_contains($rec['cssclass'], 'statuspurple') ) {
+            $color = 'F0DDFF';
+        } elseif( str_contains($rec['cssclass'], 'statusblue') ) {
+            $color = 'DDF1FF';
+        } elseif( str_contains($rec['cssclass'], 'statusgrey') ) {
+            $color = 'EEEEEE';
+        } */
+        if( $color != '' && $fade == 'no' ) {
             $objPHPExcelWorksheet->getStyle("A{$row}:F{$row}")->applyFromArray(
                 array('fill'=>array(
                     'type' => PHPExcel_Style_Fill::FILL_SOLID, 
                     'color' => array('rgb' => $color),
                     )));
+        } elseif( $color != '' && $fade == 'yes' ) {
+            $objPHPExcelWorksheet->getStyle("A{$row}:A{$row}")->applyFromArray(
+                array('fill'=>array(
+                    'type' => PHPExcel_Style_Fill::FILL_SOLID, 
+                    'color' => array('rgb' => $color),
+                    )));
+        }
+        if( $strike == 'yes' ) {
+            $objPHPExcelWorksheet->getStyle("A{$row}:F{$row}")->getFont()->setStrikethrough(true);
         }
         $row++;
     }

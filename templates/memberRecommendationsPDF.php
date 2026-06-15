@@ -108,13 +108,14 @@ function ciniki_musicfestivals_templates_memberRecommendationsPDF(&$ciniki, $tni
                 }
                 $image_ratio = $width/$height;
                 $img_width = 60;
-                $available_ratio = $img_width/$this->header_height;
+                $available_ratio = $img_width/($this->header_height-8);
                 // Check if the ratio of the image will make it too large for the height,
                 // and scaled based on either height or width.
                 if( $available_ratio < $image_ratio ) {
                     $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, $img_width, 0, '', '', 'L', 2, '150');
+//                            $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, $this->header_height-8, '', '', 'L', 2, '150', '', false, false, 0, true);
                 } else {
-                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 12, 0, $this->header_height-13, '', '', 'L', 2, '150');
+                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-8, '', '', 'L', 2, '150');
                 }
             }
 
@@ -144,13 +145,26 @@ function ciniki_musicfestivals_templates_memberRecommendationsPDF(&$ciniki, $tni
             $this->SetY(-15);
             $this->SetFont('helvetica', '', 10);
             $this->SetDrawColor(128);
-            $this->setFillColor(255, 255, 255); $this->Cell(28, 6, 'Recommended', 1, false, 'C', 1);
-            $this->setFillColor(255, 253, 197); $this->Cell(28, 6, 'Alternate', 1, false, 'C', 1);
+/*            $this->setFillColor(255, 255, 255); $this->Cell(28, 6, 'Recommended', 1, false, 'C', 1);
+            $this->setFillColor(221, 241, 255); $this->Cell(28, 6, 'Issues', 1, false, 'C', 1);
+            $this->setFillColor(255, 239, 221); $this->Cell(28, 6, 'Approved', 1, false, 'C', 1);
+            $this->setFillColor(255, 239, 221); $this->Cell(28, 6, 'Invited', 1, false, 'C', 1);
+            $this->setFillColor(206, 255, 248); $this->Cell(28, 6, 'Accepted', 1, false, 'C', 1);
+            $this->setFillColor(206, 255, 248); $this->Cell(28, 6, 'Instr. Sent', 1, false, 'C', 1);
+            $this->setFillColor(221, 255, 221); $this->Cell(28, 6, 'Registered', 1, false, 'C', 1);
+            $this->setFillColor(255, 221, 221); $this->Cell(28, 6, 'Turned Down', 1, false, 'C', 1);
+            $this->setFillColor(240, 221, 255); $this->Cell(28, 6, 'Already Rec', 1, false, 'C', 1);
+            $this->setFillColor(238, 238, 238); $this->Cell(28, 6, 'Ineligible', 1, false, 'C', 1);
+            $this->SetFont('helvetica', 'D', 10);
+            $this->setFillColor(255, 255, 255); $this->Cell(28, 6, 'Former', 1, false, 'C', 1);
+
+            $this->setFillColor(221, 241, 255); $this->Cell(28, 6, 'Alternate', 1, false, 'C', 1);
             $this->setFillColor(255, 239, 221); $this->Cell(28, 6, 'Accepted', 1, false, 'C', 1);
             $this->setFillColor(221, 255, 221); $this->Cell(28, 6, 'Registered', 1, false, 'C', 1);
             $this->setFillColor(255, 221, 221); $this->Cell(28, 6, 'Turned Down', 1, false, 'C', 1);
             $this->setFillColor(240, 221, 255); $this->Cell(28, 6, 'Duplicate', 1, false, 'C', 1);
-            $this->setFillColor(221, 221, 221); $this->Cell(28, 6, 'Expired', 1, false, 'C', 1);
+            $this->setFillColor(221, 221, 221); $this->Cell(28, 6, 'Expired', 1, false, 'C', 1); */
+            $this->Cell(190, 6, '', 0, false, 'L', 0, '', 0, false, 'T', 'M');
             $this->Cell(53, 6, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
         } 
         public function labelValue($w1, $label, $w2, $value) {
@@ -258,7 +272,7 @@ function ciniki_musicfestivals_templates_memberRecommendationsPDF(&$ciniki, $tni
     $pdf->MultiCell($w[1], 0, 'Position', 1, 'L', $fill, 0);
     $pdf->MultiCell($w[2], 0, 'Competitor', 1, 'L', $fill, 0);
     $pdf->MultiCell($w[3], 0, 'Mark', 1, 'L', $fill, 0);
-    $pdf->MultiCell($w[4], 0, 'Adjudicator', 1, 'L', $fill, 1);
+    $pdf->MultiCell($w[4], 0, 'Status', 1, 'L', $fill, 1);
     $fill = 0;
     $pdf->setFont('helvetica','');
 
@@ -270,8 +284,8 @@ function ciniki_musicfestivals_templates_memberRecommendationsPDF(&$ciniki, $tni
         // Calculate the height of recommendation
         //
         $rec['lh'] = $pdf->getStringHeight($w[0], $rec['class']);
-        if( $pdf->getStringHeight($w[1], $rec['position']) > $rec['lh'] ) {
-            $rec['lh'] = $pdf->getStringHeight($w[1], $rec['position']);
+        if( $pdf->getStringHeight($w[1], $rec['position_text']) > $rec['lh'] ) {
+            $rec['lh'] = $pdf->getStringHeight($w[1], $rec['position_text']);
         }
         if( $pdf->getStringHeight($w[2], $rec['name']) > $rec['lh'] ) {
             $rec['lh'] = $pdf->getStringHeight($w[2], $rec['name']);
@@ -279,8 +293,13 @@ function ciniki_musicfestivals_templates_memberRecommendationsPDF(&$ciniki, $tni
         if( $pdf->getStringHeight($w[2], $rec['mark']) > $rec['lh'] ) {
             $rec['lh'] = $pdf->getStringHeight($w[3], $rec['mark']);
         }
-        if( $pdf->getStringHeight($w[2], $rec['adjudicator_name']) > $rec['lh'] ) {
-            $rec['lh'] = $pdf->getStringHeight($w[4], $rec['adjudicator_name']);
+/*        if( $rec['status'] == 35 ) {
+            $rec['status_text'] .= ' - ' . $rec['date_invited'];
+        } elseif( $rec['status'] == 50 ) {
+            $rec['status_text'] .= ' - ' . $rec['reg_status_text'];
+        }  */
+        if( $pdf->getStringHeight($w[2], $rec['status_text']) > $rec['lh'] ) {
+            $rec['lh'] = $pdf->getStringHeight($w[4], $rec['status_text']);
         }
 
         if( $pdf->GetY() > ($pdf->getPageHeight() - $rec['lh'] - 25) ) {
@@ -292,13 +311,32 @@ function ciniki_musicfestivals_templates_memberRecommendationsPDF(&$ciniki, $tni
             $pdf->MultiCell($w[1], 0, 'Position', 1, 'R', $fill, 0);
             $pdf->MultiCell($w[2], 0, 'Competitor', 1, 'L', $fill, 0);
             $pdf->MultiCell($w[3], 0, 'Mark', 1, 'C', $fill, 0);
-            $pdf->MultiCell($w[4], 0, 'Adjudicator', 1, 'L', $fill, 1);
+            $pdf->MultiCell($w[4], 0, 'Status', 1, 'L', $fill, 1);
             $fill = 0;
             $pdf->setFont('helvetica','');
         }
 
+
         $pdf->setFillColor(255, 255, 255);
-        if( $rec['cssclass'] == 'statusyellow' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'recommendationEntryStatusColour');
+        $rc = ciniki_musicfestivals_recommendationEntryStatusColour($ciniki, $tnid, $rec);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        } 
+        $fade = 'no';
+        if( isset($rc['fill']) ) {
+            $pdf->setFillColorArray($rc['fill']);
+        }
+        if( isset($rc['fade']) ) {
+            $pdf->setFillColorArray($rc['fade']);
+            $fade = 'yes';
+        }
+        $pdf->setFont('helvetica','');
+        if( isset($rc['strike']) && $rc['strike'] == 'yes' ) {
+            $pdf->setFont('helvetica','D');
+        }
+
+/*        if( $rec['cssclass'] == 'statusyellow' ) {
             $pdf->setFillColor(255, 253, 197);
         } elseif( $rec['cssclass'] == 'statusorange' ) {
             $pdf->setFillColor(255, 239, 221);
@@ -312,13 +350,16 @@ function ciniki_musicfestivals_templates_memberRecommendationsPDF(&$ciniki, $tni
             $pdf->setFillColor(221, 241, 255);
         } elseif( $rec['cssclass'] == 'statusgrey' ) {
             $pdf->setFillColor(221, 221, 221);
-        }
+        } */
         $fill = 1;
         $pdf->MultiCell($w[0], $rec['lh'], $rec['class'], 1, 'L', $fill, 0);
-        $pdf->MultiCell($w[1], $rec['lh'], $rec['position'], 1, 'R', $fill, 0);
+        if( $fade == 'yes' ) {
+            $fill = 0;
+        }
+        $pdf->MultiCell($w[1], $rec['lh'], $rec['position_text'], 1, 'R', $fill, 0);
         $pdf->MultiCell($w[2], $rec['lh'], $rec['name'], 1, 'L', $fill, 0);
         $pdf->MultiCell($w[3], $rec['lh'], $rec['mark'], 1, 'C', $fill, 0);
-        $pdf->MultiCell($w[4], $rec['lh'], $rec['adjudicator_name'], 1, 'L', $fill, 1);
+        $pdf->MultiCell($w[4], $rec['lh'], $rec['status_text'], 1, 'L', $fill, 1);
 //        $fill = !$fill;
     }
 

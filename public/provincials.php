@@ -87,6 +87,7 @@ function ciniki_musicfestivals_provincials($ciniki) {
     $provincials_festival_id = $festival['provincial-festival-id'];
     $member = $rc['member'];
     $provincials_tnid = $member['tnid'];
+    $provincials_name = $member['provincials_name'];
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalMaps');
     $rc = ciniki_musicfestivals_festivalMaps($ciniki, $provincials_tnid, $provincials_festival_id);
@@ -352,9 +353,11 @@ function ciniki_musicfestivals_provincials($ciniki) {
             . "entries.local_reg_id, "
             . "entries.dt_invite_sent, "
             . "recommendations.date_submitted, "
+            . "recommendations.adjudicator_name, "
             . "sections.name AS section_name, "
             . "categories.name AS category_name, "
-            . "CONCAT_WS(' - ', classes.code, classes.name) AS class_name, "
+            . "classes.name AS class_name, "
+            . "CONCAT_WS(' - ', classes.code, classes.name) AS class, "
             . "IFNULL(registrations.status, '') AS reg_status, "
             . "IFNULL(registrations.status, '') AS reg_status_text "
             . "FROM ciniki_musicfestival_recommendations AS recommendations "
@@ -385,21 +388,22 @@ function ciniki_musicfestivals_provincials($ciniki) {
             . $recommendation_sql
             . $section_sql
             . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
-            . "ORDER BY recommendations.date_submitted DESC, sections.sequence, sections.name, categories.sequence, categories.name, classes.sequence, classes.name, entries.position "
+//            . "ORDER BY recommendations.date_submitted DESC, sections.sequence, sections.name, categories.sequence, categories.name, classes.sequence, classes.name, entries.position "
+            . "ORDER BY classes.code, classes.name, entries.position, entries.name "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'entries', 'fname'=>'id', 
                 'fields'=>array('id', 'recommendation_id', 'status', 'status_text', 'name', 'position', 'position_text', 'mark', 
                     'provincials_reg_id', 'local_reg_id', 'date_submitted', 'date_invited'=>'dt_invite_sent',
-                    'section_name', 'category_name', 'class_name', 'reg_status', 'reg_status_text',
+                    'section_name', 'category_name', 'class', 'class_name', 'reg_status', 'reg_status_text', 'adjudicator_name',
                     ),
                 'utctotz'=>array(
                     'date_invited' => array('timezone'=>$intl_timezone, 'format'=>'M j - g:i A'),
                     ),
                 'maps'=>array(
                     'status_text'=>$maps['recommendationentry']['status'],
-                    'position_text'=>$maps['recommendationentry']['position'],
+                    'position_text'=>$maps['recommendationentry']['position_shortname'],
                     'reg_status_text'=>$provincials_maps['registration']['status'],
                     ),
                 ),
@@ -422,6 +426,69 @@ function ciniki_musicfestivals_provincials($ciniki) {
             } elseif( $entry['status'] == 45 && $entry['position'] < 100 ) {
                 $rsp['num_instructionssent']++;
             }
+            if( isset($args['output']) && in_array($args['output'], ['excel', 'pdf']) ) {
+                if( $entry['status'] == 35 ) {
+                    $rsp['entries'][$eid]['status_text'] .= ' - ' . $entry['date_invited'];
+                } elseif( $entry['status'] == 50 ) {
+                    $rsp['entries'][$eid]['status_text'] .= ' - ' . $entry['reg_status_text'];
+                }
+            }
+        }
+        if( isset($args['output']) && $args['output'] == 'excel' ) {
+            //
+            // Generate XLS of recommendations
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'memberRecommendationsExcel');
+            $rc = ciniki_musicfestivals_templates_memberRecommendationsExcel($ciniki, $provincials_tnid, [
+                'festival_id' => $provincials_festival_id,
+                'member_id' => $member['id'],
+                'recommendations' => $rsp['entries'],
+                ]);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+
+            //
+            // Output the excel file
+            //
+            $filename = "{$member['name']} - {$festival['name']} - Recommendations";
+            header('Content-Type: application/vnd.ms-excel');
+            header('Content-Disposition: attachment;filename="' . $filename . '.xls"');
+            header('Cache-Control: max-age=0');
+            
+            $objWriter = PHPExcel_IOFactory::createWriter($rc['excel'], 'Excel5');
+            $objWriter->save('php://output');
+
+            return array('stat'=>'exit');
+        } 
+        elseif( isset($args['output']) && $args['output'] == 'pdf' ) {
+            //
+            // Generate PDF of recommendations
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'memberRecommendationsPDF');
+            $rc = ciniki_musicfestivals_templates_memberRecommendationsPDF($ciniki, $provincials_tnid, [
+                'festival_id' => $provincials_festival_id,
+                'title' => $member['name'],
+                'subtitle' => $member['provincials_name'] . ' - Recommendations',
+                'recommendations' => $rsp['entries'],
+                ]);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+
+            //
+            // Output the pdf file
+            //
+            $filename = "{$member['name']} - {$festival['name']} - Recommendations";
+            header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+            header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+            header('Cache-Control: no-cache, must-revalidate');
+            header('Pragma: no-cache');
+            header('Content-Type: application/pdf');
+            header('Cache-Control: max-age=0');
+
+            $rc['pdf']->Output($filename . '.pdf', 'I');
+            return array('stat'=>'exit');
         }
     }
 

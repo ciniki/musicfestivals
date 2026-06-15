@@ -26,6 +26,23 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
     }
     $maps = $rc['maps'];
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalMaps');
+    $rc = ciniki_musicfestivals_festivalMaps($ciniki, $tnid, $args['festival']['id']);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $provincials_maps = $rc['maps'];
+
+    //
+    // Load the tenant settings
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
+    $rc = ciniki_tenants_intlSettings($ciniki, $tnid);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $intl_timezone = $rc['settings']['intl-default-timezone'];
+    
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
@@ -50,11 +67,15 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
     $strsql = "SELECT entries.id, "
         . "CONCAT_WS(' - ', classes.code, classes.name) AS class, "
         . "entries.position, "
+        . "entries.position AS position_text, "
         . "entries.name, "
         . "entries.mark, "
         . "entries.status, "
         . "entries.status AS status_text, "
-        . "recommendations.adjudicator_name "
+        . "entries.dt_invite_sent, "
+        . "recommendations.adjudicator_name, "
+        . "IFNULL(registrations.status, '') AS reg_status, "
+        . "IFNULL(registrations.status, '') AS reg_status_text "
         . "FROM ciniki_musicfestival_recommendations AS recommendations "
         . "INNER JOIN ciniki_musicfestival_recommendation_entries AS entries ON ("
             . "recommendations.id = entries.recommendation_id "
@@ -64,18 +85,28 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
             . "entries.class_id = classes.id "
             . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
+        . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
+            . "entries.provincials_reg_id = registrations.id "
+            . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
         . "WHERE recommendations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member']['id']) . "' "
         . "AND recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival']['id']) . "' "
         . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "ORDER BY classes.name, entries.position, entries.name "
+        . "ORDER BY classes.code, classes.name, entries.position, entries.name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'recommendations', 'fname'=>'id', 
-            'fields'=>array( 'id', 'class', 'position', 'name', 'status', 'status_text', 'mark', 'adjudicator_name'),
+            'fields'=>array( 'id', 'class', 'position', 'position_text', 'name', 'status', 'status_text', 
+                'reg_status', 'reg_status_text', 'date_invited'=>'dt_invite_sent',
+                'mark', 'adjudicator_name'),
+            'utctotz'=>array(
+                'date_invited' => array('timezone'=>$intl_timezone, 'format'=>'M j - g:i A'),
+                ),
             'maps'=>array(
-                'position'=>$maps['recommendationentry']['position'],
+                'position_text'=>$maps['recommendationentry']['position_shortname'],
                 'status_text'=>$maps['recommendationentry']['status'],
+                'reg_status_text'=>$provincials_maps['registration']['status'],
                 ),
             ),
         ));
@@ -83,17 +114,24 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.984', 'msg'=>'Unable to load recommendations', 'err'=>$rc['err']));
     }
     $recommendations = isset($rc['recommendations']) ? $rc['recommendations'] : array();
-    foreach($recommendations AS $rid => $rec) {
-        if( $rec['position'] > 100 && $rec['position'] < 600 ) {
-            $recommendations[$rid]['status_text'] .= ' - Alternate';
-        }
-    }
-
     //
     // Setup background row colours
     //
     foreach($recommendations as $rid => $recommendation) {
-        $recommendations[$rid]['cssclass'] = 'statuswhite';
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'recommendationEntryStatusColour');
+        $rc = ciniki_musicfestivals_recommendationEntryStatusColour($ciniki, $tnid, $recommendation);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $recommendations[$rid]['cssclass'] = $rc['colour'];
+
+        if( $recommendation['status'] == 35 ) {
+            $recommendations[$rid]['status_text'] .= ' - ' . $recommendation['date_invited'];
+        } elseif( $recommendation['status'] == 50 ) {
+            $recommendations[$rid]['status_text'] .= ' - ' . $recommendation['reg_status_text'];
+        } 
+
+/*        $recommendations[$rid]['cssclass'] = 'statuswhite';
         if( $recommendation['status'] == 10 ) {
             if( preg_match("/Alt/", $recommendation['position']) ) {
                 $recommendations[$rid]['cssclass'] = 'statusyellow';
@@ -108,7 +146,7 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
             $recommendations[$rid]['cssclass'] = 'statuspurple';
         } elseif( $recommendation['status'] == 90 ) {
             $recommendations[$rid]['cssclass'] = 'statusgrey';
-        }
+        } */
     }
 
     $blocks[] = array(
@@ -173,7 +211,7 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
             'recommendations' => $recommendations,
             ]);
         if( $rc['stat'] != 'ok' ) {
-            error_log('ERR: Unable to generate local festival recommendations excel');
+            error_log('ERR: Unable to generate local festival recommendations pdf');
             $blocks[] = array(
                 'type' => 'msg', 
                 'level' => 'error',
@@ -183,7 +221,7 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
         }
 
         //
-        // Output the excel file
+        // Output the pdf file
         //
         $filename = "{$args['member']['name']} - {$args['festival']['name']} - Recommendations";
         header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
@@ -203,10 +241,10 @@ function ciniki_musicfestivals_wng_accountMemberRecommendationsProcess(&$ciniki,
         'class' => 'fold-at-50',
         'columns' => array(
             array('label'=>'Class', 'fold-label'=>'Class: ', 'field'=>'class'),
-            array('label'=>'Position', 'fold-label'=>'Position: ', 'field'=>'position'),
+            array('label'=>'Position', 'fold-label'=>'Position: ', 'field'=>'position_text'),
             array('label'=>'Competitor', 'field'=>'name'),
-            array('label'=>'Status', 'field'=>'status_text'),
             array('label'=>'Mark', 'fold-label'=>'Mark: ', 'field'=>'mark'),
+            array('label'=>'Status', 'field'=>'status_text'),
             array('label'=>'Adjudicator', 'fold-label'=>'Adjudicator: ', 'field'=>'adjudicator_name'),
             ),
         'rows' => $recommendations,
