@@ -133,11 +133,25 @@ function ciniki_musicfestivals_wng_approvedTitlesProcess(&$ciniki, $tnid, &$requ
     }
 
     if( !isset($s['search']) || $s['search'] == 'yes' ) {
-        $blocks[] = [
-            'type' => 'tablefilter',
-            'selector' => '.musicfestivals-approved-titles tbody > tr',
-            'callback' => 'showAllLists',
+        $api_args = [
+            'list-ids' => $list_ids,
+            'baseurl' => $request['ssl_domain_base_url'] . $request['page']['path'],
             ];
+        $blocks[] = [
+            'type' => 'livesearch',
+            'label' => 'Search',
+            'id' => $section['sequence'],
+            'api-search-url' => $request['api_url'] . '/ciniki/musicfestivals/titleListSearch',
+            'api-args' => $api_args,
+            ];
+
+        // OLD search
+//        $blocks[] = [
+//            'type' => 'tablefilter',
+//            'selector' => '.musicfestivals-approved-titles tbody > tr',
+//            'callback' => 'showAllLists',
+//            ];
+
     }
 
     //
@@ -225,17 +239,17 @@ function ciniki_musicfestivals_wng_approvedTitlesProcess(&$ciniki, $tnid, &$requ
                         . "C.aC(e,'hidden');"
                     . "}"
                 . "} "
-            . '};'
-            . 'showAllLists = function(v) {'
-                . "for(var i in lists) {"
-                    . "var e=C.gE(lists[i]).parentNode.parentNode;"
-                    . "if(v!=''){"
-                        . "C.rC(e,'hidden');"
-                    . "}else{"
-                        . "C.aC(e,'hidden');"
-                    . "}"
-                . "}"
             . '};';
+//            . 'showAllLists = function(v) {'
+//                . "for(var i in lists) {"
+//                    . "var e=C.gE(lists[i]).parentNode.parentNode;"
+//                    . "if(v!=''){"
+//                        . "C.rC(e,'hidden');"
+//                    . "}else{"
+//                        . "C.aC(e,'hidden');"
+//                    . "}"
+//                . "}"
+//            . '};';
         $blocks[] = [
             'type' => 'buttons',
             'class' => 'aligncenter',

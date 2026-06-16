@@ -45,6 +45,12 @@ function ciniki_musicfestivals_wng_api(&$ciniki, $tnid, &$request) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'apiScheduleSearch');
         return ciniki_musicfestivals_wng_apiScheduleSearch($ciniki, $tnid, $request);
     }
+    elseif( isset($request['uri_split'][$request['cur_uri_pos']]) 
+        && $request['uri_split'][$request['cur_uri_pos']] == 'titleListSearch' 
+        ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'apiTitleListSearch');
+        return ciniki_musicfestivals_wng_apiTitleListSearch($ciniki, $tnid, $request);
+    }
 
     return array('stat'=>'ok');
 }

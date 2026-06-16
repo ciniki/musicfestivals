@@ -102,6 +102,25 @@
 #                           0x40000000 - 
 #                           0x80000000 - 
 #
+# listflags:            The options for how to connect to approved titles
+#
+#                           0x01 - Title 1 - Search Lists
+#                           0x02 - Title 1 - Require from Lists
+#                           0x04 - Title 2 - Search Lists
+#                           0x08 - Title 2 - Require from Lists
+#                           0x10 - Title 3 - Search Lists
+#                           0x20 - Title 3 - Require from Lists
+#                           0x40 - Title 4 - Search Lists
+#                           0x80 - Title 4 - Require from Lists
+#                           0x0100 - Title 5 - Search Lists
+#                           0x0200 - Title 5 - Require from Lists
+#                           0x0400 - Title 6 - Search Lists
+#                           0x0800 - Title 6 - Require from Lists
+#                           0x1000 - Title 7 - Search Lists
+#                           0x2000 - Title 7 - Require from Lists
+#                           0x4000 - Title 8 - Search Lists
+#                           0x8000 - Title 8 - Require from Lists
+#
 # earlybird_fee:        The earlybird fee for the class.
 # fee:                  The fee for the class.
 # virtual_fee:          The fee for the class.

@@ -991,6 +991,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'movements' => array('name'=>'Movements/Musical', 'default'=>''),
             'composer' => array('name'=>'Composer', 'default'=>''),
             'source_type' => array('name'=>'Source Type', 'default'=>''),
+            'keywords'=>array('name'=>'Keywords', 'default'=>''),
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );

@@ -72,15 +72,15 @@ function ciniki_musicfestivals_titleGet($ciniki) {
     // Get the details for an existing Approved Title
     //
     else {
-        $strsql = "SELECT ciniki_musicfestivals_titles.id, "
-            . "ciniki_musicfestivals_titles.list_id, "
-            . "ciniki_musicfestivals_titles.title, "
-            . "ciniki_musicfestivals_titles.movements, "
-            . "ciniki_musicfestivals_titles.composer, "
-            . "ciniki_musicfestivals_titles.source_type "
-            . "FROM ciniki_musicfestivals_titles "
-            . "WHERE ciniki_musicfestivals_titles.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND ciniki_musicfestivals_titles.id = '" . ciniki_core_dbQuote($ciniki, $args['title_id']) . "' "
+        $strsql = "SELECT titles.id, "
+            . "titles.list_id, "
+            . "titles.title, "
+            . "titles.movements, "
+            . "titles.composer, "
+            . "titles.source_type "
+            . "FROM ciniki_musicfestivals_titles AS titles "
+            . "WHERE titles.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "AND titles.id = '" . ciniki_core_dbQuote($ciniki, $args['title_id']) . "' "
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(

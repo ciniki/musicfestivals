@@ -43,6 +43,49 @@ function ciniki_musicfestivals_titleUpdate(&$ciniki) {
     }
 
     //
+    // Load the current title
+    //
+    $strsql = "SELECT titles.id, "
+        . "titles.list_id, "
+        . "titles.title, "
+        . "titles.movements, "
+        . "titles.composer, "
+        . "titles.source_type, "
+        . "titles.keywords "
+        . "FROM ciniki_musicfestivals_titles AS titles "
+        . "WHERE titles.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND titles.id = '" . ciniki_core_dbQuote($ciniki, $args['title_id']) . "' "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'title');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1655', 'msg'=>'Unable to load title', 'err'=>$rc['err']));
+    }
+    if( !isset($rc['title']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1656', 'msg'=>'Unable to find requested title'));
+    }
+    $title = $rc['title'];
+
+    //
+    // Create the keywords
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleListKeywordsMake');
+    $rc = ciniki_musicfestivals_titleListKeywordsMake($ciniki, $args['tnid'], [
+        'title'=>[
+            'title' => isset($args['title']) ? $args['title'] : $title['title'],
+            'movements' => isset($args['movements']) ? $args['movements'] : $title['movements'],
+            'composer' => isset($args['composer']) ? $args['composer'] : $title['composer'],
+            'source_type' => isset($args['source_type']) ? $args['source_type'] : $title['source_type'],
+            ],
+        ]);
+    if( $rc['stat'] != 'ok' ) {
+        print_r($rc);
+        exit;
+    }
+    if( $title['keywords'] != $rc['keywords'] ) {
+        $args['keywords'] = $rc['keywords'];
+    }
+
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');

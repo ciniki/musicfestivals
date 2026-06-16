@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestivals_titles ADD COLUMN keywords varchar(1000) not null after source_type;
+ALTER TABLE ciniki_musicfestivals_titles COMMENT='v1.02';

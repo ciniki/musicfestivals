@@ -24,11 +24,13 @@ create table ciniki_musicfestivals_titles (
     movements varchar(150) not null,
     composer varchar(150) not null,
     source_type varchar(100) not null,
+    keywords varchar(1000) not null,
 
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
     unique index (list_id, title, movements, composer, source_type),
+    index (keywords),
     index sync (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.01';
+) ENGINE='InnoDB', COMMENT='v1.02';

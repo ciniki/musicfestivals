@@ -45,6 +45,17 @@ function ciniki_musicfestivals_titleAdd(&$ciniki) {
     }
 
     //
+    // Create the keywords
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleListKeywordsMake');
+    $rc = ciniki_musicfestivals_titleListKeywordsMake($ciniki, $args['tnid'], ['title'=>$args]);
+    if( $rc['stat'] != 'ok' ) {
+        print_r($rc);
+        exit;
+    }
+    $args['keywords'] = $rc['keywords'];
+
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
