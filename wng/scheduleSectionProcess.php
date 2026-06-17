@@ -353,6 +353,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "divisions.division_date, "
         . "DATE_FORMAT(divisions.division_date, '" . ciniki_core_dbQuote($ciniki, $division_date_format) . "') AS division_date_text, ";
     if( isset($s['results-only']) && $s['results-only'] == 'yes' 
+        && isset($s['ipv']) && $s['ipv'] == 'inperson' 
         && ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
         ) {
         $strsql .= "classes.id AS timeslot_id, ";
