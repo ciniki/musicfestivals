@@ -17969,18 +17969,22 @@ function ciniki_musicfestivals_main() {
                 '90':'Expired',
                 }},  */
             'class_id':{'label':'Class', 'type':'select', 'complex_options':{'name':'name', 'value':'id'}, 'options':{}},
-            'position':{'label':'Position', 'required':'yes', 'type':'toggle', 'toggles':{
+            'position':{'label':'Position', 'required':'yes', 'join':'no', 'type':'toggle', 'toggles':{
                 '1':'1st',
                 '2':'2nd',
                 '3':'3rd',
+                '601':'Old 1',
+                '602':'Old 2',
+                '603':'Old 3',
 //                '4':'4th',
                 '101':'1st Alt',
                 '102':'2nd Alt',
                 '103':'3rd Alt',
                 '104':'4th Alt',
-                '601':'Old-1',
-                '602':'Old-2',
-                '603':'Old-3',
+                '701':'Old Alt 1',
+                '702':'Old Alt 2',
+                '703':'Old Alt 3',
+                '704':'Old Alt 4',
                 }},
             'name':{'label':'Name', 'required':'yes', 'type':'text', 'livesearch':'yes'},
             'mark':{'label':'Mark', 'required':'yes', 'type':'text'},
@@ -21601,9 +21605,11 @@ function ciniki_musicfestivals_main() {
 
     this.recommendationEntryStatusColour = function(festival, entry) {
         var st = '';
+        console.log(entry.position);
         if( entry.position == 'Former 1st' || entry.position == 'Former 2nd' || entry.position == 'Former 3rd' 
             || entry.position == 'Old 1st' || entry.position == 'Old 2nd' || entry.position == 'Old 3rd' 
-            || entry.position == '601' || entry.position == '602' || entry.position == '603' 
+            || entry.position == 'Old 1st Alt' || entry.position == 'Old 2nd Alt' || entry.position == 'Old 3rd Alt' || entry.position == 'Old 4th Alt'
+            || (entry.position >= 601 && entry.position < 799)
             ) {
             st = ' statuslinethrough';
 //            return 'statusgreyfade statuslinethrough';

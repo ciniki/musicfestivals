@@ -144,6 +144,10 @@ function ciniki_musicfestivals_maps($ciniki) {
             601 => 'Former 1st',
             602 => 'Former 2nd',
             603 => 'Former 3rd',
+            701 => 'Former 1st Alternate',
+            702 => 'Former 2nd Alternate',
+            703 => 'Former 3rd Alternate',
+            704 => 'Former 4td Alternate',
             600 => 'N/A',
         ),
         'position_shortname'=>array(
@@ -159,6 +163,10 @@ function ciniki_musicfestivals_maps($ciniki) {
             601 => 'Old 1st',
             602 => 'Old 2nd',
             603 => 'Old 3rd',
+            701 => 'Old 1st Alt',
+            702 => 'Old 2nd Alt',
+            703 => 'Old 3rd Alt',
+            704 => 'Old 4th Alt',
         ),
         'status'=>array(
             10 => 'Recommended',
