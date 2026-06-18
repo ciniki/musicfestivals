@@ -160,7 +160,7 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                     . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") ";
         }
-        $strsql .= "LEFT JOIN ciniki_musicfestival_volunteer_assignments AS assignments ON ("
+        $strsql .= "LEFT JOIN ciniki_musicfestival_volunteer_assignments AS assignments USE INDEX (festival_id) ON ("
                 . "volunteers.id = assignments.volunteer_id "
                 . "AND assignments.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
@@ -252,7 +252,7 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                 . "volunteers.customer_id = customers.id "
                 . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "LEFT JOIN ciniki_musicfestival_volunteer_assignments AS assignments ON ("
+            . "LEFT JOIN ciniki_musicfestival_volunteer_assignments AS assignments USE INDEX (festival_id) ON ("
                 . "volunteers.id = assignments.volunteer_id "
                 . "AND assignments.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "

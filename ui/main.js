@@ -19007,7 +19007,8 @@ function ciniki_musicfestivals_main() {
         'volunteers':{'label':'Volunteers', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 
             'headerValues':[],
             'dataMaps':['name', 'total_hours_text'],
-            'visible':function() { return M.ciniki_musicfestivals_main.volunteers.sections._tabs.selected == 'volunteers' ? 'yes' : 'no'; },
+//            'visible':function() { return M.ciniki_musicfestivals_main.volunteers.sections._tabs.selected == 'volunteers' ? 'yes' : 'no'; },
+            'visible':function() { return ['volunteers','pending'].indexOf(M.ciniki_musicfestivals_main.volunteers.sections._tabs.selected) >= 0 ? 'yes' : 'no'; },
             'noData':'No volunteers',
             'cellClasses':['multiline', 'multiline alignright'],
             'editFn':function(s, i, d) {
