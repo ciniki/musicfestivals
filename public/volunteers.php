@@ -232,6 +232,30 @@ function ciniki_musicfestivals_volunteers($ciniki) {
             $phones = isset($rc['customers']) ? $rc['customers'] : array();
         }
             
+        //
+        // Load Emails
+        //
+        if( isset($customer_ids) && count($customer_ids) > 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
+            $strsql = "SELECT emails.customer_id, "
+                . "emails.id, "
+                . "emails.email "
+                . "FROM ciniki_customer_emails AS emails "
+                . "WHERE emails.customer_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $customer_ids) . ") "
+                . "AND emails.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "ORDER BY emails.customer_id, emails.email "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+            $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'customers', 'fname'=>'customer_id', 'fields'=>array()),
+                array('container'=>'emails', 'fname'=>'id', 'fields'=>array('id', 'email')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1657', 'msg'=>'Unable to load emails', 'err'=>$rc['err']));
+            }
+            $emails = isset($rc['customers']) ? $rc['customers'] : array();
+        }
+
 
     } elseif( isset($args['volunteers']) && $args['volunteers'] == 'basic' ) {
         //
@@ -319,6 +343,11 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                     $rsp['volunteers'][$vid]['phones'] .= ($rsp['volunteers'][$vid]['phones'] != '' ? ', ' : '')
                         . (count($phones[$volunteer['customer_id']]['phones']) > 1 ? $phone['phone_label'] . ': ' : '')
                         . $phone['phone_number'];
+                }
+            }
+            if( isset($emails[$volunteer['customer_id']]['emails']) ) {
+                foreach($emails[$volunteer['customer_id']]['emails'] as $email) {
+                    $rsp['volunteers'][$vid]['emails'] .= ($rsp['volunteers'][$vid]['emails'] != '' ? ', ' : '') . $email['email'];
                 }
             }
         }
