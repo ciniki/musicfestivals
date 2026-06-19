@@ -19013,7 +19013,7 @@ function ciniki_musicfestivals_main() {
             'noData':'No volunteers found',
             'editFn':function(s, i, d) {
                 if( M.ciniki_musicfestivals_main.volunteers.sections._tabs.selected != 'pending' ) {
-                    return 'M.ciniki_musicfestivals_main.volunteer.open(\'M.ciniki_musicfestivals_main.volunteers.reopen();\',\'' + d.id + '\',0,M.ciniki_musicfestivals_main.volunteers.festival_id,M.ciniki_musicfestivals_main.volunteers.nplist);';
+                    return 'M.ciniki_musicfestivals_main.volunteer.open(\'M.ciniki_musicfestivals_main.volunteers.reopen();\',\'' + d.id + '\',0,M.ciniki_musicfestivals_main.volunteers.festival_id);';
                 }
                 return '';
                 },
