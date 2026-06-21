@@ -295,7 +295,7 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
     $fields['phone_cell'] = array(
         'id' => 'phone_cell',
         'label' => 'Cell Phone',
-        'ftype' => 'text',
+        'ftype' => 'phone',
         'required' => 'yes',
         'size' => 'small',
         'class' => '',
@@ -306,13 +306,23 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
     } elseif( isset($festival['competitor-individual-phone-cell-label']) && $festival['competitor-individual-phone-cell-label'] != '' ) {
         $fields['phone_cell']['label'] = $festival['competitor-individual-phone-cell-label'];
     }
+    // Format the phone number
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'phoneFormat');
+    $rc = ciniki_tenants_hooks_phoneFormat($ciniki, $tnid, ['number'=>$fields['phone_cell']['value']]);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( isset($rc['formatted_number']) ) {
+        $fields['phone_cell']['value'] = $rc['formatted_number'];
+    }
+
     if( ($ctype == 50 && (!isset($festival['competitor-group-phone-home']) || $festival['competitor-group-phone-home'] != 'hidden'))
         || ($ctype != 50 && (!isset($festival['competitor-individual-phone-home']) || $festival['competitor-individual-phone-home'] != 'hidden'))
         ) {
         $fields['phone_home'] = array(
             'id' => 'phone_home',
             'label' => 'Home Phone',
-            'ftype' => 'text',
+            'ftype' => 'phone',
             'size' => 'small',
             'class' => '',
             'value' => (isset($_POST['f-phone_home']) ? trim($_POST['f-phone_home']) : (isset($competitor['phone_home']) ? $competitor['phone_home'] :'')),
@@ -321,6 +331,15 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
             $fields['phone_home']['label'] = $festival['competitor-group-phone-home-label'];
         } elseif( isset($festival['competitor-individual-phone-home-label']) && $festival['competitor-individual-phone-home-label'] != '' ) {
             $fields['phone_home']['label'] = $festival['competitor-individual-phone-home-label'];
+        }
+        // Format the phone number
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'phoneFormat');
+        $rc = ciniki_tenants_hooks_phoneFormat($ciniki, $tnid, ['number'=>$fields['phone_home']['value']]);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['formatted_number']) ) {
+            $fields['phone_home']['value'] = $rc['formatted_number'];
         }
     }
     $fields['newline4'] = array(
@@ -335,7 +354,8 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
         'size' => 'small-medium',
         'class' => '',
         'value' => (isset($_POST['f-email']) ? trim($_POST['f-email']) : (isset($competitor['email']) ? $competitor['email'] :'')),
-            );
+        );
+    $fields['email']['value'] = preg_replace("/^\s*mailto:\s*/", '', $fields['email']['value']);
     if( ($ctype == 50 
         && isset($festival['competitor-group-email-confirm']) && $festival['competitor-group-email-confirm'] == 'yes' 
         )
@@ -351,6 +371,7 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
             'class' => '',
             'value' => (isset($_POST['f-email_confirm']) ? trim($_POST['f-email_confirm']) : (isset($competitor['email']) ? $competitor['email'] :'')),
             );
+        $fields['email_confirm']['value'] = preg_replace("/^\s*mailto:\s*/", '', $fields['email_confirm']['value']);
     } 
     if( $ctype == 50 
         && isset($festival['competitor-group-etransfer-email']) 
@@ -365,6 +386,7 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
             'class' => '',
             'value' => (isset($_POST['f-etransfer_email']) ? trim($_POST['f-etransfer_email']) : (isset($competitor['etransfer_email']) ? $competitor['etransfer_email'] :'')),
             );
+        $fields['etransfer_email']['value'] = preg_replace("/^\s*mailto:\s*/", '', $fields['etransfer_email']['value']);
         if( isset($festival['competitor-group-etransfer-email-label']) 
             && $festival['competitor-group-etransfer-email-label'] != ''
             ) {
@@ -382,6 +404,7 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
                 'class' => '',
                 'value' => (isset($_POST['f-etransfer_email_confirm']) ? trim($_POST['f-etransfer_email_confirm']) : (isset($competitor['etransfer_email']) ? $competitor['etransfer_email'] :'')),
                 );
+            $fields['etransfer_email_confirm']['value'] = preg_replace("/^\s*mailto:\s*/", '', $fields['etransfer_email_confirm']['value']);
         }
     } 
     elseif( $ctype != 50
@@ -398,6 +421,7 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
             'class' => '',
             'value' => (isset($_POST['f-etransfer_email']) ? trim($_POST['f-etransfer_email']) : (isset($competitor['etransfer_email']) ? $competitor['etransfer_email'] :'')),
             );
+        $fields['etransfer_email']['value'] = preg_replace("/^\s*mailto:\s*/", '', $fields['etransfer_email']['value']);
         if( isset($festival['competitor-individual-etransfer-email-label']) 
             && $festival['competitor-individual-etransfer-email-label'] != ''
             ) {
@@ -415,6 +439,7 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
                 'class' => '',
                 'value' => (isset($_POST['f-etransfer_email_confirm']) ? trim($_POST['f-etransfer_email_confirm']) : (isset($competitor['etransfer_email']) ? $competitor['etransfer_email'] :'')),
                 );
+            $fields['etransfer_email_confirm']['value'] = preg_replace("/^\s*mailto:\s*/", '', $fields['etransfer_email_confirm']['value']);
         }
     }
     // 
