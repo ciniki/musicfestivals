@@ -102,6 +102,30 @@ function ciniki_musicfestivals_competitorUpdate(&$ciniki) {
     }
 
     //
+    // Check if phone numbers should be reformatted
+    //
+    if( isset($args['phone_cell']) && $args['phone_cell'] != '' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'phoneFormat');
+        $rc = ciniki_tenants_hooks_phoneFormat($ciniki, $args['tnid'], ['number'=>$args['phone_cell']]);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['formatted_number']) ) {
+            $args['phone_cell'] = $rc['formatted_number'];
+        }
+    }
+    if( isset($args['phone_home']) && $args['phone_home'] != '' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'phoneFormat');
+        $rc = ciniki_tenants_hooks_phoneFormat($ciniki, $args['tnid'], ['number'=>$args['phone_home']]);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['formatted_number']) ) {
+            $args['phone_home'] = $rc['formatted_number'];
+        }
+    }
+
+    //
     // Start transaction
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionStart');
