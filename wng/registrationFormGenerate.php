@@ -785,6 +785,16 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'class' => isset($_POST['f-teacher_customer_id']) && $_POST['f-teacher_customer_id'] == -1 ? '' : 'hidden',
             'value' => isset($_POST['f-teacher_email']) ? trim($_POST['f-teacher_email']) : '',
             );
+        if( isset($_POST['f-teacher_phone']) && $_POST['f-teacher_phone'] != '' ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'phoneFormat');
+            $rc = ciniki_tenants_hooks_phoneFormat($ciniki, $tnid, ['number'=>$_POST['f-teacher_phone']]);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            if( isset($rc['formatted_number']) ) {
+                $_POST['f-teacher_phone'] = $rc['formatted_number'];
+            }
+        }
         $fields['teacher_phone'] = array(
             'id' => 'teacher_phone',
             'label' => 'Teacher Phone',
@@ -859,6 +869,16 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'class' => isset($_POST['f-accompanist_customer_id']) && $_POST['f-accompanist_customer_id'] == -1 ? '' : 'hidden',
             'value' => isset($_POST['f-accompanist_email']) ? trim($_POST['f-accompanist_email']) : '',
             );
+        if( isset($_POST['f-accompanist_phone']) && $_POST['f-accompanist_phone'] != '' ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'phoneFormat');
+            $rc = ciniki_tenants_hooks_phoneFormat($ciniki, $tnid, ['number'=>$_POST['f-accompanist_phone']]);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            if( isset($rc['formatted_number']) ) {
+                $_POST['f-accompanist_phone'] = $rc['formatted_number'];
+            }
+        }
         $fields['accompanist_phone'] = array(
             'id' => 'accompanist_phone',
             'label' => 'Accompanist Phone',
