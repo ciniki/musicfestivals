@@ -170,6 +170,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             . "public_name, "
             . "pronoun, "
             . "flags, "
+            . "organization, "
             . "conductor, "
             . "num_people, "
             . "parent, "
@@ -180,9 +181,11 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             . "country, "
             . "phone_home, "
             . "phone_cell, "
+            . "phone_work, "
             . "email, "
             . "age, "
             . "study_level, "
+            . "grade, "
             . "last_exam, "
             . "instrument, "
             . "etransfer_email, "
@@ -366,6 +369,9 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     }
                     if( $phone['phone_label'] == 'Home' ) {
                         $fields['phone_home']['value'] = $phone['phone_number'];
+                    }
+                    if( $phone['phone_label'] == 'Work' ) {
+                        $fields['phone_work']['value'] = $phone['phone_number'];
                     }
                 }
             }

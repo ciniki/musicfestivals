@@ -78,6 +78,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
             'public_name'=>'',
             'pronoun'=>'',
             'flags'=>0x07,
+            'organization'=>'',
             'conductor'=>'',
             'num_people'=>'',
             'parent'=>'',
@@ -88,9 +89,11 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
             'country'=>'',
             'phone_home'=>'',
             'phone_cell'=>'',
+            'phone_work'=>'',
             'email'=>'',
             'age'=>'',
             'study_level'=>'',
+            'grade'=>'',
             'last_exam'=>'',
             'instrument'=>'',
             'etransfer_email'=>'',
@@ -122,6 +125,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
             . "ciniki_musicfestival_competitors.public_name, "
             . "ciniki_musicfestival_competitors.pronoun, "
             . "ciniki_musicfestival_competitors.flags, "
+            . "ciniki_musicfestival_competitors.organization, "
             . "ciniki_musicfestival_competitors.conductor, "
             . "ciniki_musicfestival_competitors.num_people, "
             . "ciniki_musicfestival_competitors.parent, "
@@ -132,9 +136,11 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
             . "ciniki_musicfestival_competitors.country, "
             . "ciniki_musicfestival_competitors.phone_home, "
             . "ciniki_musicfestival_competitors.phone_cell, "
+            . "ciniki_musicfestival_competitors.phone_work, "
             . "ciniki_musicfestival_competitors.email, "
             . "ciniki_musicfestival_competitors.age AS _age, "
             . "ciniki_musicfestival_competitors.study_level, "
+            . "ciniki_musicfestival_competitors.grade, "
             . "ciniki_musicfestival_competitors.last_exam, "
             . "ciniki_musicfestival_competitors.instrument, "
             . "ciniki_musicfestival_competitors.etransfer_email, "
@@ -147,9 +153,9 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'competitors', 'fname'=>'id', 
                 'fields'=>array('id', 'festival_id', 'ctype', 'first', 'last', 'name', 'public_name', 'pronoun', 
-                    'flags', 'conductor', 'num_people', 
-                    'parent', 'address', 'city', 'province', 'postal', 'country', 'phone_home', 'phone_cell', 
-                    'email', '_age', 'study_level', 'last_exam', 'instrument', 'etransfer_email', 'notes'),
+                    'flags', 'organization', 'conductor', 'num_people', 
+                    'parent', 'address', 'city', 'province', 'postal', 'country', 'phone_home', 'phone_cell', 'phone_work',
+                    'email', '_age', 'study_level', 'grade', 'last_exam', 'instrument', 'etransfer_email', 'notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -193,6 +199,9 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
         if( $competitor['ctype'] == 10 && ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
             $details[] = array('label'=>'Pronoun', 'value'=>$competitor['pronoun']);
         }
+        if( $competitor['ctype'] == 50 && $competitor['organization'] != '' ) { 
+            $details[] = array('label'=>'Organization', 'value'=>$competitor['organization']); 
+        }
         if( $competitor['ctype'] == 10 && $competitor['parent'] != '' ) { 
             $details[] = array('label'=>'Parent', 'value'=>$competitor['parent']); 
         }
@@ -219,7 +228,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
         if( $competitor['phone_cell'] != '' ) { 
             $label = 'Cell';
             if( $competitor['ctype'] == 50 && isset($festival['competitor-group-phone-cell-label']) && $festival['competitor-group-phone-cell-label'] != '' ) {
-                $label = $festival['competitor-individual-phone-cell-label'];
+                $label = $festival['competitor-group-phone-cell-label'];
             } elseif( $competitor['ctype'] != 50 && isset($festival['competitor-individual-phone-cell-label']) && $festival['competitor-individual-phone-cell-label'] != '' ) {
                 $label = $festival['competitor-individual-phone-cell-label'];
             }
@@ -228,22 +237,40 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
         if( $competitor['phone_home'] != '' ) { 
             $label = 'Home';
             if( $competitor['ctype'] == 50 && isset($festival['competitor-group-phone-home-label']) && $festival['competitor-group-phone-home-label'] != '' ) {
-                $label = $festival['competitor-individual-phone-home-label'];
+                $label = $festival['competitor-group-phone-home-label'];
             } elseif( $competitor['ctype'] != 50 && isset($festival['competitor-individual-phone-home-label']) && $festival['competitor-individual-phone-home-label'] != '' ) {
                 $label = $festival['competitor-individual-phone-home-label'];
             }
             $details[] = array('label'=>$label, 'value'=>$competitor['phone_home']); 
+        }
+        if( $competitor['phone_work'] != '' ) { 
+            $label = 'Work';
+            if( $competitor['ctype'] == 50 && isset($festival['competitor-group-phone-work-label']) && $festival['competitor-group-phone-work-label'] != '' ) {
+                $label = $festival['competitor-group-phone-work-label'];
+            } elseif( $competitor['ctype'] != 50 && isset($festival['competitor-individual-phone-work-label']) && $festival['competitor-individual-phone-work-label'] != '' ) {
+                $label = $festival['competitor-individual-phone-work-label'];
+            }
+            $details[] = array('label'=>$label, 'value'=>$competitor['phone_work']); 
         }
         if( $competitor['email'] != '' ) { $details[] = array('label'=>'Email', 'value'=>$competitor['email']); }
         if( $competitor['age'] != '' ) { $details[] = array('label'=>'Age', 'value'=>$competitor['age']); }
         if( $competitor['study_level'] != '' ) { 
             $label = 'Study/Level';
             if( $competitor['ctype'] == 50 && isset($festival['competitor-group-study-level-label']) && $festival['competitor-group-study-level-label'] != '' ) {
-                $label = $festival['competitor-individual-study-level-label'];
+                $label = $festival['competitor-group-study-level-label'];
             } elseif( $competitor['ctype'] != 50 && isset($festival['competitor-individual-study-level-label']) && $festival['competitor-individual-study-level-label'] != '' ) {
                 $label = $festival['competitor-individual-study-level-label'];
             }
             $details[] = array('label'=>$label, 'value'=>$competitor['study_level']); 
+        }
+        if( $competitor['grade'] != '' ) { 
+            $label = 'Grade';
+            if( $competitor['ctype'] == 50 && isset($festival['competitor-group-grade-label']) && $festival['competitor-group-grade-label'] != '' ) {
+                $label = $festival['competitor-group-grade-label'];
+            } elseif( $competitor['ctype'] != 50 && isset($festival['competitor-individual-grade-label']) && $festival['competitor-individual-grade-label'] != '' ) {
+                $label = $festival['competitor-individual-grade-label'];
+            }
+            $details[] = array('label'=>$label, 'value'=>$competitor['grade']); 
         }
         if( $competitor['last_exam'] != '' ) { 
             $label = 'Study/Level';
@@ -494,7 +521,8 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
                 . "categories.section_id = sections.id "
                 . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "WHERE ("
+            . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "AND ("
                 . "competitor1_id = '" . ciniki_core_dbQuote($ciniki, $args['competitor_id']) . "' "
                 . "OR competitor2_id = '" . ciniki_core_dbQuote($ciniki, $args['competitor_id']) . "' "
                 . "OR competitor3_id = '" . ciniki_core_dbQuote($ciniki, $args['competitor_id']) . "' "

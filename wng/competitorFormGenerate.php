@@ -103,6 +103,20 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
                 $fields['name']['size'] = 'medium';
             }
         }
+        if( isset($festival['competitor-group-organization']) && in_array($festival['competitor-group-organization'], ['required', 'optional']) ) {
+            $fields['organization'] = array(
+                'id' => 'organization',
+                'label' => 'Organization',
+                'ftype' => 'text',
+                'required' => (!isset($festival['competitor-group-organization']) || $festival['competitor-group-organization'] == 'required' ? 'yes' : 'no'),
+                'size' => 'large',
+                'class' => '',
+                'value' => (isset($_POST['f-organization']) ? trim($_POST['f-organization']) : (isset($competitor['organization']) ? $competitor['organization'] :'')),
+                );
+            if( isset($festival['competitor-group-organization-label']) && $festival['competitor-group-organization-label'] != '' ) {
+                $fields['organization']['label'] = $festival['competitor-group-organization-label'];
+            }
+        }
         $fields['conductor'] = array(
             'id' => 'conductor',
             'label' => 'Conductor',
@@ -133,6 +147,24 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
                 );
             if( isset($festival['competitor-group-age-label']) && $festival['competitor-group-age-label'] != '' ) {
                 $fields['age']['label'] = $festival['competitor-group-age-label'];
+            }
+            if( isset($festival['competitor-group-instrument']) && in_array($festival['competitor-group-instrument'], ['required', 'optional']) ) {
+                $fields['name']['size'] = 'medium';
+                $fields['age']['size'] = 'tiny';
+            }
+        }
+        if( isset($festival['competitor-group-grade']) && in_array($festival['competitor-group-grade'], ['required', 'optional']) ) {
+            $fields['grade'] = array(
+                'id' => 'grade',
+                'label' => 'Grade',
+                'ftype' => 'text',
+                'required' => (!isset($festival['competitor-group-grade']) || $festival['competitor-group-grade'] == 'required' ? 'yes' : 'no'),
+                'size' => 'tiny',
+                'class' => '',
+                'value' => (isset($_POST['f-grade']) ? trim($_POST['f-grade']) : (isset($competitor['grade']) ? $competitor['grade'] :'')),
+                );
+            if( isset($festival['competitor-group-grade-label']) && $festival['competitor-group-grade-label'] != '' ) {
+                $fields['grade']['label'] = $festival['competitor-group-grade-label'];
             }
             if( isset($festival['competitor-group-instrument']) && in_array($festival['competitor-group-instrument'], ['required', 'optional']) ) {
                 $fields['name']['size'] = 'medium';
@@ -340,6 +372,32 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
         }
         if( isset($rc['formatted_number']) ) {
             $fields['phone_home']['value'] = $rc['formatted_number'];
+        }
+    }
+    if( ($ctype == 50 && (!isset($festival['competitor-group-phone-work']) || $festival['competitor-group-phone-work'] != 'hidden'))
+        || ($ctype != 50 && (!isset($festival['competitor-individual-phone-work']) || $festival['competitor-individual-phone-work'] != 'hidden'))
+        ) {
+        $fields['phone_work'] = array(
+            'id' => 'phone_work',
+            'label' => 'Work Phone',
+            'ftype' => 'phone',
+            'size' => 'small',
+            'class' => '',
+            'value' => (isset($_POST['f-phone_work']) ? trim($_POST['f-phone_work']) : (isset($competitor['phone_work']) ? $competitor['phone_work'] :'')),
+            );
+        if( $ctype == 50 && isset($festival['competitor-group-phone-work-label']) && $festival['competitor-group-phone-work-label'] != '' ) {
+            $fields['phone_work']['label'] = $festival['competitor-group-phone-work-label'];
+        } elseif( isset($festival['competitor-individual-phone-work-label']) && $festival['competitor-individual-phone-work-label'] != '' ) {
+            $fields['phone_work']['label'] = $festival['competitor-individual-phone-work-label'];
+        }
+        // Format the phone number
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'phoneFormat');
+        $rc = ciniki_tenants_hooks_phoneFormat($ciniki, $tnid, ['number'=>$fields['phone_work']['value']]);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['formatted_number']) ) {
+            $fields['phone_work']['value'] = $rc['formatted_number'];
         }
     }
     $fields['newline4'] = array(

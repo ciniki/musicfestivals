@@ -1,0 +1,5 @@
+ALTER TABLE ciniki_musicfestival_competitors ADD COLUMN organization varchar(250) not null AFTER flags;
+ALTER TABLE ciniki_musicfestival_competitors ADD COLUMN phone_work varchar(100) not null AFTER phone_cell;
+ALTER TABLE ciniki_musicfestival_competitors ADD COLUMN grade varchar(25) not null AFTER study_level;
+ALTER TABLE ciniki_musicfestival_competitors MODIFY COLUMN notes text not null;
+ALTER TABLE ciniki_musicfestival_competitors COMMENT='v1.08';

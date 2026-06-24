@@ -45,6 +45,7 @@
 #
 # conductor:            The conductor for a group or ensemble, not used for individual.
 # num_people:           The number of people in the ensemble.
+# organization:         The School or Organization for the ensembled, not use for individual.
 # parent:               The name of the parent.
 # address:              The address for the competitor.
 # city:                 The city for the competitor.
@@ -53,9 +54,11 @@
 # country:              The country for the competitor.
 # phone_home:           The home phone number for the competitor.
 # phone_cell:           The cell phone of the competitor.
+# phone_work:           The work phone of the competitor.
 # email:                The email address of the competitor.
 # age:                  The age of the competitor.
 # study_level:          The study level of the competitor.
+# grade:                The grade of the competitor (typically school grade for ensembles).
 # last_exam:            The Last Exam Level taken of the competitor.
 # instrument:           The instrument of the competitor.
 # etransfer_email:      The email address to receive any etransfer awards.
@@ -79,6 +82,7 @@ create table ciniki_musicfestival_competitors (
     public_name varchar(250) not null,
     pronoun varchar(50) not null,
     flags smallint unsigned not null,
+    organization varchar(250) not null,
     conductor varchar(250) not null,
     num_people varchar(50) not null,
     parent varchar(250) not null,
@@ -89,9 +93,11 @@ create table ciniki_musicfestival_competitors (
     country varchar(250) not null,
     phone_home varchar(250) not null,
     phone_cell varchar(250) not null,
+    phone_work varchar(100) not null,
     email varchar(250) not null,
     age varchar(25) not null,
     study_level varchar(250) not null,
+    grade varchar(25) not null,
     last_exam varchar(100) not null,
     instrument varchar(250) not null,
     etransfer_email varhcar(250) not null,
@@ -102,4 +108,4 @@ create table ciniki_musicfestival_competitors (
     unique index (uuid),
     index name (id, tnid, festival_id, name, city, province),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.07';
+) ENGINE='InnoDB', COMMENT='v1.08';
