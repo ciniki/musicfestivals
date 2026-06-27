@@ -175,7 +175,7 @@ create table ciniki_musicfestival_classes (
     min_titles tinyint unsigned not null,
     max_titles tinyint unsigned not null,
     provincials_code varchar(20) not null,
-    synopsis varchar(2000) not null,
+    synopsis text not null,
     schedule_seconds int not null,
     schedule_at_seconds int not null,
     schedule_ata_seconds int not null,
@@ -191,4 +191,4 @@ create table ciniki_musicfestival_classes (
     index (festival_id, category_id, tnid),
     index keywords (keywords),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.19';
+) ENGINE='InnoDB', COMMENT='v1.20';
