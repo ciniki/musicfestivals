@@ -1171,6 +1171,11 @@ function ciniki_musicfestivals_main() {
             'sortable':'yes',
             'sortTypes':['text', 'text', 'text', 'text', 'altnumber', 'text'],
             'cellClasses':['multiline', 'multiline', '', 'multiline', 'multiline', 'alignright'],
+            'menu':{
+                'excel':{'label':'Export Registrations to Excel', 
+                    'fn':'M.ciniki_musicfestivals_main.festival.downloadExcel(M.ciniki_musicfestivals_main.festival.festival_id);',
+                    },
+                },
             },
         'registrations_emailbutton':{'label':'', 
             'visible':function() {return M.ciniki_musicfestivals_main.festival.menutabs.selected=='registrations' && M.ciniki_musicfestivals_main.festival.teacher_customer_id > 0 ?'yes':'no';},
@@ -4821,6 +4826,8 @@ function ciniki_musicfestivals_main() {
             args['accompanist_customer_id'] = this.accompanist_customer_id;
         } else if( this.sections.registration_tabs.selected == 'tags' && this.registration_tag != '' ) {
             args['registration_tag'] = this.registration_tag;
+        } else if( this.sections.registration_tabs.selected == 'statuses' && this.registration_status != '' ) {
+            args['registration_status'] = this.registration_status;
         } else if( this.sections.registration_tabs.selected == 'members' && this.member_id > 0 ) {
             args['member_id'] = this.member_id;
         }
