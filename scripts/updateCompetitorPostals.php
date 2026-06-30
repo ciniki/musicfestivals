@@ -28,6 +28,7 @@ if( $rc['stat'] != 'ok' ) {
 // Setup the $ciniki variable to hold all things ciniki.  
 //
 $ciniki = $rc['ciniki'];
+$ciniki['session']['user']['id'] = -3;  // Setup to Ciniki Robot
 
 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuote');
 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbUpdate');
