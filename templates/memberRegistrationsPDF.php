@@ -13,8 +13,6 @@
 //
 function ciniki_musicfestivals_templates_memberRegistrationsPDF(&$ciniki, $tnid, $args) {
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
-
     //
     // Make sure festival_id was passed in
     //

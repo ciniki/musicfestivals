@@ -13,16 +13,16 @@
 // ---------
 // 
 function ciniki_musicfestivals_titlesMerge(&$ciniki, $tnid, $registration, $args=null) {
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
+//    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
 
     $newline = isset($args['newline']) ? $args['newline'] : "\n";
     $titles = '';
     $perf_time = 0;
     $num = 1;
     for($i = 1; $i <= 8; $i++) {
-        $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $registration, $i);
-        if( isset($rc['title']) && $rc['title'] != '' ) {
-            $title = $rc['title'];
+//        $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $registration, $i);
+        if( isset($registration["fulltitle{$i}"]) && $registration["fulltitle{$i}"] != '' ) {
+            $title = $registration["fulltitle{$i}"];
             if( isset($registration["perf_time{$i}"]) && $registration["perf_time{$i}"] != '' ) {
                 $perf_time += $registration["perf_time{$i}"];
             }

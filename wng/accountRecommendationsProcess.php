@@ -94,9 +94,7 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
         . "registrations.id, "
         . "registrations.mark, "
         . "registrations.display_name, "
-        . "registrations.title1, "
-        . "registrations.movements1, "
-        . "registrations.composer1, "
+        . "registrations.fulltitle1, "
         . "registrations.perf_time1, "
         . "registrations.mark "
         . "FROM ciniki_musicfestival_adjudicatorrefs AS arefs "
@@ -132,7 +130,7 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
         array('container'=>'classes', 'fname'=>'provincials_code', 'fields'=>array()),
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'class_code', 'class_name', 'mark', 'display_name', 'mark',
-                'title1', 'movements1', 'composer1', 'perf_time1'),
+                'fulltitle1', 'perf_time1'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -140,15 +138,9 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
     }
     $adjudicator['registrations'] = isset($rc['classes']) ? $rc['classes'] : array();
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
     foreach($adjudicator['registrations'] as $cid => $class) {
         foreach($class['registrations'] as $rid => $reg) {
-            $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, 1);
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
-            }
-            $title = $rc['title'];
-            $adjudicator['registrations'][$cid]['registrations'][$rid]['name'] = $reg['display_name'] . ' - ' . $reg['class_code'] . ' - ' . $reg['class_name'] . ' - ' . $title . ($reg['mark'] != '' ? " [{$reg['mark']}]" : '');
+            $adjudicator['registrations'][$cid]['registrations'][$rid]['name'] = $reg['display_name'] . ' - ' . $reg['class_code'] . ' - ' . $reg['class_name'] . ' - ' . $reg['fulltitle1'] . ($reg['mark'] != '' ? " [{$reg['mark']}]" : '');
         }
     }
 

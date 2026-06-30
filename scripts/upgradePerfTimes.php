@@ -55,7 +55,7 @@ $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
 foreach($registrations as $reg) {
     $update_args = array();
     for($i = 1; $i <= 3; $i++) {
-        if( $reg["perf_time{$i}"] != '' ) {
+        if( $reg["perf_time{$i}"] != '' && !is_numeric($reg["perf_time{$i}"]) ) {
             if( preg_match("/^[Nn]\/[aA]$/", $reg["perf_time{$i}"], $m) ) {
                 $seconds = 0;
             } elseif( preg_match("/^(\?|TBA|TBC|TBD|na|[Uu]nk|[Uu]nknown|Any.*)$/", $reg["perf_time{$i}"], $m) ) {
@@ -92,19 +92,19 @@ foreach($registrations as $reg) {
             }
             $seconds = round($seconds, 0);
             $update_args["perf_time{$i}"] = $seconds;
-           
-            
         }
     }
     if( count($update_args) > 0 ) {
         //
         // Update the registration
         //
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+        error_log("Upgrade {$reg['id']}");
+        print_r($update_args);
+/*        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
         $rc = ciniki_core_objectUpdate($ciniki, $reg['tnid'], 'ciniki.musicfestivals.registration', $reg['id'], $update_args, 0x04);
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.563', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
-        }
+        } */
     }
 }
 

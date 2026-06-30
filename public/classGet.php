@@ -363,15 +363,17 @@ function ciniki_musicfestivals_classGet($ciniki) {
     // Get the list of categories
     //
     if( isset($args['categories']) && $args['categories'] == 'yes' ) {
-        $strsql = "SELECT ciniki_musicfestival_categories.id, "
-            . "CONCAT_WS(' - ', ciniki_musicfestival_sections.name, ciniki_musicfestival_categories.name) AS name "
-            . "FROM ciniki_musicfestival_sections, ciniki_musicfestival_categories "
-            . "WHERE ciniki_musicfestival_sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "AND ciniki_musicfestival_sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-            . "AND ciniki_musicfestival_sections.id = ciniki_musicfestival_categories.section_id "
-            . "AND ciniki_musicfestival_categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-            . "ORDER BY ciniki_musicfestival_sections.sequence, ciniki_musicfestival_sections.name, "
-                . "ciniki_musicfestival_categories.sequence, ciniki_musicfestival_categories.name "
+        $strsql = "SELECT categories.id, "
+            . "CONCAT_WS(' - ', sections.name, categories.name) AS name "
+            . "FROM ciniki_musicfestival_sections AS sections "
+            . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
+                . "categories.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND sections.id = categories.section_id "
+                . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY sections.sequence, sections.name, categories.sequence, categories.name "
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'categories', 'fname'=>'id', 'fields'=>array('id', 'name')),

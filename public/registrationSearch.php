@@ -83,30 +83,14 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
         . "categories.name AS category_name, "
         . "FORMAT(registrations.fee, 2) AS fee, "
         . "registrations.participation, "
-        . "registrations.title1, "
-        . "registrations.title2, "
-        . "registrations.title3, "
-        . "registrations.title4, "
-        . "registrations.title5, "
-        . "registrations.title6, "
-        . "registrations.title7, "
-        . "registrations.title8, "
-        . "registrations.composer1, "
-        . "registrations.composer2, "
-        . "registrations.composer3, "
-        . "registrations.composer4, "
-        . "registrations.composer5, "
-        . "registrations.composer6, "
-        . "registrations.composer7, "
-        . "registrations.composer8, "
-        . "registrations.movements1, "
-        . "registrations.movements2, "
-        . "registrations.movements3, "
-        . "registrations.movements4, "
-        . "registrations.movements5, "
-        . "registrations.movements6, "
-        . "registrations.movements7, "
-        . "registrations.movements8, "
+        . "registrations.fulltitle1, "
+        . "registrations.fulltitle2, "
+        . "registrations.fulltitle3, "
+        . "registrations.fulltitle4, "
+        . "registrations.fulltitle5, "
+        . "registrations.fulltitle6, "
+        . "registrations.fulltitle7, "
+        . "registrations.fulltitle8, "
         . "registrations.perf_time1, "
         . "registrations.perf_time2, "
         . "registrations.perf_time3, "
@@ -234,14 +218,14 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
                 'status', 'status_text', 'invoice_id', 'display_name', 
                 'class_id', 'class_code', 'class_name', 'category_name', 'section_name',
                 'fee', 'participation', 
-                'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
-                'title2', 'composer2', 'movements2', 'perf_time2', 'video_url2', 'music_orgfilename2',
-                'title3', 'composer3', 'movements3', 'perf_time3', 'video_url3', 'music_orgfilename3',
-                'title4', 'composer4', 'movements4', 'perf_time4', 'video_url4', 'music_orgfilename4',
-                'title5', 'composer5', 'movements5', 'perf_time5', 'video_url5', 'music_orgfilename5',
-                'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
-                'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
-                'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
+                'fulltitle1', 'perf_time1', 'video_url1', 'music_orgfilename1',
+                'fulltitle2', 'perf_time2', 'video_url2', 'music_orgfilename2',
+                'fulltitle3', 'perf_time3', 'video_url3', 'music_orgfilename3',
+                'fulltitle4', 'perf_time4', 'video_url4', 'music_orgfilename4',
+                'fulltitle5', 'perf_time5', 'video_url5', 'music_orgfilename5',
+                'fulltitle6', 'perf_time6', 'video_url6', 'music_orgfilename6',
+                'fulltitle7', 'perf_time7', 'video_url7', 'music_orgfilename7',
+                'fulltitle8', 'perf_time8', 'video_url8', 'music_orgfilename8',
                 'mark', 'placement', 'level',
                 'invoice_type', 'invoice_status', 'payment_status_text',
                 'provincials_code', 'provincials_position', 'provincials_position_text', 

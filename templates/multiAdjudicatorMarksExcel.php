@@ -14,7 +14,6 @@ require_once($ciniki['config']['core']['lib_dir'] . '/vendor/autoload.php');
 
 function ciniki_musicfestivals_templates_multiAdjudicatorMarksExcel(&$ciniki, $tnid, $args) {
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'scheduleTimeslotProcess');
 
     //

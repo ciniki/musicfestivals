@@ -15,7 +15,19 @@
 function ciniki_musicfestivals_titleMerge(&$ciniki, $tnid, $registration, $i) {
 
     $line = $registration["title{$i}"];
-    if( $registration["movements{$i}"] != '' 
+    if( isset($registration["opus{$i}"]) 
+        && $registration["opus{$i}"] != '' 
+        && strtolower($registration["opus{$i}"]) != 'na'
+        && strtolower($registration["opus{$i}"]) != 'tba'
+        && strtolower($registration["opus{$i}"]) != 'tbd'
+        && strtolower($registration["opus{$i}"]) != 'n/a'
+        && strtolower($registration["opus{$i}"]) != 'not applicable'
+        && strtolower($registration["opus{$i}"]) != 'none'
+        ) {
+        $line .= ', ' . $registration["opus{$i}"];
+    }
+    if( isset($registration["movements{$i}"]) 
+        && $registration["movements{$i}"] != '' 
         && strtolower($registration["movements{$i}"]) != 'na'
         && strtolower($registration["movements{$i}"]) != 'tba'
         && strtolower($registration["movements{$i}"]) != 'tbd'
@@ -24,6 +36,17 @@ function ciniki_musicfestivals_titleMerge(&$ciniki, $tnid, $registration, $i) {
         && strtolower($registration["movements{$i}"]) != 'none'
         ) {
         $line .= ', ' . $registration["movements{$i}"];
+    }
+    if( isset($registration["musical{$i}"]) 
+        && $registration["musical{$i}"] != '' 
+        && strtolower($registration["musical{$i}"]) != 'na'
+        && strtolower($registration["musical{$i}"]) != 'tba'
+        && strtolower($registration["musical{$i}"]) != 'tbd'
+        && strtolower($registration["musical{$i}"]) != 'n/a'
+        && strtolower($registration["musical{$i}"]) != 'not applicable'
+        && strtolower($registration["musical{$i}"]) != 'none'
+        ) {
+        $line .= ', ' . $registration["musical{$i}"];
     }
     if( $registration["composer{$i}"] != ''
         && strtolower($registration["composer{$i}"]) != 'na'

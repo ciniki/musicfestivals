@@ -136,30 +136,14 @@ function ciniki_musicfestivals_scheduleDivisionResultsGet(&$ciniki) {
         . "registrations.status, "
         . "registrations.display_name, "
         . "registrations.timeslot_sequence, "
-        . "registrations.title1, "
-        . "registrations.title2, "
-        . "registrations.title3, "
-        . "registrations.title4, "
-        . "registrations.title5, "
-        . "registrations.title6, "
-        . "registrations.title7, "
-        . "registrations.title8, "
-        . "registrations.composer1, "
-        . "registrations.composer2, "
-        . "registrations.composer3, "
-        . "registrations.composer4, "
-        . "registrations.composer5, "
-        . "registrations.composer6, "
-        . "registrations.composer7, "
-        . "registrations.composer8, "
-        . "registrations.movements1, "
-        . "registrations.movements2, "
-        . "registrations.movements3, "
-        . "registrations.movements4, "
-        . "registrations.movements5, "
-        . "registrations.movements6, "
-        . "registrations.movements7, "
-        . "registrations.movements8, "
+        . "registrations.fulltitle1, "
+        . "registrations.fulltitle2, "
+        . "registrations.fulltitle3, "
+        . "registrations.fulltitle4, "
+        . "registrations.fulltitle5, "
+        . "registrations.fulltitle6, "
+        . "registrations.fulltitle7, "
+        . "registrations.fulltitle8, "
         . "IF((timeslots.flags&0x02)=0x02, registrations.finals_mark, registrations.mark) AS mark, "
         . "IF((timeslots.flags&0x02)=0x02, registrations.finals_placement, registrations.placement) AS placement, "
         . "IF((timeslots.flags&0x02)=0x02, registrations.finals_level, registrations.level) AS level, "
@@ -202,9 +186,7 @@ function ciniki_musicfestivals_scheduleDivisionResultsGet(&$ciniki) {
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'timeslot_id', 'timeslot_flags', 'status', 'display_name', 
                 'slot_time_text', 'timeslot_sequence', 'start_num',
-                'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
-                'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
-                'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
+                'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8', 
                 'mark', 'placement', 'level', 'provincials_status', 'provincials_position',
                 'class_code', 'class_name', 'category_name', 'section_name',
                 ),

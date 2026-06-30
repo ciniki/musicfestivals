@@ -231,9 +231,7 @@ function ciniki_musicfestivals_provincialsRecommendationGet($ciniki) {
             . "registrations.id, "
             . "registrations.mark, "
             . "registrations.display_name, "
-            . "registrations.title1, "
-            . "registrations.movements1, "
-            . "registrations.composer1, "
+            . "registrations.fulltitle1, "
             . "registrations.perf_time1 "
             . "FROM ciniki_musicfestival_adjudicatorrefs AS arefs "
             . "INNER JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
@@ -275,7 +273,7 @@ function ciniki_musicfestivals_provincialsRecommendationGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
                 'fields'=>array('id', 'display_name', 'section_name', 'category_name', 'class_code', 'class_name', 'mark',
-                    'title1', 'movements1', 'composer1', 'perf_time1'),
+                    'fulltitle1', 'perf_time1'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -283,14 +281,8 @@ function ciniki_musicfestivals_provincialsRecommendationGet($ciniki) {
         }
         $rsp['registrations'] = isset($rc['registrations']) ? $rc['registrations'] : array();
         
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
         foreach($rsp['registrations'] as $rid => $reg) {
-           $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $reg, 1);
-            if( $rc['stat'] != 'ok' ) {
-                return $rc;
-            }
-            $title = $rc['title'];
-//            $rsp['registrations'][$rid]['name'] = $reg['display_name'] . ' - ' . $reg['class_code'] . ' - ' . $reg['class_name'] . ' - ' . $title;
+            $title = $reg["fulltitle1"];
             $rsp['registrations'][$rid]['name'] = $reg['display_name'] . ' - ' . $reg['class_code'] . ' - ' . $title . ' - ' . $reg['class_name'];
         }
     }

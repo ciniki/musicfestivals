@@ -13,8 +13,6 @@
 //
 function ciniki_musicfestivals_templates_warmupSchedulePDF(&$ciniki, $tnid, $args) {
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
-
     //
     // Load the tenant details
     //

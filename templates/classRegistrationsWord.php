@@ -85,37 +85,21 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
         . "registrations.teacher_customer_id, "
         . "registrations.display_name, "
         . "registrations.public_name, "
-        . "registrations.title1, "
-        . "registrations.movements1, "
-        . "registrations.composer1, "
+        . "registrations.fulltitle1, "
+        . "registrations.fulltitle2, "
+        . "registrations.fulltitle3, "
+        . "registrations.fulltitle4, "
+        . "registrations.fulltitle5, "
+        . "registrations.fulltitle6, "
+        . "registrations.fulltitle7, "
+        . "registrations.fulltitle8, "
         . "registrations.perf_time1, "
-        . "registrations.title2, "
-        . "registrations.movements2, "
-        . "registrations.composer2, "
         . "registrations.perf_time2, "
-        . "registrations.title3, "
-        . "registrations.movements3, "
-        . "registrations.composer3, "
         . "registrations.perf_time3, "
-        . "registrations.title4, "
-        . "registrations.movements4, "
-        . "registrations.composer4, "
         . "registrations.perf_time4, "
-        . "registrations.title5, "
-        . "registrations.movements5, "
-        . "registrations.composer5, "
         . "registrations.perf_time5, "
-        . "registrations.title6, "
-        . "registrations.movements6, "
-        . "registrations.composer6, "
         . "registrations.perf_time6, "
-        . "registrations.title7, "
-        . "registrations.movements7, "
-        . "registrations.composer7, "
         . "registrations.perf_time7, "
-        . "registrations.title8, "
-        . "registrations.movements8, "
-        . "registrations.composer8, "
         . "registrations.perf_time8, "
         . "registrations.participation, "
         . "registrations.notes, "
@@ -171,14 +155,8 @@ function ciniki_musicfestivals_templates_classRegistrationsWord(&$ciniki, $tnid,
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 
-                'title1', 'movements1', 'composer1', 'perf_time1', 
-                'title2', 'movements2', 'composer2', 'perf_time2', 
-                'title3', 'movements3', 'composer3', 'perf_time3', 
-                'title4', 'movements4', 'composer4', 'perf_time4', 
-                'title5', 'movements5', 'composer5', 'perf_time5', 
-                'title6', 'movements6', 'composer6', 'perf_time6', 
-                'title7', 'movements7', 'composer7', 'perf_time7', 
-                'title8', 'movements8', 'composer8', 'perf_time8', 
+                'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8', 
+                'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8', 
                 'notes', 'internal_notes',
                 'participation', 'teacher_customer_id',
             )),

@@ -246,30 +246,14 @@ function ciniki_musicfestivals_wng_syllabusSectionResultsProcess(&$ciniki, $tnid
         . "registrations.display_name, "
         . "registrations.public_name, "
         . "registrations.flags AS reg_flags, "
-        . "registrations.title1, "
-        . "registrations.title2, "
-        . "registrations.title3, "
-        . "registrations.title4, "
-        . "registrations.title5, "
-        . "registrations.title6, "
-        . "registrations.title7, "
-        . "registrations.title8, "
-        . "registrations.composer1, "
-        . "registrations.composer2, "
-        . "registrations.composer3, "
-        . "registrations.composer4, "
-        . "registrations.composer5, "
-        . "registrations.composer6, "
-        . "registrations.composer7, "
-        . "registrations.composer8, "
-        . "registrations.movements1, "
-        . "registrations.movements2, "
-        . "registrations.movements3, "
-        . "registrations.movements4, "
-        . "registrations.movements5, "
-        . "registrations.movements6, "
-        . "registrations.movements7, "
-        . "registrations.movements8, "
+        . "registrations.fulltitle1, "
+        . "registrations.fulltitle2, "
+        . "registrations.fulltitle3, "
+        . "registrations.fulltitle4, "
+        . "registrations.fulltitle5, "
+        . "registrations.fulltitle6, "
+        . "registrations.fulltitle7, "
+        . "registrations.fulltitle8, "
         . "registrations.video_url1, "
         . "registrations.video_url2, "
         . "registrations.video_url3, "
@@ -338,9 +322,7 @@ function ciniki_musicfestivals_wng_syllabusSectionResultsProcess(&$ciniki, $tnid
         array('container'=>'groups', 'fname'=>'groupname', 'fields'=>array('name' => 'groupname')),
         array('container'=>'registrations', 'fname'=>'registration_id',  
             'fields'=>array('id'=>'registration_id', 'display_name', 'public_name', 'flags'=>'reg_flags',
-                'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
-                'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
-                'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8',
                 'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
                 'participation', 'mark', 'placement', 'level', 
                 )),
@@ -383,7 +365,7 @@ function ciniki_musicfestivals_wng_syllabusSectionResultsProcess(&$ciniki, $tnid
                                 //
                                 // Make sure the title exists
                                 //
-                                if( isset($reg["title{$i}"]) && $reg["title{$i}"] != '' ) {
+                                if( isset($reg["fulltitle{$i}"]) && $reg["fulltitle{$i}"] != '' ) {
                                     $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
                                     if( $rc['stat'] != 'ok' ) {
                                         return $rc;

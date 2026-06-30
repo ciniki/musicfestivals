@@ -39,36 +39,52 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         'competitor5_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Competitor 5'),
         'class_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Class'),
         'title1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Title'),
-        'composer1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Composer'),
+        'opus1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Opus'),
         'movements1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Movements'),
+        'musical1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Musical'),
+        'composer1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Composer'),
         'perf_time1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Performance Time'),
         'title2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2nd Title'),
-        'composer2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2nd Composer'),
+        'opus2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2nd Opus'),
         'movements2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2nd Movements'),
+        'musical2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2nd Musical'),
+        'composer2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2nd Composer'),
         'perf_time2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2nd Performance Time'),
         'title3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'3rd Title'),
-        'composer3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'3rd Composer'),
+        'opus3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'3rd Opus'),
         'movements3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'3rd Movements'),
+        'musical3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'3rd Musical'),
+        'composer3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'3rd Composer'),
         'perf_time3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'3rd Performance Time'),
         'title4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'4th Title'),
-        'composer4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'4th Composer'),
+        'opus4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'4th Opus'),
         'movements4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'4th Movements'),
+        'musical4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'4th Musical'),
+        'composer4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'4th Composer'),
         'perf_time4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'4th Performance Time'),
         'title5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'5th Title'),
-        'composer5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'5th Composer'),
+        'opus5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'5th Opus'),
         'movements5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'5th Movements'),
+        'musical5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'5th Musical'),
+        'composer5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'5th Composer'),
         'perf_time5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'5th Performance Time'),
         'title6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'6th Title'),
-        'composer6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'6th Composer'),
+        'opus6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'6th Opus'),
         'movements6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'6th Movements'),
+        'musical6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'6th Musical'),
+        'composer6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'6th Composer'),
         'perf_time6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'6th Performance Time'),
         'title7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'7th Title'),
-        'composer7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'7th Composer'),
+        'opus7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'7th Opus'),
         'movements7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'7th Movements'),
+        'musical7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'7th Musical'),
+        'composer7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'7th Composer'),
         'perf_time7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'7th Performance Time'),
         'title8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'8th Title'),
-        'composer8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'8th Composer'),
+        'opus8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'8th Opus'),
         'movements8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'8th Movements'),
+        'musical8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'8th Musical'),
+        'composer8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'8th Composer'),
         'perf_time8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'8th Performance Time'),
         'fee'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Fee'),
         'participation'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Virtual'),
@@ -522,6 +538,19 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationNameUpdate');
     $rc = ciniki_musicfestivals_registrationNameUpdate($ciniki, $args['tnid'], [
+        'festival_id' => $registration['festival_id'],
+        'registration_id' => $args['registration_id'],
+        ]);
+    if( $rc['stat'] != 'ok' ) {
+        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+        return $rc;
+    }
+
+    //
+    // Update the full titles for the registration
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationFullTitlesUpdate');
+    $rc = ciniki_musicfestivals_registrationFullTitlesUpdate($ciniki, $args['tnid'], [
         'festival_id' => $registration['festival_id'],
         'registration_id' => $args['registration_id'],
         ]);

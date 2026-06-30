@@ -110,30 +110,14 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
         . "registrations.uuid AS reg_uuid, "
         . "registrations.display_name, "
         . "registrations.public_name, "
-        . "registrations.title1, "
-        . "registrations.title2, "
-        . "registrations.title3, "
-        . "registrations.title4, "
-        . "registrations.title5, "
-        . "registrations.title6, "
-        . "registrations.title7, "
-        . "registrations.title8, "
-        . "registrations.composer1, "
-        . "registrations.composer2, "
-        . "registrations.composer3, "
-        . "registrations.composer4, "
-        . "registrations.composer5, "
-        . "registrations.composer6, "
-        . "registrations.composer7, "
-        . "registrations.composer8, "
-        . "registrations.movements1, "
-        . "registrations.movements2, "
-        . "registrations.movements3, "
-        . "registrations.movements4, "
-        . "registrations.movements5, "
-        . "registrations.movements6, "
-        . "registrations.movements7, "
-        . "registrations.movements8, "
+        . "registrations.fulltitle1, "
+        . "registrations.fulltitle2, "
+        . "registrations.fulltitle3, "
+        . "registrations.fulltitle4, "
+        . "registrations.fulltitle5, "
+        . "registrations.fulltitle6, "
+        . "registrations.fulltitle7, "
+        . "registrations.fulltitle8, "
         . "registrations.video_url1, "
         . "registrations.video_url2, "
         . "registrations.video_url3, "
@@ -185,9 +169,7 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name', 
                 'reg_flags', 'participation', 'min_titles', 'max_titles',
-                'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
-                'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
-                'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8',
                 'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8', 
                 'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3', 'music_orgfilename4', 
                 'music_orgfilename5', 'music_orgfilename6', 'music_orgfilename7', 'music_orgfilename8',
@@ -205,10 +187,6 @@ function ciniki_musicfestivals_scheduleTimeslotCommentsGet($ciniki) {
             $timeslot['placement_' . $registration['id']] = $registration['placement'];
             $timeslot['level_' . $registration['id']] = $registration['level'];
             $timeslot['comments_' . $registration['id']] = $registration['comments'];
-            for($i = 1; $i <= 8; $i++) {
-                $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
-                $timeslot['registrations'][$rid]["title{$i}"] = $rc['title'];
-            }
         }
     }
 /*    if( isset($timeslot['registrations']) ) {

@@ -13,8 +13,6 @@
 //
 function ciniki_musicfestivals_templates_adjudicatorCompetitorClassesPDF(&$ciniki, $tnid, $args) {
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
-
     //
     // Load the tenant details
     //
@@ -60,7 +58,7 @@ function ciniki_musicfestivals_templates_adjudicatorCompetitorClassesPDF(&$cinik
         . "registrations.mark AS marks, "
         . "classes.code AS codes "
         . "FROM ciniki_musicfestival_competitors AS competitors "
-        . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+        . "INNER JOIN ciniki_musicfestival_registrations AS registrations USE INDEX (competitors) ON ("
             . "registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
             . "AND ("
                 . "competitors.id = registrations.competitor1_id "

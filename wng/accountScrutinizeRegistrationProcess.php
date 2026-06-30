@@ -33,7 +33,7 @@ function ciniki_musicfestivals_wng_accountScrutinizeRegistrationProcess(&$ciniki
         return array('stat'=>'exit');
     }
 
-    $fields = ['title', 'composer', 'movements', 'perf_time', 'video_url', 'music_orgfilename', 'backtrack', 'artwork'];
+    $fields = ['title', 'opus', 'movements', 'musical', 'composer', 'perf_time', 'video_url', 'music_orgfilename', 'backtrack', 'artwork'];
 
     //
     // Load the registration
@@ -132,6 +132,20 @@ function ciniki_musicfestivals_wng_accountScrutinizeRegistrationProcess(&$ciniki
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1142', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
             }
+
+            //
+            // Update the full titles for the registration
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationFullTitlesUpdate');
+            $rc = ciniki_musicfestivals_registrationFullTitlesUpdate($ciniki, $tnid, [
+                'festival_id' => $festival['id'],
+                'registration_id' => $registration['id'],
+                ]);
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+                return $rc;
+            }
+
         }
 
         header("Location: {$base_url}");
@@ -258,14 +272,32 @@ function ciniki_musicfestivals_wng_accountScrutinizeRegistrationProcess(&$ciniki
                 'label' => "{$prefix} " . (isset($festival['registration-title-label']) && $festival['registration-title-label'] != '' ? $festival['registration-title-label'] : "Title"),
                 'value' => isset($_POST["f-title{$i}"]) ? $_POST["f-title{$i}"] : $registration["title{$i}"],
                 ];
+            $fields["opus{$i}"] = [
+                'id' => "opus{$i}",
+                'ftype' => 'text',
+                'flex-basis' => '50%',
+                'editable' => $editable,
+                'size' => 'small',
+                'label' => "{$prefix} " . (isset($festival['registration-opus-label']) && $festival['registration-opus-label'] != '' ? $festival['registration-opus-label'] : "Opus"),
+                'value' => isset($_POST["f-opus{$i}"]) ? $_POST["f-opus{$i}"] : $registration["opus{$i}"],
+                ];
             $fields["movements{$i}"] = [
                 'id' => "movements{$i}",
                 'ftype' => 'text',
                 'flex-basis' => '50%',
                 'editable' => $editable,
                 'size' => 'small',
-                'label' => "{$prefix} " . (isset($festival['registration-movements-label']) && $festival['registration-movements-label'] != '' ? $festival['registration-movements-label'] : "Movements/Musical"),
+                'label' => "{$prefix} " . (isset($festival['registration-movements-label']) && $festival['registration-movements-label'] != '' ? $festival['registration-movements-label'] : "Movements"),
                 'value' => isset($_POST["f-movements{$i}"]) ? $_POST["f-movements{$i}"] : $registration["movements{$i}"],
+                ];
+            $fields["musical{$i}"] = [
+                'id' => "musical{$i}",
+                'ftype' => 'text',
+                'flex-basis' => '50%',
+                'editable' => $editable,
+                'size' => 'small',
+                'label' => "{$prefix} " . (isset($festival['registration-musical-label']) && $festival['registration-musical-label'] != '' ? $festival['registration-musical-label'] : "Musical"),
+                'value' => isset($_POST["f-musical{$i}"]) ? $_POST["f-musical{$i}"] : $registration["musical{$i}"],
                 ];
             $fields["composer{$i}"] = [
                 'id' => "composer{$i}",

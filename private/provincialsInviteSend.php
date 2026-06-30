@@ -78,30 +78,14 @@ function ciniki_musicfestivals_provincialsInviteSend(&$ciniki, $tnid, $args) {
         . "registrations.competitor3_id, "
         . "registrations.competitor4_id, "
         . "registrations.competitor5_id, "
-        . "registrations.title1, "
-        . "registrations.movements1, "
-        . "registrations.composer1, "
-        . "registrations.title2, "
-        . "registrations.movements2, "
-        . "registrations.composer2, "
-        . "registrations.title3, "
-        . "registrations.movements3, "
-        . "registrations.composer3, "
-        . "registrations.title4, "
-        . "registrations.movements4, "
-        . "registrations.composer4, "
-        . "registrations.title5, "
-        . "registrations.movements5, "
-        . "registrations.composer5, "
-        . "registrations.title6, "
-        . "registrations.movements6, "
-        . "registrations.composer6, "
-        . "registrations.title7, "
-        . "registrations.movements7, "
-        . "registrations.composer7, "
-        . "registrations.title8, "
-        . "registrations.movements8, "
-        . "registrations.composer8 "
+        . "registrations.fulltitle1, "
+        . "registrations.fulltitle2, "
+        . "registrations.fulltitle3, "
+        . "registrations.fulltitle4, "
+        . "registrations.fulltitle5, "
+        . "registrations.fulltitle6, "
+        . "registrations.fulltitle7, "
+        . "registrations.fulltitle8 "
         . "FROM ciniki_musicfestival_registrations AS registrations "
         . "WHERE registrations.id = '" . ciniki_core_dbQuote($ciniki, $entry['local_reg_id']) . "' "
         . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -124,16 +108,10 @@ function ciniki_musicfestivals_provincialsInviteSend(&$ciniki, $tnid, $args) {
     //
     // Merge titles
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
     $registration['titles'] = '';
     for($i = 1; $i <= 8; $i++) {
-        if( $registration["title{$i}"] != '' ) {
-            $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $registration, $i);
-            if( isset($rc['title']) ) {
-                $registration['title1'] = $rc['title'];
-                $registration['titles'] .= ($registration['titles'] != '' ? '<br>' : '') . $rc['title'];
-
-            }
+        if( $registration["fulltitle{$i}"] != '' ) {
+            $registration['titles'] .= ($registration['titles'] != '' ? '<br>' : '') . $registration["fulltitle{$i}"];
         }
     }
 
@@ -170,8 +148,8 @@ function ciniki_musicfestivals_provincialsInviteSend(&$ciniki, $tnid, $args) {
     $subject = str_replace('{_name_}', $registration_name, $subject);
     $message = str_replace('{_name_}', $registration_name, $message);
     for($i = 1; $i <= 8; $i++) {
-        $subject = str_replace("{_title{$i}_}", $registration["title{$i}"], $subject);
-        $message = str_replace("{_title{$i}_}", $registration["title{$i}"], $message);
+        $subject = str_replace("{_title{$i}_}", $registration["fulltitle{$i}"], $subject);
+        $message = str_replace("{_title{$i}_}", $registration["fulltitle{$i}"], $message);
     }
     $subject = str_replace('{_titles_}', $registration['titles'], $subject);
     $message = str_replace('{_titles_}', $registration['titles'], $message);

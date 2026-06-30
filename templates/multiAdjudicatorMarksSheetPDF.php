@@ -12,7 +12,6 @@
 //
 function ciniki_musicfestivals_templates_multiAdjudicatorMarksSheetPDF(&$ciniki, $tnid, $args) {
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'scheduleTimeslotProcess');
 
     //
@@ -98,30 +97,14 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksSheetPDF(&$ciniki,
         . "registrations.competitor3_id, "
         . "registrations.competitor4_id, "
         . "registrations.competitor5_id, "
-        . "registrations.title1, "
-        . "registrations.title2, "
-        . "registrations.title3, "
-        . "registrations.title4, "
-        . "registrations.title5, "
-        . "registrations.title6, "
-        . "registrations.title7, "
-        . "registrations.title8, "
-        . "registrations.composer1, "
-        . "registrations.composer2, "
-        . "registrations.composer3, "
-        . "registrations.composer4, "
-        . "registrations.composer5, "
-        . "registrations.composer6, "
-        . "registrations.composer7, "
-        . "registrations.composer8, "
-        . "registrations.movements1, "
-        . "registrations.movements2, "
-        . "registrations.movements3, "
-        . "registrations.movements4, "
-        . "registrations.movements5, "
-        . "registrations.movements6, "
-        . "registrations.movements7, "
-        . "registrations.movements8, "
+        . "registrations.fulltitle1, "
+        . "registrations.fulltitle2, "
+        . "registrations.fulltitle3, "
+        . "registrations.fulltitle4, "
+        . "registrations.fulltitle5, "
+        . "registrations.fulltitle6, "
+        . "registrations.fulltitle7, "
+        . "registrations.fulltitle8, "
         . "registrations.perf_time1, "
         . "registrations.perf_time2, "
         . "registrations.perf_time3, "
@@ -237,9 +220,7 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksSheetPDF(&$ciniki,
                 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
                 'notes', 'internal_notes', 'runsheet_notes'=>'runnote',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 'groupname',
-                'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
-                'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
-                'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8',
                 'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
                 ),
             ),
@@ -446,13 +427,11 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksSheetPDF(&$ciniki,
                         $h = 0;
                         $pdf->SetFont('helvetica', '', 10);
                         for($i = 1; $i <= 8; $i++) {
-                            if( trim($reg["title{$i}"]) == '' ) {
+                            if( trim($reg["fulltitle{$i}"]) == '' ) {
                                 continue;
                             }
-                            $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
-                            $reg["title{$i}_merged"] = $rc['title'];
-                            $reg["title{$i}_h"] = $pdf->getStringHeight($wncm[1], $reg["title{$i}_merged"]);
-                            $h += $reg["title{$i}_h"];
+                            $reg["fulltitle{$i}_h"] = $pdf->getStringHeight($wncm[1], $reg["fulltitle{$i}"]);
+                            $h += $reg["fulltitle{$i}_h"];
                         }
                         
                         if( ($pdf->GetY() + $h) > $pdf->getPageHeight() - 20 ) {
@@ -470,14 +449,14 @@ function ciniki_musicfestivals_templates_multiAdjudicatorMarksSheetPDF(&$ciniki,
 
                         $pdf->SetFont('helvetica', '', 10);
                         for($i = 1; $i <= 8; $i++) {
-                            if( trim($reg["title{$i}"]) == '' ) {
+                            if( trim($reg["fulltitle{$i}"]) == '' ) {
                                 continue;
                             }
                             if( $i > 1 ) {
                                 $pdf->setX($pdf->getX() + $wncm[0]);
                             }
-                            $pdf->MultiCell($wncm[1], $reg["title{$i}_h"], $reg["title{$i}_merged"], 1, 'L', 0, 0);
-                            $pdf->MultiCell($wncm[2], $reg["title{$i}_h"], '', 1, 'L', 0, 1);
+                            $pdf->MultiCell($wncm[1], $reg["fulltitle{$i}_h"], $reg["fulltitle{$i}"], 1, 'L', 0, 0);
+                            $pdf->MultiCell($wncm[2], $reg["fulltitle{$i}_h"], '', 1, 'L', 0, 1);
                         }
                     }
                     $prev_adjudicator = $adjudicator['name'];

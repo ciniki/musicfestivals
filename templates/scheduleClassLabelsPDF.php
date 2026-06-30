@@ -14,7 +14,6 @@
 function ciniki_musicfestivals_templates_scheduleClassLabelsPDF(&$ciniki, $tnid, $args) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
 
     //

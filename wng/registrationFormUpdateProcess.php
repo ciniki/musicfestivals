@@ -177,7 +177,7 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             //
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
                 && isset($field['required']) && $field['required'] == 'yes' && $display == 'view' 
-                && preg_match("/(composer|movements)/", $field['id'])
+                && preg_match("/(opus|movements|musical|composer)/", $field['id'])
                 && $festival['edit'] == 'no' 
                 ) {
                 $field['required'] = 'no';
@@ -384,8 +384,10 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
                 continue;
             }
             $registration["title{$i}"] = isset($fields["title{$i}"]['value']) ? $fields["title{$i}"]['value'] : '';
-            $registration["composer{$i}"] = isset($fields["composer{$i}"]['value']) ? $fields["composer{$i}"]['value'] : '';
+            $registration["opus{$i}"] = isset($fields["opus{$i}"]['value']) ? $fields["opus{$i}"]['value'] : '';
             $registration["movements{$i}"] = isset($fields["movements{$i}"]['value']) ? $fields["movements{$i}"]['value'] : '';
+            $registration["musical{$i}"] = isset($fields["musical{$i}"]['value']) ? $fields["musical{$i}"]['value'] : '';
+            $registration["composer{$i}"] = isset($fields["composer{$i}"]['value']) ? $fields["composer{$i}"]['value'] : '';
             $registration["perf_time{$i}"] = isset($fields["perf_time{$i}"]['value']) ? $fields["perf_time{$i}"]['value'] : '';
             $registration["video_url{$i}"] = isset($fields["video_url{$i}"]['value']) ? $fields["video_url{$i}"]['value'] : '';
         }
@@ -561,25 +563,32 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
         }
 
         //
+        // Update the full titles for the registration
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationFullTitlesUpdate');
+        $rc = ciniki_musicfestivals_registrationFullTitlesUpdate($ciniki, $tnid, [
+            'festival_id' => $festival['id'],
+            'registration_id' => $registration_id,
+            ]);
+        if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            return $rc;
+        }
+        for($i = 1; $i <= 8; $i++) {
+            if( isset($rc['titles'][$i]) ) {
+                $registration["fulltitle{$i}"] = $rc['titles'][$i];
+            }
+        }
+
+        //
         // Generate notes field for invoice
         //
         $notes = $registration['display_name'];
         $titles = '';
-        for($i = 1; $i <= 8; $i++) {
-            if( isset($registration["title{$i}"]) && $registration["title{$i}"] != '' ) {
-                $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $registration, $i);
-                if( isset($rc['title']) ) {
-                    $registration["title{$i}"] = $rc['title'];
-                }
-                if( $titles != '' && $i > 1 ) {
-                    if( strncmp($titles, '1', 1) != 0 ) {
-                        $titles = "1. " . $titles . "\n{$i}. ";
-                    } else {
-                        $titles .= "\n{$i}. ";
-                    }
-                }
-                $titles .= $registration["title{$i}"];
-            }
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
+        $rc = ciniki_musicfestivals_titlesMerge($ciniki, $tnid, $registration, ['basicnumbers'=>'yes']);
+        if( isset($rc['titles']) ) {
+            $titles = $rc['titles'];
         } 
         if( $titles != '' ) {
             $notes .= "\n" . $titles;
@@ -710,7 +719,7 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             // Skip fields when editing a pending or paid registration
             //
             if( isset($registration['status']) && $registration['status'] > 10 
-                && !preg_match("/(title|composer|movements|perf_time|video_url|music_orgfilename|backtrack_option|backtrack|artwork)/", $field['id'])
+                && !preg_match("/(title|opus|movements|musical|composer|perf_time|video_url|music_orgfilename|backtrack_option|backtrack|artwork)/", $field['id'])
                 ) {
                 continue;
             }
@@ -814,17 +823,45 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
                 $registration['public_name'] = $rc['public_name'];
                 $registration['private_name'] = $rc['private_name'];
             }
-            for($i = 1; $i <= 8; $i++) {
+
+            //
+            // Update the full titles for the registration
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'registrationFullTitlesUpdate');
+            $rc = ciniki_musicfestivals_registrationFullTitlesUpdate($ciniki, $tnid, [
+                'festival_id' => $festival['id'],
+                'registration_id' => $registration_id,
+                ]);
+            if( $rc['stat'] != 'ok' ) {
+                ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+                return $rc;
+            }
+            // Update the registration full titles so they can be updated in cart
+            if( isset($rc['titles']) ) {
+                for($i = 1; $i <= 8; $i++) {
+                    if( isset($rc['titles'][$i]) ) {
+                        $registration["fulltitle{$i}"] = $rc['titles'][$i];
+                    }
+                }
+            }
+
+/*            for($i = 1; $i <= 8; $i++) {
                 if( isset($update_args["title{$i}"]) ) {
                     $registration["title{$i}"] = $update_args["title{$i}"];
                 }
-                if( isset($update_args["composer{$i}"]) ) {
-                    $registration["composer{$i}"] = $update_args["composer{$i}"];
+                if( isset($update_args["opus{$i}"]) ) {
+                    $registration["opus{$i}"] = $update_args["opus{$i}"];
                 }
                 if( isset($update_args["movements{$i}"]) ) {
                     $registration["movements{$i}"] = $update_args["movements{$i}"];
                 }
-            }
+                if( isset($update_args["musical{$i}"]) ) {
+                    $registration["musical{$i}"] = $update_args["musical{$i}"];
+                }
+                if( isset($update_args["composer{$i}"]) ) {
+                    $registration["composer{$i}"] = $update_args["composer{$i}"];
+                }
+            } */
 
             //
             // Load the cart item

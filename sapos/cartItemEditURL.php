@@ -27,7 +27,7 @@ function ciniki_musicfestivals_sapos_cartItemEditURL($ciniki, $tnid, $invoice_id
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.333', 'msg'=>'Unable to load registration', 'err'=>$rc['err']));
         }
         if( isset($rc['registration']['uuid']) ) {
-            return array('stat'=>'ok', 'url'=>'/account/musicfestivalregistrations?r=' . $rc['registration']['uuid']);
+            return array('stat'=>'ok', 'url'=>'/account/musicfestival/registrations?r=' . $rc['registration']['uuid']);
         }
     }
 

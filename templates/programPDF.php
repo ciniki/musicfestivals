@@ -13,8 +13,6 @@
 //
 function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
-
     //
     // Load the tenant details
     //
@@ -85,30 +83,14 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
         . "registrations.display_name, "
         . "registrations.public_name, "
 //        . "'' AS title "
-        . "registrations.title1, "
-        . "registrations.title2, "
-        . "registrations.title3, "
-        . "registrations.title4, "
-        . "registrations.title5, "
-        . "registrations.title6, "
-        . "registrations.title7, "
-        . "registrations.title8, "
-        . "registrations.composer1, "
-        . "registrations.composer2, "
-        . "registrations.composer3, "
-        . "registrations.composer4, "
-        . "registrations.composer5, "
-        . "registrations.composer6, "
-        . "registrations.composer7, "
-        . "registrations.composer8, "
-        . "registrations.movements1, "
-        . "registrations.movements2, "
-        . "registrations.movements3, "
-        . "registrations.movements4, "
-        . "registrations.movements5, "
-        . "registrations.movements6, "
-        . "registrations.movements7, "
-        . "registrations.movements8 "
+        . "registrations.fulltitle1, "
+        . "registrations.fulltitle2, "
+        . "registrations.fulltitle3, "
+        . "registrations.fulltitle4, "
+        . "registrations.fulltitle5, "
+        . "registrations.fulltitle6, "
+        . "registrations.fulltitle7, "
+        . "registrations.fulltitle8 "
         . "FROM ciniki_musicfestival_schedule_sections AS ssections "
         . "INNER JOIN ciniki_musicfestival_schedule_divisions AS divisions ON ("
             . "ssections.id = divisions.ssection_id " 
@@ -171,9 +153,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
                 )),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name',
-                'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
-                'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
-                'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8',
             )),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -462,7 +442,7 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
                         $row['name'] = $reg['name'];
                         $row['dash_width'] = $pdf->getStringWidth('-', '', '') + 3;
                         $row['name_width'] = $pdf->getStringWidth($row['name'], '', '') + 0.25;
-                        $row['title_width'] = $pdf->getStringWidth($reg['title1'], '', '') + 0.25;
+                        $row['title_width'] = $pdf->getStringWidth($reg["fulltitle1"], '', '') + 0.25;
                         if( ($row['name_width'] + $row['dash_width'] + $row['title_width']) > $w2[2] 
                             && $row['name_width'] > ($w2[2]*0.4) 
                             ) {
@@ -475,11 +455,8 @@ function ciniki_musicfestivals_templates_programPDF(&$ciniki, $tnid, $args) {
 //                        $row['titles_height'] = $pdf->getStringHeight($row['title_width'], $row['title1']);
                         $row['titles_height'] = 0;
                         for($i = 1; $i <= 8; $i++ ) {
-                            if( isset($reg["title{$i}"]) && $reg["title{$i}"] != '' ) {
-                                $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
-                                if( isset($rc['title']) ) {
-                                    $timeslot['registrations'][$rid]["title{$i}"] = $rc['title'];
-                                }
+                            if( isset($reg["fulltitle{$i}"]) && $reg["fulltitle{$i}"] != '' ) {
+                                $timeslot['registrations'][$rid]["title{$i}"] = $reg["fulltitle{$i}"];
                                 $row["title{$i}"] = $timeslot['registrations'][$rid]["title{$i}"];
                                 if( isset($args['video_urls']) && $args['video_urls'] == 'yes' 
                                     && isset($reg["video_url{$i}"]) && $reg["video_url{$i}"] != '' 

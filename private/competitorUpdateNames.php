@@ -56,30 +56,14 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $args) {
         . "registrations.competitor5_id, "
         . "registrations.class_id, "
         . "FORMAT(registrations.fee, 2) AS fee, "
-        . "registrations.title1, "
-        . "registrations.title2, "
-        . "registrations.title3, "
-        . "registrations.title4, "
-        . "registrations.title5, "
-        . "registrations.title6, "
-        . "registrations.title7, "
-        . "registrations.title8, "
-        . "registrations.movements1, "
-        . "registrations.movements2, "
-        . "registrations.movements3, "
-        . "registrations.movements4, "
-        . "registrations.movements5, "
-        . "registrations.movements6, "
-        . "registrations.movements7, "
-        . "registrations.movements8, "
-        . "registrations.composer1, "
-        . "registrations.composer2, "
-        . "registrations.composer3, "
-        . "registrations.composer4, "
-        . "registrations.composer5, "
-        . "registrations.composer6, "
-        . "registrations.composer7, "
-        . "registrations.composer8, "
+        . "registrations.fulltitle1, "
+        . "registrations.fulltitle2, "
+        . "registrations.fulltitle3, "
+        . "registrations.fulltitle4, "
+        . "registrations.fulltitle5, "
+        . "registrations.fulltitle6, "
+        . "registrations.fulltitle7, "
+        . "registrations.fulltitle8, "
         . "registrations.notes "
 /*        . "competitors.id AS competitor_id, "
         . "competitors.name AS competitor_name, "
@@ -114,9 +98,7 @@ function ciniki_musicfestivals_competitorUpdateNames(&$ciniki, $tnid, $args) {
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'rtype', 'invoice_id', 'status', 
                 'display_name', 'public_name', 'private_name', 'pn_display_name', 'pn_public_name', 'pn_private_name',
-                'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
-                'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
-                'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
+                'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8',
                 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
                 )),
 //        array('container'=>'competitors', 'fname'=>'competitor_id', 

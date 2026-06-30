@@ -79,30 +79,14 @@ function ciniki_musicfestivals_scheduleTimeslotRecalc(&$ciniki, $tnid, $args) {
         . "registrations.timeslot_id, "
         . "registrations.finals_timeslot_id, "
         . "registrations.timeslot_time, "
-        . "registrations.title1, "
-        . "registrations.title2, "
-        . "registrations.title3, "
-        . "registrations.title4, "
-        . "registrations.title5, "
-        . "registrations.title6, "
-        . "registrations.title7, "
-        . "registrations.title8, "
-        . "registrations.composer1, "
-        . "registrations.composer2, "
-        . "registrations.composer3, "
-        . "registrations.composer4, "
-        . "registrations.composer5, "
-        . "registrations.composer6, "
-        . "registrations.composer7, "
-        . "registrations.composer8, "
-        . "registrations.movements1, "
-        . "registrations.movements2, "
-        . "registrations.movements3, "
-        . "registrations.movements4, "
-        . "registrations.movements5, "
-        . "registrations.movements6, "
-        . "registrations.movements7, "
-        . "registrations.movements8, "
+        . "registrations.fulltitle1, "
+        . "registrations.fulltitle2, "
+        . "registrations.fulltitle3, "
+        . "registrations.fulltitle4, "
+        . "registrations.fulltitle5, "
+        . "registrations.fulltitle6, "
+        . "registrations.fulltitle7, "
+        . "registrations.fulltitle8, "
         . "registrations.perf_time1, "
         . "registrations.perf_time2, "
         . "registrations.perf_time3, "
@@ -132,11 +116,8 @@ function ciniki_musicfestivals_scheduleTimeslotRecalc(&$ciniki, $tnid, $args) {
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'timeslot_id', 'finals_timeslot_id', 'timeslot_time',
-                'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 
-                'title8', 'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 
-                'composer7', 'composer8', 'movements1', 'movements2', 'movements3', 'movements4', 
-                'movements5', 'movements6', 'movements7', 'movements8', 'perf_time1', 'perf_time2', 
-                'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8', 
+                'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8', 
+                'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8', 
                 'class_flags', 'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds'),
             ),
         ));

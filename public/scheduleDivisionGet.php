@@ -188,30 +188,14 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
             . "registrations.display_name, "
             . "registrations.timeslot_sequence, "
             . "registrations.flags, "
-            . "registrations.title1, "
-            . "registrations.title2, "
-            . "registrations.title3, "
-            . "registrations.title4, "
-            . "registrations.title5, "
-            . "registrations.title6, "
-            . "registrations.title7, "
-            . "registrations.title8, "
-            . "registrations.composer1, "
-            . "registrations.composer2, "
-            . "registrations.composer3, "
-            . "registrations.composer4, "
-            . "registrations.composer5, "
-            . "registrations.composer6, "
-            . "registrations.composer7, "
-            . "registrations.composer8, "
-            . "registrations.movements1, "
-            . "registrations.movements2, "
-            . "registrations.movements3, "
-            . "registrations.movements4, "
-            . "registrations.movements5, "
-            . "registrations.movements6, "
-            . "registrations.movements7, "
-            . "registrations.movements8, "
+            . "registrations.fulltitle1, "
+            . "registrations.fulltitle2, "
+            . "registrations.fulltitle3, "
+            . "registrations.fulltitle4, "
+            . "registrations.fulltitle5, "
+            . "registrations.fulltitle6, "
+            . "registrations.fulltitle7, "
+            . "registrations.fulltitle8, "
             . "IF((timeslots.flags&0x02)=0x02, registrations.finals_mark, registrations.mark) AS mark, "
             . "IF((timeslots.flags&0x02)=0x02, registrations.finals_placement, registrations.placement) AS placement, "
             . "IF((timeslots.flags&0x02)=0x02, registrations.finals_level, registrations.level) AS level, "
@@ -255,9 +239,7 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
             array('container'=>'results', 'fname'=>'id', 
                 'fields'=>array('id', 'timeslot_id', 'groupname', 'start_num', 
                     'status', 'display_name', 'slot_time_text', 'timeslot_sequence', 'flags',
-                    'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
-                    'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
-                    'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
+                    'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8', 
                     'mark', 'placement', 'level', 'provincials_status', 'provincials_position',
                     'class_code', 'class_name', 'class_flags', 'category_name', 'section_name',
                     ),
@@ -279,16 +261,8 @@ function ciniki_musicfestivals_scheduleDivisionGet($ciniki) {
             if( $result['status'] == 77 ) {
                 $scheduledivision['division_results'][$sid]['mark'] .= ($result['mark'] != '' ? ' - ' : '') . 'No Show';
             }
-            $titles = '';
-            for($i = 1; $i <= 8; $i++) {
-                if( $result["title{$i}"] != '' ) {
-                    $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $result, $i);
-                    if( isset($rc['title']) ) {
-                        $titles .= ($titles != '' ? '<br/>' : '') . $rc['title'];
-                    }
-                }
-            }
-            $scheduledivision['division_results'][$sid]['titles'] = $titles;
+            $rc = ciniki_musicfestivals_titlesMerge($ciniki, $args['tnid'], $result);
+            $scheduledivision['division_results'][$sid]['titles'] = $rc['titles'];
         }
     }
 

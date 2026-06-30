@@ -12,8 +12,6 @@
 //
 function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$request, $args) {
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
-
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
@@ -67,30 +65,14 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
     } else {
         $strsql .= "registrations.display_name, ";
     }
-    $strsql .= "registrations.title1, "
-        . "registrations.title2, "
-        . "registrations.title3, "
-        . "registrations.title4, "
-        . "registrations.title5, "
-        . "registrations.title6, "
-        . "registrations.title7, "
-        . "registrations.title8, "
-        . "registrations.composer1, "
-        . "registrations.composer2, "
-        . "registrations.composer3, "
-        . "registrations.composer4, "
-        . "registrations.composer5, "
-        . "registrations.composer6, "
-        . "registrations.composer7, "
-        . "registrations.composer8, "
-        . "registrations.movements1, "
-        . "registrations.movements2, "
-        . "registrations.movements3, "
-        . "registrations.movements4, "
-        . "registrations.movements5, "
-        . "registrations.movements6, "
-        . "registrations.movements7, "
-        . "registrations.movements8, "
+    $strsql .= "registrations.fulltitle1, "
+        . "registrations.fulltitle2, "
+        . "registrations.fulltitle3, "
+        . "registrations.fulltitle4, "
+        . "registrations.fulltitle5, "
+        . "registrations.fulltitle6, "
+        . "registrations.fulltitle7, "
+        . "registrations.fulltitle8, "
         . "registrations.fee, "
         . "registrations.participation, "
         . "classes.code AS class_code, "
@@ -171,9 +153,7 @@ function ciniki_musicfestivals_wng_accountScheduleProcess(&$ciniki, $tnid, &$req
                     'billing_customer_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 'display_name', 
                     'class_code', 'class_name', 'section_name', 'category_name', 'codename', 
                     'fee', 'participation', 
-                    'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
-                    'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
-                    'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
+                    'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8', 
                     'timeslot_time', 'timeslot_date', 'timeslot_flags', 'timeslot_name',
                     'location_name', 'location_address', 'location_city', 'location_province', 'location_postal',
                     'location_latitude', 'location_longitude',

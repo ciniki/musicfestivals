@@ -151,30 +151,14 @@ function ciniki_musicfestivals_templates_scheduleProvincialsPDF(&$ciniki, $tnid,
         $strsql .= "registrations.display_name, "
             . "registrations.public_name, ";
     }
-    $strsql .= "registrations.title1, "
-        . "registrations.title2, "
-        . "registrations.title3, "
-        . "registrations.title4, "
-        . "registrations.title5, "
-        . "registrations.title6, "
-        . "registrations.title7, "
-        . "registrations.title8, "
-        . "registrations.composer1, "
-        . "registrations.composer2, "
-        . "registrations.composer3, "
-        . "registrations.composer4, "
-        . "registrations.composer5, "
-        . "registrations.composer6, "
-        . "registrations.composer7, "
-        . "registrations.composer8, "
-        . "registrations.movements1, "
-        . "registrations.movements2, "
-        . "registrations.movements3, "
-        . "registrations.movements4, "
-        . "registrations.movements5, "
-        . "registrations.movements6, "
-        . "registrations.movements7, "
-        . "registrations.movements8, "
+    $strsql .= "registrations.fulltitle1, "
+        . "registrations.fulltitle2, "
+        . "registrations.fulltitle3, "
+        . "registrations.fulltitle4, "
+        . "registrations.fulltitle5, "
+        . "registrations.fulltitle6, "
+        . "registrations.fulltitle7, "
+        . "registrations.fulltitle8, "
         . "registrations.video_url1, "
         . "registrations.video_url2, "
         . "registrations.video_url3, "
@@ -251,10 +235,12 @@ function ciniki_musicfestivals_templates_scheduleProvincialsPDF(&$ciniki, $tnid,
     }
     if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
 //        $strsql .= "AND (registrations.participation < 1 || ISNULL(registrations.participation) ) ";
-        $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";
+//        $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";
+        $strsql .= "AND registrations.participation = 0 ";
     } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
         $strsql .= "AND registrations.participation = 1 ";
     }
+    $strsql .= "GROUP BY timeslots.id, registrations.id ";
     $strsql .= "ORDER BY ssections.sequence, ssections.name, divisions.division_date, divisions.name, slot_time, registrations.timeslot_sequence, class_code, registrations.display_name "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -273,9 +259,7 @@ function ciniki_musicfestivals_templates_scheduleProvincialsPDF(&$ciniki, $tnid,
             ),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'public_name', 'participation', 'timeslot_time', 'member_name',
-                'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
-                'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
-                'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8',
                 'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
                 )),
         ));
@@ -283,6 +267,7 @@ function ciniki_musicfestivals_templates_scheduleProvincialsPDF(&$ciniki, $tnid,
         return $rc;
     }
     $sections = isset($rc['sections']) ? $rc['sections'] : array();
+    error_log(print_r($sections,true));
 
     //
     // Load TCPDF library

@@ -765,11 +765,23 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     } elseif( ($class['flags']&0x200000) == 0x200000 ) {
                         $festival['classes'][$iid]['music'] = '';
                     }
+                    $festival['classes'][$iid]['opus'] = '';
+                    if( ($class['titleflags']&0x0400) == 0x0400) {
+                        $festival['classes'][$iid]['opus'] = 'Required';
+                    } elseif( ($class['titleflags']&0x0800) == 0x0800) {
+                        $festival['classes'][$iid]['opus'] = 'Optional';
+                    }
                     $festival['classes'][$iid]['movements'] = '';
                     if( ($class['flags']&0x04000000) == 0x04000000 ) {
                         $festival['classes'][$iid]['movements'] = 'Required';
                     } elseif( ($class['flags']&0x08000000) == 0x08000000 ) {
                         $festival['classes'][$iid]['movements'] = 'Optional';
+                    }
+                    $festival['classes'][$iid]['musical'] = '';
+                    if( ($class['titleflags']&0x4000) == 0x4000 ) {
+                        $festival['classes'][$iid]['musical'] = 'Required';
+                    } elseif( ($class['titleflags']&0x8000) == 0x8000 ) {
+                        $festival['classes'][$iid]['musical'] = 'Optional';
                     }
                     $festival['classes'][$iid]['composer'] = '';
                     if( ($class['flags']&0x10000000) == 0x10000000 ) {
@@ -914,37 +926,21 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "classes.schedule_at_seconds, "
                     . "classes.schedule_ata_seconds, "
                     . "registrations.id AS reg_id, "
-                    . "registrations.title1, "
-                    . "registrations.composer1, "
-                    . "registrations.movements1, "
+                    . "registrations.fulltitle1, "
+                    . "registrations.fulltitle2, "
+                    . "registrations.fulltitle3, "
+                    . "registrations.fulltitle4, "
+                    . "registrations.fulltitle5, "
+                    . "registrations.fulltitle6, "
+                    . "registrations.fulltitle7, "
+                    . "registrations.fulltitle8, "
                     . "registrations.perf_time1, "
-                    . "registrations.title2, "
-                    . "registrations.composer2, "
-                    . "registrations.movements2, "
                     . "registrations.perf_time2, "
-                    . "registrations.title3, "
-                    . "registrations.composer3, "
-                    . "registrations.movements3, "
                     . "registrations.perf_time3, "
-                    . "registrations.title4, "
-                    . "registrations.composer4, "
-                    . "registrations.movements4, "
                     . "registrations.perf_time4, "
-                    . "registrations.title5, "
-                    . "registrations.composer5, "
-                    . "registrations.movements5, "
                     . "registrations.perf_time5, "
-                    . "registrations.title6, "
-                    . "registrations.composer6, "
-                    . "registrations.movements6, "
                     . "registrations.perf_time6, "
-                    . "registrations.title7, "
-                    . "registrations.composer7, "
-                    . "registrations.movements7, "
                     . "registrations.perf_time7, "
-                    . "registrations.title8, "
-                    . "registrations.composer8, "
-                    . "registrations.movements8, "
                     . "registrations.perf_time8 "
                     . "FROM ciniki_musicfestival_categories AS categories "
                     . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
@@ -971,14 +967,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     array('container'=>'registrations', 'fname'=>'reg_id', 
                         'fields'=>array('id'=>'reg_id',
                             'class_flags', 'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds',
-                            'title1', 'composer1', 'movements1', 'perf_time1',
-                            'title2', 'composer2', 'movements2', 'perf_time2',
-                            'title3', 'composer3', 'movements3', 'perf_time3',
-                            'title4', 'composer4', 'movements4', 'perf_time4',
-                            'title5', 'composer5', 'movements5', 'perf_time5',
-                            'title6', 'composer6', 'movements6', 'perf_time6',
-                            'title7', 'composer7', 'movements7', 'perf_time7',
-                            'title8', 'composer8', 'movements8', 'perf_time8',
+                            'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 
+                            'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8',
                             )),
                     ));
                 if( $rc['stat'] != 'ok' ) {
@@ -1356,53 +1346,37 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "classes.name AS class_name, "
                     . "categories.name AS category_name, "
                     . "registrations.instrument, "
-                    . "registrations.title1, "
-                    . "registrations.composer1, "
-                    . "registrations.movements1, "
+                    . "registrations.fulltitle1, "
+                    . "registrations.fulltitle2, "
+                    . "registrations.fulltitle3, "
+                    . "registrations.fulltitle4, "
+                    . "registrations.fulltitle5, "
+                    . "registrations.fulltitle6, "
+                    . "registrations.fulltitle7, "
+                    . "registrations.fulltitle8, "
                     . "registrations.perf_time1, "
-                    . "registrations.video_url1, "
-                    . "registrations.music_orgfilename1, "
-                    . "registrations.title2, "
-                    . "registrations.composer2, "
-                    . "registrations.movements2, "
                     . "registrations.perf_time2, "
-                    . "registrations.video_url2, "
-                    . "registrations.music_orgfilename2, "
-                    . "registrations.title3, "
-                    . "registrations.composer3, "
-                    . "registrations.movements3, "
                     . "registrations.perf_time3, "
-                    . "registrations.video_url3, "
-                    . "registrations.music_orgfilename3, "
-                    . "registrations.title4, "
-                    . "registrations.composer4, "
-                    . "registrations.movements4, "
                     . "registrations.perf_time4, "
-                    . "registrations.video_url4, "
-                    . "registrations.music_orgfilename4, "
-                    . "registrations.title5, "
-                    . "registrations.composer5, "
-                    . "registrations.movements5, "
                     . "registrations.perf_time5, "
-                    . "registrations.video_url5, "
-                    . "registrations.music_orgfilename5, "
-                    . "registrations.title6, "
-                    . "registrations.composer6, "
-                    . "registrations.movements6, "
                     . "registrations.perf_time6, "
-                    . "registrations.video_url6, "
-                    . "registrations.music_orgfilename6, "
-                    . "registrations.title7, "
-                    . "registrations.composer7, "
-                    . "registrations.movements7, "
                     . "registrations.perf_time7, "
-                    . "registrations.video_url7, "
-                    . "registrations.music_orgfilename7, "
-                    . "registrations.title8, "
-                    . "registrations.composer8, "
-                    . "registrations.movements8, "
                     . "registrations.perf_time8, "
+                    . "registrations.video_url1, "
+                    . "registrations.video_url2, "
+                    . "registrations.video_url3, "
+                    . "registrations.video_url4, "
+                    . "registrations.video_url5, "
+                    . "registrations.video_url6, "
+                    . "registrations.video_url7, "
                     . "registrations.video_url8, "
+                    . "registrations.music_orgfilename1, "
+                    . "registrations.music_orgfilename2, "
+                    . "registrations.music_orgfilename3, "
+                    . "registrations.music_orgfilename4, "
+                    . "registrations.music_orgfilename5, "
+                    . "registrations.music_orgfilename6, "
+                    . "registrations.music_orgfilename7, "
                     . "registrations.music_orgfilename8, "
                     . "registrations.competitor1_id, "
                     . "registrations.competitor2_id, "
@@ -1548,14 +1522,14 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             'class_flags', 'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds',
                             'min_titles', 'max_titles',
                             'fee', 'participation', 'flags', 'instrument',
-                            'title1', 'composer1', 'movements1', 'perf_time1', 'video_url1', 'music_orgfilename1',
-                            'title2', 'composer2', 'movements2', 'perf_time2', 'video_url2', 'music_orgfilename2',
-                            'title3', 'composer3', 'movements3', 'perf_time3', 'video_url3', 'music_orgfilename3',
-                            'title4', 'composer4', 'movements4', 'perf_time4', 'video_url4', 'music_orgfilename4',
-                            'title5', 'composer5', 'movements5', 'perf_time5', 'video_url5', 'music_orgfilename5',
-                            'title6', 'composer6', 'movements6', 'perf_time6', 'video_url6', 'music_orgfilename6',
-                            'title7', 'composer7', 'movements7', 'perf_time7', 'video_url7', 'music_orgfilename7',
-                            'title8', 'composer8', 'movements8', 'perf_time8', 'video_url8', 'music_orgfilename8',
+                            'fulltitle1', 'perf_time1', 'video_url1', 'music_orgfilename1',
+                            'fulltitle2', 'perf_time2', 'video_url2', 'music_orgfilename2',
+                            'fulltitle3', 'perf_time3', 'video_url3', 'music_orgfilename3',
+                            'fulltitle4', 'perf_time4', 'video_url4', 'music_orgfilename4',
+                            'fulltitle5', 'perf_time5', 'video_url5', 'music_orgfilename5',
+                            'fulltitle6', 'perf_time6', 'video_url6', 'music_orgfilename6',
+                            'fulltitle7', 'perf_time7', 'video_url7', 'music_orgfilename7',
+                            'fulltitle8', 'perf_time8', 'video_url8', 'music_orgfilename8',
                             'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
                             'notes', 'internal_notes', 'runsheet_notes',
                             'mark', 'placement', 'level',
@@ -1604,10 +1578,11 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                                     $festival['registrations'][$rid]['titles'] .= ($festival['registrations'][$rid]['titles'] != '' ? '<br/>' : '') . $rc['title'];
                                 }
                             } */
-                            unset($festival['registrations'][$rid]["movements{$i}"]);
-                            unset($festival['registrations'][$rid]["composer{$i}"]);
+//                            unset($festival['registrations'][$rid]["opus{$i}"]);
+//                            unset($festival['registrations'][$rid]["movements{$i}"]);
+//                            unset($festival['registrations'][$rid]["composer{$i}"]);
                             if( $i > $registration['max_titles'] ) {
-                                unset($festival['registrations'][$rid]["title{$i}"]);
+//                                unset($festival['registrations'][$rid]["title{$i}"]);
                                 unset($festival['registrations'][$rid]["perf_time{$i}"]);
                                 unset($festival['registrations'][$rid]["music_orgfilename{$i}"]);
                                 unset($festival['registrations'][$rid]["video_url{$i}"]);
@@ -1880,30 +1855,14 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 } else {
                     $strsql .= "registrations.display_name, ";
                 }
-                $strsql .= "registrations.title1, "
-                    . "registrations.title2, "
-                    . "registrations.title3, "
-                    . "registrations.title4, "
-                    . "registrations.title5, "
-                    . "registrations.title6, "
-                    . "registrations.title7, "
-                    . "registrations.title8, "
-                    . "registrations.composer1, "
-                    . "registrations.composer2, "
-                    . "registrations.composer3, "
-                    . "registrations.composer4, "
-                    . "registrations.composer5, "
-                    . "registrations.composer6, "
-                    . "registrations.composer7, "
-                    . "registrations.composer8, "
-                    . "registrations.movements1, "
-                    . "registrations.movements2, "
-                    . "registrations.movements3, "
-                    . "registrations.movements4, "
-                    . "registrations.movements5, "
-                    . "registrations.movements6, "
-                    . "registrations.movements7, "
-                    . "registrations.movements8, "
+                $strsql .= "registrations.fulltitle1, "
+                    . "registrations.fulltitle2, "
+                    . "registrations.fulltitle3, "
+                    . "registrations.fulltitle4, "
+                    . "registrations.fulltitle5, "
+                    . "registrations.fulltitle6, "
+                    . "registrations.fulltitle7, "
+                    . "registrations.fulltitle8, "
                     . "registrations.status, "
                     . "registrations.status AS status_text, "
                     . "classes.code AS class_code, "
@@ -1922,9 +1881,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'registrations', 'fname'=>'id', 
                         'fields'=>array('id', 'flags', 'display_name', 'class_code', 'status', 'status_text',
-                            'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
-                            'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
-                            'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
+                            'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8', 
                             ),
                         'maps'=>array('status_text'=>$maps['registration']['status']),
                         ),
@@ -1936,12 +1893,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 foreach($festival['unscheduled_registrations'] as $rid => $registration) {
                     $festival['unscheduled_registrations'][$rid]['titles'] = '';
                     for($i = 1; $i <= 8; $i++) {
-                        if( $registration["title{$i}"] != '' ) {
-                            $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
-                            if( $rc['stat'] == 'ok' ) {
-                                $festival['unscheduled_registrations'][$rid]["title{$i}"] = $rc['title'];
-                                $festival['unscheduled_registrations'][$rid]['titles'] .= ($festival['unscheduled_registrations'][$rid]['titles'] != '' ? '<br/>' : '') . $rc['title'];
-                            }
+                        if( $registration["fulltitle{$i}"] != '' ) {
+//                            $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
+//                            if( $rc['stat'] == 'ok' ) {
+//                                $festival['unscheduled_registrations'][$rid]["title{$i}"] = $rc['title'];
+                            $festival['unscheduled_registrations'][$rid]['titles'] .= ($festival['unscheduled_registrations'][$rid]['titles'] != '' ? '<br/>' : '') . $registration["fulltitle{$i}"];
+//                            }
                         }
                     }
                 }
@@ -1954,30 +1911,14 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 } else {
                     $strsql .= "registrations.display_name, ";
                 }
-                $strsql .= "registrations.title1, "
-                    . "registrations.title2, "
-                    . "registrations.title3, "
-                    . "registrations.title4, "
-                    . "registrations.title5, "
-                    . "registrations.title6, "
-                    . "registrations.title7, "
-                    . "registrations.title8, "
-                    . "registrations.composer1, "
-                    . "registrations.composer2, "
-                    . "registrations.composer3, "
-                    . "registrations.composer4, "
-                    . "registrations.composer5, "
-                    . "registrations.composer6, "
-                    . "registrations.composer7, "
-                    . "registrations.composer8, "
-                    . "registrations.movements1, "
-                    . "registrations.movements2, "
-                    . "registrations.movements3, "
-                    . "registrations.movements4, "
-                    . "registrations.movements5, "
-                    . "registrations.movements6, "
-                    . "registrations.movements7, "
-                    . "registrations.movements8, "
+                $strsql .= "registrations.fulltitle1, "
+                    . "registrations.fulltitle2, "
+                    . "registrations.fulltitle3, "
+                    . "registrations.fulltitle4, "
+                    . "registrations.fulltitle5, "
+                    . "registrations.fulltitle6, "
+                    . "registrations.fulltitle7, "
+                    . "registrations.fulltitle8, "
                     . "registrations.notes, "
                     . "GROUP_CONCAT(competitors.notes SEPARATOR ' ') AS competitor_notes, "
                     . "registrations.status, "
@@ -2008,9 +1949,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'registrations', 'fname'=>'id', 
                         'fields'=>array('id', 'flags', 'display_name', 'class_code', 'status', 'status_text',
-                            'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
-                            'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
-                            'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
+                            'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8', 
                             'notes', 'competitor_notes',
                             ),
                         'maps'=>array('status_text'=>$maps['registration']['status']),
@@ -2028,11 +1967,11 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     $festival['registrations_notes'][$rid]['titles'] = '';
                     for($i = 1; $i <= 8; $i++) {
                         if( $registration["title{$i}"] != '' ) {
-                            $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
-                            if( $rc['stat'] == 'ok' ) {
-                                $festival['registrations_notes'][$rid]["title{$i}"] = $rc['title'];
-                                $festival['registrations_notes'][$rid]['titles'] .= ($festival['registrations_notes'][$rid]['titles'] != '' ? '<br/>' : '') . $rc['title'];
-                            }
+//                            $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
+//                            if( $rc['stat'] == 'ok' ) {
+//                                $festival['registrations_notes'][$rid]["title{$i}"] = $rc['title'];
+                            $festival['registrations_notes'][$rid]['titles'] .= ($festival['registrations_notes'][$rid]['titles'] != '' ? '<br/>' : '') . $registration["fulltitle{$i}"];
+//                            }
                         }
                     }
                     if( $registration['competitor_notes'] != '' ) {
@@ -2263,7 +2202,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     $strsql .= "registrations.display_name, "
                         . "registrations.public_name, ";
                 }
-                $strsql .= "registrations.title1, "
+                $strsql .= "registrations.fulltitle1, "
                     . "registrations.participation, "
                     . "registrations.video_url1, "
                     . "registrations.video_url2, "
@@ -2310,7 +2249,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                             )),
                     array('container'=>'registrations', 'fname'=>'reg_id', 
                         'fields'=>array('id'=>'reg_id', 'uuid'=>'reg_uuid', 'name'=>'display_name', 'public_name',
-                            'title'=>'title1', 
+                            'title'=>'fulltitle1', 
                             'participation', 'video_url1', 'video_url2', 'video_url3', 
                             'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3',
 //                            'adjudicator_id', 
@@ -2487,30 +2426,14 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "registrations.display_name, "
                     . "registrations.timeslot_sequence, "
                     . "registrations.flags, "
-                    . "registrations.title1, "
-                    . "registrations.title2, "
-                    . "registrations.title3, "
-                    . "registrations.title4, "
-                    . "registrations.title5, "
-                    . "registrations.title6, "
-                    . "registrations.title7, "
-                    . "registrations.title8, "
-                    . "registrations.composer1, "
-                    . "registrations.composer2, "
-                    . "registrations.composer3, "
-                    . "registrations.composer4, "
-                    . "registrations.composer5, "
-                    . "registrations.composer6, "
-                    . "registrations.composer7, "
-                    . "registrations.composer8, "
-                    . "registrations.movements1, "
-                    . "registrations.movements2, "
-                    . "registrations.movements3, "
-                    . "registrations.movements4, "
-                    . "registrations.movements5, "
-                    . "registrations.movements6, "
-                    . "registrations.movements7, "
-                    . "registrations.movements8, "
+                    . "registrations.fulltitle1, "
+                    . "registrations.fulltitle2, "
+                    . "registrations.fulltitle3, "
+                    . "registrations.fulltitle4, "
+                    . "registrations.fulltitle5, "
+                    . "registrations.fulltitle6, "
+                    . "registrations.fulltitle7, "
+                    . "registrations.fulltitle8, "
                     . "IF((timeslots.flags&0x02)=0x02, registrations.finals_mark, registrations.mark) AS mark, "
                     . "IF((timeslots.flags&0x02)=0x02, registrations.finals_placement, registrations.placement) AS placement, "
                     . "IF((timeslots.flags&0x02)=0x02, registrations.finals_level, registrations.level) AS level, "
@@ -2551,9 +2474,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     array('container'=>'results', 'fname'=>'id', 
                         'fields'=>array('id', 'timeslot_id', 'groupname', 'start_num', 
                             'status', 'display_name', 'timeslot_name', 'slot_time_text', 'timeslot_sequence', 'timeslot_description', 'flags',
-                            'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
-                            'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
-                            'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
+                            'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8', 
                             'mark', 'placement', 'level', 'provincials_status', 'provincials_position',
                             'class_code', 'class_name', 'category_name', 'section_name',
                             ),
@@ -2583,11 +2504,11 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     }
                     $titles = '';
                     for($i = 1; $i <= 8; $i++) {
-                        if( $result["title{$i}"] != '' ) {
-                            $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $result, $i);
-                            if( isset($rc['title']) ) {
-                                $titles .= ($titles != '' ? '<br/>' : '') . $rc['title'];
-                            }
+                        if( $result["fulltitle{$i}"] != '' ) {
+//                            $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $result, $i);
+//                            if( isset($rc['title']) ) {
+                                $titles .= ($titles != '' ? '<br/>' : '') . $result["fulltitle{$i}"];
+//                            }
                         }
                     }
                     $festival['schedule_results'][$sid]['titles'] = $titles;
@@ -2644,30 +2565,14 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     . "registrations.id, "
                     . "registrations.display_name, "
                     . "registrations.timeslot_sequence, "
-                    . "registrations.title1, "
-                    . "registrations.title2, "
-                    . "registrations.title3, "
-                    . "registrations.title4, "
-                    . "registrations.title5, "
-                    . "registrations.title6, "
-                    . "registrations.title7, "
-                    . "registrations.title8, "
-                    . "registrations.composer1, "
-                    . "registrations.composer2, "
-                    . "registrations.composer3, "
-                    . "registrations.composer4, "
-                    . "registrations.composer5, "
-                    . "registrations.composer6, "
-                    . "registrations.composer7, "
-                    . "registrations.composer8, "
-                    . "registrations.movements1, "
-                    . "registrations.movements2, "
-                    . "registrations.movements3, "
-                    . "registrations.movements4, "
-                    . "registrations.movements5, "
-                    . "registrations.movements6, "
-                    . "registrations.movements7, "
-                    . "registrations.movements8, "
+                    . "registrations.fulltitle1, "
+                    . "registrations.fulltitle2, "
+                    . "registrations.fulltitle3, "
+                    . "registrations.fulltitle4, "
+                    . "registrations.fulltitle5, "
+                    . "registrations.fulltitle6, "
+                    . "registrations.fulltitle7, "
+                    . "registrations.fulltitle8, "
                     . "registrations.mark, "
                     . "registrations.placement, "
                     . "registrations.level, "
@@ -2713,9 +2618,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'provincials', 'fname'=>'id', 
                         'fields'=>array('id', 'timeslot_id', 'groupname', 'start_num', 'display_name', 
-                            'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
-                            'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
-                            'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
+                            'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8', 
                             'mark', 'placement', 'level', 'provincials_code', 'provincials_status_text', 'provincials_position',
                             'class_code', 'class_name', 'category_name', 'section_name',
                             ),
@@ -2729,11 +2632,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 foreach($festival['schedule_provincials'] as $sid => $result) {
                     $titles = '';
                     for($i = 1; $i <= 8; $i++) {
-                        if( $result["title{$i}"] != '' ) {
-                            $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $result, $i);
-                            if( isset($rc['title']) ) {
-                                $titles .= ($titles != '' ? '<br/>' : '') . $rc['title'];
-                            }
+                        if( $result["fulltitle{$i}"] != '' ) {
+                            $titles .= ($titles != '' ? '<br/>' : '') . $result["fulltitle{$i}"];
                         }
                     }
                     $festival['schedule_provincials'][$sid]['titles'] = $titles;
@@ -3410,30 +3310,14 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "classes.provincials_code, "
                 . "registrations.id, "
                 . "registrations.display_name, "
-                . "registrations.title1, "
-                . "registrations.title2, "
-                . "registrations.title3, "
-                . "registrations.title4, "
-                . "registrations.title5, "
-                . "registrations.title6, "
-                . "registrations.title7, "
-                . "registrations.title8, "
-                . "registrations.composer1, "
-                . "registrations.composer2, "
-                . "registrations.composer3, "
-                . "registrations.composer4, "
-                . "registrations.composer5, "
-                . "registrations.composer6, "
-                . "registrations.composer7, "
-                . "registrations.composer8, "
-                . "registrations.movements1, "
-                . "registrations.movements2, "
-                . "registrations.movements3, "
-                . "registrations.movements4, "
-                . "registrations.movements5, "
-                . "registrations.movements6, "
-                . "registrations.movements7, "
-                . "registrations.movements8, "
+                . "registrations.fulltitle1, "
+                . "registrations.fulltitle2, "
+                . "registrations.fulltitle3, "
+                . "registrations.fulltitle4, "
+                . "registrations.fulltitle5, "
+                . "registrations.fulltitle6, "
+                . "registrations.fulltitle7, "
+                . "registrations.fulltitle8, "
                 . "registrations.mark, "
                 . "registrations.placement, "
                 . "registrations.level, "
@@ -3505,9 +3389,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 array('container'=>'registrations', 'fname'=>'id', 
                     'fields'=>array('id', 'section_name', 'category_name', 'class_code', 'class_name',
                         'display_name', 
-                        'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8', 
-                        'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8', 
-                        'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8', 
+                        'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8', 
                         'mark', 'placement', 'level', 'provincials_code', 
                         'provincials_status', 'provincials_status_text', 'provincials_position', 'provincials_position_text', 
                         'provincials_invite_date', 'provincials_notes', 'provincials_class_name',
@@ -3526,11 +3408,8 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             foreach($festival['provincial_recommendations'] as $rid => $reg) {
                 $titles = '';
                 for($i = 1; $i <= 8; $i++) {
-                    if( $reg["title{$i}"] != '' ) {
-                        $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $reg, $i);
-                        if( isset($rc['title']) ) {
-                            $titles .= ($titles != '' ? '<br/>' : '') . $rc['title'];
-                        }
+                    if( $reg["fulltitle{$i}"] != '' ) {
+                        $titles .= ($titles != '' ? '<br/>' : '') . $reg["fulltitle{$i}"];
                     }
                 }
                 $festival['provincial_recommendations'][$rid]['titles'] = $titles;
@@ -5354,14 +5233,14 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             //
             // Get the number of titles
             //
-            $strsql = "SELECT COUNT(IF(title1 <> '', title1, null)) "
-                . "+ COUNT(IF(title2 <> '', title2, null)) "
-                . "+ COUNT(IF(title3 <> '', title3, null)) "
-                . "+ COUNT(IF(title4 <> '', title4, null)) "
-                . "+ COUNT(IF(title5 <> '', title5, null)) "
-                . "+ COUNT(IF(title6 <> '', title6, null)) "
-                . "+ COUNT(IF(title7 <> '', title7, null)) "
-                . "+ COUNT(IF(title8 <> '', title8, null)) "
+            $strsql = "SELECT COUNT(IF(fulltitle1 <> '', fulltitle1, null)) "
+                . "+ COUNT(IF(fulltitle2 <> '', fulltitle2, null)) "
+                . "+ COUNT(IF(fulltitle3 <> '', fulltitle3, null)) "
+                . "+ COUNT(IF(fulltitle4 <> '', fulltitle4, null)) "
+                . "+ COUNT(IF(fulltitle5 <> '', fulltitle5, null)) "
+                . "+ COUNT(IF(fulltitle6 <> '', fulltitle6, null)) "
+                . "+ COUNT(IF(fulltitle7 <> '', fulltitle7, null)) "
+                . "+ COUNT(IF(fulltitle8 <> '', fulltitle8, null)) "
                 . "AS num "
                 . "FROM ciniki_musicfestival_registrations AS registrations "
                 . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "

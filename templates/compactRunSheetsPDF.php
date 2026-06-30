@@ -13,8 +13,6 @@
 //
 function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $args) {
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
-
     //
     // Load the tenant details
     //
@@ -105,30 +103,14 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
         . "registrations.competitor3_id, "
         . "registrations.competitor4_id, "
         . "registrations.competitor5_id, "
-        . "registrations.title1, "
-        . "registrations.title2, "
-        . "registrations.title3, "
-        . "registrations.title4, "
-        . "registrations.title5, "
-        . "registrations.title6, "
-        . "registrations.title7, "
-        . "registrations.title8, "
-        . "registrations.composer1, "
-        . "registrations.composer2, "
-        . "registrations.composer3, "
-        . "registrations.composer4, "
-        . "registrations.composer5, "
-        . "registrations.composer6, "
-        . "registrations.composer7, "
-        . "registrations.composer8, "
-        . "registrations.movements1, "
-        . "registrations.movements2, "
-        . "registrations.movements3, "
-        . "registrations.movements4, "
-        . "registrations.movements5, "
-        . "registrations.movements6, "
-        . "registrations.movements7, "
-        . "registrations.movements8, "
+        . "registrations.fulltitle1, "
+        . "registrations.fulltitle2, "
+        . "registrations.fulltitle3, "
+        . "registrations.fulltitle4, "
+        . "registrations.fulltitle5, "
+        . "registrations.fulltitle6, "
+        . "registrations.fulltitle7, "
+        . "registrations.fulltitle8, "
         . "registrations.perf_time1, "
         . "registrations.perf_time2, "
         . "registrations.perf_time3, "
@@ -249,15 +231,10 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                 'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 
                 'notes', 'internal_notes',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 
-                'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
-                'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
-                'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8',
                 'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
                 ),
             ),
-//        array('container'=>'accolades', 'fname'=>'accolade_id', 
-//            'fields'=>array('id'=>'accolade_id', 'name'=>'accolade_name'),
-//            ),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -686,7 +663,7 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                         $titles = '';
                         if( $show_titles == 'yes' ) {
                             for($i = 1; $i <= 8; $i++) {
-                                if( $reg["title{$i}"] != '' ) {
+                                if( $reg["fulltitle{$i}"] != '' ) {
                                     $timeslot['registrations'][$rid]['last_title'] = $i;
                                     $perf_time = '??';
                                     if( $reg["perf_time{$i}"] != '' && is_numeric($reg["perf_time{$i}"]) ) {
@@ -694,15 +671,12 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                                             . ':' 
                                             . str_pad(($reg["perf_time{$i}"]%60), 2, '0', STR_PAD_LEFT);
                                     }
-                                    $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
-                                    if( isset($rc['title']) ) {
-                                        $timeslot['registrations'][$rid]["title{$i}"] = "- [{$perf_time}] " . $rc['title'];
-                                        $titles .= ($titles != '' ? "\n" : '') . "[{$perf_time}] " . $rc['title'];
-                                    }
+                                    $timeslot['registrations'][$rid]["fulltitle{$i}"] = "- [{$perf_time}] " . $reg["fulltitle{$i}"];
+                                    $titles .= ($titles != '' ? "\n" : '') . "[{$perf_time}] " . $reg["fulltitle{$i}"];
                                     if( $orientation == 'landscape' ) {
-                                        $ht += $pdf->getStringHeight($w[3], $timeslot['registrations'][$rid]["title{$i}"]);
+                                        $ht += $pdf->getStringHeight($w[3], $timeslot['registrations'][$rid]["fulltitle{$i}"]);
                                     } else {
-                                        $ht += $pdf->getStringHeight($tw[1], $timeslot['registrations'][$rid]["title{$i}"]);
+                                        $ht += $pdf->getStringHeight($tw[1], $timeslot['registrations'][$rid]["fulltitle{$i}"]);
                                     }
                                 }
                             }
@@ -904,8 +878,8 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                             }
                         } elseif( $show_titles == 'yes' ) {
                             for($i = 1; $i <= 8; $i++) {
-                                if( $reg["title{$i}"] != '' ) {
-                                    $ht += $pdf->getStringHeight($tw[1], $reg["title{$i}"]);
+                                if( $reg["fulltitle{$i}"] != '' ) {
+                                    $ht += $pdf->getStringHeight($tw[1], $reg["fulltitle{$i}"]);
                                 }
                             }
                         }
@@ -1033,7 +1007,7 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                         $pdf->SetFont('', '', '11');
                         if( $orientation != 'landscape' ) {
                             for($i = 1; $i <= 8; $i++) {
-                                if( $reg["title{$i}"] != '' ) {
+                                if( $reg["fulltitle{$i}"] != '' ) {
                                     if( $reg['last_title'] == $i && $reg['combined_notes'] == '' ) {
                                         $border = 'LBR';
                                         if( $i == 1 ) {
@@ -1044,9 +1018,9 @@ function ciniki_musicfestivals_templates_compactRunSheetsPDF(&$ciniki, $tnid, $a
                                     } elseif( $i > 1 ) {
                                         $pdf->SetCellPaddings($cell_padding,0,$cell_padding,0);
                                     }
-                                    $h = $pdf->getStringHeight($tw[1], $reg["title{$i}"]);
+                                    $h = $pdf->getStringHeight($tw[1], $reg["fulltitle{$i}"]);
                                     $pdf->MultiCell($tw[0], $h, '', $border, 'C', 0, 0);
-                                    $pdf->MultiCell($tw[1], $h, $reg["title{$i}"], $border, 'L', 0, 1);
+                                    $pdf->MultiCell($tw[1], $h, $reg["fulltitle{$i}"], $border, 'L', 0, 1);
                                 }
                             }
                         }

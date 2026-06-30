@@ -70,7 +70,7 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
     } else {
         $strsql .= "registrations.display_name, ";
     }
-    $strsql .= "registrations.title1, "
+    $strsql .= "registrations.fulltitle1, "
         . "registrations.mark, "
         . "registrations.flags, "
         . "registrations.placement, "
@@ -153,7 +153,7 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
             'fields'=>array('id'=>'timeslot_id', 'name'=>'timeslot_name', 'time'=>'slot_time_text', 'groupname'=>'timeslot_groupname',
                 )),
         array('container'=>'registrations', 'fname'=>'reg_id', 
-            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'title'=>'title1', 'class_name', 
+            'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 'title'=>'fulltitle1', 'class_name', 
                 'class_code', 'class_name', 'class_cert_name', 'category_name', 'syllabus_section_name',
                 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 
                 'participation', 'mark', 'flags', 'placement', 'level', 'division_date_text',

@@ -14,7 +14,6 @@
 function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
 
     ini_set('memory_limit', '1024M');
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
 
     //
     // Load the tenant details
@@ -101,30 +100,14 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
         } else {
             $strsql .= "registrations.display_name, ";
         }
-        $strsql .= "registrations.title1, "
-            . "registrations.title2, "
-            . "registrations.title3, "
-            . "registrations.title4, "
-            . "registrations.title5, "
-            . "registrations.title6, "
-            . "registrations.title7, "
-            . "registrations.title8, "
-            . "registrations.composer1, "
-            . "registrations.composer2, "
-            . "registrations.composer3, "
-            . "registrations.composer4, "
-            . "registrations.composer5, "
-            . "registrations.composer6, "
-            . "registrations.composer7, "
-            . "registrations.composer8, "
-            . "registrations.movements1, "
-            . "registrations.movements2, "
-            . "registrations.movements3, "
-            . "registrations.movements4, "
-            . "registrations.movements5, "
-            . "registrations.movements6, "
-            . "registrations.movements7, "
-            . "registrations.movements8, "
+        $strsql .= "registrations.fulltitle1, "
+            . "registrations.fulltitle2, "
+            . "registrations.fulltitle3, "
+            . "registrations.fulltitle4, "
+            . "registrations.fulltitle5, "
+            . "registrations.fulltitle6, "
+            . "registrations.fulltitle7, "
+            . "registrations.fulltitle8, "
             . "registrations.participation, "
             . "IFNULL(timeslots.groupname, '') AS timeslot_groupname, ";
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
@@ -224,30 +207,14 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
         } else {
             $strsql .= "registrations.display_name, ";
         }
-        $strsql .= "registrations.title1, "
-            . "registrations.title2, "
-            . "registrations.title3, "
-            . "registrations.title4, "
-            . "registrations.title5, "
-            . "registrations.title6, "
-            . "registrations.title7, "
-            . "registrations.title8, "
-            . "registrations.composer1, "
-            . "registrations.composer2, "
-            . "registrations.composer3, "
-            . "registrations.composer4, "
-            . "registrations.composer5, "
-            . "registrations.composer6, "
-            . "registrations.composer7, "
-            . "registrations.composer8, "
-            . "registrations.movements1, "
-            . "registrations.movements2, "
-            . "registrations.movements3, "
-            . "registrations.movements4, "
-            . "registrations.movements5, "
-            . "registrations.movements6, "
-            . "registrations.movements7, "
-            . "registrations.movements8, "
+        $strsql .= "registrations.fulltitle1, "
+            . "registrations.fulltitle2, "
+            . "registrations.fulltitle3, "
+            . "registrations.fulltitle4, "
+            . "registrations.fulltitle5, "
+            . "registrations.fulltitle6, "
+            . "registrations.fulltitle7, "
+            . "registrations.fulltitle8, "
             . "registrations.participation, "
             . "IFNULL(classes.code, '') AS class_code, "
             . "IFNULL(classes.name, '') AS class_name, "
@@ -340,9 +307,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             )),
         array('container'=>'registrations', 'fname'=>'reg_id', 
             'fields'=>array('id'=>'reg_id', 'name'=>'display_name', 
-                'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
-                'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
-                'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8',
                 'class_code', 'class_name', 'category_name', 'syllabus_section_name', 'class_flags', 
                 'competitor2_id', 'timeslot_date', 'timeslot_time', 'participation',
                 'mark', 'flags', 'placement', 'level', 'comments',
@@ -363,7 +328,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                 ['id' => 0, 'name' => '', 'timeslots' => [
                     ['id' => 0, 'name' => '', 'class_name' => '', 'description' => '', 'groupname' => '', 'registrations' => [
                         ['id' => 0, 'name' => '', 
-                            'title1' => ' ', 'movements1' => '', 'composer1' => '', 
+                            'fulltitle1' => ' ', 
                             'class_code' => '', 'class_name' => '', 'category_name' => '', 'syllabus_section_name' => '',
                             'class_flags' => 0x0700, 
                             'timeslot_date' => ' ', 'timeslot_time' => ' ', 
@@ -400,6 +365,27 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
         public $footer_msg = '';
         public $tenant_details = array();
 
+        public function setHeaderImage($ciniki, $tnid, $image_id) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
+            $rc = ciniki_images_loadImage($ciniki, $tnid, $image_id, 'original');
+            if( $rc['stat'] == 'ok' ) {
+                $header_image = $rc['image'];
+                $height = $header_image->getImageHeight();
+                $width = $header_image->getImageWidth();
+                $this->header_image_ratio = $header_image->getImageWidth()/$header_image->getImageHeight();
+                //
+                // Load the image storage filename, adding as blob is REALLY slow!
+                //
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'hooks', 'loadOriginalStorageFilename');
+                $rc = ciniki_images_hooks_loadOriginalStorageFilename($ciniki, $tnid, array('image_id'=>$image_id));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1664', 'msg'=>'No image specified', 'err'=>$rc['err']));
+                }
+                $this->header_image_filename = $rc['filename'];
+            }
+            return array('stat'=>'ok');
+        }
+
         public function Header() {
             //
             // Check if there is an image to be output in the header.   The image
@@ -409,24 +395,14 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
             //
             $img_width = 0;
             if( $this->header_image_filename != '' ) {
-/*                $height = $this->header_image->getImageHeight();
-                $width = $this->header_image->getImageWidth();
-                if( $width > 600 ) {
-                    $this->header_image->scaleImage(600, 0);
-                }
-                $image_ratio = $width/$height;
-*/
                 $img_width = 65;
                 $available_ratio = $img_width/$this->header_height;
                 // Check if the ratio of the image will make it too large for the height,
                 // and scaled based on either height or width.
                 if( $available_ratio < $this->header_image_ratio ) {
-//                $pdf->Image($rc['filename'], 0, 0, 216, 279, '', '', '', false, 300, '', false, false, 0);
                     $this->Image($this->header_image_filename, $this->left_margin, 10, $img_width, $this->header_height-8, '', '', 'L', false, '150', '', false, false, 0, true);
-//                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, $img_width, $this->header_height-8, '', '', 'L', 2, '150', '', false, false, 0, true);
                 } else {
                     $this->Image($this->header_image_filename, $this->left_margin, 10, 0, $this->header_height-8, '', '', 'L', false, '150');
-//                    $this->Image('@'.$this->header_image->getImageBlob(), $this->left_margin, 10, 0, $this->header_height-8, '', '', 'L', 2, '150');
                 }
             }
 
@@ -491,30 +467,9 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
     // Load the header image
     //
     if( isset($festival['document_logo_id']) && $festival['document_logo_id'] > 0 ) {
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'private', 'loadImage');
-        $rc = ciniki_images_loadImage($ciniki, $tnid, $festival['document_logo_id'], 'original');
-        if( $rc['stat'] == 'ok' ) {
-            $header_image = $rc['image'];
-            $height = $header_image->getImageHeight();
-            $width = $header_image->getImageWidth();
-            if( $width > 600 ) {
-                $header_image->scaleImage(600, 0);
-            }
-            $pdf->header_image_ratio = $width/$height;
-            //
-            // Load the image storage filename, adding as blob is REALLY slow!
-            //
-            ciniki_core_loadMethod($ciniki, 'ciniki', 'images', 'hooks', 'loadOriginalStorageFilename');
-            $rc = ciniki_images_hooks_loadOriginalStorageFilename($ciniki, $tnid, array('image_id'=>$festival['document_logo_id']));
-            if( $rc['stat'] != 'ok' ) {
-                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.302', 'msg'=>'No image specified', 'err'=>$rc['err']));
-            }
-            $pdf->header_image_filename = $rc['filename'];
-//            if( isset($certificate['orientation']) && $certificate['orientation'] == 'P' ) {
-//                $pdf->Image($rc['filename'], 0, 0, 216, 279, '', '', '', false, 300, '', false, false, 0);
-//            } else {
-//                $pdf->Image($rc['filename'], 0, 0, 280, 216, '', '', '', false, 300, '', false, false, 0);
-//            }
+        $rc = $pdf->setHeaderImage($ciniki, $tnid, $festival['document_logo_id']);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
         }
     }
 
@@ -616,17 +571,6 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                     if( isset($args['schedulesection_id']) && $args['schedulesection_id'] == 'blank' ) {
                         $class_name = '';
                     }
-                    //
-                    // Merge titles
-                    //
-                    for($i = 1; $i <= 8; $i++) {
-                        if( isset($reg["title{$i}"]) && $reg["title{$i}"] != '' ) {
-                            $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
-                            if( isset($rc['title']) ) {
-                                $reg["title{$i}"] = $rc['title'];
-                            }
-                        }
-                    }
                     foreach($reg['adjudicators'] as $adjudicator) {
                         $pdf->SetAutoPageBreak(true, PDF_MARGIN_FOOTER+20);
                         if( (!isset($festival['comments-header-adjudicator']) || $festival['comments-header-adjudicator'] == 'yes')
@@ -640,8 +584,8 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         $pdf->AddPage();
                         $pdf->SetDrawColor(128);
                         $border = 'T';
-                        $lh = $pdf->getStringHeight($w[1], $reg['timeslot_date']);
                         $pdf->SetCellPaddings(1, 2, 1, 1);
+                        $lh = $pdf->getStringHeight($w[1], $reg['timeslot_date']);
                         //
                         // Check if timeslot date/time to be displayed
                         //
@@ -669,7 +613,7 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                         $pdf->MultiCell($w[1], $lh, $class_name, $border, 'L', 0, 1, '', '');
                         $pdf->SetFont('helvetica', 'B', 12);
 
-                        $border = ($reg['title1'] != '' ? '' : 'B');
+                        $border = ($reg['fulltitle1'] != '' ? '' : 'B');
 
                         $lh = $pdf->getStringHeight($w[1], $reg['name']);
                         if( $reg['competitor2_id'] > 0 ) {
@@ -682,12 +626,12 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
 
                         if( !isset($festival['comments-titles']) || $festival['comments-titles'] == 'yes' ) { 
                             for($i = 1; $i <= 8; $i++) {
-                                if( isset($reg["title{$i}"]) && $reg["title{$i}"] != '' ) {
-                                    $lh = $pdf->getStringHeight($w[1], $reg["title{$i}"]);
+                                if( isset($reg["fulltitle{$i}"]) && $reg["fulltitle{$i}"] != '' ) {
+                                    $lh = $pdf->getStringHeight($w[1], $reg["fulltitle{$i}"]);
                                     $pdf->SetFont('helvetica', 'B', 12);
                                     $pdf->MultiCell($w[0], $lh, 'Title: ', $border, 'R', 0, 0, '', '');
                                     $pdf->SetFont('arialunicodems', '', 12);
-                                    $pdf->MultiCell($w[1], $lh, $reg["title{$i}"], $border, 'L', 0, 1, '', '');
+                                    $pdf->MultiCell($w[1], $lh, $reg["fulltitle{$i}"], $border, 'L', 0, 1, '', '');
                                 }
                             }
                         }
@@ -862,7 +806,6 @@ function ciniki_musicfestivals_templates_commentsPDF(&$ciniki, $tnid, $args) {
                             $pdf->SetTextColor(128);
                             $pdf->SetFont('helvetica', '', 10);
                             $pdf->SetCellPaddings(0,2,0,2);
-    //                        $pdf->Cell(180, 10, $festival['comments-footer-msg'], 1, 0, 'C', 0, '', 1, false);
                             $pdf->MultiCell(180, 11, $festival['comments-footer-msg'], 0, 'C', 0, 0, '', '', true, 0, false, true, 0, 'M', 1);
                         }
 

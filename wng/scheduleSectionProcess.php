@@ -388,30 +388,14 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "registrations.competitor4_id, "
         . "registrations.competitor5_id, "
         . "registrations.flags, "
-        . "registrations.title1, "
-        . "registrations.title2, "
-        . "registrations.title3, "
-        . "registrations.title4, "
-        . "registrations.title5, "
-        . "registrations.title6, "
-        . "registrations.title7, "
-        . "registrations.title8, "
-        . "registrations.composer1, "
-        . "registrations.composer2, "
-        . "registrations.composer3, "
-        . "registrations.composer4, "
-        . "registrations.composer5, "
-        . "registrations.composer6, "
-        . "registrations.composer7, "
-        . "registrations.composer8, "
-        . "registrations.movements1, "
-        . "registrations.movements2, "
-        . "registrations.movements3, "
-        . "registrations.movements4, "
-        . "registrations.movements5, "
-        . "registrations.movements6, "
-        . "registrations.movements7, "
-        . "registrations.movements8, "
+        . "registrations.fulltitle1, "
+        . "registrations.fulltitle2, "
+        . "registrations.fulltitle3, "
+        . "registrations.fulltitle4, "
+        . "registrations.fulltitle5, "
+        . "registrations.fulltitle6, "
+        . "registrations.fulltitle7, "
+        . "registrations.fulltitle8, "
         . "registrations.video_url1, "
         . "registrations.video_url2, "
         . "registrations.video_url3, "
@@ -558,30 +542,14 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
         . "registrations.competitor4_id, "
         . "registrations.competitor5_id, "
         . "registrations.flags, "
-        . "registrations.title1, "
-        . "registrations.title2, "
-        . "registrations.title3, "
-        . "registrations.title4, "
-        . "registrations.title5, "
-        . "registrations.title6, "
-        . "registrations.title7, "
-        . "registrations.title8, "
-        . "registrations.composer1, "
-        . "registrations.composer2, "
-        . "registrations.composer3, "
-        . "registrations.composer4, "
-        . "registrations.composer5, "
-        . "registrations.composer6, "
-        . "registrations.composer7, "
-        . "registrations.composer8, "
-        . "registrations.movements1, "
-        . "registrations.movements2, "
-        . "registrations.movements3, "
-        . "registrations.movements4, "
-        . "registrations.movements5, "
-        . "registrations.movements6, "
-        . "registrations.movements7, "
-        . "registrations.movements8, "
+        . "registrations.fulltitle1, "
+        . "registrations.fulltitle2, "
+        . "registrations.fulltitle3, "
+        . "registrations.fulltitle4, "
+        . "registrations.fulltitle5, "
+        . "registrations.fulltitle6, "
+        . "registrations.fulltitle7, "
+        . "registrations.fulltitle8, "
         . "registrations.video_url1, "
         . "registrations.video_url2, "
         . "registrations.video_url3, "
@@ -708,9 +676,7 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                 'fields'=>array('id'=>'reg_id', 'display_name', 'public_name', 'status', 'flags',
                     'timeslot_time', 'finals_timeslot_time', 'reg_finals_sort_time',
                     'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
-                    'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
-                    'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
-                    'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                    'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8',
                     'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
                     'participation', 'class_name', 'mark', 'placement', 'level', 'finals_mark', 'finals_placement', 'member_name'),
                 ),
@@ -745,10 +711,8 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             array('container'=>'registrations', 'fname'=>'reg_id', 
                 'fields'=>array('id'=>'reg_id', 'display_name', 'public_name', 'status', 'flags',
                     'timeslot_time', 'finals_timeslot_time', 'reg_finals_sort_time',
-                    'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
                     'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
-                    'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
-                    'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
+                    'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8',
                     'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
                     'participation', 'class_name', 'mark', 'placement', 'level', 'finals_mark', 'finals_placement', 'member_name'),
                 ),
@@ -913,7 +877,6 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
     //
     // Show the divisions
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'scheduleTimeslotProcess');
     foreach($divisions as $did => $division) {
         
@@ -1044,21 +1007,17 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
                                 //
                                 // Make sure the title exists
                                 //
-                                if( isset($registration["title{$i}"]) && $registration["title{$i}"] != '' ) {
-                                    $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $registration, $i);
-                                    if( $rc['stat'] != 'ok' ) {
-                                        return $rc;
-                                    }
+                                if( isset($registration["fulltitle{$i}"]) && $registration["fulltitle{$i}"] != '' ) {
                                     if( isset($s['video_urls']) && $s['video_urls'] == 'yes' 
                                         && isset($registration["video_url{$i}"]) && $registration["video_url{$i}"] != '' 
                                         && $show_videos == 'yes'
                                         ) {
-                                        $titles .= "<div class='video-title'><span class='perf-title'>{$rc['title']}</span>"
+                                        $titles .= "<div class='video-title'><span class='perf-title'>{$registration["fulltitle{$i}"]}</span>"
                                             . "<span class='perf-video'>"
                                             . "<a target='_blank' class='link' href='" . $registration["video_url{$i}"] . "'>Watch Video</a>"
                                             . "</span></div>";
                                     } else {
-                                        $titles .= "<div class='perf-title'>{$rc['title']}</div>";
+                                        $titles .= "<div class='perf-title'>{$registration["fulltitle{$i}"]}</div>";
                                     }
                                 }
                             }

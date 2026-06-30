@@ -201,36 +201,52 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "registrations.competitor5_id, "
             . "registrations.class_id, "
             . "registrations.title1, "
-            . "registrations.composer1, "
+            . "registrations.opus1, "
             . "registrations.movements1, "
+            . "registrations.musical1, "
+            . "registrations.composer1, "
             . "registrations.perf_time1, "
             . "registrations.title2, "
-            . "registrations.composer2, "
+            . "registrations.opus2, "
             . "registrations.movements2, "
+            . "registrations.musical2, "
+            . "registrations.composer2, "
             . "registrations.perf_time2, "
             . "registrations.title3, "
-            . "registrations.composer3, "
+            . "registrations.opus3, "
             . "registrations.movements3, "
+            . "registrations.musical3, "
+            . "registrations.composer3, "
             . "registrations.perf_time3, "
             . "registrations.title4, "
-            . "registrations.composer4, "
+            . "registrations.opus4, "
             . "registrations.movements4, "
+            . "registrations.musical4, "
+            . "registrations.composer4, "
             . "registrations.perf_time4, "
             . "registrations.title5, "
-            . "registrations.composer5, "
+            . "registrations.opus5, "
             . "registrations.movements5, "
+            . "registrations.musical5, "
+            . "registrations.composer5, "
             . "registrations.perf_time5, "
             . "registrations.title6, "
-            . "registrations.composer6, "
+            . "registrations.opus6, "
             . "registrations.movements6, "
+            . "registrations.musical6, "
+            . "registrations.composer6, "
             . "registrations.perf_time6, "
             . "registrations.title7, "
-            . "registrations.composer7, "
+            . "registrations.opus7, "
             . "registrations.movements7, "
+            . "registrations.musical7, "
+            . "registrations.composer7, "
             . "registrations.perf_time7, "
             . "registrations.title8, "
-            . "registrations.composer8, "
+            . "registrations.opus8, "
             . "registrations.movements8, "
+            . "registrations.musical8, "
+            . "registrations.composer8, "
             . "registrations.perf_time8, "
             . "registrations.fee, "
             . "registrations.timeslot_id, "
@@ -348,14 +364,14 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     'competitor1_id', 'competitor2_id', 'competitor3_id', 
                     'competitor4_id', 'competitor5_id', 
                     'class_id', 
-                    'title1', 'composer1', 'movements1', 'perf_time1', 
-                    'title2', 'composer2', 'movements2', 'perf_time2', 
-                    'title3', 'composer3', 'movements3', 'perf_time3', 
-                    'title4', 'composer4', 'movements4', 'perf_time4', 
-                    'title5', 'composer5', 'movements5', 'perf_time5', 
-                    'title6', 'composer6', 'movements6', 'perf_time6', 
-                    'title7', 'composer7', 'movements7', 'perf_time7', 
-                    'title8', 'composer8', 'movements8', 'perf_time8', 
+                    'title1', 'composer1', 'opus1', 'movements1', 'musical1', 'perf_time1', 
+                    'title2', 'composer2', 'opus2', 'movements2', 'musical2', 'perf_time2', 
+                    'title3', 'composer3', 'opus3', 'movements3', 'musical3', 'perf_time3', 
+                    'title4', 'composer4', 'opus4', 'movements4', 'musical4', 'perf_time4', 
+                    'title5', 'composer5', 'opus5', 'movements5', 'musical5', 'perf_time5', 
+                    'title6', 'composer6', 'opus6', 'movements6', 'musical6', 'perf_time6', 
+                    'title7', 'composer7', 'opus7', 'movements7', 'musical7', 'perf_time7', 
+                    'title8', 'composer8', 'opus8', 'movements8', 'musical8', 'perf_time8', 
                     'fee',
                     'participation', 
                     'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
@@ -775,6 +791,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "AND tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "ORDER BY tag_type, tag_name "
             . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryTree');
         $rc = ciniki_core_dbHashQueryTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'tags', 'fname'=>'tag_type', 'name'=>'tags',
                 'fields'=>array('tag_type', 'lists'), 'dlists'=>array('lists'=>'::')),

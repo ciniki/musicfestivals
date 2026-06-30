@@ -14,6 +14,7 @@
 function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid, $args) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
 
     //
     // Make sure festival_id was passed in
@@ -95,37 +96,21 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
             . "registrations.competitor5_id, "
             . "registrations.class_id, "
             . "registrations.timeslot_id, "
-            . "registrations.title1, "
-            . "registrations.composer1, "
-            . "registrations.movements1, "
+            . "registrations.fulltitle1, "
+            . "registrations.fulltitle2, "
+            . "registrations.fulltitle3, "
+            . "registrations.fulltitle4, "
+            . "registrations.fulltitle5, "
+            . "registrations.fulltitle6, "
+            . "registrations.fulltitle7, "
+            . "registrations.fulltitle8, "
             . "registrations.perf_time1, "
-            . "registrations.title2, "
-            . "registrations.composer2, "
-            . "registrations.movements2, "
             . "registrations.perf_time2, "
-            . "registrations.title3, "
-            . "registrations.composer3, "
-            . "registrations.movements3, "
             . "registrations.perf_time3, "
-            . "registrations.title4, "
-            . "registrations.composer4, "
-            . "registrations.movements4, "
             . "registrations.perf_time4, "
-            . "registrations.title5, "
-            . "registrations.composer5, "
-            . "registrations.movements5, "
             . "registrations.perf_time5, "
-            . "registrations.title6, "
-            . "registrations.composer6, "
-            . "registrations.movements6, "
             . "registrations.perf_time6, "
-            . "registrations.title7, "
-            . "registrations.composer7, "
-            . "registrations.movements7, "
             . "registrations.perf_time7, "
-            . "registrations.title8, "
-            . "registrations.composer8, "
-            . "registrations.movements8, "
             . "registrations.perf_time8, "
             . "registrations.participation, "
             . "registrations.fee, "
@@ -203,14 +188,8 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
                     'display_name', 'public_name', 'competitor1_id', 'parent', 'parent_name',
                     'competitor2_id', 'competitor3_id', 
                     'competitor4_id', 'competitor5_id', 'class_id', 'timeslot_id', 
-                    'title1', 'composer1', 'movements1', 'perf_time1', 
-                    'title2', 'composer2', 'movements2', 'perf_time2', 
-                    'title3', 'composer3', 'movements3', 'perf_time3', 
-                    'title4', 'composer4', 'movements4', 'perf_time4', 
-                    'title5', 'composer5', 'movements5', 'perf_time5', 
-                    'title6', 'composer6', 'movements6', 'perf_time6', 
-                    'title7', 'composer7', 'movements7', 'perf_time7', 
-                    'title8', 'composer8', 'movements8', 'perf_time8', 
+                    'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8', 
+                    'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8', 
                     'participation', 'fee', 'notes',
                     'section_name', 'category_name',
                     'class_code', 'class_name', 'class_flags',
@@ -273,7 +252,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
     //
     // Check if the competitor information passed in
     //
-    if( !isset($args['competitors']) ) {
+    if( !isset($args['competitors']) && count($registrations) > 0 ) {
         if( isset($args['teacher_customer_id']) ) {
             $strsql = "SELECT competitors.id, "
                 . "competitors.uuid, "
@@ -292,7 +271,8 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
                 . "competitors.notes "
                 . "FROM ciniki_musicfestival_competitors AS competitors "
                 . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
-                    . "( competitors.id = registrations.competitor1_id "
+                    . "registrations.id in (" . ciniki_core_dbQuoteIDs($ciniki, array_keys($registrations)) . ") "
+                    . "AND ( competitors.id = registrations.competitor1_id "
                         . "OR competitors.id = registrations.competitor2_id "
                         . "OR competitors.id = registrations.competitor3_id "
                         . "OR competitors.id = registrations.competitor4_id "
@@ -434,10 +414,10 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
             $lh = 12;
             $border = 'TLRB';
             $lh = $this->getStringHeight($w2, $value);
-            $this->SetFont('helvetica', 'B', 12);
+            $this->SetFont('helvetica', 'B', 11);
             //$this->MultiCell($w1, $lh, $label, $border, 'R', $this->fill, 0);
             $this->MultiCell($w1, $lh, $label, $border, 'R', 1, 0);
-            $this->SetFont('helvetica', '', 12);
+            $this->SetFont('helvetica', '', 11);
 //            $this->MultiCell($w2, $lh, $value, $border, 'L', $this->fill, 1);
             $this->MultiCell($w2, $lh, $value, $border, 'L', 0, 1);
             $this->fill = !$this->fill;
@@ -450,13 +430,13 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
             if( $lh2 > $lh ) {
                 $lh = $lh2;
             }
-            $this->SetFont('helvetica', 'B', 12);
+            $this->SetFont('helvetica', 'B', 11);
             $this->MultiCell($w1, $lh, $l1, $border, 'R', 1, 0);
-            $this->SetFont('helvetica', '', 12);
+            $this->SetFont('helvetica', '', 11);
             $this->MultiCell($w2, $lh, $v1, $border, 'L', 0, 0);
-            $this->SetFont('helvetica', 'B', 12);
+            $this->SetFont('helvetica', 'B', 11);
             $this->MultiCell($w3, $lh, $l2, $border, 'R', 1, 0);
-            $this->SetFont('helvetica', '', 12);
+            $this->SetFont('helvetica', '', 11);
             $this->MultiCell($w4, $lh, $v2, $border, 'L', 0, 1);
             $this->fill = !$this->fill;
         }
@@ -509,7 +489,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
     // set font
-    $pdf->SetFont('helvetica', 'B', 12);
+    $pdf->SetFont('helvetica', 'B', 11);
     $pdf->SetCellPadding(1.5);
 
     // add a page
@@ -548,7 +528,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
         $pdf->SetFont('helvetica', 'B', 14);
         $pdf->Cell(180, 8, $festival['competitor-label-plural'], 'B', 0, 'L', 0);
         $pdf->Ln();
-        $pdf->SetFont('helvetica', '', 12);
+        $pdf->SetFont('helvetica', '', 11);
         foreach($competitors as $competitor) {
             if( !in_array($competitor['id'], $competitor_ids) ) {
                 continue;
@@ -558,7 +538,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
                 $pdf->SetFont('helvetica', 'B', 14);
                 $pdf->Cell(180, 8, $festival['competitor-label-plural'] . ' (continued...)', 'B', 0, 'L', 0);
                 $pdf->Ln();
-                $pdf->SetFont('helvetica', '', 12);
+                $pdf->SetFont('helvetica', '', 11);
             }
             $address = $competitor['address'];
             $address .= $competitor['city'] != '' ? ($address != '' ? ', ' : '') . $competitor['city'] : '';
@@ -586,7 +566,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
         $pdf->SetFont('helvetica', 'B', 14);
         $pdf->Cell(180, 8, 'Registrations', 'B', 0, 'L', 0);
         $pdf->Ln();
-        $pdf->SetFont('helvetica', 'B', 12);
+        $pdf->SetFont('helvetica', 'B', 11);
         $pdf->SetFillColor(224);
         $border = 1;
         $pdf->Cell($r[0], $lh-3, $festival['competitor-label-singular'], $border, 0, 'L', 1);
@@ -597,7 +577,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
             $pdf->Cell($r[4], $lh-3, 'Plus', $border, 0, 'R', 1);
         }
         $pdf->Ln();
-        $pdf->SetFont('helvetica', '', 12);
+        $pdf->SetFont('helvetica', '', 11);
         $pdf->SetFillColor(242);
         $fill = 1;
         $border = 1;
@@ -638,7 +618,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
                 $pdf->SetFont('helvetica', 'B', 14);
                 $pdf->Cell(180, 8, 'Registrations (continued...)', 'B', 0, 'L', 0);
                 $pdf->Ln();
-                $pdf->SetFont('helvetica', 'B', 12);
+                $pdf->SetFont('helvetica', 'B', 11);
                 $pdf->SetFillColor(224);
                 $border = 1;
                 $pdf->Cell($r[0], $lh-3, $festival['competitor-label-singular'], $border, 0, 'L', 1);
@@ -649,7 +629,7 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
                     $pdf->Cell($r[4], $lh-3, 'Plus', $border, 0, 'R', 1);
                 }
                 $pdf->Ln();
-                $pdf->SetFont('helvetica', '', 12);
+                $pdf->SetFont('helvetica', '', 11);
                 $pdf->SetFillColor(242);
             }
             $pdf->setFont('arialunicodems');
@@ -663,14 +643,14 @@ function ciniki_musicfestivals_templates_teacherRegistrationsPDF(&$ciniki, $tnid
             if( ($festival['flags']&0x10) == 0x10 ) {
                 $pdf->MultiCell($r[4], $lh, ($registration['participation'] == 2 ? 'Plus' : 'Reg'), $border, 'R', $fill, 1);
             }
-            $pdf->SetFont('helvetica', '', 12);
+            $pdf->SetFont('helvetica', '', 11);
 
             $fill = !$fill;
         }
         if( $total > 0 ) {
             $pdf->SetFillColor(224);
             $lh = $pdf->getStringHeight($r[1], 'Total');
-            $pdf->SetFont('helvetica', 'B', 12);
+            $pdf->SetFont('helvetica', 'B', 11);
             $pdf->MultiCell($r[0]+$r[1]+$r[2], $lh, 'Total', $border, 'R', 1, 0);
             $pdf->MultiCell($r[3], $lh, '$' . number_format($total, 2), $border, 'R', 1, 1);
         }

@@ -124,30 +124,14 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
             . "members.id AS member_id, "
             . "IFNULL(classes.code, '') AS class_code, "
             . "IFNULL(local_reg.private_name, '') AS local_reg_private_name, "
-            . "IFNULL(local_reg.title1, '') AS title1, "
-            . "IFNULL(local_reg.movements1, '') AS movements1, "
-            . "IFNULL(local_reg.composer1, '') AS composer1, "
-            . "IFNULL(local_reg.title2, '') AS title2, "
-            . "IFNULL(local_reg.movements2, '') AS movements2, "
-            . "IFNULL(local_reg.composer2, '') AS composer2, "
-            . "IFNULL(local_reg.title3, '') AS title3, "
-            . "IFNULL(local_reg.movements3, '') AS movements3, "
-            . "IFNULL(local_reg.composer3, '') AS composer3, "
-            . "IFNULL(local_reg.title4, '') AS title4, "
-            . "IFNULL(local_reg.movements4, '') AS movements4, "
-            . "IFNULL(local_reg.composer4, '') AS composer4, "
-            . "IFNULL(local_reg.title5, '') AS title5, "
-            . "IFNULL(local_reg.movements5, '') AS movements5, "
-            . "IFNULL(local_reg.composer5, '') AS composer5, "
-            . "IFNULL(local_reg.title6, '') AS title6, "
-            . "IFNULL(local_reg.movements6, '') AS movements6, "
-            . "IFNULL(local_reg.composer6, '') AS composer6, "
-            . "IFNULL(local_reg.title7, '') AS title7, "
-            . "IFNULL(local_reg.movements7, '') AS movements7, "
-            . "IFNULL(local_reg.composer7, '') AS composer7, "
-            . "IFNULL(local_reg.title8, '') AS title8, "
-            . "IFNULL(local_reg.movements8, '') AS movements8, "
-            . "IFNULL(local_reg.composer8, '') AS composer8 "
+            . "IFNULL(local_reg.fulltitle1, '') AS fulltitle1, "
+            . "IFNULL(local_reg.fulltitle2, '') AS fulltitle2, "
+            . "IFNULL(local_reg.fulltitle3, '') AS fulltitle3, "
+            . "IFNULL(local_reg.fulltitle4, '') AS fulltitle4, "
+            . "IFNULL(local_reg.fulltitle5, '') AS fulltitle5, "
+            . "IFNULL(local_reg.fulltitle6, '') AS fulltitle6, "
+            . "IFNULL(local_reg.fulltitle7, '') AS fulltitle7, "
+            . "IFNULL(local_reg.fulltitle8, '') AS fulltitle8 "
             . "FROM ciniki_musicfestival_recommendation_entries AS entries "
             . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
                 . "entries.class_id = classes.id "
@@ -174,9 +158,7 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
                 'fields'=>array('id', 'status', 'recommendation_id', 'class_id', 'position', 'name', 'mark', 'notes', 
                     'member_tnid', 'member_id', 'provincials_reg_id', 'local_reg_id', 'class_code',
                     'local_reg_private_name',
-                    'title1', 'title2', 'title3', 'title4', 'title5', 'title6', 'title7', 'title8',
-                    'movements1', 'movements2', 'movements3', 'movements4', 'movements5', 'movements6', 'movements7', 'movements8',
-                    'composer1', 'composer2', 'composer3', 'composer4', 'composer5', 'composer6', 'composer7', 'composer8',
+                    'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8',
                     ),
                 ),
             ));
@@ -194,10 +176,10 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
         for($i = 1; $i <= 8; $i++) {
             $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $entry, $i);
-            if( isset($rc['title']) && $rc['title'] != '' ) {
+            if( isset($entry["fulltitle{$i}"]) && $rc["fulltitle{$i}"] != '' ) {
                 $entry['local_reg_details'][] = [
                     'label' => "Title {$i}",
-                    'value' => $rc['title'],
+                    'value' => $registration["fulltitle{$i}"],
                     ];
             }
         }

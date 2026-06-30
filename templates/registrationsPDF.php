@@ -13,8 +13,6 @@
 //
 function ciniki_musicfestivals_templates_registrationsPDF(&$ciniki, $tnid, $args) {
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'template', 'registrationPDF');
 
@@ -100,37 +98,21 @@ function ciniki_musicfestivals_templates_registrationsPDF(&$ciniki, $tnid, $args
         . "classes.name AS class_name, "
         . "categories.name AS category_name, "
         . "sections.name AS section_name, "
-        . "registrations.title1, "
-        . "registrations.composer1, "
-        . "registrations.movements1, "
+        . "registrations.fulltitle1, "
+        . "registrations.fulltitle2, "
+        . "registrations.fulltitle3, "
+        . "registrations.fulltitle4, "
+        . "registrations.fulltitle5, "
+        . "registrations.fulltitle6, "
+        . "registrations.fulltitle7, "
+        . "registrations.fulltitle8, "
         . "registrations.perf_time1, "
-        . "registrations.title2, "
-        . "registrations.composer2, "
-        . "registrations.movements2, "
         . "registrations.perf_time2, "
-        . "registrations.title3, "
-        . "registrations.composer3, "
-        . "registrations.movements3, "
         . "registrations.perf_time3, "
-        . "registrations.title4, "
-        . "registrations.composer4, "
-        . "registrations.movements4, "
         . "registrations.perf_time4, "
-        . "registrations.title5, "
-        . "registrations.composer5, "
-        . "registrations.movements5, "
         . "registrations.perf_time5, "
-        . "registrations.title6, "
-        . "registrations.composer6, "
-        . "registrations.movements6, "
         . "registrations.perf_time6, "
-        . "registrations.title7, "
-        . "registrations.composer7, "
-        . "registrations.movements7, "
         . "registrations.perf_time7, "
-        . "registrations.title8, "
-        . "registrations.composer8, "
-        . "registrations.movements8, "
         . "registrations.perf_time8, "
         . "registrations.fee, "
 /*        . "registrations.timeslot_id, "
@@ -247,14 +229,8 @@ function ciniki_musicfestivals_templates_registrationsPDF(&$ciniki, $tnid, $args
                 'competitor1_id', 'competitor2_id', 'competitor3_id', 
                 'competitor4_id', 'competitor5_id', 
                 'class_id', 'class_code', 'class_name', 'category_name', 'section_name', 
-                'title1', 'composer1', 'movements1', 'perf_time1', 
-                'title2', 'composer2', 'movements2', 'perf_time2', 
-                'title3', 'composer3', 'movements3', 'perf_time3', 
-                'title4', 'composer4', 'movements4', 'perf_time4', 
-                'title5', 'composer5', 'movements5', 'perf_time5', 
-                'title6', 'composer6', 'movements6', 'perf_time6', 
-                'title7', 'composer7', 'movements7', 'perf_time7', 
-                'title8', 'composer8', 'movements8', 'perf_time8', 
+                'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8', 
+                'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8', 
                 'fee',
                 'participation', 
                 'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
@@ -657,18 +633,14 @@ function ciniki_musicfestivals_templates_registrationsPDF(&$ciniki, $tnid, $args
         $w = [6, 160, 14];
         $pdf->MultiCell($w[0], 8, "#", 1, 'C', 1, 0);
         $pdf->MultiCell($w[1], 8, "Title", 1, 'L', 1, 0);
-//        $pdf->MultiCell($w[2], 8, "Movements/Musical", 1, 'L', 1, 0);
-//        $pdf->MultiCell($w[3], 8, "Composer", 1, 'L', 1, 0);
         $pdf->MultiCell($w[2], 8, "Time", 1, 'R', 1, 1);
 
         for($i = 1; $i <= 8; $i++) {
-            if( isset($reg["title{$i}"]) && $reg["title{$i}"] != '' ) {
-                $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
-                $reg["title{$i}"] = $rc['title'];
+            if( isset($reg["fulltitle{$i}"]) && $reg["fulltitle{$i}"] != '' ) {
                 $reg["time{$i}"] = intval($reg["perf_time{$i}"]/60) . ':' . str_pad(($reg["perf_time{$i}"]%60), 2, '0', STR_PAD_LEFT);
-                $lh = $pdf->getStringHeight($w[1], $reg["title{$i}"]);
+                $lh = $pdf->getStringHeight($w[1], $reg["fulltitle{$i}"]);
                 $pdf->MultiCell($w[0], $lh, $i, 1, 'R', 0, 0);
-                $pdf->MultiCell($w[1], $lh, $reg["title{$i}"], 1, 'L', 0, 0);
+                $pdf->MultiCell($w[1], $lh, $reg["fulltitle{$i}"], 1, 'L', 0, 0);
                 $pdf->MultiCell($w[2], $lh, $reg["time{$i}"], 1, 'R', 0, 1);
             }
         }

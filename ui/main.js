@@ -742,6 +742,21 @@ function ciniki_musicfestivals_main() {
                     'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'competitors' ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.festival.updateMultireg(M.ciniki_musicfestivals_main.festival.section_id, "no");',
                     },
+                'opusnone':{
+                    'label':'Set Opus to None',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setOpus(M.ciniki_musicfestivals_main.festival.section_id, "None");',
+                    },
+                'opusrequired':{
+                    'label':'Set Opus to Required',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setOpus(M.ciniki_musicfestivals_main.festival.section_id, "Required");',
+                    },
+                'opusoptions':{
+                    'label':'Set Opus to Optional',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setOpus(M.ciniki_musicfestivals_main.festival.section_id, "Optional");',
+                    },
                 'movementsnone':{
                     'label':'Set Movements to None',
                     'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
@@ -756,6 +771,21 @@ function ciniki_musicfestivals_main() {
                     'label':'Set Movements to Optional',
                     'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.festival.setMovements(M.ciniki_musicfestivals_main.festival.section_id, "Optional");',
+                    },
+                'musicalnone':{
+                    'label':'Set Musical to None',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setMusical(M.ciniki_musicfestivals_main.festival.section_id, "None");',
+                    },
+                'musicalrequired':{
+                    'label':'Set Musical to Required',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setMusical(M.ciniki_musicfestivals_main.festival.section_id, "Required");',
+                    },
+                'musicaloptions':{
+                    'label':'Set Musical to Optional',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setMusical(M.ciniki_musicfestivals_main.festival.section_id, "Optional");',
                     },
                 'composernone':{
                     'label':'Set Composer to None',
@@ -4209,6 +4239,27 @@ function ciniki_musicfestivals_main() {
                 });
             });
     }
+    this.festival.setOpus = function(sid, label) {
+        M.confirm("Are you sure you want to update Opus to " + label + "?", "Confirm", function(rsp) {
+            var args = {
+                'tnid':M.curTenantID, 
+                'syllabus_id':M.ciniki_musicfestivals_main.festival.syllabus_id,
+                'section_id':sid,
+                'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
+                'opus':label,
+                }; 
+            if( M.ciniki_musicfestivals_main.festival.sections.syllabus_tabs.selected == 'categories' ) {
+                args['category_id'] = M.ciniki_musicfestivals_main.festival.category_id;
+            }
+            M.api.getJSONCb('ciniki.musicfestivals.sectionClassesUpdate', args, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_musicfestivals_main.festival.open();
+                });
+            });
+    }
     this.festival.setMovements = function(sid, label) {
         M.confirm("Are you sure you want to update Movements to " + label + "?", "Confirm", function(rsp) {
             var args = {
@@ -4217,6 +4268,27 @@ function ciniki_musicfestivals_main() {
                 'section_id':sid,
                 'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
                 'movements':label,
+                }; 
+            if( M.ciniki_musicfestivals_main.festival.sections.syllabus_tabs.selected == 'categories' ) {
+                args['category_id'] = M.ciniki_musicfestivals_main.festival.category_id;
+            }
+            M.api.getJSONCb('ciniki.musicfestivals.sectionClassesUpdate', args, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_musicfestivals_main.festival.open();
+                });
+            });
+    }
+    this.festival.setMusical = function(sid, label) {
+        M.confirm("Are you sure you want to update Musical to " + label + "?", "Confirm", function(rsp) {
+            var args = {
+                'tnid':M.curTenantID, 
+                'syllabus_id':M.ciniki_musicfestivals_main.festival.syllabus_id,
+                'section_id':sid,
+                'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
+                'musical':label,
                 }; 
             if( M.ciniki_musicfestivals_main.festival.sections.syllabus_tabs.selected == 'categories' ) {
                 args['category_id'] = M.ciniki_musicfestivals_main.festival.category_id;
@@ -4956,11 +5028,11 @@ function ciniki_musicfestivals_main() {
             this.sections.classes.num_cols++; 
         }
         else if( this.sections._stabs.selected == 'titles' ) {
-            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Titles', 'Movements', 'Composer', 'Backtrack', 'Art'];
+            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Titles', 'Opus', 'Movements', 'Musical', 'Composer', 'Backtrack', 'Art'];
             this.sections.classes.cellClasses = ['', '', '', 'aligncenter', '', '', '', '', ''];
-            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'num_titles', 'movements', 'composer', 'backtrack', 'artwork'];
-            this.sections.classes.sortTypes = ['text', 'text', 'text', 'number', 'text', 'text', 'text', 'text'];
-            this.sections.classes.num_cols = 8;
+            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'num_titles', 'opus', 'movements', 'musical', 'composer', 'backtrack', 'artwork'];
+            this.sections.classes.sortTypes = ['text', 'text', 'text', 'number', 'text', 'text', 'text', 'text', 'text', 'text'];
+            this.sections.classes.num_cols = 10;
             if( (this.data.flags&0x02) == 0x02 ) {
                 this.sections.classes.headerValues[this.sections.classes.num_cols] = 'Video';
                 this.sections.classes.cellClasses[this.sections.classes.num_cols] = '';
@@ -6291,8 +6363,14 @@ function ciniki_musicfestivals_main() {
                         'after-class':'After Class Name',
                     }},
                 'registration-title-label':{'label':'Title Label', 'type':'text', 'hint':'Title'},
+                'registration-opus-label':{'label':'Opus Label', 'type':'text', 
+                    'hint':'Opus',
+                    },
                 'registration-movements-label':{'label':'Movements Label', 'type':'text', 
-                    'hint':'Movements/Musical',
+                    'hint':'Movements',
+                    },
+                'registration-musical-label':{'label':'Musical Label', 'type':'text', 
+                    'hint':'Musical',
                     },
                 'registration-composer-label':{'label':'Composer Label', 'type':'text', 
                     'hint':'Composer',
@@ -8974,8 +9052,16 @@ function ciniki_musicfestivals_main() {
             'flags5':{'label':'Fixed Title(s)', 'type':'flagtoggle', 'bit':0x10, 'field':'flags', 'default':'off',
                 'onchange':'M.ciniki_musicfestivals_main.class.updateForm();',
                 },
-            'flags27':{'label':'Movements/Musical', 'type':'flagspiece', 'mask':0x0C000000, 'field':'flags', 'join':'yes', 'toggle':'yes',
+            'titleflags11':{'label':'Opus', 'type':'flagspiece', 'mask':0x0C00, 'field':'titleflags', 'join':'yes', 'toggle':'yes',
+                'flags':{'0':{'name':'Hidden'}, '11':{'name':'Required'}, '12':{'name':'Optional'}},
+                'onchange':'M.ciniki_musicfestivals_main.class.updateForm();',
+                },
+            'flags27':{'label':'Movements', 'type':'flagspiece', 'mask':0x0C000000, 'field':'flags', 'join':'yes', 'toggle':'yes',
                 'flags':{'0':{'name':'Hidden'}, '27':{'name':'Required'}, '28':{'name':'Optional'}},
+                'onchange':'M.ciniki_musicfestivals_main.class.updateForm();',
+                },
+            'titleflags15':{'label':'Musical', 'type':'flagspiece', 'mask':0xC000, 'field':'titleflags', 'join':'yes', 'toggle':'yes',
+                'flags':{'0':{'name':'Hidden'}, '15':{'name':'Required'}, '16':{'name':'Optional'}},
                 'onchange':'M.ciniki_musicfestivals_main.class.updateForm();',
                 },
             'flags29':{'label':'Composer', 'type':'flagspiece', 'mask':0x30000000, 'field':'flags', 'join':'yes', 'toggle':'yes',
@@ -9019,7 +9105,9 @@ function ciniki_musicfestivals_main() {
             'visible':'hidden',
             'fields':{
                 'title1':{'label':'Title', 'type':'text'},
-                'movements1':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
+                'opus1':{'label':'Opus', 'type':'text', 'visible':'no'},
+                'movements1':{'label':'Movements', 'type':'text', 'visible':'no'},
+                'musical1':{'label':'Musical', 'type':'text', 'visible':'no'},
                 'composer1':{'label':'Composer', 'type':'text', 'visible':'no'},
                 'perf_time1':{'label':'Performance Time', 'type':'minsec'},
             }},
@@ -9027,7 +9115,9 @@ function ciniki_musicfestivals_main() {
             'visible':'hidden',
             'fields':{
                 'title2':{'label':'Title', 'type':'text'},
-                'movements2':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
+                'opus2':{'label':'Opus', 'type':'text', 'visible':'no'},
+                'movements2':{'label':'Movements', 'type':'text', 'visible':'no'},
+                'musical2':{'label':'Musical', 'type':'text', 'visible':'no'},
                 'composer2':{'label':'Composer', 'type':'text', 'visible':'no'},
                 'perf_time2':{'label':'Performance Time', 'type':'minsec'},
             }},
@@ -9035,7 +9125,9 @@ function ciniki_musicfestivals_main() {
             'visible':'hidden',
             'fields':{
                 'title3':{'label':'Title', 'type':'text'},
-                'movements3':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
+                'opus3':{'label':'Opus', 'type':'text', 'visible':'no'},
+                'movements3':{'label':'Movements', 'type':'text', 'visible':'no'},
+                'musical3':{'label':'Musical', 'type':'text', 'visible':'no'},
                 'composer3':{'label':'Composer', 'type':'text', 'visible':'no'},
                 'perf_time3':{'label':'Performance Time', 'type':'minsec'},
             }},
@@ -9043,7 +9135,9 @@ function ciniki_musicfestivals_main() {
             'visible':'hidden',
             'fields':{
                 'title4':{'label':'Title', 'type':'text'},
-                'movements4':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
+                'opus4':{'label':'Opus', 'type':'text', 'visible':'no'},
+                'movements4':{'label':'Movements', 'type':'text', 'visible':'no'},
+                'musical4':{'label':'Musical', 'type':'text', 'visible':'no'},
                 'composer4':{'label':'Composer', 'type':'text', 'visible':'no'},
                 'perf_time4':{'label':'Performance Time', 'type':'minsec'},
             }},
@@ -9051,7 +9145,9 @@ function ciniki_musicfestivals_main() {
             'visible':'hidden',
             'fields':{
                 'title5':{'label':'Title', 'type':'text'},
-                'movements5':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
+                'opus5':{'label':'Opus', 'type':'text', 'visible':'no'},
+                'movements5':{'label':'Movements', 'type':'text', 'visible':'no'},
+                'musical5':{'label':'Musical', 'type':'text', 'visible':'no'},
                 'composer5':{'label':'Composer', 'type':'text', 'visible':'no'},
                 'perf_time5':{'label':'Performance Time', 'type':'minsec'},
             }},
@@ -9059,7 +9155,9 @@ function ciniki_musicfestivals_main() {
             'visible':'hidden',
             'fields':{
                 'title6':{'label':'Title', 'type':'text'},
-                'movements6':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
+                'opus6':{'label':'Opus', 'type':'text', 'visible':'no'},
+                'movements6':{'label':'Movements', 'type':'text', 'visible':'no'},
+                'musical6':{'label':'Musical', 'type':'text', 'visible':'no'},
                 'composer6':{'label':'Composer', 'type':'text', 'visible':'no'},
                 'perf_time6':{'label':'Performance Time', 'type':'minsec'},
             }},
@@ -9067,7 +9165,9 @@ function ciniki_musicfestivals_main() {
             'visible':'hidden',
             'fields':{
                 'title7':{'label':'Title', 'type':'text'},
-                'movements7':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
+                'opus7':{'label':'Opus', 'type':'text', 'visible':'no'},
+                'movements7':{'label':'Movements', 'type':'text', 'visible':'no'},
+                'musical7':{'label':'Musical', 'type':'text', 'visible':'no'},
                 'composer7':{'label':'Composer', 'type':'text', 'visible':'no'},
                 'perf_time7':{'label':'Performance Time', 'type':'minsec'},
             }},
@@ -9075,7 +9175,9 @@ function ciniki_musicfestivals_main() {
             'visible':'hidden',
             'fields':{
                 'title8':{'label':'Title', 'type':'text'},
-                'movements8':{'label':'Movements/Musical', 'type':'text', 'visible':'no'},
+                'opus8':{'label':'Opus', 'type':'text', 'visible':'no'},
+                'movements8':{'label':'Movements', 'type':'text', 'visible':'no'},
+                'musical8':{'label':'Musical', 'type':'text', 'visible':'no'},
                 'composer8':{'label':'Composer', 'type':'text', 'visible':'no'},
                 'perf_time8':{'label':'Performance Time', 'type':'minsec'},
             }},
@@ -9753,8 +9855,14 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'titles' ? 'yes' : 'hidden'; },
             'fields':{
                 'title1':{'label':'Title', 'type':'text', 'separator':'yes'},
-                'movements1':{'label':'Movements/Musical', 'type':'text',
+                'opus1':{'label':'Opus', 'type':'text',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.opusVisible(1); },
+                    },
+                'movements1':{'label':'Movements', 'type':'text',
                     'visible':function() { return M.ciniki_musicfestivals_main.registration.movementsVisible(1); },
+                    },
+                'musical1':{'label':'Musical', 'type':'text',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.musicalVisible(1); },
                     },
                 'composer1':{'label':'Composer', 'type':'text',
                     'visible':function() { return M.ciniki_musicfestivals_main.registration.composerVisible(1); },
@@ -9780,8 +9888,14 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.registration.titleVisible(2); },
             'fields':{
                 'title2':{'label':'Title', 'type':'text', 'separator':'yes'},
-                'movements2':{'label':'Movements/Musical', 'type':'text',
+                'opus2':{'label':'Opus', 'type':'text',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.opusVisible(2); },
+                    },
+                'movements2':{'label':'Movements', 'type':'text',
                     'visible':function() { return M.ciniki_musicfestivals_main.registration.movementsVisible(2); },
+                    },
+                'musical2':{'label':'Musical', 'type':'text',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.musicalVisible(2); },
                     },
                 'composer2':{'label':'Composer', 'type':'text',
                     'visible':function() { return M.ciniki_musicfestivals_main.registration.composerVisible(2); },
@@ -9807,8 +9921,14 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.registration.titleVisible(3); },
             'fields':{
                 'title3':{'label':'Title', 'type':'text', 'separator':'yes'},
-                'movements3':{'label':'Movements/Musical', 'type':'text',
+                'opus3':{'label':'Opus', 'type':'text',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.opusVisible(3); },
+                    },
+                'movements3':{'label':'Movements', 'type':'text',
                     'visible':function() { return M.ciniki_musicfestivals_main.registration.movementsVisible(3); },
+                    },
+                'musical3':{'label':'Musical', 'type':'text',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.musicalVisible(3); },
                     },
                 'composer3':{'label':'Composer', 'type':'text',
                     'visible':function() { return M.ciniki_musicfestivals_main.registration.composerVisible(3); },
@@ -9834,8 +9954,14 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.registration.titleVisible(4); },
             'fields':{
                 'title4':{'label':'Title', 'type':'text', 'separator':'yes'},
-                'movements4':{'label':'Movements/Musical', 'type':'text',
+                'opus4':{'label':'Opus', 'type':'text',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.opusVisible(4); },
+                    },
+                'movements4':{'label':'Movements', 'type':'text',
                     'visible':function() { return M.ciniki_musicfestivals_main.registration.movementsVisible(4); },
+                    },
+                'musical4':{'label':'Musical', 'type':'text',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.musicalVisible(4); },
                     },
                 'composer4':{'label':'Composer', 'type':'text',
                     'visible':function() { return M.ciniki_musicfestivals_main.registration.composerVisible(4); },
@@ -9861,8 +9987,14 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.registration.titleVisible(5); },
             'fields':{
                 'title5':{'label':'Title', 'type':'text', 'separator':'yes'},
-                'movements5':{'label':'Movements/Musical', 'type':'text',
+                'opus5':{'label':'Opus', 'type':'text',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.opusVisible(5); },
+                    },
+                'movements5':{'label':'Movements', 'type':'text',
                     'visible':function() { return M.ciniki_musicfestivals_main.registration.movementsVisible(5); },
+                    },
+                'musical5':{'label':'Musical', 'type':'text',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.musicalVisible(5); },
                     },
                 'composer5':{'label':'Composer', 'type':'text', 
                     'visible':function() { return M.ciniki_musicfestivals_main.registration.composerVisible(5); },
@@ -9888,8 +10020,14 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.registration.titleVisible(6); },
             'fields':{
                 'title6':{'label':'Title', 'type':'text', 'separator':'yes'},
-                'movements6':{'label':'Movements/Musical', 'type':'text',
+                'opus6':{'label':'Opus', 'type':'text',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.opusVisible(6); },
+                    },
+                'movements6':{'label':'Movements', 'type':'text',
                     'visible':function() { return M.ciniki_musicfestivals_main.registration.movementsVisible(6); },
+                    },
+                'musical6':{'label':'Musical', 'type':'text',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.musicalVisible(6); },
                     },
                 'composer6':{'label':'Composer', 'type':'text',
                     'visible':function() { return M.ciniki_musicfestivals_main.registration.composerVisible(6); },
@@ -9915,8 +10053,14 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.registration.titleVisible(7); },
             'fields':{
                 'title7':{'label':'Title', 'type':'text', 'separator':'yes'},
-                'movements7':{'label':'Movements/Musical', 'type':'text',
+                'opus7':{'label':'Opus', 'type':'text',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.opusVisible(7); },
+                    },
+                'movements7':{'label':'Movements', 'type':'text',
                     'visible':function() { return M.ciniki_musicfestivals_main.registration.movementsVisible(7); },
+                    },
+                'musical7':{'label':'Musical', 'type':'text',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.musicalVisible(7); },
                     },
                 'composer7':{'label':'Composer', 'type':'text',
                     'visible':function() { return M.ciniki_musicfestivals_main.registration.composerVisible(7); },
@@ -9942,8 +10086,14 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.registration.titleVisible(8); },
             'fields':{
                 'title8':{'label':'Title', 'type':'text', 'separator':'yes'},
-                'movements8':{'label':'Movements/Musical', 'type':'text',
+                'opus8':{'label':'Opus', 'type':'text',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.opusVisible(8); },
+                    },
+                'movements8':{'label':'Movements', 'type':'text',
                     'visible':function() { return M.ciniki_musicfestivals_main.registration.movementsVisible(8); },
+                    },
+                'musical8':{'label':'Musical', 'type':'text',
+                    'visible':function() { return M.ciniki_musicfestivals_main.registration.musicalVisible(8); },
                     },
                 'composer8':{'label':'Composer', 'type':'text', 
                     'visible':function() { return M.ciniki_musicfestivals_main.registration.composerVisible(8); },
@@ -10167,7 +10317,9 @@ function ciniki_musicfestivals_main() {
         this.refreshSection('_tabs');
         this.showHideSections(['_results', 'provincials', 'messages', '_comments', 'invoice_details', '_fee', '_notes', '_internal_notes', '_runsheet_notes', 'accolades', 'crs']);
         for(var i = 1; i <= 8; i++) {
+            this.showHideFormField('_title'+i, 'opus'+i);
             this.showHideFormField('_title'+i, 'movements'+i);
+            this.showHideFormField('_title'+i, 'musical'+i);
             this.showHideFormField('_title'+i, 'composer'+i);
             this.showHideSection('_title'+i);
         }
@@ -10190,8 +10342,14 @@ function ciniki_musicfestivals_main() {
     this.registration.titleVisible = function(i) {
         return this.sections._tabs.selected == 'titles' && this.selected_class != null && (this.selected_class.max_titles >= i || this.data['title'+i] != '') ? 'yes' : 'hidden';
     }
+    this.registration.opusVisible = function(i) {
+        return (this.selected_class != null && (this.selected_class.titleflags&0x0C00) > 0 || this.data['opus'+i] != '') ? 'yes' : 'no';
+    }
     this.registration.movementsVisible = function(i) {
         return (this.selected_class != null && (this.selected_class.flags&0x0C000000) > 0 || this.data['movements'+i] != '') ? 'yes' : 'no';
+    }
+    this.registration.musicalVisible = function(i) {
+        return (this.selected_class != null && (this.selected_class.titleflags&0xC000) > 0 || this.data['musical'+i] != '') ? 'yes' : 'no';
     }
     this.registration.composerVisible = function(i) {
         return (this.selected_class != null && (this.selected_class.flags&0x30000000) > 0 || this.data['composer'+i] != '') ? 'yes' : 'no';
@@ -10391,7 +10549,9 @@ function ciniki_musicfestivals_main() {
                 this.showHideSections(['_display_name', 'competitor2_details', 'competitor3_details', 'competitor4_details', 'competitor5_details']);
                 for(var i = 1; i <= 8; i++) {
                     this.showHideSection('_title'+i);
+                    this.showHideFormField('_title'+i, 'opus'+i);
                     this.showHideFormField('_title'+i, 'movements'+i);
+                    this.showHideFormField('_title'+i, 'musical'+i);
                     this.showHideFormField('_title'+i, 'composer'+i);
                     this.showHideFormField('_title'+i, 'video_url'+i);
                     this.showHideFormField('_title'+i, 'music_orgfilename'+i);
@@ -10550,6 +10710,10 @@ function ciniki_musicfestivals_main() {
         if( fid != null ) { this.festival_id = fid; }
         if( cid != null ) { this.class_id = cid; }
         if( list != null ) { this.nplist = list; }
+        if( this.registration_id == 0 ) {
+            M.alert("Oops, we hit a snag. Please contact us and let us know what you were doing.");
+            return;
+        }
         if( source != null ) { 
             this._source = source; 
             if( source == 'provincials' || source == 'results' ) {
@@ -13311,12 +13475,7 @@ function ciniki_musicfestivals_main() {
                         ];
                     for(var j = 1;j <= 8; j++) {
                         if( j <= registration.max_titles ) {
-                            p.data['details_' + i].push({'label':'Title #' + j, 'value':registration['title' + j]});
-                            // Now combined into title[j]
-//                            if( M.modFlagOn('ciniki.musicfestivals', 0x040000) ) {
-//                                p.data['details_' + i].push({'label':'Movements/Musical', 'value':registration['movements' + j]});
-//                                p.data['details_' + i].push({'label':'Composer', 'value':registration['composer' + j]});
-//                            }
+                            p.data['details_' + i].push({'label':'Title #' + j, 'value':registration['fulltitle' + j]});
                             if( registration.participation == 1 ) {
                                 p.data['details_' + i].push({'label':'Video', 'value':M.hyperlink(registration['video_url' + j])});
                                 p.data['details_' + i].push({'label':'Music', 'value':registration['music_orgfilename' + j]});

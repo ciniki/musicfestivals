@@ -32,7 +32,9 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         'plus_fee_update'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Plus Fee Update'),
         'instrument'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Instrument Setting'),
         'accompanist'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Accompanist Setting'),
+        'opus'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Opus Setting'),
         'movements'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Movements Setting'),
+        'musical'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Musical Setting'),
         'composer'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Composer Setting'),
         'backtrack'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Backtrack Setting'),
         'artwork'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Artwork Setting'),
@@ -200,6 +202,17 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         }
 
         //
+        // Update opus
+        //
+        if( isset($args['opus']) && strtolower($args['opus']) == 'none' && ($class['titleflags']&0x0C00) > 0 ) {
+            $titleflags = ($titleflags&0xFFFFF3FF);
+        } elseif( isset($args['opus']) && strtolower($args['opus']) == 'required' && ($class['titleflags']&0x0400) == 0 ) {
+            $titleflags = ($titleflags&0xFFFFF3FF) | 0x0400;
+        } elseif( isset($args['opus']) && strtolower($args['opus']) == 'optional' && ($class['titleflags']&0x0800) == 0 ) {
+            $titleflags = ($titleflags&0xFFFFF3FF) | 0x0800;
+        }
+
+        //
         // Update movements
         //
         if( isset($args['movements']) && strtolower($args['movements']) == 'none' && ($class['flags']&0x0C000000) > 0 ) {
@@ -208,6 +221,17 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
             $flags = ($flags&0xF3FFFFFF) | 0x04000000;
         } elseif( isset($args['movements']) && strtolower($args['movements']) == 'optional' && ($class['flags']&0x08000000) == 0 ) {
             $flags = ($flags&0xF3FFFFFF) | 0x08000000;
+        }
+
+        //
+        // Update musical
+        //
+        if( isset($args['musical']) && strtolower($args['musical']) == 'none' && ($class['titleflags']&0xC000) > 0 ) {
+            $titleflags = ($titleflags&0xFFFF3FFF);
+        } elseif( isset($args['musical']) && strtolower($args['musical']) == 'required' && ($class['titleflags']&0x4000) == 0 ) {
+            $titleflags = ($titleflags&0xFFFF3FFF) | 0x4000;
+        } elseif( isset($args['musical']) && strtolower($args['musical']) == 'optional' && ($class['titleflags']&0x8000) == 0 ) {
+            $titleflags = ($titleflags&0xFFFF3FFF) | 0x8000;
         }
 
         //
