@@ -304,7 +304,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                         $sections[$sid]['classes'][$cid]['codename'] .= " ({$participation_label})";
                     }
                 }
-                    
+
                 //
                 // Check for valid sections and options when not in view mode for the form.
                 //
@@ -1534,7 +1534,12 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 . "sl.classList.remove('hidden');"
             . "}"
             . ""; 
+        // FIXME: Add display for fee
+    } else {
+        // Single pricing
+        // FIXME: Add display for fee
     }
+
 
     $js = ""
         . "var sids=[" . implode(',', array_keys($sections)) . "];"

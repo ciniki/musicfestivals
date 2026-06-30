@@ -111,7 +111,21 @@ function ciniki_musicfestivals_competitorAdd(&$ciniki) {
             $args['phone_home'] = $rc['formatted_number'];
         }
     }
-    
+   
+    //
+    // Format the postal
+    //
+    if( isset($args['postal']) ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'postalFormat');
+        $rc = ciniki_tenants_hooks_postalFormat($ciniki, $args['tnid'], ['postal'=>$args['postal']]);
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        if( isset($rc['formatted_postal']) ) {
+            $args['postal'] = $rc['formatted_postal'];
+        }
+    }
+
     //
     // Start transaction
     //

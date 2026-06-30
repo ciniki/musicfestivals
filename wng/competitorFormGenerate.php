@@ -311,6 +311,15 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
         'class' => '',
         'value' => (isset($_POST['f-postal']) ? trim($_POST['f-postal']) : (isset($competitor['postal']) ? $competitor['postal'] :'')),
         );
+    // Format the postal 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'postalFormat');
+    $rc = ciniki_tenants_hooks_postalFormat($ciniki, $tnid, ['postal'=>$fields['postal']['value']]);
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    if( isset($rc['formatted_postal']) ) {
+        $fields['postal']['value'] = $rc['formatted_postal'];
+    }
     $fields['country'] = array(
         'id' => 'country',
         'label' => 'Country',
