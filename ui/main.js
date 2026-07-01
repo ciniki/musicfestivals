@@ -6494,6 +6494,7 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('registrations'); },
             'fields':{
                 'registration-status-5-colour':{'label':'Draft(unpaid) Colour', 'type':'colour'},
+                'registration-status-7-colour':{'label':'Submitted(unpaid) Colour', 'type':'colour'},
                 'registration-status-10-colour':{'label':'Registered(paid) Colour', 'type':'colour'},
                 'registration-status-31-label':{'label':'Incomplete #1 Label', 'type':'text', 'separator':'yes'},
                 'registration-status-31-colour':{'label':'Incomplete #1 Colour', 'type':'colour'},
@@ -6544,6 +6545,10 @@ function ciniki_musicfestivals_main() {
                     'code-category-name':'Code, Category-Name',
                     }},
                 'ui-registrations-count-status-5':{'label':'Registration Counts - Draft', 'type':'toggle', 'default':'yes', 'toggles':{
+                    'no':'Exclude',
+                    'yes':'Include',
+                    }},
+                'ui-registrations-count-status-7':{'label':'Registration Counts - Submitted', 'type':'toggle', 'default':'yes', 'toggles':{
                     'no':'Exclude',
                     'yes':'Include',
                     }},
@@ -6955,6 +6960,11 @@ function ciniki_musicfestivals_main() {
                         'yes':'Yes',
                     }},
                 'scheduling-draft-show':{'label':'Show Draft', 'type':'toggle', 'default':'no', 
+                    'toggles':{
+                        'no':'No',
+                        'yes':'Yes',
+                    }},
+                'scheduling-submitted-show':{'label':'Show Submitted', 'type':'toggle', 'default':'no', 
                     'toggles':{
                         'no':'No',
                         'yes':'Yes',
@@ -7411,6 +7421,7 @@ function ciniki_musicfestivals_main() {
     this.edit.setDefaultColours = function() {
         this.popupMenuClose('_registration_statuses');
         M.gE(this.panelUID + '_registration-status-5-colour').style.background = '#f0f0f0';
+        M.gE(this.panelUID + '_registration-status-7-colour').style.background = '#f0f0f0';
         M.gE(this.panelUID + '_registration-status-10-colour').style.background = '#ffffff';
         M.gE(this.panelUID + '_registration-status-31-colour').style.background = '#e0e0e0'; // grey
         M.gE(this.panelUID + '_registration-status-32-colour').style.background = '#fffdc5'; // yellow
@@ -10788,6 +10799,7 @@ function ciniki_musicfestivals_main() {
             p.sections._class.fields.status.editable = (rsp.registration.status < 10 ? 'no' : 'yes');
             p.sections._class.fields.status.options = [];
             p.sections._class.fields.status.options[5] = 'Draft';
+            p.sections._class.fields.status.options[7] = 'Submitted';
             p.sections._class.fields.status.options[10] = 'Registered';
             for(var i = 31;i<=38;i++) {
                 if( rsp.registration.festival['registration-status-' + i + '-label'] != null
@@ -12075,6 +12087,7 @@ function ciniki_musicfestivals_main() {
             }},
         'statuses':{'label':'Include Registrations Status', 'fields':{
             'status_5':{'label':'Draft', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
+            'status_7':{'label':'Submitted', 'type':'toggle', 'default':'yes', 'toggles':{'no':'No', 'yes':'Yes'}},
             'status_70':{'label':'Disqualified', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
             'status_75':{'label':'Withdrawn', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
 //            'status_77':{'label':'No Show', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
@@ -12123,6 +12136,7 @@ function ciniki_musicfestivals_main() {
             }},
         'statuses':{'label':'Include Registrations Status', 'fields':{
             'status_5':{'label':'Draft', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
+            'status_7':{'label':'Submitted', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
             'status_70':{'label':'Disqualified', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
             'status_75':{'label':'Withdrawn', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
             'status_80':{'label':'Cancelled', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},

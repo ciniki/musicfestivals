@@ -24,7 +24,8 @@ function ciniki_musicfestivals_scheduleSectionClassImport(&$ciniki) {
         'scheduledivision_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Division'),
         'section_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Section'),
         'status_5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Draft'),
-        'status_70-'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Disqualified'),
+        'status_7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Draft'),
+        'status_70'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Disqualified'),
         'status_75'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Withdrawn'),
         'status_80'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Cancelled'),
         ));
@@ -75,9 +76,12 @@ function ciniki_musicfestivals_scheduleSectionClassImport(&$ciniki) {
         . "AND registrations.timeslot_id = 0 "
         . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND ("
-            . "(registrations.status > 5 AND registrations.status < 70) ";
+            . "(registrations.status > 7 AND registrations.status < 70) ";
     if( isset($args['status_5']) && $args['status_5'] == 'yes' ) {
         $strsql .= "OR registrations.status = 5 ";
+    }
+    if( isset($args['status_7']) && $args['status_7'] == 'yes' ) {
+        $strsql .= "OR registrations.status = 7 ";
     }
     if( isset($args['status_70']) && $args['status_70'] == 'yes' ) {
         $strsql .= "OR registrations.status = 70 ";

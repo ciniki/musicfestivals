@@ -378,7 +378,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         //
         // Setup the sql to limit the count of registrations statuses
         $reg_count_exclude_sql = '';
-        foreach([5, 70, 75, 77, 80] as $status) {
+        foreach([5, 7, 70, 75, 77, 80] as $status) {
             if( isset($festival["ui-registrations-count-status-{$status}"]) && $festival["ui-registrations-count-status-{$status}"] == 'no' ) {
                 $reg_count_exclude_sql .= "AND registrations.status <> {$status} ";
             }

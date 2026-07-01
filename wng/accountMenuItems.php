@@ -300,7 +300,7 @@ function ciniki_musicfestivals_wng_accountMenuItems($ciniki, $tnid, $request, $a
             . "OR registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
             . ") "
         . "AND registrations.status < 70 "
-        . "AND registrations.status > 5 "
+        . "AND registrations.status > 7 "
 //        . "AND registrations.comments <> '' "
         . "AND registrations.festival_id <> '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
         . "";

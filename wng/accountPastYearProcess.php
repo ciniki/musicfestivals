@@ -68,7 +68,7 @@ function ciniki_musicfestivals_wng_accountPastYearProcess(&$ciniki, $tnid, &$req
             . ") "
         . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "AND registrations.status < 70 "
-        . "AND registrations.status > 5 "
+        . "AND registrations.status > 7 "
 //        . "AND registrations.comments <> '' "
         . "AND ("
             . "registrations.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "

@@ -127,7 +127,7 @@ function ciniki_musicfestivals_wng_provincialResultsProcess(&$ciniki, $tnid, &$r
         . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $s['festival-id']) . "' "
         . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $provincial_tnid) . "' "
         . "AND registrations.status < 70 "
-        . "AND registrations.status > 5 "
+        . "AND registrations.status > 7 "
         . "AND (placement <> '' OR finals_placement <> '') "
         . "AND ((divisions.flags&0x20) = 0x20 OR (ssections.flags&0x20) = 0x20) "
         . "ORDER BY sections.sequence, sections.id, categories.sequence, categories.id, classes.sequence, classes.code, registrations.id "

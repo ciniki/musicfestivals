@@ -45,6 +45,10 @@ function ciniki_musicfestivals_sapos_cartItemETransferCheckout($ciniki, $tnid, $
         if( $item['invoice_id'] != $args['invoice_id'] ) {
             $update_args['invoice_id'] = $args['invoice_id'];
         }
+        // Update to submitted status
+        if( $status < 7 ) {
+            $update_args['status'] = 7;
+        }
         if( count($update_args) > 0 ) {
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
             $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $args['object_id'], $update_args, 0x04);

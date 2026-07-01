@@ -28,6 +28,7 @@ function ciniki_musicfestivals_maps($ciniki) {
         ),
         'status'=>array(
             '5'=>'Draft',
+            '7'=>'Submitted',
             '10'=>'Registered',
             '31'=>'Other',
             '32'=>'Other',

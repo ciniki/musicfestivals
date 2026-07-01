@@ -35,7 +35,7 @@ function ciniki_musicfestivals_wng_accountPastProcess(&$ciniki, $tnid, &$request
             . "OR registrations.teacher_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
             . ") "
         . "AND registrations.status < 70 "
-        . "AND registrations.status > 5 "
+        . "AND registrations.status > 7 "
 //        . "AND registrations.comments <> '' "
         . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
         . "ORDER BY festivals.start_date DESC, festivals.name "
