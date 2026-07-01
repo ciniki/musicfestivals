@@ -17,7 +17,7 @@
 function ciniki_musicfestivals_festivalGet($ciniki) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
+//    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titlesMerge');
 
     //
@@ -1569,20 +1569,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         $festival['registrations'][$rid]['perf_time'] = $rc['perf_time'];
                         $perf_time = 0;
                         for($i = 1; $i <= 8; $i++) {
-                            
-/*                            if( $registration["title{$i}"] != '' ) {
-                                $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
-                                if( $rc['stat'] == 'ok' ) {
-                                    $festival['registrations'][$rid]["title{$i}"] = $rc['title'];
-                                    $registration["title{$i}"] = $rc['title'];
-                                    $festival['registrations'][$rid]['titles'] .= ($festival['registrations'][$rid]['titles'] != '' ? '<br/>' : '') . $rc['title'];
-                                }
-                            } */
-//                            unset($festival['registrations'][$rid]["opus{$i}"]);
-//                            unset($festival['registrations'][$rid]["movements{$i}"]);
-//                            unset($festival['registrations'][$rid]["composer{$i}"]);
                             if( $i > $registration['max_titles'] ) {
-//                                unset($festival['registrations'][$rid]["title{$i}"]);
                                 unset($festival['registrations'][$rid]["perf_time{$i}"]);
                                 unset($festival['registrations'][$rid]["music_orgfilename{$i}"]);
                                 unset($festival['registrations'][$rid]["video_url{$i}"]);

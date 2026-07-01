@@ -366,19 +366,15 @@ function ciniki_musicfestivals_wng_syllabusSectionResultsProcess(&$ciniki, $tnid
                                 // Make sure the title exists
                                 //
                                 if( isset($reg["fulltitle{$i}"]) && $reg["fulltitle{$i}"] != '' ) {
-                                    $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $reg, $i);
-                                    if( $rc['stat'] != 'ok' ) {
-                                        return $rc;
-                                    }
                                     if( isset($s['video_urls']) && $s['video_urls'] == 'yes' 
                                         && isset($reg["video_url{$i}"]) && $reg["video_url{$i}"] != '' 
                                         ) {
-                                        $titles .= "<div class='video-title'><span class='perf-title'>{$rc['title']}</span>"
+                                        $titles .= "<div class='video-title'><span class='perf-title'>{$reg["fulltitle{$i}"]}</span>"
                                             . "<span class='perf-video'>"
                                             . "<a target='_blank' class='link' href='" . $reg["video_url{$i}"] . "'>Watch Video</a>"
                                             . "</span></div>";
                                     } else {
-                                        $titles .= "<div class='perf-title'>{$rc['title']}</div>";
+                                        $titles .= "<div class='perf-title'>{$reg["fulltitle{$i}"]}</div>";
                                     }
                                 }
                             }
