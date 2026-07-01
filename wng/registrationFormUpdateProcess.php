@@ -185,6 +185,13 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
                     'msg' => 'You must specify how you want to participate.',
                     );
             }
+            elseif( preg_match("/video_url([0-9])/", $field['id'], $m) 
+                && preg_match("/safelinks\./", $field['value'])
+                ) {
+                $errors[] = array(
+                    'msg' => 'Invalid ' . $field['label'] . '. Please open the link first and copy the youtube url.',
+                    );
+            }
             elseif( ($selected_class['flags']&0x400000) == 0x400000 && preg_match("/backtrack([0-9])/", $field['id'], $m) ) {
                 if( $fields["backtrack_option{$m[1]}"]['value'] == 'on' 
                     && $field['value'] == '' 

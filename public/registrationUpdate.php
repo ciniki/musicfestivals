@@ -193,6 +193,15 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         return $rc;
     }
     $festival = $rc['festival'];
+
+    //
+    // Check to make sure any youtube urls are not safelinks
+    //
+    for($i = 1; $i <= 8; $i++) {
+        if( isset($args["video_url{$i}"]) && preg_match("/safelinks\./", $args["video_url{$i}"]) ) {
+            return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.302', 'msg'=>'Invalid Video URL. Please click on the link and copy the youtube url.'));
+        }
+    }
     
     //
     // Get the tenant storage directory
