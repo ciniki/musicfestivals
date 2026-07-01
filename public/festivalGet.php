@@ -5449,7 +5449,104 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 }
             }
         }
-        if( isset($args['statistics']) && $args['statistics'] == 'cities' ) {
+        elseif( isset($args['statistics']) && $args['statistics'] == 'syllabus' ) {
+            $strsql = "SELECT sections.id, "
+                . "sections.name, "
+                . "IFNULL(registrations.status, 0) AS status, "
+                . "IFNULL(COUNT(registrations.id), 0) AS num_reg "
+                . "FROM ciniki_musicfestival_sections AS sections "
+                . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
+                    . "sections.id = categories.section_id "
+                    . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+                    . "categories.id = classes.category_id "
+                    . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                    . "classes.id = registrations.class_id "
+                    . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "GROUP BY sections.id, registrations.status "
+                . "ORDER BY sections.sequence, sections.name, registrations.status "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'sections', 'fname'=>'id', 'fields'=>array('id', 'name')),
+                array('container'=>'status', 'fname'=>'status', 'fields'=>array('status', 'num_reg')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1667', 'msg'=>'Unable to load sections', 'err'=>$rc['err']));
+            }
+            $festival['stats_syllabus'] = isset($rc['sections']) ? $rc['sections'] : array();
+            $festival['stats_syllabus_headerValues'] = ['Section', 'Draft', 'Submitted', 'Registered'];
+            $festival['stats_syllabus_cellClasses'] = ['', 'alignright', 'alignright', 'alignright'];
+            $festival['stats_syllabus_dataMaps'] = ['name', 'status_5_num_reg', 'status_7_num_reg', 'status_10_num_reg'];
+            $festival['stats_syllabus_totals'] = ['name'=>'Totals', 'status_5_num_reg'=>0, 'status_7_num_reg'=>0, 'status_10_num_reg'=>0];
+            for($i = 31; $i <= 38; $i++) {
+                if( isset($festival["registration-status-{$i}-label"]) && $festival["registration-status-{$i}-label"] != '' ) {
+                    $festival['stats_syllabus_headerValues'][] = $festival["registration-status-{$i}-label"];
+                    $festival['stats_syllabus_cellClasses'][] = 'alignright';
+                    $festival['stats_syllabus_dataMaps'][] = "status_{$i}_num_reg";
+                    $festival['stats_syllabus_totals']["status_{$i}_num_reg"] = 0;
+                }
+            }
+            for($i = 50; $i <= 56; $i++) {
+                if( isset($festival["registration-status-{$i}-label"]) && $festival["registration-status-{$i}-label"] != '' ) {
+                    $festival['stats_syllabus_headerValues'][] = $festival["registration-status-{$i}-label"];
+                    $festival['stats_syllabus_cellClasses'][] = 'alignright';
+                    $festival['stats_syllabus_dataMaps'][] = "status_{$i}_num_reg";
+                    $festival['stats_syllabus_totals']["status_{$i}_num_reg"] = 0;
+                } elseif( $i == 50 ) {
+                    $festival['stats_syllabus_headerValues'][] = 'Approved';
+                    $festival['stats_syllabus_cellClasses'][] = 'alignright';
+                    $festival['stats_syllabus_dataMaps'][] = "status_{$i}_num_reg";
+                    $festival['stats_syllabus_totals']["status_{$i}_num_reg"] = 0;
+                }
+            }
+            foreach(['70'=>'Disqualified', '75' => 'Withdrawn', '77' => 'No Show', '80'=>'Cancelled'] as $i => $label) {
+                $festival['stats_syllabus_headerValues'][] = $label;
+                $festival['stats_syllabus_cellClasses'][] = 'alignright';
+                $festival['stats_syllabus_dataMaps'][] = "status_{$i}_num_reg";
+                $festival['stats_syllabus_totals']["status_{$i}_num_reg"] = 0;
+            }
+            $festival['stats_syllabus_headerValues'][] = 'Total';
+            $festival['stats_syllabus_cellClasses'][] = 'alignright';
+            $festival['stats_syllabus_dataMaps'][] = "num_reg";
+            $festival['stats_syllabus_totals']['num_reg'] = 0;
+
+            foreach($festival['stats_syllabus'] as $sid => $section) {
+                if( !isset($section['status']) ) {
+                    continue;
+                }
+                $festival['stats_syllabus'][$sid]["num_reg"] = 0;
+                foreach($section['status'] as $i => $status) {
+                    if( $status['status'] > 0 ) {
+                        $festival['stats_syllabus'][$sid]["status_{$status['status']}_num_reg"] = $status['num_reg'];
+                        $festival['stats_syllabus'][$sid]["num_reg"] += $status['num_reg'];
+                        $festival['stats_syllabus_totals']["status_{$status['status']}_num_reg"] += $status['num_reg'];
+                        $festival['stats_syllabus_totals']["num_reg"] += $status['num_reg'];
+                    }
+                }
+                unset($festival['stats_syllabus'][$sid]['status']);
+            }
+            // Remove empty columns
+            foreach($festival['stats_syllabus_dataMaps'] as $i => $map) {
+                if( $i > 0 ) {
+                    if( $festival['stats_syllabus_totals'][$map] == 0 ) {
+                        unset($festival['stats_syllabus_headerValues'][$i]);
+                        unset($festival['stats_syllabus_cellClasses'][$i]);
+                        unset($festival['stats_syllabus_dataMaps'][$i]);
+                    }
+                }
+            }
+            $festival['stats_syllabus_headerValues'] = array_values($festival['stats_syllabus_headerValues']);
+            $festival['stats_syllabus_cellClasses'] = array_values($festival['stats_syllabus_cellClasses']);
+            $festival['stats_syllabus_dataMaps'] = array_values($festival['stats_syllabus_dataMaps']);
+        }
+        elseif( isset($args['statistics']) && $args['statistics'] == 'cities' ) {
             //
             // Get the number of city, province stats
             //
