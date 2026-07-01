@@ -13,7 +13,6 @@ function ciniki_musicfestivals_wng_accountMemberResultsProcess(&$ciniki, $tnid, 
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'videoProcess');
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
 
     //
     // Load maps

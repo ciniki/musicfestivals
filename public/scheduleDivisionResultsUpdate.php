@@ -13,8 +13,6 @@
 // 
 function ciniki_musicfestivals_scheduleDivisionResultsUpdate(&$ciniki) {
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
-
     //
     // Find all the required and optional arguments
     //

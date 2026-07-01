@@ -12,8 +12,6 @@
 //
 function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid, &$request, $args) {
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
-
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.1369', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }

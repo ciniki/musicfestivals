@@ -13,7 +13,6 @@
 function ciniki_musicfestivals_wng_accountScrutinizationsProcess(&$ciniki, $tnid, &$request, $args) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'videoProcess');
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'classNameFormat');
 
     $blocks = array();

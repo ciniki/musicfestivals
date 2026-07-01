@@ -173,13 +173,11 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
         $entry['local_reg_details'] = [
             ['label'=>'Participant', 'value'=>$entry['local_reg_private_name']],
             ];
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
         for($i = 1; $i <= 8; $i++) {
-            $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $entry, $i);
-            if( isset($entry["fulltitle{$i}"]) && $rc["fulltitle{$i}"] != '' ) {
+            if( isset($entry["fulltitle{$i}"]) && $entry["fulltitle{$i}"] != '' ) {
                 $entry['local_reg_details'][] = [
                     'label' => "Title {$i}",
-                    'value' => $registration["fulltitle{$i}"],
+                    'value' => $entry["fulltitle{$i}"],
                     ];
             }
         }

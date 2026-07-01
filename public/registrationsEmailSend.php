@@ -129,7 +129,6 @@ function ciniki_musicfestivals_registrationsEmailSend(&$ciniki) {
         } else {
             $html .= "<tr><th>Class</th><th>Competitor</th><th>Title</th><th>Length</th></tr>";
         }
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
         foreach($festival['registrations'] as $iid => $registration) {
             $titles = '';
             $perf_times = '';

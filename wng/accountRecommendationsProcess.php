@@ -12,8 +12,6 @@
 //
 function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid, &$request, $args) {
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
-
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();

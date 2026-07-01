@@ -13,7 +13,6 @@
 function ciniki_musicfestivals_wng_accountBacktracksProcess(&$ciniki, $tnid, &$request, $args) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makePermalink');
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'classNameFormat');
 
     $blocks = array();

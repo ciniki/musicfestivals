@@ -13,7 +13,6 @@
 function ciniki_musicfestivals_wng_syllabusSectionResultsProcess(&$ciniki, $tnid, &$request, $section) {
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'classNameFormat');
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
 
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.943', 'msg'=>"I'm sorry, the page you requested does not exist."));

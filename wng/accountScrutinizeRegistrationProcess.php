@@ -56,7 +56,15 @@ function ciniki_musicfestivals_wng_accountScrutinizeRegistrationProcess(&$ciniki
         . "registrations.competitor3_id, "
         . "registrations.competitor4_id, "
         . "registrations.competitor5_id, "
-        . "registrations.class_id, ";
+        . "registrations.class_id, "
+        . "registrations.fulltitle1, "
+        . "registrations.fulltitle2, "
+        . "registrations.fulltitle3, "
+        . "registrations.fulltitle4, "
+        . "registrations.fulltitle5, "
+        . "registrations.fulltitle6, "
+        . "registrations.fulltitle7, "
+        . "registrations.fulltitle8, ";
     for($i = 1; $i <= 8; $i++) {
         foreach($fields as $field) {
             $strsql .= "registrations.{$field}{$i}, ";
@@ -322,13 +330,12 @@ function ciniki_musicfestivals_wng_accountScrutinizeRegistrationProcess(&$ciniki
                 );
         } else {
             if( $registration["title{$i}"] != '' ) {
-                $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, $registration, $i);
                 $fields["title{$i}"] = [
                     'id' => "title{$i}",
                     'ftype' => 'content',
                     'label' => 'Title',
                     'flex-basis' => '50%',
-                    'description' => $rc['title'],
+                    'description' => $registration["fulltitle{$i}"],
                     ];
                 $min = floor($registration["perf_time{$i}"]/60);
                 $sec = ($registration["perf_time{$i}"]%60);

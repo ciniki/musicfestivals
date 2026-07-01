@@ -258,16 +258,6 @@ function ciniki_musicfestivals_registrationSearch($ciniki) {
                 $registrations[$rid]['titles'] .= $rc['titles'];
                 $registrations[$rid]['perf_time'] = $rc['perf_time'];
             }
-/*            for($i = 1; $i <= 8; $i++) {
-                if( $registration["title{$i}"] != '' ) {
-                    $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $registration, $i);
-                    if( $rc['stat'] == 'ok' ) {
-                        $registrations[$rid]["title{$i}"] = $rc['title'];
-                        $registrations[$rid]['titles'] .= ($registrations[$rid]['titles'] != '' ? '<br/>' : '') . $rc['title'];
-                        $perf_time += $registration["perf_time{$i}"];
-                    }
-                }
-            } */
             //
             // Setup invoice status
             //

@@ -13,8 +13,6 @@
 // 
 function ciniki_musicfestivals_scheduleDivisionResultsGet(&$ciniki) {
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
-
     //
     // Find all the required and optional arguments
     //
@@ -206,11 +204,8 @@ function ciniki_musicfestivals_scheduleDivisionResultsGet(&$ciniki) {
         }
         $titles = '';
         for($i = 1; $i <= 8; $i++) {
-            if( $result["title{$i}"] != '' ) {
-                $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $result, $i);
-                if( isset($rc['title']) ) {
-                    $titles .= ($titles != '' ? '<br/>' : '') . $rc['title'];
-                }
+            if( $result["fulltitle{$i}"] != '' ) {
+                $titles .= ($titles != '' ? '<br/>' : '') . $result["fulltitle{$i}"];
             }
         }
         $registrations[$rid]['titles'] = $titles;
