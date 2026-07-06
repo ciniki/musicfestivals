@@ -760,7 +760,9 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
                     $registration_flags &= ~$bit;
                 }
             }
-            elseif( !isset($registration[$field['id']]) || $field['value'] != $registration[$field['id']] ) {
+            elseif( isset($field['value']) 
+                && (!isset($registration[$field['id']]) || $field['value'] != $registration[$field['id']])
+                ) {
                 $update_args[$field['id']] = $field['value'];
             } 
         }
