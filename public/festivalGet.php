@@ -788,6 +788,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     } elseif( ($class['flags']&0x20000000) == 0x20000000 ) {
                         $festival['classes'][$iid]['composer'] = 'Optional';
                     }
+                    $festival['classes'][$iid]['arranger'] = '';
+                    if( ($class['titleflags']&0x040000) == 0x040000 ) {
+                        $festival['classes'][$iid]['arranger'] = 'Required';
+                    } elseif( ($class['titleflags']&0x080000) == 0x080000 ) {
+                        $festival['classes'][$iid]['arranger'] = 'Optional';
+                    }
                     if( ($class['flags']&0x040000) == 0x040000 ) {
                         $festival['classes'][$iid]['schedule_type'] = 'Performance&nbsp;+';
                     } elseif( ($class['flags']&0x080000) == 0x080000 ) {

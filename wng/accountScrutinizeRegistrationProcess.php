@@ -33,7 +33,7 @@ function ciniki_musicfestivals_wng_accountScrutinizeRegistrationProcess(&$ciniki
         return array('stat'=>'exit');
     }
 
-    $fields = ['title', 'opus', 'movements', 'musical', 'composer', 'perf_time', 'video_url', 'music_orgfilename', 'backtrack', 'artwork'];
+    $fields = ['title', 'opus', 'movements', 'musical', 'composer', 'arranger', 'perf_time', 'video_url', 'music_orgfilename', 'backtrack', 'artwork'];
 
     //
     // Load the registration
@@ -315,6 +315,15 @@ function ciniki_musicfestivals_wng_accountScrutinizeRegistrationProcess(&$ciniki
                 'size' => 'small',
                 'label' => "{$prefix} " . (isset($festival['registration-composer-label']) && $festival['registration-composer-label'] != '' ? $festival['registration-composer-label'] : "Composer"),
                 'value' => isset($_POST["f-composer{$i}"]) ? $_POST["f-composer{$i}"] : $registration["composer{$i}"],
+                ];
+            $fields["arranger{$i}"] = [
+                'id' => "arranger{$i}",
+                'ftype' => 'text',
+                'flex-basis' => '50%',
+                'editable' => $editable,
+                'size' => 'small',
+                'label' => "{$prefix} " . (isset($festival['registration-arranger-label']) && $festival['registration-arranger-label'] != '' ? $festival['registration-arranger-label'] : "Arranger"),
+                'value' => isset($_POST["f-arranger{$i}"]) ? $_POST["f-arranger{$i}"] : $registration["arranger{$i}"],
                 ];
             $fields["perf_time{$i}"] = array(
                 'id' => "perf_time{$i}",

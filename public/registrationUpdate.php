@@ -43,48 +43,56 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         'movements1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Movements'),
         'musical1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Musical'),
         'composer1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Composer'),
+        'arranger1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Arranger'),
         'perf_time1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Performance Time'),
         'title2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2nd Title'),
         'opus2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2nd Opus'),
         'movements2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2nd Movements'),
         'musical2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2nd Musical'),
         'composer2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2nd Composer'),
+        'arranger2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Arranger'),
         'perf_time2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'2nd Performance Time'),
         'title3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'3rd Title'),
         'opus3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'3rd Opus'),
         'movements3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'3rd Movements'),
         'musical3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'3rd Musical'),
         'composer3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'3rd Composer'),
+        'arranger3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Arranger'),
         'perf_time3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'3rd Performance Time'),
         'title4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'4th Title'),
         'opus4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'4th Opus'),
         'movements4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'4th Movements'),
         'musical4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'4th Musical'),
         'composer4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'4th Composer'),
+        'arranger4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Arranger'),
         'perf_time4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'4th Performance Time'),
         'title5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'5th Title'),
         'opus5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'5th Opus'),
         'movements5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'5th Movements'),
         'musical5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'5th Musical'),
         'composer5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'5th Composer'),
+        'arranger5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Arranger'),
         'perf_time5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'5th Performance Time'),
         'title6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'6th Title'),
         'opus6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'6th Opus'),
         'movements6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'6th Movements'),
         'musical6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'6th Musical'),
         'composer6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'6th Composer'),
+        'arranger6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Arranger'),
         'perf_time6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'6th Performance Time'),
         'title7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'7th Title'),
         'opus7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'7th Opus'),
         'movements7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'7th Movements'),
         'musical7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'7th Musical'),
         'composer7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'7th Composer'),
+        'arranger7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Arranger'),
         'perf_time7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'7th Performance Time'),
         'title8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'8th Title'),
         'opus8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'8th Opus'),
         'movements8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'8th Movements'),
         'musical8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'8th Musical'),
         'composer8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'8th Composer'),
+        'arranger8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Arranger'),
         'perf_time8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'8th Performance Time'),
         'fee'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Fee'),
         'participation'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Virtual'),
@@ -855,14 +863,14 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         . "registrations.title6, "
         . "registrations.title7, "
         . "registrations.title8, "
-        . "registrations.composer1, "
-        . "registrations.composer2, "
-        . "registrations.composer3, "
-        . "registrations.composer4, "
-        . "registrations.composer5, "
-        . "registrations.composer6, "
-        . "registrations.composer7, "
-        . "registrations.composer8, "
+        . "registrations.opus1, "
+        . "registrations.opus2, "
+        . "registrations.opus3, "
+        . "registrations.opus4, "
+        . "registrations.opus5, "
+        . "registrations.opus6, "
+        . "registrations.opus7, "
+        . "registrations.opus8, "
         . "registrations.movements1, "
         . "registrations.movements2, "
         . "registrations.movements3, "
@@ -871,6 +879,30 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         . "registrations.movements6, "
         . "registrations.movements7, "
         . "registrations.movements8, "
+        . "registrations.musical1, "
+        . "registrations.musical2, "
+        . "registrations.musical3, "
+        . "registrations.musical4, "
+        . "registrations.musical5, "
+        . "registrations.musical6, "
+        . "registrations.musical7, "
+        . "registrations.musical8, "
+        . "registrations.composer1, "
+        . "registrations.composer2, "
+        . "registrations.composer3, "
+        . "registrations.composer4, "
+        . "registrations.composer5, "
+        . "registrations.composer6, "
+        . "registrations.composer7, "
+        . "registrations.composer8, "
+        . "registrations.arranger1, "
+        . "registrations.arranger2, "
+        . "registrations.arranger3, "
+        . "registrations.arranger4, "
+        . "registrations.arranger5, "
+        . "registrations.arranger6, "
+        . "registrations.arranger7, "
+        . "registrations.arranger8, "
         . "registrations.fee, "
         . "classes.code AS class_code, "
         . "classes.name AS class_name "

@@ -87,8 +87,8 @@
 #                           0x8000 - Musical Optional
 #                           0x010000 - Virtual Entry Youtube URL Required  **FUTURE move from flags**
 #                           0x020000 - Virtual Entry Youtube URL Hidden **Future move from flags**
-#                           0x040000 - 
-#                           0x080000 - 
+#                           0x040000 - Arranger Required
+#                           0x080000 - Arranger Optional
 #                           0x100000 - Virtual Entry Music PDF Required **Future move from flags**
 #                           0x200000 - Virtual Entry Music PDF Hidden **Future move from flags**
 #                           0x400000 - Live Entry Music PDF Required 

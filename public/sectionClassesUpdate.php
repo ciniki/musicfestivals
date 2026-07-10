@@ -36,6 +36,7 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         'movements'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Movements Setting'),
         'musical'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Musical Setting'),
         'composer'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Composer Setting'),
+        'arranger'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Arranger Setting'),
         'backtrack'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Backtrack Setting'),
         'artwork'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Artwork Setting'),
         'video'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Setting'),
@@ -227,11 +228,11 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         // Update musical
         //
         if( isset($args['musical']) && strtolower($args['musical']) == 'none' && ($class['titleflags']&0xC000) > 0 ) {
-            $titleflags = ($titleflags&0xFFFF3FFF);
+            $titleflags = ($titleflags&0xFFFFCFFF);
         } elseif( isset($args['musical']) && strtolower($args['musical']) == 'required' && ($class['titleflags']&0x4000) == 0 ) {
-            $titleflags = ($titleflags&0xFFFF3FFF) | 0x4000;
+            $titleflags = ($titleflags&0xFFFFCFFF) | 0x4000;
         } elseif( isset($args['musical']) && strtolower($args['musical']) == 'optional' && ($class['titleflags']&0x8000) == 0 ) {
-            $titleflags = ($titleflags&0xFFFF3FFF) | 0x8000;
+            $titleflags = ($titleflags&0xFFFFCFFF) | 0x8000;
         }
 
         //
@@ -243,6 +244,18 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
             $flags = ($flags&0xCFFFFFFF) | 0x10000000;
         } elseif( isset($args['composer']) && strtolower($args['composer']) == 'optional' && ($class['flags']&0x20000000) == 0 ) {
             $flags = ($flags&0xCFFFFFFF) | 0x20000000;
+        }
+
+        //
+        // Update arranger
+        //
+        if( isset($args['arranger']) && strtolower($args['arranger']) == 'none' && ($class['titleflags']&0x0C0000) > 0 ) {  
+            error_log('none');
+            $titleflags = ($titleflags&0xFFF3FFFF);
+        } elseif( isset($args['arranger']) && strtolower($args['arranger']) == 'required' && ($class['titleflags']&0x040000) == 0 ) {
+            $titleflags = ($titleflags&0xFFF3FFFF) | 0x040000;
+        } elseif( isset($args['arranger']) && strtolower($args['arranger']) == 'optional' && ($class['titleflags']&0x080000) == 0 ) {
+            $titleflags = ($titleflags&0xFFF3FFFF) | 0x080000;
         }
 
         //

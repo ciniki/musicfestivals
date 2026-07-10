@@ -1,0 +1,9 @@
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN arranger1 text not null AFTER musical1;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN arranger2 text not null AFTER musical2;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN arranger3 text not null AFTER musical3;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN arranger4 text not null AFTER musical4;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN arranger5 text not null AFTER musical5;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN arranger6 text not null AFTER musical6;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN arranger7 text not null AFTER musical7;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN arranger8 text not null AFTER musical8;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.32';

@@ -69,6 +69,28 @@ function ciniki_musicfestivals_titleMerge(&$ciniki, $tnid, $registration, $i) {
         } else {
             $line .= ' by ' . $registration["composer{$i}"];
         }
+    }
+    if( $registration["arranger{$i}"] != ''
+        && strtolower($registration["arranger{$i}"]) != 'na'
+        && strtolower($registration["arranger{$i}"]) != 'tba'
+        && strtolower($registration["arranger{$i}"]) != 'tbd'
+        && strtolower($registration["arranger{$i}"]) != 'n/a'
+        && strtolower($registration["arranger{$i}"]) != 'not applicable'
+        && strtolower($registration["arranger{$i}"]) != 'none'
+        ) {
+        if( preg_match("/^\s*[Bb][Yy]\s+/", $registration["arranger{$i}"]) ) {
+            $line .= ' ' . $registration["arranger{$i}"];
+        } elseif( preg_match("/^\s*[Aa][Rr][Rr]\.\s+/", $registration["arranger{$i}"]) ) {    // arr. OR arranged
+            $line .= ' ' . $registration["arranger{$i}"];
+        } elseif( preg_match("/^\s*[Aa][Rr][Rr]\s+/", $registration["arranger{$i}"]) ) {    // arr. OR arranged
+            $line .= ' ' . $registration["arranger{$i}"];
+        } elseif( preg_match("/^\s*[Aa][Tt][Tt][Rr]\s+/", $registration["arranger{$i}"]) ) {    // Attr or attributed
+            $line .= ' ' . $registration["arranger{$i}"];
+        } elseif( preg_match("/^\s*[Aa][Dd][Aa][Pp]\s+/", $registration["arranger{$i}"]) ) {     // Adapted
+            $line .= ' ' . $registration["arranger{$i}"];
+        } else {
+            $line .= ', arr. ' . $registration["arranger{$i}"];
+        }
     } 
 
     return array('stat'=>'ok', 'title'=>$line);

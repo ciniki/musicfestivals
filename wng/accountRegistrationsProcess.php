@@ -586,48 +586,56 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "movements1, "
             . "musical1, "
             . "composer1, "
+            . "arranger1, "
             . "perf_time1, "
             . "title2, "
             . "opus2, "
             . "movements2, "
             . "musical2, "
             . "composer2, "
+            . "arranger2, "
             . "perf_time2, "
             . "title3, "
             . "opus3, "
             . "movements3, "
             . "musical3, "
             . "composer3, "
+            . "arranger3, "
             . "perf_time3, "
             . "title4, "
             . "opus4, "
             . "movements4, "
             . "musical4, "
             . "composer4, "
+            . "arranger4, "
             . "perf_time4, "
             . "title5, "
             . "opus5, "
             . "movements5, "
             . "musical5, "
             . "composer5, "
+            . "arranger5, "
             . "perf_time5, "
             . "title6, "
             . "opus6, "
             . "movements6, "
             . "musical6, "
             . "composer6, "
+            . "arranger6, "
             . "perf_time6, "
             . "title7, "
             . "opus7, "
             . "movements7, "
             . "musical7, "
             . "composer7, "
+            . "arranger7, "
             . "perf_time7, "
             . "title8, "
             . "opus8, "
             . "movements8, "
             . "musical8, "
             . "composer8, "
+            . "arranger8, "
             . "perf_time8, "
             . "fee, "
             . "participation, "
@@ -799,48 +807,56 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "movements1, "
             . "musical1, "
             . "composer1, "
+            . "arranger1, "
             . "perf_time1, "
             . "title2, "
             . "opus2, "
             . "movements2, "
             . "musical2, "
             . "composer2, "
+            . "arranger2, "
             . "perf_time2, "
             . "title3, "
             . "opus3, "
             . "movements3, "
             . "musical3, "
             . "composer3, "
+            . "arranger3, "
             . "perf_time3, "
             . "title4, "
             . "opus4, "
             . "movements4, "
             . "musical4, "
             . "composer4, "
+            . "arranger4, "
             . "perf_time4, "
             . "title5, "
             . "opus5, "
             . "movements5, "
             . "musical5, "
             . "composer5, "
+            . "arranger5, "
             . "perf_time5, "
             . "title6, "
             . "opus6, "
             . "movements6, "
             . "musical6, "
             . "composer6, "
+            . "arranger6, "
             . "perf_time6, "
             . "title7, "
             . "opus7, "
             . "movements7, "
             . "musical7, "
             . "composer7, "
+            . "arranger7, "
             . "perf_time7, "
             . "title8, "
             . "opus8, "
             . "movements8, "
             . "musical8, "
             . "composer8, "
+            . "arranger8, "
             . "perf_time8, "
             . "fee, "
             . "participation, "
@@ -1414,7 +1430,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $fields[$fid]['ftype'] = 'textarea';
             }
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
-                && preg_match("/(title|opus|movements|musical|composer|perf_time|video_url|music_orgfilename|backtrack[0-9]|artwork)/", $fid)
+                && preg_match("/(title|opus|movements|musical|composer|arranger|perf_time|video_url|music_orgfilename|backtrack[0-9]|artwork)/", $fid)
                 && !preg_match("/line-title/", $fid)
                 && isset($selected_member['open']) 
                 && $selected_member['open'] == 'yes'
@@ -1445,7 +1461,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     $fields[$fid]['ftype'] = 'select';
                 }
             }
-            elseif( preg_match("/(title|opus|movements|musical|composer|perf_time|video_url|music_orgfilename|backtrack[0-9]|artwork)/", $fid)
+            elseif( preg_match("/(title|opus|movements|musical|composer|arranger|perf_time|video_url|music_orgfilename|backtrack[0-9]|artwork)/", $fid)
                 && ($festival['edit'] == 'yes' || (isset($selected_section['edit']) && $selected_section['edit'] == 'yes'))
                 && $registration['billing_customer_id'] == $request['session']['customer']['id']
                 ) {
@@ -1476,7 +1492,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $fields[$fid]['editable'] = 'yes';
                 $editable = 'yes';
             } 
-            elseif( preg_match("/(title|opus|movements|musical|composer)/", $fid)
+            elseif( preg_match("/(title|opus|movements|musical|composer|arranger)/", $fid)
                 && $festival['upload'] == 'yes' 
                 && ($selected_class['titleflags']&0x0300) > 0   // Artwork Class
                 && $registration['billing_customer_id'] == $request['session']['customer']['id']
