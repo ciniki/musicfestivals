@@ -12,6 +12,8 @@
 //
 function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$request, $args) {
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
+
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.453', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
@@ -241,6 +243,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
         if( count($cart_registrations) > 0 ) {
             $add_button = "<a class='button' href='{$base_url}?add=yes'>Add</a>";
             $total = 0;
+            $invoice_ids = [];
             foreach($cart_registrations as $rid => $registration) {
                 $cart_registrations[$rid]['editbutton'] = "<form action='{$base_url}' method='POST'>"
                     . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
@@ -249,7 +252,42 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
                     . "<input class='button' type='submit' name='f-delete' value='Remove'>"
                     . "</form>";
                 $cart_registrations[$rid]['fee'] = '$' . number_format($registration['fee'], 2);
+                if( !in_array($registration['invoice_id'], $invoice_ids) ) {
+                    $invoice_ids[] = $registration['invoice_id'];
+                }
                 $total += $registration['fee'];
+            }
+            // 
+            // Load any additional fees from carts
+            //
+            if( count($invoice_ids) > 0 ) {
+                $strsql = "SELECT items.id, "
+                    . "items.description, "
+                    . "items.total_amount "
+                    . "FROM ciniki_sapos_invoice_items AS items "
+                    . "WHERE invoice_id in (" . ciniki_core_dbQuoteIDs($ciniki, $invoice_ids) . ") "
+                    . "AND object LIKE 'ciniki.musicfestivals.%' "
+                    . "AND object <> 'ciniki.musicfestivals.registration' "
+                    . "ORDER BY invoice_id, line_number "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'items', 'fname'=>'id', 'fields'=>array('description', 'total_amount')),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1668', 'msg'=>'Unable to load items', 'err'=>$rc['err']));
+                }
+                $items = isset($rc['items']) ? $rc['items'] : array();
+                foreach($items as $item) {
+                    $cart_registrations[] = [
+                        'display_name' => '',
+                        'codename' => $item['description'],
+                        'titles' => '',
+                        'fee' => '$' . number_format($item['total_amount'], 2),
+                        'editbutton' => '',
+                        ];
+                    $total += $item['total_amount'];
+                }
             }
             $blocks[] = array(
                 'type' => 'table',
