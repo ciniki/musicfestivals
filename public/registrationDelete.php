@@ -38,10 +38,46 @@ function ciniki_musicfestivals_registrationDelete(&$ciniki) {
     }
 
     //
+    // Get the tenant storage directory
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'hooks', 'storageDir');
+    $rc = ciniki_tenants_hooks_storageDir($ciniki, $args['tnid'], array());
+    if( $rc['stat'] != 'ok' ) {
+        return $rc;
+    }
+    $tenant_storage_dir = $rc['storage_dir'];
+
+    //
     // Get the current settings for the registration
     //
-    $strsql = "SELECT id, uuid, invoice_id "
-        . "FROM ciniki_musicfestival_registrations "
+    $strsql = "SELECT registrations.id, "
+        . "registrations.uuid, "
+        . "registrations.invoice_id, "
+        . "registrations.music_orgfilename1, "
+        . "registrations.music_orgfilename2, "
+        . "registrations.music_orgfilename3, "
+        . "registrations.music_orgfilename4, "
+        . "registrations.music_orgfilename5, "
+        . "registrations.music_orgfilename6, "
+        . "registrations.music_orgfilename7, "
+        . "registrations.music_orgfilename8, "
+        . "registrations.backtrack1, "
+        . "registrations.backtrack2, "
+        . "registrations.backtrack3, "
+        . "registrations.backtrack4, "
+        . "registrations.backtrack5, "
+        . "registrations.backtrack6, "
+        . "registrations.backtrack7, "
+        . "registrations.backtrack8, "
+        . "registrations.artwork1, "
+        . "registrations.artwork2, "
+        . "registrations.artwork3, "
+        . "registrations.artwork4, "
+        . "registrations.artwork5, "
+        . "registrations.artwork6, "
+        . "registrations.artwork7, "
+        . "registrations.artwork8 "
+        . "FROM ciniki_musicfestival_registrations AS registrations "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "AND id = '" . ciniki_core_dbQuote($ciniki, $args['registration_id']) . "' "
         . "";
@@ -216,6 +252,30 @@ function ciniki_musicfestivals_registrationDelete(&$ciniki) {
         if( $rc['stat'] != 'ok' ) {
             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
             return $rc;
+        }
+    }
+
+    //
+    // Remove the files
+    //
+    for($i = 1; $i <= 8; $i++) {
+        if( $registration["music_orgfilename{$i}"] != '' ) {
+            $filename = "{$tenant_storage_dir}/ciniki.musicfestivals/files/{$registration['uuid'][0]}/{$registration['uuid']}_music{$i}";
+            if( file_exists($filename) ) {
+                unlink($filename);
+            }
+        }
+        if( $registration["backtrack{$i}"] != '' ) {
+            $filename = "{$tenant_storage_dir}/ciniki.musicfestivals/files/{$registration['uuid'][0]}/{$registration['uuid']}_backtrack{$i}";
+            if( file_exists($filename) ) {
+                unlink($filename);
+            }
+        }
+        if( $registration["artwork{$i}"] != '' ) {
+            $filename = "{$tenant_storage_dir}/ciniki.musicfestivals/files/{$registration['uuid'][0]}/{$registration['uuid']}_artwork{$i}";
+            if( file_exists($filename) ) {
+                unlink($filename);
+            }
         }
     }
 
