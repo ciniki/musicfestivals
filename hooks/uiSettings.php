@@ -40,7 +40,7 @@ function ciniki_musicfestivals_hooks_uiSettings(&$ciniki, $tnid, $args) {
             )
         ) {
         $menu_item = array(
-            'priority'=>2841,
+            'priority'=>2800,
             'label'=>'Music Festivals',
             'edit'=>array('app'=>'ciniki.musicfestivals.main'),
             );
