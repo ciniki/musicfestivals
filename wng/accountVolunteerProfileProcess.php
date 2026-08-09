@@ -15,8 +15,23 @@ function ciniki_musicfestivals_wng_accountVolunteerProfileProcess(&$ciniki, $tni
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
-    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/volunteer';
     $festival = $args['festival'];
+
+    //
+    // Load current festival
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'festivalLoad');
+    $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $request);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'ok', 'blocks'=>[[
+            'type' => 'msg', 
+            'level' => 'error', 
+            'message' => 'Festival is now closed',
+            ]]);
+    }
+    $festival = $rc['festival'];
+    $request['cur_uri_pos']++;
+    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/' . $festival['permalink'] . '/volunteer';
 
     //
     // Build the fields
@@ -429,23 +444,23 @@ function ciniki_musicfestivals_wng_accountVolunteerProfileProcess(&$ciniki, $tni
                     ? $festival['volunteers-applied-msg'] 
                     : 'Thank you for applying to be a volunteer, your application is being reviewed.'),
                 ];
-            $blocks[] = [
-                'type' => 'buttons',
-                'class' => 'aligncenter',
-                'items' => [['url' => '/account/musicfestival/volunteer', 'text' => 'Continue']],
-                ];
+//            $blocks[] = [
+//                'type' => 'buttons',
+//                'class' => 'aligncenter',
+//                'items' => [['url' => '/account/musicfestival/volunteer', 'text' => 'Continue']],
+//                ];
         } else {
             $blocks[] = [
                 'type' => 'msg',
                 'level' => 'success',
                 'content' => 'Thank you for updating your profile.',
                 ];
-            $blocks[] = [
-                'type' => 'buttons',
-                'class' => 'aligncenter',
-                'items' => [['url' => $base_url, 'text' => 'Continue']],
-                ];
         }
+        $blocks[] = [
+            'type' => 'buttons',
+            'class' => 'aligncenter',
+            'items' => [['url' => $base_url, 'text' => 'Continue']],
+            ];
         return array('stat'=>'ok', 'blocks'=>$blocks);
     }
 

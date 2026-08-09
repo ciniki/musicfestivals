@@ -284,7 +284,7 @@ function ciniki_musicfestivals_wng_competitorFormUpdateProcess(&$ciniki, $tnid, 
                 header("Location: {$request['session']['account-musicfestivals-competitor-form-return']}");
                 return array('stat'=>'exit');
             }
-            header("Location: {$request['ssl_domain_base_url']}/account/musicfestival/competitors");
+            header("Location: {$args['base_url']}");
             exit;
         } 
         else {
@@ -396,7 +396,7 @@ function ciniki_musicfestivals_wng_competitorFormUpdateProcess(&$ciniki, $tnid, 
                     header("Location: {$request['session']['account-musicfestivals-competitor-form-return']}");
                     exit;
                 }
-                header("Location: {$request['ssl_domain_base_url']}/account/musicfestival/competitors");
+                header("Location: {$args['base_url']}");
                 exit;
             }
         }

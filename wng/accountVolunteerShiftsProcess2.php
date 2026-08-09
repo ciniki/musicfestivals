@@ -18,9 +18,25 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess2(&$ciniki, $tni
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
-    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/volunteer';
     $display = 'sections';
     $date_format = 'D, M j, Y';
+
+    //
+    // Load current festival
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'festivalLoad');
+    $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $request);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'ok', 'blocks'=>[[
+            'type' => 'msg', 
+            'level' => 'error', 
+            'message' => 'Festival is now closed',
+            ]]);
+       
+    }
+    $festival = $rc['festival'];
+    $request['cur_uri_pos']++;
+    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/' . $festival['permalink'] . '/volunteer';
 
     //
     // Load the tenant settings
@@ -33,16 +49,6 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess2(&$ciniki, $tni
     $intl_timezone = $rc['settings']['intl-default-timezone'];
     
     $now = new DateTime('now', new DateTimezone($intl_timezone));
-
-    //
-    // Load current festival
-    //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
-    $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid);
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1545', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
-    }
-    $festival = $rc['festival'];
 
     //
     // Parse and check the approved roles for this volunteer

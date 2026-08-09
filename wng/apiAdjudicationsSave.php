@@ -31,6 +31,13 @@ function ciniki_musicfestivals_wng_apiAdjudicationsSave(&$ciniki, $tnid, $reques
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.432', 'msg'=>'No timeslot specified'));
     }
 
+    //
+    // Make sure festival specified
+    //
+    if( !isset($_POST['festival-id']) || $_POST['festival-id'] == '' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.327', 'msg'=>'No festival specified'));
+    }
+
     $customer_id = 0;
     if( isset($request['session']['customer']['id']) && $request['session']['customer']['id'] > 0 ) {
         $customer_id = $request['session']['customer']['id'];
@@ -56,12 +63,15 @@ function ciniki_musicfestivals_wng_apiAdjudicationsSave(&$ciniki, $tnid, $reques
     $dt_utc = new DateTime('now', new DateTimezone('UTC'));
 
     //
-    // Load current festival
+    // Get the music festival details
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
-    $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'festivalLoad');
+    $rc = ciniki_musicfestivals_festivalLoad($ciniki, $tnid, $request['args']['festival-id']);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.434', 'msg'=>'', 'err'=>$rc['err']));
+        return $rc;
+    }
+    if( !isset($rc['festival']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.434', 'msg'=>'Unable to find requested festival', 'err'=>$rc['err']));
     }
     $festival = $rc['festival'];
 

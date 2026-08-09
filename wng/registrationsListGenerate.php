@@ -325,7 +325,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
             ) {
             $buttons['list'][] = array(
                 'text' => 'Add Registration',
-                'url' => "/account/musicfestival/registrations?add=yes",
+                'url' => "/account/musicfestival/{$festival['permalink']}/registrations?add=yes",
                 );
         }
         if( count($cart_registrations) > 0 ) {
@@ -391,7 +391,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
                 'list' => array(array(
                     'text' => 'Download Registrations PDF',
                     'target' => '_blank',
-                    'url' => "/account/musicfestival/registrations?pdf=yes",
+                    'url' => "/account/musicfestival/{$festival['permalink']}/registrations?pdf=yes",
                     )),
                 );
         }
@@ -539,7 +539,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
                 'list' => array(array(
                     'text' => 'Download Registrations PDF',
                     'target' => '_blank',
-                    'url' => "/account/musicfestival/registrations?pdf=yes",
+                    'url' => "/account/musicfestival/{$festival['permalink']}/registrations?pdf=yes",
                     )),
                 );
         }
@@ -625,7 +625,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
                 'list' => array(array(
                     'text' => 'Download Registrations PDF',
                     'target' => '_blank',
-                    'url' => "/account/musicfestival/registrations?pdf=yes",
+                    'url' => "/account/musicfestival/{$festival['permalink']}/registrations?pdf=yes",
                     )),
                 );
     }
@@ -690,7 +690,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
             'list' => array(array(
                 'text' => 'Download Schedule PDF',
                 'target' => '_blank',
-                'url' => "/account/musicfestival/registrations?schedulepdf=yes",
+                'url' => "/account/musicfestival/{$festival['permalink']}/registrations?schedulepdf=yes",
                 )),
             );
     }

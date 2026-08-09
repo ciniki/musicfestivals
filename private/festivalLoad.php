@@ -34,6 +34,7 @@ function ciniki_musicfestivals_festivalLoad(&$ciniki, $tnid, $festival_id) {
     // Get the current festival
     //
     $strsql = "SELECT id, "
+        . "permalink, "
         . "name, "
         . "start_date, "
         . "end_date, "

@@ -648,7 +648,7 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             return array('stat'=>'exit', 'id'=>$registration_id);
         }
 
-        header("Location: {$request['ssl_domain_base_url']}/account/musicfestival/registrations");
+        header("Location: {$args['base_url']}");
         return array('stat'=>'exit', 'id'=>$registration_id);
     }
     elseif( count($errors) == 0 ) {
@@ -932,7 +932,7 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             return array('stat'=>'exit');
         }
 
-        header("Location: {$request['ssl_domain_base_url']}/account/musicfestival/registrations");
+        header("Location: {$args['base_url']}");
         return array('stat'=>'exit');
     }
 

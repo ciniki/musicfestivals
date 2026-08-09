@@ -12,7 +12,7 @@
 // Returns
 // ---------
 // 
-function ciniki_musicfestivals_wng_festivalLoad(&$ciniki, $tnid, $request) {
+function ciniki_musicfestivals_wng_loadCurrentFestivals(&$ciniki, $tnid) {
 
     //
     // Get the current festival
@@ -29,7 +29,6 @@ function ciniki_musicfestivals_wng_festivalLoad(&$ciniki, $tnid, $request) {
         . "upload_end_dt "
         . "FROM ciniki_musicfestivals "
         . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $request['uri_split'][2]) . "' "
         . "AND status = 30 "        // Current
         . "ORDER BY start_date DESC "
         . "";
@@ -37,13 +36,20 @@ function ciniki_musicfestivals_wng_festivalLoad(&$ciniki, $tnid, $request) {
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.259', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
     }
-    if( !isset($rc['festival']) ) {
+    if( !isset($rc['rows']) ) {
         // No festivals published, no items to return
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.254', 'msg'=>'Unable to find festival'));
+        return array('stat'=>'ok', 'items'=>array());
     }
-    $festival = $rc['festival'];
+    $festivals = $rc['rows'];
 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
-    return ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid, $festival);
+    foreach($festivals as $fid => $festival) {
+        $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid, $festival);
+        if( isset($rc['festival']) ) {
+            $festivals[$fid] = $rc['festival'];
+        }
+    }
+
+    return array('stat'=>'ok', 'festivals'=>$festivals);
 }
 ?>

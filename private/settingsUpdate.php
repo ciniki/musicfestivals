@@ -298,6 +298,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'competitor-individual-etransfer-email-label',
         'competitor-individual-etransfer-email-confirm',
         'competitor-individual-notes-enable',
+        'competitor-individual-disable',
         'competitor-group-organization',
         'competitor-group-organization-label',
         'competitor-group-age',

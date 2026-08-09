@@ -18,18 +18,24 @@ function ciniki_musicfestivals_wng_accountBacktracksProcess(&$ciniki, $tnid, &$r
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
-    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/backtracks';
     $display = 'sections';
 
     //
     // Load current festival
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
-    $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'festivalLoad');
+    $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $request);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1610', 'msg'=>'', 'err'=>$rc['err']));
+        return array('stat'=>'ok', 'blocks'=>[[
+            'type' => 'msg', 
+            'level' => 'error', 
+            'message' => 'Festival is now closed',
+            ]]);
+       
     }
     $festival = $rc['festival'];
+    $request['cur_uri_pos']++;
+    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/' . $festival['permalink'] . '/backtracks';
 
     //
     // Load maps
@@ -148,9 +154,9 @@ function ciniki_musicfestivals_wng_accountBacktracksProcess(&$ciniki, $tnid, &$r
             //
             // Check if zip requested
             //
-            if( isset($request['uri_split'][4]) 
-                && $request['uri_split'][3] == $section_permalink
-                && $request['uri_split'][4] == $division_permalink . '.zip'
+            if( isset($request['uri_split'][5]) 
+                && $request['uri_split'][4] == $section_permalink
+                && $request['uri_split'][5] == $division_permalink . '.zip'
                 ) {
                 require_once($ciniki['config']['ciniki.core']['lib_dir'] . '/zipstream-php/src/ZipStream.php');
                 $zip_filename = preg_replace('/ /', '_', "{$section['name']}_{$division['location_name']}_{$division['name']}.zip");
@@ -175,9 +181,9 @@ function ciniki_musicfestivals_wng_accountBacktracksProcess(&$ciniki, $tnid, &$r
                         //
                         $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/files/'
                             . $reg['uuid'][0] . '/' . $reg['uuid'] . '_backtrack' . $i;
-                        if( isset($request['uri_split'][4]) 
-                            && $request['uri_split'][3] == $section_permalink
-                            && $request['uri_split'][4] == $division_permalink . '.zip'
+                        if( isset($request['uri_split'][5]) 
+                            && $request['uri_split'][4] == $section_permalink
+                            && $request['uri_split'][5] == $division_permalink . '.zip'
                             ) {
                             try {
                                 $zip->add_file_from_path($section['name'] . '/' . $division['name'] . '/'
@@ -186,10 +192,10 @@ function ciniki_musicfestivals_wng_accountBacktracksProcess(&$ciniki, $tnid, &$r
                                 error_log("Zip Add File: " . $e->getMessage());
                             }
                         }
-                        if( isset($request['uri_split'][5]) 
-                            && $request['uri_split'][3] == $section_permalink
-                            && $request['uri_split'][4] == $division_permalink
-                            && $request['uri_split'][5] == $backtrack_permalink
+                        if( isset($request['uri_split'][6]) 
+                            && $request['uri_split'][4] == $section_permalink
+                            && $request['uri_split'][5] == $division_permalink
+                            && $request['uri_split'][6] == $backtrack_permalink
                             ) {
                             // Download file
                             header("Expires: Mon, 26 Jul 1997 05:00:00 GMT"); 
@@ -229,16 +235,16 @@ function ciniki_musicfestivals_wng_accountBacktracksProcess(&$ciniki, $tnid, &$r
             //
             // Check if division selected
             //
-            if( isset($request['uri_split'][4]) 
-                && $request['uri_split'][3] == $section_permalink
-                && $request['uri_split'][4] == $division_permalink . '.zip'
+            if( isset($request['uri_split'][5]) 
+                && $request['uri_split'][4] == $section_permalink
+                && $request['uri_split'][5] == $division_permalink . '.zip'
                 ) {
                 $zip->close();
                 return array('stat'=>'exit');
             }
-            if( isset($request['uri_split'][4]) 
-                && $request['uri_split'][3] == $section_permalink
-                && $request['uri_split'][4] == $division_permalink
+            if( isset($request['uri_split'][5]) 
+                && $request['uri_split'][4] == $section_permalink
+                && $request['uri_split'][5] == $division_permalink
                 ) {
                 $blocks = [];
                 $html = '';

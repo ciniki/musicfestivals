@@ -15,18 +15,24 @@ function ciniki_musicfestivals_wng_accountVolunteerProcess(&$ciniki, $tnid, &$re
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
-    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/volunteer';
     $display = 'sections';
 
     //
     // Load current festival
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
-    $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid);
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'festivalLoad');
+    $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $request);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1259', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
+        return array('stat'=>'ok', 'blocks'=>[[
+            'type' => 'msg', 
+            'level' => 'error', 
+            'message' => 'Festival is now closed',
+            ]]);
+       
     }
     $festival = $rc['festival'];
+    $request['cur_uri_pos']++;
+    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/' . $festival['permalink'] . '/volunteer';
 
     //
     // Check if the customer is a volunteer

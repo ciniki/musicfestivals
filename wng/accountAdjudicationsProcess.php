@@ -18,23 +18,29 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
-    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/adjudications';
     $display = 'list';
+
+    //
+    // Load current festival
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'festivalLoad');
+    $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $request);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'ok', 'blocks'=>[[
+            'type' => 'msg', 
+            'level' => 'error', 
+            'message' => 'Festival is now closed',
+            ]]);
+       
+    }
+    $festival = $rc['festival'];
+    $request['cur_uri_pos']++;
+    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/' . $festival['permalink'] . '/adjudications';
 
     if( isset($_POST['submit']) && $_POST['submit'] == 'Back' ) {
         header("Location: {$base_url}");
         return array('stat'=>'exit');
     }
-
-    //
-    // Load current festival
-    //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
-    $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid);
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.395', 'msg'=>'', 'err'=>$rc['err']));
-    }
-    $festival = $rc['festival'];
 
     //
     // Setup placement autofills
@@ -956,6 +962,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
                 . "fSaveTimer=null;"
                 . "var fD = new FormData;"
                 . "fD.append('last_saved', lSaved);"
+                . "fD.append('festival-id', {$festival['id']});"
                 . "fD.append('f-timeslot_id', {$timeslot['id']});"
                 . "fD.append('f-customer_id', {$request['session']['customer']['id']});"
                 . "for(var i in fFields) {"
@@ -971,7 +978,7 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             // Might be good to give them the option to review and apply/discard
             . "function fSaved(rsp){"
                 . "if(rsp.stat=='ok'){"
-                    . "if(sendAll==1){console.log('updateall');rsp.updated_ids=regIds;}"
+                    . "if(sendAll==1){rsp.updated_ids=regIds;}"
                     . "sendAll=0;"
                     . "lSaved=rsp.last_saved_utc;"
                     . "for(var i in rsp.updates){"
@@ -1048,9 +1055,10 @@ function ciniki_musicfestivals_wng_accountAdjudicationsProcess(&$ciniki, $tnid, 
             'class' => 'limit-width limit-width-60 musicfestival-adjudications',
             'form-sections' => $sections,
             'js' => $js,
-            'api-save-url' => $request['api_url'] . '/ciniki/musicfestivals/adjudicationsSave',
+            'api-save-url' => $request['api_url'] . '/ciniki/musicfestivals/' . $festival['permalink'] . '/adjudicationsSave',
             'last-saved-msg' => '',
             'api-args' => array(
+                'festival-id' => $festival['id'],
                 ),
             );
 //        $blocks[] = array(

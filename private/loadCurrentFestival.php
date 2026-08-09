@@ -12,35 +12,38 @@
 // Returns
 // ---------
 // 
-function ciniki_musicfestivals_loadCurrentFestival(&$ciniki, $tnid) {
+function ciniki_musicfestivals_loadCurrentFestival(&$ciniki, $tnid, $festival = null) {
 
     //
     // Get the current festival
     //
-    $strsql = "SELECT id, "
-        . "name, "
-        . "flags, "
-        . "earlybird_date, "
-        . "live_date, "
-        . "virtual_date, "
-        . "titles_end_dt, "
-        . "accompanist_end_dt, "
-        . "upload_end_dt "
-        . "FROM ciniki_musicfestivals "
-        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND status = 30 "        // Current
-        . "ORDER BY start_date DESC "
-        . "LIMIT 1 "
-        . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.259', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
+    if( $festival == null ) {
+        $strsql = "SELECT id, "
+            . "name, "
+            . "permalink, "
+            . "flags, "
+            . "earlybird_date, "
+            . "live_date, "
+            . "virtual_date, "
+            . "titles_end_dt, "
+            . "accompanist_end_dt, "
+            . "upload_end_dt "
+            . "FROM ciniki_musicfestivals "
+            . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "AND status = 30 "        // Current
+            . "ORDER BY start_date DESC "
+            . "LIMIT 1 "
+            . "";
+        $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.259', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
+        }
+        if( !isset($rc['festival']) ) {
+            // No festivals published, no items to return
+            return array('stat'=>'ok', 'items'=>array());
+        }
+        $festival = $rc['festival'];
     }
-    if( !isset($rc['festival']) ) {
-        // No festivals published, no items to return
-        return array('stat'=>'ok', 'items'=>array());
-    }
-    $festival = $rc['festival'];
 
     //
     // Load festival settings

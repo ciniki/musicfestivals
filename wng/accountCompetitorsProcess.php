@@ -15,8 +15,24 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
-    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/competitors';
     $display = 'list';
+
+    //
+    // Load current festival
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'festivalLoad');
+    $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $request);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'ok', 'blocks'=>[[
+            'type' => 'msg', 
+            'level' => 'error', 
+            'message' => 'Festival is now closed',
+            ]]);
+       
+    }
+    $festival = $rc['festival'];
+    $request['cur_uri_pos']++;
+    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/' . $festival['permalink'] . '/competitors';
 
     //
     // Check for a cancel
@@ -35,24 +51,14 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     //
     if( isset($_POST['f-action']) && $_POST['f-action'] == 'addcompetitor' ) {
         $request['session']['account-musicfestivals-registration-saved'] = $_POST;
-        $return_url = $request['ssl_domain_base_url'] . '/account/musicfestival/registrations';
+        $return_url = $request['ssl_domain_base_url'] . '/account/musicfestival/' . $festival['permalink'] . '/registrations';
         $request['session']['account-musicfestivals-competitor-form-return'] = $return_url;
     }
     elseif( isset($_POST['f-action']) && $_POST['f-action'] == 'editcompetitor' ) {
         $request['session']['account-musicfestivals-registration-saved'] = $_POST;
-        $return_url = $request['ssl_domain_base_url'] . '/account/musicfestival/registrations';
+        $return_url = $request['ssl_domain_base_url'] . '/account/musicfestival/' . $festival['permalink'] . '/registrations';
         $request['session']['account-musicfestivals-competitor-form-return'] = $return_url;
     }
-
-    //
-    // Load current festival
-    //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
-    $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid);
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.424', 'msg'=>'', 'err'=>$rc['err']));
-    }
-    $festival = $rc['festival'];
 
     //
     // Check for any sections that have different end date
@@ -107,10 +113,10 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
     // Load the customer type, or ask for customer type
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountCustomerTypeProcess');
-    $rc = ciniki_musicfestivals_wng_accountCustomerTypeProcess($ciniki, $tnid, $request, array(
+    $rc = ciniki_musicfestivals_wng_accountCustomerTypeProcess($ciniki, $tnid, $request, [
         'festival' => $festival,
         'base_url' => $base_url,
-        ));
+        ]);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
@@ -240,6 +246,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         $rc = ciniki_musicfestivals_wng_competitorFormUpdateProcess($ciniki, $tnid, $request, [
             'ctype' => $ctype,
             'customer_type' => $customer_type,
+            'base_url' => $base_url,
             'festival' => $festival,
             'fields' => $fields,
             'competitor_id' => $_POST['f-competitor_id'],
@@ -298,7 +305,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.359', 'msg'=>'Unable to remove competitor', 'err'=>$rc['err']));
             }
-            header("Location: {$request['ssl_domain_base_url']}/account/musicfestival/competitors");
+            header("Location: {$request['ssl_domain_base_url']}/account/musicfestival/{$festival['permalink']}/competitors");
             exit;
         } else {
             $display = 'delete';
@@ -531,11 +538,21 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     'list' => array(
                         array(
                             'text' => 'Add Individual',
-                            'url' => "/account/musicfestival/competitors?add=individual",
+                            'url' => "/account/musicfestival/{$festival['permalink']}/competitors?add=individual",
                             ),
                         ),
                     );
-
+            } elseif( isset($festival['competitor-individual-disable']) && $festival['competitor-individual-disable'] == 'yes' ) {
+                $blocks[] = array(
+                    'type' => 'buttons',
+                    'class' => 'limit-width limit-width-40 aligncenter',
+                    'list' => array(
+                        array(
+                            'text' => 'Add Group/Ensemble',
+                            'url' => "/account/musicfestival/{$festival['permalink']}/competitors?add=group",
+                            ),
+                        ),
+                    );
             } else {
                 $blocks[] = array(
                     'type' => 'buttons',
@@ -543,11 +560,11 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     'list' => array(
                         array(
                             'text' => 'Add Individual',
-                            'url' => "/account/musicfestival/competitors?add=individual",
+                            'url' => "/account/musicfestival/{$festival['permalink']}/competitors?add=individual",
                             ),
                         array(
                             'text' => 'Add Group/Ensemble',
-                            'url' => "/account/musicfestival/competitors?add=group",
+                            'url' => "/account/musicfestival/{$festival['permalink']}/competitors?add=group",
                             ),
                         ),
                     );

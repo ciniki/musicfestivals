@@ -15,11 +15,27 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
     $blocks = array();
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
-    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/recommendations';
     $display = 'list';
 
+    //
+    // Load current festival
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'festivalLoad');
+    $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $request);
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'ok', 'blocks'=>[[
+            'type' => 'msg', 
+            'level' => 'error', 
+            'message' => 'Festival is now closed',
+            ]]);
+       
+    }
+    $local = $rc['festival'];
+    $request['cur_uri_pos']++;
+    $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/' . $local['permalink'] . '/recommendations';
+
     if( isset($_POST['submit']) && $_POST['submit'] == 'Back' ) {
-        header("Location: {$request['ssl_domain_base_url']}/account/musicfestival/recommendations");
+        header("Location: {$base_url}");
         return array('stat'=>'exit');
     }
 
@@ -43,16 +59,6 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
     }
     $maps = $rc['maps'];
     
-    //
-    // Load current festival
-    //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
-    $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid);
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1017', 'msg'=>'', 'err'=>$rc['err']));
-    }
-    $local = $rc['festival'];
-
     if( !isset($local['provincial-festival-id']) ) {
         return array('stat'=>'ok', 'blocks'=>[[
             'type' => 'msg',
