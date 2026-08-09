@@ -242,6 +242,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'registration-scrutineers-status-53',
         'registration-scrutineers-status-54',
         'registration-scrutineers-status-55',
+        'scrutineers-class-format',
         'ui-registrations-class-format',
         'ui-registrations-count-status-5',
         'ui-registrations-count-status-70',
