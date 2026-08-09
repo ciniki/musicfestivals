@@ -173,7 +173,7 @@ function ciniki_musicfestivals_wng_accountScrutinizeRegistrationProcess(&$ciniki
         'name' => $class['name'],
         'category' => $category['name'],
         'section' => $section['name'],
-        'format' => isset($festival['scrutineers-class-format']) ? $festival['scrutineers-class-format'] : 'code-class',
+        'format' => isset($festival['registrations-class-format']) ? $festival['registrations-class-format'] : 'code-class',
         ]);
     $class_name = $rc['name'];
 
@@ -338,7 +338,7 @@ function ciniki_musicfestivals_wng_accountScrutinizeRegistrationProcess(&$ciniki
                 'name' => $oreg['class_name'],
                 'category' => $oreg['category_name'],
                 'section' => $oreg['section_name'],
-                'format' => isset($festival['scrutineers-class-format']) ? $festival['scrutineers-class-format'] : 'code-class',
+                'format' => isset($festival['registrations-class-format']) ? $festival['registrations-class-format'] : 'code-class',
                 ]);
             $class_name = $rc['name'];
             

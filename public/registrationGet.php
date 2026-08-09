@@ -529,8 +529,12 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         //
         // Get the competitor details
         //
+        $competitor_ids = [];
         for($i = 1; $i <= 5; $i++) {
             if( $registration['competitor' . $i . '_id'] > 0 ) {
+                if( !in_array($registration["competitor{$i}_id"], $competitor_ids) ) {
+                    $competitor_ids[] = $registration["competitor{$i}_id"];
+                }
                 $strsql = "SELECT ciniki_musicfestival_competitors.id, "
                     . "ciniki_musicfestival_competitors.festival_id, "
                     . "ciniki_musicfestival_competitors.ctype, "
@@ -688,6 +692,84 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                 if( $competitor['etransfer_email'] != '' ) {
                     $registration['etransfer_email'] .= ($registration['etransfer_email'] != '' ? ', ' : '') . $competitor['etransfer_email'];
                 }
+            }
+        }
+
+        //
+        // Lookup other registrations for competitors
+        //
+        if( count($competitor_ids) > 0 ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'classNameFormat');
+            $strsql = "SELECT registrations.id, "
+                . "registrations.display_name, "
+                . "registrations.fulltitle1, "
+                . "registrations.fulltitle2, "
+                . "registrations.fulltitle3, "
+                . "registrations.fulltitle4, "
+                . "registrations.fulltitle5, "
+                . "registrations.fulltitle6, "
+                . "registrations.fulltitle7, "
+                . "registrations.fulltitle8, "
+                . "classes.code AS class_code, "
+                . "classes.name AS class_name, "
+                . "categories.name AS category_name, "
+                . "sections.name AS section_name "
+                . "FROM ciniki_musicfestival_registrations AS registrations "
+                . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
+                    . "registrations.class_id = classes.id "
+                    . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_musicfestival_categories AS categories ON ("
+                    . "classes.category_id = categories.id "
+                    . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_musicfestival_sections AS sections ON ("
+                    . "categories.section_id = sections.id "
+                    . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+                . "AND ("
+                    . "registrations.competitor1_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
+                    . "OR registrations.competitor2_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
+                    . "OR registrations.competitor3_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
+                    . "OR registrations.competitor4_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
+                    . "OR registrations.competitor5_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
+                    . ") "
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "AND registrations.id <> '" . ciniki_core_dbQuote($ciniki, $registration['id']) . "' "
+                . "ORDER BY display_name, class_code, fulltitle1 "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+            $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'registrations', 'fname'=>'id', 
+                    'fields'=>array('id', 'display_name', 'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 
+                        'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8', 'class_code', 'class_name', 'category_name', 'section_name',
+                        ),
+                    ),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.395', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
+            }
+            $oregs = isset($rc['registrations']) ? $rc['registrations'] : array();
+            if( count($oregs) > 0 ) {
+                foreach($oregs as $oid => $oreg) {
+                    $oregs[$oid]['titles'] = '';
+                    for($i = 1; $i <= 8; $i++) {    
+                        if( $oreg["fulltitle{$i}"] != '' ) {
+                            $oregs[$oid]['titles'] .= ($oregs[$oid]['titles'] != '' ? "\n" : '') . '&nbsp;&nbsp;&nbsp;- ' . $oreg["fulltitle{$i}"];
+                        }
+                    }
+                    $rc = ciniki_musicfestivals_classNameFormat($ciniki, $args['tnid'], [
+                        'code' => $oreg['class_code'],
+                        'name' => $oreg['class_name'],
+                        'category' => $oreg['category_name'],
+                        'section' => $oreg['section_name'],
+                        'format' => isset($festival['registrations-class-format']) ? $festival['registrations-class-format'] : 'code-class',
+                        ]);
+                    $oregs[$oid]['class_name'] = $rc['name'];
+                }
+                $registration['other_regs'] = $oregs;
             }
         }
 
