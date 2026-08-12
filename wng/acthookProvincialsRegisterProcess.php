@@ -735,6 +735,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
             'registration_id' => 0,
             'display' => 'recommendation-registration',
             'selected_class' => isset($selected_class) ? $selected_class : null,
+            'selected_section' => isset($selected_section) ? $selected_section : null,
             'selected_member' => $selected_member,
             'fields' => $fields,
             'registration' => isset($registration) ? $registration : null,

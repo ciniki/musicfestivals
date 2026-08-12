@@ -47,6 +47,9 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
     if( isset($args['selected_class']) && $args['selected_class'] != null ) {
         $selected_class = $args['selected_class'];
     }
+    if( isset($args['selected_section']) && $args['selected_section'] != null ) {
+        $selected_section = $args['selected_section'];
+    }
 
     if( !isset($args['fields']) ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1375', 'msg'=>"Internal Error"));
@@ -324,6 +327,24 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
     }
 
     //
+    // Check if any scheduling requests submitted
+    //  
+    if( isset($festival['registration-scheduling-requests']) && $festival['registration-scheduling-requests'] == 'yes' 
+        && isset($selected_section['sr_times']) 
+        && ($selected_section['flags']&0x0200) == 0x0200
+        ) {
+        $preferred_times = '';
+        foreach($selected_section['sr_times'] as $tid => $time) {
+            if( isset($_POST["f-sr_time_{$tid}"]) ) {
+                $preferred_times .= ($preferred_times != '' ? "\n" : '') . $time;
+            }
+        }
+        if( $preferred_times != $registration['sr_preferred'] ) {   
+            $fields['sr_preferred']['value'] = $preferred_times;
+        }
+    }
+
+    //
     // Check the cart still exists
     //
     if( count($errors) == 0 && isset($request['session']['cart']['sapos_id']) && $request['session']['cart']['sapos_id'] > 0 ) {
@@ -379,6 +400,8 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             'instrument' => isset($fields['instrument']['value']) ? $fields['instrument']['value'] : '',
             'participation' => (isset($fields['participation']['value']) ? $fields['participation']['value'] : ''),
             'notes' => isset($fields['notes']['value']) ? $fields['notes']['value'] : '',
+            'sr_preferred' => isset($fields['sr_preferred']['value']) ? $fields['sr_preferred']['value'] : '',
+            'sr_conflicts' => isset($fields['sr_conflicts']['value']) ? $fields['sr_conflicts']['value'] : '',
             );
         if( isset($args['selected_member']['id']) && $args['selected_member']['id'] > 0 ) {
             $registration['member_id'] = $args['selected_member']['id'];

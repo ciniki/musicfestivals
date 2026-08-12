@@ -187,6 +187,9 @@ function ciniki_musicfestivals_objects($ciniki) {
             'latefees_days'=>array('name'=>'Late Fees Days', 'default'=>'0'),
             'adminfees_amount'=>array('name'=>'Admin Fee Amount', 'default'=>'0'),
             'competitorfees_amount'=>array('name'=>'Competitor Fee Amount', 'default'=>'0'),
+            'scheduling_request_title'=>array('name'=>'Scheduling Request Title', 'default'=>''),
+            'scheduling_request_intro'=>array('name'=>'Scheduling Request Intro', 'default'=>''),
+            'scheduling_request_times'=>array('name'=>'Scheduling Request Times', 'default'=>''),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         );
@@ -485,6 +488,8 @@ function ciniki_musicfestivals_objects($ciniki) {
             'notes'=>array('name'=>'Notes', 'default'=>''),
             'internal_notes'=>array('name'=>'Interal Notes', 'default'=>''),
             'runsheet_notes'=>array('name'=>'Runsheet Notes', 'default'=>''),
+            'sr_preferred'=>array('name'=>'Scheduling Requests Preferred Times', 'default'=>''),
+            'sr_conflicts'=>array('name'=>'Scheduling Requests Conflicts', 'default'=>''),
             ),
         'history_table'=>'ciniki_musicfestivals_history',
         'history_customer' => 'yes',

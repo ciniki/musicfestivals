@@ -134,6 +134,8 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         'notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Notes'),
         'internal_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Interal Notes'),
         'runsheet_notes'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Runsheet Notes'),
+        'sr_preferred'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Scheduling Request Preferred'),
+        'sr_conflicts'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Scheduling Request Conflicts'),
         'tags'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Registration Tags'),
         'cr_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Change Request'),
         'cr_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Change Request Status',

@@ -27,8 +27,8 @@
 #                           0x40 - Admin Fees per Invoice
 #                           0x80 - Admin Fees per Registration ** future **
 #                           0x0100 - per Competitor Fee per Invoice
-#                           0x0200 - 
-#                           0x0400 - 
+#                           0x0200 - Scheduling Requests enabled
+#                           0x0400 - Scheduling Requests Non-negotiable conflicts area
 #                           0x0800 - 
 #
 # primary_image_id:             The ID of the image section.
@@ -50,6 +50,10 @@
 #
 # adminfees_amount:             The amount to charge for admin fees for this section.
 # competitorfees_amount:        The amount to charge for each competitor.
+#
+# scheduling_request_title:     The title for the request section on the form
+# scheduling_request_intro:     The intro to go under the title.
+# scheduling_request_times:     The times available for this section.
 #
 # date_added:           The UTC date and time the record was added.
 # last_updated:         The UTC date and time the record was last updated.
@@ -80,10 +84,13 @@ create table ciniki_musicfestival_sections (
     latefees_days tinyint not null,
     adminfees_amount decimal(19,6) not null,
     competitorfees_amount decimal(19,6) not null,
+    scheduling_request_title varchar(150) not null,
+    scheduling_request_intro text not null,
+    scheduling_request_times text not null,
     date_added datetime not null,
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
     unique index (festival_id, permalink),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.11';
+) ENGINE='InnoDB', COMMENT='v1.12';

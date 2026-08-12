@@ -681,7 +681,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "mark, "
             . "placement, "
             . "comments, "
-            . "notes "
+            . "notes, "
+            . "sr_preferred, "
+            . "sr_conflicts "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $registration_id) . "' ";
         if( (isset($_POST['action']) && ($_POST['action'] == 'view' || $_POST['action'] == 'comments' || $_POST['action'] == 'certificate' || $_POST['action'] == 'download' ))
@@ -902,7 +904,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "mark, "
             . "placement, "
             . "comments, "
-            . "notes "
+            . "notes, "
+            . "sr_preferred, "
+            . "sr_conflicts "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE uuid = '" . ciniki_core_dbQuote($ciniki, $registration_uuid) . "' "
             . "AND billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
@@ -1110,6 +1114,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             'base_url' => $base_url,
             'display' => $display,
             'selected_class' => isset($selected_class) ? $selected_class : null,
+            'selected_section' => isset($selected_section) ? $selected_section : null,
             'selected_member' => isset($selected_member) ? $selected_member : null,
             'fields' => $fields,
             'registration' => isset($registration) ? $registration : null,

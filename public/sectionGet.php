@@ -118,7 +118,10 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
             . "ciniki_musicfestival_sections.latefees_daily_increase, "
             . "ciniki_musicfestival_sections.latefees_days, "
             . "ciniki_musicfestival_sections.adminfees_amount, "
-            . "ciniki_musicfestival_sections.competitorfees_amount "
+            . "ciniki_musicfestival_sections.competitorfees_amount, "
+            . "ciniki_musicfestival_sections.scheduling_request_title, "
+            . "ciniki_musicfestival_sections.scheduling_request_intro, "
+            . "ciniki_musicfestival_sections.scheduling_request_times "
             . "FROM ciniki_musicfestival_sections "
             . "WHERE ciniki_musicfestival_sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND ciniki_musicfestival_sections.id = '" . ciniki_core_dbQuote($ciniki, $args['section_id']) . "' "
@@ -132,6 +135,7 @@ function ciniki_musicfestivals_sectionGet($ciniki) {
                     'live_description', 'virtual_description', 'recommendations_description', 
                     'live_end_dt', 'virtual_end_dt', 'titles_end_dt', 'upload_end_dt',
                     'latefees_start_amount', 'latefees_daily_increase', 'latefees_days', 'adminfees_amount', 'competitorfees_amount',
+                    'scheduling_request_title', 'scheduling_request_intro', 'scheduling_request_times',
                     ),
                 'utctotz'=>array(
                     'live_end_dt'=>array('timezone'=>$intl_timezone, 'format'=>$datetime_format),

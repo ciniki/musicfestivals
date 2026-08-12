@@ -6465,6 +6465,9 @@ function ciniki_musicfestivals_main() {
                     'no':'No',
                     'yes':'Yes',
                     }},
+                'registration-scheduling-requests':{'label':'Scheduling Requests', 'type':'toggle',
+                    'default':'no', 'toggles':{'no':'No', 'yes':'Yes'},
+                    },
                 'registration-crs-enable':{'label':'Change Requests', 'type':'toggle', 'default':'no', 'separator':'yes', 'toggles':{
                     'no':'No',
                     'yes':'Yes',
@@ -8270,6 +8273,10 @@ function ciniki_musicfestivals_main() {
                 'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x020000); }, // live/virtual split festivals
                 'fn':'M.ciniki_musicfestivals_main.section.switchTab(\'virtual\');',
                 },
+            'scheduling':{'label':'Scheduling', 
+                'visible':function() { return M.ciniki_musicfestivals_main.festival.settingValue('registration-scheduling-requests') == 'yes' ? 'yes' : 'no'; },
+                'fn':'M.ciniki_musicfestivals_main.section.switchTab(\'scheduling\');',
+                },
             'recommendations':{'label':'Recommendations', 
                 'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x010000); }, // provincials
                 'fn':'M.ciniki_musicfestivals_main.section.switchTab(\'recommendations\');',
@@ -8293,6 +8300,15 @@ function ciniki_musicfestivals_main() {
             'fields':{
                 'virtual_description':{'label':'', 'hidelabel':'yes', 'type':'htmlarea', 'size':'xlarge'}},
             },
+        '_scheduling':{'label':'Scheduling Requests', 
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.settingValue('registration-scheduling-requests') == 'yes' && M.ciniki_musicfestivals_main.section.sections._tabs.selected == 'scheduling' ? 'yes' : 'hidden'; },
+            'fields':{
+                'flags10':{'label':'Enabled', 'type':'flagtoggle', 'bit':0x0200, 'default':'off', 'field':'flags' },
+                'scheduling_request_title':{'label':'Schedule Request Title', 'type':'text', },
+                'scheduling_request_intro':{'label':'Schedule Request Intro', 'type':'textarea', },
+                'scheduling_request_times':{'label':'Schedule Request Times', 'type':'textarea', },
+                'flags11':{'label':'Non-negotiable Conflicts', 'type':'flagtoggle', 'bit':0x0400, 'default':'off', 'field':'flags' },
+            }},
         '_recommendations_description':{'label':'Adjudicator Recommendations Description', 
             'visible':function() { return M.modFlagOn('ciniki.musicfestivals', 0x010000) && M.ciniki_musicfestivals_main.section.sections._tabs.selected == 'recommendations' ? 'yes' : 'hidden'; },
             'fields':{
@@ -8374,7 +8390,7 @@ function ciniki_musicfestivals_main() {
     }
     this.section.switchTab = function(tab) {
         this.sections._tabs.selected = tab;
-        this.showHideSections(['categories', '_synopsis', '_description', '_live_description', '_virtual_description', '_recommendations_description', 'category_descriptions']);
+        this.showHideSections(['categories', '_synopsis', '_description', '_live_description', '_virtual_description', '_scheduling', '_recommendations_description', 'category_descriptions']);
         this.refreshSection('_tabs');
     }
     this.section.downloadSyllabusPDF = function() {
@@ -9967,6 +9983,10 @@ function ciniki_musicfestivals_main() {
                 'visible':function() { return M.ciniki_musicfestivals_main.registration.settingValue('registration-crs-enable') == 'yes' ? 'yes' : 'no'; },
                 'fn':'M.ciniki_musicfestivals_main.registration.switchTab("crs");',
                 },
+            'srs':{'label':'Scheduling', 
+                'visible':function() { return M.ciniki_musicfestivals_main.registration.settingValue('registration-scheduling-requests') == 'yes' ? 'yes' : 'no'; },
+                'fn':'M.ciniki_musicfestivals_main.registration.switchTab("srs");',
+                },
             }},
         '_title1':{'label':'Title', 'panelcolumn':1,
             'visible':function() { return M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'titles' ? 'yes' : 'hidden'; },
@@ -10345,8 +10365,14 @@ function ciniki_musicfestivals_main() {
             'fields':{
                 'fee':{'label':'Fee', 'type':'text', 'size':'small'},
             }},
+        'scheduling':{'label':'Scheduling Requests', 'panelcolumn':1,
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'srs' ? 'yes' : 'hidden'; },
+            'fields':{
+                'sr_preferred':{'label':'Preferred', 'type':'textarea'},
+                'sr_conflicts':{'label':'Conflicts', 'type':'textarea'},
+            }},
         '_notes':{'label':'Registration Notes', 'panelcolumn':1,
-            'visible':function() { return M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'notes' ? 'yes' : 'hidden'; },
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'notes' || M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'srs' ? 'yes' : 'hidden'; },
             'fields':{
                 'notes':{'label':'', 'hidelabel':'yes', 'type':'textarea'},
             }},
@@ -10460,7 +10486,7 @@ function ciniki_musicfestivals_main() {
     this.registration.switchTab = function(t) {
         this.sections._tabs.selected = t;
         this.refreshSection('_tabs');
-        this.showHideSections(['other_regs', '_results', 'provincials', 'messages', '_comments', 'invoice_details', '_fee', '_notes', '_internal_notes', '_runsheet_notes', 'accolades', 'crs']);
+        this.showHideSections(['other_regs', '_results', 'provincials', 'messages', '_comments', 'invoice_details', '_fee', '_notes', '_internal_notes', '_runsheet_notes', 'accolades', 'crs', 'scheduling']);
         for(var i = 1; i <= 8; i++) {
             this.showHideFormField('_title'+i, 'opus'+i);
             this.showHideFormField('_title'+i, 'movements'+i);

@@ -187,6 +187,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'registration-arranger-label',
         'registration-length-label',
         'registration-length-format',
+        'registration-scheduling-requests', 
         'registration-status-31-label',
         'registration-status-32-label',
         'registration-status-33-label',

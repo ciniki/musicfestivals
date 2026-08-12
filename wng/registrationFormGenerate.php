@@ -12,6 +12,8 @@
 //
 function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$request, $args) {
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'contentProcess');
+
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.341', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
@@ -103,6 +105,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         . "sections.latefees_start_amount, "
         . "sections.latefees_daily_increase, "
         . "sections.latefees_days, "
+        . "sections.scheduling_request_title, "
+        . "sections.scheduling_request_intro, "
+        . "sections.scheduling_request_times, "
         . "categories.name AS category_name, "
         . "classes.id AS class_id, "
         . "classes.uuid AS class_uuid, "
@@ -146,6 +151,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'fields'=>array('id'=>'section_id', 'name'=>'section_name', 'flags'=>'section_flags',
                 'live_end_dt', 'virtual_end_dt', 'titles_end_dt', 'upload_end_dt',
                 'latefees_start_amount', 'latefees_daily_increase', 'latefees_days',
+                'scheduling_request_title', 'scheduling_request_intro', 'scheduling_request_times',
                 ),
             ),
         array('container'=>'classes', 'fname'=>'class_id', 
@@ -167,14 +173,16 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     //
     // Build the list of classes and find selected class
     //
-    $classes_2c = array();  // Class id's with 2 competitors
-    $classes_3c = array();  // Class id's with 3 competitors
-    $classes_4c = array();  // Class id's with 4 competitors
-    $classes_5c = array();  // Class id's with 5 competitors
+//    $classes_2c = array();  // Class id's with 2 competitors
+//    $classes_3c = array();  // Class id's with 3 competitors
+//    $classes_4c = array();  // Class id's with 4 competitors
+//    $classes_5c = array();  // Class id's with 5 competitors
     $js_classes = array();  // Class array that will be in javascript: flags, min_titles, max_titles
+    $js_sections = array();  // Class array that will be in javascript: flags, min_titles, max_titles
     $live_prices = array();
     $plus_prices = array();
     $virtual_prices = array();
+    $max_sr_times = 0;
     $virtual_only = array();    // Used when virtual option but not virtual pricing
     $now = new DateTime('now', new DateTimezone('UTC'));
     foreach($sections as $sid => $section) {
@@ -183,6 +191,36 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         $section_virtual = $festival['virtual'] == 'yes' ? 'yes' : 'no';
         $section_edit = $festival['edit'] == 'yes' ? 'yes' : 'no';
         $section_upload = $festival['upload'] == 'yes' ? 'yes' : 'no';
+        $js_sections[$sid] = [
+            'f' => $section['flags'],
+            ];
+        if( isset($festival['registration-scheduling-requests']) && $festival['registration-scheduling-requests'] == 'yes' ) {
+            if( ($section['flags']&0x0200) == 0x0200 && $section['scheduling_request_title'] != '' ) {
+                if( $section['scheduling_request_times'] != '' ) {
+                    $times = preg_split("/\r\n|\n|\r/", $section['scheduling_request_times']);
+                    foreach($times as $tid => $time) {  
+                        $times[$tid] = trim($time);
+                        if( $times[$tid] == '' ) {
+                            unset($times[$tid]);
+                        }
+                    }
+                    if( count($times) > 0 ) {
+                        $js_sections[$sid]['srt'] = $times;
+                        $sections[$sid]['sr_times'] = $times;
+                        if( count($times) > $max_sr_times ) {
+                            $max_sr_times = count($times);
+                        }
+                    }
+                }
+                $js_sections[$sid]['srh'] = $section['scheduling_request_title'];
+                if( isset($section['scheduling_request_intro']) && $section['scheduling_request_intro'] != '' ) {
+                    $rc = ciniki_wng_contentProcess($ciniki, $tnid, $request, $section['scheduling_request_intro']);
+                    if( $rc['stat'] == 'ok' ) {
+                        $js_sections[$sid]['sri'] = $rc['content'];
+                    }
+                }
+            }
+        }
         if( ($festival['flags']&0x08) == 0x08 ) {
             if( $section['live_end_dt'] != '0000-00-00 00:00:00' ) {
                 $section_live_dt = new DateTime($section['live_end_dt'], new DateTimezone('UTC'));
@@ -1471,6 +1509,98 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         } 
     }
 
+    //
+    // Display the scheduling requests options
+    //
+    if( isset($festival['registration-scheduling-requests']) && $festival['registration-scheduling-requests'] == 'yes' ) {
+        $fields['sr_line'] = array(
+            'id' => 'sr_line',
+            'ftype' => 'line',
+            'class' => 'hidden',
+            );
+    
+        //
+        // Add intro field
+        //
+        $fields['sr_intro'] = array(
+            'id' => 'sr_intro',
+            'ftype' => 'htmlcontent',
+            'label' => isset($selected_section['scheduling_request_title']) ? $selected_section['scheduling_request_title'] : '',
+            'size' => 'large',
+            'class' => 'hidden',
+            'content' => isset($selected_section['scheduling_request_intro']) ? $selected_section['scheduling_request_intro'] : '',
+            );
+
+        //
+        // Add checkboxes fields
+        //
+        for($i = 0; $i < $max_sr_times; $i++) {
+            $fields["sr_time_{$i}"] = array(
+                'id' => "sr_time_{$i}",
+                'label' => isset($js_sections[$selected_section['id']]['srt'][$i]) ? $js_sections[$selected_section['id']]['srt'][$i] : '',
+                'ftype' => 'checkbox',
+                'size' => 'large',
+                'class' => 'hidden',
+                'value' => '',
+//                'value' => (isset($_POST['f-sr_preferred']) ? trim($_POST['f-sr_preferred']) : (isset($registration['sr_preferred']) ? $registration['sr_preferred'] :'')),
+                );
+        }
+
+        //
+        // Add preferred field
+        //
+        $fields['sr_preferred'] = array(
+            'id' => 'sr_preferred',
+            'label' => 'Preferred Dates & Times',
+            'ftype' => 'textarea',
+            'size' => 'tiny',
+            'class' => 'hidden',
+            'value' => (isset($_POST['f-sr_preferred']) ? trim($_POST['f-sr_preferred']) : (isset($registration['sr_preferred']) ? $registration['sr_preferred'] :'')),
+            );
+
+        //
+        // Add conflicts field
+        //
+        $fields['sr_conflicts'] = array(
+            'id' => 'sr_conflicts',
+            'label' => 'Non-negotiable Conflicts',
+            'ftype' => 'textarea',
+            'size' => 'tiny',
+            'class' => 'hidden',
+            'value' => (isset($_POST['f-sr_conflicts']) ? trim($_POST['f-sr_conflicts']) : (isset($registration['sr_conflicts']) ? $registration['sr_conflicts'] :'')),
+            );
+
+        //
+        // Turn on fields for section
+        //
+        if( isset($selected_section['scheduling_request_title']) && $selected_section['scheduling_request_title'] != '' 
+            && ($selected_section['flags']&0x0200) == 0x0200
+            ) {
+            $fields['sr_line']['class'] = '';
+            $fields['sr_intro']['class'] = '';
+            for($i = 0; $i < $max_sr_times; $i++) {
+                if( isset($js_sections[$selected_section['id']]['srt'][$i]) && $js_sections[$selected_section['id']]['srt'][$i] != '' ) {
+                    $fields["sr_time_{$i}"]['class'] = '';
+                    if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' ) {
+                        if( isset($_POST["f-sr_time_{$i}"]) && $_POST["f-sr_time_{$i}"] == 'on' ) {
+                            $fields["sr_time_{$i}"]['value'] = 'on';
+                        } else {
+                            $fields["sr_time_{$i}"]['value'] = '';
+                        }
+                    } elseif( isset($registration['sr_preferred']) && str_contains($registration['sr_preferred'], $js_sections[$selected_section['id']]['srt'][$i]) ) {
+                        $fields["sr_time_{$i}"]['value'] = 'on';
+                    }
+                }
+            }
+            if( !isset($js_sections[$selected_section['id']]['srt']) || count($js_sections[$selected_section['id']]['srt']) == 0 ) {
+                $fields['sr_preferred']['class'] = '';
+            }
+            if( ($selected_section['flags']&0x0400) == 0x0400 ) {
+                $fields['sr_conflicts']['class'] = '';
+            }
+        }
+    }
+
     if( !isset($festival['registration-notes-enable']) || $festival['registration-notes-enable'] == 'yes' ) {
         $fields['line-notes'] = array(
             'ftype' => 'line',
@@ -1574,7 +1704,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
 
     $js = ""
         . "var sids=[" . implode(',', array_keys($sections)) . "];"
-        . "var classes=" . json_encode($js_classes) . ";";
+        . "var classes=" . json_encode($js_classes) . ";"
+        . "var sections=" . json_encode($js_sections) . ";";
         if( isset($js_members) ) {
             $js .= "var members=" . json_encode($js_members) . ";";
         }
@@ -1591,8 +1722,43 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 . "}else{"
                     . "C.aC(e.parentNode,'hidden');"
                 . "}"
+            . "}";
+    //
+    // Check if scheduling requests is enabled for this festival
+    //
+    if( isset($festival['registration-scheduling-requests']) && $festival['registration-scheduling-requests'] == 'yes' ) {
+        $js .= ""
+            . "C.aC(C.gE('f-sr_line'),'hidden');"
+            . "C.aC(C.gE('f-sr_intro').parentNode,'hidden');"
+            . "for(var i=0;i<{$max_sr_times};i++){"
+                . "C.aC(C.gE('f-sr_time_'+i).parentNode,'hidden');"
             . "}"
-        . "};"
+            . "C.aC(C.gE('f-sr_preferred').parentNode,'hidden');"
+            . "C.aC(C.gE('f-sr_conflicts').parentNode,'hidden');"
+            . "if(sections[s]!=null&&sections[s].f!=null&&(sections[s].f&0x0200)==0x0200){"
+                . "C.rC(C.gE('f-sr_line'),'hidden');"
+                . "if(sections[s].srh!=null){"
+                    . "let intro=C.gE('f-sr_intro');"
+                    . "C.rC(intro.parentNode,'hidden');"
+                    . "intro.innerHTML=(sections[s].sri!=null?sections[s].sri:'');"
+                    . "intro.parentNode.children[0].innerHTML=sections[s].srh;"
+                . "}"
+                . "if(sections[s].srt!=null){"
+                    . "for(var i=0;i<{$max_sr_times};i++){"
+                        . "if(sections[s].srt[i]!=null){"
+                            . "C.rC(C.gE('f-sr_time_'+i).parentNode,'hidden');"
+                            . "C.gE('f-sr_time_'+i).nextSibling.innerHTML = sections[s].srt[i];"
+                        . "}"
+                    . "}"
+                . "}else{"
+                    . "C.rC(C.gE('f-sr_preferred').parentNode,'hidden');"
+                . "}"
+                . "if((sections[s].f&0x0400)==0x0400){"
+                    . "C.rC(C.gE('f-sr_conflicts').parentNode,'hidden');"
+                . "}"
+            . "}";
+    }
+    $js .= "};"
         . "function participationSelected(){"
             . "var c=C.gE('f-participation').value;"
             // Live 

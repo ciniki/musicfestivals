@@ -1,0 +1,4 @@
+ALTER TABLE ciniki_musicfestival_sections ADD COLUMN scheduling_request_title varchar(150) not null AFTER competitorfees_amount;
+ALTER TABLE ciniki_musicfestival_sections ADD COLUMN scheduling_request_intro text not null AFTER scheduling_request_title;
+ALTER TABLE ciniki_musicfestival_sections ADD COLUMN scheduling_request_times text not null AFTER scheduling_request_intro;
+ALTER TABLE ciniki_musicfestival_sections COMMENT='v1.12';
