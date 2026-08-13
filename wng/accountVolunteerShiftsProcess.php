@@ -20,6 +20,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
     $display = 'sections';
     $date_format = 'D, M j, Y';
+    $js = '';
 
     //
     // Load current festival
@@ -35,8 +36,42 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
        
     }
     $festival = $rc['festival'];
-    $request['cur_uri_pos']++;
+    $request['cur_uri_pos']+=3;
     $base_url = $request['ssl_domain_base_url'] . '/account/musicfestival/' . $festival['permalink'] . '/volunteer';
+    $back = '';
+    $filters = '';
+    foreach(['date', 'role', 'discipline', 'location'] as $f) {
+        if( isset($_GET[$f]) ) {
+            $filters .= ($filters == '' ? '?' : '&') . "{$f}={$_GET[$f]}";
+            $back .= ($back == '' ? '?' : '&') . "{$f}={$_GET[$f]}";
+        }
+    }
+    $back_url = $base_url . '/shifts' . $filters;
+    if( isset($_GET['back']) && $_GET['back'] == 'profile' ) {
+        $back .= ($back == '' ? '?' : '&') . 'back=profile';
+        $back_url = $base_url . $filters;
+    }
+
+    //
+    // Check for a locations section on a page
+    //
+    $strsql = "SELECT sections.id, "
+        . "sections.page_id "
+        . "FROM ciniki_wng_sections AS sections "
+        . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "AND sections.ref = 'ciniki.musicfestivals.locations' "
+        . "AND settings like '%\"festival-id\":\"" . ciniki_core_dbQuote($ciniki, $festival['id']) . "\"%' "
+        . "LIMIT 1 "
+        . "";
+    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'section');
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1584', 'msg'=>'Unable to load page', 'err'=>$rc['err']));
+    }
+    if( isset($rc['section']) ) {
+        if( isset($request['site']['pages'][$rc['section']['page_id']]) ) {
+            $locations_base_url = $request['ssl_domain_base_url'] . $request['site']['pages'][$rc['section']['page_id']]['path'];
+        }
+    }
 
     //
     // Load the tenant settings
@@ -59,7 +94,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
         $roles = explode('::', $volunteer['approved_roles']);
     }
 
-    $css_width_limit = 'limit-width limit-width-70';
+    $css_width_limit = 'limit-width limit-width-80';
 
     if( count($roles) <= 0 ) {
         $blocks[] = [
@@ -72,7 +107,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             'type' => 'buttons',
             'class' => 'aligncenter ' . $css_width_limit,
             'items' => [
-                ['url' => $base_url, 'text' => 'Back'],
+                ['url' => $back_url, 'text' => 'Back'],
                 ],
             ];
         return array('stat'=>'ok', 'blocks'=>$blocks);
@@ -92,7 +127,9 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
     // Get the shifts discipline(s)
     //
     $disciplines = [];
-    if( isset($festival['volunteers-discipline-format']) && $festival['volunteers-discipline-format'] == 'section' ) {
+    if( isset($festival['volunteers-discipline-format']) 
+        && $festival['volunteers-discipline-format'] == 'section' 
+        ) {
         $strsql = "SELECT shifts.id, "
             . "GROUP_CONCAT(DISTINCT sections.name SEPARATOR ', ') AS disciplines "
             . "FROM ciniki_musicfestival_volunteer_shifts AS shifts "
@@ -131,7 +168,10 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1479', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
         }
         $disciplines = isset($rc['shifts']) ? $rc['shifts'] : array();
-    } elseif( isset($festival['volunteers-discipline-format']) && $festival['volunteers-discipline-format'] == 'division' ) {
+    } 
+    elseif( isset($festival['volunteers-discipline-format']) 
+        && $festival['volunteers-discipline-format'] == 'division' 
+        ) {
         $strsql = "SELECT shifts.id, "
             . "GROUP_CONCAT(DISTINCT divisions.name SEPARATOR ', ') AS disciplines "
             . "FROM ciniki_musicfestival_volunteer_shifts AS shifts "
@@ -166,7 +206,10 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1630', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
         }
         $disciplines = isset($rc['shifts']) ? $rc['shifts'] : array();
-    } elseif( isset($festival['volunteers-discipline-format']) && $festival['volunteers-discipline-format'] == 'syllabussection' ) {
+    } 
+    elseif( isset($festival['volunteers-discipline-format']) 
+        && $festival['volunteers-discipline-format'] == 'syllabussection' 
+        ) {
         $strsql = "SELECT shifts.id, "
             . "GROUP_CONCAT(DISTINCT sections.name SEPARATOR ', ') AS disciplines "
             . "FROM ciniki_musicfestival_volunteer_shifts AS shifts "
@@ -257,26 +300,29 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'dates', 'fname'=>'shift_date', 
-            'fields'=>array('shift_date', 'shift_date_text'),
-            'utctotz'=>array('shift_date_text'=>array('timezone'=>'UTC', 'format'=>$date_format)),
-            ),
-        array('container'=>'roles', 'fname'=>'role', 
-            'fields'=>array('name'=>'role'),
-            ),
+//        array('container'=>'dates', 'fname'=>'shift_date', 
+//            'fields'=>array('shift_date', 'shift_date_text'),
+//            'utctotz'=>array('shift_date_text'=>array('timezone'=>'UTC', 'format'=>$date_format)),
+//            ),
+//        array('container'=>'roles', 'fname'=>'role', 
+//            'fields'=>array('name'=>'role'),
+//            ),
         array('container'=>'shifts', 'fname'=>'uuid', 
-            'fields'=>array('id', 'uuid', 'shift_date', 'start_time', 'end_time', 'assignment_id',
+            'fields'=>array('id', 'uuid', 'shift_date', 'shift_date_text', 'start_time', 'end_time', 
+                'assignment_id',
                 'sort_start_time', 'sort_end_time', 
                 'object', 'object_id', 'role', 
-                'min_volunteers', 'max_volunteers', 'shift_notes', 'num_volunteers'),
+                'min_volunteers', 'max_volunteers', 'shift_notes', 'num_volunteers',
+                ),
+            'utctotz'=>array('shift_date_text'=>array('timezone'=>'UTC', 'format'=>$date_format)),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1260', 'msg'=>'Unable to load shifts', 'err'=>$rc['err']));
     }
-    $shift_dates = isset($rc['dates']) ? $rc['dates'] : array();
+    $upcoming_shifts = isset($rc['shifts']) ? $rc['shifts'] : array();
 
-    if( count($shift_dates) == 0 ) {
+    if( count($upcoming_shifts) == 0 ) {
         $blocks[] = [
             'type' => 'msg',
             'level' => 'error',
@@ -287,140 +333,202 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             'type' => 'buttons',
             'class' => 'aligncenter ' . $css_width_limit,
             'items' => [
-                ['url' => $base_url, 'text' => 'Back'],
+                ['url' => $back_url, 'text' => 'Back'],
                 ],
             ];
         return array('stat'=>'ok', 'blocks'=>$blocks);
     }
 
     //
-    // Check for a locations section on a page
+    // Filter the upcoming shifts
     //
-    $strsql = "SELECT sections.id, "
-        . "sections.page_id "
-        . "FROM ciniki_wng_sections AS sections "
-        . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND sections.ref = 'ciniki.musicfestivals.locations' "
-        . "AND settings like '%\"festival-id\":\"" . ciniki_core_dbQuote($ciniki, $festival['id']) . "\"%' "
-        . "LIMIT 1 "
-        . "";
-    $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'section');
-    if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1584', 'msg'=>'Unable to load page', 'err'=>$rc['err']));
-    }
-    if( isset($rc['section']) ) {
-        if( isset($request['site']['pages'][$rc['section']['page_id']]) ) {
-            $locations_base_url = $request['ssl_domain_base_url'] . $request['site']['pages'][$rc['section']['page_id']]['path'];
-        }
-    }
+    $fields = [];
+    $available_dates = [];
+    $available_locations = [];
+    $available_disciplines = [];
+    $available_roles = [];
+    $filtered_shifts = [];
 
-    //
-    // Show the dates
-    //
-    foreach($shift_dates AS $did => $date) {
-        $shift_dates[$did]['num_open'] = 0;
-        if( isset($date['roles']) ) {
-            foreach($date['roles'] as $rid => $role) {
-                $shift_dates[$did]['roles'][$rid]['num_open'] = 0;
-                $permalink = ciniki_core_makePermalink($ciniki, $role['name']);
-                $shift_dates[$did]['roles'][$permalink] = $shift_dates[$did]['roles'][$rid];
-                unset($shift_dates[$did]['roles'][$rid]);
-                $rid = $permalink;
-                $shift_dates[$did]['roles'][$rid]['permalink'] = $permalink;
-                if( isset($role['shifts']) ) {
-                    foreach($role['shifts'] as $sid => $shift) {
-                        //
-                        // Setup shift location
-                        //
-                        if( isset($locations["{$shift['object']}:{$shift['object_id']}"]) ) {
-                            $location = $locations["{$shift['object']}:{$shift['object_id']}"];
-                            $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['location'] = $location['name'];
-                            $address = $location['address1'];
-                            if( $location['city'] != '' ) {
-                                $address .= ($address != '' ? ', ' : '') . $location['city'];
-                            }
-                            if( $location['province'] != '' ) {
-                                $address .= ($address != '' ? ', ' : '') . $location['province'];
-                            }
-                            if( $location['postal'] != '' ) {
-                                $address .= ($address != '' ? '  ' : '') . $location['postal'];
-                            }
-                            if( isset($locations_base_url) && $locations_base_url != '' ) {
-                                $address .= " (<a href='{$locations_base_url}/{$location['permalink']}'>View Map</a>)";
-                            }
-                            $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['address'] = $address;
-                        }
-                        // Setup to disciplines
-                        $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['disciplines'] = '';
-                        if( isset($disciplines[$shift['id']]) ) {
-                            $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['disciplines'] = $disciplines[$shift['id']]['disciplines'];
-                        }
-                        // Setup shift times
-                        $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['times'] = "{$shift['start_time']} - {$shift['end_time']}";
-                        if( $shift['num_volunteers'] < $shift['max_volunteers'] ) {
-                            $shift_dates[$did]['num_open']++;
-                            $shift_dates[$did]['roles'][$rid]['num_open']++;
-                        }
-                        //
-                        // Setup shift buttons
-                        //
-                        $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['buttons'] = "";
-                        if( isset($args['volunteer']['shifts'][$shift['id']]) ) {
-                            $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['assigned'] = 'yes';
-                            if( $args['volunteer']['shifts'][$shift['id']]['assignment_status'] == 30 ) {
-                                $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['buttons'] .= "<span class='text'>Your Shift</span>";
-                            } else {
-                                $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['buttons'] .= "<span class='text'>Request Pending</span>";
-                            }
-                        } elseif( $shift['num_volunteers'] >= $shift['max_volunteers'] ) {
-                            $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['buttons'] .= "<span class='text'>Filled</span>";
-                        } 
-                        $shift_dates[$did]['roles'][$rid]['shifts'][$sid]['buttons'] .= "<a class='button' href='{$base_url}/shifts/{$date['shift_date']}/{$permalink}/{$shift['uuid']}'>Open</a>";
-                    }
-                    uasort($shift_dates[$did]['roles'][$rid]['shifts'], function($a, $b) {
-                        if( $a['location'] == $b['location'] ) {
-                            return $a['sort_start_time'] < $b['sort_start_time'] ? -1 : 1;
-                        }
-                        return strcasecmp($a['location'], $b['location']);
-                        });
+    foreach($upcoming_shifts as $shift) {
+        //
+        // Filter out unwanted shifts
+        //
+
+        if( !isset($available_roles[$shift['role']]) ) {
+            $available_roles[$shift['role']] = [
+                'id' => $shift['role'],
+                'name' => $shift['role'],
+                ];
+        }
+        if( !isset($available_dates[$shift['shift_date']]) ) {
+            $available_dates[$shift['shift_date']] = [
+                'id' => $shift['shift_date'],
+                'name' => $shift['shift_date_text'],
+                ];
+        }
+        if( isset($disciplines[$shift['id']]['disciplines']) ) {
+            $shift['disciplines'] = $disciplines[$shift['id']]['disciplines'];
+            $m = explode(', ', $shift['disciplines']);
+            foreach($m as $d) {
+                if( !isset($available_disciplines[$d]) ) {
+                    $available_disciplines[$d] = [
+                        'id' => $d,
+                        'name' => $d,
+                        ];
                 }
-                $shift_dates[$did]['roles'][$rid]['num_open_text'] = $shift_dates[$did]['roles'][$rid]['num_open'] > 0 ? $shift_dates[$did]['roles'][$rid]['num_open'] : 'Filled';
-                $shift_dates[$did]['roles'][$rid]['buttons'] = "<a class='button' href='{$base_url}/shifts/{$date['shift_date']}/{$permalink}'>Open</a>";
             }
         }
-        $shift_dates[$did]['num_open_text'] = $shift_dates[$did]['num_open'] > 0 ? $shift_dates[$did]['num_open'] : 'Filled';
-        $shift_dates[$did]['buttons'] = "<a class='button' href='{$base_url}/shifts/{$date['shift_date']}'>Open</a>";
-    }
+        if( isset($locations["{$shift['object']}:{$shift['object_id']}"]) ) {   
+            $shift['location'] = $locations["{$shift['object']}:{$shift['object_id']}"]['name'];
+            if( !isset($available_locations[$shift['location']]) ) {
+                $available_locations[$shift['location']] = [
+                    'id' => $shift['location'],
+                    'name' => $shift['location'],
+                    ];
+            }
+        }
+        if( isset($_GET['role']) && $_GET['role'] != '' && isset($shift['role'])
+            && $_GET['role'] != $shift['role'] 
+            ) {
+            continue;
+        } 
+        if( isset($_GET['date']) && $_GET['date'] != '' && isset($shift['shift_date'])
+            && $_GET['date'] != $shift['shift_date'] 
+            ) {
+            continue;
+        }
+        if( isset($_GET['location']) && $_GET['location'] != '' 
+            && (!isset($shift['location']) || $_GET['location'] != $shift['location'])
+            ) {
+            continue;
+        }
+        if( isset($_GET['discipline']) && $_GET['discipline'] != '' 
+            && (!isset($shift['disciplines']) || !str_contains($shift['disciplines'], $_GET['discipline']))
+            ) {
+            continue;
+        } 
+        
+        //
+        // Setup shift buttons
+        //
+        $shift['buttons'] = '';
+        $shift['status'] = '';
+        if( isset($args['volunteer']['shifts'][$shift['id']]) ) {
+            $shift['assigned'] = 'yes';
+            if( $args['volunteer']['shifts'][$shift['id']]['assignment_status'] == 30 ) {
+                $shift['status'] .= "Your Shift";
+            } else {
+                $shift['status'] .= "Request Pending";
+            }
+            $shift['buttons'] .= "<a class='button' href='{$base_url}/shifts/{$shift['uuid']}{$filters}'>Open</a>";
+        } elseif( $shift['num_volunteers'] >= $shift['max_volunteers'] ) {
+            $shift['status'] .= "Filled";
+            $shift['buttons'] .= "<a class='button' href='{$base_url}/shifts/{$shift['uuid']}{$filters}'>View</a>";
+        } else {
+            $shift['buttons'] .= "<a class='button' href='{$base_url}/shifts/{$shift['uuid']}{$filters}'>Open</a>";
+        }
 
-    $selected_date = '';
-    $selected_role = '';
-    $selected_shift = '';
-    $action = 'view';
-    if( isset($request['uri_split'][($request['cur_uri_pos']+4)]) ) {
-        $selected_date = $request['uri_split'][($request['cur_uri_pos']+4)];
-    }
-    if( isset($request['uri_split'][($request['cur_uri_pos']+5)]) ) {
-        $selected_role = $request['uri_split'][($request['cur_uri_pos']+5)];
-    }
-    if( isset($request['uri_split'][($request['cur_uri_pos']+6)]) ) {
-        $selected_shift = $request['uri_split'][($request['cur_uri_pos']+6)];
-    }
-    if( isset($request['uri_split'][($request['cur_uri_pos']+7)]) ) {
-        $action = $request['uri_split'][($request['cur_uri_pos']+7)];
-    }
-    if( isset($request['uri_split'][($request['cur_uri_pos']+8)]) ) {
-        $confirm = $request['uri_split'][($request['cur_uri_pos']+8)];
+        if( isset($request['uri_split'][($request['cur_uri_pos']+1)]) 
+            && $shift['uuid'] == $request['uri_split'][($request['cur_uri_pos']+1)]
+            ) {
+            $selected_shift = $shift;
+        }
+
+        $filtered_shifts[] = $shift;
     }
 
     //
-    // Decide what to display
+    // Sort the arrays
     //
-    if( $selected_date != '' && $selected_role != '' && $selected_shift != '' 
-        && isset($shift_dates[$selected_date]['roles'][$selected_role]['shifts'][$selected_shift]) 
-        ) {
-        $date = $shift_dates[$selected_date];
-        $shift = $shift_dates[$selected_date]['roles'][$selected_role]['shifts'][$selected_shift];
-        $content = "<b>Date</b>: {$date['shift_date_text']}<br/>"
+    uasort($available_locations, function($a, $b) {
+        return strcasecmp($a['name'], $b['name']);
+        });
+    uasort($available_disciplines, function($a, $b) {
+        return strcasecmp($a['name'], $b['name']);
+        });
+    uasort($available_roles, function($a, $b) {
+        return strcasecmp($a['name'], $b['name']);
+        });
+
+    //
+    // Build the filtering form fields
+    //
+    $js .= "function updateFilter(){"
+        . "var qs='';";
+    if( count($available_dates) > 0 ) {
+        $fields['date'] = [
+            'id' => 'date',
+            'ftype' => 'select',
+            'flex-basis' => '25%',
+            'label' => 'Date',
+            'blank' => 'yes',
+            'blank-label' => 'All',
+            'options' => $available_dates,
+            'onchange' => 'updateFilter();',
+            'value' => isset($_GET['date']) ? $_GET['date'] : '',
+            ];
+        $js .= "qs+=(qs!=''?'&':'')+'date='+C.gE('f-date').value;";
+    }
+    if( count($available_disciplines) > 0 ) {
+        $fields['discipline'] = [
+            'id' => 'discipline',
+            'ftype' => 'select',
+            'label' => 'Discipline',
+            'flex-basis' => '25%',
+            'blank' => 'yes',
+            'blank-label' => 'All',
+            'options' => $available_disciplines,
+            'onchange' => 'updateFilter();',
+            'value' => isset($_GET['discipline']) ? $_GET['discipline'] : '',
+            ];
+        $js .= "qs+=(qs!=''?'&':'')+'discipline='+C.gE('f-discipline').value;";
+    }
+    if( count($available_locations) > 0 ) {
+        $fields['location'] = [
+            'id' => 'location',
+            'ftype' => 'select',
+            'label' => 'Location',
+            'flex-basis' => '25%',
+            'blank' => 'yes',
+            'blank-label' => 'All',
+            'options' => $available_locations,
+            'onchange' => 'updateFilter();',
+            'value' => isset($_GET['location']) ? $_GET['location'] : '',
+            ];
+        $js .= "qs+=(qs!=''?'&':'')+'location='+C.gE('f-location').value;";
+    }
+    if( count($available_roles) > 0 ) {
+        $fields['role'] = [
+            'id' => 'role',
+            'ftype' => 'select',
+            'flex-basis' => '25%',
+            'label' => 'Role',
+            'blank' => 'yes',
+            'blank-label' => 'All',
+            'options' => $available_roles,
+            'onchange' => 'updateFilter();',
+            'value' => isset($_GET['role']) ? $_GET['role'] : '',
+            ];
+        $js .= "qs+=(qs!=''?'&':'')+'role='+C.gE('f-role').value;";
+    }
+    $js .= "window.location.search='?'+qs;"
+        . "}";
+
+    //
+    // Display the selected shift
+    //
+    if( isset($selected_shift) ) {
+        $shift = $selected_shift;
+
+        $action = 'view';
+        if( isset($request['uri_split'][($request['cur_uri_pos']+2)]) ) {
+            $action = $request['uri_split'][($request['cur_uri_pos']+2)];
+        }
+        if( isset($request['uri_split'][($request['cur_uri_pos']+3)]) ) {
+            $confirm = $request['uri_split'][($request['cur_uri_pos']+3)];
+        }
+
+        $content = "<b>Date</b>: {$shift['shift_date_text']}<br/>"
             . "<b>Times</b>: {$shift['start_time']} - {$shift['end_time']}<br/>";
         if( isset($shift['location']) ) {
             $content .= "<b>Location</b>: {$shift['location']}<br/>";
@@ -436,9 +544,9 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             $content .= preg_replace("/\n/", '', $shift['shift_notes']) . "<br/>";
         }
         $alert_email_content = $content;
-        if( isset($festival["volunteers-role-{$selected_role}-description"]) 
-            && $festival["volunteers-role-{$selected_role}-description"] != '' ) {
-            $content .= preg_replace("/\n/", '', $festival["volunteers-role-{$selected_role}-description"]);
+        if( isset($festival["volunteers-role-{$shift['role']}-description"]) 
+            && $festival["volunteers-role-{$shift['role']}-description"] != '' ) {
+            $content .= preg_replace("/\n/", '', $festival["volunteers-role-{$shift['role']}-description"]);
         }
         $blocks[] = [
             'type' => 'text',
@@ -530,15 +638,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
                     'content' => "Your shift has been cancelled.",
                     ];
             }
-            if( isset($_GET['back']) && $_GET['back'] == 'profile' ) {
-                $buttons = [
-                    ['url' => "{$base_url}", 'text' => 'Back'],
-                    ];
-            } else {
-                $buttons = [
-                    ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}", 'text' => 'Back'],
-                    ];
-            }
+            $buttons = [['url' => "{$back_url}", 'text' => 'Back']];
         }
         // Confirm a cancellation
         elseif( isset($args['volunteer']['shifts'][$shift['id']]) && isset($action) && $action == 'cancel' ) {
@@ -548,12 +648,8 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
                 'class' => $css_width_limit,
                 'content' => "Are you sure you want to cancel your shift?",
                 ];
-            $back = '';
-            if( isset($_GET['back']) && $_GET['back'] == 'profile' ) {
-                $back = '?back=profile';
-            }
-            $buttons[] = ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}/{$selected_shift}{$back}", 'text' => 'Back'];
-            $buttons[] = ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}/{$selected_shift}/cancel/confirm{$back}", 'text' => 'Yes, cancel my shift'];
+            $buttons[] = ['url' => "{$base_url}/shifts/{$selected_shift['uuid']}{$back}", 'text' => 'Back'];
+            $buttons[] = ['url' => "{$base_url}/shifts/{$selected_shift['uuid']}/cancel/confirm{$back}", 'text' => 'Yes, cancel my shift'];
         }
         // Already signed up for this shift
         elseif( isset($args['volunteer']['shifts'][$shift['id']]) ) {
@@ -572,19 +668,9 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
                     'content' => "Thank you for requesting this shift, we will email when with confirmation.",
                     ];
             }
-            $back = '';
-            if( isset($_GET['back']) && $_GET['back'] == 'profile' ) {
-                $buttons = [
-                    ['url' => "{$base_url}", 'text' => 'Back'],
-                    ];
-                $back = '?back=profile';
-            } else {
-                $buttons = [
-                    ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}", 'text' => 'Back'],
-                    ];
-            }
+            $buttons = [['url' => "{$back_url}", 'text' => 'Back']];
             if( isset($festival['volunteers-account-cancel']) && $festival['volunteers-account-cancel'] == 'yes' ) {
-                $buttons[] = ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}/{$selected_shift}/cancel{$back}", 'text' => 'Cancel my shift'];
+                $buttons[] = ['url' => "{$base_url}/shifts/{$selected_shift['uuid']}/cancel{$back}", 'text' => 'Cancel my shift'];
             }
         } 
         // Shift is full
@@ -596,7 +682,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
                 'content' => "This shift is full",
                 ];
             $buttons = [
-                ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}", 'text' => 'Back'],
+                ['url' => "{$back_url}", 'text' => 'Back'],
                 ];
         } 
         // Shift has open spots
@@ -617,9 +703,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
                     'class' => $css_width_limit,
                     'content' => "You have a conflict with another shift."
                     ];
-                $buttons = [
-                    ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}", 'text' => 'Back'],
-                    ];
+                $buttons = [['url' => "{$back_url}", 'text' => 'Back']];
             } else {
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
                 $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.volunteerassignment', [
@@ -654,9 +738,7 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
                     'class' => $css_width_limit,
                     'content' => "Thank you for requesting this shift, we will email with your confirmation.",
                     ];
-                $buttons = [
-                    ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}", 'text' => 'Back'],
-                    ];
+                $buttons = [['url' => "{$back_url}", 'text' => 'Back']];
             } 
         }
         elseif( isset($action) && $action == 'signup' ) {
@@ -668,14 +750,14 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
                 ];
             
             $buttons = [
-                ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}/{$selected_shift}", 'text' => 'Cancel'],
-                ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}/{$selected_shift}/signup/confirm", 'text' => 'Confirm'],
+                ['url' => "{$base_url}/shifts/{$selected_shift['uuid']}{$back}", 'text' => 'Cancel'],
+                ['url' => "{$base_url}/shifts/{$selected_shift['uuid']}/signup/confirm{$filters}", 'text' => 'Confirm'],
                 ];
         }
         else {
             $buttons = [
-                ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}", 'text' => 'Back'],
-                ['url' => "{$base_url}/shifts/{$selected_date}/{$selected_role}/{$selected_shift}/signup", 'text' => 'Request Shift'],
+                ['url' => "{$back_url}", 'text' => 'Back'],
+                ['url' => "{$base_url}/shifts/{$selected_shift['uuid']}/signup{$filters}", 'text' => 'Request Shift'],
                 ];
         }
         $blocks[] = [
@@ -683,81 +765,53 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess(&$ciniki, $tnid
             'class' => 'aligncenter ' . $css_width_limit,
             'items' => $buttons,
             ];
+
     } 
-    elseif( $selected_date != '' && $selected_role != '' && isset($shift_dates[$selected_date]['roles'][$selected_role]) ) {
-        $date = $shift_dates[$selected_date];
-        $role = $shift_dates[$selected_date]['roles'][$selected_role];
-        $columns = [
-            ['label' => 'Location', 'field' => 'location'],
-            ['label' => 'Times', 'field' => 'times'],
-            ];
-        if( isset($festival['volunteers-discipline-format']) && $festival['volunteers-discipline-format'] == 'section' ) {
-            $columns[] = ['label' => 'Disciplines', 'class' => '', 'field' => 'disciplines'];
-        } elseif( isset($festival['volunteers-discipline-format']) && $festival['volunteers-discipline-format'] == 'division' ) {
-            $columns[] = ['label' => 'Disciplines', 'class' => '', 'field' => 'disciplines'];
-        } elseif( isset($festival['volunteers-discipline-format']) && $festival['volunteers-discipline-format'] == 'syllabussection' ) {
-            $columns[] = ['label' => 'Disciplines', 'class' => '', 'field' => 'disciplines'];
-        }
-        $columns[] = ['label' => '', 'class' => 'alignright buttons', 'field' => 'buttons'];
-        $blocks[] = [
-            'type' => 'table',
-            'title' => $date['shift_date_text'] . ' - ' . $role['name'],
-            'class' => $css_width_limit,
-            'columns' => $columns,
-            'rows' => $role['shifts'],
-            ];
-        $blocks[] = [
-            'type' => 'buttons',
-            'class' => 'aligncenter',
-            'class' => $css_width_limit,
-            'items' => [
-                ['url' => $base_url . '/shifts/' . $selected_date, 'text' => 'Back'],
-                ],
-            ];
-    } 
-    elseif( $selected_date != '' && isset($shift_dates[$selected_date]) ) {
-        $date = $shift_dates[$selected_date];
-        $blocks[] = [
-            'type' => 'table',
-            'title' => $date['shift_date_text'],
-            'class' => $css_width_limit,
-            'columns' => [
-                ['label' => 'Role', 'field' => 'name'],
-                ['label' => 'Unfilled Shifts', 'field' => 'num_open_text'],
-                ['label' => '', 'class' => 'alignright buttons', 'field' => 'buttons'],
-                ],
-            'rows' => $date['roles'],
-            ];
-        $blocks[] = [
-            'type' => 'buttons',
-            'class' => 'aligncenter ' . $css_width_limit,
-            'items' => [
-                ['url' => $base_url . '/shifts', 'text' => 'Back'],
-                ],
-            ];
-    }
     //
-    // Print the list of dates
+    // Display the filter form and list
     //
     else {
+        //
+        // Display the filtering form
+        //
         $blocks[] = [
-            'type' => 'table',
-            'title' => 'Dates',
-            'class' => $css_width_limit,
-            'columns' => [
+            'type' => 'form',
+            'title' => 'Shift Filter',
+            'submit-hide' => 'yes',
+            'fields' => $fields,
+            'js' => $js,
+            ];
+        if( count($filtered_shifts) == 0 ) {
+            //
+            // Display the error
+            //
+            $blocks[] = [
+                'type' => 'msg',
+                'level' => 'error',
+                'class' => $css_width_limit,
+                'content' => "No available volunteer shifts",
+                ];
+        } 
+        else {
+            $columns = [
                 ['label' => 'Date', 'field' => 'shift_date_text'],
-                ['label' => 'Unfilled Shifts', 'field' => 'num_open_text'],
-                ['label' => '', 'class' => 'alignright buttons', 'field' => 'buttons'],
-                ],
-            'rows' => $shift_dates,
-            ];
-        $blocks[] = [
-            'type' => 'buttons',
-            'class' => 'aligncenter ' . $css_width_limit,
-            'items' => [
-                ['url' => $base_url, 'text' => 'Back'],
-                ],
-            ];
+                ['label' => 'Location', 'field' => 'location'],
+                ];
+            if( count($disciplines) > 0 ) {
+                $columns[] = ['label' => 'Discipline', 'field' => 'disciplines'];
+            }
+            $columns[] = ['label' => 'Role', 'field' => 'role'];
+            $columns[] = ['label' => '', 'class' => '', 'field' => 'status'];
+            $columns[] = ['label' => '', 'class' => 'alignright buttons', 'field' => 'buttons'];
+            $blocks[] = [
+                'type' => 'table',
+                'title' => 'Upcoming Shifts',
+                'class' => $css_width_limit . ' fold-at-40',
+                'columns' => $columns,
+                'rows' => $filtered_shifts,
+                ];
+            
+        }
     }
 
     return array('stat'=>'ok', 'blocks'=>$blocks);

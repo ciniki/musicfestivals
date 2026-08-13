@@ -73,7 +73,7 @@ function ciniki_musicfestivals_wng_accountVolunteerProcess(&$ciniki, $tnid, &$re
             'editable' => 'yes',
             ]);
     }
-    elseif( isset($request['uri_split'][($request['cur_uri_pos']+3)]) 
+/*    elseif( isset($request['uri_split'][($request['cur_uri_pos']+3)]) 
         && $request['uri_split'][($request['cur_uri_pos']+3)] == 'shifts'
         && isset($festival['volunteers-account-shift-selector']) && $festival['volunteers-account-shift-selector'] == 'yes'
         ) {
@@ -82,7 +82,7 @@ function ciniki_musicfestivals_wng_accountVolunteerProcess(&$ciniki, $tnid, &$re
             'festival' => $festival,
             'volunteer' => $volunteer,
             ]);
-    }
+    } */
     elseif( isset($request['uri_split'][($request['cur_uri_pos']+3)]) 
         && $request['uri_split'][($request['cur_uri_pos']+3)] == 'shifts'
         ) {
@@ -193,7 +193,7 @@ function ciniki_musicfestivals_wng_accountVolunteerProcess(&$ciniki, $tnid, &$re
         } else {
             foreach($volunteer['shifts'] as $sid => $shift) {
                 $permalink = ciniki_core_makePermalink($ciniki, $shift['role']);
-                $volunteer['shifts'][$sid]['buttons'] = "<a class='button' href='{$base_url}/shifts/{$shift['shift_date_ymd']}/{$permalink}/{$shift['uuid']}?back=profile'>Open</a>";
+                $volunteer['shifts'][$sid]['buttons'] = "<a class='button' href='{$base_url}/shifts/{$shift['uuid']}?back=profile'>Open</a>";
             }
             $blocks[] = [
                 'type' => 'table',

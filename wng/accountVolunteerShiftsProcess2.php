@@ -296,20 +296,20 @@ function ciniki_musicfestivals_wng_accountVolunteerShiftsProcess2(&$ciniki, $tni
     $selected_role = '';
     $selected_shift = '';
     $action = 'view';
+    if( isset($request['uri_split'][($request['cur_uri_pos']+3)]) ) {
+        $selected_date = $request['uri_split'][($request['cur_uri_pos']+3)];
+    }
     if( isset($request['uri_split'][($request['cur_uri_pos']+4)]) ) {
-        $selected_date = $request['uri_split'][($request['cur_uri_pos']+4)];
+        $selected_role = $request['uri_split'][($request['cur_uri_pos']+4)];
     }
     if( isset($request['uri_split'][($request['cur_uri_pos']+5)]) ) {
-        $selected_role = $request['uri_split'][($request['cur_uri_pos']+5)];
+        $selected_shift = $request['uri_split'][($request['cur_uri_pos']+5)];
     }
     if( isset($request['uri_split'][($request['cur_uri_pos']+6)]) ) {
-        $selected_shift = $request['uri_split'][($request['cur_uri_pos']+6)];
+        $action = $request['uri_split'][($request['cur_uri_pos']+6)];
     }
     if( isset($request['uri_split'][($request['cur_uri_pos']+7)]) ) {
-        $action = $request['uri_split'][($request['cur_uri_pos']+7)];
-    }
-    if( isset($request['uri_split'][($request['cur_uri_pos']+8)]) ) {
-        $confirm = $request['uri_split'][($request['cur_uri_pos']+8)];
+        $confirm = $request['uri_split'][($request['cur_uri_pos']+7)];
     }
 
     //
