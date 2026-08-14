@@ -139,6 +139,8 @@ function ciniki_musicfestivals_volunteers($ciniki) {
             . "volunteers.status AS status_text, "
             . "volunteers.customer_id, "
             . "customers.display_name AS customer_name, "
+            . "IF((customers.flags&0x0100)=0x0100, 'Yes', '') AS crc_checked, "
+            . "customers.crc_expiry_date, "
             . "IF(volunteers.shortname <> '', volunteers.shortname, customers.display_name) AS display_name, ";
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
             $strsql .= "IFNULL(members.name, '') AS member_name, ";
@@ -180,8 +182,9 @@ function ciniki_musicfestivals_volunteers($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'volunteers', 'fname'=>'id', 
                 'fields'=>array('id', 'status', 'status_text', 'customer_id', 'display_name', 'customer_name',
-                    'member_name', ),
+                    'member_name', 'crc_checked', 'crc_expiry_date'),
                 'maps'=>array('status_text'=>$maps['volunteer']['status']),
+                'dtformat'=>array('crc_expiry_date'=>$date_format),
                 ),
             array('container'=>'shifts', 'fname'=>'shift_id', 
                 'fields'=>array('id'=>'shift_id', 'shift_date', 'start_seconds', 'end_seconds'),
@@ -368,11 +371,13 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                 'festival_id' => $args['festival_id'],
                 'volunteer_id' => $args['volunteer_id'],
                 'assignments' => 'yes',
+                'contact' => 'yes',
                 ]);
             if( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
             $rsp['volunteer_shifts'] = isset($rc['volunteer']['shifts']) ? array_values($rc['volunteer']['shifts']) : [];
+            $rsp['volunteer_details'] = $rc['volunteer']['details'];
         }
     }
 

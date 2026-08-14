@@ -128,7 +128,7 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
             );
         $fields['num_people'] = array(
             'id' => 'num_people',
-            'label' => 'Number of People',
+            'label' => 'Number of Participants',
             'ftype' => 'text',
             'required' => 'yes',
             'size' => 'tiny',

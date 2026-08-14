@@ -19438,6 +19438,7 @@ function ciniki_musicfestivals_main() {
             },
         'volunteers':{'label':'Volunteers', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 
             'headerValues':[],
+            'sortable':'yes',
             'dataMaps':['name', 'total_hours_text'],
 //            'visible':function() { return M.ciniki_musicfestivals_main.volunteers.sections._tabs.selected == 'volunteers' ? 'yes' : 'no'; },
             'visible':function() { return ['volunteers','pending'].indexOf(M.ciniki_musicfestivals_main.volunteers.sections._tabs.selected) >= 0 ? 'yes' : 'no'; },
@@ -19480,6 +19481,10 @@ function ciniki_musicfestivals_main() {
             'visible':function() { return M.ciniki_musicfestivals_main.volunteers.sections._tabs.selected == 'volunteers' && M.ciniki_musicfestivals_main.volunteers.data.declined != null ? 'yes' : 'no'; },
             'noData':'No declined volunteers',
             'cellClasses':['multiline', 'multiline alignright'],
+            },
+        'volunteer_details':{'label':'Volunteer', 'type':'simplegrid', 'num_cols':2, 
+            'visible':function() { return M.ciniki_musicfestivals_main.volunteers.sections._tabs.selected == 'volunteers' && M.ciniki_musicfestivals_main.volunteers.volunteer_id > 0 ? 'yes' :'no'; },
+            'cellClasses':['label', ''],
             },
         'volunteer_shifts':{'label':'Shifts', 'type':'simplegrid', 'num_cols':5, 
             'visible':function() { return M.ciniki_musicfestivals_main.volunteers.sections._tabs.selected == 'volunteers' && M.ciniki_musicfestivals_main.volunteers.volunteer_id > 0 ? 'yes' :'no'; },
@@ -19709,6 +19714,18 @@ function ciniki_musicfestivals_main() {
         if( s == 'declined' ) {
             switch(j) {
                 case 0: return d.display_name;
+            }
+        }
+        if( s == 'volunteer_details' ) {
+            switch(j) {
+                case 0: return d.label;
+                case 1: 
+                    if( d.label == 'Email' ) {
+                        return M.linkEmail(d.value);
+                    } else if( d.label == 'Address' ) {
+                        return d.value.replace(/\n/g, '<br/>');
+                    }
+                    return d.value;
             }
         }
         if( s == 'volunteer_shifts' ) {
@@ -19955,16 +19972,31 @@ function ciniki_musicfestivals_main() {
             args['declined'] = 'yes';
             this.sections.volunteers.headerValues = ['Name', 'Phone', 'Email'];
             this.sections.volunteers.dataMaps = ['name', 'phones', 'emails'];
+            this.sections.volunteers.sortTypes = ['text', 'text', 'text'];
             this.sections.volunteers.cellClasses = ['', '', ''];
             this.sections.volunteers.num_cols = 3;
             if( M.modFlagOn('ciniki.musicfestivals', 0x010000) ) {
                 this.sections.volunteers.headerValues[this.sections.volunteers.num_cols] = 'Member';
                 this.sections.volunteers.dataMaps[this.sections.volunteers.num_cols] = 'member_name';
+                this.sections.volunteers.sortTypes[this.sections.volunteers.num_cols] = 'text';
+                this.sections.volunteers.cellClasses[this.sections.volunteers.num_cols] = '';
+                this.sections.volunteers.num_cols++;
+            }
+            if( M.modFlagOn('ciniki.customers', 0x100000) ) {
+                this.sections.volunteers.headerValues[this.sections.volunteers.num_cols] = 'CRC';
+                this.sections.volunteers.dataMaps[this.sections.volunteers.num_cols] = 'crc_checked';
+                this.sections.volunteers.sortTypes[this.sections.volunteers.num_cols] = 'text';
+                this.sections.volunteers.cellClasses[this.sections.volunteers.num_cols] = '';
+                this.sections.volunteers.num_cols++;
+                this.sections.volunteers.headerValues[this.sections.volunteers.num_cols] = 'Expiry';
+                this.sections.volunteers.dataMaps[this.sections.volunteers.num_cols] = 'crc_expiry_date';
+                this.sections.volunteers.sortTypes[this.sections.volunteers.num_cols] = 'date';
                 this.sections.volunteers.cellClasses[this.sections.volunteers.num_cols] = '';
                 this.sections.volunteers.num_cols++;
             }
             this.sections.volunteers.headerValues[this.sections.volunteers.num_cols] = 'Hours';
             this.sections.volunteers.dataMaps[this.sections.volunteers.num_cols] = 'total_hours_text';
+            this.sections.volunteers.sortTypes[this.sections.volunteers.num_cols] = 'number';
             this.sections.volunteers.cellClasses[this.sections.volunteers.num_cols] = 'alignright';
             this.sections.volunteers.num_cols++;
             this.size = 'xlarge';

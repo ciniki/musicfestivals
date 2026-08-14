@@ -42,7 +42,7 @@ function ciniki_musicfestivals_wng_accountVolunteerProcess(&$ciniki, $tnid, &$re
         'festival_id' => $festival['id'],
         'customer_id' => $request['session']['customer']['id'],
         'assignments' => 'upcoming',
-        'contact' => 'yes',
+//        'contact' => 'yes',
         ]);
     if( $rc['stat'] == 'noexist' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountVolunteerProfileProcess');

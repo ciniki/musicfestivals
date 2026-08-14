@@ -210,7 +210,7 @@ function ciniki_musicfestivals_volunteerLoad($ciniki, $tnid, $args) {
     // Check if contact info should be loaded
     //
     if( isset($args['contact']) && $args['contact'] == 'yes' ) {
-/*        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
         $rc = ciniki_customers_hooks_customerDetails2($ciniki, $tnid, [
             'customer_id' => $volunteer['customer_id'],
             'addresses' => 'yes',
@@ -221,6 +221,7 @@ function ciniki_musicfestivals_volunteerLoad($ciniki, $tnid, $args) {
             return $rc;
         }
         $volunteer['customer'] = $rc['customer'];
+        $volunteer['details'] = $rc['details'];
         if( !isset($volunteer['customer']['phones']) ) {
             $volunteer['customer']['phones'] = array();
         }
@@ -229,7 +230,7 @@ function ciniki_musicfestivals_volunteerLoad($ciniki, $tnid, $args) {
         }
         if( !isset($volunteer['customer']['addresses']) ) {
             $volunteer['customer']['addresses'] = array();
-        } */
+        } 
     }
 
     return array('stat'=>'ok', 'volunteer'=>$volunteer);

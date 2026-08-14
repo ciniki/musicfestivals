@@ -31,7 +31,7 @@ function ciniki_musicfestivals_competitorAdd(&$ciniki) {
         'flags'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Options'),
         'organization'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Organization'),
         'conductor'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Conductor'),
-        'num_people'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Number of People'),
+        'num_people'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Number of Participants'),
         'parent'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Parent'),
         'address'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Address'),
         'city'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'City'),

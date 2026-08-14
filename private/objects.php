@@ -316,7 +316,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'flags'=>array('name'=>'Options', 'default'=>'0'),
             'organization'=>array('name'=>'Organization', 'default'=>''),
             'conductor'=>array('name'=>'Conductor', 'default'=>''),
-            'num_people'=>array('name'=>'Number of People', 'default'=>'1'),
+            'num_people'=>array('name'=>'Number of Participants', 'default'=>'1'),
             'parent'=>array('name'=>'Parent', 'default'=>''),
             'address'=>array('name'=>'Address', 'default'=>''),
             'city'=>array('name'=>'City', 'default'=>''),
