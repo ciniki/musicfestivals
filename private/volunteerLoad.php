@@ -216,6 +216,7 @@ function ciniki_musicfestivals_volunteerLoad($ciniki, $tnid, $args) {
             'addresses' => 'yes',
             'phones' => 'yes',
             'emails' => 'yes',
+            'crc' => 'yes',
             ]);
         if( $rc['stat'] != 'ok' ) {
             return $rc;
