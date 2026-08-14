@@ -116,6 +116,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         . "CONCAT_WS(' - ', sections.name, classes.code, classes.name) AS sectionclassname, "
         . "classes.flags AS class_flags, "
         . "classes.feeflags, "
+        . "classes.questionflags, "
         . "classes.titleflags, "
         . "classes.min_competitors, "
         . "classes.max_competitors, "
@@ -156,7 +157,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             ),
         array('container'=>'classes', 'fname'=>'class_id', 
             'fields'=>array('id'=>'class_id', 'uuid'=>'class_uuid', 'category_name', 'code'=>'class_code', 
-                'name'=>'class_name', 'sectionclassname', 'flags'=>'class_flags', 'feeflags', 'titleflags',
+                'name'=>'class_name', 'sectionclassname', 'flags'=>'class_flags', 'feeflags', 'questionflags', 'titleflags',
                     'min_competitors', 'max_competitors', 
                     'min_titles', 'max_titles', 
                     'earlybird_fee', 'fee', 
@@ -177,13 +178,14 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
 //    $classes_3c = array();  // Class id's with 3 competitors
 //    $classes_4c = array();  // Class id's with 4 competitors
 //    $classes_5c = array();  // Class id's with 5 competitors
-    $js_classes = array();  // Class array that will be in javascript: flags, min_titles, max_titles
-    $js_sections = array();  // Class array that will be in javascript: flags, min_titles, max_titles
-    $live_prices = array();
-    $plus_prices = array();
-    $virtual_prices = array();
+    $js_classes = [];  // Class array that will be in javascript: flags, min_titles, max_titles
+    $js_sections = [];  // Class array that will be in javascript: flags, min_titles, max_titles
+    $live_prices = [];
+    $plus_prices = [];
+    $virtual_prices = [];
     $max_sr_times = 0;
-    $virtual_only = array();    // Used when virtual option but not virtual pricing
+    $virtual_only = [];    // Used when virtual option but not virtual pricing
+    $questions = 0;
     $now = new DateTime('now', new DateTimezone('UTC'));
     foreach($sections as $sid => $section) {
         // Set default to current festival
@@ -296,6 +298,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 $js_classes[$cid] = array(
                     'f' => $section_class['flags'],
                     'ff' => $section_class['feeflags'],
+                    'qf' => $section_class['questionflags'],
                     'tf' => $section_class['titleflags'],
                     'mic' => $section_class['min_competitors'],
                     'mac' => $section_class['max_competitors'],
@@ -309,6 +312,10 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                         $js_classes[$cid]['opt'] = json_decode($section_class['options'], true);
                     }
                 }
+                if( $section_class['questionflags'] > 0 ) {
+                    $questions |= $section_class['questionflags'];
+                }
+
                 //
                 // Check syllabus class name format
                 //
@@ -1510,32 +1517,93 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     }
 
     //
+    // Questions
+    //
+    if( $questions > 0 ) {
+        $fields['questions_line'] = [
+            'id' => 'questions_line',
+            'ftype' => 'line',
+            'class' => (isset($selected_class['questionflags']) && ($selected_class['questionflags']&0x07) > 0 ? '' : 'hidden'),
+            ];
+        if( ($questions&0x01) == 0x01 ) {
+            $fields['questionflags1'] = [
+                'id' => 'questionflags1',
+                'ftype' => 'select',
+                'class' => ($selected_class['questionflags']&0x01) == 0x01 ? '' : 'hidden',
+                'label' => 'Do you want to be considered for Provincials?',
+                'value' => '0',
+                'blank' => 'no',
+                'options' => [
+                    ['id'=>0, 'name'=>'Yes, I want this registration to be considered for Provincials'],
+                    ['id'=>1, 'name'=>'No, do not consider this registration for Provincials'],
+                    ],
+                ];
+        }
+        if( ($questions&0x02) == 0x02 ) {
+            $fields['questionflags2'] = [
+                'id' => 'questionflags2',
+                'ftype' => 'select',
+                'class' => ($selected_class['questionflags']&0x02) == 0x02 ? '' : 'hidden',
+                'label' => 'Do you want to be considered for Music Fest?',
+                'value' => '0',
+                'blank' => 'no',
+                'options' => [
+                    ['id'=>0, 'name'=>'Yes, I want this registration to be considered for Music Fest'],
+                    ['id'=>1, 'name'=>'No, do not consider this registration for Music Fest'],
+                    ],
+                ];
+        }
+        if( ($questions&0x04) == 0x04 ) {
+            $fields['questionflags3'] = [
+                'id' => 'questionflags3',
+                'ftype' => 'select',
+                'class' => ($selected_class['questionflags']&0x04) == 0x04 ? '' : 'hidden',
+                'label' => 'Do you want to be considered for Can West?',
+                'value' => '0',
+                'blank' => 'no',
+                'options' => [
+                    ['id'=>0, 'name'=>'Yes, I want this registration to be considered for Can West'],
+                    ['id'=>1, 'name'=>'No, do not consider this registration for Can West'],
+                    ],
+                ];
+        }
+        for($i = 1; $i <= 3; $i++) {
+            if( isset($_POST["f-questionflags{$i}"]) ) {
+                $fields["questionflags{$i}"]['value'] = $_POST["f-questionflags{$i}"];
+            } elseif( isset($registration['flags']) && ($registration['flags']&pow(2,$i+15)) > 0 ) {
+                $fields["questionflags{$i}"]['value'] = '1';
+            }
+        }
+    }
+
+
+    //
     // Display the scheduling requests options
     //
     if( isset($festival['registration-scheduling-requests']) && $festival['registration-scheduling-requests'] == 'yes' ) {
-        $fields['sr_line'] = array(
+        $fields['sr_line'] = [
             'id' => 'sr_line',
             'ftype' => 'line',
             'class' => 'hidden',
-            );
+            ];
     
         //
         // Add intro field
         //
-        $fields['sr_intro'] = array(
+        $fields['sr_intro'] = [
             'id' => 'sr_intro',
             'ftype' => 'htmlcontent',
             'label' => isset($selected_section['scheduling_request_title']) ? $selected_section['scheduling_request_title'] : '',
             'size' => 'large',
             'class' => 'hidden',
             'content' => isset($selected_section['scheduling_request_intro']) ? $selected_section['scheduling_request_intro'] : '',
-            );
+            ];
 
         //
         // Add checkboxes fields
         //
         for($i = 0; $i < $max_sr_times; $i++) {
-            $fields["sr_time_{$i}"] = array(
+            $fields["sr_time_{$i}"] = [
                 'id' => "sr_time_{$i}",
                 'label' => isset($js_sections[$selected_section['id']]['srt'][$i]) ? $js_sections[$selected_section['id']]['srt'][$i] : '',
                 'ftype' => 'checkbox',
@@ -1543,7 +1611,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 'class' => 'hidden',
                 'value' => '',
 //                'value' => (isset($_POST['f-sr_preferred']) ? trim($_POST['f-sr_preferred']) : (isset($registration['sr_preferred']) ? $registration['sr_preferred'] :'')),
-                );
+                ];
         }
 
         //
@@ -2084,8 +2152,19 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                             . "}"
                         . "}"
                     . "}"
-                . "}" // End of processing titles
-            . "}"
+                . "}"; // End of processing titles
+    if( $questions > 0 ) {
+        $js .= "C.aC(C.gE('f-questions_line'),'hidden');"
+            . "for(var i=1;i<=3;i++){"
+                . "if((classes[c].qf&(1<<(i-1)))>0){"
+                    . "C.rC(C.gE('f-questionflags'+i).parentNode,'hidden');"
+                    . "C.rC(C.gE('f-questions_line'),'hidden');"
+                . "}else{"
+                    . "C.aC(C.gE('f-questionflags'+i).parentNode,'hidden');"
+                . "}"
+            . "}";
+    }
+    $js .= "}"
         . "};"
         . "function competitorSelected(c) {"
             . "var t=C.gE('f-competitor'+c+'_id').value;"

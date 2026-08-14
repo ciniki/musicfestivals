@@ -66,6 +66,17 @@
 #                           0x40 -      ** saved for possible future fee type **
 #                           0x80 -      ** saved for possible future fee type **
 #
+# questionflags:        The flags for questions to be asked
+#
+#                           0x01 - Enable Question: Do you want to be considered for Provincials
+#                           0x02 - Enable Question: Do you want to be considered for Music Fest (Canada)
+#                           0x04 - Enable Question: Do you want to be considered for Can West (Canada)
+#                           0x08 - 
+#                           0x10 - 
+#                           0x20 - 
+#                           0x40 - 
+#                           0x80 - 
+#
 # titleflags:           The options for titles. Several of the flags will be moved from flags
 #                       field in the future.
 #
@@ -164,6 +175,7 @@ create table ciniki_musicfestival_classes (
     sequence tinyint unsigned not null,
     flags int unsigned not null,
     feeflags int unsigned not null,
+    questionflags int unsigned not null,
     titleflags int unsigned not null,
     earlybird_fee decimal(19,6) not null,
     fee decimal(19,6) not null,
@@ -191,4 +203,4 @@ create table ciniki_musicfestival_classes (
     index (festival_id, category_id, tnid),
     index keywords (keywords),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.20';
+) ENGINE='InnoDB', COMMENT='v1.21';

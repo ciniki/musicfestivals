@@ -1145,6 +1145,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
     }
     $strsql .= "classes.flags, "
         . "classes.feeflags, "
+        . "classes.questionflags, "
         . "classes.titleflags, "
         . "classes.min_titles, "
         . "classes.max_titles, "
@@ -1172,7 +1173,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         . "";
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'classes', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'flags', 'feeflags', 'titleflags', 'min_titles', 'max_titles', 
+            'fields'=>array('id', 'name', 'flags', 'feeflags', 'questionflags', 'titleflags', 'min_titles', 'max_titles', 
                 'min_competitors', 'max_competitors',
                 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
                 'provincials_code',

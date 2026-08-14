@@ -70,6 +70,14 @@
 #                           0x2000 - Title 6 use backtrack instead of accompanist
 #                           0x4000 - Title 7 use backtrack instead of accompanist
 #                           0x8000 - Title 8 use backtrack instead of accompanist
+#                           0x010000 - Do not want to be considered for provincials
+#                           0x020000 - Do not want to be considered for Music Fest (Canada)
+#                           0x040000 - Do not want to be considered for Can West (Canada)
+#                           0x080000 - 
+#                           0x100000 - 
+#                           0x200000 - 
+#                           0x400000 - 
+#                           0x800000 - 
 #
 # invoice_id:           The ID of the invoice in ciniki.sapos if paid online.
 #
@@ -184,7 +192,7 @@ create table ciniki_musicfestival_registrations (
     member_id int not null,
     rtype tinyint unsigned not null,
     status tinyint unsigned not null,
-    flags smallint unsigned not null,
+    flags int unsigned not null,
     invoice_id int not null,
     display_name varchar(250) not null,
     public_name varchar(250) not null,
@@ -332,4 +340,4 @@ create table ciniki_musicfestival_registrations (
     index (timeslot_id),
     index timeslots (festival_id, timeslot_id, finals_timeslot_id, tnid),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.33';
+) ENGINE='InnoDB', COMMENT='v1.34';

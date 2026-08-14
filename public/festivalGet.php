@@ -566,6 +566,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "classes.sequence, "
                 . "classes.flags, "
                 . "classes.feeflags, "
+                . "IF((classes.questionflags&0x01)=0x01, 'yes', '') AS question_provincials, "
+                . "IF((classes.questionflags&0x02)=0x02, 'yes', '') AS question_musicfest, "
+                . "IF((classes.questionflags&0x04)=0x04, 'yes', '') AS question_canwest, "
                 . "classes.titleflags, "
                 . "classes.earlybird_fee, "
                 . "classes.fee, "
@@ -668,6 +671,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     'fields'=>array('id', 'festival_id', 'category_id', 'section_name', 'groupname', 'category_name', 
                         'code', 'name', 'permalink', 'cert_name', 'sequence', 'flags', 'feeflags', 'titleflags',
                         'earlybird_fee', 'fee', 'virtual_fee', 'plus_fee', 'earlybird_plus_fee',
+                        'question_provincials', 'question_musicfest', 'question_canwest',
                         'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 
                         'synopsis', 'provincials_code', 'provincials_class_name', 
                         'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds', 'levels', 'accolades',

@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_registrations MODIFY COLUMN flags int not null;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.34';

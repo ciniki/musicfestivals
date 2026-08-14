@@ -244,6 +244,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'sequence'=>array('name'=>'Order', 'default'=>'1'),
             'flags'=>array('name'=>'Options', 'default'=>'0'),
             'feeflags'=>array('name'=>'Fee Options', 'default'=>'0'),
+            'questionflags'=>array('name'=>'Question Options', 'default'=>'0'),
             'titleflags'=>array('name'=>'Title Options', 'default'=>'0'),
             'earlybird_fee'=>array('name'=>'Earlybird Fee', 'type'=>'currency', 'default'=>'0'),
             'fee'=>array('name'=>'Fee', 'type'=>'currency', 'default'=>'0'),

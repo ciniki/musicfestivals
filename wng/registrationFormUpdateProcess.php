@@ -560,6 +560,16 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
                 }
             }
         }
+    
+        //
+        // Check if questions answered
+        //
+        for($i = 1; $i <= 3; $i++) {
+            if( isset($_POST["f-questionflags{$i}"]) && $_POST["f-questionflags{$i}"] == '1' ) {
+                $registration['flags'] |= pow(2, ($i+15));
+            }
+        }
+
         //
         // Add the registration
         //
@@ -777,10 +787,21 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
                 // Do nothing
             }
             elseif( preg_match("/backtrack_option([0-9])/", $field['id'], $m) && ($selected_class['flags']&0x400000) == 0x400000 ) {
-                $bit = pow(2, ($m[1]+7));
+                $bit = pow(2, $m[1]+7);
                 if( $field['value'] == 'on' || (isset($_POST["f-{$field['id']}"]) && $_POST["f-{$field['id']}"] == 'on') ) {
                     $registration_flags |= $bit;
                 } else {
+                    $registration_flags &= ~$bit;
+                }
+            }
+            elseif( preg_match("/questionflags([0-9+])/", $field['id'], $m) && ($selected_class['questionflags']&0x07) > 0 ) {
+                $bit = pow(2, $m[1]+15);
+                error_log('check: ' . $bit);
+                if( $field['value'] == 1 ) {
+                    error_log('NO');
+                    $registration_flags |= $bit;
+                } else {
+                    error_log('Yes');
                     $registration_flags &= ~$bit;
                 }
             }
@@ -799,6 +820,8 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
                 $registration['fee'] = $new_fee;
             }
         }
+            error_log('reg flags: ' . $registration['flags']);
+            error_log('update flags: ' . $registration_flags);
         if( $registration_flags != $registration['flags'] ) {
             $update_args['flags'] = $registration_flags;
             $registration['flags'] = $registration['flags'];

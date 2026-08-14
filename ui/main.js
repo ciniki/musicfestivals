@@ -640,6 +640,7 @@ function ciniki_musicfestivals_main() {
                     'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x1000); },
                     'fn':'M.ciniki_musicfestivals_main.festival.switchTab(null,\'levels\');',
                     },
+                'questions':{'label':'Questions', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(null,\'questions\');'},
                 'marking':{'label':'Marking', 'fn':'M.ciniki_musicfestivals_main.festival.switchTab(null,\'marking\');'},
                 'accolades':{'label':'Accolades', 
                     'visible':function() { return M.modFlagSet('ciniki.musicfestivals', 0x40); },
@@ -5120,6 +5121,13 @@ function ciniki_musicfestivals_main() {
             this.sections.classes.sortTypes = ['text', 'text', 'text', 'text'];
             this.sections.classes.num_cols = 4;
         }
+        else if( this.sections._stabs.selected == 'questions' ) {
+            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Provincials', 'Music Fest', 'Can West'];
+            this.sections.classes.cellClasses = ['', '', '', '', '', ''];
+            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'question_provincials', 'question_musicfest', 'question_canwest'];
+            this.sections.classes.sortTypes = ['text', 'text', 'text', 'text', 'text', 'text'];
+            this.sections.classes.num_cols = 6;
+        }
         else if( this.sections._stabs.selected == 'marking' ) {
             this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Cert', 'Mark', 'Placement', 'Level', 'Provincials'];
             this.sections.classes.cellClasses = ['', '', '', '', '', '', ''];
@@ -9221,7 +9229,7 @@ function ciniki_musicfestivals_main() {
                 },
             'provincials_code':{'label':'Provincials Code', 'type':'text'},
             }},
-        'scheduling':{'label':'Scheduling Options', 'aside':'yes', 'fields':{
+        'scheduling':{'label':'Scheduling Options', 'fields':{
             'flags19':{'label':'Schedule Time', 'type':'flagspiece', 'mask':0x0C0000, 'field':'flags', 'join':'yes', 'toggle':'yes',
                 'flags':{'0':{'name':'None'}, '19':{'name':'Perf+Adj'}, '20':{'name':'Total'}},
                 'onchange':'M.ciniki_musicfestivals_main.class.updateForm();',
@@ -9229,6 +9237,11 @@ function ciniki_musicfestivals_main() {
             'schedule_seconds':{'label':'Schedule Time/Registration', 'type':'minsec', 'visible':'no'},
             'schedule_at_seconds':{'label':'Talk Time/Class', 'type':'minsec', 'visible':'no'},
             'schedule_ata_seconds':{'label':'Additional Talk Time/Reg', 'type':'minsec', 'visible':'no'},
+            }},
+        'questions':{'label':'Questions', 'fields':{
+            'questionflags1':{'label':'Do you want to be considered for Provincials?', 'type':'flagtoggle', 'bit':0x01, 'default':'off', 'field':'questionflags'},
+            'questionflags2':{'label':'Do you want to be considered for Music Fest?', 'type':'flagtoggle', 'bit':0x02, 'default':'off', 'field':'questionflags'},
+            'questionflags3':{'label':'Do you want to be considered for Can West?', 'type':'flagtoggle', 'bit':0x04, 'default':'off', 'field':'questionflags'},
             }},
         '_fixed_title1':{'label':'Fixed Title #1', 
             'visible':'hidden',
@@ -10287,6 +10300,15 @@ function ciniki_musicfestivals_main() {
         '_results':{'label':'Results', 'panelcolumn':1,
             'visible':function() { return M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'results' ? 'yes' : 'hidden'; },
             'fields':{
+                'flags9':{'label':'Consider for Provincials', 'type':'flagtoggle', 'bit':0x010000, 'field':'flags', 'reverse':'yes',
+                    'visible':function() { return (M.ciniki_musicfestivals_main.registration.selected_class != null && M.ciniki_musicfestivals_main.registration.selected_class.questionflags&0x01) == 0x01 ? 'yes' : 'no'; },
+                    },
+                'flags10':{'label':'Consider for Music Fest', 'type':'flagtoggle', 'bit':0x020000, 'field':'flags', 'reverse':'yes',
+                    'visible':function() { return (M.ciniki_musicfestivals_main.registration.selected_class != null && M.ciniki_musicfestivals_main.registration.selected_class.questionflags&0x02) == 0x02 ? 'yes' : 'no'; },
+                    },
+                'flags11':{'label':'Consider for Can West', 'type':'flagtoggle', 'bit':0x040000, 'field':'flags', 'reverse':'yes',
+                    'visible':function() { return (M.ciniki_musicfestivals_main.registration.selected_class != null && M.ciniki_musicfestivals_main.registration.selected_class.questionflags&0x04) == 0x04 ? 'yes' : 'no'; },
+                    },
                 'mark':{'label':'Mark', 'type':'text', 'visible':'yes', 'size':'small', 
                     'onkeyup':'M.ciniki_musicfestivals_main.registration.updatePlacement',
                     },
@@ -10752,6 +10774,9 @@ function ciniki_musicfestivals_main() {
                 this.sections._results.fields.mark.visible = (c.flags&0x0100) == 0x0100 ? 'yes' : 'no';
                 this.sections._results.fields.placement.visible = (c.flags&0x0200) == 0x0200 ? 'yes' : 'no';
                 this.sections._results.fields.level.visible = (c.flags&0x0400) == 0x0400 ? 'yes' : 'no';
+                this.showHideFormField('_results', 'flags9');
+                this.showHideFormField('_results', 'flags10');
+                this.showHideFormField('_results', 'flags11');
                 this.showHideFormField('_results', 'mark');
                 this.showHideFormField('_results', 'placement');
                 this.showHideFormField('_results', 'level');
