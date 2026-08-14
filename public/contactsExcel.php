@@ -245,7 +245,7 @@ function ciniki_musicfestivals_contactsExcel($ciniki) {
                 $accompanists[$reg['accompanist_customer_id']] = $cust;
             }
         }
-        if( $reg['billing_customer_id'] != $reg['teacher_customer_id'] && $reg['custtype'] == 30 ) {
+        if( $reg['billing_customer_id'] != $reg['teacher_customer_id'] && $reg['custtype'] == 10 ) {
             $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], [
                 'customer_id' => $reg['billing_customer_id'], 
                 'phones'=>'yes', 
