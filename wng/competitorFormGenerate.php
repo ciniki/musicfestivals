@@ -117,15 +117,17 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
                 $fields['organization']['label'] = $festival['competitor-group-organization-label'];
             }
         }
-        $fields['conductor'] = array(
-            'id' => 'conductor',
-            'label' => 'Conductor',
-            'ftype' => 'text',
-            'required' => 'no',
-            'size' => 'small',
-            'class' => '',
-            'value' => (isset($_POST['f-conductor']) ? trim($_POST['f-conductor']) : (isset($competitor['conductor']) ? $competitor['conductor'] : '')),
-            );
+        if( !isset($festival['competitor-group-conductor']) || $festival['competitor-group-conductor'] == 'optional' || $festival['competitor-group-conductor'] == 'required' ) {
+            $fields['conductor'] = array(
+                'id' => 'conductor',
+                'label' => 'Conductor',
+                'ftype' => 'text',
+                'required' => (isset($festival['competitor-group-conductor']) && $festival['competitor-group-conductor'] == 'required' ? 'yes' : 'no'),
+                'size' => 'small',
+                'class' => '',
+                'value' => (isset($_POST['f-conductor']) ? trim($_POST['f-conductor']) : (isset($competitor['conductor']) ? $competitor['conductor'] : '')),
+                );
+        }
         $fields['num_people'] = array(
             'id' => 'num_people',
             'label' => 'Number of Participants',
@@ -265,12 +267,17 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
     $fields['parent'] = array(
         'id' => 'parent',
         'label' => ($ctype == 50 ? 'Contact Person' : 'Parent'),
-        'ftype' => ($customer_type == 30 ? 'hidden' : 'text'),
-        'required' => ($customer_type == 30 ? 'no' : 'yes'),
+//        'ftype' => ($customer_type == 30 ? 'hidden' : 'text'),
+        'ftype' => 'text',
+//        'required' => ($customer_type == 30 ? 'no' : 'yes'),
+        'required' => 'yes',
         'size' => 'large',
         'class' => '',
         'value' => (isset($_POST['f-parent']) ? trim($_POST['f-parent']) : (isset($competitor['parent']) ? $competitor['parent'] :'')),
         );
+    if( $ctype == 50 && isset($festival['competitor-group-parent-label']) && $festival['competitor-group-parent-label'] != '' ) {
+        $fields['parent']['label'] = $festival['competitor-group-parent-label'];
+    }
     $fields['address'] = array(
         'id' => 'address',
         'label' => 'Address',

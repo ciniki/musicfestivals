@@ -6718,6 +6718,9 @@ function ciniki_musicfestivals_main() {
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
                 'competitor-group-organization-label':{'label':'Organization Label', 'type':'text'},
+                'competitor-group-conductor':{'label':'Conductor', 'type':'toggle', 'default':'optional', 'toggles':{
+                    'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
+                    }},
                 'competitor-group-age':{'label':'Age', 'type':'toggle', 'default':'required', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
@@ -6729,6 +6732,7 @@ function ciniki_musicfestivals_main() {
                 'competitor-group-instrument':{'label':'Instrument', 'type':'toggle', 'default':'hidden', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
+                'competitor-group-parent-label':{'label':'Contact Person Label', 'type':'text'},
                 'competitor-group-email-confirm':{'label':'Email Confirm', 'type':'toggle', 'default':'no', 'separator':'no', 'toggles':{
                     'no':'No', 'yes':'Yes',
                     }},

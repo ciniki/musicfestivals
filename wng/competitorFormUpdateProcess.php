@@ -102,9 +102,12 @@ function ciniki_musicfestivals_wng_competitorFormUpdateProcess(&$ciniki, $tnid, 
             }
         }
         elseif( isset($field['id']) && $field['id'] == 'etransfer_email' ) {
-            if( $field['value'] != '' && !preg_match("/^[^@ ]+@[A-Za-z0-9\.\-]+\.[a-zA-Z]+$/", $field['value']) ) {
+            if( $field['value'] != '' 
+                && !preg_match("/^[^@ ]+@[A-Za-z0-9\.\-]+\.[a-zA-Z]+$/", $field['value']) 
+                && !preg_match("/^https?:\/\/[a-zA-Z0-9\.]+\.[a-zA-Z]+\/.*$/", $field['value']) 
+                ) {
                 $errors[] = array(
-                    'msg' => 'Invalid etransfer email address format.',
+                    'msg' => 'Invalid ' . $field['label'] . ' format.',
                     );
             }
             elseif( (($fields['ctype']['value'] == 50
