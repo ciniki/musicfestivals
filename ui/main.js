@@ -19471,7 +19471,7 @@ function ciniki_musicfestivals_main() {
                 return '';
                 },
             },
-        'volunteers':{'label':'Volunteers', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 
+        'volunteers':{'label':'Volunteers', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 'selectable':'yes',
             'headerValues':[],
             'sortable':'yes',
             'dataMaps':['name', 'total_hours_text'],
@@ -19887,11 +19887,20 @@ function ciniki_musicfestivals_main() {
     }
     this.volunteers.emailVolunteers = function() {
         var customers = [];
-        for(var i in this.data.volunteers) {
-            customers[i] = {
-                'id':this.data.volunteers[i].customer_id,
-                'name':this.data.volunteers[i].customer_name,
-                };
+        if( this.sections.volunteers.selected.length > 0 ) {
+            for(var i of this.sections.volunteers.selected) {
+                customers[i] = {
+                    'id':this.data.volunteers[i].customer_id,
+                    'name':this.data.volunteers[i].customer_name,
+                    };
+            }
+        } else {
+            for(var i in this.data.volunteers) {
+                customers[i] = {
+                    'id':this.data.volunteers[i].customer_id,
+                    'name':this.data.volunteers[i].customer_name,
+                    };
+            }
         }
         M.startApp('ciniki.mail.omessage',
             null,
