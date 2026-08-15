@@ -2083,7 +2083,11 @@ function ciniki_musicfestivals_main() {
                     },
                 'excel':{
                     'label':'Download Excel',
-                    'fn':'M.ciniki_musicfestivals_main.festival.adjudicatorsExcel();',
+                    'fn':'M.ciniki_musicfestivals_main.festival.adjudicatorsExcel("");',
+                    },
+                'contacts':{
+                    'label':'Download Contacts Excel',
+                    'fn':'M.ciniki_musicfestivals_main.festival.adjudicatorsExcel("contacts");',
                     },
                 },
             },
@@ -2735,9 +2739,11 @@ function ciniki_musicfestivals_main() {
             };
         M.api.openPDF('ciniki.musicfestivals.scheduleResultsExcel',args);
     }
-    this.festival.adjudicatorsExcel = function(s) {
+    this.festival.adjudicatorsExcel = function(f) {
+        this.popupMenuClose('adjudicators');
         var args = {'tnid':M.curTenantID,
             'festival_id':this.festival_id,
+            'layout':f,
             };
         M.api.openPDF('ciniki.musicfestivals.adjudicatorsExcel',args);
     }
