@@ -374,10 +374,10 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
                     if( $phone['phone_label'] == 'Cell' ) {
                         $fields['phone_cell']['value'] = $phone['phone_number'];
                     }
-                    if( $phone['phone_label'] == 'Home' ) {
+                    if( $phone['phone_label'] == 'Home' && isset($fields['phone_cell']) ) {
                         $fields['phone_home']['value'] = $phone['phone_number'];
                     }
-                    if( $phone['phone_label'] == 'Work' ) {
+                    if( $phone['phone_label'] == 'Work' && isset($fields['phone_work']) ) {
                         $fields['phone_work']['value'] = $phone['phone_number'];
                     }
                 }
