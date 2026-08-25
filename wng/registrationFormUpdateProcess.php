@@ -796,7 +796,6 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             }
             elseif( preg_match("/questionflags([0-9+])/", $field['id'], $m) && ($selected_class['questionflags']&0x07) > 0 ) {
                 $bit = pow(2, $m[1]+15);
-                error_log('check: ' . $bit);
                 if( $field['value'] == 1 ) {
                     error_log('NO');
                     $registration_flags |= $bit;
@@ -820,8 +819,6 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
                 $registration['fee'] = $new_fee;
             }
         }
-            error_log('reg flags: ' . $registration['flags']);
-            error_log('update flags: ' . $registration_flags);
         if( $registration_flags != $registration['flags'] ) {
             $update_args['flags'] = $registration_flags;
             $registration['flags'] = $registration['flags'];
