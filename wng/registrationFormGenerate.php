@@ -2253,7 +2253,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         $js .= "function searchTitles(e,i){"
             // Create the element to show the search results
             . "var sr=C.gE('f-title'+i+'_search');"
-            . "if(sr==null){sr=C.aE('div','f-title'+i+'_search','search-results','Testing');C.gE('f-title'+i).parentNode.appendChild(sr);}"
+            . "if(sr==null){sr=C.aE('div','f-title'+i+'_search','search-results','<table><tbody><tr><td>Loading...</td></tr></tbody></table>');C.gE('f-title'+i).parentNode.appendChild(sr);}"
             . "lS++;"       // iteration number live search
             . "var cS=lS;"  // keep track of current search iteration
             . "var v=C.gE('f-title'+i).value;"
