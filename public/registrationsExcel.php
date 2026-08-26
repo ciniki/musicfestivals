@@ -128,7 +128,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.928', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.805', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
     }
     $competitors = isset($rc['competitors']) ? $rc['competitors'] : array();
 

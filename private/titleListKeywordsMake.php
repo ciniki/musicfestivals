@@ -22,7 +22,7 @@ function ciniki_musicfestivals_titleListKeywordsMake(&$ciniki, $tnid, $args) {
     } else {
         if( !isset($args['title']) ) {
             if( isset($args['title_id']) || isset($args['title']['id']) ) {
-                $strsql = "SELECT id, title, movements, composer, source_type, keywords "
+                $strsql = "SELECT id, title, opus, movements, musical, composer, arranger, source_type, keywords "
                     . "FROM ciniki_musicfestivals_titles ";
                 if( isset($args['title_id']) ) {
                     $strsql .= "WHERE id = '" . ciniki_core_dbQuote($ciniki, $args['title_id']) . "' ";
@@ -48,14 +48,39 @@ function ciniki_musicfestivals_titleListKeywordsMake(&$ciniki, $tnid, $args) {
         //
         // Build the new keywords
         //
-        $keywords = strtolower($title['title'] . ' ' . $title['movements'] . ' ' . $title['composer'] . ' ' . $title['source_type']);
+        $keywords = '';
+        foreach(['title', 'opus', 'movements', 'musical', 'composer', 'arranger', 'source_type'] as $field) {
+            if( isset($title[$field]) ) {
+                $keywords .= ($keywords != '' ? ' ' : '') . $title[$field];
+            }
+        }
+        $keywords = strtolower($keywords);
     }
 
     //
-    // Generate the new keywords string
+    // Generate a new keywords string. This must be custom and not using the core/makeKeywords. 
+    // These keywords should include and, I, I'm , etc as they could easily be used in searching song titles
+    // 
+    $keywords = preg_replace('/[^a-zA-Z0-9\']/', ' ', $keywords);
+    $keywords = preg_replace('/\s\s/', ' ', $keywords);
+    $keywords = strtolower($keywords);
+    $words = explode(' ', $keywords);
+
     //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'makeKeywords');
-    $keywords = ciniki_core_makeKeywords($ciniki, $keywords, false);
+    // Remove 2 letter words, and common words
+    //
+    foreach($words as $wid => $word) {
+        if( strlen($word) > 2 && substr($word, -1) == 's' && substr($word, -2) != 'ss' ) {
+            $words[$wid] = rtrim($words[$wid], 's');
+        }
+    }
+
+    //
+    // Sort the words
+    //
+    sort($words);
+
+    $keywords = implode(' ', array_unique($words));
 
     //
     // Must have a space at the start which makes for small search sql

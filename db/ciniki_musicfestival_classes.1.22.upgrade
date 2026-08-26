@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN tlflags int unsigned NOT NULL AFTER titleflags;
+ALTER TABLE ciniki_musicfestival_classes COMMENT='v1.22';

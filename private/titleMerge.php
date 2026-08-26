@@ -48,7 +48,8 @@ function ciniki_musicfestivals_titleMerge(&$ciniki, $tnid, $registration, $i) {
         ) {
         $line .= ', ' . $registration["musical{$i}"];
     }
-    if( $registration["composer{$i}"] != ''
+    if( isset($registration["composer{$i}"]) 
+        && $registration["composer{$i}"] != ''
         && strtolower($registration["composer{$i}"]) != 'na'
         && strtolower($registration["composer{$i}"]) != 'tba'
         && strtolower($registration["composer{$i}"]) != 'tbd'
@@ -56,6 +57,7 @@ function ciniki_musicfestivals_titleMerge(&$ciniki, $tnid, $registration, $i) {
         && strtolower($registration["composer{$i}"]) != 'not applicable'
         && strtolower($registration["composer{$i}"]) != 'none'
         ) {
+        // Code also in apiClassTitleSearch
         if( preg_match("/^\s*[Bb][Yy]\s+/", $registration["composer{$i}"]) ) {
             $line .= ' ' . $registration["composer{$i}"];
         } elseif( preg_match("/^\s*[Aa][Rr][Rr]\.\s+/", $registration["composer{$i}"]) ) {    // arr. OR arranged
@@ -70,7 +72,8 @@ function ciniki_musicfestivals_titleMerge(&$ciniki, $tnid, $registration, $i) {
             $line .= ' by ' . $registration["composer{$i}"];
         }
     }
-    if( $registration["arranger{$i}"] != ''
+    if( isset($registration["arranger{$i}"]) 
+        && $registration["arranger{$i}"] != ''
         && strtolower($registration["arranger{$i}"]) != 'na'
         && strtolower($registration["arranger{$i}"]) != 'tba'
         && strtolower($registration["arranger{$i}"]) != 'tbd'

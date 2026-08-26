@@ -118,6 +118,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         . "classes.feeflags, "
         . "classes.questionflags, "
         . "classes.titleflags, "
+        . "classes.tlflags, "
         . "classes.min_competitors, "
         . "classes.max_competitors, "
         . "classes.min_titles, "
@@ -157,7 +158,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             ),
         array('container'=>'classes', 'fname'=>'class_id', 
             'fields'=>array('id'=>'class_id', 'uuid'=>'class_uuid', 'category_name', 'code'=>'class_code', 
-                'name'=>'class_name', 'sectionclassname', 'flags'=>'class_flags', 'feeflags', 'questionflags', 'titleflags',
+                'name'=>'class_name', 'sectionclassname', 'flags'=>'class_flags', 'feeflags', 'questionflags', 'titleflags', 'tlflags',
                     'min_competitors', 'max_competitors', 
                     'min_titles', 'max_titles', 
                     'earlybird_fee', 'fee', 
@@ -187,6 +188,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     $virtual_only = [];    // Used when virtual option but not virtual pricing
     $questions = 0;
     $now = new DateTime('now', new DateTimezone('UTC'));
+    $tlflags = 0;
     foreach($sections as $sid => $section) {
         // Set default to current festival
         $section_live = $festival['live'] == 'yes' ? 'yes' : 'no';
@@ -300,12 +302,16 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     'ff' => $section_class['feeflags'],
                     'qf' => $section_class['questionflags'],
                     'tf' => $section_class['titleflags'],
+                    'lf' => $section_class['tlflags'],
                     'mic' => $section_class['min_competitors'],
                     'mac' => $section_class['max_competitors'],
                     'mit' => $section_class['min_titles'],
                     'mat' => $section_class['max_titles'],
                     's' => $section_class['synopsis'],
                     );
+                if( $section_class['tlflags'] > 0 ) {   
+                    $tlflags |= $section_class['tlflags'];
+                }
                 if( ($section_class['flags']&0x10) == 0x10 ) {
                     $js_classes[$cid]['opt'] = [];
                     if( isset($section_class['options']) && $section_class['options'] != '' ) {
@@ -499,7 +505,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     if( isset($selected_class['options']) && $selected_class['options'] != '' ) {
         $selected_class['options'] = json_decode($selected_class['options'], true);
     }
-
 
     //
     // Setup the fields for the form
@@ -1198,6 +1203,12 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         if( isset($selected_class) && $i > $selected_class['max_titles'] ) {
             $fields["title{$i}"]['value'] = '';
         }
+        if( $tlflags > 0 ) {
+            $fields["title{$i}"]['onkeyup'] = "searchTitles(event,{$i});";
+            $fields["title{$i}"]['onfocus'] = "searchTitles(event,{$i});";
+            $fields["title{$i}"]['onblur'] = "hideTitles(event,{$i});";
+            $fields["title{$i}"]['autocomplete'] = "off";
+        }
 
         $fields["opus{$i}"] = array(
             'id' => "opus{$i}",
@@ -1779,6 +1790,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         }
     $js .= "var video=0;"
         . "var music=0;"
+        . "var lS=0;" // Live search increment counter
+        . "var lSD=null;" // Live search last data results
         . $js_prices
         . "function sectionSelected(){"
             . "var s=C.gE('f-section').value;"
@@ -2232,11 +2245,61 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 . "C.aC(C.gE('f-accompanist_phone').parentNode,'hidden');"
                 . "C.aC(C.gE('f-accompanist_email').parentNode,'hidden');"
             . "}"
-        . "}; "
+        . "};"
         . "function backtrackShow(i){"
             . "C.rC(C.gE('f-backtrack'+i).parentNode,'hidden');"
+        . "}";
+    if( $tlflags > 0 ) {
+        $js .= "function searchTitles(e,i){"
+            // Create the element to show the search results
+            . "var sr=C.gE('f-title'+i+'_search');"
+            . "if(sr==null){sr=C.aE('div','f-title'+i+'_search','search-results','Testing');C.gE('f-title'+i).parentNode.appendChild(sr);}"
+            . "lS++;"       // iteration number live search
+            . "var cS=lS;"  // keep track of current search iteration
+            . "var v=C.gE('f-title'+i).value;"
+            . "var sid=C.gE('f-section').value;"
+            . "var c=C.gE('f-section-'+sid+'-class').value;"
+            . "C.getBg('{$request['ssl_domain_base_url']}/cpi/ciniki/musicfestivals/classTitleSearch',{'class_id':c,'t':i,'s':v,'f':classes[c].f,'tf':classes[c].tf},function(rsp){"
+                // Display results if current search results are the most recent
+                . "if(cS==lS){"
+                    . "if(rsp.titles!=null&&rsp.titles.length>0){"
+                        . "lDS=rsp.titles;"
+                        . "C.rC(sr,'hidden');"
+                        . "var tb=C.aE('tbody');"
+                        . "for(var j in rsp.titles){"
+                            . "var tr=C.aE('tr','','clickable','','selectTitle(event,'+i+','+j+');');"
+                            . "var td=C.aE('td','','clickable',rsp.titles[j].fulltitle);"
+//                            . "td.setAttribute('onclick','selectTitle(event,'+j+');');"
+                            . "tr.appendChild(td);"
+                            . "tb.appendChild(tr);"
+                        . "}"
+                        . "var table=C.aE('table');"
+                        . "table.appendChild(tb);"
+                        . "sr.replaceChildren(table);"
+                    . "}else{"
+                        . "C.aC(sr,'hidden');"
+                        . "lDS=null;"
+                    . "}"
+                . "}"
+                . "});"
+        . "};"
+        . "function selectTitle(e,i,j){"
+            . "if(lDS!=null&&lDS[j]!=null){"
+                . "C.gE('f-title'+i).value=lDS[j].title;"
+                . "C.gE('f-opus'+i).value=lDS[j].opus;"
+                . "C.gE('f-movements'+i).value=lDS[j].movements;"
+                . "C.gE('f-musical'+i).value=lDS[j].musical;"
+                . "C.gE('f-composer'+i).value=lDS[j].composer;"
+                . "C.gE('f-arranger'+i).value=lDS[j].arranger;"
+                . "C.aC(C.gE('f-title'+i+'_search'),'hidden');"
+            . "}"
+        . "};"
+        . "function hideTitles(e,i){"
+            . "lS=0;"
+            . "setTimeout(()=>{C.aC(C.gE('f-title'+i+'_search'),'hidden');}, 250);"
         . "};"
         . "";
+    }
 
     $rsp = array('stat'=>'ok', 'fields'=>$fields, 'js'=>$js, 'sections'=>$sections);
     if( isset($selected_section) ) {

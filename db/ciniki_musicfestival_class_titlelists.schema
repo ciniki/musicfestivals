@@ -1,0 +1,38 @@
+#
+# Description
+# -----------
+# This table links approved title lists to 
+# This table allows lists to be linked to objects (section/category/class) in a syllabus.
+# The SSAM list can be linked to a section to appear as a button at the top.
+# This was designed to original store the information for Songs from the Screen and More
+# but may change and allow lists of RCM syllabus to be attached to classes for students to pick from.
+#
+# Fields
+# ------
+# id:                       The ID assigned to the record.
+# uuid:                     The Universal Unique ID.
+# tnid:                     The Tenant ID the record belongs to.
+#
+# class_id:                 The ID of the class the title list is attached to.
+# title_num:                The title number (1-8) the list is attached to.
+# list_id:                  The ID of the list attached to the class title.
+#
+# date_added:               The UTC date and time the record was added.
+# last_updated:             The UTC date and time the record was last update.
+#
+create table ciniki_musicfestival_class_titlelists (
+    id int not null auto_increment,
+    uuid char(36) not null,
+    tnid int not null,
+
+    class_id int not null,
+    title_num tinyint not null,
+    list_id int not null,
+
+    date_added datetime not null,
+    last_updated datetime not null,
+    primary key (id),
+    unique index (uuid),
+    unique index (class_id, title_num, list_id),
+    index sync (tnid, uuid, last_updated)
+) ENGINE='InnoDB', COMMENT='v1.01';

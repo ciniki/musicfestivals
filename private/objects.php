@@ -246,6 +246,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'feeflags'=>array('name'=>'Fee Options', 'default'=>'0'),
             'questionflags'=>array('name'=>'Question Options', 'default'=>'0'),
             'titleflags'=>array('name'=>'Title Options', 'default'=>'0'),
+            'tlflags'=>array('name'=>'Title Lists Options', 'default'=>'0'),
             'earlybird_fee'=>array('name'=>'Earlybird Fee', 'type'=>'currency', 'default'=>'0'),
             'fee'=>array('name'=>'Fee', 'type'=>'currency', 'default'=>'0'),
             'virtual_fee'=>array('name'=>'Virtual Fee', 'type'=>'currency', 'default'=>'0'),
@@ -1028,11 +1029,28 @@ function ciniki_musicfestivals_objects($ciniki) {
         'table' => 'ciniki_musicfestivals_titles',
         'fields' => array(
             'list_id' => array('name'=>'List', 'ref'=>'ciniki.musicfestivals.titlelist'),
+            'fulltitle' => array('name'=>'Full Title'),
             'title' => array('name'=>'Title'),
-            'movements' => array('name'=>'Movements/Musical', 'default'=>''),
+            'opus' => array('name'=>'Opus', 'default'=>''),
+            'movements' => array('name'=>'Movements', 'default'=>''),
+            'musical' => array('name'=>'Musical', 'default'=>''),
             'composer' => array('name'=>'Composer', 'default'=>''),
+            'arranger' => array('name'=>'Arranger', 'default'=>''),
             'source_type' => array('name'=>'Source Type', 'default'=>''),
             'keywords'=>array('name'=>'Keywords', 'default'=>''),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
+    $objects['classtitlelist'] = array(
+        'name' => 'Class Title List',
+        'sync' => 'yes',
+        'o_name' => 'list',
+        'o_container' => 'lists',
+        'table' => 'ciniki_musicfestival_class_titlelists',
+        'fields' => array(
+            'class_id' => array('name'=>'Class', 'ref'=>'ciniki.musicfestivals.'),
+            'title_num' => array('name'=>'Title Number'),
+            'list_id' => array('name'=>'List', 'ref'=>'ciniki.musicfestivals.'),
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );

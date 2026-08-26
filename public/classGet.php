@@ -116,6 +116,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
             'feeflags' => 0,
             'questionflags' => 0,
             'titleflags' => 0,
+            'tlflags' => 0,
             'earlybird_fee' => '',
             'fee' => '',
             'virtual_fee' => '',
@@ -171,6 +172,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
             . "ciniki_musicfestival_classes.feeflags, "
             . "ciniki_musicfestival_classes.questionflags, "
             . "ciniki_musicfestival_classes.titleflags, "
+            . "ciniki_musicfestival_classes.tlflags, "
             . "ciniki_musicfestival_classes.earlybird_fee, "
             . "ciniki_musicfestival_classes.fee, "
             . "ciniki_musicfestival_classes.virtual_fee, "
@@ -196,9 +198,9 @@ function ciniki_musicfestivals_classGet($ciniki) {
             . "";
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'classes', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'category_id', 'section_id', 'code', 'name', 'permalink', 
+                'fields'=>array('id', 'festival_id', 'category_id', 'section_id', 'code', 'name', 'permalink', 
                     'cert_name', 'icon_image_id',
-                    'sequence', 'flags', 'feeflags', 'questionflags', 'titleflags',
+                    'sequence', 'flags', 'feeflags', 'questionflags', 'titleflags', 'tlflags', 
                     'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 
                     'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 'provincials_code', 'synopsis',
                     'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds', 'options',
@@ -224,6 +226,40 @@ function ciniki_musicfestivals_classGet($ciniki) {
                     $class[$k] = $v;
                 }
             }
+        }
+        
+        //
+        // Check if approved title lists need to be loaded
+        //
+        if( ($class['tlflags']&0xFFFF) > 0 ) {
+            $strsql = "SELECT classlists.id, "
+                . "classlists.title_num, "
+                . "classlists.list_id, "
+                . "titlelists.name "
+                . "FROM ciniki_musicfestival_class_titlelists AS classlists "
+                . "LEFT JOIN ciniki_musicfestivals_titlelists AS titlelists ON ("
+                    . "classlists.list_id = titlelists.id "
+                    . "AND titlelists.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") " 
+                . "WHERE classlists.class_id = '" . ciniki_core_dbQuote($ciniki, $class['id']) . "' "
+                . "AND classlists.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "ORDER BY title_num, name "
+                . "";
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+            $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                array('container'=>'titlelists', 'fname'=>'title_num', 'fields'=>array('title_num')),
+                array('container'=>'lists', 'fname'=>'id', 'fields'=>array('id', 'title_num', 'list_id', 'name')),
+                ));
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.424', 'msg'=>'Unable to load titlelists', 'err'=>$rc['err']));
+            }
+            for($i = 1; $i <= 8; $i++) {
+                $class["titlelists{$i}"] = isset($rc['titlelists'][$i]['lists']) ? array_values($rc['titlelists'][$i]['lists']) : [];
+            }
+//            $class['titlelists1'] = [
+//                ['id'=>1, 'list_id'=>1, 'name'=>'First List'],
+//                ['id'=>2, 'list_id'=>2, 'name'=>'Second List'],
+//                ];
         }
 
         //

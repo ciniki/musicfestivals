@@ -132,7 +132,7 @@ function ciniki_musicfestivals_volunteerSearch($ciniki) {
             array('container'=>'phones', 'fname'=>'id', 'fields'=>array('id', 'phone_label', 'phone_number')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1607', 'msg'=>'Unable to load phones', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1673', 'msg'=>'Unable to load phones', 'err'=>$rc['err']));
         }
         $phones = isset($rc['customers']) ? $rc['customers'] : array();
     }
@@ -156,7 +156,7 @@ function ciniki_musicfestivals_volunteerSearch($ciniki) {
             array('container'=>'emails', 'fname'=>'id', 'fields'=>array('id', 'email')),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1657', 'msg'=>'Unable to load emails', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1674', 'msg'=>'Unable to load emails', 'err'=>$rc['err']));
         }
         $emails = isset($rc['customers']) ? $rc['customers'] : array();
     }

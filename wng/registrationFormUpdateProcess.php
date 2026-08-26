@@ -327,6 +327,66 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
     }
 
     //
+    // Check required title lists
+    //
+    if( count($errors) == 0 && ($selected_class['tlflags']&0x0000FF00) > 0 ) {
+        //
+        // Load the titles for the class
+        //
+        $strsql = "SELECT titles.id, "
+            . "titles.list_id, "
+            . "ctl.title_num, "
+            . "titles.fulltitle "
+            . "FROM ciniki_musicfestival_class_titlelists AS ctl "
+            . "INNER JOIN ciniki_musicfestivals_titlelists AS lists ON ("
+                . "ctl.list_id = lists.id "
+                . "AND lists.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "INNER JOIN ciniki_musicfestivals_titles AS titles ON ("
+                . "lists.id = titles.list_id "
+                . "AND titles.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE ctl.class_id = '" . ciniki_core_dbQuote($ciniki, $selected_class['id']) . "' "
+            . "AND ctl.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "ORDER BY title_num, fulltitle "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'titles', 'fname'=>'title_num', 
+                'fields'=>array('title_num'),
+                ),
+            array('container'=>'list', 'fname'=>'fulltitle', 
+                'fields'=>array('id', 'list_id', 'fulltitle'),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $titles = isset($rc['titles']) ? $rc['titles'] : [];
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
+        for($i = 1; $i <= $selected_class['max_titles']; $i++) {
+            if( ($selected_class['tlflags']&($i<<8)) == ($i<<8) ) {
+                $rc = ciniki_musicfestivals_titleMerge($ciniki, $tnid, [
+                    "title{$i}" => isset($fields["title{$i}"]['value']) ? $fields["title{$i}"]['value'] : '',
+                    "opus{$i}" => isset($fields["opus{$i}"]['value']) ? $fields["opus{$i}"]['value'] : '',
+                    "movements{$i}" => isset($fields["movements{$i}"]['value']) ? $fields["movements{$i}"]['value'] : '',
+                    "musical{$i}" => isset($fields["musical{$i}"]['value']) ? $fields["musical{$i}"]['value'] : '',
+                    "composer{$i}" => isset($fields["composer{$i}"]['value']) ? $fields["composer{$i}"]['value'] : '',
+                    "arranger{$i}" => isset($fields["arranger{$i}"]['value']) ? $fields["arranger{$i}"]['value'] : '',
+                    ], $i);
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
+                }
+                if( !isset($titles[$i]['list'][$rc['title']]) ) {
+                    $errors[] = array(
+                        'msg' => "You must choose from the list for " . $fields["title{$i}"]['label'],
+                        );
+                }
+            }
+        }
+    }
+
+    //
     // Check if any scheduling requests submitted
     //  
     if( isset($festival['registration-scheduling-requests']) && $festival['registration-scheduling-requests'] == 'yes' 

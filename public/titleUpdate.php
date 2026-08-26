@@ -19,8 +19,11 @@ function ciniki_musicfestivals_titleUpdate(&$ciniki) {
         'title_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Approved Title'),
         'list_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'List'),
         'title'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Title'),
-        'movements'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Movements/Musical'),
+        'opus'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Opus'),
+        'movements'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Movements'),
+        'musical'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Musical'),
         'composer'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Composer'),
+        'arranger'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Arranger'),
         'source_type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Source Type'),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -47,9 +50,13 @@ function ciniki_musicfestivals_titleUpdate(&$ciniki) {
     //
     $strsql = "SELECT titles.id, "
         . "titles.list_id, "
+        . "titles.fulltitle, "
         . "titles.title, "
+        . "titles.opus, "
         . "titles.movements, "
+        . "titles.musical, "
         . "titles.composer, "
+        . "titles.arranger, "
         . "titles.source_type, "
         . "titles.keywords "
         . "FROM ciniki_musicfestivals_titles AS titles "
@@ -66,23 +73,42 @@ function ciniki_musicfestivals_titleUpdate(&$ciniki) {
     $title = $rc['title'];
 
     //
+    // Merge args with existing title information
+    //
+    $updated_title = [
+        'title' => isset($args['title']) ? $args['title'] : $title['title'],
+        'opus' => isset($args['opus']) ? $args['opus'] : $title['opus'],
+        'movements' => isset($args['movements']) ? $args['movements'] : $title['movements'],
+        'musical' => isset($args['musical']) ? $args['musical'] : $title['musical'],
+        'composer' => isset($args['composer']) ? $args['composer'] : $title['composer'],
+        'arranger' => isset($args['arranger']) ? $args['arranger'] : $title['arranger'],
+        'source_type' => isset($args['source_type']) ? $args['source_type'] : $title['source_type'],
+        ];
+
+    //
     // Create the keywords
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleListKeywordsMake');
-    $rc = ciniki_musicfestivals_titleListKeywordsMake($ciniki, $args['tnid'], [
-        'title'=>[
-            'title' => isset($args['title']) ? $args['title'] : $title['title'],
-            'movements' => isset($args['movements']) ? $args['movements'] : $title['movements'],
-            'composer' => isset($args['composer']) ? $args['composer'] : $title['composer'],
-            'source_type' => isset($args['source_type']) ? $args['source_type'] : $title['source_type'],
-            ],
-        ]);
+    $rc = ciniki_musicfestivals_titleListKeywordsMake($ciniki, $args['tnid'], ['title'=>$updated_title]);
     if( $rc['stat'] != 'ok' ) {
         print_r($rc);
         exit;
     }
     if( $title['keywords'] != $rc['keywords'] ) {
         $args['keywords'] = $rc['keywords'];
+    }
+
+    //
+    // Create the full title
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
+    $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $updated_title, '');
+    if( $rc['stat'] != 'ok' ) {
+        print_r($rc);
+        exit;
+    }
+    if( $rc['title'] != $title['fulltitle'] ) {
+        $args['fulltitle'] = $rc['title'];
     }
 
     //

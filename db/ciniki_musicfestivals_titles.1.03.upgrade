@@ -1,0 +1,8 @@
+ALTER TABLE ciniki_musicfestivals_titles ADD COLUMN fulltitle varchar(500) not null AFTER list_id;
+ALTER TABLE ciniki_musicfestivals_titles ADD COLUMN opus varchar(150) not null AFTER title;
+ALTER TABLE ciniki_musicfestivals_titles ADD COLUMN musical varchar(150) not null AFTER movements;
+ALTER TABLE ciniki_musicfestivals_titles ADD COLUMN arranger varchar(150) not null AFTER composer;
+DROP INDEX list_id ON ciniki_musicfestivals_titles;
+UPDATE ciniki_musicfestivals_titles SET fulltitle = CONCAT_WS(' ', title, movements, composer);
+CREATE INDEX list_id ON ciniki_musicfestivals_titles (tnid, list_id, fulltitle, source_type);
+ALTER TABLE ciniki_musicfestivals_titles COMMENT='v1.03';

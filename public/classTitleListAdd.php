@@ -2,32 +2,27 @@
 //
 // Description
 // -----------
-// This method will add a new approved title for the tenant.
+// This method will add a new class title list for the tenant.
 //
 // Arguments
 // ---------
 // api_key:
 // auth_token:
-// tnid:        The ID of the tenant to add the Approved Title to.
+// tnid:        The ID of the tenant to add the Class Title List to.
 //
 // Returns
 // -------
 //
-function ciniki_musicfestivals_titleAdd(&$ciniki) {
+function ciniki_musicfestivals_classtitlelistAdd(&$ciniki) {
     //
     // Find all the required and optional arguments
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
+        'class_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Class'),
+        'title_num'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Title Number'),
         'list_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'List'),
-        'title'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Title'),
-        'opus'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Opus'),
-        'movements'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Movements'),
-        'musical'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Musical'),
-        'composer'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Composer'),
-        'arranger'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Arranger'),
-        'source_type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Source Type'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -38,36 +33,10 @@ function ciniki_musicfestivals_titleAdd(&$ciniki) {
     // Check access to tnid as owner
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'checkAccess');
-    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.titleAdd');
+    $rc = ciniki_musicfestivals_checkAccess($ciniki, $args['tnid'], 'ciniki.musicfestivals.classtitlelistAdd');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
-
-    if( !isset($args['list_id']) || $args['list_id'] == '' || $args['list_id'] <= 0 ) {
-        return array('stat'=>'warn', 'err'=>array('code'=>'ciniki.musicfestivals.1158', 'msg'=>'You must choose a list'));
-    }
-
-    //
-    // Create the keywords
-    //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleListKeywordsMake');
-    $rc = ciniki_musicfestivals_titleListKeywordsMake($ciniki, $args['tnid'], ['title'=>$args]);
-    if( $rc['stat'] != 'ok' ) {
-        print_r($rc);
-        exit;
-    }
-    $args['keywords'] = $rc['keywords'];
-
-    //
-    // Create the full title
-    //
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'titleMerge');
-    $rc = ciniki_musicfestivals_titleMerge($ciniki, $args['tnid'], $args, '');
-    if( $rc['stat'] != 'ok' ) {
-        print_r($rc);
-        exit;
-    }
-    $args['fulltitle'] = $rc['title'];
 
     //
     // Start transaction
@@ -82,15 +51,15 @@ function ciniki_musicfestivals_titleAdd(&$ciniki) {
     }
 
     //
-    // Add the approved title to the database
+    // Add the class title list to the database
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
-    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.title', $args, 0x04);
+    $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.classtitlelist', $args, 0x04);
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;
     }
-    $title_id = $rc['id'];
+    $ctl_id = $rc['id'];
 
     //
     // Commit the transaction
@@ -111,8 +80,8 @@ function ciniki_musicfestivals_titleAdd(&$ciniki) {
     // Update the web index if enabled
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'hookExec');
-    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.musicfestivals.title', 'object_id'=>$title_id));
+    ciniki_core_hookExec($ciniki, $args['tnid'], 'ciniki', 'web', 'indexObject', array('object'=>'ciniki.musicfestivals.classtitlelist', 'object_id'=>$ctl_id));
 
-    return array('stat'=>'ok', 'id'=>$title_id);
+    return array('stat'=>'ok', 'id'=>$ctl_id);
 }
 ?>
