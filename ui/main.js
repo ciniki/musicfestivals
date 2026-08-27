@@ -7772,6 +7772,8 @@ function ciniki_musicfestivals_main() {
             'deleteFn':function(s, i, d) {
                 return 'M.ciniki_musicfestivals_main.syllabus.rulesItemDelete(' + i + ');';
                 },
+            'changeTxt':'Add Rule',
+            'changeFn':'M.ciniki_musicfestivals_main.syllabus.rulesItemAdd();',
             'menu':{    
                 'add':{
                     'label':'Add Rule',
