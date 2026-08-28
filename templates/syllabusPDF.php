@@ -362,6 +362,9 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                         if( $i == (count($w)-1) ) {
                             $border = 'TR';
                         }
+                        if( $class['synopsis'] == '' ) {
+                            $border .= 'B';
+                        }
                         if( $field == 'earlybird_fee' && ($class['feeflags']&0x01) == 0 ) {
                             $val = 'n/a';
                         }
