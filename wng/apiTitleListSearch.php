@@ -17,10 +17,10 @@ function ciniki_musicfestivals_wng_apiTitleListSearch(&$ciniki, $tnid, $request)
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
    
     if( !isset($request['args']['search_string']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.766', 'msg'=>'No search string specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1654', 'msg'=>'No search string specified'));
     }
     if( !isset($request['args']['list-ids']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.789', 'msg'=>'No lists specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1654', 'msg'=>'No lists specified'));
     }
 
     $list_ids = [];
@@ -50,6 +50,39 @@ function ciniki_musicfestivals_wng_apiTitleListSearch(&$ciniki, $tnid, $request)
     // search the titles
     //
     if( $keywords != '' && count($list_ids) > 0 ) {
+        $strsql = "SELECT lists.id, "
+            . "lists.name, "
+            . "lists.permalink, "
+            . "lists.flags, "
+            . "lists.col1_field, "
+            . "lists.col1_label, "
+            . "lists.col2_field, "
+            . "lists.col2_label, "
+            . "lists.col3_field, "
+            . "lists.col3_label, "
+            . "lists.col4_field, "
+            . "lists.col4_label "
+            . "FROM ciniki_musicfestivals_titlelists AS lists "
+            . "WHERE ID IN (" . ciniki_core_dbQuoteIDs($ciniki, $list_ids) . ") "
+            . "AND ("
+                . "lists.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . "OR (lists.flags&0x01) = 0x01 "
+                . ") ";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'lists', 'fname'=>'id', 
+                'fields'=>array('id', 'name', 'permalink', 'flags', 'col1_field', 'col1_label', 
+                    'col2_field', 'col2_label', 'col3_field', 'col3_label', 'col4_field', 'col4_label'),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1656', 'msg'=>'Unable to load lists', 'err'=>$rc['err']));
+        }
+        $lists = isset($rc['lists']) ? $rc['lists'] : array();
+        $list_ids = [];
+        foreach($rc['lists'] as $list) {
+            $list_ids[] = $list['id'];
+        }
 
         $strsql = "SELECT titles.id, "
             . "titles.list_id, "
