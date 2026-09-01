@@ -5879,6 +5879,9 @@ function ciniki_musicfestivals_main() {
                 if( (rsp.festival.flags&0x06) > 0 ) {
                     p.sections.stats_sections.headerValues = ['Section', 'Live #', 'Live Fees', 'Virtual #', 'Virtual Fees', 'Total #', 'Total Fees'];
                     p.sections.stats_sections.dataMaps = ['name', 'live_reg', 'live_fees', 'virtual_reg', 'virtual_fees', 'total_reg', 'total_fees'];
+                } else if( (rsp.festival.flags&0x10) > 0 ) {
+                    p.sections.stats_sections.headerValues = ['Section', 'Live #', 'Live Fees', 'Plus #', 'Plus Fees', 'Total #', 'Total Fees'];
+                    p.sections.stats_sections.dataMaps = ['name', 'live_reg', 'live_fees', 'plus_reg', 'plus_fees', 'total_reg', 'total_fees'];
                 } else {
                     p.sections.stats_sections.headerValues = ['Section', 'Live #', 'Live Fees'];
                     p.sections.stats_sections.dataMaps = ['name', 'live_reg', 'live_fees'];
