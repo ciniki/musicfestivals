@@ -87,6 +87,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'messages_status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Messages Status'),
         'members'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Members List'),
         'member_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Member Festival'),
+        'recommendation_adjudicator'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Recommendations Adjudicator Name'),
         'emails_list'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Emails List'),
         'action'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Action'),
         'entry_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Entry'),
@@ -4909,8 +4910,11 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         . "AND members.member_tnid = local_reg.tnid "
                         . ") "
                     . "WHERE recommendations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' "
-                    . "AND recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-                    . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "AND recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
+                if( isset($args['recommendation_adjudicator']) && $args['recommendation_adjudicator'] != '' ) {
+                    $strsql .= "AND recommendations.adjudicator_name = '" . ciniki_core_dbQuote($ciniki, $args['recommendation_adjudicator']) . "' ";
+                }
+                $strsql .= "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                     . "ORDER BY class_code, class_name, position "
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
@@ -4941,6 +4945,24 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
 //                    }
                 }
                 $festival['recommendation_member_entries'] = $entries;
+
+                //
+                // Get the list of adjudicator names
+                //
+                $strsql = "SELECT DISTINCT recommendations.adjudicator_name AS name "
+                    . "FROM ciniki_musicfestival_recommendations AS recommendations "
+                    . "WHERE recommendations.member_id = '" . ciniki_core_dbQuote($ciniki, $args['member_id']) . "' "
+                    . "AND recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                    . "ORDER BY adjudicator_name "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'member_adjudicator_names', 'fname'=>'name', 'fields'=>array('name')),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.766', 'msg'=>'Unable to load adjudicator names', 'err'=>$rc['err']));
+                }
+                $festival['member_adjudicator_names'] = isset($rc['member_adjudicator_names']) ? $rc['member_adjudicator_names'] : array();
             }
         }
         //

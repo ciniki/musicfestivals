@@ -779,6 +779,52 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
         }
 
         //
+        // Check for local registration when provincials
+        //
+        if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) ) {
+            $strsql = "SELECT registrations.id, "
+                . "registrations.fulltitle1, "
+                . "registrations.fulltitle2, "
+                . "registrations.fulltitle3, "
+                . "registrations.fulltitle4, "
+                . "registrations.fulltitle5, "
+                . "registrations.fulltitle6, "
+                . "registrations.fulltitle7, "
+                . "registrations.fulltitle8 "
+                . "FROM ciniki_musicfestival_recommendation_entries AS entries "
+                . "INNER JOIN ciniki_musicfestival_recommendations AS recommendations ON ("
+                    . "entries.recommendation_id = recommendations.id "
+                    . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_musicfestivals_members AS members ON ("
+                    . "recommendations.member_id = members.id "
+                    . "AND members.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                    . "entries.local_reg_id = registrations.id "
+                    . "AND members.member_tnid = registrations.tnid "
+                    . ") "
+                . "WHERE entries.provincials_reg_id = '" . ciniki_core_dbQuote($ciniki, $registration['id']) . "' "
+                . "AND entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "";
+            $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'registration');
+            if( $rc['stat'] != 'ok' ) {
+                return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.789', 'msg'=>'Unable to load registration', 'err'=>$rc['err']));
+            }
+            if( isset($rc['registration']) ) {
+                $registration['local_titles'] = [];
+                for($i = 1; $i <= 8; $i++) {
+                    if( isset($rc['registration']["fulltitle{$i}"]) && $rc['registration']["fulltitle{$i}"] != '' ) {
+                        $registration['local_titles'][] = [
+                            'label' => "Title #{$i}",
+                            'value' => $rc['registration']["fulltitle{$i}"],
+                            ];
+                    }
+                }
+            }
+        }
+
+        //
         // Load the message sent directly to this registration
         //
 /*        $strsql = "SELECT messages.id, "
