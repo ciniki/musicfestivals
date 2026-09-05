@@ -879,6 +879,36 @@ function ciniki_musicfestivals_main() {
                     'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.festival.setMusic(M.ciniki_musicfestivals_main.festival.section_id, "Optional");',
                     },
+                'provincialsquestionno':{
+                    'label':'Set Provincials to No',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'questions' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setProvincials(M.ciniki_musicfestivals_main.festival.section_id, "No");',
+                    },
+                'provincialsquestionyes':{
+                    'label':'Set Provincials to Yes',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'questions' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setProvincials(M.ciniki_musicfestivals_main.festival.section_id, "Yes");',
+                    },
+                'musicfestquestionno':{
+                    'label':'Set Music Fest to No',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'questions' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setMusicFest(M.ciniki_musicfestivals_main.festival.section_id, "No");',
+                    },
+                'musicfestquestionyes':{
+                    'label':'Set Music Fest to Yes',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'questions' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setMusicFest(M.ciniki_musicfestivals_main.festival.section_id, "Yes");',
+                    },
+                'canwestquestionno':{
+                    'label':'Set Can West to No',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'questions' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setCanWest(M.ciniki_musicfestivals_main.festival.section_id, "No");',
+                    },
+                'canwestquestionyes':{
+                    'label':'Set Can West to Yes',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'questions' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.festival.setCanWest(M.ciniki_musicfestivals_main.festival.section_id, "Yes");',
+                    },
                 'findreplacesynopsis':{
                     'label':'Find/Replace Synopsis',
                     'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'synopsis' ? 'yes' : 'no'; },
@@ -4491,6 +4521,36 @@ function ciniki_musicfestivals_main() {
                 'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
                 'music':label,
                 }; 
+            if( M.ciniki_musicfestivals_main.festival.sections.syllabus_tabs.selected == 'categories' ) {
+                args['category_id'] = M.ciniki_musicfestivals_main.festival.category_id;
+            }
+            M.api.getJSONCb('ciniki.musicfestivals.sectionClassesUpdate', args, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_musicfestivals_main.festival.open();
+                });
+            });
+    }
+    this.festival.setProvincials = function(sid, label) {
+        this.confirmUpdate(sid, label, "Provincials Question", "provincials");
+    }
+    this.festival.setMusicFest = function(sid, label) {
+        this.confirmUpdate(sid, label, "Music Fest", "musicfest");
+    }
+    this.festival.setCanWest = function(sid, label) {
+        this.confirmUpdate(sid, label, "Can West", "canwest");
+    }
+    this.festival.confirmUpdate = function(sid, label, name, action) {
+        M.confirm("Are you sure you want to update " + name + " to " + label + "?", "Confirm", function(rsp) {
+            var args = {
+                'tnid':M.curTenantID, 
+                'syllabus_id':M.ciniki_musicfestivals_main.festival.syllabus_id,
+                'section_id':sid,
+                'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
+                }; 
+            args[action] = label;
             if( M.ciniki_musicfestivals_main.festival.sections.syllabus_tabs.selected == 'categories' ) {
                 args['category_id'] = M.ciniki_musicfestivals_main.festival.category_id;
             }

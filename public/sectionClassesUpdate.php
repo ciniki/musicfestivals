@@ -41,6 +41,9 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         'artwork'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Artwork Setting'),
         'video'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Setting'),
         'music'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music Setting'),
+        'provincials'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Provincials Setting'),
+        'musicfest'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music Fest Setting'),
+        'canwest'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Can West Setting'),
         'marking'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Marking Flags Setting'),
         'multireg'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Multi Registration Option'),
         'find_replace_fields'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'idlist', 'name'=>'Fields'),
@@ -94,6 +97,7 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         . "classes.flags, "
         . "classes.feeflags, "
         . "classes.titleflags, "
+        . "classes.questionflags, "
         . "classes.earlybird_fee, "
         . "classes.fee, "
         . "classes.virtual_fee, "
@@ -125,7 +129,7 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'classes', 'fname'=>'id', 
-            'fields'=>array('id', 'flags', 'feeflags', 'titleflags', 
+            'fields'=>array('id', 'flags', 'feeflags', 'titleflags', 'questionflags',
                 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
                 'synopsis',
                 )),
@@ -181,6 +185,7 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         $flags = $class['flags'];
         $feeflags = $class['feeflags'];
         $titleflags = $class['titleflags'];
+        $questionflags = $class['questionflags'];
 
         //
         // Update the instrument
@@ -303,6 +308,33 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         }
 
         //
+        // Update provincials question
+        //
+        if( isset($args['provincials']) && strtolower($args['provincials']) == 'no' && ($class['questionflags']&0x01) > 0 ) {
+            $questionflags = ($questionflags&0xFFFFFFFE);
+        } elseif( isset($args['provincials']) && strtolower($args['provincials']) == 'yes' && ($class['questionflags']&0x01) == 0 ) {
+            $questionflags = ($questionflags&0xFFFFFFFE) | 0x01;
+        }
+
+        //
+        // Update music fest question
+        //
+        if( isset($args['musicfest']) && strtolower($args['musicfest']) == 'no' && ($class['questionflags']&0x02) > 0 ) {
+            $questionflags = ($questionflags&0xFFFFFFFD);
+        } elseif( isset($args['musicfest']) && strtolower($args['musicfest']) == 'yes' && ($class['questionflags']&0x02) == 0 ) {
+            $questionflags = ($questionflags&0xFFFFFFFD) | 0x02;
+        }
+
+        //
+        // Update can west question
+        //
+        if( isset($args['canwest']) && strtolower($args['canwest']) == 'no' && ($class['questionflags']&0x04) > 0 ) {
+            $questionflags = ($questionflags&0xFFFFFFFB);
+        } elseif( isset($args['canwest']) && strtolower($args['canwest']) == 'yes' && ($class['questionflags']&0x04) == 0 ) {
+            $questionflags = ($questionflags&0xFFFFFFFB) | 0x04;
+        }
+
+        //
         // Update the marking
         //
         if( isset($args['marking']) && $args['marking'] != '' && is_numeric($args['marking']) ) {
@@ -339,6 +371,9 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         }
         if( $titleflags != $class['titleflags'] ) {
             $update_args['titleflags'] = $titleflags;
+        }
+        if( $questionflags != $class['questionflags'] ) {
+            $update_args['questionflags'] = $questionflags;
         }
 
         if( count($update_args) > 0 ) {
