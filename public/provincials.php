@@ -728,6 +728,63 @@ function ciniki_musicfestivals_provincials($ciniki) {
             $rc['pdf']->Output($filename . '.pdf', 'I');
             return array('stat'=>'exit');
         }
+
+        if( isset($args['output']) && $args['output'] == 'excel' ) {
+            //
+            // Generate XLS of recommendations
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'memberRecommendationsExcel');
+            $rc = ciniki_musicfestivals_templates_memberRecommendationsExcel($ciniki, $args['tnid'], [
+                'festival_id' => $args['festival_id'],
+                'member_id' => $member['id'],
+                'recommendations' => $rsp['entries'],
+                ]);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+
+            //
+            // Output the excel file
+            //
+            $filename = "{$member['name']} - {$festival['name']} - Recommendations";
+            header('Content-Type: application/vnd.ms-excel');
+            header('Content-Disposition: attachment;filename="' . $filename . '.xls"');
+            header('Cache-Control: max-age=0');
+            
+            $objWriter = PHPExcel_IOFactory::createWriter($rc['excel'], 'Excel5');
+            $objWriter->save('php://output');
+
+            return array('stat'=>'exit');
+        } 
+        elseif( isset($args['output']) && $args['output'] == 'pdf' ) {
+            //
+            // Generate PDF of recommendations
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'templates', 'memberRecommendationsPDF');
+            $rc = ciniki_musicfestivals_templates_memberRecommendationsPDF($ciniki, $args['tnid'], [
+                'festival_id' => $args['festival_id'],
+                'title' => $member['name'],
+                'subtitle' => $festival['name'] . ' - Recommendations',
+                'recommendations' => $rsp['entries'],
+                ]);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+
+            //
+            // Output the pdf file
+            //
+            $filename = "{$member['name']} - {$festival['name']} - Recommendations";
+            header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
+            header("Last-Modified: " . gmdate("D,d M YH:i:s") . " GMT");
+            header('Cache-Control: no-cache, must-revalidate');
+            header('Pragma: no-cache');
+            header('Content-Type: application/pdf');
+            header('Cache-Control: max-age=0');
+
+            $rc['pdf']->Output($filename . '.pdf', 'I');
+            return array('stat'=>'exit');
+        }
     }
 
     //
