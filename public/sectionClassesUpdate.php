@@ -32,11 +32,17 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         'plus_fee_update'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Plus Fee Update'),
         'instrument'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Instrument Setting'),
         'accompanist'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Accompanist Setting'),
+        'title_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Title Label'),
         'opus'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Opus Setting'),
+        'opus_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Opus Label'),
         'movements'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Movements Setting'),
+        'movements_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Movements Label'),
         'musical'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Musical Setting'),
+        'musical_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Musical Label'),
         'composer'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Composer Setting'),
+        'composer_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Composer Label'),
         'arranger'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Arranger Setting'),
+        'arranger_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Arranger Label'),
         'backtrack'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Backtrack Setting'),
         'artwork'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Artwork Setting'),
         'video'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Setting'),
@@ -103,7 +109,13 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         . "classes.virtual_fee, "
         . "classes.earlybird_plus_fee, "
         . "classes.plus_fee, "
-        . "classes.synopsis "
+        . "classes.synopsis, "
+        . "classes.title_label, "
+        . "classes.opus_label, "
+        . "classes.movements_label, "
+        . "classes.musical_label, "
+        . "classes.composer_label, "
+        . "classes.arranger_label "
         . "FROM ciniki_musicfestival_categories AS categories "
         . "INNER JOIN ciniki_musicfestival_sections AS sections ON ("
             . "categories.section_id = sections.id "
@@ -132,6 +144,7 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
             'fields'=>array('id', 'flags', 'feeflags', 'titleflags', 'questionflags',
                 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
                 'synopsis',
+                'title_label', 'opus_label', 'movements_label', 'musical_label', 'composer_label', 'arranger_label',
                 )),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -233,11 +246,11 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         // Update musical
         //
         if( isset($args['musical']) && strtolower($args['musical']) == 'none' && ($class['titleflags']&0xC000) > 0 ) {
-            $titleflags = ($titleflags&0xFFFFCFFF);
+            $titleflags = ($titleflags&0xFFFF3FFF);
         } elseif( isset($args['musical']) && strtolower($args['musical']) == 'required' && ($class['titleflags']&0x4000) == 0 ) {
-            $titleflags = ($titleflags&0xFFFFCFFF) | 0x4000;
+            $titleflags = ($titleflags&0xFFFF3FFF) | 0x4000;
         } elseif( isset($args['musical']) && strtolower($args['musical']) == 'optional' && ($class['titleflags']&0x8000) == 0 ) {
-            $titleflags = ($titleflags&0xFFFFCFFF) | 0x8000;
+            $titleflags = ($titleflags&0xFFFF3FFF) | 0x8000;
         }
 
         //
@@ -339,6 +352,15 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         //
         if( isset($args['marking']) && $args['marking'] != '' && is_numeric($args['marking']) ) {
             $flags = ($flags&0xFFFFF0FF) | ($args['marking']&0x00000F00);
+        }
+
+        //
+        // Check for label updates
+        //
+        foreach(['title', 'opus', 'movements', 'musical', 'composer', 'arranger'] as $field) {
+            if( isset($args["{$field}_label"]) && $args["{$field}_label"] != $class["{$field}_label"] ) {
+                $update_args["{$field}_label"] = $args["{$field}_label"]; 
+            }
         }
 
         //
