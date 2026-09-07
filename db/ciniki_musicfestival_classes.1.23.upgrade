@@ -1,0 +1,7 @@
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN title_label varchar(150) NOT NULL AFTER max_titles;
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN opus_label varchar(150) NOT NULL AFTER title_label;
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN movements_label varchar(150) NOT NULL AFTER opus_label;
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN musical_label varchar(150) NOT NULL AFTER movements_label;
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN composer_label varchar(150) NOT NULL AFTER musical_label;
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN arranger_label varchar(150) NOT NULL AFTER composer_label;
+ALTER TABLE ciniki_musicfestival_classes COMMENT='v1.23';

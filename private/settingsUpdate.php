@@ -223,6 +223,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'registration-status-75-colour',
         'registration-status-80-colour',
         'registration-notes-enable',
+        'registration-notes-description',
         'registration-crs-enable',
         'registration-crs-deadline',
         'registration-crs-notify-emails',

@@ -144,6 +144,13 @@
 # min_titles:           The minimum number of titles that must be performed.
 # max_titles:           The maximum number of titles that can be performed.
 #
+# title_label:          The override label for the title field.
+# opus_label:           The override label for the opus field.
+# movements_label:      The override label for the movements field.
+# musical_label:        The override label for the musical field.
+# composer_label:       The override label for the composer field.
+# arranger_label:       The override label for the arranger field.
+#
 # provincials_code:     The provincial class code any students in this class can be recommended for.
 #
 # synopsis:             The synopsis/short description of the class.
@@ -187,6 +194,12 @@ create table ciniki_musicfestival_classes (
     max_competitors tinyint unsigned not null,
     min_titles tinyint unsigned not null,
     max_titles tinyint unsigned not null,
+    title_label varchar(150) not null,
+    opus_label varchar(150) not null,
+    movements_label varchar(150) not null,
+    musical_label varchar(150) not null,
+    composer_label varchar(150) not null,
+    arranger_label varchar(150) not null,
     provincials_code varchar(20) not null,
     synopsis text not null,
     schedule_seconds int not null,
@@ -204,4 +217,4 @@ create table ciniki_musicfestival_classes (
     index (festival_id, category_id, tnid),
     index keywords (keywords),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.22';
+) ENGINE='InnoDB', COMMENT='v1.23';
