@@ -1731,6 +1731,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
 
     if( !isset($festival['registration-notes-enable']) || $festival['registration-notes-enable'] == 'yes' ) {
         $fields['line-notes'] = array(
+            'id' => 'line-notes',
             'ftype' => 'break',
             'label' => 'Registration Notes',
             'class' => '',
