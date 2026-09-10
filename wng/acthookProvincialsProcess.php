@@ -46,6 +46,13 @@ function ciniki_musicfestivals_wng_acthookProvincialsProcess(&$ciniki, $tnid, &$
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1400', 'msg'=>'', 'err'=>$rc['err']));
     }
+    if( !isset($rc['festival']) ) {
+        return array('stat'=>'ok', 'blocks'=>[[
+            'type' => 'msg',
+            'level' => 'error',
+            'content' => 'No festival configured',
+            ]]);
+    }
     $local = $rc['festival'];
 
     if( !isset($local['provincial-festival-id']) ) {
