@@ -604,7 +604,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                 $s_height = 0;
             }
             $description = preg_replace("/<(ul|ol|ol [^>]+)>\n/", "<$1>", $description);
-            $description = preg_replace("/<\/li>\n/", "</$1>", $description);
+            $description = preg_replace("/<\/li>\n/", "</li>", $description);
 
             $pdf->SetFont('', 'B', '18');
             $lh = $pdf->getStringHeight(180, $category['name']);
@@ -626,6 +626,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             }
             $newpage = 'no';
 
+            $pdf->setCellPaddings(2, 2, 3, 2);
             if( $section['name'] != $category['name'] ) {
                 $pdf->MultiCell(180, 5, $category['name'], 0, 'L', 0, 1);
             }
