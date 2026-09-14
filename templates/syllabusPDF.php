@@ -603,8 +603,8 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
             } else {
                 $s_height = 0;
             }
-            $description = preg_replace("/<(ul|ol)>\n/", "<$1>", $description);
-            $description = preg_replace("/<\/li>\n/", "</li>", $description);
+            $description = preg_replace("/<(ul|ol|ol [^>]+)>\n/", "<$1>", $description);
+            $description = preg_replace("/<\/li>\n/", "</$1>", $description);
 
             $pdf->SetFont('', 'B', '18');
             $lh = $pdf->getStringHeight(180, $category['name']);
