@@ -523,6 +523,7 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
     //
     $w = array(30, 120, 30);
     foreach($sections as $section) {
+        $pdf->setCellPaddings(2, 2, 3, 2);
         if( isset($args['live-virtual']) && $args['live-virtual'] == 'live' && $section['live_description'] != '' ) {
             $section['description'] = $section['live_description'];
         } elseif( isset($args['live-virtual']) && $args['live-virtual'] == 'virtual' && $section['virtual_description'] != '' ) {
