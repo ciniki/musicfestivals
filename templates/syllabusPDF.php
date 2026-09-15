@@ -557,6 +557,8 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
 //        }
         $pdf->SetFont('', '', '12');
         if( isset($section['description']) && $section['description'] != '' ) {
+            $section['description'] = preg_replace("/<(ul|ol|ol [^>]+)>\n/", "<$1>", $section['description']);
+            $section['description'] = preg_replace("/<\/li>\n/", "</li>", $section['description']);
             $pdf->writeHTMLCell(180, '', '', '', preg_replace("/\n/", '<br/>', $section['description']), 0, 1);
         }
 
