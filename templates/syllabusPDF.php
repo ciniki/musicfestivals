@@ -324,10 +324,12 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                     $icon_y = $this->GetY() + 1.5;
                 }
                 
+                            error_log($class['code']);
                 foreach($fields as $i => $field) {
                     $x = $this->getX();
                     $y = $this->getY();
                     if( $field == 'code_name_synopsis' ) {
+                        $this->setCellPaddings(2, 2, 2, 1);
                         if( $class['synopsis'] != '' ) {
 /*                            $this->setCellPaddings(2, 2, 2, 1);
                             $this->MultiCell($w[$i], $lh, "{$class['code']} {$img}- {$class['name']}", 'LT', 'L', $fill, 1, '', '', true, 0, true);
@@ -342,7 +344,6 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                             $this->SetFont('', '', '12');
                             $this->setY($y);
                             $this->setX($x+$w[$i]); */
-                            $this->setCellPaddings(2, 2, 2, 1);
                             $this->MultiCell($w[$i], $lh, "{$class['code']} {$img}- {$class['name']}", 'LT', 'L', $fill, 0, '', '', true, 0, true);
                         } else {
                             $this->MultiCell($w[$i], $lh, "{$class['code']} {$img}- {$class['name']}", 'LTB', 'L', $fill, 0, '', '', true, 0, true);
