@@ -2,8 +2,7 @@
 //
 // Description
 // -----------
-// This function will genereate the form for recommendations both on website via private link, or through local website
-// for a logged in adjudicator
+// This function is the next generation of form for recommendations. This is a simplified process for the form, 
 // 
 // Arguments
 // ---------
@@ -13,11 +12,11 @@
 // Returns
 // ---------
 // 
-function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $request, $args) {
+function ciniki_musicfestivals_wng_accountRecommendationFormGenerate(&$ciniki, $tnid, $request, $args) {
 
     $section = $args['section'];
 
-    if( !isset($args['classes']) ) {
+/*    if( !isset($args['classes']) ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'recommendationClassesLoad');
         $rc = ciniki_musicfestivals_recommendationClassesLoad($ciniki, $tnid, $section);
         if( $rc['stat'] != 'ok' ) {
@@ -26,7 +25,13 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
         $classes = isset($rc['classes']) ? $rc['classes'] : array();
     } else {
         $classes = $args['classes'];
+    } 
+*/
+
+    if( !isset($args['class']) ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.883', 'msg'=>'Missing class'));
     }
+    $class = $args['class'];
 
     //
     // Load the list of positions
@@ -49,20 +54,6 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
             'fields' => [],
             ],
         ];
-    if( !isset($args['recommendation']['member_id']) || $args['recommendation']['member_id'] == 0 ) {
-        $form_sections['adjudicator']['fields']['member_id'] = [
-            'id' => 'member_id',
-            'label' => 'Name of Festival',
-            'ftype' => 'select',
-            'options' => $args['members'],
-            'complex_options' => array(
-                'value' => 'id',
-                'name' => 'name',
-                ),
-            'required' => 'yes',
-            'value' => (isset($_POST['f-member_id']) ? $_POST['f-member_id'] : (isset($request['session']['ciniki.musicfestivals']['member_id']) ? $request['session']['ciniki.musicfestivals']['member_id'] : 0)),
-            ];
-    }
     $form_sections['adjudicator']['fields']['adjudicator_name'] = [
         'id' => 'adjudicator_name',
         'label' => "Adjudicator's Name",
@@ -79,24 +70,6 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
     } elseif( isset($args['adjudicator']) ) {
         $form_sections['adjudicator']['fields']['adjudicator_name']['value'] = $args['adjudicator']['name'];
     }
-/*    $form_sections['adjudicator']['fields']['adjudicator_phone'] = [
-        'id' => 'adjudicator_phone',
-        'label' => "Adjudicator's Phone Number",
-        'ftype' => 'text',
-        'size' => 'small',
-        'flex-basis' => '40%',
-        'required' => 'yes',
-        'value' => '',
-        ];
-    if( isset($_POST['f-adjudicator_phone']) ) {
-        $form_sections['adjudicator']['fields']['adjudicator_phone']['value'] = $_POST['f-adjudicator_phone'];
-    } elseif( isset($args['recommendation']['adjudicator_phone']) && $args['recommendation']['adjudicator_phone'] != '' ) {
-        $form_sections['adjudicator']['fields']['adjudicator_phone']['value'] = $args['recommendation']['adjudicator_phone'];
-    } elseif( isset($request['session']['ciniki.musicfestivals']['adjudicator_phone']) ) {
-        $form_sections['adjudicator']['fields']['adjudicator_phone']['value'] = $request['session']['ciniki.musicfestivals']['adjudicator_phone'];
-    } elseif( isset($args['adjudicator']) ) {
-        $form_sections['adjudicator']['fields']['adjudicator_phone']['value'] = $args['adjudicator']['phone'];
-    } */
     $form_sections['adjudicator']['fields']['adjudicator_email'] = [ 
         'id' => 'adjudicator_email',
         'label' => "Adjudicator's Email",
@@ -133,19 +106,14 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
         '99' => '99',
         '100' => '100',
         );
-    foreach($classes as $cid => $class) {
-        $form_sections[$cid] = array(
-            'id' => "class_{$cid}",
+//    foreach($classes as $cid => $class) {
+    $cid = $class['id'];
+        $form_sections["{$cid}"] = array(
+            'id' => "{$cid}",
             'class_id' => $cid,
             'label' => $class['code'] . ' - ' . $class['name'],
             'fields' => array(),
             );
-// Old code from 2024 to allow for 4 recommendations in some classes
-//        if( in_array($class['code'], ['31012', '11007', '33009', '13007', '12007', '14007', '16007', '16031'])  ) {
-//            $num_recommendations = 4;
-//        } else {
-//            $num_recommendations = 3;
-//        } 
         $num_recommendations = 3;
         $num_alternates = 3;
         if( isset($args['adjudicator']['registrations']) ) {
@@ -159,6 +127,12 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
                 }
             }
             uasort($registrations, function($a, $b) {   
+                if( $a['name'] == $b['name'] ) {
+                    if( $a['class'] == $b['class'] ) {
+                        return strcmp($a['title'], $b['title']);
+                    }
+                    return strcmp($a['class'], $b['class']);
+                }
                 return strcmp($a['name'], $b['name']);
                 });
         }
@@ -185,15 +159,21 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
                     'value' => 'Already Submitted',
                     );
             } else {
-                if( isset($registrations) ) {
+//                if( isset($registrations) ) {
                     $form_sections[$cid]['fields']["recommendation_{$i}_{$cid}"] = array(
                         'id' => "recommendation_{$i}_{$cid}",
                         'label' => $position['label'],
                         'size' => 'small',
                         'flex-basis' => '75%',
-                        'ftype' => 'select',
+                        'ftype' => 'dropdown',
                         'options' => $registrations,
-                        'value' => 0,
+                        'blank' => 'yes',
+                        'blank-label' => '',
+                        'option-line-1' => 'name',
+                        'option-line-2' => 'class',
+                        'option-line-3' => 'title',
+                        'searchable' => 'yes',
+                        'value' => '',
                         'onchange' => "C.form.setMark({$i},{$cid});",
                         );
                     if( isset($_POST["f-recommendation_{$i}_{$cid}"]) ) {
@@ -201,7 +181,7 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
                     } elseif( isset($args['recommendation']['entries'][$cid][$i]['local_reg_id']) ) {
                         $form_sections[$cid]['fields']["recommendation_{$i}_{$cid}"]['value'] = $args['recommendation']['entries'][$cid][$i]['local_reg_id'];
                     }
-                } else {
+/*                } else {
                     $form_sections[$cid]['fields']["recommendation_{$i}_{$cid}"] = array(
                         'id' => "recommendation_{$i}_{$cid}",
                         'label' => $position['label'],
@@ -210,7 +190,7 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
                         'ftype' => 'text',
                         'value' => (isset($_POST["f-recommendation_{$i}_{$cid}"]) ? $_POST["f-recommendation_{$i}_{$cid}"] : ''),
                         );
-                }
+                } */
                 $form_sections[$cid]['fields']["recommendation_mark_{$i}_{$cid}"] = array(
                     'id' => "recommendation_mark_{$i}_{$cid}",
                     'label' => 'Mark',
@@ -231,65 +211,7 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
                 'ftype' => 'newline',
                 );
         }
-/*        for($i = 101; $i <= (100+$num_alternates); $i++) {
-            $label = ($i == 1 ? '1st' : ($i == 2 ? '2nd' : ($i == 3 ? '3rd' : $i . 'th')));
-            if( isset($args['existing'][$cid][$i]) ) {
-                $form_sections[$cid]['fields']["recommendation_{$i}_{$cid}"] = array(
-                    'id' => "recommendation_{$i}_{$cid}",
-                    'label' => $label . ' Recommendation',
-                    'size' => 'small',
-                    'flex-basis' => '100%',
-                    'ftype' => 'text',
-                    'editable' => 'no',
-                    'value' => 'Already Submitted',
-                    );
-            } else {
-                if( isset($registrations) ) {
-                    $form_sections[$cid]['fields']["recommendation_{$i}_{$cid}"] = array(
-                        'id' => "recommendation_{$i}_{$cid}",
-                        'label' => $label . ' Alternate',
-                        'size' => 'small',
-                        'flex-basis' => '75%',
-                        'ftype' => 'select',
-                        'options' => $registrations,
-                        'value' => 0,
-                        );
-                    if( isset($_POST["f-alternate_{$i}_{$cid}"]) ) {
-                        $form_sections[$cid]['fields']["alternate_{$i}_{$cid}"]['value'] = $_POST["f-alternate_{$i}_{$cid}"];
-                    } elseif( isset($args['recommendation']['entries'][$cid][(100+$i)]['local_reg_id']) ) {
-                        $form_sections[$cid]['fields']["alternate_{$i}_{$cid}"]['value'] = $args['recommendation']['entries'][$cid][(100+$i)]['local_reg_id'];
-                    }
-                } else {
-                    $form_sections[$cid]['fields']["alternate_{$i}_{$cid}"] = array(
-                        'id' => "alternate_{$i}_{$cid}",
-                        'label' => $label . ' Alternate',
-                        'size' => 'small',
-                        'flex-basis' => '75%',
-                        'ftype' => 'text',
-                        'value' => (isset($_POST["f-alternate_{$i}_{$cid}"]) ? $_POST["f-alternate_{$i}_{$cid}"] : ''),
-                        );
-                }
-            }
-            $form_sections[$cid]['fields']["alternate_mark_{$i}_{$cid}"] = array(
-                'id' => "alternate_mark_{$i}_{$cid}",
-                'label' => 'Mark',
-                'size' => 'tiny',
-                'flex-basis' => '10%',
-                'ftype' => 'select',
-                'options' => $mark_options,
-                'value' => '',
-                );
-            if( isset($_POST["f-alternate_mark_{$i}_{$cid}"]) ) {
-                $form_sections[$cid]['fields']["alternate_mark_{$i}_{$cid}"]['value'] = $_POST["f-alternate_mark_{$i}_{$cid}"];
-            } elseif( isset($args['recommendation']['entries'][$cid][(100+$i)]['mark']) ) {
-                $form_sections[$cid]['fields']["alternate_mark_{$i}_{$cid}"]['value'] = $args['recommendation']['entries'][$cid][(100+$i)]['mark'];
-            }
-            $form_sections[$cid]['fields']["newlineb_{$i}_{$cid}"] = array(
-                'id' => "newlineb_{$i}_{$cid}",
-                'ftype' => 'newline',
-                );
-        } */
-    }
+//    }
     if( isset($args['save-draft']) && $args['save-draft'] == 'yes' ) {
         $form_sections['save'] = array(
             'id' => 'save',
@@ -374,6 +296,6 @@ function ciniki_musicfestivals_wng_recommendationFormGenerate(&$ciniki, $tnid, $
             );
     }
 
-    return array('stat'=>'ok', 'form_errors'=>$form_errors, 'form_sections'=>$form_sections, 'classes'=>$classes);
+    return array('stat'=>'ok', 'form_errors'=>$form_errors, 'form_sections'=>$form_sections);
 }
 ?>

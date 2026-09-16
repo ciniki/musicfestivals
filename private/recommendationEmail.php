@@ -44,7 +44,7 @@ function ciniki_musicfestivals_recommendationEmail(&$ciniki, $tnid, $args) {
     $email_content .= "<tr><th style='text-align: right;'>Section</th><td>{$recommendation['section_name']}</td></tr>";
     $email_content .= "<tr><th style='text-align: right;'>Festival</th><td>{$recommendation['member_name']}</td></tr>";
     $email_content .= "<tr><th style='text-align: right;'>Adjudicator Name</th><td>{$recommendation['adjudicator_name']}</td></tr>";
-    $email_content .= "<tr><th style='text-align: right;'>Adjudicator Phone</th><td>{$recommendation['adjudicator_phone']}</td></tr>";
+//    $email_content .= "<tr><th style='text-align: right;'>Adjudicator Phone</th><td>{$recommendation['adjudicator_phone']}</td></tr>";
     $email_content .= "<tr><th style='text-align: right;'>Adjudicator Email</th><td>{$recommendation['adjudicator_email']}</td></tr>";
     $email_content .= "<tr><th style='text-align: right;'>Acknowledgement</th><td>{$recommendation['acknowledgement']}</td></tr>";
     $email_content .= "<tr><th style='text-align: right;'>Date Submitted</th><td>{$recommendation['date_submitted']}</td></tr>";
@@ -55,7 +55,7 @@ function ciniki_musicfestivals_recommendationEmail(&$ciniki, $tnid, $args) {
     $email_text .= "Section: {$recommendation['section_name']}\n";
     $email_text .= "Festival: {$recommendation['member_name']}\n";
     $email_text .= "Adjudicator Name: {$recommendation['adjudicator_name']}\n";
-    $email_text .= "Adjudicator Phone: {$recommendation['adjudicator_phone']}\n";
+//    $email_text .= "Adjudicator Phone: {$recommendation['adjudicator_phone']}\n";
     $email_text .= "Adjudicator Email: {$recommendation['adjudicator_email']}\n";
     $email_text .= "Acknowledgement: {$recommendation['acknowledgement']}\n";
     $email_text .= "Date Submitted: {$recommendation['date_submitted']}\n";

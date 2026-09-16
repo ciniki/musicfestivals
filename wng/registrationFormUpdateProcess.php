@@ -741,6 +741,10 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             return array('stat'=>'exit', 'id'=>$registration_id);
         }
 
+        if( isset($request['session']['musicfestival-registration']) ) {
+            unset($request['session']['musicfestival-registration']);
+        }
+        
         header("Location: {$args['base_url']}");
         return array('stat'=>'exit', 'id'=>$registration_id);
     }
@@ -857,10 +861,8 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             elseif( preg_match("/questionflags([0-9+])/", $field['id'], $m) && ($selected_class['questionflags']&0x07) > 0 ) {
                 $bit = pow(2, $m[1]+15);
                 if( $field['value'] == 1 ) {
-                    error_log('NO');
                     $registration_flags |= $bit;
                 } else {
-                    error_log('Yes');
                     $registration_flags &= ~$bit;
                 }
             }

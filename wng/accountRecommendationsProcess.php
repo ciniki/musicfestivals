@@ -99,7 +99,21 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
         . "registrations.mark, "
         . "registrations.display_name, "
         . "registrations.fulltitle1, "
+        . "registrations.fulltitle2, "
+        . "registrations.fulltitle3, "
+        . "registrations.fulltitle4, "
+        . "registrations.fulltitle5, "
+        . "registrations.fulltitle6, "
+        . "registrations.fulltitle7, "
+        . "registrations.fulltitle8, "
         . "registrations.perf_time1, "
+        . "registrations.perf_time2, "
+        . "registrations.perf_time3, "
+        . "registrations.perf_time4, "
+        . "registrations.perf_time5, "
+        . "registrations.perf_time6, "
+        . "registrations.perf_time7, "
+        . "registrations.perf_time8, "
         . "registrations.mark "
         . "FROM ciniki_musicfestival_adjudicatorrefs AS arefs "
         . "INNER JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
@@ -116,7 +130,7 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
             . ") "
         . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
             . "timeslots.id = registrations.timeslot_id "
-            . "AND (registrations.flags&0x20) = 0 " // Eligible for provincials
+            . "AND (registrations.flags&0x010020) = 0 " // Does not want to be considered OR Eligible for provincials
             . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
@@ -134,17 +148,31 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
         array('container'=>'classes', 'fname'=>'provincials_code', 'fields'=>array()),
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'class_code', 'class_name', 'mark', 'display_name', 'mark',
-                'fulltitle1', 'perf_time1'),
+                'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8', 
+                'perf_time1', 'perf_time2', 'perf_time3', 'perf_time4', 'perf_time5', 'perf_time6', 'perf_time7', 'perf_time8',
+                ),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1041', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
     }
-    $adjudicator['registrations'] = isset($rc['classes']) ? $rc['classes'] : array();
+    $registrations = isset($rc['classes']) ? $rc['classes'] : array();
 
-    foreach($adjudicator['registrations'] as $cid => $class) {
+    $adjudicator['registrations'] = [];
+    foreach($registrations as $cid => $class) {
         foreach($class['registrations'] as $rid => $reg) {
-            $adjudicator['registrations'][$cid]['registrations'][$rid]['name'] = $reg['display_name'] . ' - ' . $reg['class_code'] . ' - ' . $reg['class_name'] . ' - ' . $reg['fulltitle1'] . ($reg['mark'] != '' ? " [{$reg['mark']}]" : '');
+//            $adjudicator['registrations'][$cid]['registrations'][$rid]['name'] = $reg['display_name'] . ' - ' . $reg['class_code'] . ' - ' . $reg['class_name'] . ' - ' . $reg['fulltitle1'] . ($reg['mark'] != '' ? " [{$reg['mark']}]" : '');
+            for($i = 1; $i <= 8; $i++) {
+                if( $reg["fulltitle{$i}"] != '' ) {
+//                    $adjudicator['registrations'][$cid]['registrations']["{$rid}-{$i}"]['name'] = $reg['display_name'];
+                    $adjudicator['registrations'][$cid]['registrations']["{$rid}-{$i}"] = [
+                        'id' => "{$rid}-{$i}",
+                        'name' => $reg['display_name'],
+                        'class' => $reg['class_code'] . ' - ' . $reg['class_name'],
+                        'title' => $reg["fulltitle{$i}"] . ($reg['mark'] != '' ? " [{$reg['mark']}]" : ''),
+                        ];
+                }
+            }
         }
     }
 
@@ -154,20 +182,20 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
     ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
     $rc = ciniki_customers_hooks_customerDetails2($ciniki, $tnid, [
         'customer_id' => $request['session']['customer']['id'],
-        'phones' => 'yes',
+//        'phones' => 'yes',
         ]);
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
     $customer = $rc['customer'];
     $adjudicator['name'] = $customer['display_name'];
-    if( isset($customer['phones'][0]['phone_number']) ) {
-        $adjudicator['phone'] = $customer['phones'][0]['phone_number'];
-    } elseif( isset($request['session']['ciniki.musicfestivals']['adjudicator_phone']) ) {
-        $adjudicator['phone'] = $request['session']['ciniki.musicfestivals']['adjudicator_phone'];
-    } else {
-        $adjudicator['phone'] = '';
-    }
+//    if( isset($customer['phones'][0]['phone_number']) ) {
+//        $adjudicator['phone'] = $customer['phones'][0]['phone_number'];
+//    } elseif( isset($request['session']['ciniki.musicfestivals']['adjudicator_phone']) ) {
+//        $adjudicator['phone'] = $request['session']['ciniki.musicfestivals']['adjudicator_phone'];
+//    } else {
+//        $adjudicator['phone'] = '';
+//    }
     if( isset($customer['emails'][0]['address']) ) {
         $adjudicator['email'] = $customer['emails'][0]['address'];
     }
@@ -251,7 +279,7 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
         . "recommendations.status, "
         . "recommendations.status AS status_text, "
         . "recommendations.adjudicator_name, "
-        . "recommendations.adjudicator_phone, "
+//        . "recommendations.adjudicator_phone, "
         . "recommendations.adjudicator_email, "
         . "recommendations.acknowledgement, "
         . "recommendations.date_submitted "
@@ -268,7 +296,7 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'recommendations', 'fname'=>'id', 
             'fields'=>array('id', 'uuid', 'festival_id', 'member_id', 'section_id', 'section_name', 
-                'adjudicator_name', 'adjudicator_phone', 'adjudicator_email', 
+                'adjudicator_name', 'adjudicator_email', 
                 'status', 'status_text',
                 'acknowledgement', 'date_submitted'),
             'maps'=>array('status_text'=>$maps['recommendation']['status']),
@@ -350,7 +378,7 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
                 . "<a class='button' href='{$base_url}/{$recommendation['uuid']}/delete'>Delete</a>"
                 . "";
         } else {
-            $recommendations[$rid]['actions'] = "<a class='button' href='{$base_url}/{$recommendation['uuid']}'>View</a>";
+            $recommendations[$rid]['actions'] = "<a class='button' href='{$base_url}/{$recommendation['uuid']}'>Review</a>";
         }
     }
 
@@ -360,7 +388,7 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
     if( isset($request['uri_split'][($request['cur_uri_pos']+3)])
         && $request['uri_split'][($request['cur_uri_pos']+3)] == 'add'
         ) {
-        $request['cur_uri_pos'] += 3;
+        $request['cur_uri_pos'] += 2;
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountRecommendationProcess');
         $rc = ciniki_musicfestivals_wng_accountRecommendationProcess($ciniki, $tnid, $request, [
             'sections' => $sections,
@@ -378,7 +406,39 @@ function ciniki_musicfestivals_wng_accountRecommendationsProcess(&$ciniki, $tnid
         } else {
             return $rc;
         }
-    }
+    } /* elseif( isset($request['uri_split'][($request['cur_uri_pos']+3)])
+        && $request['uri_split'][($request['cur_uri_pos']+3)] == 'add'
+        ) {
+        //
+        // Display the groups/classes
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'recommendationClassesLoad');
+        $rc = ciniki_musicfestivals_recommendationClassesLoad($ciniki, $args['provincials']['tnid'], $section);
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1054', 'msg'=>'', 'err'=>$rc['err']));
+        }
+        $classes = isset($rc['classes']) ? $rc['classes'] : array();
+        $categories = [];
+        foreach($classes as $class) {
+            $class['text'] = $class['code'] . ' - ' . $class['name'],
+            $class['url'] = "{$base_url}/add/{$recommendation
+            if( !isset($categories[$class['category_id']]) ) {
+                $categories[$class['category_id']] = [
+                    'id' => $class['category_id'],
+                    'name' => $class['category_name'],
+                    'permalink' => $class['category_permalink'],
+                    'classes' => [],
+                    ];
+            }
+        }
+        foreach($categories as $cid => $category) {
+            $blocks[] = [
+                'type' => 'buttons',
+                'title' => $cateogry['name'],
+                'items' => $category['classes'],
+                ];
+        }
+    } */
 
     //
     // Display title

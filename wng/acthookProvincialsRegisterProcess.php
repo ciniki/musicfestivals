@@ -61,7 +61,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
     }
     $entry_uuid = $request['uri_split'][$request['cur_uri_pos']];
     $registration_uuid = $request['uri_split'][($request['cur_uri_pos']+1)];
-    $base_url .= '/' . $entry_uuid . '/' . $registration_uuid;
+    $registration_form_base_url = $base_url . '/' . $entry_uuid . '/' . $registration_uuid;
 
     //
     // Make sure festival is a provincials festival
@@ -130,6 +130,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
         . "entries.mark, "
         . "entries.notes, "
         . "entries.class_id, "
+        . "entries.title1_local_num, "
         . "classes.code AS class_code, "
         . "classes.name AS class_name, "
         . "recommendations.id AS recommendation_id, "
@@ -214,7 +215,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
         . "FROM ciniki_musicfestival_recommendation_entries AS entries "
         . "INNER JOIN ciniki_musicfestival_recommendations AS recommendations ON ("
             . "entries.recommendation_id = recommendations.id "
-            . "AND recommendations.status = 50 "
+//            . "AND recommendations.status = 50 "
             . "AND recommendations.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
             . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
@@ -332,7 +333,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountCustomerTypeProcess');
     $rc = ciniki_musicfestivals_wng_accountCustomerTypeProcess($ciniki, $tnid, $request, array(
         'festival' => $festival,
-        'base_url' => $base_url,
+        'base_url' => $registration_form_base_url,
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -385,10 +386,19 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
             'class_id' => $entry['class_id'],
             'instrument' => $entry['instrument'],
             ];
-        for($i = 1; $i <= 8; $i++) {
+        if( isset($entry['title1_local_num']) ) {
+            $i = $entry['title1_local_num'];
             foreach(['title', 'opus', 'movements', 'musical', 'composer', 'arranger', 'perf_time'] as $field) {
                 if( isset($entry["{$field}{$i}"]) && $entry["{$field}{$i}"] != '' ) {
-                    $request['session']['musicfestival-registration']["{$field}{$i}"] = $entry["{$field}{$i}"];
+                    $request['session']['musicfestival-registration']["{$field}1"] = $entry["{$field}{$i}"];
+                }
+            }
+        } else {
+            for($i = 1; $i <= 1; $i++) {
+                foreach(['title', 'opus', 'movements', 'musical', 'composer', 'arranger', 'perf_time'] as $field) {
+                    if( isset($entry["{$field}{$i}"]) && $entry["{$field}{$i}"] != '' ) {
+                        $request['session']['musicfestival-registration']["{$field}{$i}"] = $entry["{$field}{$i}"];
+                    }
                 }
             }
         }
@@ -487,7 +497,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
             // Process the competitor
             //
             if( isset($_POST['f-competitor_id']) && isset($_POST['f-action']) && $_POST['f-action'] == 'update' ) {
-                $request['session']['account-musicfestivals-competitor-form-return'] = $base_url;
+                $request['session']['account-musicfestivals-competitor-form-return'] = $registration_form_base_url;
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'competitorFormUpdateProcess');
                 $rc = ciniki_musicfestivals_wng_competitorFormUpdateProcess($ciniki, $tnid, $request, [
                     'ctype' => $local_competitor['ctype'],
@@ -734,6 +744,7 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
             'festival' => $festival,
             'registration_id' => 0,
             'display' => 'recommendation-registration',
+            'base_url' => "{$request['ssl_domain_base_url']}/account/musicfestival/{$festival['permalink']}/registrations",
             'selected_class' => isset($selected_class) ? $selected_class : null,
             'selected_section' => isset($selected_section) ? $selected_section : null,
             'selected_member' => $selected_member,

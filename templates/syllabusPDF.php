@@ -324,7 +324,6 @@ function ciniki_musicfestivals_templates_syllabusPDF(&$ciniki, $tnid, $args) {
                     $icon_y = $this->GetY() + 1.5;
                 }
                 
-                            error_log($class['code']);
                 foreach($fields as $i => $field) {
                     $x = $this->getX();
                     $y = $this->getY();

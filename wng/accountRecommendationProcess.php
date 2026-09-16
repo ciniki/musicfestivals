@@ -84,8 +84,20 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
             . "entries.name, "
             . "entries.mark, "
             . "entries.provincials_reg_id, "
-            . "entries.local_reg_id "
+            . "entries.local_reg_id, "
+            . "entries.title1_local_num, "
+            . "IFNULL(registrations.fulltitle1, '') AS fulltitle1, "
+            . "IFNULL(registrations.fulltitle2, '') AS fulltitle2, "
+            . "IFNULL(registrations.fulltitle3, '') AS fulltitle3, "
+            . "IFNULL(registrations.fulltitle4, '') AS fulltitle4, "
+            . "IFNULL(registrations.fulltitle5, '') AS fulltitle5, "
+            . "IFNULL(registrations.fulltitle6, '') AS fulltitle6, "
+            . "IFNULL(registrations.fulltitle7, '') AS fulltitle7, "
+            . "IFNULL(registrations.fulltitle8, '') AS fulltitle8 "
             . "FROM ciniki_musicfestival_recommendation_entries AS entries "
+            . "LEFT JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                . "entries.local_reg_id = registrations.id "
+                . ") "
             . "WHERE entries.recommendation_id = '" . ciniki_core_dbQuote($ciniki, $recommendation['id']) . "' "
             . "AND entries.tnid = '" . ciniki_core_dbQuote($ciniki, $args['provincials']['tnid']) . "' "
             . "ORDER BY entries.class_id, position "
@@ -94,7 +106,9 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'entries', 'fname'=>'id', 
                 'fields'=>array('id', 'status', 'status_text', 'class_id', 'position', 'name', 'mark', 
-                    'provincials_reg_id', 'local_reg_id'),
+                    'provincials_reg_id', 'local_reg_id', 'title1_local_num',
+                    'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8',
+                    ),
                 'maps'=>array('status_text'=>$maps['recommendationentry']['status']),
                 ),
             ));
@@ -123,10 +137,11 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
             'member_name' => $args['member']['name'],
             'section_id' => 0,
             'section_name' => '',
+            'class' => null,
             'status' => 10,
             'status_text' => 'Draft',
             'adjudicator_name' => $args['adjudicator']['name'],
-            'adjudicator_phone' => $args['adjudicator']['phone'],
+//            'adjudicator_phone' => $args['adjudicator']['phone'],
             'adjudicator_email' => $args['adjudicator']['email'],
             'local_adjudicator_id' => $args['adjudicator']['id'],
             'acknowledgement' => '',
@@ -198,13 +213,12 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
             );
         return array('stat'=>'ok', 'blocks'=>$blocks);
     } 
-    else {
-        foreach($sections as $section) {
-            if( $section['id'] == $recommendation['section_id'] ) {
-                $recommendation['section'] = $section;
-                $recommendation['section_name'] = $section['name'];
-                break;
-            }
+
+    foreach($sections as $section) {
+        if( $section['id'] == $recommendation['section_id'] ) {
+            $recommendation['section'] = $section;
+            $recommendation['section_name'] = $section['name'];
+            break;
         }
     }
     if( !isset($recommendation['section']) ) {
@@ -220,6 +234,47 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1054', 'msg'=>'', 'err'=>$rc['err']));
     }
     $classes = isset($rc['classes']) ? $rc['classes'] : array();
+
+    //
+    // Check if class selected
+    //
+    if( $recommendation['id'] == 0 && $recommendation['class'] == null ) {
+        $block = null;
+        $categories = [];
+        foreach($classes as $class) {
+            if( isset($request['uri_split'][($request['cur_uri_pos']+2)]) 
+                && $request['uri_split'][($request['cur_uri_pos']+2)] == $class['code']
+                && $recommendation['class'] == null
+                ) {
+                $recommendation['class'] = $class;
+            }
+            if( !isset($categories[$class['category_id']]) ) {
+                $categories[$class['category_id']] = [
+                    'id' => $class['category_id'],
+                    'name' => $class['category_name'],
+                    'permalink' => $class['category_permalink'],
+                    'classes' => [],
+                    ];
+            }
+            $categories[$class['category_id']]['classes'][] = [
+                'text' => $class['code'] . ' - ' . $class['name'],
+                'url' => "{$base_url}/add/{$recommendation['section']['permalink']}/{$class['code']}",
+                ];
+                
+        }
+        if( $recommendation['class'] == null ) {
+            foreach($categories as $category) {
+                $blocks[] = [
+                    'type' => 'buttons',
+                    'cat-id' => $class['category_id'],
+                    'title' => $class['category_name'],
+                    'level' => 2,
+                    'items' => $category['classes'],
+                    ];
+            }
+            return array('stat'=>'ok', 'blocks'=>$blocks);
+        } 
+    }
 
     //
     // Decide what should be displayed
@@ -240,11 +295,12 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
         //
         // Generate the form
         //
-        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'recommendationFormGenerate');
-        $rc = ciniki_musicfestivals_wng_recommendationFormGenerate($ciniki, $args['provincials']['tnid'], $request, [   
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountRecommendationFormGenerate');
+        $rc = ciniki_musicfestivals_wng_accountRecommendationFormGenerate($ciniki, $args['provincials']['tnid'], $request, [   
             'recommendation' => $recommendation,
             'section' => $section,
-            'classes' => $classes,
+//            'classes' => $classes,
+            'class' => $recommendation['class'],
             'existing' => $existing,
             'adjudicator' => $args['adjudicator'],
             'cancel-url' => $base_url,
@@ -273,6 +329,11 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
                 if( isset($recommendation['entries'][$cid][$i]) ) {
                     $entry = $recommendation['entries'][$cid][$i];
                     $entry['position_text'] = $position['label'];
+                    if( $entry['title1_local_num'] > 0 ) {
+                        $entry['titles'] = $entry["fulltitle{$entry['title1_local_num']}"];
+                    } else {
+                        $entry['titles'] = $entry["fulltitle1"];
+                    }
                     $entries[] = $entry;
                 }
             }
@@ -285,6 +346,7 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
                     'columns' => array(
                         array('label'=>'Position', 'fold-label'=>'Position: ', 'field'=>'position_text'),
                         array('label'=>'Competitor', 'field'=>'name'),
+                        array('label'=>'Title', 'field'=>'titles'),
                         array('label'=>'Status', 'field'=>'status_text'),
                         array('label'=>'Mark', 'fold-label'=>'Mark: ', 'field'=>'mark'),
                         ),
@@ -379,14 +441,40 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
                 . "C.gE('f-recommendation_mark_'+i+'_'+cid).value='';"
             . "}"
         . "}}";
+    $fields = [];
+    foreach($form_sections as $section) {
+        //
+        // Add the intro to each section as a break, unless submit section
+        //
+//        if( !isset($section['id']) || $section['id'] != 'submit' ) {
+            $form['fields'][] = array(
+                'id' => 'section-' . isset($section['id']) ? $section['id'] : '0',
+                'ftype' => 'break',
+                'label' => $section['label'],
+                'description' => isset($section['description']) ? $section['description'] : '',
+                );
+//        }
+        foreach($section['fields'] as $fid => $field) {
+            $form['fields'][] = $field;
+        }
+    }
+    $fields['action'] = array(
+        'id' => 'action',
+        'ftype' => 'hidden', 
+        'name' => 'submit',
+        'value' => 'submit',
+        );
+
     $blocks[] = array(
         'type' => 'form',
         'form-id' => 'section-form',
-        'guidelines' => 'Please submit all your recommendations for ' . $section['name'] . ' at once.',
+//        'guidelines' => 'Please submit all your recommendations for ' . $section['name'] . ' at once.',
         'class' => 'limit-width limit-width-90 musicfestival-recommendations',
         'problem-list' => $form_errors,
         'section-selector' => 'yes',
-        'form-sections' => $form_sections,
+//        'form-sections' => $form_sections,
+        'fields' => $form['fields'],
+        'submit-hide' => 'yes',
         'js' => $js,
         );
 

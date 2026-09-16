@@ -187,7 +187,6 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                 $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.recommendation', $recommendation_args, 0x04);
                 if( $rc['stat'] != 'ok' ) {
                     $form_errors .= "We had an expected error, please contact us for help.";
-                    error_log(print_r($rc, true));
                     ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
                 }
                 $recommendation_id = $rc['id'];
@@ -203,7 +202,6 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
                         $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.recommendationentry', $entry, 0x04);
                         if( $rc['stat'] != 'ok' ) {
                             $form_errors .= "We had an expected error, please contact us for help.";
-                            error_log(print_r($rc, true));
                             ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
                         }
                     }

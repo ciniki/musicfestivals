@@ -135,7 +135,7 @@ function ciniki_musicfestivals_provincialsRecommendationGet($ciniki) {
     }
 
     $recommendation['details'][] = ['label' => 'Adjudicator', 'value'=>$recommendation['adjudicator_name']];
-    $recommendation['details'][] = ['label' => 'Phone', 'value'=>$recommendation['adjudicator_phone']];
+//    $recommendation['details'][] = ['label' => 'Phone', 'value'=>$recommendation['adjudicator_phone']];
     $recommendation['details'][] = ['label' => 'Email', 'value'=>$recommendation['adjudicator_email']];
 
     //
@@ -232,7 +232,13 @@ function ciniki_musicfestivals_provincialsRecommendationGet($ciniki) {
             . "registrations.mark, "
             . "registrations.display_name, "
             . "registrations.fulltitle1, "
-            . "registrations.perf_time1 "
+            . "registrations.fulltitle2, "
+            . "registrations.fulltitle3, "
+            . "registrations.fulltitle4, "
+            . "registrations.fulltitle5, "
+            . "registrations.fulltitle6, "
+            . "registrations.fulltitle7, "
+            . "registrations.fulltitle8 "
             . "FROM ciniki_musicfestival_adjudicatorrefs AS arefs "
             . "INNER JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
                 . "ssections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
@@ -273,20 +279,33 @@ function ciniki_musicfestivals_provincialsRecommendationGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'id', 
                 'fields'=>array('id', 'display_name', 'section_name', 'category_name', 'class_code', 'class_name', 'mark',
-                    'fulltitle1', 'perf_time1'),
+                    'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8', 
+                    ),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1432', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
         }
-        $rsp['registrations'] = isset($rc['registrations']) ? $rc['registrations'] : array();
-        
-        foreach($rsp['registrations'] as $rid => $reg) {
-            $title = $reg["fulltitle1"];
-            $rsp['registrations'][$rid]['name'] = $reg['display_name'] . ' - ' . $reg['class_code'] . ' - ' . $title . ' - ' . $reg['class_name'];
+        $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
+      
+        //
+        // Build the array so id's are reg_id-title_num
+        //
+        $rsp['registrations'] = [];
+        foreach($registrations as $rid => $reg) {
+            for($i = 1; $i <= 8; $i++) {
+                if( $reg["fulltitle{$i}"] != '' ) {
+                    $rsp['registrations'][] = [
+                        'id' => "{$reg['id']}-{$i}",
+                        'name' => "{$reg['display_name']} - {$reg['class_code']} - {$reg["fulltitle{$i}"]} - {$reg['class_name']}",
+                        'mark' => $reg['mark'],
+                        ];
+                }
+            }
+//            $title = $reg["fulltitle1"];
+//            $rsp['registrations'][$rid]['name'] = $reg['display_name'] . ' - ' . $reg['class_code'] . ' - ' . $title . ' - ' . $reg['class_name'];
         }
     }
-
 
     return $rsp;
 }

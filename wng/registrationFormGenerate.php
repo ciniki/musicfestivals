@@ -1178,6 +1178,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         if( isset($selected_class['titleflags']) && ($selected_class['titleflags']&0x0300) > 0 ) {
             $artwork_class = $css_class;
         }
+        if( isset($fields['member_break']['class']) && str_contains($fields['member_break']['class'], 'hidden') ) {
+            $css_class = 'hidden';
+        }
 
         //
         // Setup the title prefix
@@ -1235,6 +1238,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             $fields["title{$i}"]['onblur'] = "hideTitles(event,{$i});";
             $fields["title{$i}"]['autocomplete'] = "off";
         }
+        if( $i == 1 && $args['display'] == 'recommendation-registration' && $fields["title{$i}"]['value'] != '' ) {
+            $fields["title{$i}"]['editable'] = 'no';
+        }
 
         $fields["opus{$i}"] = array(
             'id' => "opus{$i}",
@@ -1268,6 +1274,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         }
         if( isset($selected_class) && $i > $selected_class['max_titles'] ) {
             $fields["opus{$i}"]['value'] = '';
+        }
+        if( $i == 1 && $args['display'] == 'recommendation-registration' && $fields["opus{$i}"]['value'] != '' ) {
+            $fields["opus{$i}"]['editable'] = 'no';
         }
 
         $fields["movements{$i}"] = array(
@@ -1303,6 +1312,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         if( isset($selected_class) && $i > $selected_class['max_titles'] ) {
             $fields["movements{$i}"]['value'] = '';
         }
+        if( $i == 1 && $args['display'] == 'recommendation-registration' && $fields["movements{$i}"]['value'] != '' ) {
+            $fields["movements{$i}"]['editable'] = 'no';
+        }
 
         $fields["musical{$i}"] = array(
             'id' => "musical{$i}",
@@ -1336,6 +1348,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         }
         if( isset($selected_class) && $i > $selected_class['max_titles'] ) {
             $fields["musical{$i}"]['value'] = '';
+        }
+        if( $i == 1 && $args['display'] == 'recommendation-registration' && $fields["musical{$i}"]['value'] != '' ) {
+            $fields["musical{$i}"]['editable'] = 'no';
         }
 
         $fields["composer{$i}"] = array(
@@ -1371,6 +1386,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         if( isset($selected_class) && $i > $selected_class['max_titles'] ) {
             $fields["composer{$i}"]['value'] = '';
         }
+        if( $i == 1 && $args['display'] == 'recommendation-registration' && $fields["composer{$i}"]['value'] != '' ) {
+            $fields["composer{$i}"]['editable'] = 'no';
+        }
 
         $fields["arranger{$i}"] = array(
             'id' => "arranger{$i}",
@@ -1404,6 +1422,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         }
         if( isset($selected_class) && $i > $selected_class['max_titles'] ) {
             $fields["arranger{$i}"]['value'] = '';
+        }
+        if( $i == 1 && $args['display'] == 'recommendation-registration' && $fields["arranger{$i}"]['value'] != '' ) {
+            $fields["arranger{$i}"]['editable'] = 'no';
         }
 
         if( isset($selected_class) && ($selected_class['flags']&0x10) == 0x10 
@@ -1736,6 +1757,10 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'label' => 'Registration Notes',
             'class' => '',
             );
+        // Check if a provincial form, hide registration by default
+        if( isset($fields['member_break']['class']) && str_contains($fields['member_break']['class'], 'hidden') ) {
+            $fields['line-notes']['class'] = 'hidden';
+        }
 
         //
         // Add notes field
@@ -1902,20 +1927,30 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         . "};"
         . "function memberSelected(){"
             . "var v=C.gE('f-member_id').value;"
+            . "for(var i=1;i<=8;i++){"
+                . "C.aC(C.gE('line-title-'+i).previousSibling,'hidden');"
+                . "C.aC(C.gE('line-title-'+i),'hidden');"
+            . "}"
             . "if(members[v]!=null&&members[v]['s']==1&&members[v]!=null&&members[v]['r']==1){"
                 // Show message about register via link
                 . "C.rC(C.gE('member_notallowed'),'hidden');"
                 . "C.aC(C.gE('member_break'),'hidden');"
                 . "C.aC(C.gE('addregform_submit_buttons'),'hidden');"
+                . "C.aC(C.gE('line-notes'),'hidden');"
+                . "C.aC(C.gE('line-notes').previousSibling,'hidden');"
             . "}else if(members[v]!=null&&members[v]['s']==1){"
                 . "sectionSelected();"
                 . "C.aC(C.gE('member_notallowed'),'hidden');"
+                . "C.rC(C.gE('line-notes'),'hidden');"
+                . "C.rC(C.gE('line-notes').previousSibling,'hidden');"
                 . "C.rC(C.gE('member_break'),'hidden');"
                 . "C.rC(C.gE('addregform_submit_buttons'),'hidden');"
             . "}else{"
                 . "C.aC(C.gE('member_notallowed'),'hidden');"
                 . "C.aC(C.gE('member_break'),'hidden');"
                 . "C.aC(C.gE('addregform_submit_buttons'),'hidden');"
+                . "C.aC(C.gE('line-notes'),'hidden');"
+                . "C.aC(C.gE('line-notes').previousSibling,'hidden');"
             . "}"
         . "};"
         . "function classSelected(sid){"

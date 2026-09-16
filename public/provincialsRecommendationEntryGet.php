@@ -105,12 +105,21 @@ function ciniki_musicfestivals_provincialsRecommendationEntryGet($ciniki) {
             . "entries.notes, "
             . "entries.dt_invite_sent, "
             . "entries.class_id, "
+            . "entries.title1_local_num, "
             . "classes.code AS class_code, "
             . "classes.name AS class_name, "
             . "recommendations.id AS recommendation_id, "
             . "recommendations.status AS recommendation_status, "
             . "localreg.id AS registration_id, "
             . "localreg.display_name AS local_display_name, "
+            . "localreg.fulltitle1 AS fulltitle1, "
+            . "localreg.fulltitle2 AS fulltitle2, "
+            . "localreg.fulltitle3 AS fulltitle3, "
+            . "localreg.fulltitle4 AS fulltitle4, "
+            . "localreg.fulltitle5 AS fulltitle5, "
+            . "localreg.fulltitle6 AS fulltitle6, "
+            . "localreg.fulltitle7 AS fulltitle7, "
+            . "localreg.fulltitle8 AS fulltitle8, "
             . "localclasses.code AS local_class_code, "
             . "localclasses.name AS local_class_name, "
             . "localcategories.name AS local_category_name, "
@@ -166,6 +175,10 @@ function ciniki_musicfestivals_provincialsRecommendationEntryGet($ciniki) {
             $entry['details'][] = [
                 'label' => 'Local Class', 
                 'value' => $entry['local_class_code'] . ' - ' . $entry['local_category_name'] . ' - ' . $entry['local_class_name'],
+                ];
+            $entry['details'][] = [
+                'label' => 'Title',
+                'value' => $entry["fulltitle{$entry['title1_local_num']}"],
                 ];
         }
         if( $entry['status'] > 30 && $entry['dt_invite_sent'] != '' && $entry['dt_invite_sent'] != '0000-00-00 00:00:00' ) {

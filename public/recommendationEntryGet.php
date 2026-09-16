@@ -77,6 +77,7 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
             'name' => '',
             'mark' => '',
             'notes' => '',
+            'title1_local_num' => 1,
             'member_tnid' => 0,
             'local_reg_details' => [
                 ['label' => 'Participant', 'value' => ''],
@@ -120,6 +121,7 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
             . "entries.notes, "
             . "entries.provincials_reg_id, "
             . "entries.local_reg_id, "
+            . "entries.title1_local_num, "
             . "members.member_tnid, "
             . "members.id AS member_id, "
             . "IFNULL(classes.code, '') AS class_code, "
@@ -156,7 +158,7 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'entries', 'fname'=>'id', 
                 'fields'=>array('id', 'status', 'recommendation_id', 'class_id', 'position', 'name', 'mark', 'notes', 
-                    'member_tnid', 'member_id', 'provincials_reg_id', 'local_reg_id', 'class_code',
+                    'member_tnid', 'member_id', 'provincials_reg_id', 'local_reg_id', 'title1_local_num', 'class_code',
                     'local_reg_private_name',
                     'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8',
                     ),
@@ -169,6 +171,11 @@ function ciniki_musicfestivals_recommendationEntryGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.610', 'msg'=>'Unable to find Adjudicator Recommendation Entry'));
         }
         $entry = $rc['entries'][0];
+        if( $entry['title1_local_num'] > 0 ) {
+            $entry['title'] = $entry["fulltitle{$entry['title1_local_num']}"];
+        } else {
+            $entry['title'] = $entry['fulltitle1'];
+        }
 
         $entry['local_reg_details'] = [
             ['label'=>'Participant', 'value'=>$entry['local_reg_private_name']],

@@ -139,26 +139,31 @@ function ciniki_musicfestivals_recommendationLocalRegistrationSearch($ciniki) {
             'private_name' => $reg['name'],
             'mark' => $reg['mark'],
             'local_reg_details' => [],
+            'titles' => [],
             ];
         $result['local_reg_details'] = [
             ['label'=>'Participant', 'value'=>$reg['name']],
             ];
         for($i = 1; $i <= 8; $i++) {
-            if( isset($rc["fulltitle{$i}"]) && $rc["fulltitle{$i}"] != '' ) {
+            if( isset($reg["fulltitle{$i}"]) && $reg["fulltitle{$i}"] != '' ) {
                 $result['local_reg_details'][] = [
                     'label' => "Title {$i}",
-                    'value' => $registration["fulltitle{$i}"],
+                    'value' => $reg["fulltitle{$i}"],
                     ];
-                if( $i == 1 ) {
-                    $result['name'] .= ' - ' . $registration["fulltitle{$i}"];
-                }
+                $result['titles'][$i] = $reg["fulltitle{$i}"];
+//                if( $i == 1 ) {
+//                    $result['name'] .= ' - ' . $reg["fulltitle{$i}"];
+//                }
             }
         }
-        if( $reg['mark'] != '' ) {
-            $result['name'] .= ' - ' . $reg['mark'];
-        }
 
-        $results[] = $result;
+        for($i = 1; $i <= 8; $i++) {
+            if( isset($reg["fulltitle{$i}"]) && $reg["fulltitle{$i}"] != '' ) {
+                $result['name'] = "{$reg['name']} - {$reg["fulltitle{$i}"]} - {$reg['mark']}";
+                $result['title_num'] = $i;
+                $results[] = $result;
+            }
+        }
     }
 
     return array('stat'=>'ok', 'registrations'=>$results);

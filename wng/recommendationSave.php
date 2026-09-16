@@ -66,7 +66,7 @@ function ciniki_musicfestivals_wng_recommendationSave(&$ciniki, $tnid, $request,
         'section_id',
         'status',
         'adjudicator_name',
-        'adjudicator_phone',
+//        'adjudicator_phone',
         'adjudicator_email',
         'local_adjudicator_id',
         ];
@@ -100,9 +100,9 @@ function ciniki_musicfestivals_wng_recommendationSave(&$ciniki, $tnid, $request,
         if( isset($recommendation_args['adjudicator_name']) && trim($recommendation_args['adjudicator_name']) == '' ) {
             $form_errors .= ($form_errors != '' ? "\n" : '') . "You must specify an Adjudicator Name";
         }
-        if( isset($recommendation_args['adjudicator_phone']) && trim($recommendation_args['adjudicator_phone']) == '' ) {
-            $form_errors .= ($form_errors != '' ? "\n" : '') . "You must specify an Adjudicator Phone";
-        }
+//        if( isset($recommendation_args['adjudicator_phone']) && trim($recommendation_args['adjudicator_phone']) == '' ) {
+//            $form_errors .= ($form_errors != '' ? "\n" : '') . "You must specify an Adjudicator Phone";
+//        }
         if( isset($recommendation_args['adjudicator_email']) && trim($recommendation_args['adjudicator_email']) == '' ) {
             $form_errors .= ($form_errors != '' ? "\n" : '') . "You must specify an Adjudicator Email";
         }
@@ -155,7 +155,7 @@ function ciniki_musicfestivals_wng_recommendationSave(&$ciniki, $tnid, $request,
         }
         $recommendation['id'] = $rc['id'];
         $recommendation['adjudicator_name'] = $recommendation_args['adjudicator_name'];
-        $recommendation['adjudicator_phone'] = $recommendation_args['adjudicator_phone'];
+//        $recommendation['adjudicator_phone'] = $recommendation_args['adjudicator_phone'];
         $recommendation['adjudicator_email'] = $recommendation_args['adjudicator_email'];
     }
     elseif( count($recommendation_args) > 0 ) {
@@ -198,14 +198,21 @@ function ciniki_musicfestivals_wng_recommendationSave(&$ciniki, $tnid, $request,
         $positions = $rc['positions'];
         foreach($positions as $i => $position) {
             $entry = [];
-            if( $form_section['fields']["recommendation_{$i}_{$cid}"]['ftype'] == 'select' ) {
+            if( $form_section['fields']["recommendation_{$i}_{$cid}"]['ftype'] == 'select' 
+                || $form_section['fields']["recommendation_{$i}_{$cid}"]['ftype'] == 'dropdown' 
+                ) {
                 // Lookup competitor name 
                 $entry['local_reg_id'] = $form_section['fields']["recommendation_{$i}_{$cid}"]['value'];
                 if( $entry['local_reg_id'] > 0 ) {
                     foreach($form_section['fields']["recommendation_{$i}_{$cid}"]['options'] as $option) {
                         if( $option['id'] == $entry['local_reg_id'] ) {
-                            $entry['name'] = $option['display_name'];
+//                            $entry['name'] = $option['display_name'];
+                            $entry['name'] = $option['name'];
                         }
+                    }
+                    if( preg_match("/^([0-9]+)-([0-9]+)$/", $entry['local_reg_id'], $m) ) {
+                        $entry['local_reg_id'] = $m[1];
+                        $entry['title1_local_num'] = $m[2];
                     }
                 } else {
                     $entry['name'] = '';
@@ -261,6 +268,9 @@ function ciniki_musicfestivals_wng_recommendationSave(&$ciniki, $tnid, $request,
                     }
                     if( isset($entry['local_reg_id']) && $entry['local_reg_id'] != $recommendation['entries'][$cid][$i]['local_reg_id'] ) {
                         $update_args['local_reg_id'] = $entry['local_reg_id'];
+                    }
+                    if( isset($entry['title1_local_num']) && $entry['title1_local_num'] != $recommendation['entries'][$cid][$i]['title1_local_num'] ) {
+                        $update_args['title1_local_num'] = $entry['title1_local_num'];
                     }
                     if( count($update_args) > 0 ) {
                         $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.recommendationentry', $recommendation['entries'][$cid][$i]['id'], $update_args, 0x04);

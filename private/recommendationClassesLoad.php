@@ -23,19 +23,15 @@ function ciniki_musicfestivals_recommendationClassesLoad(&$ciniki, $tnid, $secti
         . "classes.category_id, "
         . "categories.id AS category_id, "
         . "categories.name AS category_name, "
-        . "categories.primary_image_id AS category_image_id, "
-        . "categories.synopsis AS category_synopsis, "
-        . "categories.description AS category_description, "
+        . "categories.permalink AS category_permalink, "
+//        . "categories.primary_image_id AS category_image_id, "
+//        . "categories.synopsis AS category_synopsis, "
+//        . "categories.description AS category_description, "
         . "classes.code, "
         . "classes.name, "
         . "classes.permalink, "
         . "classes.sequence, "
-        . "classes.flags, "
-        . "earlybird_fee, "
-        . "fee, "
-        . "virtual_fee, "
-        . "earlybird_plus_fee, "
-        . "plus_fee "
+        . "classes.flags "
         . "FROM ciniki_musicfestival_categories AS categories "
         . "INNER JOIN ciniki_musicfestival_classes AS classes ON ("
             . "categories.id = classes.category_id "
@@ -48,8 +44,8 @@ function ciniki_musicfestivals_recommendationClassesLoad(&$ciniki, $tnid, $secti
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'classes', 'fname'=>'id', 
-            'fields'=>array('id', 'uuid', 'festival_id', 'category_id', 'code', 'name', 'permalink', 
-                'sequence', 'flags'),
+            'fields'=>array('id', 'uuid', 'festival_id', 'category_id', 'category_name', 'category_permalink',
+                'code', 'name', 'permalink', 'sequence', 'flags'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {

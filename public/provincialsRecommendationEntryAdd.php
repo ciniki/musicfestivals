@@ -43,6 +43,16 @@ function ciniki_musicfestivals_provincialsRecommendationEntryAdd(&$ciniki) {
     }
 
     //
+    // Check if reg-title_num as id
+    //
+    if( isset($args['local_reg_id']) && preg_match("/^([0-9]+)-([0-9]+)$/", $args['local_reg_id'], $m) ) {
+        $args['local_reg_id'] = $m[1];
+        $args['title1_local_num'] = $m[2];
+    } else {
+        $args['title1_local_num'] = 1;
+    }
+
+    //
     // Load tenant settings
     //
     ciniki_core_loadMethod($ciniki, 'ciniki', 'tenants', 'private', 'intlSettings');
@@ -146,6 +156,10 @@ function ciniki_musicfestivals_provincialsRecommendationEntryAdd(&$ciniki) {
             . "AND recommendations.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
             . ") "
         . "WHERE entries.local_reg_id = '" . ciniki_core_dbQuote($ciniki, $args['local_reg_id']) . "' "
+        . "AND ("
+            . "entries.class_id = '" . ciniki_core_dbQuote($ciniki, $args['class_id']) . "' "
+            . "OR entries.title1_local_num = '" . ciniki_core_dbQuote($ciniki, $args['title1_local_num']) . "' "
+            . ") "
         . "AND entries.tnid = '" . ciniki_core_dbQuote($ciniki, $provincials_tnid) . "' "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'entry');
