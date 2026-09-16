@@ -1042,7 +1042,7 @@ function ciniki_musicfestivals_objects($ciniki) {
         'o_container' => 'titles',
         'table' => 'ciniki_musicfestivals_titles',
         'fields' => array(
-            'list_id' => array('name'=>'List', 'ref'=>'ciniki.musicfestivals.titlelist'),
+//            'list_id' => array('name'=>'List', 'ref'=>'ciniki.musicfestivals.titlelist'),
             'fulltitle' => array('name'=>'Full Title'),
             'title' => array('name'=>'Title'),
             'opus' => array('name'=>'Opus', 'default'=>''),
@@ -1052,6 +1052,18 @@ function ciniki_musicfestivals_objects($ciniki) {
             'arranger' => array('name'=>'Arranger', 'default'=>''),
             'source_type' => array('name'=>'Source Type', 'default'=>''),
             'keywords'=>array('name'=>'Keywords', 'default'=>''),
+            ),
+        'history_table' => 'ciniki_musicfestivals_history',
+        );
+    $objects['titlelisttitle'] = array(
+        'name' => 'Title List Title',
+        'sync' => 'yes',
+        'o_name' => 'item',
+        'o_container' => 'items',
+        'table' => 'ciniki_musicfestivals_titlelists_titles',
+        'fields' => array(
+            'list_id' => array('name'=>'List', 'ref'=>'ciniki.musicfestivals.titlelist', 'default'=>'0'),
+            'title_id' => array('name'=>'Title', 'ref'=>'ciniki.musicfestivals.title', 'default'=>'0'),
             ),
         'history_table' => 'ciniki_musicfestivals_history',
         );

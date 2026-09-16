@@ -67,7 +67,7 @@ function ciniki_musicfestivals_titleGet($ciniki) {
             'source_type'=>'',
         );
         if( isset($args['list_id']) && $args['list_id'] > 0 ) {
-            $title['list_id'] = $args['list_id'];
+            $title['list_ids'] = [$args['list_id']];
         }
     }
 
@@ -76,15 +76,19 @@ function ciniki_musicfestivals_titleGet($ciniki) {
     //
     else {
         $strsql = "SELECT titles.id, "
-            . "titles.list_id, "
             . "titles.title, "
             . "titles.opus, "
             . "titles.movements, "
             . "titles.musical, "
             . "titles.composer, "
             . "titles.arranger, "
-            . "titles.source_type "
+            . "titles.source_type, "
+            . "tlt.list_id AS list_ids "
             . "FROM ciniki_musicfestivals_titles AS titles "
+            . "LEFT JOIN ciniki_musicfestivals_titlelists_titles AS tlt ON ("
+                . "titles.id = tlt.title_id "
+                . "AND titles.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
             . "WHERE titles.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . "AND titles.id = '" . ciniki_core_dbQuote($ciniki, $args['title_id']) . "' "
             . "";
@@ -92,8 +96,10 @@ function ciniki_musicfestivals_titleGet($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'titles', 'fname'=>'id', 
                 'fields'=>array('list_id', 'title', 'opus', 'movements', 'musical', 
-                    'composer', 'arranger', 'source_type',
-                    )),
+                    'composer', 'arranger', 'source_type', 'list_ids',
+                    ),
+                'lists'=>array('list_ids'),
+                ),
             ));
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1156', 'msg'=>'Approved Title not found', 'err'=>$rc['err']));
@@ -115,16 +121,16 @@ function ciniki_musicfestivals_titleGet($ciniki) {
         . "WHERE lists.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
         . "ORDER BY lists.name "
         . "";
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
-    $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'lists', 'fname'=>'id', 
-            'fields'=>array('id', 'name', 'permalink', 'flags')),
+            'fields'=>array('id', 'name')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
     $lists = isset($rc['lists']) ? $rc['lists'] : array();
-    array_unshift($lists, ['id' => 0, 'name' => 'None']);
+//    array_unshift($lists, ['id' => 0, 'name' => 'None']);
 
     return array('stat'=>'ok', 'title'=>$title, 'lists'=>$lists);
 }

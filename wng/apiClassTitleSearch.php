@@ -77,6 +77,10 @@ function ciniki_musicfestivals_wng_apiClassTitleSearch(&$ciniki, $tnid, $request
             . "ctl.list_id = lists.id "
             . "AND lists.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
+        . "INNER JOIN ciniki_musicfestivals_titlelists_titles AS tlt ON ("
+            . "lists.id = tlt.list_id "
+            . "AND tlt.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
         . "INNER JOIN ciniki_musicfestivals_titles AS titles ON ("
             . "lists.id = titles.list_id ";
     if( $keywords != '' ) {

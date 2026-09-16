@@ -17,7 +17,6 @@ function ciniki_musicfestivals_titleUpdate(&$ciniki) {
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
         'title_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Approved Title'),
-        'list_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'List'),
         'title'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Title'),
         'opus'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Opus'),
         'movements'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Movements'),
@@ -25,12 +24,14 @@ function ciniki_musicfestivals_titleUpdate(&$ciniki) {
         'composer'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Composer'),
         'arranger'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Arranger'),
         'source_type'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Source Type'),
+        'list_ids'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'name'=>'Lists'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
     }
     $args = $rc['args'];
 
+    error_log(print_r($args,true));
     //
     // Make sure this module is activated, and
     // check permission to run this function for this tenant
@@ -49,7 +50,6 @@ function ciniki_musicfestivals_titleUpdate(&$ciniki) {
     // Load the current title
     //
     $strsql = "SELECT titles.id, "
-        . "titles.list_id, "
         . "titles.fulltitle, "
         . "titles.title, "
         . "titles.opus, "
@@ -71,6 +71,25 @@ function ciniki_musicfestivals_titleUpdate(&$ciniki) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1656', 'msg'=>'Unable to find requested title'));
     }
     $title = $rc['title'];
+
+    //
+    // Load the titlelists
+    //
+    $strsql = "SELECT tlt.id, "
+        . "tlt.uuid, "
+        . "tlt.list_id "
+        . "FROM ciniki_musicfestivals_titlelists_titles AS tlt "
+        . "WHERE tlt.title_id = '" . ciniki_core_dbQuote($ciniki, $args['title_id']) . "' "
+        . "AND tlt.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'list_ids', 'fname'=>'list_id', 'fields'=>array('id', 'uuid', 'list_id')),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1297', 'msg'=>'Unable to load list_ids', 'err'=>$rc['err']));
+    }
+    $title['list_ids'] = isset($rc['list_ids']) ? $rc['list_ids'] : array();
 
     //
     // Merge args with existing title information
@@ -118,6 +137,8 @@ function ciniki_musicfestivals_titleUpdate(&$ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionCommit');
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbAddModuleHistory');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectDelete');
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
     $rc = ciniki_core_dbTransactionStart($ciniki, 'ciniki.musicfestivals');
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -131,6 +152,35 @@ function ciniki_musicfestivals_titleUpdate(&$ciniki) {
     if( $rc['stat'] != 'ok' ) {
         ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
         return $rc;
+    }
+
+    if( isset($args['list_ids']) && is_array($args['list_ids']) ) {
+        //
+        // Remove list_ids no longer attached
+        //
+        foreach($title['list_ids'] as $id => $item) {
+            if( !in_array($id, $args['list_ids']) ) {
+                $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.musicfestivals.titlelisttitle', $item['id'], $item['uuid'], 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1017', 'msg'=>'Unable to add the titlelist_title', 'err'=>$rc['err']));
+                }
+            }
+        }
+
+        //
+        // Add new list_ids 
+        //
+        foreach($args['list_ids'] as $id) {
+            if( !isset($title['list_ids'][$id]) ) {
+                $rc = ciniki_core_objectAdd($ciniki, $args['tnid'], 'ciniki.musicfestivals.titlelisttitle', [
+                    'list_id' => $id,
+                    'title_id' => $title['id'],
+                    ], 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1017', 'msg'=>'Unable to add the titlelist_title', 'err'=>$rc['err']));
+                }
+            }
+        }
     }
 
     //

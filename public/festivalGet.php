@@ -4163,20 +4163,27 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 } else {
                     $order_sql = "ORDER BY " . $order_sql;
                 }
-                $strsql = "SELECT id, "
-                    . "title, "
-                    . "movements, "
-                    . "composer, "
-                    . "source_type "
-                    . "FROM ciniki_musicfestivals_titles "
-                    . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                    . "AND list_id = '" . ciniki_core_dbQuote($ciniki, $args['titlelist_id']) . "' "
+                $strsql = "SELECT titles.id, "
+                    . "titles.title, "
+                    . "titles.opus, "
+                    . "titles.movements, "
+                    . "titles.musical, "
+                    . "titles.composer, "
+                    . "titles.arranger, "
+                    . "titles.source_type "
+                    . "FROM ciniki_musicfestivals_titlelists_titles AS tlt "
+                    . "INNER JOIN ciniki_musicfestivals_titles AS titles ON ("
+                        . "tlt.title_id = titles.id "
+                        . "AND titles.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE tlt.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "AND tlt.list_id = '" . ciniki_core_dbQuote($ciniki, $args['titlelist_id']) . "' "
                     . $order_sql
                     . "";
                 ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
                 $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
                     array('container'=>'titles', 'fname'=>'id', 
-                        'fields'=>array('id', 'title', 'movements', 'composer', 'source_type')),
+                        'fields'=>array('id', 'title', 'opus', 'movements', 'musical', 'composer', 'arranger', 'source_type')),
                     ));
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;

@@ -85,21 +85,33 @@ function ciniki_musicfestivals_wng_apiTitleListSearch(&$ciniki, $tnid, $request)
         }
 
         $strsql = "SELECT titles.id, "
-            . "titles.list_id, "
             . "titles.title, "
+            . "titles.opus, "
             . "titles.movements, "
+            . "titles.musical, "
             . "titles.composer, "
-            . "titles.source_type "
-            . "FROM ciniki_musicfestivals_titles AS titles "
-            . "WHERE titles.list_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $list_ids) . ") "
+            . "titles.arranger, "
+            . "titles.source_type, "
+            . "GROUP_CONCAT(lists.name SEPARATOR ', ') AS lists "
+            . "FROM ciniki_musicfestivals_titlelists_titles AS tlt "
+            . "INNER JOIN ciniki_musicfestivals_titles AS titles ON ("
+                . "tlt.title_id = titles.id "
+                . "AND tlt.tnid = titles.tnid "
+                . ") "
+            . "INNER JOIN ciniki_musicfestivals_titlelists AS lists ON ("
+                . "tlt.list_id = lists.id "
+                . "AND tlt.tnid = lists.tnid "
+                . ") "
+            . "WHERE tlt.list_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $list_ids) . ") "
             . "AND titles.keywords LIKE '% " . ciniki_core_dbQuote($ciniki, $keywords) . "%' "
-            . "ORDER BY source_type, title, movements, composer "
+            . "GROUP BY titles.id "
+            . "ORDER BY source_type, title, movements, composer, lists.name "
             . "LIMIT " . ($limit + 1)
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
         $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'titles', 'fname'=>'id', 
-                'fields'=>array('id', 'list_id', 'title', 'movements', 'composer', 'source_type'),
+                'fields'=>array('id', 'lists', 'title', 'opus', 'movements', 'musical', 'composer', 'arranger', 'source_type'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -111,10 +123,10 @@ function ciniki_musicfestivals_wng_apiTitleListSearch(&$ciniki, $tnid, $request)
     }
 
     if( count($titles) > 0 ) {
-        foreach($titles as $tid => $title) {
-            $titles[$tid]['list'] = $lists[$title['list_id']]['name'];
-        }
-        $columns = [['label' => 'Discipline', 'field'=>'list']];
+//        foreach($titles as $tid => $title) {
+//            $titles[$tid]['list'] = $lists[$title['list_id']]['name'];
+//        }
+        $columns = [['label' => 'Discipline', 'field'=>'lists']];
         for($j = 1; $j < 5; $j++) {
             if( in_array($list["col{$j}_field"], ['title', 'movements', 'composer', 'source_type']) ) {
                 $columns[] = [
