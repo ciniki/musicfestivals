@@ -126,6 +126,14 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'fee'=>'0',
             'participation'=>0,
             'scheduled'=>'',
+            'source1'=>'',
+            'source2'=>'',
+            'source3'=>'',
+            'source4'=>'',
+            'source5'=>'',
+            'source6'=>'',
+            'source7'=>'',
+            'source8'=>'',
             'video_url1'=>'',
             'video_url2'=>'',
             'video_url3'=>'',
@@ -278,6 +286,14 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "IFNULL(ssections.name, '') AS section_name, "
             . "IFNULL(finals_ssections.name, '') AS finals_section_name, "
             . "registrations.participation, "
+            . "registrations.source1, "
+            . "registrations.source2, "
+            . "registrations.source3, "
+            . "registrations.source4, "
+            . "registrations.source5, "
+            . "registrations.source6, "
+            . "registrations.source7, "
+            . "registrations.source8, "
             . "registrations.video_url1, "
             . "registrations.video_url2, "
             . "registrations.video_url3, "
@@ -386,6 +402,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     'title8', 'composer8', 'opus8', 'movements8', 'musical8', 'arranger8', 'perf_time8', 
                     'fee',
                     'participation', 
+                    'source1', 'source2', 'source3', 'source4', 'source5', 'source6', 'source7', 'source8',
                     'video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8',
                     'music_orgfilename1', 'music_orgfilename2', 'music_orgfilename3',  'music_orgfilename4', 
                     'music_orgfilename5', 'music_orgfilename6',  'music_orgfilename7', 'music_orgfilename8',  

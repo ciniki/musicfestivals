@@ -800,6 +800,16 @@ function ciniki_musicfestivals_main() {
                     'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.titlelabel.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.section_id, "arranger", "Arranger");',
                     },
+                'source':{
+                    'label':'Set Source',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.titleopts.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.section_id, "source", "Source", {"none":"None","required":"Required","optional":"Optional"});',
+                    },
+                'sourcelabel':{
+                    'label':'Set Source Label',
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
+                    'fn':'M.ciniki_musicfestivals_main.titlelabel.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.section_id, "source", "Source");',
+                    },
                 'backtrack':{
                     'label':'Set Backtrack',
                     'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
@@ -4443,6 +4453,27 @@ function ciniki_musicfestivals_main() {
                 });
             });
     }
+    this.festival.setSource = function(sid, label) {
+        M.confirm("Are you sure you want to update Source to " + label + "?", "Confirm", function(rsp) {
+            var args = {
+                'tnid':M.curTenantID, 
+                'syllabus_id':M.ciniki_musicfestivals_main.festival.syllabus_id,
+                'section_id':sid,
+                'festival_id':M.ciniki_musicfestivals_main.festival.festival_id,
+                'source':label,
+                }; 
+            if( M.ciniki_musicfestivals_main.festival.sections.syllabus_tabs.selected == 'categories' ) {
+                args['category_id'] = M.ciniki_musicfestivals_main.festival.category_id;
+            }
+            M.api.getJSONCb('ciniki.musicfestivals.sectionClassesUpdate', args, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                M.ciniki_musicfestivals_main.festival.open();
+                });
+            });
+    }
     this.festival.setBacktrack = function(sid, label) {
         M.confirm("Are you sure you want to update Backtrack to " + label + "?", "Confirm", function(rsp) {
             var args = {
@@ -5189,11 +5220,11 @@ function ciniki_musicfestivals_main() {
             this.sections.classes.num_cols++; 
         }
         else if( this.sections._stabs.selected == 'titles' ) {
-            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Titles', 'Opus', 'Movements', 'Musical', 'Composer', 'Arranger', 'Backtrack', 'Art'];
-            this.sections.classes.cellClasses = ['', '', '', 'multiline aligncenter', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', '',''];
-            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'num_titles', 'opus', 'movements', 'musical', 'composer', 'arranger', 'backtrack', 'artwork'];
-            this.sections.classes.sortTypes = ['text', 'text', 'text', 'number', 'text', 'text', 'text', 'text', 'text', 'text', 'text'];
-            this.sections.classes.num_cols = 11;
+            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Titles', 'Opus', 'Movements', 'Musical', 'Composer', 'Arranger', 'Source', 'Backtrack', 'Art'];
+            this.sections.classes.cellClasses = ['', '', '', 'multiline aligncenter', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', '',''];
+            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'num_titles', 'opus', 'movements', 'musical', 'composer', 'arranger', 'source', 'backtrack', 'artwork'];
+            this.sections.classes.sortTypes = ['text', 'text', 'text', 'number', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text'];
+            this.sections.classes.num_cols = 12;
             if( (this.data.flags&0x02) == 0x02 ) {
                 this.sections.classes.headerValues[this.sections.classes.num_cols] = 'Video';
                 this.sections.classes.cellClasses[this.sections.classes.num_cols] = '';

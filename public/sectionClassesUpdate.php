@@ -43,6 +43,8 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         'composer_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Composer Label'),
         'arranger'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Arranger Setting'),
         'arranger_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Arranger Label'),
+        'source'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Source Setting'),
+        'source_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Source Label'),
         'backtrack'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Backtrack Setting'),
         'artwork'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Artwork Setting'),
         'video'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Setting'),
@@ -115,7 +117,8 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         . "classes.movements_label, "
         . "classes.musical_label, "
         . "classes.composer_label, "
-        . "classes.arranger_label "
+        . "classes.arranger_label, "
+        . "classes.source_label "
         . "FROM ciniki_musicfestival_categories AS categories "
         . "INNER JOIN ciniki_musicfestival_sections AS sections ON ("
             . "categories.section_id = sections.id "
@@ -144,7 +147,7 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
             'fields'=>array('id', 'flags', 'feeflags', 'titleflags', 'questionflags',
                 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
                 'synopsis',
-                'title_label', 'opus_label', 'movements_label', 'musical_label', 'composer_label', 'arranger_label',
+                'title_label', 'opus_label', 'movements_label', 'musical_label', 'composer_label', 'arranger_label', 'source_label',
                 )),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -268,12 +271,22 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         // Update arranger
         //
         if( isset($args['arranger']) && strtolower($args['arranger']) == 'none' && ($class['titleflags']&0x0C0000) > 0 ) {  
-            error_log('none');
             $titleflags = ($titleflags&0xFFF3FFFF);
         } elseif( isset($args['arranger']) && strtolower($args['arranger']) == 'required' && ($class['titleflags']&0x040000) == 0 ) {
             $titleflags = ($titleflags&0xFFF3FFFF) | 0x040000;
         } elseif( isset($args['arranger']) && strtolower($args['arranger']) == 'optional' && ($class['titleflags']&0x080000) == 0 ) {
             $titleflags = ($titleflags&0xFFF3FFFF) | 0x080000;
+        }
+
+        //
+        // Update source
+        //
+        if( isset($args['source']) && strtolower($args['source']) == 'none' && ($class['titleflags']&0x03) > 0 ) {  
+            $titleflags = ($titleflags&0xFFFFFFFC);
+        } elseif( isset($args['source']) && strtolower($args['source']) == 'required' && ($class['titleflags']&0x01) == 0 ) {
+            $titleflags = ($titleflags&0xFFFFFFFC) | 0x01;
+        } elseif( isset($args['source']) && strtolower($args['source']) == 'optional' && ($class['titleflags']&0x02) == 0 ) {
+            $titleflags = ($titleflags&0xFFFFFFFC) | 0x02;
         }
 
         //
@@ -357,7 +370,7 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         //
         // Check for label updates
         //
-        foreach(['title', 'opus', 'movements', 'musical', 'composer', 'arranger'] as $field) {
+        foreach(['title', 'opus', 'movements', 'musical', 'composer', 'arranger', 'source'] as $field) {
             if( isset($args["{$field}_label"]) && $args["{$field}_label"] != $class["{$field}_label"] ) {
                 $update_args["{$field}_label"] = $args["{$field}_label"]; 
             }

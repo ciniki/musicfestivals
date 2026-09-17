@@ -586,6 +586,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "classes.musical_label, "
                 . "classes.composer_label, "
                 . "classes.arranger_label, "
+                . "classes.source_label, "
                 . "classes.synopsis, "
                 . "classes.provincials_code, "
                 . "classes.schedule_seconds, "
@@ -680,7 +681,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         'earlybird_fee', 'fee', 'virtual_fee', 'plus_fee', 'earlybird_plus_fee',
                         'question_provincials', 'question_musicfest', 'question_canwest',
                         'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 
-                        'title_label', 'opus_label', 'movements_label', 'musical_label', 'composer_label', 'arranger_label',
+                        'title_label', 'opus_label', 'movements_label', 'musical_label', 'composer_label', 'arranger_label', 'source_label',
                         'synopsis', 'provincials_code', 'provincials_class_name', 
                         'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds', 'levels', 'accolades',
                         'num_registrations', 'perf_time',
@@ -805,6 +806,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         $festival['classes'][$iid]['arranger'] = 'Required';
                     } elseif( ($class['titleflags']&0x080000) == 0x080000 ) {
                         $festival['classes'][$iid]['arranger'] = 'Optional';
+                    }
+                    $festival['classes'][$iid]['source'] = '';
+                    if( ($class['titleflags']&0x01) == 0x01 ) {
+                        $festival['classes'][$iid]['source'] = 'Required';
+                    } elseif( ($class['titleflags']&0x02) == 0x02 ) {
+                        $festival['classes'][$iid]['source'] = 'Optional';
                     }
                     if( ($class['flags']&0x040000) == 0x040000 ) {
                         $festival['classes'][$iid]['schedule_type'] = 'Performance&nbsp;+';
