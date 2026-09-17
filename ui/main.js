@@ -2013,7 +2013,8 @@ function ciniki_musicfestivals_main() {
             'cellClasses':['', ''],
             },
         'titles':{'label':'Approved Titles', 'type':'simplegrid', 'num_cols':7, 
-            'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'titles') == 'yes' && M.ciniki_musicfestivals_main.festival.titlelist_id > 0 ? 'yes' : 'no'; },
+//            'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'titles') == 'yes' && (M.ciniki_musicfestivals_main.festival.titlelist_id > 0 || (M.ciniki_musicfestivals_main.festival.data.titles != null && M.ciniki_musicfestivals_main.festival.data.titles.length > 0)) ? 'yes' : 'no'; },
+            'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'titles') == 'yes' ? 'yes' : 'no'; },
             'headerValues':['Title', 'Opus', 'Movements', 'Musical', 'Composer', 'Arranger', 'Source Type'],
             'noData':'No titles',
             'dataMaps':['title', 'opus', 'movements', 'musical', 'composer', 'arranger', 'source_type'],
@@ -3597,7 +3598,7 @@ function ciniki_musicfestivals_main() {
         }
         if( s == 'titlelists' ) {
             switch(j) { 
-                case 0: return d.name;
+                case 0: return M.textCount(d.name, d.num_titles);
             }
         }
         if( s == 'titles' ) {

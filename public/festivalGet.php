@@ -4115,20 +4115,30 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         // Get the list of title lists
         //
         if( isset($args['titlelists']) && $args['titlelists'] == 'yes' ) {
-            $strsql = "SELECT id, "
-                . "name, "
-                . "flags, "
-                . "col1_field, "
-                . "col1_label, "
-                . "col2_field, "
-                . "col2_label, "
-                . "col3_field, "
-                . "col3_label, "
-                . "col4_field, "
-                . "col4_label "
-                . "FROM ciniki_musicfestivals_titlelists "
-                . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
-                . "ORDER BY name "
+            $strsql = "SELECT lists.id, "
+                . "lists.name, "
+                . "lists.flags, "
+                . "lists.col1_field, "
+                . "lists.col1_label, "
+                . "lists.col2_field, "
+                . "lists.col2_label, "
+                . "lists.col3_field, "
+                . "lists.col3_label, "
+                . "lists.col4_field, "
+                . "lists.col4_label, "
+                . "COUNT(titles.id) AS num_titles "
+                . "FROM ciniki_musicfestivals_titlelists AS lists "
+                . "LEFT JOIN ciniki_musicfestivals_titlelists_titles AS tlt ON ("
+                    . "lists.id = tlt.list_id "
+                    . "AND tlt.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "LEFT JOIN ciniki_musicfestivals_titles AS titles ON ("
+                    . "tlt.title_id = titles.id "
+                    . "AND titles.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . ") "
+                . "WHERE lists.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . "GROUP BY lists.id "
+                . "ORDER BY lists.name "
                 . "";
             ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
             $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
@@ -4137,6 +4147,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     'col2_field', 'col2_label',
                     'col3_field', 'col3_label',
                     'col4_field', 'col4_label',
+                    'num_titles',
                     )),
                 ));
             if( $rc['stat'] != 'ok' ) {
@@ -4144,25 +4155,104 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             }
             $festival['titlelists'] = isset($rc['lists']) ? $rc['lists'] : array();
 
-            //
-            // Check if need query for list sections
-            //
-            if( isset($args['titlelist_id']) && $args['titlelist_id'] > 0 ) {
-                $order_sql = '';
-                foreach($festival['titlelists'] as $list) {
-                    if( $list['id'] == $args['titlelist_id'] ) {
-                        for($i = 1; $i < 5; $i++ ) {
-                            if( $list["col{$i}_field"] != 'none' && $list["col{$i}_field"] != '' ) {
-                                $order_sql .= ($order_sql != '' ? ', ' : '') . $list["col{$i}_field"];
-                            }
+            $order_sql = '';
+            foreach($festival['titlelists'] as $list) {
+                if( $list['id'] == $args['titlelist_id'] ) {
+                    for($i = 1; $i < 5; $i++ ) {
+                        if( $list["col{$i}_field"] != 'none' && $list["col{$i}_field"] != '' ) {
+                            $order_sql .= ($order_sql != '' ? ', ' : '') . $list["col{$i}_field"];
                         }
                     }
                 }
-                if( $order_sql == '' ) {
-                    $order_sql = "ORDER BY title, movements, composer ";
-                } else {
-                    $order_sql = "ORDER BY " . $order_sql;
+            }
+            if( $order_sql == '' ) {
+                $order_sql = "ORDER BY title, movements, composer ";
+            } else {
+                $order_sql = "ORDER BY " . $order_sql;
+            }
+
+            //
+            // Check if any unconnected titles
+            //
+            if( isset($args['titlelist_id']) && $args['titlelist_id'] == 0 ) {
+                $strsql = "SELECT titles.id, "
+                    . "titles.title, "
+                    . "titles.opus, "
+                    . "titles.movements, "
+                    . "titles.musical, "
+                    . "titles.composer, "
+                    . "titles.arranger, "
+                    . "titles.source_type "
+                    . "FROM ciniki_musicfestivals_titles AS titles "
+                    . "LEFT JOIN ciniki_musicfestivals_titlelists_titles AS tlt ON ("
+                        . "titles.id = tlt.title_id "
+                        . "AND tlt.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE titles.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "AND ISNULL(tlt.list_id) "
+                    . $order_sql
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+                $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+                    array('container'=>'titles', 'fname'=>'id', 
+                        'fields'=>array('id', 'title', 'opus', 'movements', 'musical', 'composer', 'arranger', 'source_type')),
+                    ));
+                if( $rc['stat'] != 'ok' ) {
+                    return $rc;
                 }
+                $festival['titles'] = isset($rc['titles']) ? $rc['titles'] : array();
+                if( count($festival['titles']) > 0 ) {
+                    array_unshift($festival['titlelists'], [
+                        'id' => 0,
+                        'name' => 'Unlisted',
+                        'num_titles' => count($festival['titles']),
+                        'col1_field' => 'title',
+                        'col1_label' => 'Title',
+                        'col2_field' => 'movements',
+                        'col2_label' => 'Movements',
+                        'col3_field' => 'composer',
+                        'col3_label' => 'Composer',
+                        'col4_field' => 'source',
+                        'col4_label' => 'Source',
+                        ]);
+                }
+            }
+
+            //
+            // Check if need query for list sections
+            //
+            elseif( isset($args['titlelist_id']) && $args['titlelist_id'] > 0 ) {
+                $strsql = "SELECT COUNT(titles.id) AS num_titles "
+                    . "FROM ciniki_musicfestivals_titles AS titles "
+                    . "LEFT JOIN ciniki_musicfestivals_titlelists_titles AS tlt ON ("
+                        . "titles.id = tlt.title_id "
+                        . "AND tlt.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                        . ") "
+                    . "WHERE titles.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                    . "AND ISNULL(tlt.list_id) "
+                    . "";
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbSingleCount');
+                $rc = ciniki_core_dbSingleCount($ciniki, $strsql, 'ciniki.musicfestivals', 'num_titles');
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1158', 'msg'=>'Unable to load get the number of items', 'err'=>$rc['err']));
+                }
+                $num_titles = isset($rc['num_titles']) ? $rc['num_titles'] : '';
+                if( $num_titles > 0 ) {
+                    array_unshift($festival['titlelists'], [
+                        'id' => 0,
+                        'name' => 'Unlisted',
+                        'num_titles' => $num_titles,
+                        'col1_field' => 'title',
+                        'col1_label' => 'Title',
+                        'col2_field' => 'movements',
+                        'col2_label' => 'Movements',
+                        'col3_field' => 'composer',
+                        'col3_label' => 'Composer',
+                        'col4_field' => 'source',
+                        'col4_label' => 'Source',
+                        ]);
+                }
+
                 $strsql = "SELECT titles.id, "
                     . "titles.title, "
                     . "titles.opus, "
