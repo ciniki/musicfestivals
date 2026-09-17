@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN source_label varchar(150) NOT NULL AFTER arranger_label;
+ALTER TABLE ciniki_musicfestival_classes COMMENT='v1.24';

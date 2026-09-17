@@ -1,0 +1,9 @@
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN source1 text not null AFTER participation;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN source2 text not null AFTER participation;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN source3 text not null AFTER participation;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN source4 text not null AFTER participation;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN source5 text not null AFTER participation;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN source6 text not null AFTER participation;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN source7 text not null AFTER participation;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN source8 text not null AFTER participation;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.35';

@@ -48,6 +48,7 @@ function ciniki_musicfestivals_classAdd(&$ciniki) {
         'musical_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Musical Label'),
         'composer_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Composer Label'),
         'arranger_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Arranger Label'),
+        'source_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Source Label'),
         'provincials_code'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Provincials Class Code'),
         'levels'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'list', 'delimiter'=>'::', 'name'=>'Level Tags'),
         'synopsis'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Synopsis'),

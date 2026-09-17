@@ -178,7 +178,7 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             //
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x010000) 
                 && isset($field['required']) && $field['required'] == 'yes' && $display == 'view' 
-                && preg_match("/(opus|movements|musical|composer|arranger)/", $field['id'])
+                && preg_match("/(opus|movements|musical|composer|arranger|source)/", $field['id'])
                 && $festival['edit'] == 'no' 
                 ) {
                 $field['required'] = 'no';
@@ -377,6 +377,7 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
                     "musical{$i}" => isset($fields["musical{$i}"]['value']) ? $fields["musical{$i}"]['value'] : '',
                     "composer{$i}" => isset($fields["composer{$i}"]['value']) ? $fields["composer{$i}"]['value'] : '',
                     "arranger{$i}" => isset($fields["arranger{$i}"]['value']) ? $fields["arranger{$i}"]['value'] : '',
+                    "source{$i}" => isset($fields["source{$i}"]['value']) ? $fields["source{$i}"]['value'] : '',
                     ], $i);
                 if( $rc['stat'] != 'ok' ) {
                     return $rc;
@@ -481,6 +482,7 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             $registration["musical{$i}"] = isset($fields["musical{$i}"]['value']) ? $fields["musical{$i}"]['value'] : '';
             $registration["composer{$i}"] = isset($fields["composer{$i}"]['value']) ? $fields["composer{$i}"]['value'] : '';
             $registration["arranger{$i}"] = isset($fields["arranger{$i}"]['value']) ? $fields["arranger{$i}"]['value'] : '';
+            $registration["source{$i}"] = isset($fields["source{$i}"]['value']) ? $fields["source{$i}"]['value'] : '';
             $registration["perf_time{$i}"] = isset($fields["perf_time{$i}"]['value']) ? $fields["perf_time{$i}"]['value'] : '';
             $registration["video_url{$i}"] = isset($fields["video_url{$i}"]['value']) ? $fields["video_url{$i}"]['value'] : '';
         }
@@ -826,7 +828,7 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             // Skip fields when editing a pending or paid registration
             //
             if( isset($registration['status']) && $registration['status'] > 10 
-                && !preg_match("/(title|opus|movements|musical|composer|arranger|perf_time|video_url|music_orgfilename|backtrack_option|backtrack|artwork)/", $field['id'])
+                && !preg_match("/(title|opus|movements|musical|composer|arranger|source|perf_time|video_url|music_orgfilename|backtrack_option|backtrack|artwork)/", $field['id'])
                 ) {
                 continue;
             }

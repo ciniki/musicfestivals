@@ -188,6 +188,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
             . "ciniki_musicfestival_classes.musical_label, "
             . "ciniki_musicfestival_classes.composer_label, "
             . "ciniki_musicfestival_classes.arranger_label, "
+            . "ciniki_musicfestival_classes.source_label, "
             . "ciniki_musicfestival_classes.provincials_code, "
             . "ciniki_musicfestival_classes.synopsis, "
             . "ciniki_musicfestival_classes.schedule_seconds, "
@@ -209,7 +210,7 @@ function ciniki_musicfestivals_classGet($ciniki) {
                     'sequence', 'flags', 'feeflags', 'questionflags', 'titleflags', 'tlflags', 
                     'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 
                     'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 
-                    'title_label', 'opus_label', 'movements_label', 'musical_label', 'composer_label', 'arranger_label',
+                    'title_label', 'opus_label', 'movements_label', 'musical_label', 'composer_label', 'arranger_label', 'source_label',
                     'provincials_code', 'synopsis',
                     'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds', 'options',
                     )),

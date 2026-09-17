@@ -129,6 +129,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         . "classes.musical_label, "
         . "classes.composer_label, "
         . "classes.arranger_label, "
+        . "classes.source_label, "
         . "classes.earlybird_fee, "
         . "classes.fee, "
         . "classes.virtual_fee, "
@@ -167,7 +168,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 'name'=>'class_name', 'sectionclassname', 'flags'=>'class_flags', 'feeflags', 'questionflags', 'titleflags', 'tlflags',
                     'min_competitors', 'max_competitors', 
                     'min_titles', 'max_titles', 
-                    'title_label', 'opus_label', 'movements_label', 'musical_label', 'composer_label', 'arranger_label',
+                    'title_label', 'opus_label', 'movements_label', 'musical_label', 'composer_label', 'arranger_label', 'source_label', 
                     'earlybird_fee', 'fee', 
                     'vfee' => 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 'synopsis', 'options',
                     ),
@@ -332,7 +333,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 //
                 // Check for custom labels
                 //
-                foreach(['title', 'opus', 'movements', 'musical', 'composer', 'arranger'] as $field) {
+                foreach(['title', 'opus', 'movements', 'musical', 'composer', 'arranger', 'source'] as $field) {
                     if( isset($section_class["{$field}_label"]) && $section_class["{$field}_label"] != '' ) {
                         $js_classes[$cid]["{$field[0]}{$field[1]}L"] = $section_class["{$field}_label"];
                     }
@@ -1427,6 +1428,43 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             $fields["arranger{$i}"]['editable'] = 'no';
         }
 
+        $fields["source{$i}"] = array(
+            'id' => "source{$i}",
+            'ftype' => 'text',
+            'flex-basis' => '50%',
+            'class' => $css_class,
+            'required' => $required,
+            'size' => 'small',
+            'label' => (isset($festival['registration-source-label']) && $festival['registration-source-label'] != '' ? $festival['registration-source-label'] : "Source"),
+            'error_label' => "{$prefix} " . (isset($festival['registration-source-label']) && $festival['registration-source-label'] != '' ? $festival['registration-source-label'] : "Source"),
+            'value' => isset($_POST["f-source{$i}"]) ? trim($_POST["f-source{$i}"]) : (isset($registration["source{$i}"]) ? $registration["source{$i}"] : ''),
+            );
+        if( isset($selected_class['source_label']) && $selected_class['source_label'] != '' ) {
+            $fields["source{$i}"]['label'] = $selected_class['source_label'];
+        }
+        if( !isset($selected_class) || ($selected_class['titleflags']&0x03) == 0 ) {
+            $fields["source{$i}"]['required'] = 'no';
+            $fields["source{$i}"]['class'] = 'hidden';
+        }
+        elseif( ($selected_class['titleflags']&0x02) == 0x02 ) {
+            $fields["source{$i}"]['required'] = 'no';
+        }
+        if( isset($selected_class) && ($selected_class['flags']&0x10) == 0x10 && isset($selected_class['options']["source{$i}"]) ) {
+            $fields["source{$i}"]['value'] = $selected_class['options']["source{$i}"];
+            $fields["source{$i}"]['editable'] = 'no';
+            $fields["source{$i}"]['disabled'] = 'yes';
+        } elseif( isset($_POST["f-source{$i}"]) ) {
+            $fields["source{$i}"]['value'] = trim($_POST["f-source{$i}"]);
+        } elseif( isset($registration["source{$i}"]) ) {
+            $fields["source{$i}"]['value'] = $registration["source{$i}"];
+        }
+        if( isset($selected_class) && $i > $selected_class['max_titles'] ) {
+            $fields["source{$i}"]['value'] = '';
+        }
+        if( $i == 1 && $args['display'] == 'recommendation-registration' && $fields["source{$i}"]['value'] != '' ) {
+            $fields["source{$i}"]['editable'] = 'no';
+        }
+
         if( isset($selected_class) && ($selected_class['flags']&0x10) == 0x10 
             && isset($selected_class['options']["perf_time{$i}"]) 
             && $selected_class['options']["perf_time{$i}"] > 0
@@ -2078,6 +2116,11 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                         . "}else{"
                             . "C.aC(C.gE('f-arranger'+i).parentNode,'hidden');"
                         . "}"
+                        . "if(classes[c]!=null&&(classes[c].tf&0x03)>0){"
+                            . "C.rC(C.gE('f-source'+i).parentNode,'hidden');"
+                        . "}else{"
+                            . "C.aC(C.gE('f-source'+i).parentNode,'hidden');"
+                        . "}"
                         . "if(i<=classes[c].mit){"
                             . "C.aC(C.gE('f-title'+i).parentNode,'required');"
                             . "C.aC(C.gE('f-perf_time'+i+'-min').parentNode.parentNode,'required');"
@@ -2106,6 +2149,11 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                             . "}else{"
                                 . "C.rC(C.gE('f-arranger'+i).parentNode,'required');"
                             . "}"
+                            . "if(classes[c]!=null&&(classes[c].tf&0x01)>0){"
+                                . "C.aC(C.gE('f-source'+i).parentNode,'required');"
+                            . "}else{"
+                                . "C.rC(C.gE('f-source'+i).parentNode,'required');"
+                            . "}"
                         . "}else{"
                             . "C.rC(C.gE('f-title'+i).parentNode,'required');"
                             . "C.rC(C.gE('f-perf_time'+i+'-min').parentNode.parentNode,'required');"
@@ -2114,6 +2162,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                             . "C.rC(C.gE('f-musical'+i).parentNode,'required');"
                             . "C.rC(C.gE('f-composer'+i).parentNode,'required');"
                             . "C.rC(C.gE('f-arranger'+i).parentNode,'required');"
+                            . "C.rC(C.gE('f-source'+i).parentNode,'required');"
                         . "}"
                         . "C.qS('label[for=\"f-title'+i+'\"]').innerText=(classes[c].tiL!=null?classes[c].tiL:'" 
                             . (isset($festival['registration-title-label']) && $festival['registration-title-label'] != '' ? $festival['registration-title-label'] : 'Title') 
@@ -2132,6 +2181,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                             . "');"
                         . "C.qS('label[for=\"f-arranger'+i+'\"]').innerText=(classes[c].arL!=null?classes[c].arL:'" 
                             . (isset($festival['registration-arranger-label']) && $festival['registration-arranger-label'] != '' ? $festival['registration-arranger-label'] : 'Arranger') 
+                            . "');"
+                        . "C.qS('label[for=\"f-source'+i+'\"]').innerText=(classes[c].soL!=null?classes[c].soL:'" 
+                            . (isset($festival['registration-source-label']) && $festival['registration-source-label'] != '' ? $festival['registration-source-label'] : 'Source') 
                             . "');"
                         . "if((classes[c].f&0x010000)==0x010000){"
                             . "C.aC(C.gE('f-video_url'+i).parentNode,'required');"
@@ -2209,6 +2261,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                         . "C.aC(C.gE('f-musical'+i).parentNode,'hidden');"
                         . "C.aC(C.gE('f-composer'+i).parentNode,'hidden');"
                         . "C.aC(C.gE('f-arranger'+i).parentNode,'hidden');"
+                        . "C.aC(C.gE('f-source'+i).parentNode,'hidden');"
                         . "C.aC(C.gE('f-perf_time'+i+'-min').parentNode.parentNode,'hidden');"
                         . "C.aC(C.gE('f-video_url'+i).parentNode,'hidden');"
                         . "C.aC(C.gE('f-music_orgfilename'+i).parentNode,'hidden');"
@@ -2222,12 +2275,14 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     . "C.gE('f-musical'+i).readOnly=false;"
                     . "C.gE('f-composer'+i).readOnly=false;"
                     . "C.gE('f-arranger'+i).readOnly=false;"
+                    . "C.gE('f-source'+i).readOnly=false;"
                     . "C.gE('f-title'+i).disabled=false;"
                     . "C.gE('f-opus'+i).disabled=false;"
                     . "C.gE('f-movements'+i).disabled=false;"
                     . "C.gE('f-musical'+i).disabled=false;"
                     . "C.gE('f-composer'+i).disabled=false;"
                     . "C.gE('f-arranger'+i).disabled=false;"
+                    . "C.gE('f-source'+i).disabled=false;"
                     . "C.gE('f-perf_time'+i+'-min').disabled=false;"
                     . "if(C.gE('f-perf_time'+i+'-sec')!=null){"
                         . "C.gE('f-perf_time'+i+'-sec').disabled=false;"
@@ -2262,6 +2317,11 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                             . "C.gE('f-arranger'+i).value=classes[c].opt['arranger'+i];"
                             . "C.gE('f-arranger'+i).readOnly=true;"
                             . "C.gE('f-arranger'+i).disabled=true;"
+                        . "}"
+                        . "if(classes[c].opt['source'+i]!=null&&classes[c].opt['source'+i]!=''){"
+                            . "C.gE('f-source'+i).value=classes[c].opt['source'+i];"
+                            . "C.gE('f-source'+i).readOnly=true;"
+                            . "C.gE('f-source'+i).disabled=true;"
                         . "}"
                         . "if(classes[c].opt['perf_time'+i]!=null&&classes[c].opt['perf_time'+i]!=''){"
                             . "var n=parseInt(classes[c].opt['perf_time'+i]);"
@@ -2399,6 +2459,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 . "C.gE('f-musical'+i).value=lDS[j].musical;"
                 . "C.gE('f-composer'+i).value=lDS[j].composer;"
                 . "C.gE('f-arranger'+i).value=lDS[j].arranger;"
+                . "C.gE('f-source'+i).value=lDS[j].source;"
                 . "C.aC(C.gE('f-title'+i+'_search'),'hidden');"
             . "}"
         . "};"

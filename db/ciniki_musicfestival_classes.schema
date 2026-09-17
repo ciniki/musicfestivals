@@ -80,8 +80,8 @@
 # titleflags:           The options for titles. Several of the flags will be moved from flags
 #                       field in the future.
 #
-#                           0x01 - 
-#                           0x02 - 
+#                           0x01 - Source field Required
+#                           0x02 - Source field Optional
 #                           0x04 - 
 #                           0x08 - 
 #                           0x10 - Fixed title(s) **Future move from flags**
@@ -150,6 +150,7 @@
 # musical_label:        The override label for the musical field.
 # composer_label:       The override label for the composer field.
 # arranger_label:       The override label for the arranger field.
+# source_label:         The override label for the source field.
 #
 # provincials_code:     The provincial class code any students in this class can be recommended for.
 #
@@ -200,6 +201,7 @@ create table ciniki_musicfestival_classes (
     musical_label varchar(150) not null,
     composer_label varchar(150) not null,
     arranger_label varchar(150) not null,
+    source_label varchar(150) not null,
     provincials_code varchar(20) not null,
     synopsis text not null,
     schedule_seconds int not null,
@@ -217,4 +219,4 @@ create table ciniki_musicfestival_classes (
     index (festival_id, category_id, tnid),
     index keywords (keywords),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.23';
+) ENGINE='InnoDB', COMMENT='v1.24';
