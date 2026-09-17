@@ -26,10 +26,10 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         'section_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Section'),
         'category_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Category'),
         'earlybird_fee_update'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Earlybird Fee Update'),
-        'fee_update'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Fee Update'),
-        'virtual_fee_update'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Virtual Fee Update'),
-        'earlybird_plus_fee_update'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Earlybird Plus Fee Update'),
-        'plus_fee_update'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'currency', 'name'=>'Plus Fee Update'),
+        'fee_update'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Fee Update'),
+        'virtual_fee_update'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Virtual Fee Update'),
+        'earlybird_plus_fee_update'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Earlybird Plus Fee Update'),
+        'plus_fee_update'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Plus Fee Update'),
         'instrument'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Instrument Setting'),
         'accompanist'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Accompanist Setting'),
         'title_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Title Label'),
@@ -62,6 +62,17 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         return $rc;
     }
     $args = $rc['args'];
+
+    foreach(['fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee'] as $field) {
+        if( isset($args["{$field}_update"]) ) {
+            if( preg_match("/^([0-9\.\-]+)\%/", $args["{$field}_update"], $m) ) {
+                $args["{$field}_update"] = 1+($m[1]/100);
+                $args["{$field}_percent"] = 'yes';
+            } else {
+                $args["{$field}_update"] = preg_replace("/[^0-9\.\-]/", '', $args["{$field}_update"]);
+            }
+        }
+    }
 
     //
     // Make sure this module is activated, and
@@ -158,7 +169,11 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
     foreach($classes as $class) {
         $update_args = array();
         if( isset($args['fee_update']) && $args['fee_update'] != '' && $args['fee_update'] != 0 ) {
-            $update_args['fee'] = $class['fee'] + $args['fee_update'];
+            if( isset($args['fee_percent']) && $args['fee_percent'] == 'yes' ) {
+                $update_args['fee'] = round($class['fee'] * $args['fee_update']);
+            } else {
+                $update_args['fee'] = $class['fee'] + $args['fee_update'];
+            }
         }
 
         //
@@ -167,7 +182,11 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         if( ($festival['flags']&0x04) == 0x04 
             && isset($args['virtual_fee_update']) && $args['virtual_fee_update'] != '' && $args['virtual_fee_update'] != 0 
             ) {
-            $update_args['virtual_fee'] = $class['virtual_fee'] + $args['virtual_fee_update'];
+            if( isset($args['virtual_fee_percent']) && $args['virtual_fee_percent'] == 'yes' ) {
+                $update_args['virtual_fee'] = round($class['virtual_fee'] * $args['virtual_fee_update']);
+            } else {
+                $update_args['virtual_fee'] = $class['virtual_fee'] + $args['virtual_fee_update'];
+            }
         }
 
         //
@@ -176,7 +195,11 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         if( ($festival['flags']&0x20) == 0x20 
             && isset($args['earlybird_fee_update']) && $args['earlybird_fee_update'] != '' && $args['earlybird_fee_update'] != 0 
             ) {
-            $update_args['earlybird_fee'] = $class['earlybird_fee'] + $args['earlybird_fee_update'];
+            if( isset($args['earlybird_fee_percent']) && $args['earlybird_fee_percent'] == 'yes' ) {
+                $update_args['earlybird_fee'] = round($class['earlybird_fee'] * $args['earlybird_fee_update']);
+            } else {
+                $update_args['earlybird_fee'] = $class['earlybird_fee'] + $args['earlybird_fee_update'];
+            }
         }
 
         //
@@ -186,13 +209,21 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
             && isset($args['plus_fee_update']) && $args['plus_fee_update'] != '' 
             && $args['plus_fee_update'] != 0 
             ) {
-            $update_args['plus_fee'] = $class['plus_fee'] + $args['plus_fee_update'];
+            if( isset($args['plus_fee_percent']) && $args['plus_fee_percent'] == 'yes' ) {
+                $update_args['plus_fee'] = round($class['plus_fee'] * $args['plus_fee_update']);
+            } else {
+                $update_args['plus_fee'] = $class['plus_fee'] + $args['plus_fee_update'];
+            }
         }
         if( ($festival['flags']&0x30) == 0x30 
             && isset($args['earlybird_plus_fee_update']) && $args['earlybird_plus_fee_update'] != '' 
             && $args['earlybird_plus_fee_update'] != 0 
             ) {
-            $update_args['earlybird_plus_fee'] = $class['earlybird_plus_fee'] + $args['earlybird_plus_fee_update'];
+            if( isset($args['earlybird_plus_fee_percent']) && $args['earlybird_plus_fee_percent'] == 'yes' ) {
+                $update_args['earlybird_plus_fee'] = round($class['earlybird_plus_fee'] * $args['earlybird_plus_fee_update']);
+            } else {
+                $update_args['earlybird_plus_fee'] = $class['earlybird_plus_fee'] + $args['earlybird_plus_fee_update'];
+            }
         }
 
         //
