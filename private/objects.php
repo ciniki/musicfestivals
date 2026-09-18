@@ -341,6 +341,7 @@ function ciniki_musicfestivals_objects($ciniki) {
             'grade'=>array('name'=>'Grade', 'default'=>''),
             'last_exam'=>array('name'=>'Last Exam Level', 'default'=>''),
             'instrument'=>array('name'=>'Instrument', 'default'=>''),
+            'school'=>array('name'=>'School', 'default'=>''),
             'etransfer_email'=>array('name'=>'etransfer Email', 'default'=>''),
             'notes'=>array('name'=>'Notes', 'default'=>''),
             ),

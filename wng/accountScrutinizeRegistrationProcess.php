@@ -34,7 +34,7 @@ function ciniki_musicfestivals_wng_accountScrutinizeRegistrationProcess(&$ciniki
         return array('stat'=>'exit');
     }
 
-    $fields = ['title', 'opus', 'movements', 'musical', 'composer', 'arranger', 'perf_time', 'video_url', 'music_orgfilename', 'backtrack', 'artwork'];
+    $fields = ['fulltitle', 'title', 'opus', 'movements', 'musical', 'composer', 'arranger', 'source', 'perf_time', 'video_url', 'music_orgfilename', 'backtrack', 'artwork'];
 
     //
     // Load the registration
@@ -57,15 +57,7 @@ function ciniki_musicfestivals_wng_accountScrutinizeRegistrationProcess(&$ciniki
         . "registrations.competitor3_id, "
         . "registrations.competitor4_id, "
         . "registrations.competitor5_id, "
-        . "registrations.class_id, "
-        . "registrations.fulltitle1, "
-        . "registrations.fulltitle2, "
-        . "registrations.fulltitle3, "
-        . "registrations.fulltitle4, "
-        . "registrations.fulltitle5, "
-        . "registrations.fulltitle6, "
-        . "registrations.fulltitle7, "
-        . "registrations.fulltitle8, ";
+        . "registrations.class_id, ";
     for($i = 1; $i <= 8; $i++) {
         foreach($fields as $field) {
             $strsql .= "registrations.{$field}{$i}, ";

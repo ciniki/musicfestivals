@@ -96,6 +96,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
             'grade'=>'',
             'last_exam'=>'',
             'instrument'=>'',
+            'school'=>'',
             'etransfer_email'=>'',
             'notes'=>'',
         );
@@ -143,6 +144,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
             . "ciniki_musicfestival_competitors.grade, "
             . "ciniki_musicfestival_competitors.last_exam, "
             . "ciniki_musicfestival_competitors.instrument, "
+            . "ciniki_musicfestival_competitors.school, "
             . "ciniki_musicfestival_competitors.etransfer_email, "
             . "ciniki_musicfestival_competitors.notes "
             . "FROM ciniki_musicfestival_competitors "
@@ -155,7 +157,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
                 'fields'=>array('id', 'festival_id', 'ctype', 'first', 'last', 'name', 'public_name', 'pronoun', 
                     'flags', 'organization', 'conductor', 'num_people', 
                     'parent', 'address', 'city', 'province', 'postal', 'country', 'phone_home', 'phone_cell', 'phone_work',
-                    'email', '_age', 'study_level', 'grade', 'last_exam', 'instrument', 'etransfer_email', 'notes'),
+                    'email', '_age', 'study_level', 'grade', 'last_exam', 'instrument', 'school', 'etransfer_email', 'notes'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
@@ -282,6 +284,7 @@ function ciniki_musicfestivals_competitorGet($ciniki) {
             $details[] = array('label'=>$label, 'value'=>$competitor['last_exam']); 
         }
         if( $competitor['instrument'] != '' ) { $details[] = array('label'=>'Instrument', 'value'=>$competitor['instrument']); }
+        if( $competitor['school'] != '' ) { $details[] = array('label'=>'School', 'value'=>$competitor['school']); }
         if( $competitor['etransfer_email'] != '' ) { $details[] = array('label'=>'etransfer Email', 'value'=>$competitor['etransfer_email']); }
         if( ($competitor['flags']&0x01) == 0x01 ) { 
             $details[] = array(

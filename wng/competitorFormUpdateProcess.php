@@ -230,6 +230,7 @@ function ciniki_musicfestivals_wng_competitorFormUpdateProcess(&$ciniki, $tnid, 
                 'study_level' => isset($fields['study_level']['value']) ? $fields['study_level']['value'] : '',
                 'last_exam' => isset($fields['last_exam']['value']) ? $fields['last_exam']['value'] : '',
                 'instrument' => isset($fields['instrument']['value']) ? $fields['instrument']['value'] : '',
+                'school' => isset($fields['school']['value']) ? $fields['school']['value'] : '',
                 'etransfer_email' => isset($fields['etransfer_email']['value']) ? $fields['etransfer_email']['value'] : '',
                 'notes' => isset($fields['comp_notes']['value']) ? $fields['comp_notes']['value'] : '',
                 );

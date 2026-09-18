@@ -139,7 +139,8 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         . "competitors.pronoun, "
         . "competitors.parent, "
         . "competitors.age, "
-        . "competitors.instrument "
+        . "competitors.instrument, "
+        . "competitors.school "
         . "FROM ciniki_musicfestival_competitors AS competitors "
         . "WHERE competitors.billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
         . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -148,7 +149,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'name', 'pronoun', 'parent', 'age', 'instrument')),
+        array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'name', 'pronoun', 'parent', 'age', 'instrument', 'school')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.257', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
@@ -194,6 +195,7 @@ function ciniki_musicfestivals_wng_accountCompetitorsProcess(&$ciniki, $tnid, &$
             . "grade, "
             . "last_exam, "
             . "instrument, "
+            . "school, "
             . "etransfer_email, "
             . "notes "
             . "FROM ciniki_musicfestival_competitors "

@@ -581,6 +581,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     . "ciniki_musicfestival_competitors.study_level, "
                     . "ciniki_musicfestival_competitors.last_exam, "
                     . "ciniki_musicfestival_competitors.instrument, "
+                    . "ciniki_musicfestival_competitors.school, "
                     . "ciniki_musicfestival_competitors.notes "
                     . "FROM ciniki_musicfestival_competitors "
                     . "WHERE ciniki_musicfestival_competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
@@ -591,7 +592,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     array('container'=>'competitors', 'fname'=>'id', 
                         'fields'=>array('festival_id', 'ctype', 'flags', 'organization', 'name', 'pronoun', 'conductor', 'parent', 
                             'address', 'city', 'province', 'postal', 'phone_home', 'phone_cell', 'phone_work',
-                            'email', 'etransfer_email', '_age', 'grade', 'num_people', 'study_level', 'last_exam', 'instrument', 'notes'),
+                            'email', 'etransfer_email', '_age', 'grade', 'num_people', 'study_level', 'last_exam', 'instrument', 'school', 'notes'),
                         ),
                     ));
                 if( $rc['stat'] != 'ok' ) {
@@ -689,6 +690,7 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     $details[] = array('label'=>$label, 'value'=>$competitor['last_exam']); 
                 }
                 if( $competitor['instrument'] != '' ) { $details[] = array('label'=>'Instrument', 'value'=>$competitor['instrument']); }
+                if( $competitor['school'] != '' ) { $details[] = array('label'=>'School', 'value'=>$competitor['school']); }
                 if( ($competitor['flags']&0x01) == 0x01 ) { 
                     $details[] = array(
                         'label'=>isset($festival['waiver-general-name']) && $festival['waiver-general-name'] != '' ? $festival['waiver-general-name'] : 'Waiver', 

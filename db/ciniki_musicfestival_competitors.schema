@@ -61,6 +61,7 @@
 # grade:                The grade of the competitor (typically school grade for ensembles).
 # last_exam:            The Last Exam Level taken of the competitor.
 # instrument:           The instrument of the competitor.
+# school:               The school of the competitor.
 # etransfer_email:      The email address to receive any etransfer awards.
 # 
 # notes:                Any notes for the competitor.
@@ -99,7 +100,8 @@ create table ciniki_musicfestival_competitors (
     study_level varchar(250) not null,
     grade varchar(25) not null,
     last_exam varchar(100) not null,
-    instrument varchar(250) not null,
+    instrument varchar(150) not null,
+    school varchar(150) not null,
     etransfer_email varhcar(250) not null,
     notes varchar(5000) not null,
     date_added datetime not null,
@@ -108,4 +110,4 @@ create table ciniki_musicfestival_competitors (
     unique index (uuid),
     index name (id, tnid, festival_id, name, city, province),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.08';
+) ENGINE='InnoDB', COMMENT='v1.09';

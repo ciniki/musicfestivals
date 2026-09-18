@@ -6821,6 +6821,10 @@ function ciniki_musicfestivals_main() {
                 'competitor-individual-instrument':{'label':'Instrument', 'type':'toggle', 'default':'hidden', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
+                'competitor-individual-school':{'label':'School', 'type':'toggle', 'default':'hidden', 'toggles':{
+                    'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
+                    }},
+                'competitor-individual-school-label':{'label':'School Label', 'type':'text'},
                 'competitor-individual-phone-cell-label':{'label':'Cell Phone Label', 'type':'text'},
                 'competitor-individual-phone-home':{'label':'Phone Home', 'type':'toggle', 'default':'optional', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
@@ -6882,6 +6886,10 @@ function ciniki_musicfestivals_main() {
                 'competitor-group-instrument':{'label':'Instrument', 'type':'toggle', 'default':'hidden', 'toggles':{
                     'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
                     }},
+                'competitor-group-school':{'label':'School', 'type':'toggle', 'default':'hidden', 'toggles':{
+                    'hidden':'Hidden', 'optional':'Optional', 'required':'Required', 
+                    }},
+                'competitor-group-school-label':{'label':'School Label', 'type':'text'},
                 'competitor-group-parent-label':{'label':'Contact Person Label', 'type':'text'},
                 'competitor-group-email-confirm':{'label':'Email Confirm', 'type':'toggle', 'default':'no', 'separator':'no', 'toggles':{
                     'no':'No', 'yes':'Yes',
@@ -11551,6 +11559,7 @@ function ciniki_musicfestivals_main() {
             'grade':{'label':'Grade', 'type':'text', 'visible':'no'},
             'last_exam':{'label':'Last Exam Level', 'type':'text', 'visible':'no'},
             'instrument':{'label':'Instrument', 'type':'text', 'visible':'no'},
+            'school':{'label':'School', 'type':'text', 'visible':'no'},
             'flags1':{'label':'Waiver', 'type':'flagtoggle', 'bit':0x01, 'field':'flags', 'off':'Unsigned', 'on':'Signed'},
             'flags2':{'label':'Photo Waiver', 'type':'flagtoggle', 'bit':0x02, 'field':'flags', 
                 'visible':function() { return ['on','internal'].indexOf(M.ciniki_musicfestivals_main.competitor.festival['waiver-photo-status']) >= 0 ? 'yes' : 'no'; },
@@ -11687,6 +11696,13 @@ function ciniki_musicfestivals_main() {
             } else {
                 this.sections._other.fields.instrument.visible = 'no';
             }
+            if( M.ciniki_musicfestivals_main.competitor.festival['competitor-group-school'] != null
+                && ['optional','required'].indexOf(M.ciniki_musicfestivals_main.competitor.festival['competitor-group-school']) >= 0 
+                ) {
+                this.sections._other.fields.school.visible = 'yes';
+            } else {
+                this.sections._other.fields.school.visible = 'no';
+            }
             if( this.festival['competitor-group-phone-home-label'] != null && this.festival['competitor-group-phone-home-label'] != '' ) {
                 this.sections._address.fields.phone_home.label = this.festival['competitor-group-phone-home-label'];
             }
@@ -11764,6 +11780,13 @@ function ciniki_musicfestivals_main() {
             } else {
                 this.sections._other.fields.instrument.visible = 'no';
             }
+            if( M.ciniki_musicfestivals_main.competitor.festival['competitor-individual-school'] != null
+                && ['optional','required'].indexOf(M.ciniki_musicfestivals_main.competitor.festival['competitor-individual-school']) >= 0 
+                ) {
+                this.sections._other.fields.school.visible = 'yes';
+            } else {
+                this.sections._other.fields.school.visible = 'no';
+            }
             if( this.festival['competitor-individual-phone-cell-label'] != null && this.festival['competitor-individual-phone-cell-label'] != '' ) {
                 this.sections._address.fields.phone_cell.label = this.festival['competitor-individual-phone-cell-label'];
             }
@@ -11785,6 +11808,7 @@ function ciniki_musicfestivals_main() {
         this.showHideFormField('_other', 'grade');
         this.showHideFormField('_other', 'last_exam');
         this.showHideFormField('_other', 'instrument');
+        this.showHideFormField('_other', 'school');
         this.showHideFormField('_address', 'phone_home');
         this.showHideFormField('_address', 'phone_cell');
         this.showHideFormField('_address', 'phone_work');

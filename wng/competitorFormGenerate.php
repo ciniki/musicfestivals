@@ -117,6 +117,20 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
                 $fields['organization']['label'] = $festival['competitor-group-organization-label'];
             }
         }
+        if( isset($festival['competitor-group-school']) && in_array($festival['competitor-group-school'], ['required', 'optional']) ) {
+            $fields['school'] = array(
+                'id' => 'school',
+                'label' => 'School',
+                'ftype' => 'text',
+                'required' => (!isset($festival['competitor-group-school']) || $festival['competitor-group-school'] == 'required' ? 'yes' : 'no'),
+                'size' => 'large',
+                'class' => '',
+                'value' => (isset($_POST['f-school']) ? trim($_POST['f-school']) : (isset($competitor['school']) ? $competitor['school'] :'')),
+                );
+            if( isset($festival['competitor-group-school-label']) && $festival['competitor-group-school-label'] != '' ) {
+                $fields['school']['label'] = $festival['competitor-group-school-label'];
+            }
+        }
         if( !isset($festival['competitor-group-conductor']) || $festival['competitor-group-conductor'] == 'optional' || $festival['competitor-group-conductor'] == 'required' ) {
             $fields['conductor'] = array(
                 'id' => 'conductor',
@@ -257,6 +271,24 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
                 && $festival['competitor-individual-last-exam-label'] != ''
                 ) {
                 $fields['last_exam']['label'] = $festival['competitor-individual-last-exam-label'];
+            }
+        }
+        if( isset($festival['competitor-individual-school']) 
+            && in_array($festival['competitor-individual-school'], ['required', 'optional']) 
+            ) {
+            $fields['school'] = array(
+                'id' => 'school',
+                'label' => 'School',
+                'ftype' => 'text',
+                'size' => 'small',
+                'required' => ($festival['competitor-individual-school'] == 'required' ? 'yes' : 'no'),
+                'class' => '',
+                'value' => (isset($_POST['f-school']) ? trim($_POST['f-school']) : (isset($competitor['school']) ? $competitor['school'] :'')),
+                );
+            if( isset($festival['competitor-individual-school-label']) 
+                && $festival['competitor-individual-school-label'] != ''
+                ) {
+                $fields['school']['label'] = $festival['competitor-individual-school-label'];
             }
         }
     }
