@@ -57,7 +57,6 @@ function ciniki_musicfestivals_titleGet($ciniki) {
     //
     if( $args['title_id'] == 0 ) {
         $title = array('id'=>0,
-            'list_id'=>0,
             'title'=>'',
             'opus'=>'',
             'movements'=>'',
@@ -95,7 +94,7 @@ function ciniki_musicfestivals_titleGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'titles', 'fname'=>'id', 
-                'fields'=>array('list_id', 'title', 'opus', 'movements', 'musical', 
+                'fields'=>array('title', 'opus', 'movements', 'musical', 
                     'composer', 'arranger', 'source_type', 'list_ids',
                     ),
                 'lists'=>array('list_ids'),

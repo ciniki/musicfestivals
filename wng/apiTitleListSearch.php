@@ -92,7 +92,7 @@ function ciniki_musicfestivals_wng_apiTitleListSearch(&$ciniki, $tnid, $request)
             . "titles.composer, "
             . "titles.arranger, "
             . "titles.source_type, "
-            . "GROUP_CONCAT(lists.name SEPARATOR ', ') AS lists "
+            . "GROUP_CONCAT(lists.name SEPARATOR ' / ') AS lists "
             . "FROM ciniki_musicfestivals_titlelists_titles AS tlt "
             . "INNER JOIN ciniki_musicfestivals_titles AS titles ON ("
                 . "tlt.title_id = titles.id "
