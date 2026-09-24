@@ -10134,6 +10134,7 @@ function ciniki_musicfestivals_main() {
     this.registration.competitor5_id = 0;
     this.registration.registration_id = 0;
     this.registration.nplist = [];
+    this.registration.liveSearchNS = 0;
     this.registration._source = '';
     this.registration.sections = {
         'teacher_details':{'label':'Teacher', 'type':'customer', 'num_cols':2, 'aside':'yes',
@@ -10699,6 +10700,16 @@ function ciniki_musicfestivals_main() {
             'cellClasses':['label', ''],
             'noData':'No local festival registration titles found',
             },
+        'recommendation_search':{'label':'Recommendation Search', 'panelcolumn':1, 'type':'livesearchgrid', 'livesearchcols':5,
+            'visible':function() { return M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'titles' && M.modFlagOn('ciniki.musicfestivals', 0x010000) ? 'yes' : 'hidden'; },
+            'headerValues':['', 'Class/Category', 'Name/Titles', 'Status', 'Type'],
+            'hint':'Search names',
+            'noData':'No recommendations found',
+            'headerValues':['Name', 'Class', 'Festival', 'Position', 'Submitted'],
+            'headerClasses':[],
+            'cellClasses':[],
+            'dataMaps':[],
+            },
         '_results':{'label':'Results', 'panelcolumn':1,
             'visible':function() { return M.ciniki_musicfestivals_main.registration.sections._tabs.selected == 'results' ? 'yes' : 'hidden'; },
             'fields':{
@@ -10987,6 +10998,36 @@ function ciniki_musicfestivals_main() {
     }
     this.registration.fieldHistoryArgs = function(s, i) {
         return {'method':'ciniki.musicfestivals.registrationHistory', 'args':{'tnid':M.curTenantID, 'registration_id':this.registration_id, 'field':i}};
+    }
+    this.registration.liveSearchCb = function(s, i, v) {
+        if( s == 'recommendation_search' && v != '' ) {
+            this.liveSearchNS++;
+            var sN = this.liveSearchNS;
+            M.api.getJSONBgCb('ciniki.musicfestivals.recommendationSearch', {'tnid':M.curTenantID, 'start_needle':v, 'festival_id':this.data.festival_id, 'limit':'50'}, function(rsp) {
+                    if( sN == M.ciniki_musicfestivals_main.registration.liveSearchNS ) {
+                        M.ciniki_musicfestivals_main.registration.liveSearchShow(s,null,M.gE(M.ciniki_musicfestivals_main.registration.panelUID + '_' + s), rsp.entries);
+                        if( M.ciniki_musicfestivals_main.registration.lastY > 0 ) {
+                            window.scrollTo(0,M.ciniki_musicfestivals_main.registration.lastY);
+                        }
+                    }
+                });
+        }
+    }
+    this.registration.liveSearchResultValue = function(s, f, i, j, d) {
+        if( s == 'recommendation_search' ) { 
+            switch(j) {
+                case 0: return d.name;
+                case 1: return d.class_name;
+                case 2: return d.member_name;
+                case 3: return d.position;
+                case 4: return d.date_submitted;
+            }
+        }
+    }
+    this.registration.liveSearchResultRowFn = function(s, f, i, j, d) {
+        if( s == 'recommendation_search' ) { 
+            return 'M.ciniki_musicfestivals_main.registration.savePos();M.ciniki_musicfestivals_main.recommendationentry.open(\'M.ciniki_musicfestivals_main.registration.reopen();\',\'' + d.id + '\',\'' + d.section_id + '\',[]);';
+        }
     }
     this.registration.cellValue = function(s, i, j, d) {
         if( s == 'competitor1_details' || s == 'competitor2_details' || s == 'competitor3_details' || s == 'competitor4_details' || s == 'competitor5_details' ) {
@@ -11326,6 +11367,12 @@ function ciniki_musicfestivals_main() {
         this.popupMenuClose('_class');
         this.popupMenuClose('provincials');
         M.ciniki_musicfestivals_main.message.addnew('M.ciniki_musicfestivals_main.registration.open();',this.festival_id,'ciniki.musicfestivals.registration',this.registration_id);
+    }
+    this.registration.reopen = function() {
+        this.show();
+        if( this.formValue('recommendation_search') != '' ) {
+            this.liveSearchSection('recommendation_search',null,M.gE(this.panelUID + '_recommendation_search'));
+        }
     }
     this.registration.open = function(cb, rid, tid, cid, fid, list, source, crid) {
         if( rid != null ) { this.registration_id = rid; this.cr_id = 0; }   //Reset crs id
