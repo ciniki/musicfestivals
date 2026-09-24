@@ -63,7 +63,6 @@ function ciniki_musicfestivals_wng_apiClassTitleSearch(&$ciniki, $tnid, $request
     // search the titles
     //
     $strsql = "SELECT titles.id, "
-        . "titles.list_id, "
         . "titles.fulltitle, "
         . "titles.title, "
         . "titles.opus, "
@@ -82,7 +81,7 @@ function ciniki_musicfestivals_wng_apiClassTitleSearch(&$ciniki, $tnid, $request
             . "AND tlt.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
         . "INNER JOIN ciniki_musicfestivals_titles AS titles ON ("
-            . "lists.id = titles.list_id ";
+            . "tlt.title_id = titles.id ";
     if( $keywords != '' ) {
         $strsql .= "AND titles.keywords LIKE '% " . ciniki_core_dbQuote($ciniki, $keywords) . "%' ";
     }
@@ -97,7 +96,7 @@ function ciniki_musicfestivals_wng_apiClassTitleSearch(&$ciniki, $tnid, $request
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'titles', 'fname'=>'id', 
-            'fields'=>array('id', 'list_id', 'fulltitle', 'title', 'opus', 'movements', 'musical', 'composer', 'arranger', 'source_type'),
+            'fields'=>array('id', 'fulltitle', 'title', 'opus', 'movements', 'musical', 'composer', 'arranger', 'source_type'),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
