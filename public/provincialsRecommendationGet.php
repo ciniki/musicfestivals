@@ -238,7 +238,12 @@ function ciniki_musicfestivals_provincialsRecommendationGet($ciniki) {
             . "registrations.fulltitle5, "
             . "registrations.fulltitle6, "
             . "registrations.fulltitle7, "
-            . "registrations.fulltitle8 "
+            . "registrations.fulltitle8, "
+            . "registrations.competitor1_id, "
+            . "registrations.competitor2_id, "
+            . "registrations.competitor3_id, "
+            . "registrations.competitor4_id, "
+            . "registrations.competitor5_id "
             . "FROM ciniki_musicfestival_adjudicatorrefs AS arefs "
             . "INNER JOIN ciniki_musicfestival_schedule_sections AS ssections ON ("
                 . "ssections.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
@@ -254,6 +259,7 @@ function ciniki_musicfestivals_provincialsRecommendationGet($ciniki) {
                 . ") "
             . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
                 . "timeslots.id = registrations.timeslot_id "
+                . "AND registrations.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
                 . "AND (registrations.flags&0x20) = 0 " // Eligible for provincials
                 . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "  
@@ -269,6 +275,17 @@ function ciniki_musicfestivals_provincialsRecommendationGet($ciniki) {
                 . "categories.section_id = sections.id "
                 . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
+/*            . "LEFT JOIN ciniki_musicfestival_competitors AS competitors ON ("
+                . "competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+                . "AND ("
+                    . "registrations.competitor1_id = competitors.id "
+//                    . "OR registrations.competitor2_id = competitors.id "
+//                    . "OR registrations.competitor3_id = competitors.id "
+//                    . "OR registrations.competitor4_id = competitors.id "
+//                    . "OR registrations.competitor5_id = competitors.id "
+                    . ") "
+                . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") " */
             . "WHERE arefs.adjudicator_id = '" . ciniki_core_dbQuote($ciniki, $recommendation['local_adjudicator_id']) . "' "
             . "AND arefs.object = 'ciniki.musicfestivals.scheduledivision' "
             . "AND arefs.object_id = divisions.id "
@@ -280,6 +297,7 @@ function ciniki_musicfestivals_provincialsRecommendationGet($ciniki) {
             array('container'=>'registrations', 'fname'=>'id', 
                 'fields'=>array('id', 'display_name', 'section_name', 'category_name', 'class_code', 'class_name', 'mark',
                     'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8', 
+                    'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id', 
                     ),
                 ),
             ));
@@ -287,17 +305,57 @@ function ciniki_musicfestivals_provincialsRecommendationGet($ciniki) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1432', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
         }
         $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
+        $competitor_ids = [];
+        foreach($registrations as $reg) {
+            for($i = 1; $i <= 5; $i++) {
+                if( $reg["competitor{$i}_id"] > 0 && !in_array($reg["competitor{$i}_id"], $competitor_ids) ) {
+                    $competitor_ids[] = $reg["competitor{$i}_id"];
+                }
+            }
+        }
+
+        //
+        // Get competitor details
+        //
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
+        $strsql = "SELECT competitors.id, "
+            . "competitors.age "
+            . "FROM ciniki_musicfestival_competitors AS competitors "
+            . "WHERE competitors.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
+            . "AND competitors.id IN (" . ciniki_core_dbQuoteIDs($ciniki, $competitor_ids) . ") "
+            . "AND competitors.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+        $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'age')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1687', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
+        }
+        $competitors = isset($rc['competitors']) ? $rc['competitors'] : array();
       
         //
         // Build the array so id's are reg_id-title_num
         //
         $rsp['registrations'] = [];
         foreach($registrations as $rid => $reg) {
+            $ages = [];
+            for($i = 1; $i <= 5; $i++) {
+                if( $reg["competitor{$i}_id"] > 0 && isset($competitors[$reg["competitor{$i}_id"]]['age']) 
+                    && !in_array($competitors[$reg["competitor{$i}_id"]]['age'], $ages)
+                    ) {
+                    $ages[] = $competitors[$reg["competitor{$i}_id"]]['age'];
+                }
+            }
+            sort($ages);
+            $ages = join(', ', $ages);
             for($i = 1; $i <= 8; $i++) {
                 if( $reg["fulltitle{$i}"] != '' ) {
                     $rsp['registrations'][] = [
                         'id' => "{$reg['id']}-{$i}",
-                        'name' => "{$reg['display_name']} - {$reg['class_code']} - {$reg["fulltitle{$i}"]} - {$reg['class_name']}",
+                        'name' => "{$reg['display_name']} "
+                            . ($ages != '' ? "[{$ages}] " : '')
+                            . "- {$reg['class_code']} - {$reg["fulltitle{$i}"]} - {$reg['class_name']}",
                         'mark' => $reg['mark'],
                         ];
                 }
