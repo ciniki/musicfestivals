@@ -17,10 +17,10 @@ function ciniki_musicfestivals_wng_apiTitleListSearch(&$ciniki, $tnid, $request)
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
    
     if( !isset($request['args']['search_string']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1654', 'msg'=>'No search string specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1684', 'msg'=>'No search string specified'));
     }
     if( !isset($request['args']['list-ids']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1654', 'msg'=>'No lists specified'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1685', 'msg'=>'No lists specified'));
     }
 
     $list_ids = [];
@@ -76,7 +76,7 @@ function ciniki_musicfestivals_wng_apiTitleListSearch(&$ciniki, $tnid, $request)
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1656', 'msg'=>'Unable to load lists', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1686', 'msg'=>'Unable to load lists', 'err'=>$rc['err']));
         }
         $lists = isset($rc['lists']) ? $rc['lists'] : array();
         $list_ids = [];

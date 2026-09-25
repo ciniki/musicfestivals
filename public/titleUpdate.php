@@ -31,7 +31,6 @@ function ciniki_musicfestivals_titleUpdate(&$ciniki) {
     }
     $args = $rc['args'];
 
-    error_log(print_r($args,true));
     //
     // Make sure this module is activated, and
     // check permission to run this function for this tenant
@@ -162,7 +161,7 @@ function ciniki_musicfestivals_titleUpdate(&$ciniki) {
             if( !in_array($id, $args['list_ids']) ) {
                 $rc = ciniki_core_objectDelete($ciniki, $args['tnid'], 'ciniki.musicfestivals.titlelisttitle', $item['id'], $item['uuid'], 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1017', 'msg'=>'Unable to add the titlelist_title', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1688', 'msg'=>'Unable to add the titlelist_title', 'err'=>$rc['err']));
                 }
             }
         }
@@ -177,7 +176,7 @@ function ciniki_musicfestivals_titleUpdate(&$ciniki) {
                     'title_id' => $title['id'],
                     ], 0x04);
                 if( $rc['stat'] != 'ok' ) {
-                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1017', 'msg'=>'Unable to add the titlelist_title', 'err'=>$rc['err']));
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1689', 'msg'=>'Unable to add the titlelist_title', 'err'=>$rc['err']));
                 }
             }
         }

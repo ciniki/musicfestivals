@@ -8,7 +8,7 @@
 function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, $args) {
 
     if( !isset($args['registration_id']) || $args['registration_id'] == '' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.887', 'msg'=>'No registration specified.'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1694', 'msg'=>'No registration specified.'));
     }
     $fees_msg = '';
 
@@ -58,10 +58,10 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'registration');
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.378', 'msg'=>'Unable to load registration', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1695', 'msg'=>'Unable to load registration', 'err'=>$rc['err']));
     }
     if( !isset($rc['registration']) ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.379', 'msg'=>'Unable to find requested registration'));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1696', 'msg'=>'Unable to find requested registration'));
     }
     $registration = $rc['registration'];
 
@@ -161,7 +161,7 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
             'fee' => $registration['live_fee'],
             ], 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.106', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1697', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
         } 
 
         // Update invoice
@@ -171,7 +171,7 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
             'unit_amount' => $registration['live_fee'],
             ]);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.113', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1698', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
         } 
     }
     elseif( $registration['participation'] == 2 
@@ -187,7 +187,7 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
             'fee' => $registration['plus_fee'],
             ], 0x04);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.114', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1700', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
         }
         // Update invoice
         ciniki_core_loadMethod($ciniki, 'ciniki', 'sapos', 'hooks', 'invoiceItemUpdate');
@@ -196,7 +196,7 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
             'unit_amount' => $registration['plus_fee'],
             ]);
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.140', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1701', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
         } 
     }
 
@@ -246,7 +246,7 @@ function ciniki_musicfestivals_sapos_registrationExtraFeesCheck($ciniki, $tnid, 
             || ($registration['participation'] == 0 && $festival['live'] == 'no') // Live registrations are closed
             || ($registration['participation'] == 1 && $festival['virtual'] == 'no') // Virtual registrations are closed
         )) {
-        return array('stat'=>'blocked', 'err'=>array('code'=>'ciniki.musicfestivals.381', 'msg'=>'Registrations are closed'));
+        return array('stat'=>'blocked', 'err'=>array('code'=>'ciniki.musicfestivals.1702', 'msg'=>'Registrations are closed'));
     }
 
     //

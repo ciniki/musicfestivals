@@ -143,7 +143,7 @@ function ciniki_musicfestivals_sapos_invoiceExtraFeesCheck($ciniki, $tnid, $args
             return array('stat'=>'updated', 'msg'=>'Competitor fees have been updated.');
         }
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1580', 'msg'=>'Unable to update competitor fees', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1654', 'msg'=>'Unable to update competitor fees', 'err'=>$rc['err']));
         }
     }
 

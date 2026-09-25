@@ -36,7 +36,7 @@ function ciniki_musicfestivals_loadCurrentFestival(&$ciniki, $tnid, $festival = 
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');
         if( $rc['stat'] != 'ok' ) {
-            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.259', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1691', 'msg'=>'Unable to load festival', 'err'=>$rc['err']));
         }
         if( !isset($rc['festival']) ) {
             // No festivals published, no items to return

@@ -231,7 +231,7 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'recommendationClassesLoad');
     $rc = ciniki_musicfestivals_recommendationClassesLoad($ciniki, $args['provincials']['tnid'], $section);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1054', 'msg'=>'', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1545', 'msg'=>'', 'err'=>$rc['err']));
     }
     $classes = isset($rc['classes']) ? $rc['classes'] : array();
 

@@ -61,7 +61,7 @@ foreach($titles as $title) {
         'title_id' => $title['id'],
         ], 0x07);
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1017', 'msg'=>'Unable to add the titlelist_title', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1690', 'msg'=>'Unable to add the titlelist_title', 'err'=>$rc['err']));
     }
 
     //
