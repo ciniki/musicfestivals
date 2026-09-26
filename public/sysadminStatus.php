@@ -23,6 +23,7 @@ function ciniki_musicfestivals_sysadminStatus($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
+        'year'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Year'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -45,6 +46,10 @@ function ciniki_musicfestivals_sysadminStatus($ciniki) {
         return $rc;
     }
     $maps = $rc['maps'];
+
+    $end_dt = new DateTime($args['year']. '-08-01', new DateTimezone('UTC'));
+    $start_dt = clone $end_dt;
+    $start_dt->sub(new DateInterval('P1Y'));
 
     //
     // Get the list of festivals
@@ -73,7 +78,9 @@ function ciniki_musicfestivals_sysadminStatus($ciniki) {
             . "AND festivals.tnid = settings.tnid "
             . "AND detail_key IN ('waiver-general-title', 'waiver-general-msg', 'provincial-festival-id') "
             . ") "
-        . "WHERE festivals.status < 50 "
+//        . "WHERE festivals.status < 50 "
+        . "WHERE festivals.start_date > '" . ciniki_core_dbQuote($ciniki, $start_dt->format('Y-m-d')) . "' "
+        . "AND festivals.start_date < '" . ciniki_core_dbQuote($ciniki, $end_dt->format('Y-m-d')) . "' "
         . "ORDER BY festivals.start_date, festivals.id, settings.detail_key "
         . "";
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
@@ -197,6 +204,7 @@ function ciniki_musicfestivals_sysadminStatus($ciniki) {
     //
     // Process the festivals
     //
+    $totals['num_festivals'] = 0;
     $totals['num_reg'] = 0;
     foreach($festivals as $k => $v) {
         $festivals[$k]['waiver'] = '';
@@ -246,6 +254,7 @@ function ciniki_musicfestivals_sysadminStatus($ciniki) {
             $festivals[$k]['stripe'] = '-';
         }
         $totals['num_reg'] += $festivals[$k]['num_reg'];
+        $totals['num_festivals'] += 1;
     }
 
     return array('stat'=>'ok', 'festivals'=>array_values($festivals), 'totals'=>$totals, 'nplist'=>$festivals_ids);

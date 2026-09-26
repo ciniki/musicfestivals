@@ -6,6 +6,10 @@ function ciniki_musicfestivals_status() {
     this.menu.data = {};
     this.menu.nplist = [];
     this.menu.sections = {
+        '_tabs':{'label':'', 'type':'paneltabs', 'selected':'2027', 'tabs':{
+            '2026':{'label':'2026', 'fn':'M.ciniki_musicfestivals_status.menu.switchTab("2026");'},
+            '2027':{'label':'2027', 'fn':'M.ciniki_musicfestivals_status.menu.switchTab("2027");'},
+            }},
         'festivals':{'label':'Festivals', 'type':'simplegrid', 'num_cols':1,
             'sortable':'yes',
             'headerValues':[],
@@ -29,7 +33,14 @@ function ciniki_musicfestivals_status() {
             return d[this.sections[s].dataMaps[j]];
         }
     }
+    this.menu.switchTab = function(y) {
+        this.sections._tabs.selected = y;
+        this.open();
+    }
     this.menu.footerValue = function(s, i, d) {
+        if( s == 'festivals' && i == 0 ) {
+            return this.data.totals.num_festivals;
+        }
         if( s == 'festivals' && i == 13 ) {
             return this.data.totals.num_reg;
         }
@@ -41,7 +52,7 @@ function ciniki_musicfestivals_status() {
         }
     }
     this.menu.open = function(cb) {
-        M.api.getJSONCb('ciniki.musicfestivals.sysadminStatus', {'tnid':M.curTenantID}, function(rsp) {
+        M.api.getJSONCb('ciniki.musicfestivals.sysadminStatus', {'tnid':M.curTenantID, 'year':this.sections._tabs.selected}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
