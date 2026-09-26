@@ -5523,6 +5523,7 @@ function ciniki_musicfestivals_main() {
             if( this.festival_id != fid ) {
                 this.syllabus_id = 0;
                 this.section_id = -1;
+                M.ciniki_musicfestivals_main.volunteers.volunteer_id = 0;
             }
             this.festival_id = fid; 
         }
