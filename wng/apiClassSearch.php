@@ -181,10 +181,23 @@ function ciniki_musicfestivals_wng_apiClassSearch(&$ciniki, $tnid, $request) {
                 $plus_live_column = 'yes';
             }
             if( ($class['feeflags']&0x02) == 0x02 ) {
-                if( isset($festival['earlybird']) && $festival['earlybird'] == 'yes' && ($class['feeflags']&0x01) == 0x01 ) {
-                    $classes[$cid]['live_fee'] = '$' . number_format($class['earlybird_fee'], 2);
+                if( isset($request['args']['display-earlybird-pricing']) && $request['args']['display-earlybird-pricing'] == 'both-strikethrough' 
+                    && ($class['feeflags']&0x01) == 0x01 
+                    ) {
+                    $live_label = 'Fee';
+                    if( isset($festival['earlybird']) && $festival['earlybird'] == 'yes' && ($class['feeflags']&0x01) == 0x01 ) {
+                        $classes[$cid]['live_fee'] = 'Earlybird: $' . number_format($class['earlybird_fee'], 2) 
+                            . ' <s>Regular:&nbsp;$' . number_format($class['fee'], 2) . '</s>';
+                    } else {
+                        $classes[$cid]['live_fee'] = '<s>Earlybird: $' . number_format($class['earlybird_fee'], 2) . '</s>'
+                            . ' Regular:&nbsp;$' . number_format($class['fee'], 2);
+                    }
                 } else {
-                    $classes[$cid]['live_fee'] = '$' . number_format($class['fee'], 2);
+                    if( isset($festival['earlybird']) && $festival['earlybird'] == 'yes' && ($class['feeflags']&0x01) == 0x01 ) {
+                        $classes[$cid]['live_fee'] = '$' . number_format($class['earlybird_fee'], 2);
+                    } else {
+                        $classes[$cid]['live_fee'] = '$' . number_format($class['fee'], 2);
+                    }
                 }
             } else {
                 $classes[$cid]['live_fee'] = 'n/a';

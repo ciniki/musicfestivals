@@ -43,9 +43,13 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
     }
     $festivals = isset($rc['festivals']) ? $rc['festivals'] : array();
     $virtual_festivals = 'no';
+    $earlybird_festivals = 'yes';
     foreach($festivals as $festival) {
         if( ($festival['flags']&0x02) == 0x02 ) {
             $virtual_festivals = 'yes';
+        }
+        if( ($festival['flags']&0x20) == 0x20 ) {
+            $earlybird_festivals = 'yes';
         }
     }
 
@@ -305,6 +309,14 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'after-class' => 'After Class Name',
                     ));
         }
+    }
+    if( $earlybird_festivals == 'yes' ) {
+        $sections['ciniki.musicfestivals.syllabus']['settings']['display-earlybird-pricing'] = array(
+            'label'=>'Earlybird Pricing', 
+            'type'=>'toggle', 'default'=>'current', 'separator'=>($virtual_festivals == 'no' ? 'yes' : 'no'), 'toggles'=>array(
+                'current' => 'Only Current Price',
+                'both-strikethrough' => 'Both',
+                ));
     }
 
     //

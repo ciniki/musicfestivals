@@ -374,6 +374,9 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
             'layout' => $s['layout'],
             'baseurl' => $request['ssl_domain_base_url'] . $request['page']['path'],
             ];
+        if( isset($s['display-earlybird-pricing']) && $s['display-earlybird-pricing'] != 'current' ) {
+            $api_args['display-earlybird-pricing'] = $s['display-earlybird-pricing'];
+        }
         $blocks[] = [
             'type' => 'livesearch',
             'label' => 'Search Classes',
