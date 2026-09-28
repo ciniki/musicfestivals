@@ -7,6 +7,9 @@ function ciniki_musicfestivals_status() {
     this.menu.nplist = [];
     this.menu.sections = {
         '_tabs':{'label':'', 'type':'paneltabs', 'selected':'2027', 'tabs':{
+            '2023':{'label':'2023', 'fn':'M.ciniki_musicfestivals_status.menu.switchTab("2023");'},
+            '2024':{'label':'2024', 'fn':'M.ciniki_musicfestivals_status.menu.switchTab("2024");'},
+            '2025':{'label':'2025', 'fn':'M.ciniki_musicfestivals_status.menu.switchTab("2025");'},
             '2026':{'label':'2026', 'fn':'M.ciniki_musicfestivals_status.menu.switchTab("2026");'},
             '2027':{'label':'2027', 'fn':'M.ciniki_musicfestivals_status.menu.switchTab("2027");'},
             }},
