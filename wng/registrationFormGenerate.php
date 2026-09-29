@@ -538,6 +538,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
     //
     if( !isset($selected_section) ) {
         foreach($sections as $section) {
+            if( ($section['flags']&0x04) == 0x04 ) {
+                continue;
+            }
             $selected_section = $section;
             foreach($section['classes'] as $class) {
                 $selected_class = $class;
