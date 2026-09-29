@@ -305,6 +305,33 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         $sections[$sid]['upload'] = $section_upload;
         if( isset($section['classes']) ) {
             foreach($section['classes'] as $cid => $section_class) {
+                $rc = ciniki_wng_contentProcess($ciniki, $tnid, $request, $section_class['synopsis']);
+                if( $rc['stat'] == 'ok' ) {
+                    $section_class['synopsis'] = $rc['content'];
+                    $sections[$sid]['classes'][$cid]['synopsis'] = $rc['content'];
+                }
+                //
+                // Add fee to synopsis
+                //
+                if( ($festival['flags']&0x14) == 0 // NO Virtual or Adjudication Plus
+                    || (($festival['flags']&0x06) == 0x06 && ($section_class['feeflags']&0x0a) < 0x0a)   // Virtual pricing but only one price for this class
+                    ) {  
+                    $fee_label = '';
+                    if( ($festival['flags']&0x20) == 0x20 // Festival Earlybird
+                        && $festival['earlybird'] == 'yes' && $section_live == 'yes' && $section_class['earlybird_fee'] > 0 
+                        ) {
+                        $fee_label = '<p><strong>Fee:</strong> $' . number_format($section_class['earlybird_fee'], 2) . '</p>';
+                    } elseif( ($section_class['feeflags']&0x08) == 0x08 ) { // Virtual price
+                        error_log('virt');
+                        $fee_label = '<p><strong>Fee:</strong> $' . number_format($section_class['vfee'], 2) . '</p>';
+                    } else {
+                        $fee_label = '<p><strong>Fee:</strong> $' . number_format($section_class['fee'], 2) . '</p>';
+                    }
+                    if( $fee_label != '' ) {
+                        $section_class['synopsis'] .= $fee_label;
+                        $sections[$sid]['classes'][$cid]['synopsis'] .= $fee_label;
+                    }
+                }
                 $js_classes[$cid] = array(
                     'f' => $section_class['flags'],
                     'ff' => $section_class['feeflags'],
