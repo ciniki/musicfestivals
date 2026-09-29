@@ -2194,6 +2194,10 @@ function ciniki_musicfestivals_main() {
                     'label':'Email Members', 
                     'fn':'M.ciniki_musicfestivals_main.festival.emailMembers();',
                     },
+                'import':{
+                    'label':'Import Previous Members', 
+                    'fn':'M.ciniki_musicfestivals_main.festival.importMembers();',
+                    },
                 },
             },
         'recommendation_tabs':{'label':'', 'type':'menutabs', 'selected':'classes',
@@ -4095,6 +4099,15 @@ function ciniki_musicfestivals_main() {
             return '';
         }
         return null;
+    }
+    this.festival.importMembers = function() {
+        M.api.getJSONCb('ciniki.musicfestivals.festivalMembersCopy', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'old_festival_id':'previous'}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            M.ciniki_musicfestivals_main.festival.open();
+        });
     }
     this.festival.emailMembers = function() {
         var customers = [];
