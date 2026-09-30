@@ -20628,7 +20628,12 @@ function ciniki_musicfestivals_main() {
         this.sections.volunteers.num_cols = 1;
         this.sections.volunteer_search.headerValues = ['Name'];
         this.sections.volunteer_search.livesearchcols = 1;
-        if( fid != null ) { this.festival_id = fid; }
+        if( fid != null ) { 
+            if( this.festival_id != fid ) {
+                this.volunteer_id = 0;
+            }
+            this.festival_id = fid; 
+        }
         var args = {
             'tnid':M.curTenantID,
             'festival_id':this.festival_id,
