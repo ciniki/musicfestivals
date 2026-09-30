@@ -21554,6 +21554,15 @@ function ciniki_musicfestivals_main() {
                 var p = M.ciniki_musicfestivals_main.volunteerimport;
                 p.data = rsp;
                 p.sections.volunteers.label = 'Volunteers';
+                for(var i in M.ciniki_musicfestivals_main.volunteers.data.volunteers) { 
+                    var v = M.ciniki_musicfestivals_main.volunteers.data.volunteers[i];
+                    for(var j in rsp.volunteers) {
+                        if( rsp.volunteers[j].customer_id == v.customer_id ) {
+                            delete rsp.volunteers[j];
+                            break;
+                        }
+                    }
+                }
                 p.refresh();
                 p.show(cb);
                 });
