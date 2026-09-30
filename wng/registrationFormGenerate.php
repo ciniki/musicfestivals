@@ -322,7 +322,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                         ) {
                         $fee_label = '<p><strong>Fee:</strong> $' . number_format($section_class['earlybird_fee'], 2) . '</p>';
                     } elseif( ($section_class['feeflags']&0x08) == 0x08 ) { // Virtual price
-                        error_log('virt');
                         $fee_label = '<p><strong>Fee:</strong> $' . number_format($section_class['vfee'], 2) . '</p>';
                     } else {
                         $fee_label = '<p><strong>Fee:</strong> $' . number_format($section_class['fee'], 2) . '</p>';
