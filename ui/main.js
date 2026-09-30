@@ -20128,6 +20128,10 @@ function ciniki_musicfestivals_main() {
                     'label':'Export to Excel',
                     'fn':'M.ciniki_musicfestivals_main.volunteers.excelExport();',
                     },
+                'import':{
+                    'label':'Import from Previous Festival',
+                    'fn':'M.ciniki_musicfestivals_main.volunteerimport.open(\'M.ciniki_musicfestivals_main.volunteers.open();\',M.ciniki_musicfestivals_main.volunteers.festival_id);',
+                    },
                 },
             },
         'declined':{'label':'Declined', 'type':'simplegrid', 'num_cols':1, 'aside':'yes', 
@@ -21451,6 +21455,144 @@ function ciniki_musicfestivals_main() {
     this.volunteerresource.addClose('Cancel');
     this.volunteerresource.addButton('next', 'Next');
     this.volunteerresource.addLeftButton('prev', 'Prev');
+
+    //
+    // The panel to import previous volunteers into a new festival
+    //
+    this.volunteerimport = new M.panel('Volunteer Import', 'ciniki_musicfestivals_main', 'volunteerimport', 'mc', 'large', 'sectioned', 'ciniki.musicfestival.main.volunteerimport');
+    this.volunteerimport.data = null;
+    this.volunteerimport.festival_id = 0;
+    this.volunteerimport.import_festival_id = 0;
+    this.volunteerimport.sections = {
+        'festival':{'label':'Choose Festival', 'fields':{
+            'import_festival_id':{'label':'Festival', 'type':'select', 'options':[], 
+                'complex_options':{'value':'id', 'name':'name'},
+                'onchange':'M.ciniki_musicfestivals_main.volunteerimport.festivalSet',
+                },
+            }},
+        'volunteers':{'label':'Volunteers', 'type':'simplegrid', 'num_cols':2, 'selectable':'yes',
+            'headerValues':[],
+            'sortable':'yes',
+            'dataMaps':['name', 'total_hours_text'],
+            'visible':function() { return M.ciniki_musicfestivals_main.volunteerimport.import_festival_id > 0 ? 'yes' : 'no';},
+            'noData':'No volunteers',
+            'cellClasses':['multiline', 'multiline alignright'],
+            },
+        '_buttons':{'label':'', 
+            'visible':function() { return M.ciniki_musicfestivals_main.volunteerimport.import_festival_id > 0 ? 'yes' : 'no';},
+            'buttons':{
+                'import':{'label':'Import', 'fn':'M.ciniki_musicfestivals_main.volunteerimport.save();'},
+            }},
+        };
+    this.volunteerimport.fieldValue = function(s, i, d) { 
+        if( i == 'import_festival_id' ) {
+            return this.import_festival_id;
+        }
+        return this.data[i]; 
+    }
+    this.volunteerimport.festivalSet = function() {
+        this.import_festival_id = this.formValue('import_festival_id');
+        this.open();
+    }
+    this.volunteerimport.cellValue = function(s, i, j, d) {
+        if( s == 'volunteers' ) {
+            switch(this.sections[s].dataMaps[j]) {
+                case 'name': return d.display_name + (d.status != 30 ? M.subdue(' [', d.status_text, ']') : '');
+                }
+            return d[this.sections[s].dataMaps[j]];
+        }
+    }
+    this.volunteerimport.open = function(cb, fid) {
+        if( fid != null ) { 
+            this.festival_id = fid; 
+            this.import_festival_id = 0; 
+            this.data = {};
+        }
+        if( this.import_festival_id > 0 ) {
+            // Duplicated from volunteers.open
+            var args = {
+                'tnid':M.curTenantID,
+                'festival_id':this.import_festival_id,
+                };
+            args['volunteers'] = 'yes';
+            args['exclude_festival_id'] = this.festival_id;
+            this.sections.volunteers.headerValues = ['Name', 'Phone', 'Email'];
+            this.sections.volunteers.dataMaps = ['name', 'phones', 'emails'];
+            this.sections.volunteers.sortTypes = ['text', 'text', 'text'];
+            this.sections.volunteers.cellClasses = ['', '', ''];
+            this.sections.volunteers.num_cols = 3;
+            if( M.modFlagOn('ciniki.musicfestivals', 0x010000) ) {
+                this.sections.volunteers.headerValues[this.sections.volunteers.num_cols] = 'Member';
+                this.sections.volunteers.dataMaps[this.sections.volunteers.num_cols] = 'member_name';
+                this.sections.volunteers.sortTypes[this.sections.volunteers.num_cols] = 'text';
+                this.sections.volunteers.cellClasses[this.sections.volunteers.num_cols] = '';
+                this.sections.volunteers.num_cols++;
+            }
+            if( M.modFlagOn('ciniki.customers', 0x100000) ) {
+                this.sections.volunteers.headerValues[this.sections.volunteers.num_cols] = 'CRC';
+                this.sections.volunteers.dataMaps[this.sections.volunteers.num_cols] = 'crc_checked';
+                this.sections.volunteers.sortTypes[this.sections.volunteers.num_cols] = 'text';
+                this.sections.volunteers.cellClasses[this.sections.volunteers.num_cols] = '';
+                this.sections.volunteers.num_cols++;
+                this.sections.volunteers.headerValues[this.sections.volunteers.num_cols] = 'Expiry';
+                this.sections.volunteers.dataMaps[this.sections.volunteers.num_cols] = 'crc_expiry_date';
+                this.sections.volunteers.sortTypes[this.sections.volunteers.num_cols] = 'date';
+                this.sections.volunteers.cellClasses[this.sections.volunteers.num_cols] = '';
+                this.sections.volunteers.num_cols++;
+            }
+            this.sections.volunteers.headerValues[this.sections.volunteers.num_cols] = 'Hours';
+            this.sections.volunteers.dataMaps[this.sections.volunteers.num_cols] = 'total_hours_text';
+            this.sections.volunteers.sortTypes[this.sections.volunteers.num_cols] = 'number';
+            this.sections.volunteers.cellClasses[this.sections.volunteers.num_cols] = 'alignright';
+            this.sections.volunteers.num_cols++;
+
+            M.api.getJSONCb('ciniki.musicfestivals.volunteers', args, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                var p = M.ciniki_musicfestivals_main.volunteerimport;
+                p.data = rsp;
+                p.sections.volunteers.label = 'Volunteers';
+                p.refresh();
+                p.show(cb);
+                });
+        } else {
+            M.api.getJSONCb('ciniki.musicfestivals.festivalList', {'tnid':M.curTenantID}, function(rsp) {
+                if( rsp.stat != 'ok' ) {
+                    M.api.err(rsp);
+                    return false;
+                }
+                var p = M.ciniki_musicfestivals_main.volunteerimport;
+                rsp.festivals.unshift({'id':'0', 'name':'Select a festival'});
+                p.sections.festival.fields.import_festival_id.options = rsp.festivals;
+                p.refresh();
+                p.show(cb);
+            });
+        }
+    }
+    this.volunteerimport.save = function(cb) {
+        if( cb == null ) { cb = 'M.ciniki_musicfestivals_main.volunteerimport.close();'; }
+        var ids = '';
+        if( this.sections.volunteers.selected.length > 0 ) {
+            for(var i of this.sections.volunteers.selected) {
+                ids += (ids != '' ? ',' : '') + this.data.volunteers[i].id;
+            }
+        }
+        if( ids == '' ) {
+            M.alert('You must select some volunteers.');
+            return;
+        }
+        var c = '&volunteer_ids=' + ids;
+        M.api.postJSONCb('ciniki.musicfestivals.volunteersImport', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'old_festival_id':this.import_festival_id}, c, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            M.ciniki_musicfestivals_main.volunteerimport.close();
+        });
+    }
+    this.volunteerimport.addClose('Cancel');
 
     //
     // The panel to display volunteer manager
