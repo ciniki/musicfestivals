@@ -1315,25 +1315,27 @@ function ciniki_musicfestivals_wng_scheduleSectionProcess(&$ciniki, $tnid, &$req
             } else {
                 $adjudicator_name = '';
                 $num_adjudicators = 0;
-                if( isset($adjudicators[$division['id']]['adjudicators']) ) {
-                    foreach($adjudicators[$division['id']]['adjudicators'] as $adjudicator) {
-                        if( $adjudicator['permalink'] != '' && $adjudicator['display_name'] != '' 
-                            && isset($s['adjudicators-page']) && $s['adjudicators-page'] != '' 
-                            && ($adjudicator['flags']&0x08) == 0
-                            ) {
-                            ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'urlProcess');
-                            $rc = ciniki_wng_urlProcess($ciniki, $tnid, $request, $s['adjudicators-page'], '');
-                            if( isset($rc['url']) ) {
-                                $adjudicator_name .= ($adjudicator_name != '' ? ', ' : '') . "<a class='link' href='" . $rc['url'] . '/' . $adjudicator['permalink'] . "'>"
-                                    . $adjudicator['display_name'] . "</a>";
+                if( isset($s['adjudicators-name']) && $s['adjudicators-name'] == 'yes' ) {
+                    if( isset($adjudicators[$division['id']]['adjudicators']) ) {
+                        foreach($adjudicators[$division['id']]['adjudicators'] as $adjudicator) {
+                            if( $adjudicator['permalink'] != '' && $adjudicator['display_name'] != '' 
+                                && isset($s['adjudicators-page']) && $s['adjudicators-page'] != '' 
+                                && ($adjudicator['flags']&0x08) == 0
+                                ) {
+                                ciniki_core_loadMethod($ciniki, 'ciniki', 'wng', 'private', 'urlProcess');
+                                $rc = ciniki_wng_urlProcess($ciniki, $tnid, $request, $s['adjudicators-page'], '');
+                                if( isset($rc['url']) ) {
+                                    $adjudicator_name .= ($adjudicator_name != '' ? ', ' : '') . "<a class='link' href='" . $rc['url'] . '/' . $adjudicator['permalink'] . "'>"
+                                        . $adjudicator['display_name'] . "</a>";
+                                }
+                            } else {
+                                $adjudicator_name .= ($adjudicator_name != '' ? ', ' : '') . $adjudicator['display_name'];
                             }
-                        } else {
-                            $adjudicator_name .= ($adjudicator_name != '' ? ', ' : '') . $adjudicator['display_name'];
+                            $num_adjudicators++;
                         }
-                        $num_adjudicators++;
-                    }
-                    if( isset($s['adjudicators-label']) && $s['adjudicators-label'] == 'yes' && $adjudicator_name != '' ) {
-                        $adjudicator_name = 'Adjudicator' . ($num_adjudicators > 1 ? 's: ' : ': ') . $adjudicator_name;
+                        if( isset($s['adjudicators-label']) && $s['adjudicators-label'] == 'yes' && $adjudicator_name != '' ) {
+                            $adjudicator_name = 'Adjudicator' . ($num_adjudicators > 1 ? 's: ' : ': ') . $adjudicator_name;
+                        }
                     }
                 }
 /*                $adjudicator_name = '';

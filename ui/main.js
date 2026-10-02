@@ -1562,6 +1562,7 @@ function ciniki_musicfestivals_main() {
                     'date-adjudicator-location':'Date, Adjudicator, Location',
                     'date-name-adjudicator-location':'Date, Division, Adjudicator, Location',
                     'name-date-adjudicator-location':'Division, Date, Adjudicator, Location',
+                    'name-adjudicator':'Division, Adjudicator', 
                     }},
                 'schedule-division-header-labels':{'label':'Division Header Labels', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
 //                's_division_header_adjudicator':{'label':'Include Adjudi', 'type':'toggle', 'default':'default', 'toggles':{
@@ -6364,6 +6365,7 @@ function ciniki_musicfestivals_main() {
                     'date-adjudicator-location':'Date, Adjudicator, Location',
                     'date-name-adjudicator-location':'Date, Division, Adjudicator, Location',
                     'name-date-adjudicator-location':'Division, Date, Adjudicator, Location',
+                    'name-adjudicator':'Division, Adjudicator', 
                     }},
                 'schedule-division-header-labels':{'label':'Division Header Labels', 'type':'toggle', 'default':'no', 'toggles':{'no':'No', 'yes':'Yes'}},
 //                's_division_header_adjudicator':{'label':'Include Adjudi', 'type':'toggle', 'default':'default', 'toggles':{

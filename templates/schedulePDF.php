@@ -415,6 +415,9 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                         } else {
                             $division[$field] = $division['adjudicator_names'] . ' - ' . $division['location'];
                         }
+                    } elseif( $field == 'adjudicator' ) {
+                        // This one is old and can be removed when nobody useing adjudicatoraddress anymore
+                        $division[$field] = $division['adjudicator_names'];
                     } elseif( $field == 'adjudicatoraddress' ) {
                         // This one is old and can be removed when nobody useing adjudicatoraddress anymore
                         $division[$field] = $division['adjudicator_names'] . ' - ' . $division['location'];
