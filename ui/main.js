@@ -543,7 +543,7 @@ function ciniki_musicfestivals_main() {
                 'copy':{
                     'label':'Copy Previous Syllabus & Settings', 
                     'visible':function() { return M.ciniki_musicfestivals_main.festival.data.sections.length == 0 ? 'yes' : 'no'; },
-                    'fn':'M.ciniki_musicfestivals_main.festival.festivalCopy("previous");',
+                    'fn':'M.ciniki_musicfestivals_main.festivalselect.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'M.ciniki_musicfestivals_main.festival.festivalCopy\');',
                     },
                 },
             'mailFn':function(s, i, d) {
@@ -2108,7 +2108,7 @@ function ciniki_musicfestivals_main() {
                 'copy':{
                     'label':'Copy Previous Locations',
                     'visible':function() { return M.ciniki_musicfestivals_main.festival.data.buildings.length == 0 ? 'yes' : 'no'; },
-                    'fn':'M.ciniki_musicfestivals_main.festival.festivalLocationsCopy("previous");',
+                    'fn':'M.ciniki_musicfestivals_main.festivalselect.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'M.ciniki_musicfestivals_main.festival.festivalLocationsCopy\');',
                     },
                 },
             },
@@ -2349,7 +2349,7 @@ function ciniki_musicfestivals_main() {
                     },
                 'copyprevious':{
                     'label':'Copy Previous Years Sponsors',
-                    'fn':'M.ciniki_musicfestivals_main.festival.festivalSponsorsCopy("previous");',
+                    'fn':'M.ciniki_musicfestivals_main.festivalselect.open(\'M.ciniki_musicfestivals_main.festival.open();\',\'M.ciniki_musicfestivals_main.festival.festivalSponsorsCopy\');',
                     },
                 },
         },
@@ -22933,6 +22933,37 @@ function ciniki_musicfestivals_main() {
         });
     }
     this.titlelabel.addClose('Cancel');
+
+    //
+    // The panel to show the list of festival to pick from
+    //
+    this.festivalselect = new M.panel('Select a Festival', 'ciniki_musicfestivals_main', 'festivalselect', 'mc', 'large', 'sectioned', 'ciniki.musicfestival.main.festivalselect');
+    this.festivalselect.data = null;
+    this.festivalselect.sf = null; // Fn to call on click
+    this.festivalselect.sections = {
+        'festivals':{'label':'Choose a festival', 'type':'simplegrid', 'num_cols':1,
+            },
+        };
+    this.festivalselect.cellValue = function(s, i, j, d) {
+        return d.name;
+    }
+    this.festivalselect.rowFn = function(s, i, d) {
+        return this.sf + '(' + d.id + ');';
+    }
+    this.festivalselect.open = function(cb, sf) {
+        this.sf = sf; 
+        M.api.getJSONCb('ciniki.musicfestivals.festivalList', {'tnid':M.curTenantID}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            var p = M.ciniki_musicfestivals_main.festivalselect;
+            p.data = rsp;
+            p.refresh();
+            p.show(cb);
+        });
+    }
+    this.festivalselect.addClose('Cancel');
 
     //
     // The panel to syllabus rules item edit 
