@@ -51,6 +51,45 @@ function ciniki_musicfestivals_templates_scheduleCCCWord(&$ciniki, $tnid, $args)
     }
     $festival = $rc['festival'];
 
+    //
+    // Load adjudicators
+    //
+    $strsql = "SELECT divisions.id, "
+        . "adjudicators.id AS adjudicator_id, "
+        . "adjudicators.image_id, "
+        . "adjudicators.description, "
+        . "adjudicators.flags, "
+        . "customers.display_name, "
+        . "customers.permalink "
+        . "FROM ciniki_musicfestival_schedule_divisions AS divisions "
+        . "INNER JOIN ciniki_musicfestival_adjudicatorrefs AS arefs ON ("
+            . "arefs.object = 'ciniki.musicfestivals.scheduledivision' "
+            . "AND divisions.id = arefs.object_id "
+            . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "INNER JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
+            . "arefs.adjudicator_id = adjudicators.id "
+            . "AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "INNER JOIN ciniki_customers AS customers ON ("
+            . "adjudicators.customer_id = customers.id "
+            . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . ") "
+        . "WHERE divisions.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+        . "ORDER BY divisions.id, customers.display_name, adjudicators.id "
+        . "";
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
+    $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+        array('container'=>'divisions', 'fname'=>'id', 'fields'=>array('id')),
+        array('container'=>'adjudicators', 'fname'=>'adjudicator_id', 
+            'fields'=>array('id'=>'adjudicator_id', 'image_id', 'description', 'flags', 'display_name', 'permalink',
+            )),
+        ));
+    if( $rc['stat'] != 'ok' ) {
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1525', 'msg'=>'', 'err'=>$rc['err']));
+    }
+    $adjudicators = isset($rc['divisions']) ? $rc['divisions'] : array();
+
 /*    //
     // Load the adjudicators
     //
@@ -88,8 +127,8 @@ function ciniki_musicfestivals_templates_scheduleCCCWord(&$ciniki, $tnid, $args)
         . "divisions.name AS division_name, "
         . "DATE_FORMAT(divisions.division_date, '%W, %M %e, %Y') AS division_date_text, "
         . "locations.name AS location_name, "
-        . "IFNULL(arefs.adjudicator_id, 0) AS adjudicator_id, "
-        . "IFNULL(customers.display_name, '') AS adjudicator_name, "
+//        . "IFNULL(arefs.adjudicator_id, 0) AS adjudicator_id, "
+//        . "IFNULL(customers.display_name, '') AS adjudicator_name, "
         . "CONCAT_WS(' ', divisions.division_date, timeslots.slot_time) AS division_sort_key, "
         . "TIME_FORMAT(timeslots.slot_time, '%l:%i %p') AS slot_time_text, "
         . "timeslots.id AS timeslot_id, "
@@ -129,7 +168,7 @@ function ciniki_musicfestivals_templates_scheduleCCCWord(&$ciniki, $tnid, $args)
             . "divisions.id = timeslots.sdivision_id " 
             . "AND timeslots.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . ") "
-        . "LEFT JOIN ciniki_musicfestival_adjudicatorrefs AS arefs ON ("
+/*        . "LEFT JOIN ciniki_musicfestival_adjudicatorrefs AS arefs ON ("
             . "divisions.id = arefs.object_id "
             . "AND arefs.object = 'ciniki.musicfestivals.scheduledivision' "
             . "AND arefs.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -137,11 +176,11 @@ function ciniki_musicfestivals_templates_scheduleCCCWord(&$ciniki, $tnid, $args)
         . "LEFT JOIN ciniki_musicfestival_adjudicators AS adjudicators ON ("
             . "arefs.adjudicator_id = adjudicators.id "
             ."AND adjudicators.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
+            . ") " 
         . "LEFT JOIN ciniki_customers AS customers ON ("
             . "adjudicators.customer_id = customers.id "
             . "AND customers.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-            . ") "
+            . ") " */
         . "LEFT JOIN ciniki_musicfestival_locations AS locations ON ("
             . "divisions.location_id = locations.id "
             . "AND locations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
@@ -186,7 +225,7 @@ function ciniki_musicfestivals_templates_scheduleCCCWord(&$ciniki, $tnid, $args)
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'divisions', 'fname'=>'division_id', 
             'fields'=>array('id'=>'division_id', 'name'=>'division_name', 'section_name', 'date'=>'division_date_text', 
-                'location_name', 'adjudicator_id', 'adjudicator_name',
+                'location_name', //'adjudicator_id', 'adjudicator_name',
                 'sort_key' => 'division_sort_key',
                 ),
             ),
@@ -308,8 +347,24 @@ function ciniki_musicfestivals_templates_scheduleCCCWord(&$ciniki, $tnid, $args)
         $header = $sectionWord->addHeader();
         $footer = $sectionWord->addFooter();
 
+        //
+        // Set up adjudicators
+        //
+        $adjudicator_name = '';
+        $num_adjudicators = 0;
+        if( isset($adjudicators[$division['id']]['adjudicators']) ) {
+            foreach($adjudicators[$division['id']]['adjudicators'] as $adjudicator) {
+                $adjudicator_name .= ($adjudicator_name != '' ? ', ' : '') . $adjudicator['display_name'];
+                $num_adjudicators++;
+            }
+        }
+
         $header->addText(htmlspecialchars($division['section_name']), 'Division Font', 'Divisions');
-        $header->addText(htmlspecialchars('Adjudicator: ' . $division['adjudicator_name']), 'Division Font', 'Divisions');
+        if( $num_adjudicators > 1 ) {
+            $header->addText(htmlspecialchars('Adjudicators: ' . $adjudicator_name), 'Division Font', 'Divisions');
+        } elseif( $num_adjudicators == 1 ) {
+            $header->addText(htmlspecialchars('Adjudicator: ' . $adjudicator_name), 'Division Font', 'Divisions');
+        } 
 //        $header->addText(htmlspecialchars($division['location_name']), 'Division Font', 'Locations');
         $textRun = $footer->addTextRun(['alignment' => 'center']);
         $textRun->addField('PAGE');
