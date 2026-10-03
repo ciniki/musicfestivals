@@ -6415,6 +6415,7 @@ function ciniki_musicfestivals_main() {
             'fields':{
                 'schedule-word-template':{'label':'Template', 'type':'select', 'default':'default', 'options':{
                     '':'None', 
+                    'CCC':'Template C - 1 Column', 
                     'HMT':'Template H - 1 Column', 
                     'LDN':'Template L - 3 Column', 
                     'OPF':'Template O - Timeslot List', 
