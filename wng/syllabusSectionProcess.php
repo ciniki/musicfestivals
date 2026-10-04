@@ -356,11 +356,20 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 );
         }
     } else {
+        $title = 'Syllabus - ' . $syllabus_section['name'];
+        if( isset($s['title']) && $s['title'] != '' ) {
+            $title = $s['title'];
+            if( !isset($s['section-id']) ) {
+                $title .= ' - ' . $syllabus_section['name'];
+            }
+        } elseif( isset($s['section-id']) && $s['section-id'] > 0 ) {
+            $title = $syllabus_section['name'];
+        }
         $blocks[] = array(
             'type' => 'title',
             'class' => 'musicfestival-syllabus-section',
             'title_sequence' => 1,
-            'title' => (isset($s['title']) ? $s['title'] . ($s['title'] != '' ? ' - ' : '') : 'Syllabus - ') . $syllabus_section['name'],
+            'title' => $title,
             );
         if( isset($syllabus_section['sections_description']) && $syllabus_section['sections_description'] != '' ) {
             $syllabus_section['description'] .= $syllabus_section['sections_description'];
