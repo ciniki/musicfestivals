@@ -801,7 +801,10 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                     $block['headers'] = 'no';
                 }
                 $block['columns'][] = array('label'=>'', 'field'=>'register', 'class'=>'alignright');
-                if( $intro == '' && (!isset($section['intros']) || $section['intros'] == 'yes') ) {
+                if( $intro == '' 
+                    && (!isset($section['intros']) || $section['intros'] == 'yes') 
+                    && (!isset($s['layout']) || $s['layout'] != 'classlist' || $syllabus_section['name'] != $category['name'])
+                    ) {
                     $block['title'] = $category['name']; 
                 }
                 $blocks[] = $block;
