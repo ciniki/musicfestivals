@@ -611,7 +611,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             'items' => $items,
             ];
     }
-    elseif( isset($rc['categories']) ) {
+    elseif( isset($rc['categories']) && count($rc['categories']) > 0 ) {
         $categories = $rc['categories'];
         //
         // Get the filters
@@ -847,7 +847,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
             );
     } */
 
-    if( isset($s['section-id']) && !isset($category_permalink) ) {
+    if( isset($s['section-id']) && (!isset($category_permalink) || !isset($categories)) ) {
         return array('stat'=>'ok', 'blocks'=>$blocks);
     }
 
