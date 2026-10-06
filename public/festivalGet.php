@@ -1973,7 +1973,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                     }
                     $festival['registrations_notes'][$rid]['titles'] = '';
                     for($i = 1; $i <= 8; $i++) {
-                        if( $registration["title{$i}"] != '' ) {
+                        if( $registration["fulltitle{$i}"] != '' ) {
                             $festival['registrations_notes'][$rid]['titles'] .= ($festival['registrations_notes'][$rid]['titles'] != '' ? '<br/>' : '') . $registration["fulltitle{$i}"];
                         }
                     }
