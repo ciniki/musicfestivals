@@ -8522,7 +8522,7 @@ function ciniki_musicfestivals_main() {
             'fields':{
                 'flags10':{'label':'Enabled', 'type':'flagtoggle', 'bit':0x0200, 'default':'off', 'field':'flags' },
                 'scheduling_request_title':{'label':'Schedule Request Title', 'type':'text', },
-                'scheduling_request_intro':{'label':'Schedule Request Intro', 'type':'textarea', },
+                'scheduling_request_intro':{'label':'Schedule Request Intro', 'type':'htmlarea', },
                 'scheduling_request_times':{'label':'Schedule Request Times', 'type':'textarea', },
                 'flags11':{'label':'Non-negotiable Conflicts', 'type':'flagtoggle', 'bit':0x0400, 'default':'off', 'field':'flags' },
             }},

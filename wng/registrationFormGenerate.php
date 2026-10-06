@@ -1978,7 +1978,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     . "let intro=C.gE('f-sr_intro');"
                     . "C.rC(intro.parentNode,'hidden');"
                     . "intro.innerHTML=(sections[s].sri!=null?sections[s].sri:'');"
-                    . "intro.parentNode.children[0].innerHTML=sections[s].srh;"
+                    . "intro.parentNode.children[0].innerHTML=sections[s].sri;"
                 . "}"
                 . "if(sections[s].srt!=null){"
                     . "for(var i=0;i<{$max_sr_times};i++){"
