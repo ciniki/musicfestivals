@@ -1716,7 +1716,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         //
         $fields['sr_preferred'] = array(
             'id' => 'sr_preferred',
-            'label' => 'Preferred Dates & Times',
+            'label' => 'Preferred Dates & Times - Further Info',
             'ftype' => 'textarea',
             'size' => 'tiny',
             'class' => 'hidden',
