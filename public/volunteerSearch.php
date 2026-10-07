@@ -22,6 +22,7 @@ function ciniki_musicfestivals_volunteerSearch($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'prepareArgs');
     $rc = ciniki_core_prepareArgs($ciniki, 'no', array(
         'tnid'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Tenant'),
+        'festival_id'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Festival'),
         'start_needle'=>array('required'=>'yes', 'blank'=>'no', 'name'=>'Search String'),
         'limit'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Limit'),
         ));
@@ -75,6 +76,7 @@ function ciniki_musicfestivals_volunteerSearch($ciniki) {
             . "AND emails.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
             . ") "
         . "WHERE volunteers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+        . "AND volunteers.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
         . "AND ("
             . "volunteers.shortname LIKE '" . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
             . "OR volunteers.shortname LIKE '% " . ciniki_core_dbQuote($ciniki, $args['start_needle']) . "%' "
