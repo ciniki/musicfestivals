@@ -404,7 +404,7 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
                 $preferred_times .= ($preferred_times != '' ? "\n" : '') . $time;
             }
         }
-        if( $preferred_times != $registration['sr_preferred'] ) {   
+        if( !isset($registration['sr_preferred']) || $preferred_times != $registration['sr_preferred'] ) {   
             $fields['sr_preferred']['value'] = $preferred_times;
         }
     }

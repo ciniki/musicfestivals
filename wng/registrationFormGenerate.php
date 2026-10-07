@@ -1712,11 +1712,11 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         }
 
         //
-        // Add preferred field
+        // Hidden preferred field, used to store list of 
         //
         $fields['sr_preferred'] = array(
             'id' => 'sr_preferred',
-            'label' => 'Preferred Dates & Times - Further Info',
+            'label' => 'Preferred Dates & Times',
             'ftype' => 'textarea',
             'size' => 'tiny',
             'class' => 'hidden',
