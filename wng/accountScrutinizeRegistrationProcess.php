@@ -346,6 +346,70 @@ function ciniki_musicfestivals_wng_accountScrutinizeRegistrationProcess(&$ciniki
         }
     }
 
+    //
+    // Check if past festival registrations should be displayed
+    //
+    if( isset($festival['registration-scrutineers-previous-festival-id']) 
+        && $festival['registration-scrutineers-previous-festival-id'] > 0 
+        ) {
+        //
+        // Get the past registrations
+        //
+        $placement_strsql = '';
+        if( isset($festival['registration-scrutineers-previous-placements']) 
+            && $festival['registration-scrutineers-previous-placements'] != ''
+            ) {
+            $placements = explode(',', $festival['registration-scrutineers-previous-placements']);
+            if( count($placements) > 0 ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteList');
+                $placement_strsql = "AND registrations.placement IN (" . ciniki_core_dbQuoteList($ciniki, $placements) . ") ";
+            }
+        }
+        $strsql = "SELECT registrations.id, "
+            . "registrations.display_name, "
+            . "registrations.mark, "
+            . "registrations.placement, "
+            . "registrations.level "
+            . "FROM ciniki_musicfestival_classes AS classes "
+            . "INNER JOIN ciniki_musicfestival_registrations AS registrations ON ("
+                . "classes.id = registrations.class_id "
+                . $placement_strsql
+                . "AND registrations.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+                . ") "
+            . "WHERE classes.code = '" . ciniki_core_dbQuote($ciniki, $class['code']) . "' "
+            . "AND classes.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['registration-scrutineers-previous-festival-id']) . "' "
+            . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
+            . "ORDER BY mark DESC, placement, level, display_name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'pastregs', 'fname'=>'id', 
+                'fields'=>array(
+                    'id', 'display_name', 'mark', 'placement', 'level'),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1711', 'msg'=>'Unable to load pastregs', 'err'=>$rc['err']));
+        }
+        $pastregs = isset($rc['pastregs']) ? $rc['pastregs'] : array();
+        $past_txt = '';
+        foreach($pastregs as $pastreg) {
+            $past_txt .= ($past_txt != '' ? "\n" : '') . $pastreg['display_name'] 
+                . ($pastreg['mark'] != '' ? ' - ' . $pastreg['mark'] : '')
+                . ($pastreg['placement'] != '' ? ' - ' . $pastreg['placement'] : '')
+                . ($pastreg['level'] != '' ? ' - ' . $pastreg['level'] : '')
+                . "";
+        }
+        if( $past_txt != '' ) {
+            $fields["past_reg"] = [
+                'id' => "past_reg",
+                'label' => 'Past Registrations',
+                'ftype' => 'content',
+                'description' => $past_txt,
+                ];
+        }
+    }
+
     for($i = 1; $i <= $class['max_titles']; $i++) {
         //
         // Setup the title prefix

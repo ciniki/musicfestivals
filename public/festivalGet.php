@@ -100,6 +100,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
         'provincial_festivals'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Return Provincial Festivals'),
         'accolade_category_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Accolade Category'),
         'accolade_subcategory_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Accolade Subcategory'),
+        'festivals'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Festivals'),
         ));
     if( $rc['stat'] != 'ok' ) {
         return $rc;
@@ -5842,7 +5843,37 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
             $festival['provincial_festivals'] = isset($rc['festivals']) ? $rc['festivals'] : array();
         }
     }
+    $rsp = array('stat'=>'ok', 'festival'=>$festival, 'nplists'=>$nplists);
 
-    return array('stat'=>'ok', 'festival'=>$festival, 'nplists'=>$nplists);
+    if( isset($args['festivals']) && $args['festivals'] == 'yes' ) {
+        $strsql = "SELECT ciniki_musicfestivals.id, "
+            . "ciniki_musicfestivals.name, "
+            . "ciniki_musicfestivals.permalink, "
+            . "ciniki_musicfestivals.start_date, "
+            . "ciniki_musicfestivals.end_date, "
+            . "ciniki_musicfestivals.status, "
+            . "ciniki_musicfestivals.status AS status_text, "
+            . "ciniki_musicfestivals.flags, "
+            . "ciniki_musicfestivals.earlybird_date "
+            . "FROM ciniki_musicfestivals "
+            . "WHERE ciniki_musicfestivals.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY start_date DESC "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'festivals', 'fname'=>'id', 
+                'fields'=>array('id', 'name', 'permalink', 'start_date', 'end_date', 'status', 'status_text',
+                    'flags', 'earlybird_date',
+                    ),
+                'maps'=>array('status_text'=>$maps['festival']['status']),
+                ),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $rsp['festivals'] = isset($rc['festivals']) ? $rc['festivals'] : array();
+    }
+
+    return $rsp;
 }
 ?>

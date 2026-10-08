@@ -6727,6 +6727,11 @@ function ciniki_musicfestivals_main() {
                 'registration-scrutineers-status-55':{'label':'Approved', 'type':'toggle', 'default':'no', 'visible':'no',
                     'toggles':{'no':'No', 'yes':'Yes'},
                     },
+                'registration-scrutineers-previous-festival-id':{'label':'Previous Festival Winners From', 'type':'select', 'default':'0', 'visible':'no',
+                    'options':[],
+                    'complex_options':{'value':'id', 'name':'name'},
+                    },
+                'registration-scrutineers-previous-placements':{'label':'Previous Placements', 'type':'text', 'placeholder':'all'},
             }},
         '_registration_statuses':{'label':'Registration Status', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('registrations', 'settings'); },
@@ -7771,7 +7776,7 @@ function ciniki_musicfestivals_main() {
     this.edit.open = function(cb, fid, list) {
         if( fid != null ) { this.festival_id = fid; }
         if( list != null ) { this.nplist = list; }
-        M.api.getJSONCb('ciniki.musicfestivals.festivalGet', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'provincials':'festivals'}, function(rsp) {
+        M.api.getJSONCb('ciniki.musicfestivals.festivalGet', {'tnid':M.curTenantID, 'festival_id':this.festival_id, 'provincials':'festivals', 'festivals':'yes'}, function(rsp) {
             if( rsp.stat != 'ok' ) {
                 M.api.err(rsp);
                 return false;
@@ -7781,16 +7786,21 @@ function ciniki_musicfestivals_main() {
             if( (rsp.festival.flags&0x02) == 0x02 ) {
                 p.sections.general.fields.flags3.visible = 'yes';
                 p.sections.deadlines.fields.virtual_date.visible = 'yes';
-//                p.sections.general.fields.upload_end_dt.visible = 'yes';
             } else {
                 p.sections.deadlines.fields.virtual_date.visible = 'no';
-//                p.sections.general.fields.upload_end_dt.visible = 'no';
             }
             p.sections._provincials.fields['provincial-festival-id'].options = [{'id':0, 'name':'None'}];
             if( rsp.festival.provincial_festivals != null ) {
                 for(var i in rsp.festival.provincial_festivals) {
                     p.sections._provincials.fields['provincial-festival-id'].options.push(rsp.festival.provincial_festivals[i]);
                 }
+            }
+            if( rsp.festivals != null && rsp.festivals.length > 1 ) {
+                rsp.festivals.unshift({'id':0, 'name':'Choose past festival'});
+                p.sections._scrutineer_options.fields['registration-scrutineers-previous-festival-id'].options = rsp.festivals;
+                p.sections._scrutineer_options.fields['registration-scrutineers-previous-festival-id'].visible = 'yes';
+            } else {
+                p.sections._scrutineer_options.fields['registration-scrutineers-previous-festival-id'].visible = 'no';
             }
 
             p.refresh();
