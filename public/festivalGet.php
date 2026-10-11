@@ -5846,6 +5846,18 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
     $rsp = array('stat'=>'ok', 'festival'=>$festival, 'nplists'=>$nplists);
 
     if( isset($args['festivals']) && $args['festivals'] == 'yes' ) {
+        //
+        // Load the default maps
+        //
+        if( !isset($maps) ) {
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'maps');
+            $rc = ciniki_musicfestivals_maps($ciniki);
+            if( $rc['stat'] != 'ok' ) {
+                return $rc;
+            }
+            $maps = $rc['maps'];
+        }
+
         $strsql = "SELECT ciniki_musicfestivals.id, "
             . "ciniki_musicfestivals.name, "
             . "ciniki_musicfestivals.permalink, "
