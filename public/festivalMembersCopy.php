@@ -95,7 +95,7 @@ function ciniki_musicfestivals_festivalMembersCopy($ciniki) {
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1704', 'msg'=>'Unable to load members', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1713', 'msg'=>'Unable to load members', 'err'=>$rc['err']));
     }
     $existing = isset($rc['members']) ? $rc['members'] : array();
 
