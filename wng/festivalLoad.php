@@ -28,9 +28,13 @@ function ciniki_musicfestivals_wng_festivalLoad(&$ciniki, $tnid, $request) {
         . "accompanist_end_dt, "
         . "upload_end_dt "
         . "FROM ciniki_musicfestivals "
-        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
-        . "AND permalink = '" . ciniki_core_dbQuote($ciniki, $request['uri_split'][2]) . "' "
-        . "AND status = 30 "        // Current
+        . "WHERE tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' ";
+    if( $request['uri_split'][0] == 'cpi' && isset($_POST['festival-id']) && $_POST['festival-id'] > 0 ) {
+        $strsql .= "AND id = '" . ciniki_core_dbQuote($ciniki, $_POST['festival-id']) . "' ";
+    } else {
+        $strsql .= "AND permalink = '" . ciniki_core_dbQuote($ciniki, $request['uri_split'][2]) . "' ";
+    }
+    $strsql .= "AND status = 30 "        // Current
         . "ORDER BY start_date DESC "
         . "";
     $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'festival');

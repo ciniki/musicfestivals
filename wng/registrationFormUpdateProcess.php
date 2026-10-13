@@ -12,6 +12,8 @@
 //
 function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid, &$request, $args) {
 
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbTransactionRollback');
+
     if( !isset($ciniki['tenant']['modules']['ciniki.musicfestivals']) ) {
         return array('stat'=>'404', 'err'=>array('code'=>'ciniki.musicfestivals.1369', 'msg'=>"I'm sorry, the page you requested does not exist."));
     }
@@ -642,6 +644,7 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectAdd');
         $rc = ciniki_core_objectAdd($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration, 0x04);
         if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.371', 'msg'=>'Unable to add the competitor', 'err'=>$rc['err']));
         }
         $registration_id = $rc['id'];
@@ -718,6 +721,10 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             'notes' => $notes,
             ));
         if( $rc['stat'] != 'ok' ) {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+            if( $rc['err']['code'] == 'ciniki.musicfestivals.1522' ) {  
+                return array('stat'=>'fail', 'err'=>$rc['err']);
+            }
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.309', 'msg'=>'Unable to add to cart', 'err'=>$rc['err']));
         }
 
@@ -740,8 +747,12 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
         if( $rc['stat'] != 'ok' ) {
             return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.332', 'msg'=>'Unable to load cart', 'err'=>$rc['err']));
         }
+
        
         if( isset($request['session']['account-musicfestivals-registration-return-url']) ) {
+            if( isset($args['format']) && $args['format'] == 'json' ) {
+                return array('stat'=>'ok', 'return-url'=>$request['session']['account-musicfestivals-registration-return-url']);
+            }
             header("Location: {$request['session']['account-musicfestivals-registration-return-url']}");
             unset($request['session']['account-musicfestivals-registration-return-url']);
             return array('stat'=>'exit', 'id'=>$registration_id);
@@ -751,6 +762,9 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             unset($request['session']['musicfestival-registration']);
         }
         
+        if( isset($args['format']) && $args['format'] == 'json' ) {
+            return array('stat'=>'ok', 'return-url'=>$args['base_url']);
+        }
         header("Location: {$args['base_url']}");
         return array('stat'=>'exit', 'id'=>$registration_id);
     }
@@ -1038,11 +1052,17 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
         }
 
         if( isset($request['session']['account-musicfestivals-registration-return-url']) ) {
+            if( isset($args['format']) && $args['format'] == 'json' ) {
+                return array('stat'=>'ok', 'return-url'=>$request['session']['account-musicfestivals-registration-return-url']);
+            }
             header("Location: {$request['session']['account-musicfestivals-registration-return-url']}");
             unset($request['session']['account-musicfestivals-registration-return-url']);
             return array('stat'=>'exit');
         }
 
+        if( isset($args['format']) && $args['format'] == 'json' ) {
+            return array('stat'=>'ok', 'return-url'=>$args['base_url']);
+        }
         header("Location: {$args['base_url']}");
         return array('stat'=>'exit');
     }

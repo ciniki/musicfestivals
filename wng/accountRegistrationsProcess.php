@@ -25,6 +25,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'festivalLoad');
     $rc = ciniki_musicfestivals_wng_festivalLoad($ciniki, $tnid, $request);
     if( $rc['stat'] != 'ok' ) {
+        if( isset($args['format']) && $args['format'] == 'json' ) {
+            return array('stat'=>'fail', 'errors'=>'Festival is now closed');
+        }
         return array('stat'=>'ok', 'blocks'=>[[
             'type' => 'msg', 
             'level' => 'error', 
@@ -1077,6 +1080,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         'customer_id' => $request['session']['customer']['id'],
         ));
     if( $rc['stat'] == 'noexist' ) {
+        if( isset($args['format']) && $args['format'] == 'json' ) {
+            return array('stat'=>'fail', 'errors'=>$rc['err']['msg']);
+        }
         return array('stat'=>'ok', 'blocks'=>array(
             array(
                 'type' => 'msg',
@@ -1085,7 +1091,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 ),
             ));
     } elseif( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.348', 'msg'=>'', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.348', 'msg'=>'Unknown error, please try again or contact us for help.', 'err'=>$rc['err']));
     }
     $fields = $rc['fields'];
     $js = $rc['js'];
@@ -1136,10 +1142,14 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             'registration' => isset($registration) ? $registration : null,
             'customer_type' => $customer_type,
             'customer_id' => $request['session']['customer']['id'],
+            'format' => isset($args['format']) ? $args['format'] : '',
             ]);
-        if( $rc['stat'] == 'exit' || $rc['stat'] == '404' ) {
+        if( $rc['stat'] == 'exit' || $rc['stat'] == '404' || isset($rc['return-url']) ) {
             return $rc;
         } elseif( $rc['stat'] != 'ok' && $rc['stat'] != 'updated' ) {
+            if( isset($args['format']) && $args['format'] == 'json' ) {
+                return array('stat'=>'fail', 'errors'=>$rc['err']['msg'], 'err'=>$rc['err']);
+            }
             return array('stat'=>'ok', 'blocks'=>[[
                 'type' => 'msg',
                 'level' => 'error', 
@@ -1186,6 +1196,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                         'item_id' => $rc['item']['id'],
                         ));
                     if( $rc['stat'] != 'ok' ) {
+                        if( isset($args['format']) && $args['format'] == 'json' ) {
+                            return array('stat'=>'fail', 'errors'=>'This registration cannot be removed, please contact us.');
+                        }
                         $blocks[] = array(
                             'type' => 'msg',
                             'level' => 'error',
@@ -1238,6 +1251,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     elseif( isset($_GET['r']) && $_GET['r'] == 'yes' ) {
         $display = 'form';
         if( $festival['live'] == 'no' && (($festival['flags']&0x02) == 0 || $festival['virtual'] == 'no') ) {
+            if( isset($args['format']) && $args['format'] == 'json' ) {
+                return array('stat'=>'fail', 'errors'=>'Registrations are closed for ' . $festival['name']);
+            }
             $blocks[] = array(
                 'type' => 'msg',
                 'level' => 'error',
@@ -1251,6 +1267,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         // Check if registrations are still open
         //
         if( $festival['live'] == 'no' && (($festival['flags']&0x02) == 0 || $festival['virtual'] == 'no') ) {
+            if( isset($args['format']) && $args['format'] == 'json' ) {
+                return array('stat'=>'fail', 'errors'=>'Registrations are closed for ' . $festival['name']);
+            }
             $blocks[] = array(
                 'type' => 'msg',
                 'level' => 'error',
@@ -1269,6 +1288,12 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     if( isset($errors) && count($errors) > 0 ) {
         foreach($errors as $err) {
             $form_errors .= ($form_errors != '' ? '<br/>' : '') . $err['msg'];
+        }
+    }
+
+    if( isset($args['format']) && $args['format'] == 'json' ) {
+        if( $form_errors != '' ) {
+            return array('stat'=>'fail', 'errors'=>$form_errors);
         }
     }
 
