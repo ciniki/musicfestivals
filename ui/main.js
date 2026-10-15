@@ -20678,11 +20678,6 @@ function ciniki_musicfestivals_main() {
                 this.sections.volunteers.cellClasses[this.sections.volunteers.num_cols] = '';
                 this.sections.volunteers.num_cols++;
             }
-            this.sections.volunteers.headerValues[this.sections.volunteers.num_cols] = 'Hours';
-            this.sections.volunteers.dataMaps[this.sections.volunteers.num_cols] = 'total_hours_text';
-            this.sections.volunteers.sortTypes[this.sections.volunteers.num_cols] = 'number';
-            this.sections.volunteers.cellClasses[this.sections.volunteers.num_cols] = 'alignright';
-            this.sections.volunteers.num_cols++;
             this.size = 'xlarge';
             if( this.volunteer_id > 0  ) {
                 args['volunteers'] = 'basic';
@@ -20695,10 +20690,16 @@ function ciniki_musicfestivals_main() {
                 this.sections.volunteer_search.headerValues = ['Name'];
                 this.sections.volunteer_search.livesearchcols = 1;
             } else {
-                this.sections.volunteer_search.headerValues = this.sections.volunteers.headerValues;
-                this.sections.volunteer_search.dataMaps = this.sections.volunteers.dataMaps;
-                this.sections.volunteer_search.cellClasses = this.sections.volunteers.cellClasses;
+                this.sections.volunteer_search.headerValues = this.sections.volunteers.headerValues.slice();
+                this.sections.volunteer_search.dataMaps = this.sections.volunteers.dataMaps.slice();
+                this.sections.volunteer_search.cellClasses = this.sections.volunteers.cellClasses.slice();
                 this.sections.volunteer_search.livesearchcols = this.sections.volunteers.num_cols;
+                // Add hours after so they don't show in search results
+                this.sections.volunteers.headerValues[this.sections.volunteers.num_cols] = 'Hours';
+                this.sections.volunteers.dataMaps[this.sections.volunteers.num_cols] = 'total_hours_text';
+                this.sections.volunteers.sortTypes[this.sections.volunteers.num_cols] = 'number';
+                this.sections.volunteers.cellClasses[this.sections.volunteers.num_cols] = 'alignright';
+                this.sections.volunteers.num_cols++;
             }
         } 
         else if( this.sections._tabs.selected == 'schedule' ) {

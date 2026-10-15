@@ -51,12 +51,20 @@ function ciniki_musicfestivals_volunteerSearch($ciniki) {
     $maps = $rc['maps'];
 
     //
+    // Load the date format strings for the user
+    //
+    ciniki_core_loadMethod($ciniki, 'ciniki', 'users', 'private', 'dateFormat');
+    $date_format = ciniki_users_dateFormat($ciniki, 'php');
+    
+    //
     // Get the list of volunteers
     //
     $strsql = "SELECT DISTINCT volunteers.id, "
         . "volunteers.festival_id, "
         . "volunteers.customer_id, "
         . "customers.display_name, "
+        . "IF((customers.flags&0x0100)=0x0100, 'Yes', '') AS crc_checked, "
+        . "customers.crc_expiry_date, "
         . "volunteers.shortname, "
         . "volunteers.status, "
         . "volunteers.status AS status_text, "
@@ -96,8 +104,11 @@ function ciniki_musicfestivals_volunteerSearch($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'volunteers', 'fname'=>'id', 
-            'fields'=>array('id', 'festival_id', 'customer_id', 'display_name', 'shortname', 'status', 'status_text', 'local_festival_id'),
+            'fields'=>array('id', 'festival_id', 'customer_id', 'display_name', 'shortname', 'status', 'status_text', 'local_festival_id',
+                'crc_checked', 'crc_expiry_date',
+                ),
             'maps'=>array('status_text'=>$maps['volunteer']['status']),
+            'dtformat'=>array('crc_expiry_date'=>$date_format),
             ),
         ));
     if( $rc['stat'] != 'ok' ) {
