@@ -3134,9 +3134,9 @@ function ciniki_musicfestivals_main() {
                 }
                 return d.min_titles + ' - ' + d.max_titles;
             }
-            else if( this.sections[s].dataMaps[j] == 'synopsis' ) {
-                return d.synopsis.replace('\n', '<br/>');
-            }
+//            else if( this.sections[s].dataMaps[j] == 'synopsis' ) {
+//                return d.synopsis.replace('\n', '<br/>');
+//            }
             else if( this.sections[s].dataMaps[j] == 'num_registrations' ) {
                 return d.num_registrations > 0 ? d.num_registrations : '';
             }
