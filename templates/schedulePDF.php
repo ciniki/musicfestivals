@@ -214,9 +214,9 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     }
     if( isset($args['ipv']) && $args['ipv'] == 'inperson' ) {
 //        $strsql .= "AND (registrations.participation < 1 || ISNULL(registrations.participation) ) ";
-        $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2) ";
+        $strsql .= "AND (registrations.participation = 0 OR registrations.participation = 2 OR ISNULL(registrations.participation)) ";
     } elseif( isset($args['ipv']) && $args['ipv'] == 'virtual' ) {
-        $strsql .= "AND registrations.participation = 1 ";
+        $strsql .= "AND (registrations.participation = 1 OR ISNULL(registrations.participation)) ";
     }
 //    $strsql .= "GROUP BY registrations.id ";
     $strsql .= "GROUP BY timeslots.id, registrations.id ";
