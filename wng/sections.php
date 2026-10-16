@@ -622,6 +622,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     'date-adjudicator-location' => 'Date, Adjudicator, Location',
                     'date-name-adjudicator-location' => 'Date, Division, Adjudicator, Location',
                     'name-date-adjudicator-location' => 'Division, Date, Adjudicator, Location',
+//                    'division-adjudicator' => 'Division, Adjudicator',
                     )),
             'division_header_labels' => array('label'=>'PDF Division Header Labels', 'type'=>'toggle', 'default'=>'no', 
                 'toggles'=>array(
@@ -630,11 +631,16 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                     )),
                 // With section name in header you must have break between each section, 
                 // this option is only good for print when embedding in another document, not good for website downloads
-//            'section_page_break' => array('label'=>'PDF Section Page Break', 'type'=>'toggle', 'default'=>'no',
-//                'toggles'=>array(
-//                    'no' => 'No',
-//                    'yes' => 'Yes',
-//                    )),
+            'section_page_break' => array('label'=>'PDF Section Page Break', 'type'=>'toggle', 'default'=>'no',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
+            'division_page_break' => array('label'=>'PDF Division Page Break', 'type'=>'toggle', 'default'=>'no',
+                'toggles'=>array(
+                    'no' => 'No',
+                    'yes' => 'Yes',
+                    )),
             ),
         );
 

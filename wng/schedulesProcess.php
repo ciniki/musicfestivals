@@ -86,6 +86,7 @@ function ciniki_musicfestivals_wng_schedulesProcess(&$ciniki, $tnid, &$request, 
             'titles' => isset($s['titles']) ? $s['titles'] : '',
             'video_urls' => isset($s['video_urls']) ? $s['video_urls'] : '',
             'section_page_break' => isset($s['section_page_break']) ? $s['section_page_break'] : '',
+            'division_page_break' => isset($s['division_page_break']) ? $s['division_page_break'] : '',
             ));
         if( isset($rc['pdf']) ) {
             $filename = $festival['name'] . ' Schedule';
