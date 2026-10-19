@@ -442,6 +442,18 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'imagebuttons' => 'Image Buttons',
                 'tradingcards' => 'Trading Cards',
                 )),
+            'image-ratio' => array('label' => 'Trading Cards Image Ratio', 
+                'type'=>'select', 
+                'default'=>'1-1', 
+                'options'=>array(
+                    '2-1' => 'Panoramic',
+                    '16-9' => 'Letterbox',
+                    '6-4' => 'Wider',
+                    '4-3' => 'Wide',
+                    '1-1' => 'Square',
+                    '3-4' => 'Tall',
+                    '4-6' => 'Taller',
+                )),
             'image-position'=>array('label'=>'Image Position', 'type'=>'select', 'default'=>'top-right', 'options'=>array(
                 'top-left' => 'Top Left',
                 'top-left-inline' => 'Top Left Inline',

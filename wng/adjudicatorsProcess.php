@@ -170,6 +170,7 @@ function ciniki_musicfestivals_wng_adjudicatorsProcess(&$ciniki, $tnid, &$reques
                     'type' => 'tradingcards',
                     'class' => 'musicfestival-adjudicators',
                     'size' => '25',
+                    'image-ratio' => isset($s['image-ratio']) ? $s['image-ratio'] : '1-1',
                     'items' => $adjudicators,
                     );
             } 
