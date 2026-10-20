@@ -203,21 +203,24 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
                     && (!isset($_FILES["file-{$field['id']}"]['name']) || $_FILES["file-{$field['id']}"]['name'] == '') 
                     ) {
                     $errors[] = array(
-                        'msg' => 'You must specify the registration ' . (isset($field['error_label']) ? $field['error_label'] : $field['label']) . '.',
+                        'msg' => "Selection #{$m[1]}: You must specify the " . (isset($field['error_label']) ? $field['error_label'] : $field['label']) . '.',
                         );
                 }
             }
-            elseif( isset($field['required']) && $field['required'] == 'yes' && $field['ftype'] == 'file' ) {
+            elseif( isset($field['required']) && $field['required'] == 'yes' && $field['ftype'] == 'file'
+                && preg_match("/([a-z]+)([0-9])/", $field['id'], $m)
+                ) {
                 if( $field['value'] == '' && (!isset($_FILES["file-{$field['id']}"]['name']) || $_FILES["file-{$field['id']}"]['name'] == '') ) {
                     $errors[] = array(
-                        'msg' => 'You must specify the registration ' . (isset($field['error_label']) ? $field['error_label'] : $field['label']) . '.',
+                        'msg' => "Selection #{$m[2]}: You must specify the " . (isset($field['error_label']) ? $field['error_label'] : $field['label']) . '.',
                         );
                 }
             }
             elseif( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == 0 && $field['ftype'] == 'minsec' 
+                && preg_match("/([a-z]+)([0-9])/", $field['id'], $m)
                 ) {
                 $errors[] = array(
-                    'msg' => 'You must specify the registration ' . (isset($field['error_label']) ? $field['error_label'] : $field['label']) . '.',
+                    'msg' => "Selection #{$m[2]}: You must specify the " . (isset($field['error_label']) ? $field['error_label'] : $field['label']) . '.',
                     );
             }
             elseif( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == 0 && strncmp($field['id'], 'competitor', 10) == 0 ) {
@@ -225,11 +228,12 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
                     'msg' => 'You must specify the registration ' . (isset($field['error_label']) ? $field['error_label'] : $field['label']) . '.',
                     );
             }
-            elseif( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == 0 && $field['ftype'] == 'minsec' ) {
+            elseif( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == '' 
+                && preg_match("/(title|opus|movements|musical|composer|arranger|source|video_url|artwork)([0-9])/", $field['id'], $m)
+                ) {
                 $errors[] = array(
-                    'msg' => 'You must specify the registration ' . (isset($field['error_label']) ? $field['error_label'] : $field['label']) . '.',
+                    'msg' => "Selection #{$m[2]}: You must specify the " . (isset($field['error_label']) ? $field['error_label'] : $field['label']) . '.',
                     );
-
             }
             elseif( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == '' && $field['id'] != 'termstitle' ) {
                 $errors[] = array(

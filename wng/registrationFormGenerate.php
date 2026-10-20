@@ -1243,7 +1243,6 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'class' => $css_class,
             'required' => $required,
             'size' => 'small',
-//            'label' => "{$prefix} " . (isset($festival['registration-title-label']) && $festival['registration-title-label'] != '' ? $festival['registration-title-label'] : "Title"),
             'label' => (isset($festival['registration-title-label']) && $festival['registration-title-label'] != '' ? $festival['registration-title-label'] : "Title"),
             'value' => isset($_POST["f-title{$i}"]) ? trim($_POST["f-title{$i}"]) : (isset($registration["title{$i}"]) ? $registration["title{$i}"] : ''),
             'help' => isset($festival['registration-title-help']) ? $festival['registration-title-help'] : '',
@@ -1281,7 +1280,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'required' => $required,
             'size' => 'small',
             'label' => (isset($festival['registration-opus-label']) && $festival['registration-opus-label'] != '' ? $festival['registration-opus-label'] : "Opus"),
-            'error_label' => "{$prefix} " . (isset($festival['registration-opus-label']) && $festival['registration-opus-label'] != '' ? $festival['registration-opus-label'] : "Opus"),
+            'error_label' => (isset($festival['registration-opus-label']) && $festival['registration-opus-label'] != '' ? $festival['registration-opus-label'] : "Opus"),
             'value' => isset($_POST["f-opus{$i}"]) ? trim($_POST["f-opus{$i}"]) : (isset($registration["opus{$i}"]) ? $registration["opus{$i}"] : ''),
             'help' => isset($festival['registration-opus-help']) ? $festival['registration-opus-help'] : '',
             );
@@ -1319,7 +1318,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'required' => $required,
             'size' => 'small',
             'label' => (isset($festival['registration-movements-label']) && $festival['registration-movements-label'] != '' ? $festival['registration-movements-label'] : "Movements"),
-            'error_label' => "{$prefix} " . (isset($festival['registration-movements-label']) && $festival['registration-movements-label'] != '' ? $festival['registration-movements-label'] : "Movements"),
+            'error_label' => (isset($festival['registration-movements-label']) && $festival['registration-movements-label'] != '' ? $festival['registration-movements-label'] : "Movements"),
             'value' => isset($_POST["f-movements{$i}"]) ? trim($_POST["f-movements{$i}"]) : (isset($registration["movements{$i}"]) ? $registration["movements{$i}"] : ''),
             'help' => isset($festival['registration-movements-help']) ? $festival['registration-movements-help'] : '',
             );
@@ -1357,7 +1356,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'required' => $required,
             'size' => 'small',
             'label' => (isset($festival['registration-musical-label']) && $festival['registration-musical-label'] != '' ? $festival['registration-musical-label'] : "Musical"),
-            'error_label' => "{$prefix} " . (isset($festival['registration-musical-label']) && $festival['registration-musical-label'] != '' ? $festival['registration-musical-label'] : "Musical"),
+            'error_label' => (isset($festival['registration-musical-label']) && $festival['registration-musical-label'] != '' ? $festival['registration-musical-label'] : "Musical"),
             'value' => isset($_POST["f-musical{$i}"]) ? trim($_POST["f-musical{$i}"]) : (isset($registration["musical{$i}"]) ? $registration["musical{$i}"] : ''),
             'help' => isset($festival['registration-musical-help']) ? $festival['registration-musical-help'] : '',
             );
@@ -1395,7 +1394,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'required' => $required,
             'size' => 'small',
             'label' => (isset($festival['registration-composer-label']) && $festival['registration-composer-label'] != '' ? $festival['registration-composer-label'] : "Composer"),
-            'error_label' => "{$prefix} " . (isset($festival['registration-composer-label']) && $festival['registration-composer-label'] != '' ? $festival['registration-composer-label'] : "Composer"),
+            'error_label' => (isset($festival['registration-composer-label']) && $festival['registration-composer-label'] != '' ? $festival['registration-composer-label'] : "Composer"),
             'value' => isset($_POST["f-composer{$i}"]) ? trim($_POST["f-composer{$i}"]) : (isset($registration["composer{$i}"]) ? $registration["composer{$i}"] : ''),
             'help' => isset($festival['registration-composer-help']) ? $festival['registration-composer-help'] : '',
             );
@@ -1433,7 +1432,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'required' => $required,
             'size' => 'small',
             'label' => (isset($festival['registration-arranger-label']) && $festival['registration-arranger-label'] != '' ? $festival['registration-arranger-label'] : "Arranger"),
-            'error_label' => "{$prefix} " . (isset($festival['registration-arranger-label']) && $festival['registration-arranger-label'] != '' ? $festival['registration-arranger-label'] : "Arranger"),
+            'error_label' => (isset($festival['registration-arranger-label']) && $festival['registration-arranger-label'] != '' ? $festival['registration-arranger-label'] : "Arranger"),
             'value' => isset($_POST["f-arranger{$i}"]) ? trim($_POST["f-arranger{$i}"]) : (isset($registration["arranger{$i}"]) ? $registration["arranger{$i}"] : ''),
             'help' => isset($festival['registration-arranger-help']) ? $festival['registration-arranger-help'] : '',
             );
@@ -1471,7 +1470,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'required' => $required,
             'size' => 'small',
             'label' => (isset($festival['registration-source-label']) && $festival['registration-source-label'] != '' ? $festival['registration-source-label'] : "Source"),
-            'error_label' => "{$prefix} " . (isset($festival['registration-source-label']) && $festival['registration-source-label'] != '' ? $festival['registration-source-label'] : "Source"),
+            'error_label' => (isset($festival['registration-source-label']) && $festival['registration-source-label'] != '' ? $festival['registration-source-label'] : "Source"),
             'value' => isset($_POST["f-source{$i}"]) ? trim($_POST["f-source{$i}"]) : (isset($registration["source{$i}"]) ? $registration["source{$i}"] : ''),
             );
         if( isset($selected_class['source_label']) && $selected_class['source_label'] != '' ) {
@@ -1531,7 +1530,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'flex-basis' => (isset($festival['registration-length-format']) && $festival['registration-length-format'] == 'minonly' ? '5rem' : '17rem'),
             'size' => (isset($festival['registration-length-format']) && $festival['registration-length-format'] == 'minonly' ? 'tiny' : 'small'),
             'label' => (isset($festival['registration-length-label']) && $festival['registration-length-label'] != '' ? $festival['registration-length-label'] : 'Piece Length'),
-            'error_label' => "{$prefix} " . (isset($festival['registration-length-label']) && $festival['registration-length-label'] != '' ? $festival['registration-length-label'] : 'Piece Length'),
+            'error_label' => (isset($festival['registration-length-label']) && $festival['registration-length-label'] != '' ? $festival['registration-length-label'] : 'Piece Length'),
             'value' => $perf_time,
             'help' => isset($festival['registration-perftime-help']) ? $festival['registration-perftime-help'] : '',
             );
@@ -1557,7 +1556,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'required' => 'no',
             'size' => 'medium',
             'label' => 'YouTube Video URL',
-            'error_label' => $prefix . ' YouTube Video URL',
+            'error_label' => 'YouTube Video URL',
             'value' => isset($_POST["f-video_url{$i}"]) ? trim($_POST["f-video_url{$i}"]) : (isset($registration["video_url{$i}"]) ? $registration["video_url{$i}"] : ''),
             'help' => isset($festival['registration-videourl-help']) ? $festival['registration-videourl-help'] : '',
             );
@@ -1578,8 +1577,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'size' => 'medium',
             'storage_suffix' => "music{$i}",
             'accept' => 'application/pdf',
-            'label' => $prefix . ' Music (PDF)',
-            'error_label' => $prefix . ' Title Music (PDF)',
+            'label' => 'Music (PDF)',
+            'error_label' => 'Title Music (PDF)',
             'value' => (isset($registration["music_orgfilename{$i}"]) ? $registration["music_orgfilename{$i}"] : ''),
             'help' => isset($festival['registration-orgfilename-help']) ? $festival['registration-orgfilename-help'] : '',
             );
@@ -1606,7 +1605,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'size' => 'tiny',
             'label' => 'Use Backtrack',
             'onchange' => 'sectionSelected()',
-            'error_label' => "{$prefix} Backtrack Option",
+            'error_label' => "Backtrack Option",
             'value' => '', 
             );
         if( isset($selected_class['flags']) && ($selected_class['flags']&0x400000) == 0x400000 ) {
@@ -1636,9 +1635,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'size' => 'medium-large',
             'storage_suffix' => "backtrack{$i}",
             'accept' => 'audio/mpeg',
-            'label' => "{$prefix} Backtrack (MP3)",
-            'error_label' => "{$prefix} Backtrack (MP3)",
-//            'value' => isset($_POST["f-backtrack{$i}"]) ? $_POST["f-backtrack{$i}"] : (isset($registration["backtrack{$i}"]) ? $registration["backtrack{$i}"] : ''),
+            'label' => "Backtrack (MP3)",
+            'error_label' => "Backtrack (MP3)",
             'value' => (isset($registration["backtrack{$i}"]) ? $registration["backtrack{$i}"] : ''),
             'help' => isset($festival['registration-backtrack-help']) ? $festival['registration-backtrack-help'] : '',
             );
@@ -1656,7 +1654,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'storage_suffix' => "artwork{$i}",
 //            'accept' => 'image/jpeg',
             'label' => 'Artwork (PNG/JPG/PDF)',
-            'error_label' => "{$prefix} Artwork (PNG/JPG)",
+            'error_label' => "Artwork (PNG/JPG)",
             'value' => (isset($registration["artwork{$i}"]) ? $registration["artwork{$i}"] : ''),
             'help' => isset($festival['registration-artwork-help']) ? $festival['registration-artwork-help'] : '',
             );

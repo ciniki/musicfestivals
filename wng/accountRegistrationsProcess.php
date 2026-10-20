@@ -1286,8 +1286,16 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     //
     $form_errors = '';
     if( isset($errors) && count($errors) > 0 ) {
+        $prev_selection = 0;
         foreach($errors as $err) {
+            if( preg_match("/Selection #([0-9])/", $err['msg'], $m) ) {
+                if( $prev_selection != $m[1] && $form_errors != '' ) {
+                    $form_errors .= '<br/>';
+                }
+                $prev_selection = $m[1];
+            }
             $form_errors .= ($form_errors != '' ? '<br/>' : '') . $err['msg'];
+            $prev_msg = $err['msg'];
         }
     }
 
