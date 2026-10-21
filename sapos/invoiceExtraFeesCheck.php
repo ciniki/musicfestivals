@@ -59,6 +59,12 @@ function ciniki_musicfestivals_sapos_invoiceExtraFeesCheck($ciniki, $tnid, $args
             if( $rc['stat'] == 'blocked' ) {
                 $closed_registrations .= ($closed_registrations != '' ? "\n" : '') . $item['code'] . ' - ' . $item['description'];
             }
+            // Ignore error returns we deleting an item (typically from cart)
+            elseif( isset($args['action']) && $args['action'] == 'deletereg' 
+                && $rc['stat'] == 'fail' && $rc['err']['code'] == 'ciniki.musicfestivals.1696' 
+                ) {
+                return array('stat'=>'ok');
+            }
             elseif( $rc['stat'] != 'ok' ) {
                 return $rc;
             }
