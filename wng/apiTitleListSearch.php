@@ -105,7 +105,7 @@ function ciniki_musicfestivals_wng_apiTitleListSearch(&$ciniki, $tnid, &$request
             . "WHERE tlt.list_id IN (" . ciniki_core_dbQuoteIDs($ciniki, $list_ids) . ") "
             . "AND titles.keywords LIKE '% " . ciniki_core_dbQuote($ciniki, $keywords) . "%' "
             . "GROUP BY titles.id "
-            . "ORDER BY source_type, title, movements, composer, lists.name "
+            . "ORDER BY source_type, title, movements, musical, composer, lists.name "
             . "LIMIT " . ($limit + 1)
             . "";
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
@@ -128,7 +128,7 @@ function ciniki_musicfestivals_wng_apiTitleListSearch(&$ciniki, $tnid, &$request
 //        }
         $columns = [['label' => 'Discipline', 'field'=>'lists']];
         for($j = 1; $j < 5; $j++) {
-            if( in_array($list["col{$j}_field"], ['title', 'movements', 'composer', 'source_type']) ) {
+            if( in_array($list["col{$j}_field"], ['title', 'opus', 'movements', 'musical', 'composer', 'arranger', 'source_type']) ) {
                 $columns[] = [
                     'label' => $list["col{$j}_label"],
                     'field' => $list["col{$j}_field"],
