@@ -12,7 +12,7 @@
 // Returns
 // ---------
 // 
-function ciniki_musicfestivals_wng_apiClassSearch(&$ciniki, $tnid, $request) {
+function ciniki_musicfestivals_wng_apiClassSearch(&$ciniki, $tnid, &$request) {
    
    
     if( !isset($request['args']['search_string']) ) {

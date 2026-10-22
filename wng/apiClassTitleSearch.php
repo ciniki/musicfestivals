@@ -12,7 +12,7 @@
 // Returns
 // ---------
 // 
-function ciniki_musicfestivals_wng_apiClassTitleSearch(&$ciniki, $tnid, $request) {
+function ciniki_musicfestivals_wng_apiClassTitleSearch(&$ciniki, $tnid, &$request) {
    
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbQuoteIDs');
    
