@@ -16108,6 +16108,7 @@ function ciniki_musicfestivals_main() {
                 'charm':'Charm',
                 'greatvibes':'Great Vibes',
                 'helvetica':'Helvetica',
+                'italianno':'Italianno',
                 'oleoscript':'Oleo Script',
                 'playfairdisplay':'Playfair Display',
                 'pinyonscript':'Pinyon Script',
