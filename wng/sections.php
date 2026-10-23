@@ -1303,6 +1303,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
         'name' => 'Countdown',
         'module' => 'Music Festivals',
         'settings' => array(
+            'earlybird-title' => array('label'=>'Earlybird', 'type'=>'text'),
             'open-title' => array('label'=>'Title', 'type'=>'text'),
             'festival-id' => array('label'=>'Festival', 'type'=>'select', 
                 'complex_options'=>array('value'=>'id', 'name'=>'name'),

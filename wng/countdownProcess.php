@@ -57,7 +57,18 @@ function ciniki_musicfestivals_wng_countdownProcess(&$ciniki, $tnid, &$request, 
     $festival = isset($rc['festival']) ? $rc['festival'] : array();
 
     
-    if( isset($festival['live']) && $festival['live'] == 'yes' 
+    if( isset($festival['earlybird']) && $festival['earlybird'] == 'yes' 
+        && isset($festival['earlybird_end_dt']) && is_object($festival['earlybird_end_dt'])
+        && isset($s['earlybird-title']) && $s['earlybird-title'] != ''
+        ) {
+        $blocks[] = [
+            'type' => 'countdown',
+            'running-title' => isset($s['earlybird-title']) ? $s['earlybird-title'] : '',
+            'end-dt' => $festival['earlybird_end_dt'],
+            'finished-title' => isset($s['closed-title']) ? $s['closed-title'] : '',
+            'finished-content' => isset($s['closed-content']) ? $s['closed-content'] : '',
+            ];
+    } elseif( isset($festival['live']) && $festival['live'] == 'yes' 
         && isset($festival['live_end_dt']) && is_object($festival['live_end_dt'])
         ) {
         $blocks[] = [
