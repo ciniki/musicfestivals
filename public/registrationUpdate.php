@@ -120,6 +120,14 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
         'music_orgfilename6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
         'music_orgfilename7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
         'music_orgfilename8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Music PDF'),
+        'word_line_count1'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Word Line Count 1'),
+        'word_line_count2'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Word Line Count 2'),
+        'word_line_count3'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Word Line Count 3'),
+        'word_line_count4'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Word Line Count 4'),
+        'word_line_count5'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Word Line Count 5'),
+        'word_line_count6'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Word Line Count 6'),
+        'word_line_count7'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Word Line Count 7'),
+        'word_line_count8'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Word Line Count 8'),
         'instrument'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Instrument'),
         'timeslot_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Timeslot'),
         'timeslot_time'=>array('required'=>'no', 'blank'=>'yes', 'type'=>'time', 'name'=>'Scheduled Time'),
@@ -505,6 +513,9 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
             } elseif( preg_match("/artwork([1-8])/", $field_name, $m) ) {
                 $file_num = $m[1];
                 $file_prefix = 'artwork';
+            } elseif( preg_match("/document([1-8])/", $field_name, $m) ) {
+                $file_num = $m[1];
+                $file_prefix = 'document';
             } else {
                 error_log('UNKNOWN FILE: ' . $field_name);
                 continue;
@@ -535,6 +546,9 @@ function ciniki_musicfestivals_registrationUpdate(&$ciniki) {
             } elseif( $file_prefix == 'artwork' ) {
                 $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/files/' 
                     . $registration['uuid'][0] . '/' . $registration['uuid'] . '_artwork' . $file_num;
+            } elseif( $file_prefix == 'document' ) {
+                $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/files/' 
+                    . $registration['uuid'][0] . '/' . $registration['uuid'] . '_document' . $file_num;
             } else {
                 $storage_filename = $tenant_storage_dir . '/ciniki.musicfestivals/files/' 
                     . $registration['uuid'][0] . '/' . $registration['uuid'] . '_music' . $file_num;

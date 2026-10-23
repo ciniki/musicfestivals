@@ -588,6 +588,9 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                 . "classes.composer_label, "
                 . "classes.arranger_label, "
                 . "classes.source_label, "
+                . "classes.artwork_label, "
+                . "classes.document_label, "
+                . "classes.word_line_count_label, "
                 . "classes.synopsis, "
                 . "classes.provincials_code, "
                 . "classes.schedule_seconds, "
@@ -683,6 +686,7 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         'question_provincials', 'question_musicfest', 'question_canwest',
                         'min_competitors', 'max_competitors', 'min_titles', 'max_titles', 
                         'title_label', 'opus_label', 'movements_label', 'musical_label', 'composer_label', 'arranger_label', 'source_label',
+                        'artwork_label', 'document_label', 'word_line_count_label',
                         'synopsis', 'provincials_code', 'provincials_class_name', 
                         'schedule_seconds', 'schedule_at_seconds', 'schedule_ata_seconds', 'levels', 'accolades',
                         'num_registrations', 'perf_time',
@@ -755,6 +759,12 @@ function ciniki_musicfestivals_festivalGet($ciniki) {
                         $festival['classes'][$iid]['artwork'] = 'Required';
                     } elseif( ($class['titleflags']&0x0200) == 0x0200) {
                         $festival['classes'][$iid]['artwork'] = 'Optional';
+                    }
+                    $festival['classes'][$iid]['document'] = '';
+                    if( ($class['titleflags']&0x40) == 0x40) {
+                        $festival['classes'][$iid]['document'] = 'Required';
+                    } elseif( ($class['titleflags']&0x80) == 0x80) {
+                        $festival['classes'][$iid]['document'] = 'Optional';
                     }
                     $festival['classes'][$iid]['instrument'] = '';
                     if( ($class['flags']&0x04) == 0x04 ) {

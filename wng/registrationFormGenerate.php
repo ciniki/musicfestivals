@@ -130,6 +130,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         . "classes.composer_label, "
         . "classes.arranger_label, "
         . "classes.source_label, "
+        . "classes.artwork_label, "
+        . "classes.document_label, "
+        . "classes.word_line_count_label, "
         . "classes.earlybird_fee, "
         . "classes.fee, "
         . "classes.virtual_fee, "
@@ -169,6 +172,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     'min_competitors', 'max_competitors', 
                     'min_titles', 'max_titles', 
                     'title_label', 'opus_label', 'movements_label', 'musical_label', 'composer_label', 'arranger_label', 'source_label', 
+                    'artwork_label', 'document_label', 'word_line_count_label',
                     'earlybird_fee', 'fee', 
                     'vfee' => 'virtual_fee', 'earlybird_plus_fee', 'plus_fee', 'synopsis', 'options',
                     ),
@@ -359,9 +363,13 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                 //
                 // Check for custom labels
                 //
-                foreach(['title', 'opus', 'movements', 'musical', 'composer', 'arranger', 'source'] as $field) {
+                foreach(['title', 'opus', 'movements', 'musical', 'composer', 'arranger', 'source', 'artwork', 'document', 'word_line_count'] as $field) {
                     if( isset($section_class["{$field}_label"]) && $section_class["{$field}_label"] != '' ) {
-                        $js_classes[$cid]["{$field[0]}{$field[1]}L"] = $section_class["{$field}_label"];
+                        if( $field == 'artwork' ) {
+                            $js_classes[$cid]["atL"] = $section_class["{$field}_label"];
+                        } else {
+                            $js_classes[$cid]["{$field[0]}{$field[1]}L"] = $section_class["{$field}_label"];
+                        }
                     }
                 }
 
@@ -1179,6 +1187,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         $backtrack_class = 'hidden';
         $backtrack_option_class = 'hidden';
         $artwork_class = 'hidden';
+        $document_class = 'hidden';
         if( $participation != 1 ) {
             $video_class = 'hidden';
             $music_class = 'hidden';
@@ -1207,6 +1216,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
 
         if( isset($selected_class['titleflags']) && ($selected_class['titleflags']&0x0300) > 0 ) {
             $artwork_class = $css_class;
+        }
+        if( isset($selected_class['titleflags']) && ($selected_class['titleflags']&0xC0) > 0 ) {
+            $document_class = $css_class;
         }
         if( isset($fields['member_break']['class']) && str_contains($fields['member_break']['class'], 'hidden') ) {
             $css_class = 'hidden';
@@ -1538,8 +1550,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
         if( isset($selected_class) && ($selected_class['flags']&0x10) == 0x10 && isset($selected_class['options']["perf_time{$i}"]) && $perf_time > 0 ) {
             $fields["perf_time{$i}"]['disabled'] = 'yes';
         }
-        // Artwork has no time field
-        if( isset($selected_class) && ($selected_class['titleflags']&0x0300) > 0 ) {
+        // Artwork & Documents has no time field
+        if( isset($selected_class) && ($selected_class['titleflags']&0x03C0) > 0 ) {
             $fields["perf_time{$i}"]['class'] = 'hidden';
             $fields["perf_time{$i}"]['required'] = 'no';
         }
@@ -1653,15 +1665,58 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             'size' => 'large',
             'storage_suffix' => "artwork{$i}",
 //            'accept' => 'image/jpeg',
-            'label' => 'Artwork (PNG/JPG/PDF)',
-            'error_label' => "Artwork (PNG/JPG)",
+            'label' => (isset($festival['registration-artwork-label']) && $festival['registration-artwork-label'] != '' ? $festival['registration-artwork-label'] : "Artwork (PNG/JPG/PDF)"),
+            'error_label' => (isset($festival['registration-artwork-label']) && $festival['registration-artwork-label'] != '' ? $festival['registration-artwork-label'] : "Artwork (PNG/JPG/PDF)"),
             'value' => (isset($registration["artwork{$i}"]) ? $registration["artwork{$i}"] : ''),
             'help' => isset($festival['registration-artwork-help']) ? $festival['registration-artwork-help'] : '',
             );
+        if( isset($selected_class['artwork_label']) && $selected_class['artwork_label'] != '' ) {
+            $fields["artwork{$i}"]['label'] = $selected_class['artwork_label'];
+        }
         if( isset($selected_class['titleflags']) && ($selected_class['titleflags']&0x0100) > 0 
             && $selected_class['min_titles'] >= $i 
             ) {
             $fields["artwork{$i}"]['required'] = 'yes';
+        } 
+        $fields["word_line_count{$i}"] = array(
+            'id' => "word_line_count{$i}",
+            'required' => 'no',
+            'class' => $document_class,
+            'ftype' => 'text',
+            'size' => 'small',
+            'label' => (isset($festival['registration-wordlinecount-label']) && $festival['registration-wordlinecount-label'] != '' ? $festival['registration-wordlinecount-label'] : "Word/Line Count"),
+            'error_label' => (isset($festival['registration-wordlinecount-label']) && $festival['registration-wordlinecount-label'] != '' ? $festival['registration-wordlinecount-label'] : "Word/Line Count"),
+            'value' => isset($_POST["f-word_line_count{$i}"]) ? trim($_POST["f-word_line_count{$i}"]) : (isset($registration["word_line_count{$i}"]) ? $registration["word_line_count{$i}"] : ''),
+            'help' => isset($festival['registration-word_line_count-help']) ? $festival['registration-word_line_count-help'] : '',
+            );
+        if( isset($selected_class['word_line_count_label']) && $selected_class['word_line_count_label'] != '' ) {
+            $fields["word_line_count{$i}"]['label'] = $selected_class['word_line_count_label'];
+        }
+        if( isset($selected_class['titleflags']) && ($selected_class['titleflags']&0x40) > 0 
+            && $selected_class['min_titles'] >= $i 
+            ) {
+            $fields["word_line_count{$i}"]['required'] = 'yes';
+        } 
+        $fields["document{$i}"] = array(
+            'id' => "document{$i}",
+            'required' => 'no',
+            'class' => $document_class,
+            'ftype' => 'file',
+            'size' => 'medium',
+            'storage_suffix' => "document{$i}",
+//            'accept' => 'image/jpeg',
+            'label' => (isset($festival['registration-document-label']) && $festival['registration-document-label'] != '' ? $festival['registration-document-label'] : "Document (PDF)"),
+            'error_label' => (isset($festival['registration-document-label']) && $festival['registration-document-label'] != '' ? $festival['registration-document-label'] : "Document (PDF)"),
+            'value' => (isset($registration["document{$i}"]) ? $registration["document{$i}"] : ''),
+            'help' => isset($festival['registration-document-help']) ? $festival['registration-document-help'] : '',
+            );
+        if( isset($selected_class['document_label']) && $selected_class['document_label'] != '' ) {
+            $fields["document{$i}"]['label'] = $selected_class['document_label'];
+        }
+        if( isset($selected_class['titleflags']) && ($selected_class['titleflags']&0x40) > 0 
+            && $selected_class['min_titles'] >= $i 
+            ) {
+            $fields["document{$i}"]['required'] = 'yes';
         } 
     }
 
@@ -2223,6 +2278,15 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                         . "C.qS('label[for=\"f-source'+i+'\"]').innerText=(classes[c].soL!=null?classes[c].soL:'" 
                             . (isset($festival['registration-source-label']) && $festival['registration-source-label'] != '' ? $festival['registration-source-label'] : 'Source') 
                             . "');"
+                        . "C.qS('label[for=\"f-artwork'+i+'\"]').innerText=(classes[c].atL!=null?classes[c].atL:'" 
+                            . (isset($festival['registration-artwork-label']) && $festival['registration-artwork-label'] != '' ? $festival['registration-artwork-label'] : 'Artword (PNG/JPG/PDF)') 
+                            . "');"
+                        . "C.qS('label[for=\"f-document'+i+'\"]').innerText=(classes[c].doL!=null?classes[c].doL:'" 
+                            . (isset($festival['registration-document-label']) && $festival['registration-document-label'] != '' ? $festival['registration-document-label'] : 'Document (PDF)') 
+                            . "');"
+                        . "C.qS('label[for=\"f-word_line_count'+i+'\"]').innerText=(classes[c].woL!=null?classes[c].woL:'" 
+                            . (isset($festival['registration-word_line_count-label']) && $festival['registration-word_line_count-label'] != '' ? $festival['registration-word_line_count-label'] : 'Word/Line Count') 
+                            . "');"
                         . "if((classes[c].f&0x010000)==0x010000){"
                             . "C.aC(C.gE('f-video_url'+i).parentNode,'required');"
                         . "}else{"
@@ -2273,6 +2337,13 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                         . "}else{"
                             . "C.rC(C.gE('f-artwork'+i).parentNode,'required');"
                         . "}"
+                        . "if((classes[c].tf&0x40)==0x40){"
+                            . "C.aC(C.gE('f-document'+i).parentNode,'required');"
+                            . "C.aC(C.gE('f-word_line_count'+i).parentNode,'required');"
+                        . "}else{"
+                            . "C.rC(C.gE('f-document'+i).parentNode,'required');"
+                            . "C.rC(C.gE('f-word_line_count'+i).parentNode,'required');"
+                        . "}"
 /*                        . "if((classes[c].tf&0xC00000)==0x400000){"
                             . "C.rC(C.gE('f-music_orgfilename'+i).parentNode,'hidden');"
                             . "C.aC(C.gE('f-music_orgfilename'+i).parentNode,'required');"
@@ -2283,11 +2354,25 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                             . "C.rC(C.gE('f-music_orgfilename'+i).parentNode,'required');"
                             . "C.aC(C.gE('f-music_orgfilename'+i).parentNode,'hidden');"
                         . "}" */
-                        . "if((classes[c].tf&0x0300)>0){"
+                        . "if((classes[c].tf&0x00C0)>0&&(classes[c].tf&0x0300)>0){"  // Both artwork and document enabled
                             . "C.rC(C.gE('f-artwork'+i).parentNode,'hidden');"
+                            . "C.rC(C.gE('f-document'+i).parentNode,'hidden');"
+                            . "C.rC(C.gE('f-word_line_count'+i).parentNode,'hidden');"
                             . "C.aC(C.gE('f-perf_time'+i+'-min').parentNode.parentNode,'hidden');"
-                        . "}else{"
+                        . "}else if((classes[c].tf&0x00C0)>0){" // Show only document/word count
                             . "C.aC(C.gE('f-artwork'+i).parentNode,'hidden');"
+                            . "C.rC(C.gE('f-document'+i).parentNode,'hidden');"
+                            . "C.rC(C.gE('f-word_line_count'+i).parentNode,'hidden');"
+                            . "C.aC(C.gE('f-perf_time'+i+'-min').parentNode.parentNode,'hidden');"
+                        . "}else if((classes[c].tf&0x0300)>0){" // Show artwork only
+                            . "C.rC(C.gE('f-artwork'+i).parentNode,'hidden');"
+                            . "C.aC(C.gE('f-document'+i).parentNode,'hidden');"
+                            . "C.aC(C.gE('f-word_line_count'+i).parentNode,'hidden');"
+                            . "C.aC(C.gE('f-perf_time'+i+'-min').parentNode.parentNode,'hidden');"
+                        . "}else{" // Hide artwork and document
+                            . "C.aC(C.gE('f-artwork'+i).parentNode,'hidden');"
+                            . "C.aC(C.gE('f-document'+i).parentNode,'hidden');"
+                            . "C.aC(C.gE('f-word_line_count'+i).parentNode,'hidden');"
                             . "C.rC(C.gE('f-perf_time'+i+'-min').parentNode.parentNode,'hidden');"
                         . "}"
                     . "}else{"
@@ -2306,6 +2391,8 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                         . "C.aC(C.gE('f-backtrack_option'+i).parentNode,'hidden');"
                         . "C.aC(C.gE('f-backtrack'+i).parentNode,'hidden');"
                         . "C.aC(C.gE('f-artwork'+i).parentNode,'hidden');"
+                        . "C.aC(C.gE('f-document'+i).parentNode,'hidden');"
+                        . "C.aC(C.gE('f-word_line_count'+i).parentNode,'hidden');"
                     . "}"
                     . "C.gE('f-title'+i).readOnly=false;"
                     . "C.gE('f-opus'+i).readOnly=false;"
@@ -2325,6 +2412,9 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     . "if(C.gE('f-perf_time'+i+'-sec')!=null){"
                         . "C.gE('f-perf_time'+i+'-sec').disabled=false;"
                     . "}"
+                    . "C.gE('f-artwork'+i).disabled=false;"
+                    . "C.gE('f-document'+i).disabled=false;"
+                    . "C.gE('f-word_line_count'+i).disabled=false;"
                     . "if(classes[c]!=null&&(classes[c].f&0x10)==0x10&&classes[c].opt!=null){"
                         . "if(classes[c].opt['title'+i]!=null&&classes[c].opt['title'+i]!=''){"
                             . "C.gE('f-title'+i).value=classes[c].opt['title'+i];"
@@ -2369,6 +2459,21 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                                 . "C.gE('f-perf_time'+i+'-sec').value=Math.ceil((n%60)/5)*5;"
                                 . "C.gE('f-perf_time'+i+'-sec').disabled=true;"
                             . "}"
+                        . "}"
+                        . "if(classes[c].opt['artwork'+i]!=null&&classes[c].opt['artwork'+i]!=''){"
+                            . "C.gE('f-source'+i).value=classes[c].opt['artwork'+i];"
+                            . "C.gE('f-source'+i).readOnly=true;"
+                            . "C.gE('f-source'+i).disabled=true;"
+                        . "}"
+                        . "if(classes[c].opt['document'+i]!=null&&classes[c].opt['document'+i]!=''){"
+                            . "C.gE('f-source'+i).value=classes[c].opt['document'+i];"
+                            . "C.gE('f-source'+i).readOnly=true;"
+                            . "C.gE('f-source'+i).disabled=true;"
+                        . "}"
+                        . "if(classes[c].opt['word_line_count'+i]!=null&&classes[c].opt['word_line_count'+i]!=''){"
+                            . "C.gE('f-source'+i).value=classes[c].opt['word_line_count'+i];"
+                            . "C.gE('f-source'+i).readOnly=true;"
+                            . "C.gE('f-source'+i).disabled=true;"
                         . "}"
                     . "}"
                 . "}"; // End of processing titles

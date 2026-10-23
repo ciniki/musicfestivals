@@ -166,6 +166,22 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             'artwork6'=>'',
             'artwork7'=>'',
             'artwork8'=>'',
+            'document1'=>'',
+            'document2'=>'',
+            'document3'=>'',
+            'document4'=>'',
+            'document5'=>'',
+            'document6'=>'',
+            'document7'=>'',
+            'document8'=>'',
+            'word_line_count1'=>'',
+            'word_line_count2'=>'',
+            'word_line_count3'=>'',
+            'word_line_count4'=>'',
+            'word_line_count5'=>'',
+            'word_line_count6'=>'',
+            'word_line_count7'=>'',
+            'word_line_count8'=>'',
             'instrument' => '',
             'mark' => '',
             'placement' => '',
@@ -326,6 +342,22 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
             . "registrations.artwork6, "
             . "registrations.artwork7, "
             . "registrations.artwork8, "
+            . "registrations.document1, "
+            . "registrations.document2, "
+            . "registrations.document3, "
+            . "registrations.document4, "
+            . "registrations.document5, "
+            . "registrations.document6, "
+            . "registrations.document7, "
+            . "registrations.document8, "
+            . "registrations.word_line_count1, "
+            . "registrations.word_line_count2, "
+            . "registrations.word_line_count3, "
+            . "registrations.word_line_count4, "
+            . "registrations.word_line_count5, "
+            . "registrations.word_line_count6, "
+            . "registrations.word_line_count7, "
+            . "registrations.word_line_count8, "
             . "registrations.instrument, "
             . "registrations.mark, "
             . "registrations.placement, "
@@ -408,8 +440,10 @@ function ciniki_musicfestivals_registrationGet($ciniki) {
                     'music_orgfilename5', 'music_orgfilename6',  'music_orgfilename7', 'music_orgfilename8',  
                     'backtrack1', 'backtrack2', 'backtrack3',  'backtrack4', 
                     'backtrack5', 'backtrack6',  'backtrack7', 'backtrack8',  
-                    'artwork1', 'artwork2', 'artwork3',  'artwork4', 
-                    'artwork5', 'artwork6',  'artwork7', 'artwork8',  
+                    'artwork1', 'artwork2', 'artwork3',  'artwork4', 'artwork5', 'artwork6',  'artwork7', 'artwork8',  
+                    'document1', 'document2', 'document3',  'document4', 'document5', 'document6',  'document7', 'document8',  
+                    'word_line_count1', 'word_line_count2', 'word_line_count3',  'word_line_count4', 
+                    'word_line_count5', 'word_line_count6',  'word_line_count7', 'word_line_count8',  
                     'timeslot_id', 'finals_timeslot_id', 
                     'instrument', 'mark', 'placement', 'level', 'comments', 
                     'provincials_code', 'provincials_status', 'provincials_position', 'provincials_invite_date', 'provincials_notes',

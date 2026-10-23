@@ -86,8 +86,8 @@
 #                           0x08 - 
 #                           0x10 - Fixed title(s) **Future move from flags**
 #                           0x20 - 
-#                           0x40 - 
-#                           0x80 - 
+#                           0x40 - Document Required
+#                           0x80 - Document Optional
 #                           0x0100 - Artwork Required
 #                           0x0200 - Artwork Optional
 #                           0x0400 - Opus Required
@@ -202,6 +202,9 @@ create table ciniki_musicfestival_classes (
     composer_label varchar(150) not null,
     arranger_label varchar(150) not null,
     source_label varchar(150) not null,
+    artwork_label varchar(150) not null,
+    document_label varchar(150) not null,
+    word_line_count_label varchar(150) not null,
     provincials_code varchar(20) not null,
     synopsis text not null,
     schedule_seconds int not null,

@@ -1,0 +1,17 @@
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN document1 text not null AFTER artwork8;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN document2 text not null AFTER document1;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN document3 text not null AFTER document2;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN document4 text not null AFTER document3;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN document5 text not null AFTER document4;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN document6 text not null AFTER document5;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN document7 text not null AFTER document6;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN document8 text not null AFTER document7;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN word_line_count1 text not null AFTER document8;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN word_line_count2 text not null AFTER word_line_count1;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN word_line_count3 text not null AFTER word_line_count2;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN word_line_count4 text not null AFTER word_line_count3;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN word_line_count5 text not null AFTER word_line_count4;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN word_line_count6 text not null AFTER word_line_count5;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN word_line_count7 text not null AFTER word_line_count6;
+ALTER TABLE ciniki_musicfestival_registrations ADD COLUMN word_line_count8 text not null AFTER word_line_count7;
+ALTER TABLE ciniki_musicfestival_registrations COMMENT='v1.36';

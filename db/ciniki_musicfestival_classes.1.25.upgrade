@@ -1,0 +1,4 @@
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN artwork_label varchar(150) NOT NULL AFTER source_label;
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN document_label varchar(150) NOT NULL AFTER artwork_label;
+ALTER TABLE ciniki_musicfestival_classes ADD COLUMN word_line_count_label varchar(150) NOT NULL AFTER document_label;
+ALTER TABLE ciniki_musicfestival_classes COMMENT='v1.25';

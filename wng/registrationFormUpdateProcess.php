@@ -229,7 +229,7 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
                     );
             }
             elseif( isset($field['required']) && $field['required'] == 'yes' && $field['value'] == '' 
-                && preg_match("/(title|opus|movements|musical|composer|arranger|source|video_url|artwork)([0-9])/", $field['id'], $m)
+                && preg_match("/(title|opus|movements|musical|composer|arranger|source|video_url|artwork|document|word_line_count)([0-9])/", $field['id'], $m)
                 ) {
                 $errors[] = array(
                     'msg' => "Selection #{$m[2]}: You must specify the " . (isset($field['error_label']) ? $field['error_label'] : $field['label']) . '.',
@@ -491,6 +491,7 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             $registration["source{$i}"] = isset($fields["source{$i}"]['value']) ? $fields["source{$i}"]['value'] : '';
             $registration["perf_time{$i}"] = isset($fields["perf_time{$i}"]['value']) ? $fields["perf_time{$i}"]['value'] : '';
             $registration["video_url{$i}"] = isset($fields["video_url{$i}"]['value']) ? $fields["video_url{$i}"]['value'] : '';
+            $registration["word_line_count{$i}"] = isset($fields["word_line_count{$i}"]['value']) ? $fields["word_line_count{$i}"]['value'] : '';
         }
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) ) {
             $registration['accompanist_customer_id'] = $fields['accompanist_customer_id']['value'];
@@ -608,9 +609,9 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             }
         }
         //
-        // Check for artwork uploads
+        // Check for artwork && document uploads
         //
-        foreach(['artwork1', 'artwork2', 'artwork3', 'artwork4', 'artwork5', 'artwork6', 'artwork7', 'artwork8'] as $fid) {
+        foreach(['artwork1', 'artwork2', 'artwork3', 'artwork4', 'artwork5', 'artwork6', 'artwork7', 'artwork8', 'document1', 'document2', 'document3', 'document4', 'document5', 'document6', 'document7', 'document8'] as $fid) {
             $field = $fields[$fid];
             if( isset($_POST["f-{$field['id']}"]) && $_POST["f-{$field['id']}"] != '' ) {
                 if( isset($_FILES["file-{$field['id']}"]["name"]) 
@@ -846,7 +847,7 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             // Skip fields when editing a pending or paid registration
             //
             if( isset($registration['status']) && $registration['status'] > 10 
-                && !preg_match("/(title|opus|movements|musical|composer|arranger|source|perf_time|video_url|music_orgfilename|backtrack_option|backtrack|artwork)/", $field['id'])
+                && !preg_match("/(title|opus|movements|musical|composer|arranger|source|perf_time|video_url|music_orgfilename|backtrack_option|backtrack|artwork|document|word_line_count)/", $field['id'])
                 ) {
                 continue;
             }
