@@ -45,6 +45,9 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         'arranger_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Arranger Label'),
         'source'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Source Setting'),
         'source_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Source Label'),
+        'artwork_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Artwork Label'),
+        'document_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Document Label'),
+        'word_line_count_label'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Word/Line Count Label'),
         'backtrack'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Backtrack Setting'),
         'artwork'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Artwork Setting'),
         'video'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Video Setting'),
@@ -129,7 +132,10 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         . "classes.musical_label, "
         . "classes.composer_label, "
         . "classes.arranger_label, "
-        . "classes.source_label "
+        . "classes.source_label, "
+        . "classes.artwork_label, "
+        . "classes.document_label, "
+        . "classes.word_line_count_label "
         . "FROM ciniki_musicfestival_categories AS categories "
         . "INNER JOIN ciniki_musicfestival_sections AS sections ON ("
             . "categories.section_id = sections.id "
@@ -159,6 +165,7 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
                 'earlybird_fee', 'fee', 'virtual_fee', 'earlybird_plus_fee', 'plus_fee',
                 'synopsis',
                 'title_label', 'opus_label', 'movements_label', 'musical_label', 'composer_label', 'arranger_label', 'source_label',
+                'artwork_label', 'document_label', 'word_line_count_label',
                 )),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -401,7 +408,7 @@ function ciniki_musicfestivals_sectionClassesUpdate($ciniki) {
         //
         // Check for label updates
         //
-        foreach(['title', 'opus', 'movements', 'musical', 'composer', 'arranger', 'source'] as $field) {
+        foreach(['title', 'opus', 'movements', 'musical', 'composer', 'arranger', 'source', 'artwork', 'document', 'word_line_count'] as $field) {
             if( isset($args["{$field}_label"]) && $args["{$field}_label"] != $class["{$field}_label"] ) {
                 $update_args["{$field}_label"] = $args["{$field}_label"]; 
             }
