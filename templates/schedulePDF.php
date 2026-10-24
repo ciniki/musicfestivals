@@ -300,6 +300,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
         public $footer_msg = '';
         public $tenant_details = array();
         public $continued_str = ' (continued...)';
+        public $font_name = 'helvetica';
 
         public function Header() {
             if( $this->header_visible == 'yes' ) {
@@ -321,14 +322,14 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     $this->Image('@'.$this->header_sponsor_image->getImageBlob(), $this->left_margin + $img_width + (180-($img_width*2)) + $offset, 10, $img_width, $this->header_height-8, '', '', 'R', 0, '150', '', false, false, 0, true);
                     $this->SetY(10);
                     $this->SetX($this->left_margin + $img_width);
-                    $this->SetFont('helvetica', 'B', 20);
+                    $this->SetFont($this->font_name, 'B', 20);
                     $this->MultiCell(180-($img_width*2), 0, $this->header_title, 0, 'C', 0, 1);
 
-                    $this->SetFont('helvetica', 'B', 14);
+                    $this->SetFont($this->font_name, 'B', 14);
                     $this->setX($this->left_margin + $img_width);
                     $this->MultiCell(180-($img_width*2), 0, $this->header_sub_title, 0, 'C', 0, 1);
 
-                    $this->SetFont('helvetica', 'B', 12);
+                    $this->SetFont($this->font_name, 'B', 12);
                     $this->setX($this->left_margin + $img_width);
                     $this->MultiCell(180-($img_width*2), 0, $this->header_msg, 0, 'C', 0, 1);
             
@@ -353,7 +354,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     }
 
                     $this->Ln(8);
-                    $this->SetFont('helvetica', 'B', 20);
+                    $this->SetFont($this->font_name, 'B', 20);
                     if( $img_width > 0 ) {
                         $this->Cell($img_width, 10, '', 0);
                     }
@@ -361,12 +362,12 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     $this->Cell(180-$img_width, 12, $this->header_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
                     $this->Ln(7);
 
-                    $this->SetFont('helvetica', 'B', 14);
+                    $this->SetFont($this->font_name, 'B', 14);
                     $this->setX($this->left_margin + $img_width);
                     $this->Cell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
                     $this->Ln(6);
 
-                    $this->SetFont('helvetica', 'B', 12);
+                    $this->SetFont($this->font_name, 'B', 12);
                     $this->setX($this->left_margin + $img_width);
                     $this->Cell(180-$img_width, 10, $this->header_msg, 0, false, 'R', 0, '', 0, false, 'M', 'M');
                     $this->Ln(6);
@@ -388,9 +389,9 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                 } else {
                     $this->SetY(-15);
                 }
-                $this->SetFont('helvetica', '', 10);
+                $this->SetFont($this->font_name, '', 10);
                 $this->Cell(90, 10, $this->footer_msg, 0, false, 'L', 0, '', 0, false, 'T', 'M');
-                $this->SetFont('helvetica', '', 10);
+                $this->SetFont($this->font_name, '', 10);
                 $this->Cell(90, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
             } else {
                 // No footer
@@ -554,6 +555,10 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     $pdf->header_msg = $festival['document_header_msg'];
     $pdf->footer_msg = '';
 
+    if( isset($festival['pdf-font-name']) && $festival['pdf-font-name'] != '' ) {
+        $pdf->font_name = $festival['pdf-font-name'];
+    }
+
     if( isset($args['footerdate']) && $args['footerdate'] == 'yes' ) {
         $dt = new DateTime('now', new DateTimezone($intl_timezone));
         $pdf->footer_msg = $dt->format("M j, Y");
@@ -607,7 +612,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
     // set font
-    $pdf->SetFont('helvetica', 'BI', 10);
+    $pdf->SetFont($pdf->font_name, 'BI', 10);
     $pdf->SetCellPadding(1);
 
     // add a page
@@ -1131,7 +1136,7 @@ function ciniki_musicfestivals_templates_schedulePDF(&$ciniki, $tnid, $args) {
                     }
                     $pdf->Ln(1);
                 }
-                $pdf->SetFont('helvetica', '', '12');
+                $pdf->SetFont($pdf->font_name, '', '12');
                 $pdf->SetCellPadding(1);
 
                 $fill=!$fill;

@@ -362,11 +362,12 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
             public $footer_visible = 'yes';
             public $footer_msg = '';
             public $tenant_details = array();
+            public $font_name = 'helvetica';
 
             public function Header() {
                 if( $this->header_visible == 'yes' && $this->layout == 'compact' ) {
                     $this->Ln(2);
-                    $this->SetFont('helvetica', '', 12);
+                    $this->SetFont($this->font_name, '', 12);
                     if( $this->orientation == 'landscape' ) {
                         $w = [149, 100];
                     } else {
@@ -405,7 +406,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     }
 
                     $this->Ln(8);
-                    $this->SetFont('helvetica', 'B', 14);
+                    $this->SetFont($this->font_name, 'B', 14);
                     if( $img_width > 0 ) {
                         $this->Cell($img_width, 10, '', 0);
                     }
@@ -413,12 +414,12 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                     $this->Cell(180-$img_width, 12, $this->header_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
                     $this->Ln(7);
 
-                    $this->SetFont('helvetica', '', 14);
+                    $this->SetFont($this->font_name, '', 14);
                     $this->setX($this->left_margin + $img_width);
                     $this->Cell(180-$img_width, 10, $this->header_sub_title, 0, false, 'R', 0, '', 0, false, 'M', 'M');
                     $this->Ln(7);
 
-                    $this->SetFont('helvetica', '', 12);
+                    $this->SetFont($this->font_name, '', 12);
                     $this->setX($this->left_margin + $img_width);
                     $this->Cell(180-$img_width, 10, $this->header_msg, 0, false, 'R', 0, '', 0, false, 'M', 'M');
                     $this->Ln(6);
@@ -437,9 +438,9 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                         $w = [90, 90];
                     }
                     $this->SetY(-15);
-                    $this->SetFont('helvetica', '', 10);
+                    $this->SetFont($this->font_name, '', 10);
                     $this->Cell(90, 10, $this->footer_msg, 0, false, 'L', 0, '', 0, false, 'T', 'M');
-                    $this->SetFont('helvetica', '', 10);
+                    $this->SetFont($this->font_name, '', 10);
                     $this->Cell(90, 10, 'Page ' . $this->pageNo().'/'.$this->getAliasNbPages(), 0, false, 'R', 0, '', 0, false, 'T', 'M');
                 } else {
                     // No footer
@@ -487,7 +488,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
 
             public function ClassHeader($ciniki, $w) {
                 $this->SetCellPadding($this->padding);
-                $this->SetFont('helvetica', 'B', $this->font_size);
+                $this->SetFont($this->font_name, 'B', $this->font_size);
                 if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x080000) ) {
                     $this->MultiCell($w[0], 0, 'Time', 1, 'C', 1, 0);
                 } else {
@@ -528,6 +529,10 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
     $pdf->header_sub_title = '';
     $pdf->header_msg = $festival['document_header_msg'];
     $pdf->footer_msg = '';
+
+    if( isset($festival['pdf-font-name']) && $festival['pdf-font-name'] != '' ) {
+        $pdf->font_name = $festival['pdf-font-name'];
+    }
 
     if( isset($args['footerdate']) && $args['footerdate'] == 'yes' ) {
         $dt = new DateTime('now', new DateTimezone($intl_timezone));
@@ -607,7 +612,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
     $pdf->SetFooterMargin(PDF_MARGIN_FOOTER);
 
     // set font
-    $pdf->SetFont('helvetica', 'BI', 10);
+    $pdf->SetFont($pdf->font_name, 'BI', 10);
     $pdf->SetCellPadding(1);
 
     // add a page
@@ -1194,7 +1199,7 @@ function ciniki_musicfestivals_templates_runsheetsPDF(&$ciniki, $tnid, $args) {
                                     $pdf->SetFont('arialunicodems', '', '11');
                                     $pdf->MultiCell($tw[1], $h, $reg["fulltitle{$i}"], $border, 'L', 0, 1);
                                 }
-                                $pdf->SetFont('helvetica', '', '11');
+                                $pdf->SetFont($pdf->font_name, '', '11');
                             }
                         }
                         if( $reg['combined_notes'] != '' ) {
