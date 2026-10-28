@@ -194,6 +194,7 @@ function ciniki_musicfestivals_wng_syllabusSectionProcess(&$ciniki, $tnid, &$req
                 . ") "
             . "WHERE sections.tnid = '" . ciniki_core_dbQuote($ciniki, $tnid) . "' "
             . "AND sections.festival_id = '" . ciniki_core_dbQuote($ciniki, $festival['id']) . "' "
+            . "AND sections.syllabus_id = '" . ciniki_core_dbQuote($ciniki, $s['syllabus-id']) . "' "
             . "AND sections.permalink = '" . ciniki_core_dbQuote($ciniki, $section_permalink) . "' "
             . "";
         $rc = ciniki_core_dbHashQuery($ciniki, $strsql, 'ciniki.musicfestivals', 'section');
