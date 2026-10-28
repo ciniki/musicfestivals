@@ -91,6 +91,6 @@ create table ciniki_musicfestival_sections (
     last_updated datetime not null,
     primary key (id),
     unique index (uuid),
-    unique index (festival_id, permalink),
+    unique index (festival_id, syllabus_id, permalink),
     index tenant_uuid (tnid, uuid, last_updated)
-) ENGINE='InnoDB', COMMENT='v1.12';
+) ENGINE='InnoDB', COMMENT='v1.13';

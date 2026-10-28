@@ -1,0 +1,3 @@
+DROP INDEX festival_id ON ciniki_musicfestival_sections;
+CREATE UNIQUE INDEX festival_id ON ciniki_musicfestival_sections(festival_id, syllabus_id, permalink);
+ALTER TABLE ciniki_musicfestival_sections COMMENT='v1.13';
