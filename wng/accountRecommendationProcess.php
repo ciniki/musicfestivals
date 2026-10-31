@@ -266,8 +266,8 @@ function ciniki_musicfestivals_wng_accountRecommendationProcess(&$ciniki, $tnid,
             foreach($categories as $category) {
                 $blocks[] = [
                     'type' => 'buttons',
-                    'cat-id' => $class['category_id'],
-                    'title' => $class['category_name'],
+                    'cat-id' => $category['id'],
+                    'title' => $category['name'],
                     'level' => 2,
                     'items' => $category['classes'],
                     ];
