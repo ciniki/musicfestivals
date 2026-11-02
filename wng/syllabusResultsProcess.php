@@ -87,7 +87,7 @@ function ciniki_musicfestivals_wng_syllabusResultsProcess(&$ciniki, $tnid, &$req
     if( isset($s['valid-placements']) && $s['valid-placements'] != '' && $s['valid-placements'] != 'All' ) {
         $placements = explode(',', $s['valid-placements']);
         foreach($placements as $placement) {
-            $registrations_sql .= ($registrations_sql != '' ? ', ' : '') . "'" . ciniki_core_dbQuote($ciniki, $placement) . "' ";
+            $registrations_sql .= ($registrations_sql != '' ? ', ' : '') . "'" . ciniki_core_dbQuote($ciniki, trim($placement)) . "'";
         }
         if( $registrations_sql != '' ) {
             $registrations_sql = "AND registrations.placement IN (" . $registrations_sql . ") ";

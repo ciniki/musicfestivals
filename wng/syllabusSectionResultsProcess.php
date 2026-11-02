@@ -93,7 +93,7 @@ function ciniki_musicfestivals_wng_syllabusSectionResultsProcess(&$ciniki, $tnid
     if( isset($s['valid-placements']) && $s['valid-placements'] != '' && $s['valid-placements'] != 'All' ) {
         $placements = explode(',', $s['valid-placements']);
         foreach($placements as $placement) {
-            $registrations_sql .= ($registrations_sql != '' ? ', ' : '') . "'" . ciniki_core_dbQuote($ciniki, $placement) . "' ";
+            $registrations_sql .= ($registrations_sql != '' ? ', ' : '') . "'" . ciniki_core_dbQuote($ciniki, trim($placement)) . "' ";
         }
         if( $registrations_sql != '' ) {
             $registrations_sql = "AND registrations.placement IN (" . $registrations_sql . ") ";
@@ -306,8 +306,11 @@ function ciniki_musicfestivals_wng_syllabusSectionResultsProcess(&$ciniki, $tnid
     if( isset($groupname) ) {
         $strsql .= "AND categories.groupname = '" . ciniki_core_dbQuote($ciniki, $groupname) . "' ";
     } 
-    $strsql .= "ORDER BY categories.sequence, categories.name, classes.sequence, classes.name, timeslots.groupname "
-        . "";
+    if( isset($s['valid-placements']) && $s['valid-placements'] != '' && $s['valid-placements'] != 'All' ) {
+        $strsql .= "ORDER BY categories.sequence, categories.name, classes.sequence, classes.name, timeslots.groupname, registrations.placement ";
+    } else {
+        $strsql .= "ORDER BY categories.sequence, categories.name, classes.sequence, classes.name, timeslots.groupname ";
+    }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'categories', 'fname'=>'category_id', 
