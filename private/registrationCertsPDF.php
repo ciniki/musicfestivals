@@ -82,6 +82,8 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
         . "IFNULL(categories.name, '') AS category_name, "
         . "IFNULL(sections.name, '') AS syllabus_section_name, "
         . "IFNULL(arefs.adjudicator_id, 0) AS adjudicator_id, "
+        . "IFNULL(customers.first, '') AS adjudicator_first, "
+        . "IFNULL(customers.last, '') AS adjudicator_last, "
         . "IFNULL(customers.display_name, '') AS adjudicator_name, "
         . "IFNULL(adjudicators.sig_image_id, 0) AS sig_image_id, "
 //    if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x0800) ) {
@@ -159,7 +161,7 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
                 'participation', 'mark', 'flags', 'placement', 'level', 'division_date_text',
                 )),
         array('container'=>'adjudicators', 'fname'=>'adjudicator_id', 
-            'fields'=>array('id'=>'adjudicator_id', 'name'=>'adjudicator_name', 'sig_image_id',
+            'fields'=>array('id'=>'adjudicator_id', 'name'=>'adjudicator_name', 'sig_image_id', 'first'=>'adjudicator_first', 'last'=>'adjudicator_last',
             )),
         ));
     if( $rc['stat'] != 'ok' ) {
@@ -412,6 +414,9 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
                                 ) {
                                 $names = [];
                                 foreach($reg['adjudicators'] AS $adjudicator) {
+                                    if( $adjudicator['first'] != '' && $adjudicator['last'] != '' ) {
+                                        $adjudicator['name'] = $adjudicator['first'] . ' ' . $adjudicator['last'];
+                                    } 
                                     $names[] = $adjudicator['name'];
                                 }
                                 $certificate['fields'][$fid]['text'] = implode(', ', $names);

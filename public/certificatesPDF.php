@@ -73,6 +73,8 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
     $strsql = "SELECT adjudicators.id, "
         . "adjudicators.festival_id, "
         . "adjudicators.customer_id, "
+        . "customers.first, "
+        . "customers.last, "
         . "customers.display_name, "
         . "adjudicators.sig_image_id "
         . "FROM ciniki_musicfestival_adjudicators AS adjudicators "
@@ -86,12 +88,22 @@ function ciniki_musicfestivals_certificatesPDF($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'adjudicators', 'fname'=>'id', 
-            'fields'=>array('id', 'festival_id', 'customer_id', 'name'=>'display_name', 'sig_image_id')),
+            'fields'=>array('id', 'festival_id', 'customer_id', 'first', 'last', 'name'=>'display_name', 'sig_image_id')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.324', 'msg'=>'Unable to load adjudicators', 'err'=>$rc['err']));
     }
     $adjudicators = isset($rc['adjudicators']) ? $rc['adjudicators'] : array();
+
+    foreach($adjudicators as $aid => $adjudicator) {
+        if( $adjudicator['first'] != '' && $adjudicator['last'] != '' ) {
+            $adjudicators[$aid]['name'] = $adjudicator['first'] . ' ' . $adjudicator['last'];
+        } elseif( $adjudicator['first'] != '' ) {
+            $adjudicators[$aid]['name'] = $adjudicator['first'];
+        } elseif( $adjudicator['last'] != '' ) {
+            $adjudicators[$aid]['name'] = $adjudicator['last'];
+        }
+    }
 
     if( isset($args['schedulesection_id']) && $args['schedulesection_id'] == 'blank' ) {
         $sections = [[
