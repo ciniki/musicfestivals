@@ -1346,6 +1346,32 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 )),
         );
 
+    //
+    // Basic section to display accompanist lists
+    //
+    $sections['ciniki.musicfestivals.accompanists'] = array(
+        'name' => 'Accompanists',
+        'module' => 'Music Festivals',
+        'settings' => array(
+            'title' => array('label'=>'Title', 'type'=>'text'),
+            'intro' => array('label'=>'Intro', 'type'=>'textarea', 'size'=>'large'),
+            ),
+        'repeats' => array(
+            'label' => 'Accompanists',
+            'headerValues' => array('Name', 'Sections', 'Details', 'Phone', 'Email', 'Based'),
+            'dataMaps' => array('name', 'sections', 'details', 'phone', 'email', 'based'),
+            'addTxt' => 'Add Accompanist',
+            'fields' => array(
+                'name' => array('label'=>'Name', 'type'=>'text'),
+                'sections' => array('label'=>'Sections', 'type'=>'text'),
+                'details' => array('label'=>'Details', 'type'=>'textarea'),
+                'phone' => array('label'=>'Phone', 'type'=>'text'),
+                'email' => array('label'=>'Email', 'type'=>'text'),
+                'based' => array('label'=>'Based', 'type'=>'text'),
+                ),
+            ),
+        );
+
 
     return array('stat'=>'ok', 'sections'=>$sections);
 }

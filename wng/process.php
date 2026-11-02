@@ -120,6 +120,9 @@ function ciniki_musicfestivals_wng_process(&$ciniki, $tnid, &$request, $section)
     } elseif( $section['ref'] == 'ciniki.musicfestivals.approvedtitles' ) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'approvedTitlesProcess');
         return ciniki_musicfestivals_wng_approvedTitlesProcess($ciniki, $tnid, $request, $section);
+    } elseif( $section['ref'] == 'ciniki.musicfestivals.accompanists' ) {
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accompanistsProcess');
+        return ciniki_musicfestivals_wng_accompanistsProcess($ciniki, $tnid, $request, $section);
     }
 
     return array('stat'=>'ok');
