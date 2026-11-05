@@ -181,6 +181,7 @@ function ciniki_musicfestivals_wng_sections(&$ciniki, $tnid, $args) {
                 'groups' => 'Groups - Table',
                 'groupbuttons' => 'Groups - Buttons',
                 'groupbuttoncards' => 'Groups - Button Cards',
+                'groupaccordions' => 'Groups - Accordions',
                 'classlist' => 'Categories and Class Lists',
                 'pricelist' => 'Price List',
                 )),

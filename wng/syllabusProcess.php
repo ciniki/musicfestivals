@@ -153,7 +153,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
             . "AND (sections.flags&0x01) = 0 " // Visible
             . "ORDER BY sections.sequence, sections.name "
             . "";
-    } elseif( isset($s['layout']) && ($s['layout'] == 'groups' || $s['layout'] == 'groupbuttons' || $s['layout'] == 'groupbuttoncards') ) {
+    } elseif( isset($s['layout']) && ($s['layout'] == 'groups' || $s['layout'] == 'groupbuttons' || $s['layout'] == 'groupbuttoncards' || $s['layout'] == 'groupaccordions') ) {
         $strsql = "SELECT sections.id, "
             . "sections.permalink, "
             . "sections.name, "
@@ -240,7 +240,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
     //
     // Check for syllabus section requested
     //
-    if( isset($s['layout']) && ($s['layout'] == 'groups' || $s['layout'] == 'groupbuttons' || $s['layout'] == 'groupbuttoncards') 
+    if( isset($s['layout']) && ($s['layout'] == 'groups' || $s['layout'] == 'groupbuttons' || $s['layout'] == 'groupbuttoncards' || $s['layout'] == 'groupaccordions') 
         && isset($request['uri_split'][($request['cur_uri_pos']+2)])
         && $request['uri_split'][($request['cur_uri_pos']+2)] != '' 
         ) {
@@ -480,7 +480,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
         }
     }
     //
-    // Display as table with groups
+    // Display as buttoncards with groups
     //
     elseif( isset($s['layout']) && $s['layout'] == 'groupbuttoncards' ) {
         $cards = [];
@@ -504,6 +504,34 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
         }
         $blocks[] = array(
             'type' => 'buttoncards',
+            'items' => $cards,
+            );
+    }
+    //
+    // Display as accordions
+    //
+    elseif( isset($s['layout']) && $s['layout'] == 'groupaccordions' ) {
+        $cards = [];
+        foreach($sections as $sid => $section) {
+            $buttons = [];
+            foreach($section['groups'] as $groupname => $group) {
+                if( $group == null ) {
+                    $group = ['groupname' => 'Other'];
+                }
+                $buttons[] = [
+                    'text' => $group['groupname'] == '' ? 'Other' : $group['groupname'],
+                    'page' => 0,
+                    'url' => "{$request['ssl_domain_base_url']}{$request['page']['path']}/{$section['permalink']}/{$groupname}",
+                    ];
+            }
+            $cards[] = array(
+                'title' => $section['title'],
+                'content' => $section['synopsis'],
+                'buttons' => $buttons,
+                );
+        }
+        $blocks[] = array(
+            'type' => 'accordion',
             'items' => $cards,
             );
     }
