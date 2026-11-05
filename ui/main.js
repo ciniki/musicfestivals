@@ -803,12 +803,12 @@ function ciniki_musicfestivals_main() {
                     },
                 'source':{
                     'label':'Set Source',
-                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'documents' ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.titleopts.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.section_id, "source", "Source", {"none":"None","required":"Required","optional":"Optional"});',
                     },
                 'sourcelabel':{
                     'label':'Set Source Label',
-                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'titles' ? 'yes' : 'no'; },
+                    'visible':function() { return M.ciniki_musicfestivals_main.festival.sections._stabs.selected == 'documents' ? 'yes' : 'no'; },
                     'fn':'M.ciniki_musicfestivals_main.titlelabel.open(\'M.ciniki_musicfestivals_main.festival.open();\',M.ciniki_musicfestivals_main.festival.section_id, "source", "Source");',
                     },
                 'backtrack':{
@@ -5282,18 +5282,18 @@ function ciniki_musicfestivals_main() {
             this.sections.classes.num_cols++; 
         }
         else if( this.sections._stabs.selected == 'titles' ) {
-            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Titles', 'Opus', 'Movements', 'Musical', 'Composer', 'Arranger', 'Source'];
+            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Titles', 'Opus', 'Movements', 'Musical', 'Composer', 'Arranger'];
             this.sections.classes.cellClasses = ['', '', '', 'multiline aligncenter', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', '',''];
-            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'num_titles', 'opus', 'movements', 'musical', 'composer', 'arranger', 'source'];
-            this.sections.classes.sortTypes = ['text', 'text', 'text', 'number', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text'];
-            this.sections.classes.num_cols = 10;
+            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'num_titles', 'opus', 'movements', 'musical', 'composer', 'arranger'];
+            this.sections.classes.sortTypes = ['text', 'text', 'text', 'number', 'text', 'text', 'text', 'text', 'text', 'text', 'text'];
+            this.sections.classes.num_cols = 9;
         }
         else if( this.sections._stabs.selected == 'documents' ) {
-            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Titles', 'Backtrack', 'Artwork', 'Document'];
-            this.sections.classes.cellClasses = ['', '', '', 'multiline aligncenter', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', '',''];
-            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'num_titles', 'backtrack', 'artwork', 'document'];
-            this.sections.classes.sortTypes = ['text', 'text', 'text', 'number', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'document'];
-            this.sections.classes.num_cols = 7;
+            this.sections.classes.headerValues = ['Category', 'Code', 'Class', 'Titles', 'Source', 'Backtrack', 'Artwork', 'Document'];
+            this.sections.classes.cellClasses = ['', '', '', 'multiline aligncenter', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', 'multiline', '',''];
+            this.sections.classes.dataMaps = ['category_name', 'code', 'name', 'num_titles', 'source', 'backtrack', 'artwork', 'document'];
+            this.sections.classes.sortTypes = ['text', 'text', 'text', 'number', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'text', 'document'];
+            this.sections.classes.num_cols = 8;
             if( (this.data.flags&0x02) == 0x02 ) {
                 this.sections.classes.headerValues[this.sections.classes.num_cols] = 'Video';
                 this.sections.classes.cellClasses[this.sections.classes.num_cols] = '';
