@@ -532,6 +532,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
         }
         $blocks[] = array(
             'type' => 'accordion',
+            'class' => 'musicfestival-syllabus syllabus-groupaccordions',
             'items' => $cards,
             );
     }

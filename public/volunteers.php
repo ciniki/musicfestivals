@@ -28,6 +28,7 @@ function ciniki_musicfestivals_volunteers($ciniki) {
         'schedule'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule'),
         'ssection_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Section'),
         'sdivision_id'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Schedule Division'),
+        'status'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Status'),
         'shifts'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Shifts'),
         'shift_dates'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Shift Dates'),
         'shift_date'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Shift Date'),
@@ -170,9 +171,13 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                 . "assignments.shift_id = shifts.id "
                 . "AND shifts.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "WHERE volunteers.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-            . "AND volunteers.status < 80 "
-            . "AND volunteers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
+            . "WHERE volunteers.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
+        if( isset($args['status']) && $args['status'] != '' && $args['status'] != '0' && is_numeric($args['status'])) {
+            $strsql .= "AND volunteers.status = '" . ciniki_core_dbQuote($ciniki, $args['status']) . "' ";
+        } else {
+            $strsql .= "AND volunteers.status < 80 ";
+        }
+        $strsql .= "AND volunteers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
         if( isset($args['pending']) && $args['pending'] == 'yes' ) {
             $strsql .= "AND volunteers.status = 10 ";
         }
@@ -287,9 +292,13 @@ function ciniki_musicfestivals_volunteers($ciniki) {
                 . "assignments.shift_id = shifts.id "
                 . "AND shifts.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
                 . ") "
-            . "WHERE volunteers.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' "
-            . "AND volunteers.status < 80 "
-            . "AND volunteers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
+            . "WHERE volunteers.festival_id = '" . ciniki_core_dbQuote($ciniki, $args['festival_id']) . "' ";
+        if( isset($args['status']) && $args['status'] != '' && $args['status'] != '0' && is_numeric($args['status'])) {
+            $strsql .= "AND volunteers.status = '" . ciniki_core_dbQuote($ciniki, $args['status']) . "' ";
+        } else {
+            $strsql .= "AND volunteers.status < 80 ";
+        }
+        $strsql .= "AND volunteers.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' ";
         if( isset($args['pending']) && $args['pending'] == 'yes' ) {
             $strsql .= "AND volunteers.status = 10 ";
         }

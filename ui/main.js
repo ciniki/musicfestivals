@@ -20248,6 +20248,15 @@ function ciniki_musicfestivals_main() {
                 return '';
                 },
             },
+        'status_tabs':{'label':'', 'type':'paneltabs', 'selected':'30', 'aside':'yes', 
+            'visible':function() { return ['volunteers'].indexOf(M.ciniki_musicfestivals_main.volunteers.sections._tabs.selected) >= 0 ? 'yes' : 'no'; },
+            'tabs':{
+                '0':{'label':'All', 'fn':'M.ciniki_musicfestivals_main.volunteers.switchStatusTab("0");'},
+                '10':{'label':'Applied', 'fn':'M.ciniki_musicfestivals_main.volunteers.switchStatusTab("10");'},
+                '30':{'label':'Approved', 'fn':'M.ciniki_musicfestivals_main.volunteers.switchStatusTab("30");'},
+                '80':{'label':'Declined', 'fn':'M.ciniki_musicfestivals_main.volunteers.switchStatusTab("80");'},
+                },
+            },
         'volunteers':{'label':'Volunteers', 'type':'simplegrid', 'num_cols':2, 'aside':'yes', 'selectable':'yes',
             'headerValues':[],
             'sortable':'yes',
@@ -20478,6 +20487,10 @@ function ciniki_musicfestivals_main() {
     };
     this.volunteers.switchTab = function(t) {
         this.sections._tabs.selected = t;
+        this.open();
+    }
+    this.volunteers.switchStatusTab = function(t) {
+        this.sections.status_tabs.selected = t;
         this.open();
     }
     this.volunteers.fieldValue = function(s, i, d) { 
@@ -20800,6 +20813,7 @@ function ciniki_musicfestivals_main() {
         if( this.sections._tabs.selected == 'volunteers' ) {
             args['volunteers'] = 'yes';
             args['declined'] = 'yes';
+            args['status'] = this.sections.status_tabs.selected;
             this.sections.volunteers.headerValues = ['Name', 'Phone', 'Email'];
             this.sections.volunteers.dataMaps = ['name', 'phones', 'emails'];
             this.sections.volunteers.sortTypes = ['text', 'text', 'text'];
