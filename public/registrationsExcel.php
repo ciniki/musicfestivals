@@ -100,6 +100,9 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         . "competitors.last, "
         . "competitors.flags, "
         . "competitors.pronoun, "
+        . "competitors.conductor, "
+        . "competitors.num_people, "
+        . "competitors.organization, "
         . "competitors.parent, "
         . "competitors.address, "
         . "competitors.city, "
@@ -120,7 +123,8 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'competitors', 'fname'=>'id', 
-            'fields'=>array('id', 'ctype', 'name', 'first', 'last', 'flags', 'pronoun', 'parent', 
+            'fields'=>array('id', 'ctype', 'name', 'first', 'last', 'flags', 'pronoun', 
+                'conductor', 'num_people', 'organization', 'parent',
                 'address', 'city', 'province', 'postal', 'phone_home', 'phone_cell',
                 'email', 'etransfer_email', 'cage', 'study_level', 'instrument', 
                 'notes',
@@ -141,6 +145,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         . "categories.name AS category_name, "
         . "classes.code AS class_code, "
         . "classes.name AS class_name, "
+        . "classes.questionflags, "
         . "registrations.id AS reg_id, "
         . "registrations.display_name, "
         . "registrations.fee AS reg_fee, "
@@ -223,6 +228,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         . "registrations.internal_notes, "
         . "registrations.notes AS reg_notes, "
         . "registrations.teacher_customer_id, "
+        . "registrations.teacher2_customer_id, "
         . "registrations.accompanist_customer_id, "
         . "registrations.member_id, "
         . "registrations.mark, "
@@ -233,6 +239,9 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         . "registrations.competitor3_id, "
         . "registrations.competitor4_id, "
         . "registrations.competitor5_id, "
+        . "registrations.sr_preferred, "
+        . "registrations.sr_conflicts, "
+        . "registrations.date_added, "
         . "IFNULL(invoices.invoice_number, '') AS invoice_number ";
 /*        . "competitors.id AS competitor_id, "
         . "competitors.ctype, "
@@ -289,7 +298,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'reg_id', 
-                'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 
+                'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'teacher2_customer_id', 'accompanist_customer_id', 'member_id', 
                     'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 
                     'fee'=>'reg_fee', 'invoice_number', 
                     'title1', 'opus1', 'movements1', 'musical1', 'composer1', 'arranger1', 'perf_time1', 'video_url1', 'music_orgfilename1',
@@ -301,8 +310,10 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title7', 'opus7', 'movements7', 'musical7', 'composer7', 'arranger7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'opus8', 'movements8', 'musical8', 'composer8', 'arranger8', 'perf_time8', 'video_url8', 'music_orgfilename8',
                     'participation', 'internal_notes', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
+                    'questionflags', 'sr_preferred', 'sr_conflicts',
                     'mark', 'placement', 'level', 
                     'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
+                    'date_added',
                     ),
                 'maps'=>array(
                     'status_text'=>$maps['registration']['status'],
@@ -352,7 +363,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'reg_id', 
-                'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 
+                'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'teacher2_customer_id', 'accompanist_customer_id', 'member_id', 
                     'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 
                     'fee'=>'reg_fee', 'invoice_number', 
                     'title1', 'opus1', 'movements1', 'musical1', 'composer1', 'arranger1', 'perf_time1', 'video_url1', 'music_orgfilename1',
@@ -364,8 +375,10 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title7', 'opus7', 'movements7', 'musical7', 'composer7', 'arranger7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'opus8', 'movements8', 'musical8', 'composer8', 'arranger8', 'perf_time8', 'video_url8', 'music_orgfilename8',
                     'participation', 'internal_notes', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
+                    'questionflags', 'sr_preferred', 'sr_conflicts',
                     'mark', 'placement', 'level',
                     'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
+                    'date_added',
                     ),
                 'maps'=>array(
                     'status_text'=>$maps['registration']['status'],
@@ -431,7 +444,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'reg_id', 
-                'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 
+                'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'teacher2_customer_id', 'accompanist_customer_id', 'member_id', 
                     'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 
                     'fee'=>'reg_fee', 'invoice_number', 
                     'title1', 'opus1', 'movements1', 'musical1', 'composer1', 'arranger1', 'perf_time1', 'video_url1', 'music_orgfilename1',
@@ -443,8 +456,10 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title7', 'opus7', 'movements7', 'musical7', 'composer7', 'arranger7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'opus8', 'movements8', 'musical8', 'composer8', 'arranger8', 'perf_time8', 'video_url8', 'music_orgfilename8',
                     'participation', 'internal_notes', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
+                    'questionflags', 'sr_preferred', 'sr_conflicts',
                     'mark', 'placement', 'level',
                     'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
+                    'date_added',
                     ),
                 'maps'=>array(
                     'status_text'=>$maps['registration']['status'],
@@ -513,7 +528,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'registrations', 'fname'=>'reg_id', 
-                'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 
+                'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'teacher2_customer_id', 'accompanist_customer_id', 'member_id', 
                     'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 
                     'fee'=>'reg_fee', 'invoice_number', 
                     'title1', 'opus1', 'movements1', 'musical1', 'composer1', 'arranger1', 'perf_time1', 'video_url1', 'music_orgfilename1',
@@ -525,8 +540,10 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title7', 'opus7', 'movements7', 'musical7', 'composer7', 'arranger7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'opus8', 'movements8', 'musical8', 'composer8', 'arranger8', 'perf_time8', 'video_url8', 'music_orgfilename8',
                     'participation', 'internal_notes', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
+                    'questionflags', 'sr_preferred', 'sr_conflicts',
                     'mark', 'placement', 'level',
                     'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
+                    'date_added',
                     ),
                 'maps'=>array(
                     'status_text'=>$maps['registration']['status'],
@@ -601,7 +618,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'sections', 'fname'=>'section_id', 'fields'=>array('id'=>'section_id', 'name'=>'section_name')),
             array('container'=>'registrations', 'fname'=>'reg_id', 
-                'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'accompanist_customer_id', 'member_id', 
+                'fields'=>array('id'=>'section_id', 'teacher_customer_id', 'teacher2_customer_id', 'accompanist_customer_id', 'member_id', 
                     'display_name', 'section_name', 'category_id', 'category_name', 'class_code', 'class_name', 
                     'fee'=>'reg_fee', 'invoice_number', 
                     'title1', 'opus1', 'movements1', 'musical1', 'composer1', 'arranger1', 'perf_time1', 'video_url1', 'music_orgfilename1',
@@ -613,8 +630,10 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                     'title7', 'opus7', 'movements7', 'musical7', 'composer7', 'arranger7', 'perf_time7', 'video_url7', 'music_orgfilename7',
                     'title8', 'opus8', 'movements8', 'musical8', 'composer8', 'arranger8', 'perf_time8', 'video_url8', 'music_orgfilename8',
                     'participation', 'internal_notes', 'notes'=>'reg_notes', 'flags', 'status', 'status_text',
+                    'questionflags', 'sr_preferred', 'sr_conflicts',
                     'mark', 'placement', 'level',
                     'competitor1_id', 'competitor2_id', 'competitor3_id', 'competitor4_id', 'competitor5_id',
+                    'date_added',
                     ),
                 'maps'=>array(
                     'status_text'=>$maps['registration']['status'],
@@ -703,6 +722,14 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         }
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Invoice #', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Status', false);
+        if( isset($festival['registration-scheduling-requests']) && $festival['registration-scheduling-requests'] == 'yes' ) {
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Date Created', false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Preferred', false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Conflicts', false);
+        }
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Provincials', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Music Fest', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Can West', false);
         if( isset($festival['comments-mark-ui']) && $festival['comments-mark-ui'] == 'yes' ) {
             if( isset($festival['comments-mark-label']) && $festival['comments-mark-label'] != '' ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['comments-mark-label'], false);
@@ -727,6 +754,9 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Teacher', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Teacher Email', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Teacher Phone', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Teacher', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Teacher Email', false);
+        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Teacher Phone', false);
         if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) ) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Accompanist', false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Accompanist Email', false);
@@ -737,53 +767,59 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
         }
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Internal Notes', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Notes', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Last', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Pronoun', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Parent', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Address', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'City', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Home', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Cell', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Age', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Etransfer Email', false);
-        if( isset($festival['waiver-general-title']) && $festival['waiver-general-title'] != '' ) {
-            if( isset($festival['waiver-general-name']) && $festival['waiver-general-name'] != '' ) {
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-general-name'], false);
-            } else {
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Waiver', false);
+
+        for($i = 1; $i <= 5; $i++) {
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, "Competitor #{$i}", false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Last', false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Pronoun', false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Conductor', false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '# People', false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Organization', false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Parent/Contact', false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Address', false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'City', false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Home', false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Cell', false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Age', false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Email', false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Etransfer Email', false);
+            if( isset($festival['waiver-general-title']) && $festival['waiver-general-title'] != '' ) {
+                if( isset($festival['waiver-general-name']) && $festival['waiver-general-name'] != '' ) {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-general-name'], false);
+                } else {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Waiver', false);
+                }
+            }
+            if( isset($festival['waiver-second-title']) && $festival['waiver-second-title'] != '' ) {
+                if( isset($festival['waiver-second-name']) && $festival['waiver-second-name'] != '' ) {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-second-name'], false);
+                } else {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+                }
+            }
+            if( isset($festival['waiver-third-title']) && $festival['waiver-third-title'] != '' ) {
+                if( isset($festival['waiver-third-name']) && $festival['waiver-third-name'] != '' ) {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-third-name'], false);
+                } else {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+                }
+            }
+            if( isset($festival['waiver-photo-title']) && $festival['waiver-photo-title'] != '' ) {
+                if( isset($festival['waiver-photo-name']) && $festival['waiver-photo-name'] != '' ) {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-photo-name'], false);
+                } else {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Photos', false);
+                }
+            }
+            if( isset($festival['waiver-name-title']) && $festival['waiver-name-title'] != '' ) {
+                if( isset($festival['waiver-name-name']) && $festival['waiver-name-name'] != '' ) {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-name-name'], false);
+                } else {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Name', false);
+                }
             }
         }
-        if( isset($festival['waiver-second-title']) && $festival['waiver-second-title'] != '' ) {
-            if( isset($festival['waiver-second-name']) && $festival['waiver-second-name'] != '' ) {
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-second-name'], false);
-            } else {
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
-            }
-        }
-        if( isset($festival['waiver-third-title']) && $festival['waiver-third-title'] != '' ) {
-            if( isset($festival['waiver-third-name']) && $festival['waiver-third-name'] != '' ) {
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-third-name'], false);
-            } else {
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
-            }
-        }
-        if( isset($festival['waiver-photo-title']) && $festival['waiver-photo-title'] != '' ) {
-            if( isset($festival['waiver-photo-name']) && $festival['waiver-photo-name'] != '' ) {
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-photo-name'], false);
-            } else {
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Photos', false);
-            }
-        }
-        if( isset($festival['waiver-name-title']) && $festival['waiver-name-title'] != '' ) {
-            if( isset($festival['waiver-name-name']) && $festival['waiver-name-name'] != '' ) {
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $festival['waiver-name-name'], false);
-            } else {
-                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Name', false);
-            }
-        }
-        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor 2', false);
+/*        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Competitor 2', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Last', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Pronoun', false);
         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'Parent', false);
@@ -966,9 +1002,10 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
             }
         }
-
+*/
         $objPHPExcelWorksheet->getStyle('A1:AG1')->getFont()->setBold(true);
 
+        $multiline_cols = [];
         $row++;
 
         foreach($section['registrations'] as $registration) {
@@ -976,6 +1013,9 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             $registration['teacher_name'] = '';
             $registration['teacher_phone'] = '';
             $registration['teacher_email'] = '';
+            $registration['teacher2_name'] = '';
+            $registration['teacher2_phone'] = '';
+            $registration['teacher2_email'] = '';
             if( $registration['teacher_customer_id'] > 0 ) {
                 if( isset($teachers[$registration['teacher_customer_id']]) ) {
                     $registration['teacher_name'] = $teachers[$registration['teacher_customer_id']]['teacher_name'];
@@ -998,6 +1038,35 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                         }
 
                         $teachers[$registration['teacher_customer_id']] = array(
+                            'teacher_name'=>$registration['teacher_name'],
+                            'teacher_phone'=>$registration['teacher_phone'],
+                            'teacher_email'=>$registration['teacher_email'],
+                            );
+                    }
+                }
+            }
+            if( $registration['teacher2_customer_id'] > 0 ) {
+                if( isset($teachers[$registration['teacher2_customer_id']]) ) {
+                    $registration['teacher2_name'] = $teachers[$registration['teacher2_customer_id']]['teacher_name'];
+                    $registration['teacher2_phone'] = $teachers[$registration['teacher2_customer_id']]['teacher_phone'];
+                    $registration['teacher2_email'] = $teachers[$registration['teacher2_customer_id']]['teacher_email'];
+                } else {
+                    $rc = ciniki_customers_hooks_customerDetails2($ciniki, $args['tnid'], 
+                        array('customer_id'=>$registration['teacher2_customer_id'], 'phones'=>'yes', 'emails'=>'yes'));
+                    if( isset($rc['customer']) ) {
+                        $registration['teacher_name'] = $rc['customer']['display_name'];
+                        if( isset($rc['customer']['phones']) ) {
+                            foreach($rc['customer']['phones'] as $phone) {
+                                $registration['teacher_phone'] .= ($registration['teacher_phone'] != '' ? ', ' : '') . $phone['phone_number'];
+                            }
+                        }
+                        if( isset($rc['customer']['emails']) ) {
+                            foreach($rc['customer']['emails'] as $email) {
+                                $registration['teacher_email'] .= ($registration['teacher_email'] != '' ? ', ' : '') . $email['address'];
+                            }
+                        }
+
+                        $teachers[$registration['teacher2_customer_id']] = array(
                             'teacher_name'=>$registration['teacher_name'],
                             'teacher_phone'=>$registration['teacher_phone'],
                             'teacher_email'=>$registration['teacher_email'],
@@ -1101,6 +1170,40 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             }
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['invoice_number'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['status_text'], false);
+            if( isset($festival['registration-scheduling-requests']) && $festival['registration-scheduling-requests'] == 'yes' ) {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['date_added'], false);
+                $multiline_cols[] = $col;
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['sr_preferred'], false);
+                $multiline_cols[] = $col;
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['sr_conflicts'], false);
+            }
+            if( isset($registration['questionflags']) && ($registration['questionflags']&0x01) == 0x01 ) {   // Provincials question
+                if( ($registration['flags']&0x010000) == 0x010000 ) {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'yes', false);
+                } else {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'no', false);
+                }
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+            if( isset($registration['questionflags']) && ($registration['questionflags']&0x02) == 0x02 ) {   // Music Fest question
+                if( ($registration['flags']&0x020000) == 0x020000 ) {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'yes', false);
+                } else {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'no', false);
+                }
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
+            if( isset($registration['questionflags']) && ($registration['questionflags']&0x04) == 0x04 ) {   // Can West question
+                if( ($registration['flags']&0x040000) == 0x040000 ) {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'yes', false);
+                } else {
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, 'no', false);
+                }
+            } else {
+                $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+            }
             if( isset($festival['comments-mark-ui']) && $festival['comments-mark-ui'] == 'yes' ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['mark'], false);
             }
@@ -1113,6 +1216,9 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['teacher_name'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['teacher_email'], false);
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['teacher_phone'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['teacher2_name'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['teacher2_email'], false);
+            $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['teacher2_phone'], false);
             if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x8000) ) {
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['accompanist_name'], false);
                 $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $registration['accompanist_email'], false);
@@ -1131,6 +1237,7 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                 }
             }
             $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $notes, false);
+
             
             for($i = 1; $i <= 5; $i++) {
                 if( $registration["competitor{$i}_id"] > 0 && isset($competitors[$registration["competitor{$i}_id"]]) ) {
@@ -1139,10 +1246,13 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                         $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['name'], false);
                         $col++;
                     } else {
-                        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['first'], false);
-                        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['last'], false);
+                        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
+                        $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, '', false);
                     }
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['pronoun'], false);
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['conductor'], false);
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['num_people'], false);
+                    $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['organization'], false);
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['parent'], false);
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['address'], false);
                     $objPHPExcelWorksheet->setCellValueByColumnAndRow($col++, $row, $competitor['city'], false);
@@ -1227,6 +1337,16 @@ function ciniki_musicfestivals_registrationsExcel($ciniki) {
                         'type' => PHPExcel_Style_Fill::FILL_SOLID, 
                         'color' => array('rgb' => $color),
                         )));
+            }
+            if( count($multiline_cols) > 0 ) {
+                foreach($multiline_cols as $col) {
+                    $letter = chr(65 + ($num%26));
+                    $num2 = intval($num/26);
+                    if( $num2 > 0 ) {
+                        $letter = chr(65+($num2%26)) . $letter;
+                    }
+                    $objPHPExcel->getActiveSheet()->getStyle($letter . $row)->getAlignment()->setWrapText(true);
+                }
             }
 
             $row++;
