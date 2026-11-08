@@ -44,12 +44,24 @@ function ciniki_musicfestivals_wng_apiRegistrationSave(&$ciniki, $tnid, &$reques
         return $rc;
     }
 
-    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountRegistrationsProcess');
-    $rc = ciniki_musicfestivals_wng_accountRegistrationsProcess($ciniki, $tnid, $request, ['format'=>'json']);
-    if( $rc['stat'] == 'ok' ) {
-        ciniki_core_dbTransactionCommit($ciniki, 'ciniki.musicfestivals');
+    if( isset($request['args']['acthook']) && $request['args']['acthook'] == 'yes' ) {
+        $request['cur_uri_pos']++;
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'acthookProvincialsRegisterProcess');
+        $rc = ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess($ciniki, $tnid, $request, ['format'=>'json']);
+        if( $rc['stat'] == 'ok' ) {
+            ciniki_core_dbTransactionCommit($ciniki, 'ciniki.musicfestivals');
+        } else {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+        }
+
     } else {
-        ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountRegistrationsProcess');
+        $rc = ciniki_musicfestivals_wng_accountRegistrationsProcess($ciniki, $tnid, $request, ['format'=>'json']);
+        if( $rc['stat'] == 'ok' ) {
+            ciniki_core_dbTransactionCommit($ciniki, 'ciniki.musicfestivals');
+        } else {
+            ciniki_core_dbTransactionRollback($ciniki, 'ciniki.musicfestivals');
+        }
     }
 
     return $rc;

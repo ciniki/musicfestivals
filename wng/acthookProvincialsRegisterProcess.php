@@ -10,7 +10,7 @@
 // Returns
 // -------
 //
-function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $tnid, &$request) {
+function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $tnid, &$request, $args=[]) {
 
     $blocks = [];
 
@@ -80,6 +80,9 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
     ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'loadCurrentFestival');
     $rc = ciniki_musicfestivals_loadCurrentFestival($ciniki, $tnid);
     if( $rc['stat'] != 'ok' ) {
+        if( isset($args['format']) && $args['format'] == 'json' ) {
+            return array('stat'=>'fail', 'errors'=>'Festival is now closed');
+        }
         return array('stat'=>'ok', 'blocks'=>[
             ['type' => 'msg',
             'level' => 'error',
@@ -87,7 +90,6 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
             ]]);
     }
     $festival = $rc['festival'];
-
    
     if( $festival['live'] == 'no' && $festival['virtual'] == 'no' ) {
         return array('stat'=>'ok', 'blocks'=>[
@@ -257,6 +259,9 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1394', 'msg'=>'Unable to load entry', 'err'=>$rc['err']));
     }
     if( !isset($rc['entry']) ) {
+        if( isset($args['format']) && $args['format'] == 'json' ) {
+            return array('stat'=>'fail', 'errors'=>'Invalid request');
+        }
         return array('stat'=>'ok', 'blocks'=>[
             ['type' => 'msg',
             'level' => 'error',
@@ -752,8 +757,9 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
             'registration' => isset($registration) ? $registration : null,
             'customer_type' => $customer_type,
             'customer_id' => $request['session']['customer']['id'],
+            'format' => isset($args['format']) ? $args['format'] : '',
             ]);
-        if( $rc['stat'] == 'exit' ) {
+        if( $rc['stat'] == 'exit' || $rc['stat'] == '404' || isset($rc['return-url']) ) {
             //
             // Update the recommendation with the registration
             //
@@ -767,22 +773,46 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
                     return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1376', 'msg'=>'Unable to update the recommendationentry', 'err'=>$rc['err']));
                 }
             }
-            return array('stat'=>'exit');
+            return $rc;
         } elseif( $rc['stat'] != 'ok' ) {
+            if( isset($args['format']) && $args['format'] == 'json' ) {
+                error_log("ERROR");
+                return array('stat'=>'fail', 'errors'=>$rc['err']['msg']);
+            }
             return array('stat'=>'ok', 'blocks'=>[[
                 'type' => 'msg',
                 'level' => 'error', 
                 'content' => $rc['err']['msg'],
                 ]]);
         }
-        $errors = $rc['errors'];
-
+        if( isset($rc['errors']) ) {
+            $errors = $rc['errors'];
+        }
     }
 
     $form_errors = '';
+//    if( isset($errors) && count($errors) > 0 ) {
+//        foreach($errors as $err) {
+//            $form_errors .= ($form_errors != '' ? '<br/>' : '') . $err['msg'];
+//        }
+//    }
     if( isset($errors) && count($errors) > 0 ) {
+        $prev_selection = 0;
         foreach($errors as $err) {
+            if( preg_match("/Selection #([0-9])/", $err['msg'], $m) ) {
+                if( $prev_selection != $m[1] && $form_errors != '' ) {
+                    $form_errors .= '<br/>';
+                }
+                $prev_selection = $m[1];
+            }
             $form_errors .= ($form_errors != '' ? '<br/>' : '') . $err['msg'];
+            $prev_msg = $err['msg'];
+        }
+    }
+
+    if( isset($args['format']) && $args['format'] == 'json' ) {
+        if( $form_errors != '' ) {
+            return array('stat'=>'fail', 'errors'=>$form_errors);
         }
     }
 

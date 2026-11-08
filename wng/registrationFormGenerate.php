@@ -2530,9 +2530,17 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             . "const form = C.gE('addregform');"
             . "let formData = new FormData(form);"
             . "formData.append(\"festival-id\",\"{$festival['id']}\");"
-            . "try {"
-                . "const rc = await fetch(\"${request['ssl_domain_base_url']}/cpi/ciniki/musicfestivals/registrationSave\", {"
-                    . "method: \"POST\","
+            . "try {";
+    if( isset($args['display']) && $args['display'] == 'recommendation-registration' 
+        && (!isset($registration['registration_id']) || $registration['registration_id'] == 0) 
+        && isset($request['uri_split'][4]) 
+        ) {
+               $js .= "formData.append('acthook','yes');"
+                    . "const rc = await fetch(\"${request['ssl_domain_base_url']}/cpi/ciniki/musicfestivals/registrationSave/{$request['uri_split'][3]}/{$request['uri_split'][4]}\", {";
+    } else {
+               $js .= "const rc = await fetch(\"${request['ssl_domain_base_url']}/cpi/ciniki/musicfestivals/registrationSave\", {";
+    }
+               $js .= "method: \"POST\","
                     . "body: formData, "
                     . "});"
                 . "let rsp = await rc.json();"
