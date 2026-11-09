@@ -24,7 +24,17 @@ function ciniki_musicfestivals_titleMerge(&$ciniki, $tnid, $registration, $i) {
         && strtolower($registration["opus{$i}"]) != 'not applicable'
         && strtolower($registration["opus{$i}"]) != 'none'
         ) {
-        $line .= ', ' . $registration["opus{$i}"];
+        if( preg_match("/^\s*[Oo][Pp]\.\s+/", $registration["opus{$i}"]) ) {    // op.
+            $line .= ', ' . $registration["opus{$i}"];
+        } elseif( preg_match("/^\s*[Oo][Pp][Uu][Ss]\s+(.*)$/", $registration["opus{$i}"], $m) ) {    // op.
+            $line .= ', op. ' . $m[1];
+        } elseif( preg_match("/^\s*[^Oo][^Pp]\s+(.*)$/", $registration["opus{$i}"], $m) ) {    // op.
+            $line .= ', op. ' . $m[1];
+        } elseif( preg_match("/^\s*[0-9]+/", $registration["opus{$i}"]) ) {    // op.
+            $line .= ', op. ' . $registration["opus{$i}"];
+        } else {
+            $line .= ', ' . $registration["opus{$i}"];
+        }
     }
     if( isset($registration["movements{$i}"]) 
         && $registration["movements{$i}"] != '' 
