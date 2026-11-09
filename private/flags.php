@@ -41,8 +41,8 @@ function ciniki_musicfestivals_flags(&$ciniki) {
         array('flag'=>array('bit'=>'19', 'name'=>'Program Document')), // 5.5x8.5 program
         array('flag'=>array('bit'=>'20', 'name'=>'Schedule Individual Times')),   // each registration has a scheduled time
         // 0x100000
-        array('flag'=>array('bit'=>'21', 'name'=>'Social Content')), 
-        array('flag'=>array('bit'=>'22', 'name'=>'Files')), // This will be deprecated, only there for older tenants
+//        array('flag'=>array('bit'=>'21', 'name'=>'Social Content')), // **deprecated**
+//        array('flag'=>array('bit'=>'22', 'name'=>'Files')), // **deprecated**
 //        array('flag'=>array('bit'=>'23', 'name'=>'')),
 //        array('flag'=>array('bit'=>'24', 'name'=>'')),
         );

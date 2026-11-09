@@ -8367,6 +8367,7 @@ function ciniki_musicfestivals_main() {
         p.rules_item = -1;
         p.refreshSection('rules_items');
         p.show();
+        M.ciniki_musicfestivals_main.syllabus.save("M.ciniki_musicfestivals_main.syllabus.open();");
     };
     this.syllabusrulesitem.addButton('save', 'Save', 'M.ciniki_musicfestivals_main.syllabusrulesitem.save();');
     this.syllabusrulesitem.addClose('Cancel');
