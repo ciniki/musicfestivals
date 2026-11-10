@@ -126,6 +126,13 @@ function ciniki_musicfestivals_festivalSyllabusExcel($ciniki) {
         } else {
             $classes[$cid]['accompanist'] = '';
         }
+        if( ($class['titleflags']&0x0C00) == 0x0400) {
+            $classes[$cid]['opus'] = 'required';
+        } elseif( ($class['titleflags']&0x0C00) == 0x0800) {
+            $classes[$cid]['opus'] = 'optional';
+        } else {
+            $classes[$cid]['opus'] = '';
+        }
         if( ($class['flags']&0x0C000000) == 0x04000000 ) {
             $classes[$cid]['movements'] = 'required';
         } elseif( ($class['flags']&0x0C000000) == 0x08000000 ) {
@@ -133,12 +140,26 @@ function ciniki_musicfestivals_festivalSyllabusExcel($ciniki) {
         } else {
             $classes[$cid]['movements'] = '';
         }
+        if( ($class['titleflags']&0xC000) == 0x4000 ) {
+            $classes[$cid]['musical'] = 'required';
+        } elseif( ($class['titleflags']&0xC000) == 0x8000 ) {
+            $classes[$cid]['musical'] = 'optional';
+        } else {
+            $classes[$cid]['musical'] = '';
+        }
         if( ($class['flags']&0x30000000) == 0x10000000 ) {
             $classes[$cid]['composer'] = 'required';
         } elseif( ($class['flags']&0x30000000) == 0x20000000 ) {
             $classes[$cid]['composer'] = 'optional';
         } else {
             $classes[$cid]['composer'] = '';
+        }
+        if( ($class['titleflags']&0x0C0000) == 0x040000 ) {
+            $classes[$cid]['arranger'] = 'required';
+        } elseif( ($class['titleflags']&0x0C0000) == 0x080000 ) {
+            $classes[$cid]['arranger'] = 'optional';
+        } else {
+            $classes[$cid]['arranger'] = '';
         }
         $classes[$cid]['mark'] = ($class['flags']&0x0100) == 0x0100 ? 'yes' : '';
         $classes[$cid]['placement'] = ($class['flags']&0x0200) == 0x0200 ? 'yes' : '';
@@ -173,8 +194,11 @@ function ciniki_musicfestivals_festivalSyllabusExcel($ciniki) {
     $columns[] = ['label' => 'Accompanist', 'field'=>'accompanist'];
     $columns[] = ['label' => 'Min Titles', 'field'=>'min_titles'];
     $columns[] = ['label' => 'Max Titles', 'field'=>'max_titles'];
+    $columns[] = ['label' => 'Opus', 'field'=>'opus'];
     $columns[] = ['label' => 'Movements', 'field'=>'movements'];
+    $columns[] = ['label' => 'Musical', 'field'=>'musical'];
     $columns[] = ['label' => 'Composer', 'field'=>'composer'];
+    $columns[] = ['label' => 'Arranger', 'field'=>'arranger'];
     $columns[] = ['label' => 'Mark', 'field'=>'mark'];
     $columns[] = ['label' => 'Placement', 'field'=>'placement'];
     $columns[] = ['label' => 'Level', 'field'=>'level'];
