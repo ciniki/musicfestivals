@@ -7570,37 +7570,79 @@ function ciniki_musicfestivals_main() {
             'fields':{
                 'volunteers-email-approved-subject':{'label':'Subject', 'type':'text'},
                 'volunteers-email-approved-message':{'label':'Message', 'type':'htmlarea', 'size':'medium'},
-            }},
+                },
+            'menu':{
+                'default':{
+                    'label':'Configure Default Template',
+                    'fn':'M.ciniki_musicfestivals_main.edit.volunteersDefaultEmail("_volunteers_email1", "approved");',
+                    },
+                },
+            },
         '_volunteers_email2':{'label':'Shift Assigned Email',
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('volunteers'); },
             'fields':{
                 'volunteers-email-shift-assigned-subject':{'label':'Subject', 'type':'text'},
                 'volunteers-email-shift-assigned-message':{'label':'Message', 'type':'htmlarea', 'size':'medium'},
-            }},
+                },
+            'menu':{
+                'default':{
+                    'label':'Configure Default Template',
+                    'fn':'M.ciniki_musicfestivals_main.edit.volunteersDefaultEmail("_volunteers_email2", "shift-assigned");',
+                    },
+                },
+            },
         '_volunteers_email5':{'label':'Shift Changed Email',
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('volunteers'); },
             'fields':{
                 'volunteers-email-shift-changed-subject':{'label':'Subject', 'type':'text'},
                 'volunteers-email-shift-changed-message':{'label':'Message', 'type':'htmlarea', 'size':'medium'},
-            }},
+                },
+            'menu':{
+                'default':{
+                    'label':'Configure Default Template',
+                    'fn':'M.ciniki_musicfestivals_main.edit.volunteersDefaultEmail("_volunteers_email5", "shift-changed");',
+                    },
+                },
+            },
         '_volunteers_email6':{'label':'Shift Cancelled Email',
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('volunteers'); },
             'fields':{
                 'volunteers-email-shift-cancelled-subject':{'label':'Subject', 'type':'text'},
                 'volunteers-email-shift-cancelled-message':{'label':'Message', 'type':'htmlarea', 'size':'medium'},
-            }},
+                },
+            'menu':{
+                'default':{
+                    'label':'Configure Default Template',
+                    'fn':'M.ciniki_musicfestivals_main.edit.volunteersDefaultEmail("_volunteers_email6", "shift-cancelled");',
+                    },
+                },
+            },
         '_volunteers_email3':{'label':'7 Day Prior Email',
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('volunteers'); },
             'fields':{
                 'volunteers-email-reminder-7day-subject':{'label':'Subject', 'type':'text'},
                 'volunteers-email-reminder-7day-message':{'label':'Message', 'type':'htmlarea', 'size':'medium'},
-            }},
+                },
+            'menu':{
+                'default':{
+                    'label':'Configure Default Template',
+                    'fn':'M.ciniki_musicfestivals_main.edit.volunteersDefaultEmail("_volunteers_email3", "reminder-7day");',
+                    },
+                },
+            },
         '_volunteers_email4':{'label':'24 Hour Prior Email',
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('volunteers'); },
             'fields':{
                 'volunteers-email-reminder-24hour-subject':{'label':'Subject', 'type':'text'},
                 'volunteers-email-reminder-24hour-message':{'label':'Message', 'type':'htmlarea', 'size':'medium'},
-            }},
+                },
+            'menu':{
+                'default':{
+                    'label':'Configure Default Template',
+                    'fn':'M.ciniki_musicfestivals_main.edit.volunteersDefaultEmail("_volunteers_email4", "reminder-24hour");',
+                    },
+                },
+            },
         '_volunteers_role_descriptions':{'label':'Role Descriptions',
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('volunteers'); },
             'fields':{
@@ -7757,6 +7799,17 @@ function ciniki_musicfestivals_main() {
             }
             M.ciniki_musicfestivals_main.edit.setFieldValue('provincials-email-register-reminder-subject', rsp['provincials-email-register-reminder-subject']);
             M.ciniki_musicfestivals_main.edit.setFieldValue('provincials-email-register-reminder-message', rsp['provincials-email-register-reminder-message']);
+        });
+    }
+    this.edit.volunteersDefaultEmail = function(s,m) {
+        this.popupMenuClose(s);
+        M.api.getJSONCb('ciniki.musicfestivals.volunteersDefaultEmails', {'tnid':M.curTenantID, 'festival_id':this.festival_id}, function(rsp) {
+            if( rsp.stat != 'ok' ) {
+                M.api.err(rsp);
+                return false;
+            }
+            M.ciniki_musicfestivals_main.edit.setFieldValue('volunteers-email-' + m + '-subject', rsp.emails['volunteers-email-' + m + '-subject']);
+            M.ciniki_musicfestivals_main.edit.setFieldValue('volunteers-email-' + m + '-message', rsp.emails['volunteers-email-' + m + '-message']);
         });
     }
     this.edit.setDefaultColours = function() {
