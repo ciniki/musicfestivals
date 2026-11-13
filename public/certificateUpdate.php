@@ -21,6 +21,7 @@ function ciniki_musicfestivals_certificateUpdate(&$ciniki) {
         'name'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Name'),
         'image_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Image'),
         'orientation'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Orientation'),
+        'size'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Size'),
         'section_id'=>array('required'=>'no', 'blank'=>'no', 'name'=>'Section'),
         'min_score'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Minimum Score'),
         'participation'=>array('required'=>'no', 'blank'=>'yes', 'name'=>'Participation'),

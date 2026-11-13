@@ -16149,6 +16149,7 @@ function ciniki_musicfestivals_main() {
 // FIXME: Add section support and min score support
 //            'section_id':{'label':'Section', 'type':'select', 'options':{}, 'complex_options':{'name':'name', 'value':'id'}},
 //            'min_score':{'label':'Minimum Score', 'type':'text', 'size':'small'},
+            'size':{'label':'Size', 'type':'toggle', 'default':'letter', 'toggles':{'letter':'Letter', 'halfletter':'5.5"x8.5"'}},
             'participation':{'label':'Participation', 'type':'toggle', 
                 'visible':'no',
                 'toggles':{'0':'Default'},

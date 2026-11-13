@@ -1,0 +1,2 @@
+ALTER TABLE ciniki_musicfestival_certificates ADD COLUMN size varchar(50) not null AFTER orientation;
+ALTER TABLE ciniki_musicfestival_certificates COMMENT='v1.04';

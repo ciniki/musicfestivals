@@ -63,6 +63,7 @@ function ciniki_musicfestivals_certificateGet($ciniki) {
             'name'=>'',
             'image_id'=>'',
             'orientation' => 'L',
+            'size' => 'letter',
             'section_id'=>'',
             'min_score'=>'0',
             'participation'=>'0',
@@ -78,6 +79,7 @@ function ciniki_musicfestivals_certificateGet($ciniki) {
             . "certificates.name, "
             . "certificates.image_id, "
             . "certificates.orientation, "
+            . "certificates.size, "
             . "certificates.section_id, "
             . "certificates.min_score, "
             . "certificates.participation "
@@ -88,7 +90,7 @@ function ciniki_musicfestivals_certificateGet($ciniki) {
         ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
         $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
             array('container'=>'certificates', 'fname'=>'id', 
-                'fields'=>array('festival_id', 'name', 'image_id', 'orientation', 'section_id', 'min_score', 'participation'),
+                'fields'=>array('festival_id', 'name', 'image_id', 'orientation', 'size', 'section_id', 'min_score', 'participation'),
                 ),
             ));
         if( $rc['stat'] != 'ok' ) {

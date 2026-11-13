@@ -177,6 +177,7 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
         . "certificates.name, "
         . "certificates.image_id, "
         . "certificates.orientation, "
+        . "certificates.size, "
         . "certificates.section_id, "
         . "certificates.min_score, "
         . "certificates.participation, "
@@ -207,7 +208,7 @@ function ciniki_musicfestivals_registrationCertsPDF($ciniki, $tnid, $args) {
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'certificates', 'fname'=>'id', 
-            'fields'=>array('id', 'festival_id', 'name', 'image_id', 'orientation', 'section_id', 'min_score', 'participation')),
+            'fields'=>array('id', 'festival_id', 'name', 'image_id', 'orientation', 'size', 'section_id', 'min_score', 'participation')),
         array('container'=>'fields', 'fname'=>'field_id', 'fields'=>array(
                 'id'=>'field_id', 'name'=>'field_name', 'field',
                 'xpos', 'ypos', 'width', 'height', 'font', 'size', 'style', 'align', 'valign', 'color', 
