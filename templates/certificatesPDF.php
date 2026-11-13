@@ -139,6 +139,11 @@ function ciniki_musicfestivals_templates_certificatesPDF(&$ciniki, $tnid, $args)
        
         if( isset($certificate['fields']) ) {
             foreach($certificate['fields'] as $field) {
+                if( $field['color'] != '' && preg_match("/([0-9A-Fa-f][0-9A-Fa-f])([0-9A-Fa-f][0-9A-Fa-f])([0-9A-Fa-f][0-9A-Fa-f])/", $field['color'], $m) ) {
+                    $pdf->SetTextColor(hexdec($m[1]), hexdec($m[2]), hexdec($m[3]));
+                } else {
+                    $pdf->SetTextColor(0,0,0);
+                }
                 if( $field['field'] == 'adjudicatorsig' || $field['field'] == 'adjudicatorsigorname' ) {
                     if( isset($field['image_id']) && $field['image_id'] > 0 ) {
                         $rc = ciniki_images_loadImage($ciniki, $tnid, $field['image_id'], 'original');

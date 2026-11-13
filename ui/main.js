@@ -16340,7 +16340,7 @@ function ciniki_musicfestivals_main() {
                 'M':'Middle',
                 'B':'Bottom',
                 }},
-//            'color':{'label':'Color', 'type':'text'},
+            'color':{'label':'Color', 'type':'text', 'size':'small'},
 //            'bgcolor':{'label':'Background Color', 'type':'text'},
             'text':{'label':'Text', 'type':'text'},
             }},
