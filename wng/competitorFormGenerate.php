@@ -62,7 +62,7 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
             'id' => 'competitor_id',
             'label' => '',
             'ftype' => 'hidden',
-            'value' => (isset($_POST['f-competitor_id']) ? trim($_POST['f-competitor_id']) : (isset($competitor) ? $competitor['id'] : 0)),
+            'value' => (isset($_POST['f-competitor_id']) ? trim($_POST['f-competitor_id']) : (isset($competitor['id']) ? $competitor['id'] : 0)),
             ),
         'ctype' => array(
             'id' => 'ctype',
@@ -590,7 +590,7 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
             'required' => 'yes',
             'value' => (isset($competitor['flags']) && ($competitor['flags']&0x01) == 0x01 ? 'on' : ''),
             );
-        if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' ) {
+        if( isset($_POST['f-action']) && ($_POST['f-action'] == 'update' || $_POST['f-action'] == 'transferin') ) {
             if( isset($_POST['f-terms']) && $_POST['f-terms'] == 'on' ) {
                 $fields['terms']['value'] = 'on';
             } else {
@@ -615,7 +615,7 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
             'required' => 'yes',
             'value' => (isset($competitor['flags']) && ($competitor['flags']&0x20) == 0x20 ? 'on' : ''),
             );
-        if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' ) {
+        if( isset($_POST['f-action']) && ($_POST['f-action'] == 'update' || $_POST['f-action'] == 'transferin') ) {
             if( isset($_POST['f-secondwaiver']) && $_POST['f-secondwaiver'] == 'on' ) {
                 $fields['secondwaiver']['value'] = 'on';
             } else {
@@ -640,7 +640,7 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
             'required' => 'yes',
             'value' => (isset($competitor['flags']) && ($competitor['flags']&0x20) == 0x20 ? 'on' : ''),
             );
-        if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' ) {
+        if( isset($_POST['f-action']) && ($_POST['f-action'] == 'update' || $_POST['f-action'] == 'transferin') ) {
             if( isset($_POST['f-thirdwaiver']) && $_POST['f-thirdwaiver'] == 'on' ) {
                 $fields['thirdwaiver']['value'] = 'on';
             } else {
@@ -670,7 +670,7 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
         if( isset($competitor['flags']) ) {
             $fields['photowaiver']['value'] = ($competitor['flags']&0x02) == 0x02 ? $fields['photowaiver']['option-2'] : $fields['photowaiver']['option-3'];
             }
-        if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' ) {
+        if( isset($_POST['f-action']) && ($_POST['f-action'] == 'update' || $_POST['f-action'] == 'transferin') ) {
             if( isset($_POST['f-photowaiver']) ) {
                 $fields['photowaiver']['value'] = $_POST['f-photowaiver'];
             }
@@ -698,7 +698,7 @@ function ciniki_musicfestivals_wng_competitorFormGenerate(&$ciniki, $tnid, &$req
         if( isset($competitor['flags']) ) {
             $fields['namewaiver']['value'] = ($competitor['flags']&0x04) == 0x04 ? $fields['namewaiver']['option-2'] : $fields['namewaiver']['option-3'];
             }
-        if( isset($_POST['f-action']) && $_POST['f-action'] == 'update' ) {
+        if( isset($_POST['f-action']) && ($_POST['f-action'] == 'update' || $_POST['f-action'] == 'transferin') ) {
             if( isset($_POST['f-namewaiver']) ) {
                 $fields['namewaiver']['value'] = $_POST['f-namewaiver'];
             }

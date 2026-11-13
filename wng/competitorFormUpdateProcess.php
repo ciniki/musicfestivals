@@ -280,6 +280,9 @@ function ciniki_musicfestivals_wng_competitorFormUpdateProcess(&$ciniki, $tnid, 
             if( $rc['stat'] != 'ok' ) {
                 return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.353', 'msg'=>'Unable to add the competitor', 'err'=>$rc['err']));
             }
+            if( isset($args['display']) && $args['display'] == 'transferin' ) {
+                return array('stat'=>'ok', 'id'=>$rc['id']);
+            }
             if( isset($args['provincials-competitor-number']) && $args['provincials-competitor-number'] != '' ) {
                 $request['session']['musicfestival-registration']["competitor{$args['provincials-competitor-number']}_id"] = $rc['id'];
             }

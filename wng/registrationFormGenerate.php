@@ -1907,6 +1907,49 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
             );
     }
 
+    if( $args['display'] == 'transferout' && isset($registration['status']) && $registration['status'] == 5 ) {
+        $fields['line-transferout'] = array(
+            'id' => 'line-transferout',
+            'ftype' => 'break',
+            'label' => 'Parent Information',
+            'class' => '',
+            );
+        $parent_first = '';
+        $parent_last = '';
+        $parent_email = '';
+        if( isset($competitors[$registration['competitor1_id']]['parent']) && preg_match("/^([^ ]*)\s(.*)$/", $competitors[$registration['competitor1_id']]['parent'], $m) ) {
+            $parent_first = $m[1];
+            $parent_last = $m[2];
+        }
+        if( isset($competitors[$registration['competitor1_id']]['email']) ) {
+            $parent_email = $competitors[$registration['competitor1_id']]['email'];
+        }
+        $fields['parent_first'] = array(
+            'id' => 'parent_first',
+            'label' => 'First Name',
+            'ftype' => 'text',
+            'size' => 'medium',
+            'class' => '',
+            'value' => isset($_POST['f-parent_first']) ? $_POST['f-parent_first'] : $parent_first,
+            );
+        $fields['parent_last'] = array(
+            'id' => 'parent_last',
+            'label' => 'Last Name',
+            'ftype' => 'text',
+            'size' => 'medium',
+            'class' => '',
+            'value' => isset($_POST['f-parent_last']) ? $_POST['f-parent_last'] : $parent_last,
+            );
+        $fields['parent_email'] = array(
+            'id' => 'parent_email',
+            'label' => 'Parent Email',
+            'ftype' => 'text',
+            'size' => 'large',
+            'class' => '',
+            'value' => isset($_POST['f-parent_email']) ? $_POST['f-parent_email'] : $parent_email,
+            );
+    }
+
     //
     // Setup the Javascript for updating the form as fields change
     //

@@ -12,12 +12,12 @@
 //
 function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, &$request, $args) {
 
-    $blocks = array();
+    $blocks = [];
 
     $settings = isset($request['site']['settings']) ? $request['site']['settings'] : array();
     $display = 'list';
     $form_errors = '';
-    $errors = array();
+    $errors = [];
 
     //
     // Load current festival
@@ -31,7 +31,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         return array('stat'=>'ok', 'blocks'=>[[
             'type' => 'msg', 
             'level' => 'error', 
-            'message' => 'Festival is now closed',
+            'content' => 'Festival is now closed',
             ]]);
        
     }
@@ -119,7 +119,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         return $rc;
     }
     if( $rc['stat'] != 'ok' ) {
-        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.362', 'msg'=>'Unable to ', 'err'=>$rc['err']));
+        return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.362', 'msg'=>'Unable to set type', 'err'=>$rc['err']));
     }
     $customer_type = $rc['customer_type'];
     if( isset($rc['switch_block']) ) {
@@ -174,6 +174,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     if( isset($_POST['action']) && $_POST['action'] == 'view' ) {
         $strsql = "SELECT DISTINCT competitors.id, "
             . "competitors.name, "
+            . "competitors.parent, "
+            . "competitors.email, "
             . "competitors.pronoun "
             . "FROM ciniki_musicfestival_registrations AS registrations "
             . "INNER JOIN ciniki_musicfestival_competitors AS competitors ON ("
@@ -200,6 +202,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     } else {
         $strsql = "SELECT competitors.id, "
             . "competitors.name, "
+            . "competitors.parent, "
+            . "competitors.email, "
             . "competitors.pronoun "
             . "FROM ciniki_musicfestival_competitors AS competitors "
             . "WHERE billing_customer_id = '" . ciniki_core_dbQuote($ciniki, $request['session']['customer']['id']) . "' "
@@ -210,7 +214,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     }
     ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryIDTree');
     $rc = ciniki_core_dbHashQueryIDTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
-        array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'name', 'pronoun')),
+        array('container'=>'competitors', 'fname'=>'id', 'fields'=>array('id', 'name', 'pronoun', 'parent', 'email')),
         ));
     if( $rc['stat'] != 'ok' ) {
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.325', 'msg'=>'Unable to load competitors', 'err'=>$rc['err']));
@@ -713,7 +717,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             . "sr_conflicts "
             . "FROM ciniki_musicfestival_registrations "
             . "WHERE id = '" . ciniki_core_dbQuote($ciniki, $registration_id) . "' ";
-        if( (isset($_POST['action']) && ($_POST['action'] == 'view' || $_POST['action'] == 'comments' || $_POST['action'] == 'certificate' || $_POST['action'] == 'download' ))
+        if( (isset($_POST['action']) && ($_POST['action'] == 'view' || $_POST['action'] == 'comments' || $_POST['action'] == 'transferin' || $_POST['action'] == 'certificate' || $_POST['action'] == 'download' ))
+            || (isset($_POST['f-action']) && $_POST['f-action'] == 'transferin' )
             || (isset($_POST['f-action']) && $_POST['f-action'] == 'crsubmit' )
             ) {
             $strsql .= "AND ("
@@ -747,6 +752,98 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             } 
             elseif( isset($_POST['f-action']) && $_POST['f-action'] == 'viewupdate' ) {
                 $display = 'view';
+            } 
+            elseif( isset($_POST['transferout']) && $_POST['transferout'] == 'Transfer to Parent' ) {
+                $display = 'transferout';
+            } 
+            elseif( isset($_POST['f-action']) && $_POST['f-action'] == 'transferout' ) {
+                $display = 'transferout';
+                //
+                // Create or add the parent
+                //
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'parentCreate');
+                $rc = ciniki_musicfestivals_wng_parentCreate($ciniki, $tnid, $request, [
+                    'festival' => $festival,
+                    ]);
+                if( $rc['stat'] != 'ok' ) {
+                    $blocks[] = [
+                        'type' => 'msg', 
+                        'level' => 'error', 
+                        'content' => $rc['err']['msg'], //'Unable to transfer to parent, please try again or contact us for help.',
+                        ];
+                } else {
+                    $parent_customer_id = $rc['parent_customer_id'];
+
+                    ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountRegistrationTransferOut');
+                    $rc = ciniki_musicfestivals_wng_accountRegistrationTransferOut($ciniki, $tnid, $request, [
+                        'registration' => $registration,
+                        'festival' => $festival,
+                        'parent_customer_id' => $parent_customer_id,
+                        'tofirstname' => $_POST['f-parent_first'],
+                        'toname' => $_POST['f-parent_first'] . ' ' . $_POST['f-parent_last'],
+                        'fromname' => $request['session']['customer']['display_name'],
+                        'email' => $_POST['f-parent_email'],
+                        'base_url' => $base_url,
+                        ]);
+                    if( isset($rc['stat']) && $rc['stat'] == 'transferred' ) {
+                        header("Location: {$base_url}");
+                        return array('stat'=>'exit');
+                    } elseif( $rc['stat'] != 'ok' ) {
+                        error_log("Music Reg Transfer Out error: " . print_r($rc, true));
+                        $blocks[] = [
+                            'type' => 'msg', 
+                            'level' => 'error', 
+                            'content' => $rc['err']['msg'], //'Unable to transfer to parent, please try again or contact us for help.',
+                            ];
+                    }
+                }
+            }
+            elseif( isset($_POST['action']) && $_POST['action'] == 'transferoutcancel' ) {
+                //
+                // Update the registration
+                //
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountRegistrationTransferOutCancel');
+                $rc = ciniki_musicfestivals_wng_accountRegistrationTransferOutCancel($ciniki, $tnid, $request, [
+                    'registration' => $registration,
+                    'festival' => $festival,
+                    ]);
+                if( $rc['stat'] != 'ok' ) {
+                    $blocks[] = [
+                        'type' => 'msg', 
+                        'level' => 'error', 
+                        'content' => $rc['err']['msg'], //'Unable to transfer to parent, please try again or contact us for help.',
+                        ];
+                } else {
+                    header("Location: {$base_url}");
+                    return array('stat'=>'exit');
+                }
+
+/*                ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'objectUpdate');
+                $rc = ciniki_core_objectUpdate($ciniki, $tnid, 'ciniki.musicfestivals.registration', $registration['registration_id'], [
+                    'parent_customer_id' => 0,
+                    'status' => 5,
+                    ], 0x04);
+                if( $rc['stat'] != 'ok' ) {
+                    return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.1722', 'msg'=>'Unable to update the registration', 'err'=>$rc['err']));
+                } */
+
+            }
+            elseif( (isset($_POST['action']) && $_POST['action'] == 'transferin')
+                || (isset($_POST['f-action']) && $_POST['f-action'] == 'transferin')
+                ) {
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'wng', 'accountRegistrationTransferIn');
+                $rc = ciniki_musicfestivals_wng_accountRegistrationTransferIn($ciniki, $tnid, $request, [
+                    'registration' => $registration,
+                    'festival' => $festival,
+                    'competitors' => $competitors,
+                    'base_url' => $base_url,
+                    'customer_type' => $customer_type,
+                    ]);
+                if( isset($rc['stat']) && $rc['stat'] == 'transferred' ) {
+                    header("Location: {$base_url}");
+                    return array('stat'=>'exit');
+                }
+                return $rc;
             }
             elseif( isset($_POST['action']) && $_POST['action'] == 'download' 
                 && (isset($_POST['f-comments']) && $_POST['f-comments'] == 'Download Adjudicators Comments'
@@ -801,7 +898,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                     return array('stat'=>'exit');
                 }
             } 
-            else {
+            elseif( $display != 'transferout' ) {
                 $display = 'form';
             }
         }
@@ -1190,6 +1287,9 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         }
         $errors = $rc['errors'];
     }
+    elseif( isset($_POST['transferout']) && $_POST['transferout'] == 'Transfer to Parent' ) {
+        $display = 'transferout';
+    }
     elseif( isset($_POST['f-delete']) && $_POST['f-delete'] == 'Remove' && isset($registration) ) {
         //
         // Check if paid invoice
@@ -1369,11 +1469,19 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
     //
     // Show the registration in view only mode
     //
-    elseif( $display == 'view' ) {
+    elseif( $display == 'view' || $display == 'transferout' ) {
         $editable = 'no';
         foreach($fields as $fid => $field) {
             if( isset($field['id']) && $field['id'] == 'action' ) {
-                $fields[$fid]['value'] = 'view';
+                if( $display == 'transferout' ) {
+                    $fields[$fid]['value'] = 'transferout';
+                    $editable = 'yes';
+                } else {
+                    $fields[$fid]['value'] = 'view';
+                }
+            }
+            if( $display == 'transferout' && preg_match("/^parent_/", $fid) ) {
+                continue;
             }
             if( $field['ftype'] == 'select' 
                 && isset($field['id']) && $field['id'] == 'teacher_customer_id'
@@ -1565,28 +1673,28 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 }
             } 
             elseif( in_array($fid, ['video_url1', 'video_url2', 'video_url3', 'video_url4', 'video_url5', 'video_url6', 'video_url7', 'video_url8'])
-                && $festival['upload'] == 'yes' 
+                && $festival['upload'] == 'yes' && $display == 'view'
                 && $registration['billing_customer_id'] == $request['session']['customer']['id']
                 ) {
                 $fields[$fid]['editable'] = 'yes';
                 $editable = 'yes';
             } 
             elseif( preg_match("/music_orgfilename/", $fid) 
-                && $festival['upload'] == 'yes' 
+                && $festival['upload'] == 'yes' && $display == 'view'
                 && $registration['billing_customer_id'] == $request['session']['customer']['id']
                 ) {
                 $fields[$fid]['editable'] = 'yes';
                 $editable = 'yes';
             } 
             elseif( preg_match("/backtrack[0-9]/", $fid) 
-                && $festival['upload'] == 'yes' 
+                && $festival['upload'] == 'yes' && $display == 'view'
                 && $registration['billing_customer_id'] == $request['session']['customer']['id']
                 ) {
                 $fields[$fid]['editable'] = 'yes';
                 $editable = 'yes';
             } 
             elseif( preg_match("/(title|opus|movements|musical|composer|arranger|source)/", $fid)
-                && $festival['upload'] == 'yes' 
+                && $festival['upload'] == 'yes' && $display == 'view'
                 && ($selected_class['titleflags']&0x0300) > 0   // Artwork Class
                 && $registration['billing_customer_id'] == $request['session']['customer']['id']
                 ) {
@@ -1594,7 +1702,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
                 $editable = 'yes';
             }
             elseif( preg_match("/artwork/", $fid) 
-                && $festival['upload'] == 'yes' 
+                && $festival['upload'] == 'yes' && $display == 'view'
                 && $registration['billing_customer_id'] == $request['session']['customer']['id']
                 ) {
                 $fields[$fid]['editable'] = 'yes';
@@ -1618,6 +1726,8 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
         }
         if( $editable == 'yes' && $display == 'view' ) {
             $fields['action']['value'] = 'viewupdate';
+        } elseif( $editable == 'yes' && $display == 'transferout' ) {
+            $fields['action']['value'] = 'transferout';
         } elseif( $editable == 'yes' ) {
             $fields['action']['value'] = 'update';
         }
@@ -1793,7 +1903,7 @@ function ciniki_musicfestivals_wng_accountRegistrationsProcess(&$ciniki, $tnid, 
             'class' => 'limit-width limit-width-80',
             'problem-list' => $form_errors,
             'cancel-label' => $editable == 'yes' ? 'Cancel' : '',
-            'submit-label' => 'Save',
+            'submit-label' => ($display == 'transferout' ? 'Transfer to Parent' : 'Save'),
             'submit-hide' => $editable == 'no' ? 'yes' : 'no',
             'fields' => $fields,
             'js' => $js,

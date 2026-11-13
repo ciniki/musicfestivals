@@ -507,6 +507,7 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
         } elseif( ($selected_class['flags']&0x10) == 0x10 ) {
             $registration['rtype'] = 50;
         }
+        // Note: Code also in accountRegistrationTransferIn
         // Virtual pricing
         if( $festival['earlybird'] == 'yes' 
             && ($selected_class['feeflags']&0x01) == 0x01 
@@ -528,6 +529,7 @@ function ciniki_musicfestivals_wng_registrationFormUpdateProcess(&$ciniki, $tnid
             $registration['fee'] = $selected_class['virtual_fee'];
         }
 
+        // Note: Code also in accountRegistrationTransferIn
         // Setup the description for the invoice 
         $description = $selected_class['name'];
         if( $registration['participation'] == 1 ) {

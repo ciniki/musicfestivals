@@ -620,14 +620,14 @@ function ciniki_musicfestivals_wng_acthookProvincialsRegisterProcess(&$ciniki, $
                 // 
                 // Add teacher
                 //
-                ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'web', 'customerAdd');
-                $rc = ciniki_customers_web_customerAdd($ciniki, $tnid, array(
+                ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'wng', 'customerAdd');
+                $rc = ciniki_customers_wng_customerAdd($ciniki, $tnid, $request, [
                     'first'=>$teacher_first,
                     'last'=>$teacher_last,
                     'email_address'=>$teacher_email,
                     'phone_label_1'=>$teacher_phone_label,
                     'phone_number_1'=>$teacher_phone,
-                    ));
+                    ]);
                 if( $rc['stat'] != 'ok' ) {
                     return array('stat'=>'ok', 'blocks'=>[
                         ['type' => 'msg',

@@ -84,7 +84,7 @@ function ciniki_musicfestivals_volunteersDefaultEmails(&$ciniki) {
             . "<p><strong>Volunteer Role:</strong> {_role_}</p>\n"
             . "<p><strong>Location:</strong> {_location_}</p>\n"
             . "<p>If you are unable to attend your shift please notify us at your earliest convenience.</p>\n"
-            . "<p>Thank you for being a part of the Team!</p>"
+            . "<p>Thank you for being a part of the {$tenant_details['name']} Team!</p>"
             . "",
         'volunteers-email-shift-changed-subject'=>'Your Volunteer Shift Has Been Updated',
         'volunteers-email-shift-changed-message'=>"<p>Hello {_firstname_},</p>\n"
@@ -94,7 +94,7 @@ function ciniki_musicfestivals_volunteersDefaultEmails(&$ciniki) {
             . "<p><strong>Volunteer Role:</strong> {_role_}</p>\n"
             . "<p><strong>Location:</strong> {_location_}</p>\n"
             . "<p>If you are unable to attend your shift please notify us at your earliest convenience.</p>\n"
-            . "<p>Thank you for being a part of the Team!</p>"
+            . "<p>Thank you for being a part of the {$tenant_details['name']} Team!</p>"
             . "",
         'volunteers-email-shift-cancelled-subject'=>'Your Volunteer Shift Has Been Cancelled',
         'volunteers-email-shift-cancelled-message'=>"<p>Hello {_firstname_},</p>\n"
@@ -104,7 +104,7 @@ function ciniki_musicfestivals_volunteersDefaultEmails(&$ciniki) {
             . "<p><strong>Time:</strong> {_starttime_} to {_endtime_}</p>\n"
             . "<p><strong>Volunteer Role:</strong> {_role_}</p>\n"
             . "<p><strong>Location:</strong> {_location_}</p>\n"
-            . "<p>Thank you for being a part of the Team!</p>"
+            . "<p>Thank you for being a part of the {$tenant_details['name']} Team!</p>"
             . "",
         'volunteers-email-reminder-7day-subject'=>'Reminder: Upcoming Volunteer Shift',
         'volunteers-email-reminder-7day-message'=>"<p>Hello {_firstname_},</p>\n"
@@ -114,7 +114,7 @@ function ciniki_musicfestivals_volunteersDefaultEmails(&$ciniki) {
             . "<p><strong>Volunteer Role:</strong> {_role_}</p>\n"
             . "<p><strong>Location:</strong> {_location_}</p>\n"
             . "<p>If you are unable to attend your shift please notify us immediately so that we may find someone else to fill in.</p>\n"
-            . "<p>Thank you for being a part of the Team!</p>\n"
+            . "<p>Thank you for being a part of the {$tenant_details['name']} Team!</p>\n"
             . "",
         'volunteers-email-reminder-24hour-subject'=>'Reminder: Upcoming Volunteer Shift - Tomorrow!',
         'volunteers-email-reminder-24hour-message'=>"<p>Hello {_firstname_},</p>\n"
@@ -124,7 +124,7 @@ function ciniki_musicfestivals_volunteersDefaultEmails(&$ciniki) {
             . "<p><strong>Volunteer Role: </strong>{_role_}</p>\n"
             . "<p><strong>Location: </strong>{_location_}</p>\n"
             . "<p>If you are unable to attend your shift please notify us immediately so that we may find someone else to fill in.</p>\n"
-            . "<p>Thank you for being a part of the Team!</p>"
+            . "<p>Thank you for being a part of the {$tenant_details['name']} Team!</p>"
             . "",
         ];
     

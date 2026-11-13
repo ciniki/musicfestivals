@@ -33,7 +33,8 @@
 # status:               The current status of the registration.
 #
 #                            5 - Draft (in shopping cart, unpaid or pending e-transfer)
-#                            7 - Submitted **future**
+#                            6 - Transferring (teacher transfer to parent)
+#                            7 - Submitted 
 #                           10 - Registered
 #                           31 - User Defined 
 #                           32 - User Defined 

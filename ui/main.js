@@ -6744,6 +6744,12 @@ function ciniki_musicfestivals_main() {
                     'code-category-class':'Code - Category - Class',
                     'code-class':'Code - Class',
                     }},
+                'registration-teacher-transfers':{'label':'Teacher Registration Transfers to Parents', 'type':'toggle', 'default':'no', 'toggles':{
+                    'no':'No',
+                    'yes':'Yes',
+                    }},
+                'registration-transfers-email-subject':{'label':'Parent Email Subject', 'type':'text'},
+                'registration-transfers-email-message':{'label':'Parent Email Message', 'type':'htmlarea', 'size':'medium'},
                 }},
         '_scrutineer_options':{'label':'Scrutineer Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('registrations', 'settings') == 'yes' && M.ciniki_musicfestivals_main.edit.formValue('registration-scrutineers-enable') == 'yes' ? 'yes' : 'hidden'; },
@@ -11676,6 +11682,7 @@ function ciniki_musicfestivals_main() {
             p.sections._class.fields.status.editable = (rsp.registration.status < 10 ? 'no' : 'yes');
             p.sections._class.fields.status.options = [];
             p.sections._class.fields.status.options[5] = 'Draft';
+            p.sections._class.fields.status.options[6] = 'Transfering';
             p.sections._class.fields.status.options[7] = 'Submitted';
             p.sections._class.fields.status.options[10] = 'Registered';
             for(var i = 31;i<=38;i++) {

@@ -56,6 +56,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
         . "registrations.teacher_customer_id, "
         . "registrations.teacher2_customer_id, "
         . "registrations.accompanist_customer_id, "
+        . "registrations.parent_customer_id, "
         . "registrations.member_id, "
         . "registrations.participation, ";
     if( ciniki_core_checkModuleFlags($ciniki, 'ciniki.musicfestivals', 0x80) ) {
@@ -164,7 +165,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
     $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
         array('container'=>'registrations', 'fname'=>'id', 
             'fields'=>array('id', 'uuid', 'status', 'payment_status', 'invoice_status', 'invoice_id', 
-                'billing_customer_id', 'teacher_customer_id', 'teacher2_customer_id', 'accompanist_customer_id', 'member_id', 'display_name', 
+                'billing_customer_id', 'teacher_customer_id', 'teacher2_customer_id', 'accompanist_customer_id', 'parent_customer_id', 'member_id', 'display_name', 
                 'class_code', 'class_name', 'section_name', 'category_name', 'codename', 
                 'fee', 'participation', 
                 'fulltitle1', 'fulltitle2', 'fulltitle3', 'fulltitle4', 'fulltitle5', 'fulltitle6', 'fulltitle7', 'fulltitle8', 
@@ -178,13 +179,15 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
         return array('stat'=>'fail', 'err'=>array('code'=>'ciniki.musicfestivals.300', 'msg'=>'Unable to load registrations', 'err'=>$rc['err']));
     }
     $registrations = isset($rc['registrations']) ? $rc['registrations'] : array();
-    $cart_registrations = array();
-    $etransfer_registrations = array();
-    $paymentrequired_registrations = array();
-    $paid_registrations = array();
-    $cancelled_registrations = array();
-    $parent_registrations = array();
-    $accompanist_registrations = array();
+    $cart_registrations = [];
+    $etransfer_registrations = [];
+    $paymentrequired_registrations = [];
+    $paid_registrations = [];
+    $cancelled_registrations = [];
+    $parent_registrations = [];
+    $accompanist_registrations = [];
+    $transferout_registrations = [];
+    $transferin_registrations = [];
     $schedule_pdf = 'no';
     foreach($registrations as $rid => $reg) {
         // FIXME: Add check to see if schedule should be available
@@ -212,6 +215,15 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
             ) {
             // Registration was created by parent/student and shared with teacher
             $parent_registrations[] = $reg;
+        } elseif( $reg['teacher_customer_id'] == $request['session']['customer']['id']
+            && $reg['status'] == 6
+            ) {
+            $transferout_registrations[] = $reg;
+        } elseif( $reg['parent_customer_id'] == $request['session']['customer']['id']
+            && $reg['teacher_customer_id'] = $reg['billing_customer_id']
+            && $reg['status'] == 6
+            ) {
+            $transferin_registrations[] = $reg;
         } elseif( $reg['accompanist_customer_id'] == $request['session']['customer']['id'] 
             && $reg['billing_customer_id'] != $request['session']['customer']['id']
             ) {
@@ -250,6 +262,7 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
                     . "<input type='hidden' name='action' value='edit' />"
                     . "<input class='button' type='submit' name='submit' value='Edit'>"
                     . "<input class='button' type='submit' name='f-delete' value='Remove'>"
+                    . ($customer_type == 20 && isset($festival['registration-teacher-transfers']) && $festival['registration-teacher-transfers'] == 'yes' ? "<input class='button' type='submit' name='transferout' value='Transfer to Parent'>" : '')
                     . "</form>";
                 $cart_registrations[$rid]['fee'] = '$' . number_format($registration['fee'], 2);
                 if( !in_array($registration['invoice_id'], $invoice_ids) ) {
@@ -345,6 +358,72 @@ function ciniki_musicfestivals_wng_registrationsListGenerate(&$ciniki, $tnid, &$
             'content' => 'Registrations closed',
             );
     } 
+    if( count($transferout_registrations) > 0 ) {
+        foreach($transferout_registrations as $rid => $registration) {
+            //
+            // Lookup customer
+            //
+            ciniki_core_loadMethod($ciniki, 'ciniki', 'customers', 'hooks', 'customerDetails2');
+            $rc = ciniki_customers_hooks_customerDetails2($ciniki, $tnid, ['customer_id'=>$registration['parent_customer_id']]);
+            if( $rc['stat'] == 'ok' ) {
+                $emails = '';
+                foreach($rc['customer']['emails'] as $email) {
+                    $emails .= ($emails != '' ? ', ' : '') . $email['address'];
+                }
+                $transferout_registrations[$rid]['parent_email'] = $rc['customer']['display_name'] . ' ' . $emails . ''; 
+            }
+            if( $customer_type == 20 ) {
+                $transferout_registrations[$rid]['buttons'] = "<form action='{$base_url}' method='POST'>"
+                    . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
+                    . "<input type='hidden' name='action' value='transferoutcancel' />"
+                    . "<input class='button' type='submit' name='transferout' value='Cancel Transfer'>"
+                    . "</form>";
+            }
+            $transferout_registrations[$rid]['fee'] = '$' . number_format($registration['fee'], 2);
+        }
+        $blocks[] = array(
+            'type' => 'table',
+            'title' => $festival['name'] . ' Pending Transfers',
+            'class' => 'musicfestival-registrations limit-width limit-width-90 fold-at-50',
+            'headers' => 'yes',
+            'columns' => array(
+                array('label' => 'To', 'field' => 'parent_email', 'class' => 'alignleft'),
+                array('label' => $festival['competitor-label-singular'], 'field' => 'display_name', 'class' => 'alignleft'),
+                array('label' => 'Class', 'fold-label'=>'Class:', 'field' => 'codename', 'class' => 'alignleft'),
+                array('label' => 'Title(s)', 'fold-label'=>'Title:', 'field' => 'titles', 'class' => 'alignleft'),
+                array('label' => 'Fee', 'fold-label'=>'Fee:', 'field' => 'fee', 'class' => 'alignright fold-alignleft'),
+                array('label' => '', 'field' => 'buttons', 'class' => 'buttons alignright'),
+                ),
+            'rows' => $transferout_registrations,
+            );
+
+    }
+    if( count($transferin_registrations) > 0 ) {
+        foreach($transferin_registrations as $rid => $registration) {
+            $transferin_registrations[$rid]['buttons'] = "<form action='{$base_url}' method='POST'>"
+                . "<input type='hidden' name='f-registration_id' value='{$registration['id']}' />"
+                . "<input type='hidden' name='action' value='transferin' />"
+                . "<input class='button' type='submit' name='transferin' value='Accept'>"
+                . "</form>";
+            $transferin_registrations[$rid]['fee'] = '$' . number_format($registration['fee'], 2);
+        }
+        $blocks[] = array(
+            'type' => 'table',
+            'title' => $festival['name'] . ' Pending Transfers',
+            'content' => 'The following registrations have been transferred to you. Please click Accept on each registration and follow the steps.',
+            'class' => 'musicfestival-registrations limit-width limit-width-90 fold-at-50',
+            'headers' => 'yes',
+            'columns' => array(
+                array('label' => $festival['competitor-label-singular'], 'field' => 'display_name', 'class' => 'alignleft'),
+                array('label' => 'Class', 'fold-label'=>'Class:', 'field' => 'codename', 'class' => 'alignleft'),
+                array('label' => 'Title(s)', 'fold-label'=>'Title:', 'field' => 'titles', 'class' => 'alignleft'),
+                array('label' => 'Fee', 'fold-label'=>'Fee:', 'field' => 'fee', 'class' => 'alignright fold-alignleft'),
+                array('label' => '', 'field' => 'buttons', 'class' => 'buttons alignright'),
+                ),
+            'rows' => $transferin_registrations,
+            );
+
+    }
     if( count($etransfer_registrations) > 0 ) {
         //
         // Format fee
