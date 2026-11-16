@@ -6744,13 +6744,19 @@ function ciniki_musicfestivals_main() {
                     'code-category-class':'Code - Category - Class',
                     'code-class':'Code - Class',
                     }},
-                'registration-teacher-transfers':{'label':'Teacher Registration Transfers to Parents', 'type':'toggle', 'default':'no', 'toggles':{
-                    'no':'No',
-                    'yes':'Yes',
+                'registration-teacher-transfers':{'label':'Teacher Registration Transfers to Parents', 'type':'toggle', 'default':'no', 
+                    'onchange':'M.ciniki_musicfestivals_main.edit.updateForm',
+                    'toggles':{
+                        'no':'No',
+                        'yes':'Yes',
                     }},
+                }},
+        '_registration_transfer_options':{'label':'Registration Transfer Options', 
+            'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('registrations', 'settings') == 'yes' && M.ciniki_musicfestivals_main.edit.formValue('registration-teacher-transfers') == 'yes' ? 'yes' : 'hidden'; },
+            'fields':{
                 'registration-transfers-email-subject':{'label':'Parent Email Subject', 'type':'text'},
                 'registration-transfers-email-message':{'label':'Parent Email Message', 'type':'htmlarea', 'size':'medium'},
-                }},
+            }},
         '_scrutineer_options':{'label':'Scrutineer Options', 
             'visible':function() { return M.ciniki_musicfestivals_main.edit.isSelected('registrations', 'settings') == 'yes' && M.ciniki_musicfestivals_main.edit.formValue('registration-scrutineers-enable') == 'yes' ? 'yes' : 'hidden'; },
             'fields':{
@@ -7702,6 +7708,7 @@ function ciniki_musicfestivals_main() {
             '_registration_form', 
             '_registration_form_help', 
             '_registration_options', 
+            '_registration_transfer_options', 
             '_scrutineer_options', 
             '_registration_statuses', 
             '_registration_lists',
@@ -7726,7 +7733,7 @@ function ciniki_musicfestivals_main() {
     }
     this.edit.switchRegistrationsTab = function(tab) {
         this.sections._registrations_tabs.selected = tab;
-        this.showHideSections(['_registrations_tabs', '_customer_types', '_recommendation_registration_form', '_registration_form', '_registration_form_help', '_registration_options', '_scrutineer_options', '_registration_statuses', '_registration_lists']);
+        this.showHideSections(['_registrations_tabs', '_customer_types', '_recommendation_registration_form', '_registration_form', '_registration_form_help', '_registration_options', '_registration_transfer_options', '_scrutineer_options', '_registration_statuses', '_registration_lists']);
         this.refreshSection('_registrations_tabs');
         this.updateForm();
     }
@@ -7870,6 +7877,7 @@ function ciniki_musicfestivals_main() {
         this.showHideFormField('_namewaiver', 'waiver-name-msg');
         this.showHideFormField('_namewaiver', 'waiver-name-option-yes');
         this.showHideFormField('_namewaiver', 'waiver-name-option-no');
+        this.showHideSection('_registration_transfer_options');
         this.showHideSection('_scrutineer_options');
         for(const i of [31,32,33,34,35,36,37,38,51,52,53,54,55]) {
             if( this.data['registration-status-' + i + '-label'] != null
@@ -7923,7 +7931,6 @@ function ciniki_musicfestivals_main() {
             if( rsp.festivals != null && rsp.festivals.length > 1 ) {
                 rsp.festivals.unshift({'id':0, 'name':'Choose past festival'});
                 p.sections._scrutineer_options.fields['registration-scrutineers-previous-festival-id'].options = rsp.festivals;
-                p.sections._scrutineer_options.fields['registration-scrutineers-previous-festival-id'].visible = 'yes';
             } else {
                 p.sections._scrutineer_options.fields['registration-scrutineers-previous-festival-id'].visible = 'no';
             }
