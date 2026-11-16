@@ -311,7 +311,10 @@ function ciniki_musicfestivals__festivalCopy(&$ciniki, $tnid, $args) {
                     'name' => $syllabus['name'],
                     ];
             }
-            
+           
+            if( !isset($syllabus['sections']) ) {
+                continue;
+            }
             foreach($syllabus['sections'] as $section) {
                 //
                 // Add the section
