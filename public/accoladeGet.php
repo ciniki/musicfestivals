@@ -154,6 +154,45 @@ function ciniki_musicfestivals_accoladeGet($ciniki) {
         foreach($accolade['winners'] as $iid => $winner) {
             $accolade['winner_ids'][] = $winner['id'];
         }
+        //
+        // Get the list of Classes
+        //
+        $strsql = "SELECT ac.id, "
+            . "classes.id AS class_id, "
+            . "classes.code, "
+            . "classes.name, "
+            . "categories.name AS category_name, "
+            . "sections.name AS section_name "
+            . "FROM ciniki_musicfestival_accolade_classes AS ac "
+            . "LEFT JOIN ciniki_musicfestival_classes AS classes ON ("
+                . "ac.class_id = classes.id "
+                . "AND classes.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_categories AS categories ON ("
+                . "classes.category_id = categories.id "
+                . "AND categories.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "LEFT JOIN ciniki_musicfestival_sections AS sections ON ("
+                . "categories.section_id = sections.id "
+                . "AND sections.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+                . ") "
+            . "WHERE ac.accolade_id = '" . ciniki_core_dbQuote($ciniki, $args['accolade_id']) . "' "
+            . "AND ac.tnid = '" . ciniki_core_dbQuote($ciniki, $args['tnid']) . "' "
+            . "ORDER BY sections.sequence, sections.name, categories.sequence, categories.name, classes.sequence, classes.code, classes.name "
+            . "";
+        ciniki_core_loadMethod($ciniki, 'ciniki', 'core', 'private', 'dbHashQueryArrayTree');
+        $rc = ciniki_core_dbHashQueryArrayTree($ciniki, $strsql, 'ciniki.musicfestivals', array(
+            array('container'=>'classes', 'fname'=>'id', 
+                'fields'=>array('id', 'class_id', 'code', 'name', 'category_name', 'section_name')),
+            ));
+        if( $rc['stat'] != 'ok' ) {
+            return $rc;
+        }
+        $accolade['classes'] = isset($rc['classes']) ? $rc['classes'] : array();
+        $accolade['class_ids'] = array();
+        foreach($accolade['classes'] as $cid => $class) {
+            $accolade['class_ids'][] = $class['id'];
+        }
     }
 
     $rsp = array('stat'=>'ok', 'accolade'=>$accolade);
