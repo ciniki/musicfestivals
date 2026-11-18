@@ -258,7 +258,7 @@ function ciniki_musicfestivals_wng_recommendationsProcess(&$ciniki, $tnid, &$req
             );
         $blocks[] = array(
             'type' => 'form',
-            'form-id' => 'section-form',
+//            'form-id' => 'section-form',
             'class' => 'limit-width limit-width-90 musicfestival-recommendations',
             'problem-list' => $form_errors,
             'cancel-label' => 'Cancel',
