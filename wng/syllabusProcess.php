@@ -325,7 +325,7 @@ function ciniki_musicfestivals_wng_syllabusProcess(&$ciniki, $tnid, &$request, $
         }
         for($i = 2; $i <= 5; $i++) {
             if( isset($s["section-{$tp}-button-{$i}-page"]) 
-                && $s["section-{$tp}-button-{$i}-page"] != '' && $s["section-{$tp}-button-{$i}-page"] > 0 
+                && $s["section-{$tp}-button-{$i}-page"] != '' && $s["section-{$tp}-button-{$i}-page"] != 'None' // && $s["section-{$tp}-button-{$i}-page"] > 0 
                 && isset($s["syllabus-{$tp}-button-{$i}-text"]) && $s["syllabus-{$tp}-button-{$i}-text"] != '' 
                 ) {
                 $syllabus_buttons[$tp][] = [
