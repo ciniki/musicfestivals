@@ -1627,7 +1627,7 @@ function ciniki_musicfestivals_wng_registrationFormGenerate(&$ciniki, $tnid, &$r
                     $backtrack_class = '';
                 }
             } elseif( (isset($registration['flags']) && ($registration['flags']&pow(2, ($i+7))) > 0)
-                || $registration["backtrack{$i}"] != ''
+                || (isset($registration["backtrack{$i}"]) && $registration["backtrack{$i}"] != '')
                 ) { 
                 $fields["backtrack_option{$i}"]['value'] = 'on';
                 $backtrack_class = '';
