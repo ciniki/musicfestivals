@@ -271,7 +271,7 @@ function ciniki_musicfestivals_wng_accountRegistrationTransferIn(&$ciniki, $tnid
         $selected_class = $rc['class'];
 
         ciniki_core_loadMethod($ciniki, 'ciniki', 'musicfestivals', 'private', 'classNameFormat');
-        $rc = ciniki_musicfestivals_classNameFormat($ciniki, $args['tnid'], [
+        $rc = ciniki_musicfestivals_classNameFormat($ciniki, $tnid, [
             'code' => $selected_class['code'],
             'name' => $selected_class['name'],
             'category' => $selected_class['category_name'],

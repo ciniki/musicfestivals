@@ -2075,7 +2075,7 @@ function ciniki_musicfestivals_main() {
             'headerValues':['#', 'Customer', 'Students', 'Total', 'Status'],
             'cellClasses':['', '', '', '', '', '', '', '', '', '', ''],
             },
-        'invoices':{'label':'Invoices', 'type':'simplegrid', 'num_cols':6,
+        'invoices':{'label':'Invoices', 'type':'simplegrid', 'num_cols':5,
             'visible':function() { return M.ciniki_musicfestivals_main.festival.isSelected('more', 'invoices'); },
             'headerValues':['#', 'Customer', 'Students', 'Total', 'Status'],
             'noData':'No invoices',
@@ -3568,7 +3568,7 @@ function ciniki_musicfestivals_main() {
                 case 4: return d.status_text;
             }
             if( j == 5 && d.status < 50 ) {
-                return '<button onclick="event.stopPropagation();M.ciniki_musicfestivals_main.festival.invoiceTransaction(\'' + d.id + '\',\'' + M.formatDollar(d.balance_amount) + '\');">Paid</button>';
+//                return '<button onclick="event.stopPropagation();M.ciniki_musicfestivals_main.festival.invoiceTransaction(\'' + d.id + '\',\'' + M.formatDollar(d.balance_amount) + '\');">Paid</button>';
             }
         }
         if( s == 'adjudicators' ) {
