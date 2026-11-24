@@ -11615,6 +11615,9 @@ function ciniki_musicfestivals_main() {
     this.registration.downloadArtwork = function(i) {
         M.api.openFile('ciniki.musicfestivals.registrationArtworkDownload',{'tnid':M.curTenantID, 'registration_id':this.registration_id, 'num':i});
     }
+    this.registration.downloadDocument = function(i) {
+        M.api.openFile('ciniki.musicfestivals.registrationDocumentDownload',{'tnid':M.curTenantID, 'registration_id':this.registration_id, 'num':i});
+    }
 //    this.registration.downloadPDF = function() {
 //        M.api.openFile('ciniki.musicfestivals.registrationMusicPDF',{'tnid':M.curTenantID, 'registration_id':this.registration_id});
 //    }
