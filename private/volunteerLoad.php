@@ -232,6 +232,12 @@ function ciniki_musicfestivals_volunteerLoad($ciniki, $tnid, $args) {
         if( !isset($volunteer['customer']['addresses']) ) {
             $volunteer['customer']['addresses'] = array();
         } 
+        if( isset($volunteer['notes']) && $volunteer['notes'] != '' ) {
+            $volunteer['details'][] = ['label' => 'Notes', 'value' => $volunteer['notes']];
+        }
+        if( isset($volunteer['internal_notes']) && $volunteer['internal_notes'] != '' ) {
+            $volunteer['details'][] = ['label' => 'Private Notes', 'value' => $volunteer['internal_notes']];
+        }
     }
 
     return array('stat'=>'ok', 'volunteer'=>$volunteer);

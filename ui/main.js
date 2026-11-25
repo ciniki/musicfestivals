@@ -21107,9 +21107,12 @@ function ciniki_musicfestivals_main() {
                 p.sections.shifts.label = 'Shifts';
             }
             p.sections.volunteers.label = 'Volunteers';
-            if( rsp.volunteer_total_hours_text != '' ) {
-                p.sections.volunteers.label += ' - ' + rsp.volunteer_total_hours_text + ' hours';
+            if( rsp.volunteers != null ) {
+                p.sections.volunteers.label += ' (' + rsp.volunteers.length + ')';
             }
+//            if( rsp.volunteer_total_hours_text != '' ) {
+//                p.sections.volunteers.label += ' - ' + rsp.volunteer_total_hours_text + ' hours';
+//            }
             p.refresh();
             p.show(cb);
             // 
