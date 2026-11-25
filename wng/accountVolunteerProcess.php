@@ -51,7 +51,13 @@ function ciniki_musicfestivals_wng_accountVolunteerProcess(&$ciniki, $tnid, &$re
             'editable' => 'yes',
             'signup' => 'yes',
             ]);
-    } else if( $rc['stat'] != 'ok' ) {
+    } elseif( $rc['stat'] == 'ok' && $rc['volunteer']['status'] >= 80 ) {
+        return array('stat'=>'ok', 'blocks' => [[
+            'type' => 'msg',
+            'level' => 'error',
+            'content' => 'No volunteer profile found',
+            ]]);
+    } elseif( $rc['stat'] != 'ok' ) {
         return array('stat'=>'ok', 'blocks' => [[
             'type' => 'msg',
             'level' => 'error',
