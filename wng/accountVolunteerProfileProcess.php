@@ -470,7 +470,7 @@ function ciniki_musicfestivals_wng_accountVolunteerProfileProcess(&$ciniki, $tni
     if( isset($args['editable']) && $args['editable'] == 'yes' ) {
         $blocks[] = array(
             'type' => 'form',
-            'guidelines' => '',
+            'guidelines' => isset($festival['volunteers-profile-form-intro']) ? $festival['volunteers-profile-form-intro'] : '',
             'title' => 'Volunteer Profile',
             'class' => 'limit-width limit-width-60',
             'problem-list' => $problem_list,

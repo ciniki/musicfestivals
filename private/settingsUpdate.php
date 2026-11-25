@@ -399,6 +399,7 @@ function ciniki_musicfestivals_settingsUpdate(&$ciniki, $tnid, $festival_id, $ar
         'volunteers-account-menu',          // Enable the account menu for logins
         'volunteers-signup-review',         // Review volunteer signups, require approval
         'volunteers-shift-signup-review',   // Review shift signups, require approval
+        'volunteers-profile-form-intro',     // Profile form intro
         'volunteers-applied-msg',           // The message to display when a volunteer has applied.
         'volunteers-discipline-format',     // Where to pull the discipline from
         'volunteers-account-cancel',        // Is customer allowed to cancel
